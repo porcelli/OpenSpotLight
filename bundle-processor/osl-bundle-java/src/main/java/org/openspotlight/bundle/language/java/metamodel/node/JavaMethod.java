@@ -71,9 +71,6 @@ public interface JavaMethod extends SLNode {
 	public Boolean getAbstract();
 
 	@SLProperty
-	public String getCompleteName();
-
-	@SLProperty
 	public String getCompleteQualifiedName();
 
 	/**
@@ -158,8 +155,6 @@ public interface JavaMethod extends SLNode {
 	 *            the new abstract
 	 */
 	public void setAbstract(Boolean newAbstract);
-
-	public void setCompleteName(String newCompleteName);
 
 	public void setCompleteQualifiedName(String newCompleteQualifiedName);
 

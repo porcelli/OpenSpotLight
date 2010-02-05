@@ -739,7 +739,7 @@ public class JavaTypeResolverTest {
 				null);
 		assertThat(fileClass, is(notNullValue()));
 		assertThat(fileClass.getName(), is("File"));
-		assertThat(fileClass.getPropertyValueAsString("completeName"),
+		assertThat(fileClass.getPropertyValueAsString("qualifiedName"),
 				is("java.io.File"));
 
 	}
@@ -759,7 +759,7 @@ public class JavaTypeResolverTest {
 				stringClass, null);
 		assertThat(numberClass, is(notNullValue()));
 		assertThat(numberClass.getName(), is("Number"));
-		assertThat(numberClass.getPropertyValueAsString("completeName"),
+		assertThat(numberClass.getPropertyValueAsString("qualifiedName"),
 				is("java.lang.Number"));
 
 	}
@@ -779,7 +779,7 @@ public class JavaTypeResolverTest {
 				stringClass, null);
 		assertThat(numberClass, is(notNullValue()));
 		assertThat(numberClass.getName(), is("Map.Entry"));
-		assertThat(numberClass.getPropertyValueAsString("completeName"),
+		assertThat(numberClass.getPropertyValueAsString("qualifiedName"),
 				is("java.util.Map.Entry"));
 
 	}
@@ -800,7 +800,7 @@ public class JavaTypeResolverTest {
 				stringClass, null);
 		assertThat(numberClass, is(notNullValue()));
 		assertThat(numberClass.getName(), is("Map.Entry"));
-		assertThat(numberClass.getPropertyValueAsString("completeName"),
+		assertThat(numberClass.getPropertyValueAsString("qualifiedName"),
 				is("java.util.Map.Entry"));
 
 	}
@@ -996,7 +996,7 @@ public class JavaTypeResolverTest {
 		final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
 		assertThat(stringClass, is(notNullValue()));
 		assertThat(stringClass.getName(), is("String"));
-		assertThat(stringClass.getPropertyValueAsString("completeName"),
+		assertThat(stringClass.getPropertyValueAsString("qualifiedName"),
 				is("java.lang.String"));
 	}
 
@@ -1014,7 +1014,7 @@ public class JavaTypeResolverTest {
 				.getType("java.util.Map.Entry");
 		assertThat(newEntryClass, is(notNullValue()));
 		assertThat(entryClass.getName(), is("Map.Entry"));
-		assertThat(entryClass.getPropertyValueAsString("completeName"),
+		assertThat(entryClass.getPropertyValueAsString("qualifiedName"),
 				is("java.util.Map.Entry"));
 
 	}
@@ -1363,7 +1363,7 @@ public class JavaTypeResolverTest {
 		final SLNode mapClass = javaTypeFinder.getType("java.util.Map");
 		assertThat(mapClass, is(notNullValue()));
 		assertThat(mapClass.getName(), is("Map"));
-		assertThat(mapClass.getPropertyValueAsString("completeName"),
+		assertThat(mapClass.getPropertyValueAsString("qualifiedName"),
 				is("java.util.Map"));
 	}
 
@@ -1408,7 +1408,7 @@ public class JavaTypeResolverTest {
 		final SLNode intClass = javaTypeFinder.getType("int");
 		assertThat(intClass, is(notNullValue()));
 		assertThat(intClass.getName(), is("int"));
-		assertThat(intClass.getPropertyValueAsString("completeName"), is("int"));
+		assertThat(intClass.getPropertyValueAsString("qualifiedName"), is("int"));
 	}
 
 	/**

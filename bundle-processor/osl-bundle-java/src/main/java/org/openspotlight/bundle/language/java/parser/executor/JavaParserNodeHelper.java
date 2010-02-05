@@ -78,7 +78,7 @@ public class JavaParserNodeHelper {
 				qualifiedNamePrefix.append(parent.getK2().getName());
 			} else {
 				final JavaType parentAsJavaType = (JavaType) parent.getK2();
-				qualifiedNamePrefix.append(parentAsJavaType.getCompleteName());
+				qualifiedNamePrefix.append(parentAsJavaType.getQualifiedName());
 			}
 			qualifiedNamePrefix.append('.');
 			final JavaType abstractNode = parent.getK1().addNode(
@@ -87,7 +87,7 @@ public class JavaParserNodeHelper {
 			session.addLink(AbstractTypeBind.class, abstractNode, concreteNode,
 					false);
 			final Class<? extends SLLink> linkType;
-			final String completeName = Strings.tryToRemoveBegginingFrom(
+			final String qualifiedName = Strings.tryToRemoveBegginingFrom(
 					JavaConstants.DEFAULT_PACKAGE,
 					qualifiedNamePrefix.toString() + typeName).replaceAll(
 					"[$]", ".");
@@ -97,15 +97,15 @@ public class JavaParserNodeHelper {
 				linkType = InnerClass.class;
 			}
 			concreteNode.setSimpleName(typeName);
-			concreteNode.setCompleteName(completeName);
+			concreteNode.setQualifiedName(qualifiedName);
 			abstractNode.setSimpleName(typeName);
-			abstractNode.setCompleteName(completeName);
+			abstractNode.setQualifiedName(qualifiedName);
 
 			session.addLink(linkType, parent.getK2(), concreteNode, false);
 			if (logger.isDebugEnabled()) {
 				logger.debug("adding node " + concreteNode.getName()
 						+ " on parent " + parent.getK1().getName()
-						+ " with complete name " + completeName);
+						+ " with complete name " + qualifiedName);
 			}
 
 			return new Pair<SLNode, SLNode>(abstractNode, concreteNode);

@@ -138,11 +138,14 @@ public class JavaPublicElementsTreeExecutor {
 			final List<JavaType> annotations30, final JavaType type31,
 			final List<VariableDeclarationDto> variables) {
 		try {
+			final String qualifiedParent = ((JavaType) peek).getQualifiedName()
+					+ ".";
 			final List<SLNode> nodes = new ArrayList<SLNode>();
 			for (final VariableDeclarationDto var : variables) {
 				final JavaDataField newField = peek.addNode(
 						JavaDataField.class, var.getName());
 				nodes.add(newField);
+				newField.setQualifiedName(qualifiedParent + var.getName());
 				for (final JavaModifier modifier : modifiers29) {
 
 					switch (modifier) {
@@ -248,7 +251,7 @@ public class JavaPublicElementsTreeExecutor {
 				}
 				support.session.addLink(InnerClass.class, newAbstractClass,
 						abstractParent, false);
-				qualifiedNameBuff.append(typedType.getCompleteName());
+				qualifiedNameBuff.append(typedType.getQualifiedName());
 			} else {
 				qualifiedNameBuff.append(peek.getName());
 			}
@@ -275,11 +278,11 @@ public class JavaPublicElementsTreeExecutor {
 			final String qualifiedName = Strings.tryToRemoveBegginingFrom(
 					JavaConstants.DEFAULT_PACKAGE + ".", qualifiedNameBuff
 							.toString());
-			newClass.setCompleteName(qualifiedName);
+			newClass.setQualifiedName(qualifiedName);
 
 			newClass.setSimpleName(string);
 			newAbstractClass.setSimpleName(string);
-			newAbstractClass.setCompleteName(qualifiedName);
+			newAbstractClass.setQualifiedName(qualifiedName);
 			if (modifiers7 != null) {
 				for (final JavaModifier modifier : modifiers7) {
 					switch (modifier) {
@@ -311,7 +314,7 @@ public class JavaPublicElementsTreeExecutor {
 			if (normalClassExtends9 != null) {
 				support.session.addLink(linkType, newClass,
 						normalClassExtends9, false);
-				addIncludedStaticClass(normalClassExtends9.getCompleteName());
+				addIncludedStaticClass(normalClassExtends9.getQualifiedName());
 				SLNode superType = support.findEquivalend(normalClassExtends9,
 						WhatContext.ABSTRACT);
 				if (superType == null) {
@@ -355,7 +358,7 @@ public class JavaPublicElementsTreeExecutor {
 			}
 			if (normalClassImplements10 != null) {
 				for (final JavaType interfaceType : normalClassImplements10) {
-					addIncludedStaticClass(interfaceType.getCompleteName());
+					addIncludedStaticClass(interfaceType.getQualifiedName());
 					support.session.addLink(Implements.class, newClass,
 							interfaceType, false);
 					final JavaType abstractInterfaceType = support
@@ -426,7 +429,7 @@ public class JavaPublicElementsTreeExecutor {
 					}
 				}
 			}
-			addIncludedClass(newClass.getCompleteName());
+			addIncludedClass(newClass.getQualifiedName());
 
 			return newClass;
 		} catch (final Exception e) {
@@ -539,7 +542,7 @@ public class JavaPublicElementsTreeExecutor {
 						.getInterfaces()[0];
 				arrayNode = parent.addNode(sameType, arrayName);
 				arrayNode.setArray(true);
-				arrayNode.setCompleteName(simpleOne.getCompleteName() + "[]");
+				arrayNode.setQualifiedName(simpleOne.getQualifiedName() + "[]");
 				arrayNode.setSimpleName(arrayName);
 				support.session.addLink(ArrayOfType.class, arrayNode,
 						simpleOne, false);
@@ -551,18 +554,18 @@ public class JavaPublicElementsTreeExecutor {
 	}
 
 	public JavaType findByQualifiedTypes(final List<JavaType> types) {
-		final StringBuilder completeName = new StringBuilder();
+		final StringBuilder qualifiedName = new StringBuilder();
 		for (int i = 0, size = types.size(); i < size; i++) {
 			final JavaType currentType = types.get(i);
-			final String name = i == 0 ? currentType.getCompleteName()
+			final String name = i == 0 ? currentType.getQualifiedName()
 					: currentType.getSimpleName();
-			completeName.append(name);
+			qualifiedName.append(name);
 			if (i != size - 1) {
-				completeName.append('.');
+				qualifiedName.append('.');
 			}
 
 		}
-		return findSimpleType(completeName.toString());
+		return findSimpleType(qualifiedName.toString());
 	}
 
 	public JavaTypeParameterizedExtended findExtendsParameterizedType(
@@ -576,8 +579,8 @@ public class JavaPublicElementsTreeExecutor {
 			if (parameterizedNode == null) {
 				parameterizedNode = parent.addNode(
 						JavaTypeParameterizedExtended.class, parameterizedName);
-				parameterizedNode.setCompleteName("<? extends "
-						+ simpleOne.getCompleteName() + ">");
+				parameterizedNode.setQualifiedName("<? extends "
+						+ simpleOne.getQualifiedName() + ">");
 				parameterizedNode.setSimpleName(parameterizedName);
 				support.session.addLink(TypeArgumentExtends.class,
 						parameterizedNode, simpleOne, false);
@@ -608,7 +611,7 @@ public class JavaPublicElementsTreeExecutor {
 			if (parameterizedNode == null) {
 				parameterizedNode = parent.addNode(JavaTypeParameterized.class,
 						parameterizedName);
-				parameterizedNode.setCompleteName(simpleOne.getCompleteName()
+				parameterizedNode.setQualifiedName(simpleOne.getQualifiedName()
 						+ parameterizedNameBuilder.toString());
 				parameterizedNode.setSimpleName(parameterizedName);
 
@@ -645,7 +648,7 @@ public class JavaPublicElementsTreeExecutor {
 			final JavaType typeReturn) {
 		try {
 			final JavaType simpleOne = findSimpleType(typeReturn
-					.getCompleteName());
+					.getQualifiedName());
 			final SLNode parent = simpleOne.getParent();
 			final String parameterizedName = "<? super " + simpleOne.getName()
 					+ ">";
@@ -654,8 +657,8 @@ public class JavaPublicElementsTreeExecutor {
 			if (parameterizedNode == null) {
 				parameterizedNode = parent.addNode(
 						JavaTypeParameterizedSuper.class, parameterizedName);
-				parameterizedNode.setCompleteName("<? super "
-						+ simpleOne.getCompleteName() + ">");
+				parameterizedNode.setQualifiedName("<? super "
+						+ simpleOne.getQualifiedName() + ">");
 				parameterizedNode.setSimpleName(parameterizedName);
 				support.session.addLink(TypeArgumentSuper.class,
 						parameterizedNode, simpleOne, false);
@@ -690,17 +693,17 @@ public class JavaPublicElementsTreeExecutor {
 				if (starred) {
 					support.includedStaticClasses.add(string);
 					JavaType classNode = support.currentContextFinder
-							.findByProperty(JavaType.class, "completeName",
+							.findByProperty(JavaType.class, "qualifiedName",
 									string);
 					if (classNode == null) {
 						classNode = support.abstractContextFinder
-								.findByProperty(JavaType.class, "completeName",
+								.findByProperty(JavaType.class, "qualifiedName",
 										string);
 					}
 
 					support.session.addLink(References.class, peek, classNode,
 							false);
-					support.importedNodeCache.put(classNode.getCompleteName(),
+					support.importedNodeCache.put(classNode.getQualifiedName(),
 							classNode);
 					support.importedNodeCache.put(classNode.getSimpleName(),
 							classNode);
@@ -739,11 +742,11 @@ public class JavaPublicElementsTreeExecutor {
 				} else {
 					support.includedClasses.add(string);
 					JavaType classNode = support.currentContextFinder
-							.findByProperty(JavaType.class, "completeName",
+							.findByProperty(JavaType.class, "qualifiedName",
 									string);
 					if (classNode == null) {
 						classNode = support.abstractContextFinder
-								.findByProperty(JavaType.class, "completeName",
+								.findByProperty(JavaType.class, "qualifiedName",
 										string);
 					}
 
@@ -761,7 +764,7 @@ public class JavaPublicElementsTreeExecutor {
 
 					support.session.addLink(References.class, peek, classNode,
 							false);
-					support.importedNodeCache.put(classNode.getCompleteName(),
+					support.importedNodeCache.put(classNode.getQualifiedName(),
 							classNode);
 					support.importedNodeCache.put(classNode.getSimpleName(),
 							classNode);
@@ -789,7 +792,7 @@ public class JavaPublicElementsTreeExecutor {
 			for (int i = 0, size = formalParameters34.size(); i < size; i++) {
 				final VariableDeclarationDto param = formalParameters34.get(i);
 
-				completeMethodName.append(param.getType().getCompleteName());
+				completeMethodName.append(param.getType().getQualifiedName());
 				if (i != size - 1) {
 					completeMethodName.append(' ');
 					completeMethodName.append(',');
@@ -833,7 +836,7 @@ public class JavaPublicElementsTreeExecutor {
 						.getType(), false);
 
 			}
-			javaMethod.setCompleteName(complMethodName);
+			javaMethod.setQualifiedName(complMethodName);
 			javaMethod.setSimpleName(string);
 			final StringBuilder qualifiedNameBuff = new StringBuilder();
 			SLNode parent = peek;

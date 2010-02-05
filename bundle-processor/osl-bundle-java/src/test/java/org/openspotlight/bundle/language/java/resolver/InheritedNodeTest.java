@@ -66,7 +66,7 @@ public class InheritedNodeTest {
 		SLGraphSession graphSession = context.getGraphSession();
 		JavaTypeClass newClass = graphSession.createContext("context")
 				.getRootNode().addNode(JavaTypeClass.class, "newClass");
-		newClass.setCompleteName("completeName");
+		newClass.setQualifiedName("qualifiedName");
 		newClass.setSimpleName("simpleName");
 		graphSession.save();
 		context.closeResources();
@@ -74,11 +74,11 @@ public class InheritedNodeTest {
 		graphSession = context.getGraphSession();
 		newClass = graphSession.getContext("context").getRootNode().addNode(
 				JavaTypeClass.class, "newClass");
-		Assert.assertThat(newClass.getCompleteName(), Is.is("completeName"));
+		Assert.assertThat(newClass.getQualifiedName(), Is.is("qualifiedName"));
 		Assert.assertThat(newClass.getSimpleName(), Is.is("simpleName"));
 		newClass = (JavaTypeClass) findByProperty(context.getGraphSession(),
-				JavaType.class, "completeName", "completeName");
-		Assert.assertThat(newClass.getCompleteName(), Is.is("completeName"));
+				JavaType.class, "qualifiedName", "qualifiedName");
+		Assert.assertThat(newClass.getQualifiedName(), Is.is("qualifiedName"));
 		Assert.assertThat(newClass.getSimpleName(), Is.is("simpleName"));
 
 	}

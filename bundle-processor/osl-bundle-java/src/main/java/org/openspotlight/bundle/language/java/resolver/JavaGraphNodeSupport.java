@@ -270,14 +270,14 @@ public class JavaGraphNodeSupport {
 			final T newType = abstractContextRootNode.addNode(nodeType,
 					nodeName);
 			newType.setSimpleName(nodeName);
-			newType.setCompleteName(nodeName);
+			newType.setQualifiedName(nodeName);
 			return newType;
 		}
 		final JavaPackage newPackage = abstractContextRootNode.addNode(
 				JavaPackage.class, packageName);
 		final T newType = newPackage.addNode(nodeType, nodeName);
 		newType.setSimpleName(nodeName);
-		newType.setCompleteName(Strings.tryToRemoveBegginingFrom(
+		newType.setQualifiedName(Strings.tryToRemoveBegginingFrom(
 				JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
 						+ nodeName.replaceAll("[$]", ".")));
 		session.addLink(PackageType.class, newPackage, newType, false);
@@ -349,7 +349,7 @@ public class JavaGraphNodeSupport {
 			final T newType = abstractContextRootNode.addNode(nodeType,
 					nodeName);
 			newType.setSimpleName(nodeName);
-			newType.setCompleteName(nodeName);
+			newType.setQualifiedName(nodeName);
 			return newType;
 		}
 		final JavaPackage newPackage = currentContextRootNode.addNode(
@@ -363,7 +363,7 @@ public class JavaGraphNodeSupport {
 		}
 
 		newType.setSimpleName(nodeName);
-		newType.setCompleteName(Strings.tryToRemoveBegginingFrom(
+		newType.setQualifiedName(Strings.tryToRemoveBegginingFrom(
 				JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
 						+ nodeName.replaceAll("[$]", ".")));
 		session.addLink(PackageType.class, newPackage, newType, false);
@@ -382,7 +382,7 @@ public class JavaGraphNodeSupport {
 				JavaPackage.class, packageName);
 		final JavaType newAbstractType = newAbstractPackage.addNode(
 				JavaType.class, nodeName);
-		newAbstractType.setCompleteName(Strings.tryToRemoveBegginingFrom(
+		newAbstractType.setQualifiedName(Strings.tryToRemoveBegginingFrom(
 				JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
 						+ nodeName.replaceAll("[$]", ".")));
 		newAbstractType.setSimpleName(nodeName);

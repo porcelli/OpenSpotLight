@@ -189,10 +189,10 @@ public class JavaExecutorSupport {
 
 			for (final String possibleName : possibleNames) {
 				final JavaType javaType = finder.findByProperty(JavaType.class,
-						"completeName", possibleName);
+						"qualifiedName", possibleName);
 				if (javaType != null) {
 					importedNodeCache.put(javaType.getSimpleName(), javaType);
-					importedNodeCache.put(javaType.getCompleteName(), javaType);
+					importedNodeCache.put(javaType.getQualifiedName(), javaType);
 					return javaType;
 				}
 			}
