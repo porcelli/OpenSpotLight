@@ -54,7 +54,7 @@ options{
 
 @header {
 package org.openspotlight.bundle.language.java.parser;
-import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElemetsTreeExecutor;
+import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElementsTreeExecutor;
 import org.openspotlight.bundle.language.java.parser.executor.JavaModifier;
 import org.openspotlight.bundle.language.java.parser.executor.VariableDeclarationDto;
 import org.openspotlight.bundle.language.java.metamodel.node.*;
@@ -69,13 +69,13 @@ import org.openspotlight.bundle.language.java.parser.executor.TypeParameterDto;
 
 @members{
     private Stack<SLNode> stack = new Stack<SLNode>();
-    private JavaPublicElemetsTreeExecutor executor;
+    private JavaPublicElementsTreeExecutor executor;
     
-    public void setExecutor(JavaPublicElemetsTreeExecutor executor){
+    public void setExecutor(JavaPublicElementsTreeExecutor executor){
         this.executor = executor;
     }
 
-    public JavaPublicElemetsTreeExecutor getExecutor(){
+    public JavaPublicElementsTreeExecutor getExecutor(){
         return this.executor;
     }
 }

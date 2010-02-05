@@ -3,7 +3,7 @@ package org.openspotlight.bundle.language.java.bundle;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.openspotlight.bundle.language.java.parser.JavaPublicElementsTree;
 import org.openspotlight.bundle.language.java.parser.executor.JavaExecutorSupport;
-import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElemetsTreeExecutor;
+import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElementsTreeExecutor;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -48,7 +48,7 @@ public class JavaParserPublicElementsPhase implements
 					currentContext.getCurrentNodeGroup(), context
 							.getGraphSession(), artifact
 							.getArtifactCompleteName());
-			walker.setExecutor(new JavaPublicElemetsTreeExecutor(support,
+			walker.setExecutor(new JavaPublicElementsTreeExecutor(support,
 					artifact.getVersion()));
 			walker.compilationUnit();
 			dto = JavaTransientDto.fromTree(dto).withTreeNodeStream(treeNodes)

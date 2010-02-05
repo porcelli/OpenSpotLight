@@ -51,7 +51,7 @@ import org.openspotlight.graph.query.SLQueryApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JavaPublicElemetsTreeExecutor {
+public class JavaPublicElementsTreeExecutor {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,7 +62,7 @@ public class JavaPublicElemetsTreeExecutor {
 
 	private final JavaExecutorSupport support;
 
-	public JavaPublicElemetsTreeExecutor(final JavaExecutorSupport support,
+	public JavaPublicElementsTreeExecutor(final JavaExecutorSupport support,
 			final String artifactVersion) throws Exception {
 		super();
 		this.support = support;
