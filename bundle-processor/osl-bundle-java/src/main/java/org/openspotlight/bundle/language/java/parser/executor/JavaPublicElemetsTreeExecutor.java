@@ -234,7 +234,9 @@ public class JavaPublicElemetsTreeExecutor {
 					peek, string);
 			final JavaType newAbstractClass = support.findEquivalend(newClass,
 					WhatContext.ABSTRACT);
+			final StringBuilder qualifiedNameBuff = new StringBuilder();
 			if (!(peek instanceof JavaPackage)) {
+				final JavaType typedType = (JavaType) peek;
 				newClass.setInner(true);
 				newAbstractClass.setInner(true);
 				support.session
@@ -246,15 +248,10 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 				support.session.addLink(InnerClass.class, newAbstractClass,
 						abstractParent, false);
+				qualifiedNameBuff.append(typedType.getCompleteName());
+			} else {
+				qualifiedNameBuff.append(peek.getName());
 			}
-			final StringBuilder qualifiedNameBuff = new StringBuilder();
-			SLNode parent = peek;
-			do {
-				qualifiedNameBuff.append(parent.getName());
-				qualifiedNameBuff.append('.');
-				parent = parent.getParent();
-			} while (parent instanceof JavaType);
-			qualifiedNameBuff.append(string);
 			if (logger.isDebugEnabled()
 					&& (currentPackage == null || newClass == null)) {
 				logger.debug("error on adding link "
@@ -273,10 +270,13 @@ public class JavaPublicElemetsTreeExecutor {
 			}
 			support.session.addLink(PackageType.class, newAbstractClass,
 					abstractParent, false);
+			qualifiedNameBuff.append('.');
+			qualifiedNameBuff.append(string);
 			final String qualifiedName = Strings.tryToRemoveBegginingFrom(
 					JavaConstants.DEFAULT_PACKAGE + ".", qualifiedNameBuff
-							.toString().replaceAll("[$]", "."));
+							.toString());
 			newClass.setCompleteName(qualifiedName);
+
 			newClass.setSimpleName(string);
 			newAbstractClass.setSimpleName(string);
 			newAbstractClass.setCompleteName(qualifiedName);
@@ -637,9 +637,6 @@ public class JavaPublicElemetsTreeExecutor {
 
 	public JavaType findSimpleType(final String string) {
 		final JavaType foundType = internalFindSimpleType(string);
-		if (foundType == null) {
-			toString();
-		}
 		Assertions.checkNotNull("foundType:" + string, foundType);
 		return foundType;
 	}

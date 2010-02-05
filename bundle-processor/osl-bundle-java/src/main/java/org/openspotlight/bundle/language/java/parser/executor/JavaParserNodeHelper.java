@@ -72,6 +72,15 @@ public class JavaParserNodeHelper {
 		Assertions.checkNotNull("parent.K2", parent.getK2());
 
 		try {
+
+			final StringBuilder qualifiedNamePrefix = new StringBuilder();
+			if (parent.getK2() instanceof JavaPackage) {
+				qualifiedNamePrefix.append(parent.getK2().getName());
+			} else {
+				final JavaType parentAsJavaType = (JavaType) parent.getK2();
+				qualifiedNamePrefix.append(parentAsJavaType.getCompleteName());
+			}
+			qualifiedNamePrefix.append('.');
 			final JavaType abstractNode = parent.getK1().addNode(
 					JavaType.class, typeName);
 			final T concreteNode = parent.getK2().addNode(type, typeName);
@@ -79,9 +88,9 @@ public class JavaParserNodeHelper {
 					false);
 			final Class<? extends SLLink> linkType;
 			final String completeName = Strings.tryToRemoveBegginingFrom(
-					JavaConstants.DEFAULT_PACKAGE + ".", (parent.getK2()
-							.getName()
-							+ "." + typeName).replaceAll("[$]", "."));
+					JavaConstants.DEFAULT_PACKAGE,
+					qualifiedNamePrefix.toString() + typeName).replaceAll(
+					"[$]", ".");
 			if (parent.getK1() instanceof JavaPackage) {
 				linkType = PackageType.class;
 			} else {

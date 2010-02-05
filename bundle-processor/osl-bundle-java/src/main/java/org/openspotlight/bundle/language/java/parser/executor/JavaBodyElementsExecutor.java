@@ -13,6 +13,9 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
 import org.openspotlight.bundle.language.java.parser.SingleVarDto;
 import org.openspotlight.common.exception.SLRuntimeException;
@@ -31,6 +34,7 @@ public class JavaBodyElementsExecutor {
 	private final Stack<SLCommonTree> elementStack = new Stack<SLCommonTree>();
 	private final IdentityHashMap<SLCommonTree, SLCommonTree> extendedClasses = new IdentityHashMap<SLCommonTree, SLCommonTree>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> extendedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
+	private final Stack<SLCommonTree> currentClass = new Stack<SLCommonTree>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> implementedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> variablesFromContext = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private int currentBlock = 0;
@@ -253,6 +257,16 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createExpressionFromQualified(final String string,
 			final ExpressionDto e54) {
+		System.err.println(string);
+		if (e54 == null) {
+
+			final JavaType type = support.findOnContext(string,
+					support.abstractContextFinder);
+			if (type == null) {
+
+			}
+		}
+
 		// 1st - try to find classes
 		// 2nd - try to find fields
 		// use the stuff present on this class!
@@ -381,6 +395,9 @@ public class JavaBodyElementsExecutor {
 		currentBlock = 0;
 		final SLCommonTree poped = elementStack.pop();
 		extendedClasses.remove(poped);
+		if (currentClass.peek() == poped) {
+			currentClass.pop();
+		}
 		extendedInterfaces.remove(poped);
 		implementedInterfaces.remove(poped);
 		variablesFromContext.remove(poped);
@@ -392,6 +409,10 @@ public class JavaBodyElementsExecutor {
 				imported instanceof SLCommonTree);
 		final SLCommonTree typed = (SLCommonTree) imported;
 		final SLNode node = typed.getNode();
+		if (node instanceof JavaTypeClass || node instanceof JavaTypeAnnotation
+				|| node instanceof JavaTypeEnum) {
+			currentClass.push(typed);
+		}
 		Assertions.checkNotNull("node", node);
 		if (logger.isDebugEnabled()) {
 			logger.debug(support.completeArtifactName + ": "
