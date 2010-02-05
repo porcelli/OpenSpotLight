@@ -18,16 +18,11 @@ import org.openspotlight.bundle.language.java.parser.SingleVarDto;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JavaBodyElementsExecutor {
-
-	private final String artifactName;
-
-	private final SLGraphSession session;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -40,10 +35,10 @@ public class JavaBodyElementsExecutor {
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> variablesFromContext = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private int currentBlock = 0;
 
-	public JavaBodyElementsExecutor(final SLGraphSession session,
-			final String artifactName) {
-		this.artifactName = artifactName;
-		this.session = session;
+	private final JavaExecutorSupport support;
+
+	public JavaBodyElementsExecutor(final JavaExecutorSupport support) {
+		this.support = support;
 	}
 
 	public void addExtends(final CommonTree peek, final CommonTree extended) {
@@ -59,8 +54,8 @@ public class JavaBodyElementsExecutor {
 		final SLNode extendedNode = typedExtended.getNode();
 		Assertions.checkNotNull("extendedNode", extendedNode);
 		if (logger.isDebugEnabled()) {
-			logger.debug(artifactName + ": " + "adding extend information: "
-					+ peekNode.getName());
+			logger.debug(support.completeArtifactName + ": "
+					+ "adding extend information: " + peekNode.getName());
 		}
 		extendedClasses.put(typedPeek, typedExtended);
 	}
@@ -135,7 +130,8 @@ public class JavaBodyElementsExecutor {
 			final JavaType typeAsNode = (JavaType) typedType.getNode();
 			final JavaDataVariable variable = parent.addNode(
 					JavaDataVariable.class, variableDeclarator29.getText());
-			session.addLink(DataType.class, variable, typeAsNode, false);
+			support.session
+					.addLink(DataType.class, variable, typeAsNode, false);
 			typedVariableDeclarator.setNode(variable);
 			List<SLCommonTree> value = variablesFromContext.get(peek);
 			if (value == null) {
@@ -308,8 +304,8 @@ public class JavaBodyElementsExecutor {
 						JavaDataParameter.class, dto.identifierTreeElement
 								.getText());
 				dto.identifierTreeElement.setNode(parameter);
-				session.addLink(DataType.class, parameter, dto.typeTreeElement
-						.getNode(), false);
+				support.session.addLink(DataType.class, parameter,
+						dto.typeTreeElement.getNode(), false);
 			}
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -377,9 +373,10 @@ public class JavaBodyElementsExecutor {
 	public CommonTree popFromElementStack() {
 		final SLCommonTree element = elementStack.peek();
 		if (logger.isDebugEnabled()) {
-			logger.debug(artifactName + ": " + "poping from stack "
-					+ element.getText() + " " + element.getNode().getName()
-					+ " " + element.getNode().getClass().getInterfaces()[0]);
+			logger.debug(support.completeArtifactName + ": "
+					+ "poping from stack " + element.getText() + " "
+					+ element.getNode().getName() + " "
+					+ element.getNode().getClass().getInterfaces()[0]);
 		}
 		currentBlock = 0;
 		final SLCommonTree poped = elementStack.pop();
@@ -397,8 +394,9 @@ public class JavaBodyElementsExecutor {
 		final SLNode node = typed.getNode();
 		Assertions.checkNotNull("node", node);
 		if (logger.isDebugEnabled()) {
-			logger.debug(artifactName + ": " + "pushing into stack "
-					+ imported.getText() + " " + node.getName()
+			logger.debug(support.completeArtifactName + ": "
+					+ "pushing into stack " + imported.getText() + " "
+					+ node.getName()
 					+ node.getClass().getInterfaces()[0].getSimpleName());
 		}
 		elementStack.push(typed);

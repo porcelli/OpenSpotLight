@@ -3,6 +3,7 @@ package org.openspotlight.bundle.language.java.bundle;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.openspotlight.bundle.language.java.parser.JavaBodyElements;
 import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
+import org.openspotlight.bundle.language.java.parser.executor.JavaExecutorSupport;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -30,11 +31,11 @@ public class JavaBodyElementsPhase implements
 			final ExecutionContext context) throws Exception {
 		final JavaTransientDto dto = (JavaTransientDto) artifact
 				.getTransientMap().get("DTO-PublicElementsTree");
+		final JavaExecutorSupport support = dto.support;
 		final CommonTreeNodeStream stream = dto.treeNodes;
 		stream.reset();
 		final JavaBodyElements elements = new JavaBodyElements(stream);
-		elements.setExecutor(new JavaBodyElementsExecutor(context
-				.getGraphSession(), artifact.getArtifactCompleteName()));
+		elements.setExecutor(new JavaBodyElementsExecutor(support));
 		elements.compilationUnit();
 		return LastProcessStatus.PROCESSED;
 	}

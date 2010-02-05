@@ -52,7 +52,7 @@ public class JavaParserPublicElementsPhase implements
 					artifact.getVersion()));
 			walker.compilationUnit();
 			dto = JavaTransientDto.fromTree(dto).withTreeNodeStream(treeNodes)
-					.withWalker(walker).create();
+					.withWalker(walker).withExecutorSupport(support).create();
 			artifact.getTransientMap().put("DTO-PublicElementsTree", dto);
 
 			return LastProcessStatus.PROCESSED;
