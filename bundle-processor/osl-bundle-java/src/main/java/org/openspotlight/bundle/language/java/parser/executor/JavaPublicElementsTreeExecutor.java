@@ -143,6 +143,9 @@ public class JavaPublicElementsTreeExecutor {
 			for (final VariableDeclarationDto var : variables) {
 				final JavaDataField newField = peek.addNode(
 						JavaDataField.class, var.getName());
+				support.session
+						.addLink(DataType.class, newField, type31, false);
+
 				nodes.add(newField);
 				newField.setQualifiedName(qualifiedParent + var.getName());
 				for (final JavaModifier modifier : modifiers29) {

@@ -292,6 +292,15 @@ public class JavaBodyElementsExecutor {
 					} else {
 						splited = new String[] { notFoundYet };
 					}
+					SLNode lastFoundOnThisExpression = typeToThisExpression;
+					onSplitted: for (final String s : splited) {
+						lastFoundOnThisExpression = lastFoundOnThisExpression
+								.getNode(s);
+						if (lastFoundOnThisExpression instanceof JavaType) {
+							continue onSplitted;
+						}
+
+					}
 
 				}
 
