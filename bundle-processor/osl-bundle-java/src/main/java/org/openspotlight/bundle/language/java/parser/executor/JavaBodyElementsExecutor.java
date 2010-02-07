@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import org.antlr.runtime.tree.CommonTree;
@@ -44,7 +45,7 @@ public class JavaBodyElementsExecutor {
 	private final List<ByPropertyFinder> finders;
 
 	public JavaBodyElementsExecutor(final JavaExecutorSupport support,
-			final List<String> contextNamesInOrder) throws Exception {
+			final Set<String> contextNamesInOrder) throws Exception {
 		this.support = support;
 		finders = new ArrayList<ByPropertyFinder>(contextNamesInOrder.size());
 		for (final String s : contextNamesInOrder) {

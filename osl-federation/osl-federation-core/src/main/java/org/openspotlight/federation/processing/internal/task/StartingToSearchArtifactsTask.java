@@ -87,7 +87,6 @@ import org.slf4j.LoggerFactory;
 public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 
 	private final CurrentProcessorContextImpl currentContext;
-
 	private final BundleProcessorType bundleProcessorType;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Repository repository;
@@ -234,12 +233,6 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 				for (final Artifact artifactToProcess : toBeReturned
 						.getArtifactsToBeProcessed()) {
 
-					final CurrentProcessorContextImpl taskCtx = new CurrentProcessorContextImpl();
-					taskCtx.setBundleProperties(bundleProcessorType
-							.getBundleProperties());
-					taskCtx.setCurrentGroup(currentContext.getCurrentGroup());
-					taskCtx.setCurrentRepository(currentContext
-							.getCurrentRepository());
 					logger
 							.info(" Adding processor artifact phase for bundle type "
 									+ artifactPhase.getClass().getSimpleName()
@@ -247,7 +240,8 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 									+ artifactType.getSimpleName());
 					final EachArtifactTask<Artifact> phaseTwo = new EachArtifactTask<Artifact>(
 							first, getRepositoryName(), artifactType,
-							artifactToProcess, behavior, artifactPhase, taskCtx);
+							artifactToProcess, behavior, artifactPhase,
+							currentContext);
 					final Task currentTask = currentGroup.prepareTask()
 							.withParentTasks(parentTasks)
 							.withReadableDescriptionAndUniqueId(
@@ -256,7 +250,7 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 											+ artifactToProcess
 													.getArtifactCompleteName()
 											+ ":"
-											+ taskCtx.getCurrentGroup()
+											+ currentContext.getCurrentGroup()
 													.getUniqueName())
 							.withRunnable(phaseTwo).andPublishTask();
 					thisPhaseTasks.add(currentTask);

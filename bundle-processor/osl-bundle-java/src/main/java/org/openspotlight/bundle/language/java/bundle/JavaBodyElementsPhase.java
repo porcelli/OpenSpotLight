@@ -1,6 +1,6 @@
 package org.openspotlight.bundle.language.java.bundle;
 
-import java.util.List;
+import java.util.Set;
 
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.openspotlight.bundle.language.java.JavaConstants;
@@ -37,7 +37,7 @@ public class JavaBodyElementsPhase implements
 		final JavaExecutorSupport support = dto.support;
 		final CommonTreeNodeStream stream = dto.treeNodes;
 		@SuppressWarnings("unchecked")
-		final List<String> contexts = (List<String>) currentContext
+		final Set<String> contexts = (Set<String>) currentContext
 				.getTransientProperties().get(JavaConstants.USING_CONTEXTS);
 		stream.reset();
 		final JavaBodyElements elements = new JavaBodyElements(stream);

@@ -1,7 +1,6 @@
 package org.openspotlight.bundle.language.java.bundle;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.openspotlight.bundle.language.java.JavaConstants;
@@ -50,7 +49,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 			throws Exception {
 		final String classpahtEntries = currentContext.getBundleProperties()
 				.get(JavaConstants.JAR_CLASSPATH);
-		final List<String> contexts = new LinkedList<String>();
+		final Set<String> contexts = new LinkedHashSet<String>();
 		if (classpahtEntries != null) {
 			final String[] entries = classpahtEntries
 					.split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
@@ -94,14 +93,19 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 
 			if (currentContext.getTransientProperties().containsKey(
 					JavaConstants.USING_CONTEXTS)) {
-				final List<String> existent = (List<String>) currentContext
+				final Set<String> existent = (Set<String>) currentContext
 						.getTransientProperties().get(
 								JavaConstants.USING_CONTEXTS);
 				existent.addAll(contexts);
-
+				if (logger.isDebugEnabled()) {
+					logger.debug("current contexts: " + existent);
+				}
 			} else {
 				currentContext.getTransientProperties().put(
 						JavaConstants.USING_CONTEXTS, contexts);
+				if (logger.isDebugEnabled()) {
+					logger.debug("adding contexts: " + contexts);
+				}
 			}
 		}
 	}
