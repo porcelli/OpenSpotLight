@@ -276,17 +276,18 @@ public class JavaBodyElementsExecutor {
 	public ExpressionDto createExpressionFromQualified(final String string,
 			final ExpressionDto e54) {
 		try {
-			System.err.println(string);
+			if (logger.isDebugEnabled()) {
+				logger.debug("trying  to find from qualified: " + string);
+			}
 			final ExpressionDto result = internalFind(currentClass.peek()
 					.getNode(), string, e54);
-			System.err
-					.println(result != null ? (result.leaf != null ? result.leaf
-							.getName()
-							: "leaf null " + " " + result.resultType != null ? result.resultType
-									.getName()
-									: "type null ")
-							: "null :-(");
-
+			if (logger.isDebugEnabled()) {
+				logger.debug(result != null ? "found from qualified " + string
+						+ " leaf: " + result.leaf.getName() + " and type "
+						+ result.resultType.getName()
+						: "not found from qualified " + string);
+			}
+			Assertions.checkNotNull("result", result);
 			return result;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -411,13 +412,19 @@ public class JavaBodyElementsExecutor {
 		return null;
 	}
 
-	private SLNode findParent(final String toWork) {
+	private SLNode findParentVisibleClasses(final String string) {
+		JavaType result = support.findOnContext(string,
+				support.abstractContextFinder);
+		if (result != null) {
+			return result;
+		}
+
 		final List<String> toTry = new ArrayList<String>();
-		toTry.add("");
+
 		toTry.addAll(support.includedPackages);
 		toTry.addAll(support.includedStaticClasses);
 		for (final String s : toTry) {
-			final JavaType result = support.findOnContext(s + toWork,
+			result = support.findOnContext(s + "." + string,
 					support.abstractContextFinder);
 			if (result != null) {
 				return result;
@@ -456,7 +463,7 @@ public class JavaBodyElementsExecutor {
 	 */
 	private ExpressionDto internalFind(final SLNode node, final String string,
 			final ExpressionDto e54) throws Exception {
-		if (string == null) {
+		if (string == null || string.length() == 0) {
 			JavaType resultType;
 			if (node instanceof JavaType) {
 				resultType = (JavaType) node;
@@ -483,6 +490,11 @@ public class JavaBodyElementsExecutor {
 			}
 
 		} else if (string.contains(".")) {
+			final SLNode clazz = findParentVisibleClasses(string);
+			if (clazz != null) {
+				return createMemberDto(clazz, e54);
+			}
+
 			final String toWork = removeStartIfContains(string, "this", "super");
 			if (!toWork.contains(".")) {
 				return internalFind(node, toWork, e54);
@@ -504,24 +516,34 @@ public class JavaBodyElementsExecutor {
 			}
 			return createMemberDto(currentNode, e54);
 		}
-		throw Exceptions.logAndReturn(new IllegalStateException());
+		return null;
 	}
 
 	private SLNode lookForLocalVariable(final String string) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug("looking for visible var " + string);
+		}
 		final Collection<List<SLCommonTree>> currentVariablesList = variablesFromContext
 				.values();
-		System.err.println("### " + string);
 		for (final List<SLCommonTree> currentVariables : currentVariablesList) {
 			for (final SLCommonTree entry : currentVariables) {
-				System.err.println("##### " + entry.getText());
 				if (string.equals(entry.getText().trim())) {
 					final SLNode node = entry.getNode();
-					System.err.println("##### >> "
-							+ (node != null ? node.getName() : "nullNode"));
+					if (logger.isDebugEnabled()) {
+						logger
+								.debug("found visible var "
+										+ string
+										+ " with node "
+										+ (node != null ? node.getName()
+												: "null node"));
+					}
 					return node;
 				}
 
 			}
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("not found visible var " + string);
 		}
 		return null;
 
