@@ -544,15 +544,17 @@ public class JavaBodyElementsExecutor {
 	public CommonTree popFromElementStack() {
 		final SLCommonTree element = elementStack.peek();
 		if (logger.isDebugEnabled()) {
+			final SLNode node = element.getNode();
 			logger.debug(support.completeArtifactName + ": "
-					+ "poping from stack " + element.getText() + " "
-					+ element.getNode().getName() + " "
-					+ element.getNode().getClass().getInterfaces()[0]);
+					+ "poping from stack text=" + element.getText()
+					+ " nodeName=" + node.getName() + " nodeClass="
+					+ node.getClass().getInterfaces()[0].getSimpleName());
 		}
 		currentBlock = 0;
 		final SLCommonTree poped = elementStack.pop();
 		extendedClasses.remove(poped);
-		if (currentClass.peek() == poped) {
+		if (poped != null && !currentClass.isEmpty()
+				&& poped.equals(currentClass.peek())) {
 			currentClass.pop();
 		}
 		extendedInterfaces.remove(poped);
@@ -573,8 +575,8 @@ public class JavaBodyElementsExecutor {
 		Assertions.checkNotNull("node", node);
 		if (logger.isDebugEnabled()) {
 			logger.debug(support.completeArtifactName + ": "
-					+ "pushing into stack " + imported.getText() + " "
-					+ node.getName()
+					+ "pushing into stack text=" + imported.getText()
+					+ " nodeName=" + node.getName() + " nodeClass="
 					+ node.getClass().getInterfaces()[0].getSimpleName());
 		}
 		elementStack.push(typed);
