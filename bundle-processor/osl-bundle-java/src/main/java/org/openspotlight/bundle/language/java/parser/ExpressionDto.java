@@ -25,7 +25,7 @@ public class ExpressionDto {
 	public ExpressionDto(final JavaType resultType, final ExpressionDto... dtos) {
 		Assertions.checkNotNull("resultType", resultType);
 		this.resultType = resultType;
-		leaf = null;
+		leaf = resultType;
 		final List<ExpressionDto> tempParticipants = new ArrayList<ExpressionDto>();
 		if (dtos != null) {
 			for (final ExpressionDto dto : dtos) {

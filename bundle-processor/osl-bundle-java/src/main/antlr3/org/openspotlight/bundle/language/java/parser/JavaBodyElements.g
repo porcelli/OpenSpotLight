@@ -457,7 +457,7 @@ expression returns [ExpressionDto info]
     |   ^(EXCLAMATION_EQUALS e21=expression e22=expression 
         { $info=executor.createBooleanExpression($e21.info,$e22.info); } )
     |   ^(INSTANCEOF e23=expression t1=type 
-        { $info=executor.createBooleanExpression($e23.info,$t1.treeElement); } )
+        { $info=executor.createInstanceofExpression($e23.info,$t1.treeElement); } )
     |   ^(relationalOp e24=expression e25=expression 
         { $info=executor.createBooleanExpression($e24.info,$e25.info); } )
     |   ^(shiftOp e26=expression e27=expression 
