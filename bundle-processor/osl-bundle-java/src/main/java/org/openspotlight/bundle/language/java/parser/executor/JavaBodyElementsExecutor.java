@@ -10,6 +10,8 @@ import java.util.Stack;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
+import org.openspotlight.bundle.language.java.metamodel.link.DataComparison;
+import org.openspotlight.bundle.language.java.metamodel.link.DataPropagation;
 import org.openspotlight.bundle.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
@@ -199,14 +201,24 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createAssignExpression(final ExpressionDto e4,
 			final ExpressionDto e5) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			support.session.addLink(DataPropagation.class, e4.leaf, e5.leaf,
+					false);
+			return new ExpressionDto(e4.resultType, e4, e5);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public ExpressionDto createBinaryExpression(final ExpressionDto e15,
 			final ExpressionDto e16) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			support.session.addLink(DataComparison.class, e15.leaf, e16.leaf,
+					false);
+			return new ExpressionDto(e15.resultType, e15, e16);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public CommonTree createBlockAndReturnTree(final CommonTree peek,
@@ -227,9 +239,13 @@ public class JavaBodyElementsExecutor {
 		}
 	}
 
-	public ExpressionDto createBooleanExpression(final ExpressionDto... e1) {
-		// TODO Auto-generated method stub
-		return null;
+	public ExpressionDto createBooleanExpression(final ExpressionDto e1) {
+		try {
+			final JavaType booleanType = support.findPrimitiveType("boolean");
+			return new ExpressionDto(booleanType, e1);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public ExpressionDto createBooleanExpression(final ExpressionDto e23,
@@ -238,9 +254,22 @@ public class JavaBodyElementsExecutor {
 		return null;
 	}
 
+	public ExpressionDto createBooleanExpression(final ExpressionDto e1,
+			final ExpressionDto e2) {
+		try {
+			final JavaType booleanType = support.findPrimitiveType("boolean");
+
+			support.session.addLink(DataComparison.class, e1.leaf, e2.leaf,
+					false);
+			return new ExpressionDto(booleanType, e1, e2);
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
+
 	public ExpressionDto createBooleanLiteral() {
-		// TODO Auto-generated method stub
-		return null;
+		final JavaType primitiveType = support.findPrimitiveType("boolean");
+		return new ExpressionDto(primitiveType);
 	}
 
 	public ExpressionDto createCastExpression(final ExpressionDto e46,
@@ -256,8 +285,8 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public ExpressionDto createCharLiteral() {
-		// TODO Auto-generated method stub
-		return null;
+		final JavaType primitiveType = support.findPrimitiveType("char");
+		return new ExpressionDto(primitiveType);
 	}
 
 	public ExpressionDto createClassInstanceExpression(final ExpressionDto e53,
@@ -296,8 +325,8 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public ExpressionDto createFloatLiteral() {
-		// TODO Auto-generated method stub
-		return null;
+		final JavaType intType = support.findPrimitiveType("float");
+		return new ExpressionDto(intType);
 	}
 
 	public ExpressionDto createFromArrayInitialization(
@@ -307,8 +336,8 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public ExpressionDto createIntegerLiteral() {
-		// TODO Auto-generated method stub
-		return null;
+		final JavaType intType = support.findPrimitiveType("int");
+		return new ExpressionDto(intType);
 	}
 
 	private ExpressionDto createMemberDto(final SLNode currentMember,
@@ -331,13 +360,11 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public ExpressionDto createNullLiteral() {
-		// TODO Auto-generated method stub
-		return null;
+		return ExpressionDto.NULL_EXPRESSION;
 	}
 
 	public ExpressionDto createNumberExpression(final ExpressionDto... e39) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ExpressionDto(e39[0].resultType, e39);
 	}
 
 	public void createParametersFromCatch(final CommonTree peek,
@@ -360,8 +387,7 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createPlusExpression(final ExpressionDto e28,
 			final ExpressionDto e29) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ExpressionDto(e28.resultType, e28, e29);
 	}
 
 	public void createStatement(final CommonTree peek,
@@ -379,8 +405,9 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public ExpressionDto createStringLiteral() {
-		// TODO Auto-generated method stub
-		return null;
+		final JavaType stringType = support.findOnContext("java.lang.String",
+				support.abstractContextFinder);
+		return new ExpressionDto(stringType);
 	}
 
 	public ExpressionDto createSuperConstructorExpression(
@@ -408,8 +435,8 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public ExpressionDto createTypeLiteralExpression(final CommonTree commonTree) {
-		// TODO Auto-generated method stub
-		return null;
+		final SLCommonTree typed = (SLCommonTree) commonTree;
+		return new ExpressionDto((JavaType) typed.getNode());
 	}
 
 	private SLNode findParentVisibleClasses(final String string) {
