@@ -290,8 +290,9 @@ typeArguments returns [List<JavaType> resultList]
     ;
 formalParameters returns [List<VariableDeclarationDto> resultList]
     @init{ $resultList = new ArrayList<VariableDeclarationDto>(); }
-    :    ^(FORMAL_PARAMETERS singleVariableDeclaration* 
-    { $resultList.add($singleVariableDeclaration.result); })
+    :    ^(FORMAL_PARAMETERS (singleVariableDeclaration
+         { $resultList.add($singleVariableDeclaration.result); }
+         )*)
     ;
 singleVariableDeclaration returns [VariableDeclarationDto result]
     :    ^(SINGLE_VARIABLE_DECLARATION Identifier modifiers annotations? type THREE_DOTS? ARRAY_DIMENSION? 

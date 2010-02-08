@@ -810,7 +810,7 @@ public class JavaPublicElementsTreeExecutor {
 						+ " inside its parent " + peek.getName() + " (id "
 						+ peek.getID() + ")");
 			}
-
+			javaMethod.setNumberOfParameters(formalParameters34.size());
 			int i = 0;
 			for (final VariableDeclarationDto param : formalParameters34) {
 				final MethodParameterDefinition methodParametersTypeLink = support.session

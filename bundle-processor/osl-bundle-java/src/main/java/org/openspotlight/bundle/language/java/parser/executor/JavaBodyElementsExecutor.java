@@ -12,10 +12,12 @@ import java.util.Stack;
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.metamodel.link.DataComparison;
+import org.openspotlight.bundle.language.java.metamodel.link.DataParameter;
 import org.openspotlight.bundle.language.java.metamodel.link.DataPropagation;
 import org.openspotlight.bundle.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
 import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
@@ -411,11 +413,47 @@ public class JavaBodyElementsExecutor {
 					: (JavaType) currentClass.peek().getNode();
 			final List<SLNode> methods = lookForMembers(parent, methodName,
 					getByMethodSimpleName);
-			for (final SLNode method : methods) {
-				System.err.println(method.getName());
+			final int size = optionalArguments == null ? 0 : optionalArguments
+					.size();
+			System.err.println("size: " + size);
+			for (int i = 0; i < size; i++) {
+				System.err.println("> > > > param " + optionalArguments.get(i));
+			}
+			final List<JavaMethod> foundMethods = new ArrayList<JavaMethod>();
+			for (final SLNode methodNode : methods) {
+				final JavaMethod method = (JavaMethod) methodNode;
+				if (method.getNumberOfParameters().intValue() == size) {
+					foundMethods.add(method);
+					System.err.println("found " + method.getName());
+				} else {
+					System.err.println("rejected " + method.getName() + " "
+							+ method.getNumberOfParameters() + " neq " + size);
+
+				}
+			}
+			if (foundMethods.size() > 1) {
+				// FIXME needs to use method resolution class!
 			}
 
-			return null;
+			final JavaMethod method = foundMethods.get(0);
+			final NeedsSyncronizationCollection<MethodReturns> links = support.session
+					.getLinks(MethodReturns.class, method, null);
+			final MethodReturns link = links.iterator().next();
+			final JavaType methodReturnType = (JavaType) link.getTarget();
+			if (optionalArguments != null) {
+				for (final ExpressionDto dto : optionalArguments) {
+					if (dto != ExpressionDto.NULL_EXPRESSION) {
+						support.session.addLink(DataParameter.class, dto.leaf,
+								method, false);
+					}
+				}
+			}
+			if (optionalArguments != null) {
+				return new ExpressionDto(methodReturnType, method,
+						optionalArguments.toArray(new ExpressionDto[] {}));
+			} else {
+				return new ExpressionDto(methodReturnType, method);
+			}
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}

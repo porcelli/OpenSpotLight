@@ -89,6 +89,9 @@ public interface JavaMethod extends SLNode {
 	@SLProperty
 	public Boolean getNative();
 
+	@SLProperty
+	public Integer getNumberOfParameters();
+
 	/**
 	 * Gets the private.
 	 * 
@@ -173,6 +176,8 @@ public interface JavaMethod extends SLNode {
 	 *            the new Native
 	 */
 	public void setNative(Boolean newNative);
+
+	public void setNumberOfParameters(Integer newNumberOfParameters);
 
 	/**
 	 * Sets the private.

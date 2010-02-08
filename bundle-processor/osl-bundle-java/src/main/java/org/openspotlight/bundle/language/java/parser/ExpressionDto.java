@@ -58,6 +58,9 @@ public class ExpressionDto {
 
 	@Override
 	public String toString() {
+		if (this == NULL_EXPRESSION) {
+			return "ExpressionDTO[NULL]";
+		}
 		return "ExpressionDTO[leaf: " + leaf.getName() + " , resultType: "
 				+ resultType.getName() + " ] and " + participants.size()
 				+ " participants";

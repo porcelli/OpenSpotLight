@@ -99,6 +99,24 @@ import org.slf4j.LoggerFactory;
 
 public class JavaGraphNodeSupport {
 
+	private static int findNumberOfParanetersByItsName(
+			final String methodFullName) {
+		final String methodParameterPiece = methodFullName
+				.substring(methodFullName.indexOf("(") + 1);
+		int numberOfParameters;
+		if (methodParameterPiece.startsWith(")")) {
+			numberOfParameters = 0;
+		} else {
+			numberOfParameters = 1;
+			for (final char c : methodParameterPiece.toCharArray()) {
+				if (c == ',') {
+					numberOfParameters++;
+				}
+			}
+		}
+		return numberOfParameters;
+	}
+
 	/** The using cache. */
 	private boolean usingCache = true;
 
@@ -463,6 +481,8 @@ public class JavaGraphNodeSupport {
 		} else {
 			method = newType.addNode(JavaMethodMethod.class, methodFullName);
 		}
+		final int numberOfParameters = findNumberOfParanetersByItsName(methodFullName);
+		method.setNumberOfParameters(numberOfParameters);
 		method.setSimpleName(methodName);
 		setMethodData(method, access);
 		session.addLink(TypeDeclares.class, newType, method, false);
