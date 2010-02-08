@@ -16,6 +16,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.DataPropagation;
 import org.openspotlight.bundle.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
@@ -24,6 +25,7 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
 import org.openspotlight.bundle.language.java.parser.SingleVarDto;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
@@ -402,6 +404,9 @@ public class JavaBodyElementsExecutor {
 			final List<CommonTree> optionalTypeArguments,
 			final List<ExpressionDto> optionalArguments) {
 		try {
+			System.err.println(">>> " + methodName + " "
+					+ optionalPrefixExpression);
+
 			final JavaType parent = optionalPrefixExpression != null ? optionalPrefixExpression.resultType
 					: (JavaType) currentClass.peek().getNode();
 			final List<SLNode> methods = lookForMembers(parent, methodName,
@@ -648,9 +653,19 @@ public class JavaBodyElementsExecutor {
 
 	}
 
-	private List<SLNode> lookForMembers(final JavaType currentJavaType,
+	private List<SLNode> lookForMembers(final JavaType javaType,
 			final String string, final MemberLookupPredicate predicate)
 			throws Exception {
+		final JavaType currentJavaType;
+		if (javaType instanceof JavaTypeParameterized) {
+			final NeedsSyncronizationCollection<ParameterizedTypeClass> links = support.session
+					.getLinks(ParameterizedTypeClass.class, javaType, null);
+			// FIXME filter by context
+			currentJavaType = (JavaType) links.iterator().next().getTarget();
+		} else {
+			currentJavaType = javaType;
+		}
+
 		final List<SLNode> result = new ArrayList<SLNode>();
 		final SLQueryApi query = support.session.createQueryApi();
 		query.select().type(JavaType.class.getName()).subTypes().selectEnd()

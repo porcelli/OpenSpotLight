@@ -6,4 +6,8 @@ public class AnotherExampleClass<E> {
 		public InnerClass parent;
 	}
 
+	public void doSomethingElse() {
+
+	}
+
 }

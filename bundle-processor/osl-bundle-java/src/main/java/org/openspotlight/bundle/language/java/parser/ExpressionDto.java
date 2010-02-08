@@ -55,4 +55,11 @@ public class ExpressionDto {
 		participants = Collections.unmodifiableList(tempParticipants);
 
 	}
+
+	@Override
+	public String toString() {
+		return "ExpressionDTO[leaf: " + leaf.getName() + " , resultType: "
+				+ resultType.getName() + " ] and " + participants.size()
+				+ " participants";
+	}
 }

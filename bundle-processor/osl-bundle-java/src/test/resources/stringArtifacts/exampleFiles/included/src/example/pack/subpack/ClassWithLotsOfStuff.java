@@ -21,6 +21,8 @@ public class ClassWithLotsOfStuff extends
 		final InnerClass inner2 = new InnerClass();
 		inner2.parent.parent.parent = null;
 		this.stuff = "";
+		final AnotherExampleClass<?> clazz = null;
+		clazz.doSomethingElse();
 		doSomething();
 		doStuff(0, null, 2.0d);
 		return null;
