@@ -1,6 +1,7 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.openspotlight.bundle.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaData;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
@@ -277,7 +277,7 @@ public class JavaBodyElementsExecutor {
 			final ExpressionDto e54) {
 		try {
 			System.err.println(string);
-			final ExpressionDto result = findField(currentClass.peek()
+			final ExpressionDto result = internalFind(currentClass.peek()
 					.getNode(), string, e54);
 			System.err
 					.println(result != null ? (result.leaf != null ? result.leaf
@@ -310,14 +310,14 @@ public class JavaBodyElementsExecutor {
 		return null;
 	}
 
-	private ExpressionDto createMemberDto(final SLNode node,
-			final ExpressionDto e54, final SLNode currentMember)
-			throws SLGraphSessionException {
+	private ExpressionDto createMemberDto(final SLNode currentMember,
+			final ExpressionDto e54) throws SLGraphSessionException {
+		Assertions.checkNotNull("currentMember", currentMember);
 		if (currentMember instanceof JavaType) {
 			return new ExpressionDto((JavaType) currentMember, currentMember,
 					e54);
 		} else {
-			final JavaType javaType = getJavaTypeFromField(node);
+			final JavaType javaType = getJavaTypeFromField(currentMember);
 			return new ExpressionDto(javaType, currentMember, e54);
 		}
 	}
@@ -411,108 +411,6 @@ public class JavaBodyElementsExecutor {
 		return null;
 	}
 
-	/**
-	 * 
-	 select org.openspotlight.bundle.language.java.metamodel.node.JavaType.*
-	 * where org.openspotlight.bundle.language.java.metamodel.node.JavaType.*
-	 * property qualifiedName == "example.pack.subpack.ClassWithLotsOfStuff"
-	 * keep result select
-	 * org.openspotlight.bundle.language.java.metamodel.node.JavaType.* by link
-	 * org.openspotlight.bundle.language.java.metamodel.link.Extends (a,b,both)
-	 * keep result select
-	 * org.openspotlight.bundle.language.java.metamodel.node.JavaType.* by link
-	 * org.openspotlight.bundle.language.java.metamodel.link.Implements
-	 * (a,b,both)
-	 * 
-	 * @param node
-	 * @param string
-	 * @param e54
-	 * @return
-	 * @throws Exception
-	 */
-	private ExpressionDto findField(final SLNode node, final String string,
-			final ExpressionDto e54) throws Exception {
-		if (string == null) {
-			JavaType resultType;
-			if (node instanceof JavaType) {
-				resultType = (JavaType) node;
-			} else {
-				resultType = getJavaTypeFromField(node);
-			}
-			return new ExpressionDto(resultType, node, e54);
-		} else if (string.equals("this")) {
-			return findField(currentClass.peek().getNode(), null, e54);
-		} else if (string.equals("super")) {
-			final SLNode superNode = extendedClasses.get(currentClass.peek())
-					.getNode();
-			return findField(superNode, null, e54);
-		} else if (!string.contains(".")) {
-			final JavaType currentJavaType = (JavaType) currentClass.peek()
-					.getNode();
-			final SLQueryApi query = support.session.createQueryApi();
-			query.select().type(JavaType.class.getName()).subTypes()
-					.selectEnd().where().type(JavaType.class.getName())
-					.subTypes().each().property("qualifiedName").equalsTo()
-					.value(currentJavaType.getQualifiedName()).typeEnd()
-					.whereEnd().keepResult().select().type(
-							JavaType.class.getName()).subTypes().comma()
-					.byLink(Extends.class.getName()).any().selectEnd()
-					.keepResult().select().type(JavaType.class.getName())
-					.subTypes().comma().byLink(Implements.class.getName())
-					.any().selectEnd();
-			final NeedsSyncronizationList<SLNode> nodes = query.execute()
-					.getNodes();
-			for (final SLNode currentNode : nodes) {
-				final SLNode currentMember = currentNode.getNode(string);
-				if (currentMember != null) {
-					return createMemberDto(node, e54, currentMember);
-				}
-			}
-		} else if (string.contains(".")) {
-			String toWork = removeStartIfContains(string, "this", "super");
-			final String toWorkCopy = toWork;
-			if (!toWork.contains(".")) {
-				return findField(node, toWork, e54);
-			}
-			SLNode lastFoundType = null;
-
-			infiniteLoop: while (true) {
-				final SLNode parent = findParent(toWork);
-				if (parent != null) {
-					lastFoundType = parent;
-					break infiniteLoop;
-				}
-				toWork = toWork.substring(0, toWork.lastIndexOf("."));
-				if (toWork.length() == 0) {
-					break infiniteLoop;
-				}
-			}
-			if (toWork.length() == 0 && lastFoundType != null) {
-				return createMemberDto(lastFoundType, e54, lastFoundType);
-			}
-			if (lastFoundType != null && toWork.length() > 0) {
-				final String[] splited;
-				if (toWorkCopy.contains(".")) {
-					splited = toWorkCopy.split("[.]");
-				} else {
-					splited = new String[] { toWorkCopy };
-				}
-				JavaType javaType = (JavaType) lastFoundType;
-				for (final String s : splited) {
-					lastFoundType = javaType.getNode(s);
-					if (lastFoundType instanceof JavaData) {
-						javaType = getJavaTypeFromField(lastFoundType);
-					} else if (lastFoundType instanceof JavaType) {
-						javaType = (JavaType) lastFoundType;
-					}
-				}
-				return createMemberDto(javaType, e54, lastFoundType);
-			}
-
-		}
-		throw Exceptions.logAndReturn(new IllegalStateException());
-	}
-
 	private SLNode findParent(final String toWork) {
 		final List<String> toTry = new ArrayList<String>();
 		toTry.add("");
@@ -535,6 +433,122 @@ public class JavaBodyElementsExecutor {
 				.getLinks(DataType.class, node, null);
 		resultType = (JavaType) link.iterator().next().getTarget();
 		return resultType;
+	}
+
+	/**
+	 * 
+	 select org.openspotlight.bundle.language.java.metamodel.node.JavaType.*
+	 * where org.openspotlight.bundle.language.java.metamodel.node.JavaType.*
+	 * property qualifiedName == "example.pack.subpack.ClassWithLotsOfStuff"
+	 * keep result select
+	 * org.openspotlight.bundle.language.java.metamodel.node.JavaType.* by link
+	 * org.openspotlight.bundle.language.java.metamodel.link.Extends (a,b,both)
+	 * keep result select
+	 * org.openspotlight.bundle.language.java.metamodel.node.JavaType.* by link
+	 * org.openspotlight.bundle.language.java.metamodel.link.Implements
+	 * (a,b,both)
+	 * 
+	 * @param node
+	 * @param string
+	 * @param e54
+	 * @return
+	 * @throws Exception
+	 */
+	private ExpressionDto internalFind(final SLNode node, final String string,
+			final ExpressionDto e54) throws Exception {
+		if (string == null) {
+			JavaType resultType;
+			if (node instanceof JavaType) {
+				resultType = (JavaType) node;
+			} else {
+				resultType = getJavaTypeFromField(node);
+			}
+			return new ExpressionDto(resultType, node, e54);
+		} else if (string.equals("this")) {
+			return internalFind(currentClass.peek().getNode(), null, e54);
+		} else if (string.equals("super")) {
+			final SLNode superNode = extendedClasses.get(currentClass.peek())
+					.getNode();
+			return internalFind(superNode, null, e54);
+		} else if (!string.contains(".")) {
+			SLNode currentMember = lookForLocalVariable(string);
+			if (currentMember == null) {
+				final JavaType currentJavaType = (JavaType) currentClass.peek()
+						.getNode();
+
+				currentMember = lookForMember(currentJavaType, string);
+			}
+			if (currentMember != null) {
+				return createMemberDto(currentMember, e54);
+			}
+
+		} else if (string.contains(".")) {
+			final String toWork = removeStartIfContains(string, "this", "super");
+			if (!toWork.contains(".")) {
+				return internalFind(node, toWork, e54);
+			}
+			final String[] splitted = toWork.contains(".") ? toWork
+					.split("[.]") : new String[] { toWork };
+			SLNode currentNode = lookForLocalVariable(splitted[0]);
+			if (currentNode == null) {
+				final JavaType currentJavaType = (JavaType) currentClass.peek()
+						.getNode();
+
+				currentNode = lookForMember(currentJavaType, string);
+			}
+			for (int i = 1, size = splitted.length; i < size; i++) {
+				if (!(currentNode instanceof JavaType)) {
+					currentNode = getJavaTypeFromField(currentNode);
+				}
+				currentNode = lookForMember((JavaType) currentNode, string);
+			}
+			return createMemberDto(currentNode, e54);
+		}
+		throw Exceptions.logAndReturn(new IllegalStateException());
+	}
+
+	private SLNode lookForLocalVariable(final String string) throws Exception {
+		final Collection<List<SLCommonTree>> currentVariablesList = variablesFromContext
+				.values();
+		System.err.println("### " + string);
+		for (final List<SLCommonTree> currentVariables : currentVariablesList) {
+			for (final SLCommonTree entry : currentVariables) {
+				System.err.println("##### " + entry.getText());
+				if (string.equals(entry.getText().trim())) {
+					final SLNode node = entry.getNode();
+					System.err.println("##### >> "
+							+ (node != null ? node.getName() : "nullNode"));
+					return node;
+				}
+
+			}
+		}
+		return null;
+
+	}
+
+	private SLNode lookForMember(final JavaType currentJavaType,
+			final String string) throws Exception {
+		final SLQueryApi query = support.session.createQueryApi();
+		query.select().type(JavaType.class.getName()).subTypes().selectEnd()
+				.where().type(JavaType.class.getName()).subTypes().each()
+				.property("qualifiedName").equalsTo().value(
+						currentJavaType.getQualifiedName()).typeEnd()
+				.whereEnd().keepResult().select()
+				.type(JavaType.class.getName()).subTypes().comma().byLink(
+						Extends.class.getName()).any().selectEnd().keepResult()
+				.select().type(JavaType.class.getName()).subTypes().comma()
+				.byLink(Implements.class.getName()).any().selectEnd();
+		final NeedsSyncronizationList<SLNode> nodes = query.execute()
+				.getNodes();
+		for (final SLNode currentNode : nodes) {
+			final SLNode currentMember = currentNode.getNode(string);
+			if (currentMember != null) {
+				return currentMember;
+			}
+		}
+		return null;
+
 	}
 
 	public CommonTree peek() {

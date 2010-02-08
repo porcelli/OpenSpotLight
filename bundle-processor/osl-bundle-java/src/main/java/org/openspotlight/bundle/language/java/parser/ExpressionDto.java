@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
+import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLNode;
 
 public class ExpressionDto {
@@ -14,7 +15,8 @@ public class ExpressionDto {
 
 	public ExpressionDto(final JavaType resultType, final SLNode leaf,
 			final ExpressionDto... dtos) {
-		super();
+		Assertions.checkNotNull("resultType", resultType);
+		Assertions.checkNotNull("leaf", leaf);
 		this.resultType = resultType;
 		this.leaf = leaf;
 		final List<ExpressionDto> tempParticipants = new ArrayList<ExpressionDto>();
