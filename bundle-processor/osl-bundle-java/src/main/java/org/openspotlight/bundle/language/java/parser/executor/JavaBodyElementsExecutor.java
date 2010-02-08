@@ -1,6 +1,7 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.Implements;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
@@ -26,6 +28,7 @@ import org.openspotlight.bundle.language.java.parser.ExpressionDto;
 import org.openspotlight.bundle.language.java.parser.SingleVarDto;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
+import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -37,21 +40,52 @@ import org.slf4j.LoggerFactory;
 
 public class JavaBodyElementsExecutor {
 
+	private static interface MemberLookupPredicate {
+		List<SLNode> findMember(String param, SLNode parentFound)
+				throws Exception;
+	}
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final List<SLCommonTree> importedList = new ArrayList<SLCommonTree>();
-
 	private final Stack<SLCommonTree> elementStack = new Stack<SLCommonTree>();
 	private final IdentityHashMap<SLCommonTree, SLCommonTree> extendedClasses = new IdentityHashMap<SLCommonTree, SLCommonTree>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> extendedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private final Stack<SLCommonTree> currentClass = new Stack<SLCommonTree>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> implementedInterfaces = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
 	private final IdentityHashMap<SLCommonTree, List<SLCommonTree>> variablesFromContext = new IdentityHashMap<SLCommonTree, List<SLCommonTree>>();
+
 	private int currentBlock = 0;
 
 	private final JavaExecutorSupport support;
 
 	private final List<ByPropertyFinder> finders;
+
+	private final MemberLookupPredicate getByNamePredicate = new MemberLookupPredicate() {
+
+		public List<SLNode> findMember(final String param,
+				final SLNode parentFound) throws Exception {
+			return Arrays.asList(parentFound.getNode(param));
+		}
+	};
+
+	private final MemberLookupPredicate getByMethodSimpleName = new MemberLookupPredicate() {
+
+		public List<SLNode> findMember(final String param,
+				final SLNode parentFound) throws Exception {
+			final List<SLNode> result = new ArrayList<SLNode>();
+			final NeedsSyncronizationSet<SLNode> nodes = parentFound.getNodes();
+			for (final SLNode node : nodes) {
+				if (node instanceof JavaMethod) {
+					final JavaMethod method = (JavaMethod) node;
+					if (param.equals(method.getSimpleName())) {
+						result.add(method);
+					}
+				}
+			}
+			return result;
+		}
+	};
 
 	public JavaBodyElementsExecutor(final JavaExecutorSupport support,
 			final Set<String> contextNamesInOrder) throws Exception {
@@ -202,8 +236,10 @@ public class JavaBodyElementsExecutor {
 	public ExpressionDto createAssignExpression(final ExpressionDto e4,
 			final ExpressionDto e5) {
 		try {
-			support.session.addLink(DataPropagation.class, e4.leaf, e5.leaf,
-					false);
+			if (e5.leaf != null) {
+				support.session.addLink(DataPropagation.class, e4.leaf,
+						e5.leaf, false);
+			}
 			return new ExpressionDto(e4.resultType, e4, e5);
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -360,11 +396,24 @@ public class JavaBodyElementsExecutor {
 		}
 	}
 
-	public ExpressionDto createMethodInvocation(final ExpressionDto e55,
-			final String string, final List<CommonTree> ta2,
-			final List<ExpressionDto> a3) {
-		// TODO Auto-generated method stub
-		return null;
+	public ExpressionDto createMethodInvocation(
+			final ExpressionDto optionalPrefixExpression,
+			final String methodName,
+			final List<CommonTree> optionalTypeArguments,
+			final List<ExpressionDto> optionalArguments) {
+		try {
+			final JavaType parent = optionalPrefixExpression != null ? optionalPrefixExpression.resultType
+					: (JavaType) currentClass.peek().getNode();
+			final List<SLNode> methods = lookForMembers(parent, methodName,
+					getByMethodSimpleName);
+			for (final SLNode method : methods) {
+				System.err.println(method.getName());
+			}
+
+			return null;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public ExpressionDto createNullLiteral() {
@@ -518,7 +567,8 @@ public class JavaBodyElementsExecutor {
 				final JavaType currentJavaType = (JavaType) currentClass.peek()
 						.getNode();
 
-				currentMember = lookForMember(currentJavaType, string);
+				currentMember = lookForMember(currentJavaType, string,
+						getByNamePredicate);
 			}
 			if (currentMember != null) {
 				return createMemberDto(currentMember, e54);
@@ -541,13 +591,15 @@ public class JavaBodyElementsExecutor {
 				final JavaType currentJavaType = (JavaType) currentClass.peek()
 						.getNode();
 
-				currentNode = lookForMember(currentJavaType, string);
+				currentNode = lookForMember(currentJavaType, string,
+						getByNamePredicate);
 			}
 			for (int i = 1, size = splitted.length; i < size; i++) {
 				if (!(currentNode instanceof JavaType)) {
 					currentNode = getJavaTypeFromField(currentNode);
 				}
-				currentNode = lookForMember((JavaType) currentNode, string);
+				currentNode = lookForMember((JavaType) currentNode, string,
+						getByNamePredicate);
 			}
 			return createMemberDto(currentNode, e54);
 		}
@@ -585,7 +637,21 @@ public class JavaBodyElementsExecutor {
 	}
 
 	private SLNode lookForMember(final JavaType currentJavaType,
-			final String string) throws Exception {
+			final String string, final MemberLookupPredicate predicate)
+			throws Exception {
+		final List<SLNode> members = lookForMembers(currentJavaType, string,
+				predicate);
+		if (!members.isEmpty()) {
+			return members.get(0);
+		}
+		return null;
+
+	}
+
+	private List<SLNode> lookForMembers(final JavaType currentJavaType,
+			final String string, final MemberLookupPredicate predicate)
+			throws Exception {
+		final List<SLNode> result = new ArrayList<SLNode>();
 		final SLQueryApi query = support.session.createQueryApi();
 		query.select().type(JavaType.class.getName()).subTypes().selectEnd()
 				.where().type(JavaType.class.getName()).subTypes().each()
@@ -599,12 +665,14 @@ public class JavaBodyElementsExecutor {
 		final NeedsSyncronizationList<SLNode> nodes = query.execute()
 				.getNodes();
 		for (final SLNode currentNode : nodes) {
-			final SLNode currentMember = currentNode.getNode(string);
-			if (currentMember != null) {
-				return currentMember;
+			final List<SLNode> foundMember = predicate.findMember(string,
+					currentNode);
+			if (foundMember != null && !foundMember.isEmpty()) {
+				result.addAll(foundMember);
+				// FIXME FILTER BY CONTEXTS
 			}
 		}
-		return null;
+		return result;
 
 	}
 
