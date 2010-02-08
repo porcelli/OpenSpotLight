@@ -601,7 +601,7 @@ public class JavaPublicElementsTreeExecutor {
 			parameterizedNameBuilder.append('<');
 			for (int i = 0, size = typeArguments40.size(); i < size; i++) {
 				parameterizedNameBuilder.append('?');
-				if (i - 1 != size) {
+				if (i + 1 != size) {
 					parameterizedNameBuilder.append(',');
 				}
 			}
