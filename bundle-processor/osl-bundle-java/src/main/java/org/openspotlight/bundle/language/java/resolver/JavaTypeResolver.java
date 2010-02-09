@@ -340,7 +340,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 	 * @return the java type resolver
 	 */
 	@SuppressWarnings( { "cast", "boxing" })
-	public static TypeResolver<JavaType> createNewCached(
+	public static JavaTypeResolver createNewCached(
 			final SLContext abstractContext,
 			final List<SLContext> orderedActiveContexts,
 			final boolean enableBoxing, final SLGraphSession session) {

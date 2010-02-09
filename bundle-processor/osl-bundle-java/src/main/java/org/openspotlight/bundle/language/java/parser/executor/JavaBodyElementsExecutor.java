@@ -3,9 +3,11 @@ package org.openspotlight.bundle.language.java.parser.executor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -17,8 +19,10 @@ import org.openspotlight.bundle.language.java.metamodel.link.DataPropagation;
 import org.openspotlight.bundle.language.java.metamodel.link.DataType;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.Implements;
+import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
 import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
+import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
@@ -30,12 +34,15 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
 import org.openspotlight.bundle.language.java.parser.SingleVarDto;
+import org.openspotlight.bundle.language.java.resolver.JavaTypeResolver;
+import org.openspotlight.bundle.language.java.resolver.MethodResolver;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQueryApi;
@@ -63,8 +70,6 @@ public class JavaBodyElementsExecutor {
 
 	private final JavaExecutorSupport support;
 
-	private final List<ByPropertyFinder> finders;
-
 	private final MemberLookupPredicate getByNamePredicate = new MemberLookupPredicate() {
 
 		public List<SLNode> findMember(final String param,
@@ -91,16 +96,26 @@ public class JavaBodyElementsExecutor {
 		}
 	};
 
+	private final MethodResolver<JavaType, JavaMethod> methodResolver;
+
 	public JavaBodyElementsExecutor(final JavaExecutorSupport support,
 			final Set<String> contextNamesInOrder) throws Exception {
 		this.support = support;
-		finders = new ArrayList<ByPropertyFinder>(contextNamesInOrder.size());
+		final List<SLContext> contexts = new ArrayList<SLContext>(
+				contextNamesInOrder.size());
 		for (final String s : contextNamesInOrder) {
-			final SLNode contextRootNode = support.session.getContext(s)
-					.getRootNode();
-			finders.add(new ByPropertyFinder(support.completeArtifactName,
-					support.session, contextRootNode));
+			final SLContext contextRootNode = support.session.getContext(s);
+			contexts.add(contextRootNode);
 		}
+
+		final JavaTypeResolver typeResolver = JavaTypeResolver.createNewCached(
+				support.abstractContext.getContext(), contexts, true,
+				support.session);
+
+		methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver,
+				support.session, JavaMethod.class, TypeDeclares.class,
+				MethodParameterDefinition.class, "simpleName", "Order");
+
 	}
 
 	public void addExtends(final CommonTree peek, final CommonTree extended) {
@@ -359,8 +374,7 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createConditionalExpression(final ExpressionDto e6,
 			final ExpressionDto e7, final ExpressionDto e8) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ExpressionDto(e7.resultType, e6, e7, e8);
 	}
 
 	public ExpressionDto createExpressionFromQualified(final String string,
@@ -582,11 +596,32 @@ public class JavaBodyElementsExecutor {
 
 				}
 			}
-			if (foundMethods.size() > 1) {
-				// FIXME needs to use method resolution class!
-			}
 
-			final JavaMethod method = foundMethods.get(0);
+			final JavaMethod method;
+			if (foundMethods.size() > 1) {
+				final Map<JavaMethod, JavaType[]> methodAndTypes = new HashMap<JavaMethod, JavaType[]>();
+				for (final JavaMethod method1 : foundMethods) {
+					final List<JavaType> types = new ArrayList<JavaType>();
+					final NeedsSyncronizationCollection<MethodParameterDefinition> links = support.session
+							.getLinks(MethodParameterDefinition.class, method1,
+									null);
+					for (final MethodParameterDefinition link : links) {
+						types.add((JavaType) link.getTarget());
+					}
+					methodAndTypes.put(method1, types
+							.toArray(new JavaType[] {}));
+				}
+				final ArrayList<JavaType> paramTypes = new ArrayList<JavaType>();
+				if (optionalArguments != null) {
+					for (final ExpressionDto dto : optionalArguments) {
+						paramTypes.add(dto.resultType);
+					}
+				}
+				method = methodResolver
+						.getBestMatch(methodAndTypes, paramTypes);
+			} else {
+				method = foundMethods.get(0);
+			}
 			final NeedsSyncronizationCollection<MethodReturns> links = support.session
 					.getLinks(MethodReturns.class, method, null);
 			final MethodReturns link = links.iterator().next();

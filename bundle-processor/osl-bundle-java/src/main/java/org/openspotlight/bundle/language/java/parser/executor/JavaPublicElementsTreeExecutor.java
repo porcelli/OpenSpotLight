@@ -24,6 +24,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.References;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgument;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
+import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
@@ -147,6 +148,8 @@ public class JavaPublicElementsTreeExecutor {
 						.addLink(DataType.class, newField, type31, false);
 
 				nodes.add(newField);
+				support.session.addLink(TypeDeclares.class, peek, newField,
+						false);
 				newField.setQualifiedName(qualifiedParent + var.getName());
 				for (final JavaModifier modifier : modifiers29) {
 
@@ -810,6 +813,8 @@ public class JavaPublicElementsTreeExecutor {
 						+ " inside its parent " + peek.getName() + " (id "
 						+ peek.getID() + ")");
 			}
+			support.session
+					.addLink(TypeDeclares.class, peek, javaMethod, false);
 			javaMethod.setNumberOfParameters(formalParameters34.size());
 			int i = 0;
 			for (final VariableDeclarationDto param : formalParameters34) {
