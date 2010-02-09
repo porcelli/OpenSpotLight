@@ -502,7 +502,7 @@ expression returns [ExpressionDto info]
     |   ^(TYPE_LITERAL t3=type DOT CLASS 
         { $info=executor.createTypeLiteralExpression($t3.treeElement); } )
     |   ^(THIS_EXPRESSION (e51=expression DOT)? THIS 
-        { $info=executor.createThisExpression($e51.info); } )
+        { $info=executor.createThisExpression(); } )
     |   ^(ARRAY_ACCESS e52=expression? dimensionValue 
         { $info=executor.createArrayExpression($e52.info); } )
     |   ^(CLASS_INSTANCE_CREATION (e53=expression DOT)? t4=type a2=arguments acd1=anonymousClassDeclaration? 

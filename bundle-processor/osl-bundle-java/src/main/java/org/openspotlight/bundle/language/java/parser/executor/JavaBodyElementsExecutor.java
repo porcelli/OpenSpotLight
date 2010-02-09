@@ -324,10 +324,37 @@ public class JavaBodyElementsExecutor {
 	}
 
 	public ExpressionDto createClassInstanceExpression(final ExpressionDto e53,
-			final CommonTree commonTree, final List<ExpressionDto> a2,
-			final CommonTree commonTree2) {
-		// TODO Auto-generated method stub
-		return null;
+			final CommonTree commonTree,
+			final List<ExpressionDto> optionalArguments,
+			final CommonTree anonymousInnerClassBlock) {
+		try {
+
+			final JavaType type = (JavaType) ((SLCommonTree) commonTree)
+					.getNode();
+			SLNode leaf;
+			if (anonymousInnerClassBlock != null) {
+				leaf = ((SLCommonTree) anonymousInnerClassBlock).getNode();
+			} else {
+				leaf = type;
+				// FIXME find constructor
+			}
+			if (optionalArguments != null) {
+				for (final ExpressionDto dto : optionalArguments) {
+					if (dto != ExpressionDto.NULL_EXPRESSION) {
+						support.session.addLink(DataParameter.class, dto.leaf,
+								leaf, false);
+					}
+				}
+			}
+			if (optionalArguments != null) {
+				return new ExpressionDto(type, leaf, optionalArguments
+						.toArray(new ExpressionDto[] {}));
+			} else {
+				return new ExpressionDto(type, leaf);
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	public ExpressionDto createConditionalExpression(final ExpressionDto e6,
@@ -405,58 +432,11 @@ public class JavaBodyElementsExecutor {
 			final String methodName,
 			final List<CommonTree> optionalTypeArguments,
 			final List<ExpressionDto> optionalArguments) {
-		try {
-			System.err.println(">>> " + methodName + " "
-					+ optionalPrefixExpression);
+		final JavaType parent = optionalPrefixExpression != null ? optionalPrefixExpression.resultType
+				: (JavaType) currentClass.peek().getNode();
+		return internalCreateMethodInvocation(parent, optionalPrefixExpression,
+				methodName, optionalTypeArguments, optionalArguments);
 
-			final JavaType parent = optionalPrefixExpression != null ? optionalPrefixExpression.resultType
-					: (JavaType) currentClass.peek().getNode();
-			final List<SLNode> methods = lookForMembers(parent, methodName,
-					getByMethodSimpleName);
-			final int size = optionalArguments == null ? 0 : optionalArguments
-					.size();
-			System.err.println("size: " + size);
-			for (int i = 0; i < size; i++) {
-				System.err.println("> > > > param " + optionalArguments.get(i));
-			}
-			final List<JavaMethod> foundMethods = new ArrayList<JavaMethod>();
-			for (final SLNode methodNode : methods) {
-				final JavaMethod method = (JavaMethod) methodNode;
-				if (method.getNumberOfParameters().intValue() == size) {
-					foundMethods.add(method);
-					System.err.println("found " + method.getName());
-				} else {
-					System.err.println("rejected " + method.getName() + " "
-							+ method.getNumberOfParameters() + " neq " + size);
-
-				}
-			}
-			if (foundMethods.size() > 1) {
-				// FIXME needs to use method resolution class!
-			}
-
-			final JavaMethod method = foundMethods.get(0);
-			final NeedsSyncronizationCollection<MethodReturns> links = support.session
-					.getLinks(MethodReturns.class, method, null);
-			final MethodReturns link = links.iterator().next();
-			final JavaType methodReturnType = (JavaType) link.getTarget();
-			if (optionalArguments != null) {
-				for (final ExpressionDto dto : optionalArguments) {
-					if (dto != ExpressionDto.NULL_EXPRESSION) {
-						support.session.addLink(DataParameter.class, dto.leaf,
-								method, false);
-					}
-				}
-			}
-			if (optionalArguments != null) {
-				return new ExpressionDto(methodReturnType, method,
-						optionalArguments.toArray(new ExpressionDto[] {}));
-			} else {
-				return new ExpressionDto(methodReturnType, method);
-			}
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
 	}
 
 	public ExpressionDto createNullLiteral() {
@@ -512,26 +492,29 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createSuperConstructorExpression(
 			final ExpressionDto e48, final List<ExpressionDto> a1) {
-		// TODO Auto-generated method stub
-		return null;
+		final SLCommonTree parentTree = extendedClasses.get(currentClass);
+		final JavaType parent = (JavaType) parentTree.getNode();
+		return internalCreateMethodInvocation(parent, null, parent
+				.getSimpleName(), null, a1);
 	}
 
 	public ExpressionDto createSuperFieldExpression(final ExpressionDto e50,
 			final String string) {
-		// TODO Auto-generated method stub
-		return null;
+		final String newString = string.startsWith("super.") ? string
+				: "super." + string;
+		return createExpressionFromQualified(newString, null);
 	}
 
 	public ExpressionDto createSuperInvocationExpression(
 			final ExpressionDto e49, final List<CommonTree> ta1,
 			final List<ExpressionDto> a2, final String string) {
-		// TODO Auto-generated method stub
-		return null;
+		final SLCommonTree parentTree = extendedClasses.get(currentClass);
+		final JavaType parent = (JavaType) parentTree.getNode();
+		return internalCreateMethodInvocation(parent, null, string, ta1, a2);
 	}
 
-	public ExpressionDto createThisExpression(final ExpressionDto e51) {
-		// TODO Auto-generated method stub
-		return null;
+	public ExpressionDto createThisExpression() {
+		return createExpressionFromQualified("this", null);
 	}
 
 	public ExpressionDto createTypeLiteralExpression(final CommonTree commonTree) {
@@ -567,6 +550,65 @@ public class JavaBodyElementsExecutor {
 				.getLinks(DataType.class, node, null);
 		resultType = (JavaType) link.iterator().next().getTarget();
 		return resultType;
+	}
+
+	public ExpressionDto internalCreateMethodInvocation(final JavaType parent,
+			final ExpressionDto optionalPrefixExpression,
+			final String methodName,
+			final List<CommonTree> optionalTypeArguments,
+			final List<ExpressionDto> optionalArguments) {
+
+		try {
+			System.err.println(">>> " + methodName + " "
+					+ optionalPrefixExpression);
+
+			final List<SLNode> methods = lookForMembers(parent, methodName,
+					getByMethodSimpleName);
+			final int size = optionalArguments == null ? 0 : optionalArguments
+					.size();
+			System.err.println("size: " + size);
+			for (int i = 0; i < size; i++) {
+				System.err.println("> > > > param " + optionalArguments.get(i));
+			}
+			final List<JavaMethod> foundMethods = new ArrayList<JavaMethod>();
+			for (final SLNode methodNode : methods) {
+				final JavaMethod method = (JavaMethod) methodNode;
+				if (method.getNumberOfParameters().intValue() == size) {
+					foundMethods.add(method);
+					System.err.println("found " + method.getName());
+				} else {
+					System.err.println("rejected " + method.getName() + " "
+							+ method.getNumberOfParameters() + " neq " + size);
+
+				}
+			}
+			if (foundMethods.size() > 1) {
+				// FIXME needs to use method resolution class!
+			}
+
+			final JavaMethod method = foundMethods.get(0);
+			final NeedsSyncronizationCollection<MethodReturns> links = support.session
+					.getLinks(MethodReturns.class, method, null);
+			final MethodReturns link = links.iterator().next();
+			final JavaType methodReturnType = (JavaType) link.getTarget();
+			if (optionalArguments != null) {
+				for (final ExpressionDto dto : optionalArguments) {
+					if (dto != ExpressionDto.NULL_EXPRESSION) {
+						support.session.addLink(DataParameter.class, dto.leaf,
+								method, false);
+					}
+				}
+			}
+			if (optionalArguments != null) {
+				return new ExpressionDto(methodReturnType, method,
+						optionalArguments.toArray(new ExpressionDto[] {}));
+			} else {
+				return new ExpressionDto(methodReturnType, method);
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+
 	}
 
 	/**
