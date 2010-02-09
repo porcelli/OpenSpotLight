@@ -3,6 +3,7 @@ package org.openspotlight.bundle.language.java.parser.executor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import java.util.Stack;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
+import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.DataComparison;
 import org.openspotlight.bundle.language.java.metamodel.link.DataParameter;
 import org.openspotlight.bundle.language.java.metamodel.link.DataPropagation;
@@ -27,6 +29,7 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
+import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
@@ -74,7 +77,13 @@ public class JavaBodyElementsExecutor {
 
 		public List<SLNode> findMember(final String param,
 				final SLNode parentFound) throws Exception {
-			return Arrays.asList(parentFound.getNode(param));
+			if (parentFound.getContext().equals(
+					support.abstractContext.getContext())
+					|| contexts.contains(parentFound.getContext())) {
+				return Arrays.asList(parentFound.getNode(param));
+			} else {
+				return null;
+			}
 		}
 	};
 
@@ -98,24 +107,26 @@ public class JavaBodyElementsExecutor {
 
 	private final MethodResolver<JavaType, JavaMethod> methodResolver;
 
+	private final List<SLContext> contexts;
+
 	public JavaBodyElementsExecutor(final JavaExecutorSupport support,
 			final Set<String> contextNamesInOrder) throws Exception {
 		this.support = support;
-		final List<SLContext> contexts = new ArrayList<SLContext>(
+		final List<SLContext> tmpContexts = new ArrayList<SLContext>(
 				contextNamesInOrder.size());
 		for (final String s : contextNamesInOrder) {
 			final SLContext contextRootNode = support.session.getContext(s);
-			contexts.add(contextRootNode);
+			tmpContexts.add(contextRootNode);
 		}
 
 		final JavaTypeResolver typeResolver = JavaTypeResolver.createNewCached(
-				support.abstractContext.getContext(), contexts, true,
+				support.abstractContext.getContext(), tmpContexts, true,
 				support.session);
 
 		methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver,
 				support.session, JavaMethod.class, TypeDeclares.class,
 				MethodParameterDefinition.class, "simpleName", "Order");
-
+		contexts = Collections.unmodifiableList(tmpContexts);
 	}
 
 	public void addExtends(final CommonTree peek, final CommonTree extended) {
@@ -243,13 +254,13 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createArrayExpression(final CommonTree commonTree,
 			final ExpressionDto arrayInitializer29) {
-		// TODO Auto-generated method stub
-		return null;
+		final SLCommonTree commonTree2 = (SLCommonTree) commonTree;
+		return new ExpressionDto((JavaType) commonTree2.getNode(),
+				arrayInitializer29);
 	}
 
 	public ExpressionDto createArrayExpression(final ExpressionDto e52) {
-		// TODO Auto-generated method stub
-		return null;
+		return e52;
 	}
 
 	public ExpressionDto createAssignExpression(final ExpressionDto e4,
@@ -350,8 +361,46 @@ public class JavaBodyElementsExecutor {
 			if (anonymousInnerClassBlock != null) {
 				leaf = ((SLCommonTree) anonymousInnerClassBlock).getNode();
 			} else {
-				leaf = type;
-				// FIXME find constructor
+				final int parameterSize = optionalArguments == null ? 0
+						: optionalArguments.size();
+				final NeedsSyncronizationSet<SLNode> children = type.getNodes();
+				final List<JavaMethodConstructor> constructors = new ArrayList<JavaMethodConstructor>();
+				for (final SLNode child : children) {
+					if (child instanceof JavaMethodConstructor) {
+						final JavaMethodConstructor possibleMatch = (JavaMethodConstructor) child;
+						if (possibleMatch.getNumberOfParameters().intValue() == parameterSize) {
+							constructors.add(possibleMatch);
+						}
+					}
+				}
+				if (constructors.size() == 1) {
+					leaf = constructors.get(0);
+				} else if (constructors.size() > 1) {
+					final Map<JavaMethod, JavaType[]> methodAndTypes = new HashMap<JavaMethod, JavaType[]>();
+					for (final JavaMethod method1 : constructors) {
+						final List<JavaType> types = new ArrayList<JavaType>();
+						final NeedsSyncronizationCollection<MethodParameterDefinition> links = support.session
+								.getLinks(MethodParameterDefinition.class,
+										method1, null);
+						for (final MethodParameterDefinition link : links) {
+							types.add((JavaType) link.getTarget());
+						}
+						methodAndTypes.put(method1, types
+								.toArray(new JavaType[] {}));
+					}
+					final ArrayList<JavaType> paramTypes = new ArrayList<JavaType>();
+					if (optionalArguments != null) {
+						for (final ExpressionDto dto : optionalArguments) {
+							paramTypes.add(dto.resultType);
+						}
+					}
+					leaf = methodResolver.getBestMatch(methodAndTypes,
+							paramTypes);
+
+				} else {
+					throw Exceptions.logAndReturn(new IllegalStateException(
+							"no constructors found"));
+				}
 			}
 			if (optionalArguments != null) {
 				for (final ExpressionDto dto : optionalArguments) {
@@ -406,8 +455,8 @@ public class JavaBodyElementsExecutor {
 
 	public ExpressionDto createFromArrayInitialization(
 			final List<ExpressionDto> expressions) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ExpressionDto(expressions.get(0).resultType, expressions
+				.toArray(new ExpressionDto[] {}));
 	}
 
 	public ExpressionDto createInstanceofExpression(final ExpressionDto e23,
@@ -775,8 +824,20 @@ public class JavaBodyElementsExecutor {
 		if (javaType instanceof JavaTypeParameterized) {
 			final NeedsSyncronizationCollection<ParameterizedTypeClass> links = support.session
 					.getLinks(ParameterizedTypeClass.class, javaType, null);
-			// FIXME filter by context
-			currentJavaType = (JavaType) links.iterator().next().getTarget();
+
+			JavaType foundJavaType = null;
+			for (final ParameterizedTypeClass l : links) {
+				foundJavaType = (JavaType) l.getTarget();
+				if (foundJavaType.getContext().equals(
+						support.abstractContext.getContext())
+						|| contexts.contains(foundJavaType.getContext())) {
+					break;
+				} else {
+					foundJavaType = null;
+				}
+			}
+			currentJavaType = foundJavaType;
+			Assertions.checkNotNull("currentJavaType", currentJavaType);
 		} else {
 			currentJavaType = javaType;
 		}
@@ -791,7 +852,12 @@ public class JavaBodyElementsExecutor {
 				.type(JavaType.class.getName()).subTypes().comma().byLink(
 						Extends.class.getName()).any().selectEnd().keepResult()
 				.select().type(JavaType.class.getName()).subTypes().comma()
-				.byLink(Implements.class.getName()).any().selectEnd();
+				.byLink(AbstractTypeBind.class.getName()).any().selectEnd()
+				.keepResult().select().type(JavaType.class.getName())
+				.subTypes().comma().byLink(Implements.class.getName()).any()
+				.selectEnd().keepResult().select().type(
+						JavaType.class.getName()).subTypes().comma().byLink(
+						AbstractTypeBind.class.getName()).any().selectEnd();
 		final NeedsSyncronizationList<SLNode> nodes = query.execute()
 				.getNodes();
 		for (final SLNode currentNode : nodes) {
@@ -799,7 +865,6 @@ public class JavaBodyElementsExecutor {
 					currentNode);
 			if (foundMember != null && !foundMember.isEmpty()) {
 				result.addAll(foundMember);
-				// FIXME FILTER BY CONTEXTS
 			}
 		}
 		return result;
