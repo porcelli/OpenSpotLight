@@ -557,8 +557,10 @@ public class JavaBodyElementsExecutor {
 			final ExpressionDto e48, final List<ExpressionDto> a1) {
 		final SLCommonTree parentTree = extendedClasses.get(currentClass);
 		final JavaType parent = (JavaType) parentTree.getNode();
-		return internalCreateMethodInvocation(parent, null, parent
-				.getSimpleName(), null, a1);
+		final ExpressionDto result = internalCreateMethodInvocation(parent,
+				null, parent.getSimpleName(), null, a1);
+
+		return result;
 	}
 
 	public ExpressionDto createSuperFieldExpression(final ExpressionDto e50,
@@ -573,7 +575,9 @@ public class JavaBodyElementsExecutor {
 			final List<ExpressionDto> a2, final String string) {
 		final SLCommonTree parentTree = extendedClasses.get(currentClass);
 		final JavaType parent = (JavaType) parentTree.getNode();
-		return internalCreateMethodInvocation(parent, null, string, ta1, a2);
+		final ExpressionDto result = internalCreateMethodInvocation(parent,
+				null, string, ta1, a2);
+		return result;
 	}
 
 	public ExpressionDto createThisExpression() {
@@ -622,30 +626,17 @@ public class JavaBodyElementsExecutor {
 			final List<ExpressionDto> optionalArguments) {
 
 		try {
-			System.err.println(">>> " + methodName + " "
-					+ optionalPrefixExpression);
-
 			final List<SLNode> methods = lookForMembers(parent, methodName,
 					getByMethodSimpleName);
 			final int size = optionalArguments == null ? 0 : optionalArguments
 					.size();
-			System.err.println("size: " + size);
-			for (int i = 0; i < size; i++) {
-				System.err.println("> > > > param " + optionalArguments.get(i));
-			}
 			final List<JavaMethod> foundMethods = new ArrayList<JavaMethod>();
 			for (final SLNode methodNode : methods) {
 				final JavaMethod method = (JavaMethod) methodNode;
 				if (method.getNumberOfParameters().intValue() == size) {
 					foundMethods.add(method);
-					System.err.println("found " + method.getName());
-				} else {
-					System.err.println("rejected " + method.getName() + " "
-							+ method.getNumberOfParameters() + " neq " + size);
-
 				}
 			}
-
 			final JavaMethod method;
 			if (foundMethods.size() > 1) {
 				final Map<JavaMethod, JavaType[]> methodAndTypes = new HashMap<JavaMethod, JavaType[]>();
