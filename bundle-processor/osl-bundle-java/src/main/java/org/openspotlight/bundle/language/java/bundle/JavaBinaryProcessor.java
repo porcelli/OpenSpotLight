@@ -253,7 +253,7 @@ public class JavaBinaryProcessor implements
 	private static String[] getNames(final String fullName) {
 		final String packageName = fullName.substring(0, fullName
 				.lastIndexOf('.') - 1);
-		final String className = fullName.substring(packageName.length() + 1);
+		final String className = fullName.substring(packageName.length() + 2);
 		return new String[] { packageName, className };
 	}
 
