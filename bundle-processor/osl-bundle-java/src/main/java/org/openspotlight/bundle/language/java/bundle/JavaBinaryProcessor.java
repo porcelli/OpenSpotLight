@@ -43,6 +43,9 @@ import org.slf4j.LoggerFactory;
 
 public class JavaBinaryProcessor implements
 		BundleProcessorArtifactPhase<StreamArtifact> {
+	private static final String[] OBJ_NAMES = new String[] { "java.lang",
+			"Object" };
+
 	private static void addArrayField(final JavaGraphNodeSupport helper,
 			final JavaType newType, final FieldDeclaration field,
 			final TypeReference fieldType) throws Exception {
@@ -57,7 +60,7 @@ public class JavaBinaryProcessor implements
 
 		} else if (innerFieldType instanceof PrimitiveTypeReference) {
 			helper.createField(newType, JavaTypePrimitive.class, "",
-					getPrimitiveName(fieldType), field.getName(), field
+					getPrimitiveName(innerFieldType), field.getName(), field
 							.getAccess(), true, fieldTypeAsArray
 							.getArrayDimensions());
 		}
@@ -65,8 +68,12 @@ public class JavaBinaryProcessor implements
 
 	private static void addExtendsInfo(final JavaGraphNodeSupport helper,
 			final TypeDefinition definition) throws Exception {
-		final String[] names = getNames(definition.getExtendsDef()
-				.getFullName());
+		final String[] names;
+		if (definition.getExtendsDef() != null) {
+			names = getNames(definition.getExtendsDef().getFullName());
+		} else {
+			names = OBJ_NAMES;
+		}
 		helper.addExtendsLinks(definition.getPackageName(), definition
 				.getTypeName(), names[0], names[1]);
 	}
