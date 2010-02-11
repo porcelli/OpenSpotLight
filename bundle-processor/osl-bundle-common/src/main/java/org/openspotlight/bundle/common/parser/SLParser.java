@@ -48,44 +48,34 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.Lexer;
+import org.antlr.runtime.Parser;
+import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.RecognizerSharedState;
-import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenStream;
 import org.slf4j.Logger;
 
 /**
- * This class overrides standard {@link Lexer} to construct custom tokens as well to log error messages.
+ * This class overrides standard {@link Parser} just to log error messages.
  * 
  * @author porcelli
  */
-public abstract class SLLexer extends Lexer {
+public abstract class SLParser extends Parser {
 
-    public SLLexer() {
-    }
-
-    public SLLexer(
-                    CharStream input ) {
+    public SLParser(
+                     TokenStream input ) {
         super(input);
     }
 
-    public SLLexer(
-                    CharStream input, RecognizerSharedState state ) {
+    public SLParser(
+                     TokenStream input, RecognizerSharedState state ) {
         super(input, state);
     }
 
     /**
      * {@inheritDoc}
      */
-    public Token emit() {
-        SLCommonToken t = new SLCommonToken(input, state.type, state.channel, state.tokenStartCharIndex, getCharIndex() - 1);
-        t.setLine(state.tokenStartLine);
-        t.setCharPositionInLine(state.tokenStartCharPositionInLine);
-        t.setEndCharPositionInLine(input.getCharPositionInLine());
-        t.setEndLine(input.getLine());
-        t.setText(state.text);
-        emit(t);
-        return t;
+    public void reportError( RecognitionException paramRecognitionException ) {
+        getLogger().warn(paramRecognitionException.toString());
     }
 
     /**
