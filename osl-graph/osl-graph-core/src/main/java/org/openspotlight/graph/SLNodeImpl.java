@@ -193,7 +193,12 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 					nodeProxy.setProperty(String.class, VisibilityLevel.PUBLIC,
 							SLConsts.PROPERTY_CAPTION_NAME, name);
 				}
-
+				if (linkTypesForLinkDeletion != null
+						&& linkTypesForLinkDeletion.size() > 0
+						|| linkTypesForLinkedNodeDeletion != null
+						&& linkTypesForLinkedNodeDeletion.size() > 0) {
+					getSession().save();
+				}
 				eventPoster.post(new SLNodeAddedEvent(nodeProxy, pChildNode,
 						persistenceMode, linkTypesForLinkDeletion,
 						linkTypesForLinkedNodeDeletion));

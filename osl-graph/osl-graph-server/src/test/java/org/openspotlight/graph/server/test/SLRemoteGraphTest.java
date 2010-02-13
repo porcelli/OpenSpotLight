@@ -1356,7 +1356,7 @@ public class SLRemoteGraphTest {
 			Collection<SLLink> links = null;
 			Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
 			Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
-
+			session.save();
 			simpleLinks = session.getBidirectionalLinks(
 					JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 					javaMethodNode1);
@@ -1405,7 +1405,7 @@ public class SLRemoteGraphTest {
 			Collection<SLLink> links = null;
 			Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
 			Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
-
+			session.save();
 			simpleLinks = session.getBidirectionalLinksBySide(
 					JavaClassJavaMethodSimpleLink.class, javaClassNode1);
 			assertLinksInOrder(simpleLinks, simpleLinkBoth);
@@ -1473,7 +1473,7 @@ public class SLRemoteGraphTest {
 			// DIRECTION_ANY: AB, BA, BOTH
 
 			// test getLinks between javaClassNode1 and javaMethodNode1
-
+			session.save();
 			simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
 					javaClassNode1, javaMethodNode1, DIRECTION_UNI);
 			assertLinksInOrder(simpleLinks, simpleLinkAB);
@@ -1671,7 +1671,7 @@ public class SLRemoteGraphTest {
 			link.setProperty(String.class, VisibilityLevel.PUBLIC, "author",
 					"Zé Café");
 			link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "age", 270);
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaLinkType metaLinkType = metadata
 					.getMetaLinkType(JavaClassJavaMethodSimpleLink.class);
@@ -1720,7 +1720,7 @@ public class SLRemoteGraphTest {
 			link.setProperty(String.class, VisibilityLevel.PUBLIC, "author",
 					"Zé Café");
 			link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "age", 270);
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaLinkType metaLinkType = metadata
 					.getMetaLinkType(JavaClassJavaMethodSimpleLink.class);
@@ -1764,7 +1764,7 @@ public class SLRemoteGraphTest {
 			root1.addNode(JavaPackageNode.class, "javaPackageNode2");
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
 			root1.addNode(JavaClassNode.class, "javaClassNode2");
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 
 			final SLMetaNodeType metaNode1 = metadata
@@ -1801,7 +1801,7 @@ public class SLRemoteGraphTest {
 			javaClassNode1.setClassName("HelloWorld");
 			javaClassNode1.setModifier(JavaClassNode.MODIFIER_PUBLIC);
 			javaClassNode1.setCreationTime(new Date());
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaNodeType metaNode = metadata
 					.findMetaNodeType(JavaClassNode.class);
@@ -1889,7 +1889,7 @@ public class SLRemoteGraphTest {
 			root1.addNode(JavaPackageNode.class, "javaPackageNode2");
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
 			root1.addNode(JavaClassNode.class, "javaClassNode2");
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final Collection<SLMetaNodeType> metaNodes = metadata
 					.getMetaNodesTypes(RECURSIVE);
@@ -1915,6 +1915,7 @@ public class SLRemoteGraphTest {
 
 			final SLNode root1 = session.createContext("1L").getRootNode();
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaNodeType metaNode = metadata
 					.findMetaNodeType(JavaClassNode.class);
@@ -1950,6 +1951,7 @@ public class SLRemoteGraphTest {
 		try {
 			final SLNode root1 = session.createContext("1L").getRootNode();
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaNodeType metaNode = metadata
 					.findMetaNodeType(JavaClassNode.class);
@@ -2012,9 +2014,8 @@ public class SLRemoteGraphTest {
 					javaPackageNode1, false);
 			session.addLink(JavaPackageJavaClass.class, javaInnerClassNode2,
 					javaPackageNode1, false);
-
 			Collection<? extends SLNode> nodes = null;
-
+			session.save();
 			nodes = session.getNodesByLink(JavaPackageJavaClass.class,
 					javaPackageNode1);
 			assertNodes(nodes, javaClassNode1, javaClassNode2,
@@ -2082,7 +2083,7 @@ public class SLRemoteGraphTest {
 					javaInnerClassNode2, true);
 
 			Collection<? extends SLNode> nodes = null;
-
+			session.save();
 			nodes = session.getNodesByLink(javaPackageNode1);
 			assertNodes(nodes, javaClassNode1, javaClassNode2,
 					javaInnerClassNode1, javaInnerClassNode2);
@@ -2139,7 +2140,7 @@ public class SLRemoteGraphTest {
 					JavaMethodNode.class, "javaMethodNode2A");
 			final JavaMethodNode javaMethodNode2B = javaClassNode2.addNode(
 					JavaMethodNode.class, "javaMethodNode2B");
-
+			session.save();
 			Collection<SLNode> nodes = null;
 			nodes = session
 					.getNodesByPredicate(new NamePredicate("javaPackage"));
@@ -2204,7 +2205,7 @@ public class SLRemoteGraphTest {
 			javaClassNode1.addNode(JavaInnerClassNode.class,
 					"javaInnerClassNode1");
 			javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaNodeType elementType = metadata
 					.findMetaNodeType(JavaElementNode.class);
@@ -2243,7 +2244,7 @@ public class SLRemoteGraphTest {
 			javaClassNode1.addNode(JavaInnerClassNode.class,
 					"javaInnerClassNode1");
 			javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaNodeType elementType = metadata
 					.findMetaNodeType(JavaElementNode.class);
@@ -2299,7 +2300,7 @@ public class SLRemoteGraphTest {
 			Collection<SLLink> links = null;
 			Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
 			Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
-
+			session.save();
 			simpleLinks = session.getUnidirectionalLinks(
 					JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 					javaMethodNode1);
@@ -2365,7 +2366,7 @@ public class SLRemoteGraphTest {
 			Collection<SLLink> links = null;
 			Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
 			Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
-
+			session.save();
 			simpleLinks = session.getUnidirectionalLinksBySource(
 					JavaClassJavaMethodSimpleLink.class, javaClassNode1);
 			assertLinksInOrder(simpleLinks, simpleLinkAB);
@@ -2425,7 +2426,7 @@ public class SLRemoteGraphTest {
 			Collection<SLLink> links = null;
 			Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
 			Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
-
+			session.save();
 			simpleLinks = session.getUnidirectionalLinksByTarget(
 					JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
 			assertLinksInOrder(simpleLinks, simpleLinkAB);
@@ -2707,7 +2708,7 @@ public class SLRemoteGraphTest {
 					false);
 			session.addLink(JavaLink.class, javaClassNode2, javaMethodNode2B,
 					false);
-
+			session.save();
 			Collection<JavaLink> links = session.getLinks(JavaLink.class, null,
 					null, SLLink.DIRECTION_ANY);
 			Assert.assertEquals(links.size(), 10);
@@ -2863,7 +2864,7 @@ public class SLRemoteGraphTest {
 			session.save();
 			session = client.createRemoteGraphSession(user, pass,
 					SLConsts.DEFAULT_REPOSITORY_NAME);
-
+			session.save();
 			root1 = session.getContext("1L").getRootNode();
 			javaClassNode1 = root1.getNode(JavaClassNode.class,
 					"javaClassNode1");
@@ -3003,7 +3004,7 @@ public class SLRemoteGraphTest {
 					JavaMethodNode.class, "javaMethodNode");
 			session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode,
 					javaMethodNode, false);
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaLink metaLink = metadata.getMetaLinkType(
 					JavaClassJavaMethodSimpleLink.class).getMetalinks()
@@ -3029,7 +3030,7 @@ public class SLRemoteGraphTest {
 		try {
 			final SLNode root1 = session.createContext("1L").getRootNode();
 			root1.addNode(JavaClassNode.class, "javaClassNode1");
-
+			session.save();
 			final SLMetadata metadata = session.getMetadata();
 			final SLMetaNodeType metaNode = metadata
 					.findMetaNodeType(JavaClassNode.class);

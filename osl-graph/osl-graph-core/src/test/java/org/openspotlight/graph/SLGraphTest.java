@@ -3011,7 +3011,6 @@ public class SLGraphTest {
 					javaClassNode1, javaMethodNode1, false);
 			session.addLink(JavaClassJavaMethodSimpleLink.class,
 					javaClassNode1, javaMethodNode2, false);
-
 			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = new ArrayList<Class<? extends SLLink>>();
 			linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
 			root1.addNode(JavaMethodNode.class, "javaMethodNode2",
@@ -3027,6 +3026,11 @@ public class SLGraphTest {
 					"javaMethodNode1");
 			final Collection<? extends SLLink> links = session.getLinks(
 					JavaClassJavaMethodSimpleLink.class, null, null);
+			for (final SLLink k : links) {
+				System.err.println(">>> " + k.getSource().getName() + " - "
+						+ k.getTarget().getName());
+			}
+
 			Assert.assertEquals(links.size(), 1);
 
 			final SLLink link = links.iterator().next();
