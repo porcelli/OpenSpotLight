@@ -48,40 +48,42 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import org.antlr.runtime.Parser;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.RecognizerSharedState;
+import org.antlr.runtime.TokenStream;
+import org.slf4j.Logger;
 
-import org.antlr.runtime.ANTLRStringStream;
+/**
+ * This class overrides standard {@link Parser} just to log error messages.
+ * 
+ * @author porcelli
+ */
+public abstract class SLParser extends Parser {
 
-public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
-    SLArtifactStream {
-
-    private final int    lineCount;
-    private final String version;
-
-    public SLArtifactStreamBasicImpl(
-                                      final String fedaratedArtifactPath,
-                                      final String artifactContent,
-                                      final String version ) throws IOException {
-        this.name = fedaratedArtifactPath;
-        this.data = artifactContent.toCharArray();
-        this.version= version;
-        n = artifactContent.length();
-        int count = 0;
-        final BufferedReader reader = new BufferedReader(new StringReader(
-                                                                          artifactContent));
-        while (reader.readLine() != null) {
-            count++;
-        }
-        this.lineCount = count;
+    public SLParser(
+                     TokenStream input ) {
+        super(input);
     }
 
-    public int getPhysicalLineCount() {
-        return lineCount;
+    public SLParser(
+                     TokenStream input, RecognizerSharedState state ) {
+        super(input, state);
     }
 
-    public String getVersion() {
-        return version;
+    /**
+     * {@inheritDoc}
+     */
+    public void reportError( RecognitionException paramRecognitionException ) {
+        getLogger().warn(paramRecognitionException.toString());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void emitErrorMessage( String msg ) {
+        getLogger().warn(msg);
+    }
+
+    public abstract Logger getLogger();
 }

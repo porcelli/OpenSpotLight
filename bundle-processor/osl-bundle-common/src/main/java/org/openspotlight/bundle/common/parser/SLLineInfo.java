@@ -48,40 +48,17 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
 
-import org.antlr.runtime.ANTLRStringStream;
+public interface SLLineInfo {
 
-public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
-    SLArtifactStream {
+    public int getStartLine();
 
-    private final int    lineCount;
-    private final String version;
+    public int getEndLine();
 
-    public SLArtifactStreamBasicImpl(
-                                      final String fedaratedArtifactPath,
-                                      final String artifactContent,
-                                      final String version ) throws IOException {
-        this.name = fedaratedArtifactPath;
-        this.data = artifactContent.toCharArray();
-        this.version= version;
-        n = artifactContent.length();
-        int count = 0;
-        final BufferedReader reader = new BufferedReader(new StringReader(
-                                                                          artifactContent));
-        while (reader.readLine() != null) {
-            count++;
-        }
-        this.lineCount = count;
-    }
+    public int getEndCharPositionInLine();
 
-    public int getPhysicalLineCount() {
-        return lineCount;
-    }
+    public int getStartCharPositionInLine();
 
-    public String getVersion() {
-        return version;
-    }
+    public SLArtifactStream getArtifact();
+
 }

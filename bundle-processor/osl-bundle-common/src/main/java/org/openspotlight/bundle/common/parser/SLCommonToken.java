@@ -52,71 +52,83 @@ import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonToken;
 import org.antlr.runtime.Token;
 
-public class SLCommonToken extends CommonToken {
+public class SLCommonToken extends CommonToken implements SLLineInfo {
 
-	private static final long serialVersionUID = -7832734839073755630L;
+    private static final long serialVersionUID      = -7832734839073755630L;
 
-	private int endCharPositionInLine = -1;
-	private int endLine = -1;
+    private int               endCharPositionInLine = -1;
+    private int               endLine               = -1;
 
-	public SLCommonToken(final CharStream input, final int type,
-			final int channel, final int start, final int stop) {
-		super(type);
-		this.input = input;
-		this.channel = channel;
-		this.start = start;
-		this.stop = stop;
-	}
+    public SLCommonToken(
+                          final CharStream input, final int type,
+                          final int channel, final int start, final int stop ) {
+        super(type);
+        this.input = input;
+        this.channel = channel;
+        this.start = start;
+        this.stop = stop;
+    }
 
-	public SLCommonToken(final int type) {
-		super(type);
-	}
+    public SLCommonToken(
+                          final int type ) {
+        super(type);
+    }
 
-	public SLCommonToken(final int type, final String text) {
-		super(type);
-		channel = DEFAULT_CHANNEL;
-		this.text = text;
-	}
+    public SLCommonToken(
+                          final int type, final String text ) {
+        super(type);
+        channel = DEFAULT_CHANNEL;
+        this.text = text;
+    }
 
-	public SLCommonToken(final Token oldToken) {
-		super(oldToken.getType());
-		text = oldToken.getText();
-		line = oldToken.getLine();
-		index = oldToken.getTokenIndex();
-		charPositionInLine = oldToken.getCharPositionInLine();
-		channel = oldToken.getChannel();
-		if (oldToken instanceof CommonToken) {
-			start = ((CommonToken) oldToken).getStartIndex();
-			stop = ((CommonToken) oldToken).getStopIndex();
-		}
-		if (oldToken instanceof SLCommonToken) {
-			endLine = ((SLCommonToken) oldToken).getEndLine();
-			endCharPositionInLine = ((SLCommonToken) oldToken)
-					.getEndCharPositionInLine();
-		}
-	}
+    public SLCommonToken(
+                          final Token oldToken ) {
+        super(oldToken.getType());
+        text = oldToken.getText();
+        line = oldToken.getLine();
+        index = oldToken.getTokenIndex();
+        charPositionInLine = oldToken.getCharPositionInLine();
+        channel = oldToken.getChannel();
+        if (oldToken instanceof CommonToken) {
+            start = ((CommonToken)oldToken).getStartIndex();
+            stop = ((CommonToken)oldToken).getStopIndex();
+        }
+        if (oldToken instanceof SLCommonToken) {
+            endLine = ((SLCommonToken)oldToken).getEndLine();
+            endCharPositionInLine = ((SLCommonToken)oldToken)
+                                                             .getEndCharPositionInLine();
+        }
+    }
 
-	public SLArtifactStream getArtifactStream() {
-		if (input instanceof SLArtifactStream) {
-			return (SLArtifactStream) input;
-		}
-		return null;
-	}
+    public SLArtifactStream getArtifact() {
+        if (input instanceof SLArtifactStream) {
+            return (SLArtifactStream)input;
+        }
+        return null;
+    }
 
-	public int getEndCharPositionInLine() {
-		return endCharPositionInLine;
-	}
+    public int getEndCharPositionInLine() {
+        return endCharPositionInLine;
+    }
 
-	public int getEndLine() {
-		return endLine;
-	}
+    public int getEndLine() {
+        return endLine;
+    }
 
-	public void setEndCharPositionInLine(final int endCharPositionInLine) {
-		this.endCharPositionInLine = endCharPositionInLine;
-	}
+    public void setEndCharPositionInLine( final int endCharPositionInLine ) {
+        this.endCharPositionInLine = endCharPositionInLine;
+    }
 
-	public void setEndLine(final int endLine) {
-		this.endLine = endLine;
-	}
+    public void setEndLine( final int endLine ) {
+        this.endLine = endLine;
+    }
+
+    public int getStartCharPositionInLine() {
+        return getCharPositionInLine();
+    }
+
+    public int getStartLine() {
+        return getLine();
+    }
 
 }

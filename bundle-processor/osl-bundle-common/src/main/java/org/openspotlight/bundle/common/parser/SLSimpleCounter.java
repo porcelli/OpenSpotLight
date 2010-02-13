@@ -48,40 +48,47 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.antlr.runtime.ANTLRStringStream;
+public class SLSimpleCounter {
+    private final Map<String, Integer> counters = new HashMap<String, Integer>();
 
-public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
-    SLArtifactStream {
+    public int getNextValue( String countName ) {
+        Integer value = counters.get(countName);
+        if (value != null) {
+            int intValue = value.intValue() + 1;
+            counters.put(countName, new Integer(intValue));
 
-    private final int    lineCount;
-    private final String version;
-
-    public SLArtifactStreamBasicImpl(
-                                      final String fedaratedArtifactPath,
-                                      final String artifactContent,
-                                      final String version ) throws IOException {
-        this.name = fedaratedArtifactPath;
-        this.data = artifactContent.toCharArray();
-        this.version= version;
-        n = artifactContent.length();
-        int count = 0;
-        final BufferedReader reader = new BufferedReader(new StringReader(
-                                                                          artifactContent));
-        while (reader.readLine() != null) {
-            count++;
+            return intValue;
+        } else {
+            counters.put(countName, 0);
+            return 0;
         }
-        this.lineCount = count;
     }
 
-    public int getPhysicalLineCount() {
-        return lineCount;
+    public int getActiveValue( String countName ) {
+        Integer value = counters.get(countName);
+        if (value != null) {
+            return value;
+        } else {
+            counters.put(countName, 0);
+
+            return 0;
+        }
     }
 
-    public String getVersion() {
-        return version;
+    public void resetCounter( String countName ) {
+        counters.put(countName, -1);
     }
+
+    public void resetCounter( String countName,
+                              int value ) {
+        counters.put(countName, value);
+    }
+
+    public void resetAllCounters() {
+        counters.clear();
+    }
+
 }

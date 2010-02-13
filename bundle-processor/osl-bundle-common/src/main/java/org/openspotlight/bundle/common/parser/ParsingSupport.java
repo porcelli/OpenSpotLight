@@ -48,40 +48,45 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.SLNode;
 
-import org.antlr.runtime.ANTLRStringStream;
+/**
+ * A supporter class for parsing related actions.
+ * 
+ * @author porcelli
+ */
+public abstract class ParsingSupport {
 
-public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
-    SLArtifactStream {
+    /**
+     * Creates the line reference.
+     * 
+     * @param lineInfo the line info
+     * @param statement the statement
+     * @param nodes the nodes
+     */
+    public static void createLineReference( SLLineInfo lineInfo,
+                                            String statement,
+                                            SLNode... nodes ) {
+        try {
+            if (nodes != null) {
+                for (SLNode node : nodes) {
+                    if (node != null) {
+                        node.addLineReference(lineInfo.getStartLine(),
+                                              lineInfo.getEndLine(),
+                                              lineInfo.getStartCharPositionInLine(),
+                                              lineInfo.getEndCharPositionInLine(),
+                                              statement,
+                                              lineInfo.getArtifact().getSourceName(),
+                                              lineInfo.getArtifact().getVersion());
+                    }
+                }
 
-    private final int    lineCount;
-    private final String version;
-
-    public SLArtifactStreamBasicImpl(
-                                      final String fedaratedArtifactPath,
-                                      final String artifactContent,
-                                      final String version ) throws IOException {
-        this.name = fedaratedArtifactPath;
-        this.data = artifactContent.toCharArray();
-        this.version= version;
-        n = artifactContent.length();
-        int count = 0;
-        final BufferedReader reader = new BufferedReader(new StringReader(
-                                                                          artifactContent));
-        while (reader.readLine() != null) {
-            count++;
+            }
+        } catch (Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
-        this.lineCount = count;
     }
 
-    public int getPhysicalLineCount() {
-        return lineCount;
-    }
-
-    public String getVersion() {
-        return version;
-    }
 }
