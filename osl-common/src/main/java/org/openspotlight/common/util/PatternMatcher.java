@@ -55,185 +55,230 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.openspotlight.common.MutableType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
- * This class has the necessary logic to filter names using the apache ant pattern.
- *
+ * This class has the necessary logic to filter names using the apache ant
+ * pattern.
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class PatternMatcher {
 
-    /**
-     * Result class with the results of a filter matching using the Ant expression syntax.
-     *
-     * @author Luiz Fernando Teston - feu.teston@caravelatech.com
-     */
-    public static final class FilterResult implements Serializable {
+	/**
+	 * Result class with the results of a filter matching using the Ant
+	 * expression syntax.
+	 * 
+	 * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+	 */
+	public static final class FilterResult implements Serializable {
 
-        /** The Constant serialVersionUID. */
-        private static final long serialVersionUID = -6700182758852743670L;
+		/** The Constant serialVersionUID. */
+		private static final long serialVersionUID = -6700182758852743670L;
 
-        /** The all names. */
-        private final Set<String> allNames;
+		/** The all names. */
+		private final Set<String> allNames;
 
-        /** The excluded names. */
-        private final Set<String> excludedNames;
+		/** The excluded names. */
+		private final Set<String> excludedNames;
 
-        /** The ignored names. */
-        private final Set<String> ignoredNames;
+		/** The ignored names. */
+		private final Set<String> ignoredNames;
 
-        /** The included names. */
-        private final Set<String> includedNames;
+		/** The included names. */
+		private final Set<String> includedNames;
 
-        /**
-         * Creates a empty filterResult.
-         *
-         * @param type the type
-         */
-        public FilterResult(
-                             final MutableType type ) {
-            this(new HashSet<String>(), new HashSet<String>(), new HashSet<String>(), new HashSet<String>(), type);
-        }
+		/**
+		 * Creates a empty filterResult.
+		 * 
+		 * @param type
+		 *            the type
+		 */
+		public FilterResult(final MutableType type) {
+			this(new HashSet<String>(), new HashSet<String>(),
+					new HashSet<String>(), new HashSet<String>(), type);
+		}
 
-        /**
-         * Immutable result.
-         *
-         * @param allNames the all names
-         * @param includedNames the included names
-         * @param excludedNames the excluded names
-         * @param ignoredNames the ignored names
-         */
-        public FilterResult(
-                             final Set<String> allNames, final Set<String> includedNames, final Set<String> excludedNames,
-                             final Set<String> ignoredNames ) {
-            this(allNames, includedNames, excludedNames, ignoredNames, MutableType.IMMUTABLE);
-        }
+		/**
+		 * Immutable result.
+		 * 
+		 * @param allNames
+		 *            the all names
+		 * @param includedNames
+		 *            the included names
+		 * @param excludedNames
+		 *            the excluded names
+		 * @param ignoredNames
+		 *            the ignored names
+		 */
+		public FilterResult(final Set<String> allNames,
+				final Set<String> includedNames,
+				final Set<String> excludedNames, final Set<String> ignoredNames) {
+			this(allNames, includedNames, excludedNames, ignoredNames,
+					MutableType.IMMUTABLE);
+		}
 
-        /**
-         * Mutability optional on this {@link Constructor}.
-         *
-         * @param allNames the all names
-         * @param includedNames the included names
-         * @param excludedNames the excluded names
-         * @param ignoredNames the ignored names
-         * @param type the type
-         */
-        public FilterResult(
-                             final Set<String> allNames, final Set<String> includedNames, final Set<String> excludedNames,
-                             final Set<String> ignoredNames, final MutableType type ) {
-            if (MutableType.IMMUTABLE.equals(type)) {
-                this.allNames = unmodifiableSet(allNames);
-                this.includedNames = unmodifiableSet(includedNames);
-                this.excludedNames = unmodifiableSet(excludedNames);
-                this.ignoredNames = unmodifiableSet(ignoredNames);
-            } else {
-                this.allNames = allNames;
-                this.includedNames = includedNames;
-                this.excludedNames = excludedNames;
-                this.ignoredNames = ignoredNames;
-            }
-        }
+		/**
+		 * Mutability optional on this {@link Constructor}.
+		 * 
+		 * @param allNames
+		 *            the all names
+		 * @param includedNames
+		 *            the included names
+		 * @param excludedNames
+		 *            the excluded names
+		 * @param ignoredNames
+		 *            the ignored names
+		 * @param type
+		 *            the type
+		 */
+		public FilterResult(final Set<String> allNames,
+				final Set<String> includedNames,
+				final Set<String> excludedNames,
+				final Set<String> ignoredNames, final MutableType type) {
+			if (MutableType.IMMUTABLE.equals(type)) {
+				this.allNames = unmodifiableSet(allNames);
+				this.includedNames = unmodifiableSet(includedNames);
+				this.excludedNames = unmodifiableSet(excludedNames);
+				this.ignoredNames = unmodifiableSet(ignoredNames);
+			} else {
+				this.allNames = allNames;
+				this.includedNames = includedNames;
+				this.excludedNames = excludedNames;
+				this.ignoredNames = ignoredNames;
+			}
+		}
 
-        /**
-         * Gets the all names.
-         *
-         * @return all names passed to be processed
-         */
-        public Set<String> getAllNames() {
-            return this.allNames;
-        }
+		/**
+		 * Gets the all names.
+		 * 
+		 * @return all names passed to be processed
+		 */
+		public Set<String> getAllNames() {
+			return allNames;
+		}
 
-        /**
-         * Gets the excluded names.
-         *
-         * @return a set of excluded names
-         */
-        public Set<String> getExcludedNames() {
-            return this.excludedNames;
-        }
+		/**
+		 * Gets the excluded names.
+		 * 
+		 * @return a set of excluded names
+		 */
+		public Set<String> getExcludedNames() {
+			return excludedNames;
+		}
 
-        /**
-         * Gets the ignored names.
-         *
-         * @return a set of ignored names
-         */
-        public Set<String> getIgnoredNames() {
-            return this.ignoredNames;
-        }
+		/**
+		 * Gets the ignored names.
+		 * 
+		 * @return a set of ignored names
+		 */
+		public Set<String> getIgnoredNames() {
+			return ignoredNames;
+		}
 
-        /**
-         * Gets the included names.
-         *
-         * @return a set of included names
-         */
-        public Set<String> getIncludedNames() {
-            return this.includedNames;
-        }
+		/**
+		 * Gets the included names.
+		 * 
+		 * @return a set of included names
+		 */
+		public Set<String> getIncludedNames() {
+			return includedNames;
+		}
 
-    }
+	}
 
-    /**
-     * Filter the names using the Apache Ant expression syntax (and also the {@link SelectorUtils} class.
-     *
-     * @param namesToFilter the names to filter
-     * @param includedPatterns the included patterns
-     * @param excludedPatterns the excluded patterns
-     * @param caseSensitive the case sensitive
-     * @return a filter result
-     */
-    public static FilterResult filterNamesByPattern( final Set<String> namesToFilter,
-                                                     final Set<String> includedPatterns,
-                                                     final Set<String> excludedPatterns,
-                                                     final boolean caseSensitive ) {
-        checkNotNull("namesToFilter", namesToFilter); //$NON-NLS-1$
-        checkNotNull("includedPatterns", includedPatterns); //$NON-NLS-1$
-        checkNotNull("excludedPatterns", excludedPatterns); //$NON-NLS-1$
+	private static final Logger logger = LoggerFactory
+			.getLogger(PatternMatcher.class);
 
-        final Set<String> includedNames = new HashSet<String>();
-        final Set<String> excludedNames = new HashSet<String>();
+	/**
+	 * Filter the names using the Apache Ant expression syntax (and also the
+	 * {@link SelectorUtils} class.
+	 * 
+	 * @param namesToFilter
+	 *            the names to filter
+	 * @param includedPatterns
+	 *            the included patterns
+	 * @param excludedPatterns
+	 *            the excluded patterns
+	 * @param caseSensitive
+	 *            the case sensitive
+	 * @return a filter result
+	 */
+	public static FilterResult filterNamesByPattern(
+			final Set<String> namesToFilter,
+			final Set<String> includedPatterns,
+			final Set<String> excludedPatterns, final boolean caseSensitive) {
+		checkNotNull("namesToFilter", namesToFilter); //$NON-NLS-1$
+		checkNotNull("includedPatterns", includedPatterns); //$NON-NLS-1$
+		checkNotNull("excludedPatterns", excludedPatterns); //$NON-NLS-1$
 
-        for (final String nameToFilter : namesToFilter) {
-            for (final String included : includedPatterns) {
-                if (match(included, nameToFilter, caseSensitive)) {
-                    includedNames.add(nameToFilter);
-                }
-            }
-            for (final String excluded : excludedPatterns) {
-                if (match(excluded, nameToFilter, caseSensitive)) {
-                    excludedNames.add(nameToFilter);
-                    includedNames.remove(nameToFilter);
-                }
-            }
-        }
-        final Set<String> ignoredNames = new HashSet<String>(namesToFilter);
-        ignoredNames.removeAll(includedNames);
-        ignoredNames.removeAll(excludedNames);
-        final FilterResult result = new FilterResult(namesToFilter, includedNames, excludedNames, ignoredNames);
-        return result;
-    }
+		final Set<String> includedNames = new HashSet<String>();
+		final Set<String> excludedNames = new HashSet<String>();
 
-    /**
-     * Verify if the first parameter matches the pattern passed on second parameter in a non case sensitivness way.
-     *
-     * @param nameToMatch the name to match
-     * @param patternToMatch the pattern to match
-     * @return true if nameToMatch matches patternToMatch
-     */
-    public static boolean isMatchingWithoutCaseSentitiveness( final String nameToMatch,
-                                                              final String patternToMatch ) {
-        return match(patternToMatch, nameToMatch, false);
-    }
+		for (final String nameToFilter : namesToFilter) {
+			for (final String included : includedPatterns) {
+				if (match(included, nameToFilter, caseSensitive)) {
+					includedNames.add(nameToFilter);
+				}
+			}
+			for (final String excluded : excludedPatterns) {
+				if (match(excluded, nameToFilter, caseSensitive)) {
+					excludedNames.add(nameToFilter);
+					includedNames.remove(nameToFilter);
+				}
+			}
+		}
+		final Set<String> ignoredNames = new HashSet<String>(namesToFilter);
+		ignoredNames.removeAll(includedNames);
+		ignoredNames.removeAll(excludedNames);
 
-    /**
-     * Should not be instantiated.
-     */
-    private PatternMatcher() {
-        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
-    }
+		if (logger.isDebugEnabled()) {
+			final String prefix = "With parameters included="
+					+ includedPatterns.toString() + " and excluded="
+					+ excludedPatterns;
+			logger.debug(prefix + " filtering names "
+					+ namesToFilter.toString());
+			logger.debug(prefix + " accepting names "
+					+ includedNames.toString());
+			logger.debug(prefix + " Ignoring names " + ignoredNames.toString());
+			logger.debug(prefix + " Excluding names "
+					+ excludedNames.toString());
+		}
+
+		final FilterResult result = new FilterResult(namesToFilter,
+				includedNames, excludedNames, ignoredNames);
+		return result;
+	}
+
+	/**
+	 * Verify if the first parameter matches the pattern passed on second
+	 * parameter in a non case sensitivness way.
+	 * 
+	 * @param nameToMatch
+	 *            the name to match
+	 * @param patternToMatch
+	 *            the pattern to match
+	 * @return true if nameToMatch matches patternToMatch
+	 */
+	public static boolean isMatchingWithoutCaseSentitiveness(
+			final String nameToMatch, final String patternToMatch) {
+		return match(patternToMatch, nameToMatch, false);
+	}
+
+	/**
+	 * Should not be instantiated.
+	 */
+	private PatternMatcher() {
+		logAndThrow(new IllegalStateException(Messages
+				.getString("invalidConstructor"))); //$NON-NLS-1$
+	}
 
 }

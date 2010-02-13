@@ -91,6 +91,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	/** The event poster. */
 	private final SLPersistentEventPoster eventPoster;
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	/**
 	 * Instantiates a new sL persistent node impl.
 	 * 
@@ -384,8 +386,6 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public SLPersistentTreeSession getSession() {
 		return session;
 	}
-	
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	// @Override
 	/*
@@ -396,8 +396,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public void remove() throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			try {
-				if(logger.isDebugEnabled())
-				logger.debug("Removed " + getName());
+				if (logger.isDebugEnabled()) {
+					logger.debug("Removed " + getName());
+				}
 				jcrNode.remove();
 				eventPoster.post(new SLPersistentNodeEvent(
 						SLPersistentNodeEvent.TYPE_NODE_REMOVED, this));
@@ -417,7 +418,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 	public void save() throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			try {
-				jcrNode.save();
+				// jcrNode.save();
 			} catch (final Exception e) {
 				Exceptions.catchAndLog(e);
 				throw new SLPersistentTreeSessionException(

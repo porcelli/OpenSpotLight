@@ -135,7 +135,8 @@ public class JavaGraphNodeSupport {
 	/** The nodes from abstract context. */
 	private final Map<String, JavaType> nodesFromAbstractContext = new TreeMap<String, JavaType>();
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory
+			.getLogger(JavaGraphNodeSupport.class);
 
 	/**
 	 * Instantiates a new java graph node support. The abstractContextRootNode
@@ -187,6 +188,11 @@ public class JavaGraphNodeSupport {
 	public void addExtendsLinks(final String packageName,
 			final String typeName, final String superPackageName,
 			final String superTypeName) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding extends on " + packageName + "_" + typeName
+					+ " with super " + superPackageName + "_" + superTypeName);
+		}
+
 		final JavaType newType = this.addTypeOnAbstractContext(JavaType.class,
 				packageName, typeName);
 		final JavaType newSuperType = this.addTypeOnAbstractContext(
@@ -213,6 +219,12 @@ public class JavaGraphNodeSupport {
 	public void addImplementsLinks(final String packageName,
 			final String typeName, final String superPackageName,
 			final String superTypeName) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding implements on " + packageName + "_"
+					+ typeName + " with super " + superPackageName + "_"
+					+ superTypeName);
+		}
+
 		final JavaType newType = this.addTypeOnAbstractContext(JavaType.class,
 				packageName, typeName);
 		final JavaType newSuperType = this.addTypeOnAbstractContext(
@@ -249,6 +261,11 @@ public class JavaGraphNodeSupport {
 	public void addThrowsOnMethod(final JavaMethod method,
 			final String exceptionPackage, final String exceptionName)
 			throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding throws " + exceptionPackage + "_"
+					+ exceptionName + " with super " + method.getName());
+		}
+
 		final JavaType newExceptionType = this.addTypeOnAbstractContext(
 				JavaType.class, exceptionPackage, exceptionName);
 		session.addLink(MethodThrows.class, method, newExceptionType, false);
@@ -275,6 +292,11 @@ public class JavaGraphNodeSupport {
 	public <T extends JavaType> T addTypeOnAbstractContext(
 			final Class<T> nodeType, final String packageName,
 			final String nodeName) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding type on abstract context " + packageName
+					+ "_" + nodeName);
+		}
+
 		if (usingCache
 				&& nodesFromThisContext.containsKey(packageName + nodeName)) {
 			return (T) nodesFromThisContext.get(packageName + nodeName);
@@ -359,6 +381,12 @@ public class JavaGraphNodeSupport {
 			final Class<T> nodeType, final String packageName,
 			final String nodeName, final int access, final SLNode parentType)
 			throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding type on current context " + packageName + "_"
+					+ nodeName + " with parent "
+					+ (parentType != null ? parentType.getName() : "null"));
+		}
+
 		if (usingCache
 				&& nodesFromThisContext.containsKey(packageName + nodeName)) {
 			return (T) nodesFromThisContext.get(packageName + nodeName);
@@ -445,6 +473,12 @@ public class JavaGraphNodeSupport {
 			final String fieldPackage, final String fieldTypeName,
 			final String fieldName, final int access, final boolean array,
 			final int arrayDimensions) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding field " + fieldPackage + "_" + fieldTypeName
+					+ " with name " + fieldName + " on parent "
+					+ (newType != null ? newType.getName() : "null"));
+		}
+
 		final JavaDataField field = newType.addNode(JavaDataField.class,
 				fieldName);
 		final JavaType fieldTypeAdded = this.addTypeOnAbstractContext(
@@ -474,6 +508,11 @@ public class JavaGraphNodeSupport {
 	public JavaMethod createMethod(final JavaType newType,
 			final String methodFullName, final String methodName,
 			final boolean constructor, final int access) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding method " + methodFullName + " on parent "
+					+ (newType != null ? newType.getName() : "null"));
+		}
+
 		JavaMethod method;
 		if (constructor) {
 			method = newType.addNode(JavaMethodConstructor.class,
@@ -514,6 +553,12 @@ public class JavaGraphNodeSupport {
 			final int parameterOrder, final String parameterPackage,
 			final String parameterTypeName, final boolean array,
 			final int arrayDimensions) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding method parameter " + parameterPackage + "_"
+					+ parameterType + " with order " + parameterOrder
+					+ " with parent "
+					+ (method != null ? method.getName() : "null"));
+		}
 
 		final JavaType methodParameterType = this.addTypeOnAbstractContext(
 				parameterType, parameterPackage, parameterTypeName);
@@ -547,6 +592,11 @@ public class JavaGraphNodeSupport {
 			final Class<? extends JavaType> returnType,
 			final String returnPackageName, final String returnTypeName,
 			final boolean array, final int arrayDimension) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug(" adding return  " + returnPackageName + "_"
+					+ returnTypeName + " on metohd  "
+					+ (method != null ? method.getName() : "null"));
+		}
 		final JavaType methodReturnType = this.addTypeOnAbstractContext(
 				returnType, returnPackageName, returnTypeName);
 		final MethodReturns methodReturnsType = session.addLink(
