@@ -386,7 +386,18 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	public NeedsSyncronizationCollection<SLLineReference> getLineReferences()
 			throws SLGraphSessionException;
 
-	/**
+    /**
+     * Gets the line references for a specific artifactId.
+     * 
+     * @param the artifact id
+     * @return the line references
+     * @throws SLGraphSessionException
+     *             the SL graph session exception
+     */
+    public NeedsSyncronizationCollection<SLLineReference> getLineReferences(String artifactId)
+            throws SLGraphSessionException;
+
+    /**
 	 * Gets the meta type.
 	 * 
 	 * @return the meta type or null if its a simple node

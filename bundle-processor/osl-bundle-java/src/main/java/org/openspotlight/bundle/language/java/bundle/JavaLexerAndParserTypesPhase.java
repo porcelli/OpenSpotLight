@@ -45,7 +45,8 @@ public class JavaLexerAndParserTypesPhase implements
 		}
 		try {
 			final SLArtifactStream stream = new SLArtifactStreamBasicImpl(
-					artifact.getArtifactCompleteName(), artifact.getContent());
+					artifact.getArtifactCompleteName(), artifact.getContent(),
+					artifact.getVersion());
 			final JavaLexer lexer = new JavaLexer(stream);
 			final SourceLineInfoAggregator sourceLine = new SourceLineInfoAggregator();
 			final JavaLexerExecutor lexerExecutor = new JavaLexerExecutor(

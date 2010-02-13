@@ -83,7 +83,7 @@ public class DbArtifactGlobalProcessor implements
 	}
 
 	public SaveBehavior getSaveBehavior() {
-		return SaveBehavior.PER_PROCESSING;
+		return SaveBehavior.PER_ARTIFACT;
 	}
 
 	public void selectArtifactsToBeProcessed(

@@ -93,9 +93,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
 	/** The context. */
 	private final SLContext context;
+
 	/** The parent. */
 	private final SLNode parent;
-
 	/** The p node. */
 	private final SLPersistentNode pNode;
 
@@ -822,6 +822,35 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 					final SLLineReference lineRef = SLLineReference.class
 							.cast(node);
 					lineReferences.add(lineRef);
+				}
+				return lineReferences;
+			} catch (final SLException e) {
+				throw new SLGraphSessionException(
+						"Error on attempt to retrieve line references.", e);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public NeedsSyncronizationCollection<SLLineReference> getLineReferences(
+			final String artifactId) throws SLGraphSessionException {
+		if (artifactId == null) {
+			return null;
+		}
+		synchronized (lock) {
+			try {
+				final NeedsSyncronizationCollection<SLLineReference> lineReferences = LockedCollections
+						.createCollectionWithLock(this,
+								new ArrayList<SLLineReference>());
+				final Collection<SLNode> nodes = getChildNodes("lineRef.*");
+				for (final SLNode node : nodes) {
+					final SLLineReference lineRef = SLLineReference.class
+							.cast(node);
+					if (artifactId.equals(lineRef.getArtifactId())) {
+						lineReferences.add(lineRef);
+					}
 				}
 				return lineReferences;
 			} catch (final SLException e) {

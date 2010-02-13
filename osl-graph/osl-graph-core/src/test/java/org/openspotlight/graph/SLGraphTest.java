@@ -2788,6 +2788,42 @@ public class SLGraphTest {
 	}
 
 	/**
+	 * Test line reference.
+	 */
+	@Test
+	// ( dependsOnMethods = "testLineReference" )
+	public void testLineReferenceWithArtifactId()
+			throws SLContextAlreadyExistsException, SLGraphSessionException,
+			SLInvalidCredentialException {
+		final SLNode root1 = session.createContext("1L").getRootNode();
+		final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+				"javaClassNode1");
+		final String artifactId = "targetId";
+
+		final SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17,
+				26, 44, "Hello World!", artifactId, "1");
+		javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
+		javaClassNode1.addLineReference(4, 8, 15, 16, "Hello Again!", "3", "1");
+		final Collection<SLLineReference> lineRefs = javaClassNode1
+				.getLineReferences(artifactId);
+		Assert.assertNotNull(lineRefs);
+		Assert.assertEquals(lineRefs.size(), 1);
+
+		for (final SLLineReference lineRef : lineRefs) {
+			if (lineRef.getArtifactId().equals(artifactId)) {
+				Assert.assertEquals(lineRef1.getStartLine(), new Integer(8));
+				Assert.assertEquals(lineRef1.getEndLine(), new Integer(17));
+				Assert.assertEquals(lineRef1.getStartColumn(), new Integer(26));
+				Assert.assertEquals(lineRef1.getEndColumn(), new Integer(44));
+				Assert.assertEquals(lineRef1.getStatement(), "Hello World!");
+				Assert.assertEquals(lineRef1.getArtifactVersion(), "1");
+			} else {
+				Assert.fail();
+			}
+		}
+	}
+
+	/**
 	 * Test link properties.
 	 */
 	@Test

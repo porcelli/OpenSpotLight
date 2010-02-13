@@ -141,7 +141,8 @@
 				<executions>
 					<execution>
 						<id>create-report</id>
-						<phase>test</phase>
+						<!-- do it after all tests have ran -->
+						<phase>package</phase>
 						<goals>
 							<goal>report-only</goal>
 						</goals>

@@ -111,7 +111,8 @@ public class SLGraphQueryCacheTest {
 	 * Finish.
 	 */
 	@AfterClass
-	public static void finish() {
+	public static void finish() throws Exception{
+		session.save();
 		session.close();
 		graph.shutdown();
 	}
@@ -234,7 +235,7 @@ public class SLGraphQueryCacheTest {
 		final SLQueryResult result2 = query2.execute();
 
 		assertThat(result2.getQueryId(), is(queryId));
-
+		session.save();
 		graph.gc(user);
 		session.save();
 		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
@@ -245,6 +246,7 @@ public class SLGraphQueryCacheTest {
 			SLInvalidQuerySyntaxException, SLPersistentTreeException,
 			SLInvalidCredentialException {
 		String queryId = null;
+		session.save();
 		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));
 
 		final SLQueryApi query = session.createQueryApi();

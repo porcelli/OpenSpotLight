@@ -171,7 +171,8 @@ options {
 
 @header {
 package org.openspotlight.bundle.language.java.parser;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openspotlight.bundle.common.parser.SLLexer;
 import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
 import org.openspotlight.bundle.common.parser.SLArtifactStream;
@@ -187,6 +188,12 @@ import org.openspotlight.bundle.common.parser.SLCommonToken;
 	public void setEnumIsKeyword(boolean isKeyword){
 		this.enumIsKeyword = isKeyword;
 	}
+
+  public Logger getLogger(){
+      return this.logger;
+  }
+
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void setAssertIsKeyword(boolean isKeyword){
 		this.assertIsKeyword = isKeyword;
