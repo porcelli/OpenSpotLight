@@ -61,13 +61,17 @@ public class DbForeignKeyProcessor implements
 		BundleProcessorArtifactPhase<ForeignKeyConstraintArtifact> {
 
 	public void beforeProcessArtifact(
-			final ForeignKeyConstraintArtifact artifact) {
+			final ForeignKeyConstraintArtifact artifact,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context) {
 
 	}
 
 	public void didFinishToProcessArtifact(
 			final ForeignKeyConstraintArtifact artifact,
-			final LastProcessStatus status) {
+			final LastProcessStatus status,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context) {
 
 	}
 

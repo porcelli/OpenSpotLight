@@ -264,7 +264,8 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 			}
 
 			final EndingToProcessArtifactsTask phaseThree = new EndingToProcessArtifactsTask(
-					changes, bundleProcessor, repository.getName());
+					changes, bundleProcessor, repository.getName(),
+					getBundleContext(), currentContext);
 			currentGroup.prepareTask().withParentTasks(allParentTasks)
 					.withReadableDescriptionAndUniqueId(
 							bundleProcessor.getClass().getSimpleName()

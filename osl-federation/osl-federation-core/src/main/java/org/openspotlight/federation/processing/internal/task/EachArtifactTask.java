@@ -109,7 +109,8 @@ public class EachArtifactTask<T extends Artifact> extends
 					+ this.artifact.getLastProcessStatus());
 			return;
 		}
-		this.bundleProcessor.beforeProcessArtifact(this.artifact);
+		this.bundleProcessor.beforeProcessArtifact(this.artifact,
+				this.currentContextImpl, getBundleContext());
 		LastProcessStatus result = null;
 		try {
 			if (first && this.artifact instanceof ArtifactWithSyntaxInformation) {
@@ -161,7 +162,7 @@ public class EachArtifactTask<T extends Artifact> extends
 
 			}
 			this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
-					result);
+					result, this.currentContextImpl, getBundleContext());
 			if (ex != null) {
 				throw ex;
 			}

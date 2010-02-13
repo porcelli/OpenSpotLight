@@ -25,8 +25,9 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public void didFinishProcessing(final ArtifactChanges<Artifact> changes) {
-		// TODO Auto-generated method stub
+	public void didFinishProcessing(final ArtifactChanges<Artifact> changes,
+			final ExecutionContext context,
+			final CurrentProcessorContext currentContext) {
 
 	}
 

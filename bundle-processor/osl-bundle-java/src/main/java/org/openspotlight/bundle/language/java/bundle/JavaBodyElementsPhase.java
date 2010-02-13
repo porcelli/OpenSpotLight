@@ -16,12 +16,16 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 public class JavaBodyElementsPhase implements
 		BundleProcessorArtifactPhase<StringArtifact> {
 
-	public void beforeProcessArtifact(final StringArtifact artifact) {
+	public void beforeProcessArtifact(final StringArtifact artifact,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context) {
 
 	}
 
 	public void didFinishToProcessArtifact(final StringArtifact artifact,
-			final LastProcessStatus status) {
+			final LastProcessStatus status,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context) {
 
 	}
 

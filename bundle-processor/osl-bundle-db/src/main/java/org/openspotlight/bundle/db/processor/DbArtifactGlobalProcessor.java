@@ -71,7 +71,9 @@ import org.openspotlight.graph.SLNode;
 public class DbArtifactGlobalProcessor implements
 		BundleProcessorGlobalPhase<DatabaseCustomArtifact> {
 
-	public void didFinishProcessing(final ArtifactChanges<Artifact> changes) {
+	public void didFinishProcessing(final ArtifactChanges<Artifact> changes,
+			final ExecutionContext context,
+			final CurrentProcessorContext currentContext) {
 
 	}
 
