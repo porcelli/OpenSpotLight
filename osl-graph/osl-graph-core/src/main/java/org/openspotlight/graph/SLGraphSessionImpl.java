@@ -428,7 +428,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
 						.getContextsPersistentNode(treeSession);
 				if (contextsPersistentNode.getNode(id) == null) {
 					final SLPersistentNode contextRootPersistentNode = contextsPersistentNode
-							.addNode("" + id);
+							.addNode(id);
 					return new SLContextImpl(this, contextRootPersistentNode,
 							eventPoster);
 				}

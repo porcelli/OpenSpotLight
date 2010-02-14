@@ -7,6 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
@@ -39,6 +40,8 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.remote.server.UserAuthenticator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class JavaStressExampleDataCreationTest {
@@ -66,9 +69,11 @@ public class JavaStressExampleDataCreationTest {
 
 	private final String username = "username";
 	private final String password = "password";
-	private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
+	private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 
 	private String repositoryName;
+
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void setupResourcesAndCreateData() throws Exception {
 		JcrConnectionProvider.createFromData(descriptor)
@@ -164,6 +169,22 @@ public class JavaStressExampleDataCreationTest {
 				false);
 		bufferedOutputStream.flush();
 		bufferedOutputStream.close();
+
+		final NodeIterator contexts = node.getNodes("name/contexts").nextNode()
+				.getNodes();
+
+		while (contexts.hasNext()) {
+			final Node ctxNode = contexts.nextNode();
+			final BufferedOutputStream o = new BufferedOutputStream(
+					new FileOutputStream("target/test-data/exported-"
+							+ ctxNode.getName() + ".xml"));
+			logger.debug("exported-" + ctxNode.getName() + ".xml");
+			session.exportSystemView(node.getPath(), o, false, false);
+			bufferedOutputStream.flush();
+			bufferedOutputStream.close();
+
+		}
+
 		System.err
 				.println("Done test! Server is still waiting connections on port 7070");
 		while (true) {
@@ -171,5 +192,4 @@ public class JavaStressExampleDataCreationTest {
 		}
 
 	}
-
 }

@@ -50,8 +50,10 @@ package org.openspotlight.federation.processing;
 
 import java.util.Map;
 
+import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
@@ -61,6 +63,9 @@ import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
  * The Interface CurrentProcessorContext.
  */
 public interface CurrentProcessorContext {
+	public ArtifactSource getArtifactSource();
+
+	public BundleProcessorType getBundleProcessor();
 
 	public Map<String, String> getBundleProperties();
 
@@ -109,6 +114,8 @@ public interface CurrentProcessorContext {
 	public SLNode getNodeForGroup(Group group)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
 			SLInvalidCredentialException;
+
+	public SLNode getNodeForUniqueBundleConfig();
 
 	public Map<String, Object> getTransientProperties();
 
