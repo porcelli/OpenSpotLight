@@ -119,11 +119,11 @@ public class EachArtifactTask<T extends Artifact> extends
 			}
 			result = this.bundleProcessor.processArtifact(this.artifact,
 					this.currentContextImpl, getBundleContext());
-			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
-				getBundleContext().getGraphSession().save();
-			} else {
-				logger.warn("Didn't save because of its save behavior");
-			}
+//			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
+//				getBundleContext().getGraphSession().save();
+//			} else {
+//				logger.warn("Didn't save because of its save behavior");
+//			}
 		} catch (final Exception e) {
 			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
 			Exceptions.catchAndLog(e);
