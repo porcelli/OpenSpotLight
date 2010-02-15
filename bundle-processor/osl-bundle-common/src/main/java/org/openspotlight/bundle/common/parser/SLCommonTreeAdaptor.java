@@ -82,9 +82,8 @@ public class SLCommonTreeAdaptor extends CommonTreeAdaptor {
                           final Token fromToken,
                           final String text ) {
         if (fromToken instanceof SLCommonToken) {
-            final SLCommonToken result = (SLCommonToken)super.create(
-                                                                     tokenType, fromToken, text);
-            fillData(tokenType, fromToken, text, result);
+            final SLCommonTree result = (SLCommonTree)super.create(
+                                                                   tokenType, fromToken, text);
             return result;
         }
         return super.create(tokenType, fromToken, text);
@@ -111,23 +110,4 @@ public class SLCommonTreeAdaptor extends CommonTreeAdaptor {
     public Token createToken( final Token fromToken ) {
         return new SLCommonToken(fromToken);
     }
-
-    private void fillData( final int tokenType,
-                           final Token fromToken,
-                           final String text,
-                           final SLCommonToken result ) {
-        final SLCommonToken typed = (SLCommonToken)fromToken;
-        result.setStartIndex(typed.getStartIndex());
-        if (text == null) {
-            result.setStopIndex(typed.getStopIndex());
-        } else {
-            result.setEndCharPositionInLine(result.getStartIndex()
-                                            + text.length());
-        }
-        result.setLine(typed.getLine());
-        result.setEndLine(typed.getLine());
-        result.setCharPositionInLine(typed.getStartCharPositionInLine());
-        result.setEndCharPositionInLine(typed.getEndCharPositionInLine());
-    }
-
 }

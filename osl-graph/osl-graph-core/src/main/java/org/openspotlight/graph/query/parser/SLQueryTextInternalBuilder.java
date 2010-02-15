@@ -186,7 +186,7 @@ public class SLQueryTextInternalBuilder {
         }
 
         public int LA( int i ) {
-            int result = super.LA(1);
+            int result = super.LA(i);
             if (result == 0) {
                 return 0; // undefined
             }
