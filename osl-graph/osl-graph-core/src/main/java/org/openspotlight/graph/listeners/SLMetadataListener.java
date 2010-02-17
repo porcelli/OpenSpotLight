@@ -225,18 +225,18 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	 */
 	private void addDescription(final Class<?> type,
 			final SLPersistentNode pNode)
-			throws SLPersistentTreeSessionException {
+	throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			String descriptionValue = type.getName();
 			final SLDescription description = type
-					.getAnnotation(SLDescription.class);
+			.getAnnotation(SLDescription.class);
 			if (description != null) {
 				descriptionValue = description.value();
 			}
 			final String propName = SLCommonSupport
-					.toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
+			.toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
 			final SLPersistentProperty<String> prop = SLCommonSupport
-					.getProperty(pNode, String.class, propName);
+			.getProperty(pNode, String.class, propName);
 			if (prop == null) {
 				pNode.setProperty(String.class, propName, descriptionValue);
 			}
@@ -282,7 +282,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 			final Class<? extends SLNode> nodeType) {
 		nodeTypes.add(0, nodeType);
 		final Class<? extends SLNode> superNodeType = (Class<? extends SLNode>) nodeType
-				.getInterfaces()[0];
+		.getInterfaces()[0];
 		if (superNodeType != null && !superNodeType.equals(SLNode.class)) {
 			addNodeTypeInHierarchy(nodeTypes, superNodeType);
 		}
@@ -300,18 +300,18 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	 */
 	private void addRenderHints(final Class<? extends SLNode> nodeType,
 			final SLPersistentNode pMetaNode)
-			throws SLPersistentTreeSessionException {
+	throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			final SLRenderHints renderHints = nodeType
-					.getAnnotation(SLRenderHints.class);
+			.getAnnotation(SLRenderHints.class);
 			if (renderHints != null) {
 				final SLRenderHint[] renderHintArr = renderHints.value();
 				for (final SLRenderHint renderHint : renderHintArr) {
 					final String propName = SLCommonSupport
-							.toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT
-									+ "." + renderHint.name());
+					.toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT
+							+ "." + renderHint.name());
 					final SLPersistentProperty<String> prop = SLCommonSupport
-							.getProperty(pMetaNode, String.class, propName);
+					.getProperty(pMetaNode, String.class, propName);
 					if (prop == null) {
 						pMetaNode.setProperty(String.class, propName,
 								renderHint.value());
@@ -322,15 +322,15 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	}
 
 	private void addVisibility(final Class<?> type, final SLPersistentNode pNode)
-			throws SLPersistentTreeSessionException {
+	throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			final String propName = SLCommonSupport
-					.toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
+			.toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
 			final SLPersistentProperty<String> prop = SLCommonSupport
-					.getProperty(pNode, String.class, propName);
+			.getProperty(pNode, String.class, propName);
 			if (prop == null) {
 				final SLVisibility visibility = type
-						.getAnnotation(SLVisibility.class);
+				.getAnnotation(SLVisibility.class);
 				if (visibility != null) {
 					pNode.setProperty(String.class, propName, visibility
 							.value().toString());
@@ -347,7 +347,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	 */
 	@Override
 	public void beforeSave(final SLGraphSessionSaveEvent event)
-			throws SLGraphSessionException {
+	throws SLGraphSessionException {
 		synchronized (lock) {
 			sessionCleaned();
 		}
@@ -402,7 +402,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	 */
 	private int getMetaLinkDirection(final Class<?> sourceClass,
 			final Class<?> targetClass, final boolean bidirecional)
-			throws SLException {
+	throws SLException {
 		if (bidirecional) {
 			return SLConsts.DIRECTION_BOTH;
 		} else {
@@ -424,7 +424,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	 */
 	private SLPersistentNode getMetaNodeType(
 			final SLPersistentTreeSession treeSession, final String typeName)
-			throws SLPersistentTreeSessionException {
+	throws SLPersistentTreeSessionException {
 		SLPersistentNode metaNodeType = metaNodeTypeCache.get(typeName);
 		if (metaNodeType == null) {
 			final StringBuilder statement = new StringBuilder(treeSession
@@ -469,12 +469,12 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	 */
 	private String getTypePairKey(final Class<?> linkType,
 			final Class<?> sourceClass, final Class<?> targetClass)
-			throws SLException {
+	throws SLException {
 		final Class<?> aClass = getAClass(sourceClass, targetClass);
 		final Class<?> bClass = getBClass(sourceClass, targetClass);
 		final StringBuilder pairKey = new StringBuilder();
 		pairKey.append(linkType.getName()).append(aClass.getName()).append('.')
-				.append(bClass.getName());
+		.append(bClass.getName());
 		return pairKey.toString();
 	}
 
@@ -510,17 +510,17 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 				final Class<?> bClass = getBClass(sourceClass, targetClass);
 
 				final SLPersistentNode linkClassNode = SLCommonSupport
-						.getMetaLinkClassNode(treeSession, linkClass);
+				.getMetaLinkClassNode(treeSession, linkClass);
 				pairKeyNode = linkClassNode.getNode(typePairKey);
 
 				if (pairKeyNode == null) {
 					pairKeyNode = linkClassNode.addNode(typePairKey);
 					pairKeyNode.setProperty(String.class,
 							SLConsts.PROPERTY_NAME_A_CLASS_NAME, aClass
-									.getName());
+							.getName());
 					pairKeyNode.setProperty(String.class,
 							SLConsts.PROPERTY_NAME_B_CLASS_NAME, bClass
-									.getName());
+							.getName());
 					pairKeyNode.setProperty(Long.class,
 							SLConsts.PROPERTY_NAME_LINK_COUNT, 0L);
 				}
@@ -541,10 +541,10 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	 *             the SL persistent tree session exception
 	 */
 	private long incLinkCount(final SLPersistentNode linkKeyPairNode)
-			throws SLPersistentTreeSessionException {
+	throws SLPersistentTreeSessionException {
 		synchronized (lock) {
 			final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode
-					.getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
+			.getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
 			final long linkCount = linkCountProp.getValue() + 1;
 			linkCountProp.setValue(linkCount);
 			return linkCount;
@@ -564,21 +564,31 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void linkAdded(final SLLinkAddedEvent event)
-			throws SLGraphSessionException {
+	throws SLGraphSessionException {
 		synchronized (lock) {
 			try {
 				final SLLink link = event.getLink();
 				final Class<? extends SLLink> linkType = (Class<? extends SLLink>) link
-						.getClass().getInterfaces()[0];
+				.getClass().getInterfaces()[0];
 
-				final SLNode[] sides = link.getSides();
-				final SLNode source = sides[0];
-				final SLNode target = sides[1];
+				final SLNode source;
+				final SLNode target;
+				if (link.isBidirectional()) {
+					final SLNode[] sides = link.getSides();
+					source = sides[0];
+					target = sides[1];
+
+				} else {
+					source = link.getSource();
+					target = link.getTarget();
+				}
+
 				final SLPersistentNode linkNode = event.getLinkNode();
 				final SLPersistentTreeSession treeSession = linkNode
-						.getSession();
+				.getSession();
 				final Class<?> sourceClass = source.getClass().getInterfaces()[0];
 				final Class<?> targetClass = target.getClass().getInterfaces()[0];
+
 				final String typePairKey = getTypePairKey(linkType,
 						sourceClass, targetClass);
 				final int direction = getMetaLinkDirection(sourceClass,
@@ -595,8 +605,8 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
 					final StringBuilder statement = new StringBuilder();
 					statement.append(classPairKeyNode.getPath()).append("/*[")
-							.append(SLConsts.PROPERTY_NAME_DIRECTION).append(
-									"=").append(direction).append(']');
+					.append(SLConsts.PROPERTY_NAME_DIRECTION).append(
+					"=").append(direction).append(']');
 
 					SLPersistentNode metaLinkNode = null;
 					final SLPersistentQuery query = treeSession.createQuery(
@@ -630,23 +640,23 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void linkPropertySet(final SLLinkPropertySetEvent event)
-			throws SLGraphSessionException {
+	throws SLGraphSessionException {
 		synchronized (lock) {
 
 			try {
 				final SLLinkProperty<? extends Serializable> linkProperty = event
-						.getProperty();
+				.getProperty();
 
 				final SLLink link = linkProperty.getLink();
 				final Class<? extends SLLink> linkType = (Class<? extends SLLink>) link
-						.getClass().getInterfaces()[0];
+				.getClass().getInterfaces()[0];
 				final SLNode[] sides = link.getSides();
 				final SLNode source = sides[0];
 				final SLNode target = sides[1];
 				final SLPersistentNode linkNode = event.getPersistentProperty()
-						.getNode();
+				.getNode();
 				final SLPersistentTreeSession treeSession = linkNode
-						.getSession();
+				.getSession();
 				final Class<?> sourceClass = source.getClass().getInterfaces()[0];
 				final Class<?> targetClass = target.getClass().getInterfaces()[0];
 				final String typePairKey = getTypePairKey(linkType,
@@ -662,7 +672,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 				if (!linkPropertyKeyCache.contains(propertyKey)) {
 
 					SLPersistentNode metaLinkNode = metaLinkNodeCache
-							.get(linkKey);
+					.get(linkKey);
 					if (metaLinkNode == null) {
 
 						final SLPersistentNode classPairKeyNode = getTypePairKeyNode(
@@ -675,8 +685,8 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 								.append("=").append(direction).append(']');
 
 						final SLPersistentQuery query = treeSession
-								.createQuery(statement.toString(),
-										SLPersistentQuery.TYPE_XPATH);
+						.createQuery(statement.toString(),
+								SLPersistentQuery.TYPE_XPATH);
 						final SLPersistentQueryResult result = query.execute();
 						if (result.getRowCount() == 1) {
 							metaLinkNode = result.getNodes().iterator().next();
@@ -684,14 +694,14 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 					}
 
 					final String propName = SLCommonSupport
-							.toUserPropertyName(linkProperty.getName());
+					.toUserPropertyName(linkProperty.getName());
 
 					metaLinkNode.setProperty(String.class, propName,
 							linkProperty.getValue().getClass().getName());
 
 					final String propVisibilityName = SLCommonSupport
-							.toInternalPropertyName(propName + "."
-									+ SLConsts.PROPERTY_NAME_VISIBILITY);
+					.toInternalPropertyName(propName + "."
+							+ SLConsts.PROPERTY_NAME_VISIBILITY);
 
 					metaLinkNode.setProperty(String.class, propVisibilityName,
 							event.getVisibility().toString());
@@ -718,7 +728,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void nodeAdded(final SLNodeAddedEvent event)
-			throws SLGraphSessionException {
+	throws SLGraphSessionException {
 		synchronized (lock) {
 
 			try {
@@ -727,7 +737,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 				final String typeName = SLCommonSupport.getNodeTypeName(pNode);
 
 				final Class<? extends SLNode> nodeType = (Class<? extends SLNode>) event
-						.getNode().getClass().getInterfaces()[0];
+				.getNode().getClass().getInterfaces()[0];
 				if (nodeType.equals(SLNode.class)
 						|| metaNodeTypeCache.get(typeName) != null) {
 					return;
@@ -735,15 +745,15 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
 				final SLPersistentTreeSession treeSession = pNode.getSession();
 				SLPersistentNode pMetaNodeTypeParent = SLCommonSupport
-						.getMetaTypesNode(treeSession);
+				.getMetaTypesNode(treeSession);
 
 				final Collection<Class<? extends SLNode>> nodeTypeHierarchy = getNodeTypeHierarchy(nodeType);
 				for (final Class<? extends SLNode> currentNodeType : nodeTypeHierarchy) {
 					final SLPersistentNode pMetaNodeType = pMetaNodeTypeParent
-							.getNode(currentNodeType.getName());
+					.getNode(currentNodeType.getName());
 					if (pMetaNodeType == null) {
 						pMetaNodeTypeParent = pMetaNodeTypeParent
-								.addNode(currentNodeType.getName());
+						.addNode(currentNodeType.getName());
 						pMetaNodeTypeParent.setProperty(String.class,
 								SLConsts.PROPERTY_NAME_NODE_TYPE,
 								currentNodeType.getName());
@@ -775,11 +785,11 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 	 */
 	@Override
 	public void nodePropertySet(final SLNodePropertySetEvent event)
-			throws SLGraphSessionException {
+	throws SLGraphSessionException {
 		synchronized (lock) {
 			try {
 				final SLPersistentProperty<? extends Serializable> pProperty = event
-						.getPersistentProperty();
+				.getPersistentProperty();
 				final SLPersistentNode pNode = pProperty.getNode();
 				final String typeName = SLCommonSupport.getNodeTypeName(pNode);
 				final String propertyName = pProperty.getName();
@@ -793,12 +803,12 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 								pProperty.getValue().getClass().getName());
 
 						final String propVisibilityName = SLCommonSupport
-								.toInternalPropertyName(propertyName + "."
-										+ SLConsts.PROPERTY_NAME_VISIBILITY);
+						.toInternalPropertyName(propertyName + "."
+								+ SLConsts.PROPERTY_NAME_VISIBILITY);
 
 						metaNodeType.setProperty(String.class,
 								propVisibilityName, event.getVisibility()
-										.toString());
+								.toString());
 						nodePropertyNameCache.add(fullPropertyName);
 					}
 				}

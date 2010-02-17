@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 public class JavaExecutorSupport {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	private final boolean quiet = true;
+
 	final SLNode currentContext;
 
 	final SLNode abstractContext;
@@ -48,10 +50,10 @@ public class JavaExecutorSupport {
 
 	public JavaExecutorSupport(final SLNode currentContext,
 			final SLGraphSession session, final String completeArtifactName)
-			throws Exception {
+	throws Exception {
 		this.currentContext = currentContext;
 		abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT)
-				.getRootNode();
+		.getRootNode();
 		this.session = session;
 		this.completeArtifactName = completeArtifactName;
 		currentContextFinder = new ByPropertyFinder(completeArtifactName,
@@ -94,7 +96,7 @@ public class JavaExecutorSupport {
 			break;
 		default:
 			throw Exceptions.logAndReturn(new IllegalStateException(
-					"Wrong number of elements on internal enum WhatContext"));
+			"Wrong number of elements on internal enum WhatContext"));
 		}
 		if (cached != null) {
 			return (W) cached;
@@ -110,12 +112,9 @@ public class JavaExecutorSupport {
 		}
 
 		NeedsSyncronizationCollection<AbstractTypeBind> links = session
-				.getLinks(AbstractTypeBind.class, source, null);
+		.getLinks(AbstractTypeBind.class, source, null);
 		if (links.size() == 0) {
-			links = session.getLinks(AbstractTypeBind.class, null, source);// FIXME
-			// is
-			// this
-			// necessary?
+			links = session.getLinks(AbstractTypeBind.class, null, source);
 		}
 		if (links.size() == 0) {
 			if (logger.isDebugEnabled()) {
@@ -161,7 +160,7 @@ public class JavaExecutorSupport {
 			break;
 		default:
 			throw Exceptions.logAndReturn(new IllegalStateException(
-					"Wrong number of elements on internal enum WhatContext"));
+			"Wrong number of elements on internal enum WhatContext"));
 		}
 		return found;
 
@@ -194,7 +193,7 @@ public class JavaExecutorSupport {
 				if (javaType != null) {
 					importedNodeCache.put(javaType.getSimpleName(), javaType);
 					importedNodeCache
-							.put(javaType.getQualifiedName(), javaType);
+					.put(javaType.getQualifiedName(), javaType);
 					return javaType;
 				}
 			}
@@ -204,6 +203,10 @@ public class JavaExecutorSupport {
 			}
 			return null;
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return null;
+			}
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -214,6 +217,11 @@ public class JavaExecutorSupport {
 					JavaTypePrimitive.class, string);
 			return primitive;
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return null;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}

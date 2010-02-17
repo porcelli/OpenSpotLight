@@ -24,6 +24,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-remote-support</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-slql-console</artifactId>
 			<version>0.7-SNAPSHOT</version> <!-- FIXME Maven gots hungry here. Needs to be solved! -->
 			<scope>test</scope>
@@ -50,19 +55,19 @@
 	</dependencies>
 	<build>
 		<plugins>
-            <plugin>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr3-maven-plugin</artifactId>
-                <version>3.2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>antlr</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        	<plugin>
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr3-maven-plugin</artifactId>
+				<version>3.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>antlr</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 			</plugin>
