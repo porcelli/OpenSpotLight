@@ -150,11 +150,14 @@ public abstract class JcrConnectionProvider {
 		public Repository internalOpenRepository() {
 			if (repository == null || repositoryClosed) {
 				try {
-					try {
-						Files.delete(getData().getConfigurationDirectory());
-					} catch (final SLException e) {
-						throw Exceptions.logAndReturnNew(e,
-								SLRuntimeException.class);
+					if (getData().isTemporary()) {
+						try {
+							Files.delete(getData().getConfigurationDirectory());
+						} catch (final SLException e) {
+							throw Exceptions.logAndReturnNew(e,
+									SLRuntimeException.class);
+
+						}
 					}
 
 					final RepositoryConfig config = RepositoryConfig.create(
