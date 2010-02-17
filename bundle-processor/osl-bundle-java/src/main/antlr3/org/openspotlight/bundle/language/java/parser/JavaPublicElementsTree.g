@@ -57,6 +57,7 @@ package org.openspotlight.bundle.language.java.parser;
 import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElementsTreeExecutor;
 import org.openspotlight.bundle.language.java.parser.executor.JavaModifier;
 import org.openspotlight.bundle.language.java.parser.executor.VariableDeclarationDto;
+import org.openspotlight.bundle.language.java.parser.executor.JavaReferenceConstants;
 import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.graph.SLNode;
 import java.util.List;
@@ -64,7 +65,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Stack;
 import org.openspotlight.bundle.language.java.parser.executor.TypeParameterDto;
-    
+import static org.openspotlight.bundle.common.parser.ParsingSupport.createLineReference;
+import org.openspotlight.bundle.common.parser.SLCommonTree;
 }
 
 @members{
@@ -91,7 +93,7 @@ packageDeclaration
 importDeclaration
     :    ^(IMPORT_DECLARATION STATIC? STAR? qualifiedName)
 	       { SLNode node = executor.importDeclaration(stack.peek(),$STATIC.text!=null,$STAR.text!=null,$qualifiedName.name); 
-	         executor.addLineReference($qualifiedName.start, node);   }
+	         createLineReference((SLCommonTree)$qualifiedName.start,JavaReferenceConstants.IMPORT, node);   }
     ;
 typeDeclaration
     :    normalClassDeclaration
@@ -127,7 +129,7 @@ normalClassDeclaration
 	       { SLNode node = executor.createJavaClass(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
 	               $annotations.resultList, $normalClassExtends.typeResult, 
 	               $normalClassImplements.typeListReturn,$typeParameters.resultList);
-	         executor.addLineReference($Identifier, node);
+	         createLineReference((SLCommonTree)$Identifier,JavaReferenceConstants.CLASS_DECLARE, node);
 	         stack.push(node); } 
 	classBody)
     ;
@@ -162,7 +164,7 @@ enumDeclaration
     :    ^(ENUM_DECLARATION Identifier modifiers annotations? enumDeclarationImplements?
 	       { SLNode node = executor.createEnum(stack.peek(), $Identifier.text, 
 	                                $modifiers.modifiersResultList, $annotations.resultList, $enumDeclarationImplements.resultList);
-           executor.addLineReference($Identifier,node);
+           createLineReference((SLCommonTree)$Identifier,JavaReferenceConstants.ENUM_DECLARE,node);
            stack.push(node); }
 	       enumBody)
     ;
@@ -182,7 +184,7 @@ normalInterfaceDeclaration
     :    ^(INTERFACE_DECLARATION Identifier modifiers annotations? typeParameters? normalInterfaceDeclarationExtends? interfaceBody)
 	       { SLNode node = executor.createInterface(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
 	                                  $annotations.resultList, $normalInterfaceDeclarationExtends.resultList,$typeParameters.resultList);
-	         executor.addLineReference($Identifier, node);
+	         createLineReference((SLCommonTree)$Identifier, JavaReferenceConstants.INTERFACE_DECLARE,node);
 	         stack.push(node); }
     ;
 normalInterfaceDeclarationExtends returns [List<JavaType> resultList]
@@ -206,7 +208,7 @@ typeBodyDeclaration
     |    ^(CONSTRUCTOR_DECLARATION Identifier modifiers annotations? typeParameters? formalParameters typeBodyDeclarationThrows? block)
 	       { SLNode node = executor.createMethodConstructorDeclaration(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
 	                                   $formalParameters.resultList, $annotations.resultList,  $typeBodyDeclarationThrows.resultList); 
-	         executor.addLineReference( $Identifier,node); }
+	         createLineReference((SLCommonTree) $Identifier, JavaReferenceConstants.BODY, node); }
     |    ^(FIELD_DECLARATION 
 	       { List<VariableDeclarationDto> variables = new ArrayList<VariableDeclarationDto>();
 	         List<CommonTree> treeItems = new ArrayList<CommonTree>(); }
@@ -216,13 +218,13 @@ typeBodyDeclaration
 	       { List<SLNode> nodes = executor.createFieldDeclaration(stack.peek(), $modifiers.modifiersResultList, 
 	                     $annotations.resultList, $type.typeReturn, variables); 
 	         for(int i=0,size=nodes.size();i<size;i++){
-	             executor.addLineReference(treeItems.get(i),nodes.get(i));
+	             createLineReference((SLCommonTree)treeItems.get(i),JavaReferenceConstants.FIELD_DECLARE,nodes.get(i));
 	         }
 	       }
     |    ^(METHOD_DECLARATION Identifier modifiers annotations? typeParameters? type formalParameters typeBodyDeclarationThrows? defaultValue? block?)
 	       { SLNode node = executor.createMethodDeclaration(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
 	                 $formalParameters.resultList,$annotations.resultList, $type.typeReturn, $typeBodyDeclarationThrows.resultList); 
-	         executor.addLineReference($Identifier,node); }
+	         createLineReference((SLCommonTree)$Identifier,JavaReferenceConstants.METHOD_DECLARE, node); }
     |    ^(INNER_DECLARATION typeDeclaration)
     ;
 typeBodyDeclarationThrows returns [List<JavaType> resultList]
@@ -247,32 +249,32 @@ arrayInitializer
 type returns [JavaType typeReturn]
     :    ^(ARRAY_TYPE tp0=type ARRAY_DIMENSION) 
          { $typeReturn = executor.findArrayType($tp0.typeReturn, $ARRAY_DIMENSION.text); 
-           executor.addLineReference($tp0.start,$typeReturn); }
+           createLineReference((SLCommonTree)$tp0.start,JavaReferenceConstants.REFERENCES,$typeReturn); }
     |    ^(QUALIFIED_TYPE  tp1=type 
 	       { List<JavaType> types = new ArrayList<JavaType>(); 
 	         types.add($tp1.typeReturn); } 
 	       (DOT tp2=type 
 	       { types.add($tp2.typeReturn); } )+) 
 	       { $typeReturn = executor.findByQualifiedTypes(types); 
-	         executor.addLineReference($tp1.start,$typeReturn);}
+	         createLineReference((SLCommonTree)$tp1.start,JavaReferenceConstants.REFERENCES,$typeReturn);}
     |    ^(PARAMETERIZED_TYPE tp3=type typeArguments 
          { $typeReturn = executor.findParamerizedType($tp3.typeReturn,$typeArguments.resultList); 
-           executor.addLineReference($tp3.start,$typeReturn); } )
+           createLineReference((SLCommonTree)$tp3.start,JavaReferenceConstants.REFERENCES,$typeReturn); } )
     |    ^(WILDCARD_TYPE QUESTION (^(EXTENDS tp4=type 
          { $typeReturn = executor.findExtendsParameterizedType($tp4.typeReturn); 
-           executor.addLineReference($tp4.start,$typeReturn); })
+           createLineReference((SLCommonTree)$tp4.start,JavaReferenceConstants.REFERENCES,$typeReturn); })
          |^(SUPER tp5=type 
          { $typeReturn = executor.findSuperParameterizedType($tp5.typeReturn); 
-           executor.addLineReference($tp5.start,$typeReturn); }))? )
+           createLineReference((SLCommonTree)$tp5.start,JavaReferenceConstants.REFERENCES,$typeReturn); }))? )
     |    ^(SIMPLE_TYPE (Identifier 
 	       { $typeReturn = executor.findSimpleType($Identifier.text);
-	         executor.addLineReference($Identifier,$typeReturn);} 
+	         createLineReference((SLCommonTree)$Identifier,JavaReferenceConstants.REFERENCES,$typeReturn);} 
 	  |    VOID 
 	       { $typeReturn = executor.findVoidType();
-	         executor.addLineReference($VOID,$typeReturn);}))
+	         createLineReference((SLCommonTree)$VOID,JavaReferenceConstants.REFERENCES,$typeReturn);}))
     |    ^(PRIMITIVE_TYPE primitiveType
 	       { $typeReturn = executor.findPrimitiveType($primitiveType.text);
-	         executor.addLineReference($PRIMITIVE_TYPE,$typeReturn); })
+	         createLineReference((SLCommonTree)$PRIMITIVE_TYPE,JavaReferenceConstants.REFERENCES,$typeReturn); })
     ;
 primitiveType
     :    BOOLEAN
@@ -319,13 +321,13 @@ annotations returns [List<JavaType> resultList]
 annotation returns [ JavaType typeNode]
     :    (^(MARKER_ANNOTATION q1=qualifiedName)
 		     { $typeNode=executor.resolveAnnotation($q1.name); 
-			     executor.addLineReference($q1.start, $typeNode); }
+			     createLineReference((SLCommonTree)$q1.start,JavaReferenceConstants.ANOTATES, $typeNode); }
 	  |    ^(SINGLE_MEMBER_ANNOTATION q2=qualifiedName elementValue) 
 	       { $typeNode=executor.resolveAnnotation($q2.name);  
-           executor.addLineReference($q2.start, $typeNode); }
+           createLineReference((SLCommonTree)$q2.start,JavaReferenceConstants.ANOTATES, $typeNode); }
 	  |    ^(NORMAL_ANNOTATION q3=qualifiedName elementValuePairs)
 	       { $typeNode=executor.resolveAnnotation($q3.name);  
-           executor.addLineReference($q3.start, $typeNode); }
+           createLineReference((SLCommonTree)$q3.start,JavaReferenceConstants.ANOTATES, $typeNode); }
 	)
 	
     ;
@@ -347,7 +349,7 @@ annotationTypeDeclaration
     :    ^(ANNOTATION_DECLARATION Identifier modifiers annotations? annotationTypeBody
          { SLNode node = executor.createAnnotation(stack.peek(), $Identifier.text, $modifiers.modifiersResultList, 
                                     $annotations.resultList);
-           executor.addLineReference($Identifier, node);
+           createLineReference((SLCommonTree)$Identifier,JavaReferenceConstants.ANOTATION_DECLARE, node);
            stack.push(node); } )
     ;
       
@@ -454,7 +456,7 @@ expression
     |    ^(THIS_EXPRESSION (expression DOT)? THIS)
     |    ^(ARRAY_ACCESS expression? dimensionValue)
     |    ^(CLASS_INSTANCE_CREATION (expression DOT)? superType1=type arguments (anonymousClassDeclaration[superType1.typeReturn]  
-         { executor.addLineReference($anonymousClassDeclaration.start,$anonymousClassDeclaration.typeElement); } )?)
+         { createLineReference((SLCommonTree)$anonymousClassDeclaration.start,JavaReferenceConstants.ANONYMOUS_TYPE_DECLARE,$anonymousClassDeclaration.typeElement); } )?)
     |    ^(ARRAY_CREATION type dimensionValue+ arrayInitializer?)
     |    ^(QUALIFIED_NAME (Identifier|THIS|expression) (DOT Identifier)*)
     |    ^(METHOD_INVOCATION (expression DOT)? Identifier typeArguments? arguments)

@@ -59,34 +59,38 @@ import org.openspotlight.graph.SLNode;
  */
 public abstract class ParsingSupport {
 
-    /**
-     * Creates the line reference.
-     * 
-     * @param lineInfo the line info
-     * @param statement the statement
-     * @param nodes the nodes
-     */
-    public static void createLineReference( SLLineInfo lineInfo,
-                                            String statement,
-                                            SLNode... nodes ) {
-        try {
-            if (nodes != null) {
-                for (SLNode node : nodes) {
-                    if (node != null) {
-                        node.addLineReference(lineInfo.getStartLine(),
-                                              lineInfo.getEndLine(),
-                                              lineInfo.getStartCharPositionInLine(),
-                                              lineInfo.getEndCharPositionInLine(),
-                                              statement,
-                                              lineInfo.getArtifact().getSourceName(),
-                                              lineInfo.getArtifact().getVersion());
-                    }
-                }
+	/**
+	 * Creates the line reference.
+	 * 
+	 * @param lineInfo the line info
+	 * @param statement the statement
+	 * @param nodes the nodes
+	 */
+	public static void createLineReference( final SLLineInfo lineInfo,
+			final String statement,
+			final SLNode... nodes ) {
+		try {
+			if (nodes != null) {
+				for (final SLNode node : nodes) {
+					if (node != null) {
+						try {
+							node.addLineReference(lineInfo.getStartLine(),
+									lineInfo.getEndLine(),
+									lineInfo.getStartCharPositionInLine(),
+									lineInfo.getEndCharPositionInLine(),
+									statement,
+									lineInfo.getArtifact().getSourceName(),
+									lineInfo.getArtifact().getVersion());
+						} catch (final Exception e) {
+							Exceptions.catchAndLog(e);
+						}
+					}
+				}
 
-            }
-        } catch (Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+			}
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
 
 }

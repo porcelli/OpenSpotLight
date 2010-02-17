@@ -681,9 +681,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
 						final StringBuilder statement = new StringBuilder();
 						statement.append(classPairKeyNode.getPath()).append(
-								"/*[").append(SLConsts.PROPERTY_NAME_DIRECTION)
-								.append("=").append(direction).append(']');
-
+						"/*[").append(SLConsts.PROPERTY_NAME_DIRECTION)
+						.append("=").append(direction).append(']');
+						treeSession.save();
 						final SLPersistentQuery query = treeSession
 						.createQuery(statement.toString(),
 								SLPersistentQuery.TYPE_XPATH);
@@ -695,18 +695,25 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
 					final String propName = SLCommonSupport
 					.toUserPropertyName(linkProperty.getName());
+					if (metaLinkNode != null) {
+						if (linkProperty.getValue() != null) {
+							metaLinkNode.setProperty(String.class, propName,
+									linkProperty.getValue().getClass().getName());
+						}
 
-					metaLinkNode.setProperty(String.class, propName,
-							linkProperty.getValue().getClass().getName());
+						final String propVisibilityName = SLCommonSupport
+						.toInternalPropertyName(propName + "."
+								+ SLConsts.PROPERTY_NAME_VISIBILITY);
 
-					final String propVisibilityName = SLCommonSupport
-					.toInternalPropertyName(propName + "."
-							+ SLConsts.PROPERTY_NAME_VISIBILITY);
+						metaLinkNode.setProperty(String.class, propVisibilityName,
+								event.getVisibility().toString());
 
-					metaLinkNode.setProperty(String.class, propVisibilityName,
-							event.getVisibility().toString());
-
-					linkPropertyKeyCache.add(propertyKey);
+						linkPropertyKeyCache.add(propertyKey);
+					} else {
+						// Exceptions.catchAndLog(new NullPointerException(
+						// "metaLinkNode can't be null here"));// FIXME
+						linkPropertyKeyCache.add(propertyKey);
+					}
 				}
 			} catch (final SLException e) {
 				throw new SLGraphSessionException(

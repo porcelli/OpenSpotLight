@@ -16,7 +16,7 @@
 			<param name="ConversionPattern" value="%d{yy/MM/dd HH:mm:ss:SSS} %p %c{2}: %m%n" />
 		</layout>
 	</appender>
-	<logger name="org.openspotlight.bundle.language.java">
+	<logger name="org.openspotlight.bundle.language.javazxczxc">
 		<priority value="debug" />
 		<appender-ref ref="console" />
 		<appender-ref ref="SocketAppender" />

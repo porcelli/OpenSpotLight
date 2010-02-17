@@ -51,13 +51,14 @@ options{
     tokenVocab=JavaParser;
     ASTLabelType=CommonTree;
 }
-
 @header {
 package org.openspotlight.bundle.language.java.parser;
 import java.util.Collections;
 import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
+import org.openspotlight.bundle.language.java.parser.executor.JavaReferenceConstants;
+import static org.openspotlight.bundle.common.parser.ParsingSupport.createLineReference;
+import org.openspotlight.bundle.common.parser.SLCommonTree;
 }
-
 @members{
     private JavaBodyElementsExecutor executor;
     public void setExecutor(JavaBodyElementsExecutor executor){

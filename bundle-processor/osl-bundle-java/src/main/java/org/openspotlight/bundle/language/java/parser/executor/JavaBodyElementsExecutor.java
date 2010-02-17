@@ -994,7 +994,9 @@ public class JavaBodyElementsExecutor {
 				|| node instanceof JavaTypeEnum) {
 			currentClass.push(typed);
 		}
-		Assertions.checkNotNull("node", node);
+		if (node == null) {
+			return;// FIXME
+		}
 		if (logger.isDebugEnabled()) {
 			logger.debug(support.completeArtifactName + ": "
 					+ "pushing into stack text=" + imported.getText()

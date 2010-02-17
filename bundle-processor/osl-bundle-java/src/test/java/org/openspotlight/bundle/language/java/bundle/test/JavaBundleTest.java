@@ -1,7 +1,5 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
-import org.hamcrest.core.Is;
-import org.junit.Assert;
 import org.openspotlight.bundle.common.AbstractTestServerClass;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
@@ -9,18 +7,18 @@ import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
+import org.openspotlight.common.util.Collections;
+import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
-import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
+import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
@@ -47,13 +45,26 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		repo.setName("name");
 		repo.setActive(true);
 		repositoryName = repo.getName();
-		final ArtifactSource includedSource = new ArtifactSource();
-		includedSource.setRepository(repo);
-		includedSource.setName("classpath");
-		includedSource
-		.setInitialLookup("./src/test/resources/junit-4.3.1");
-		contextFactory = TestExecutionContextFactory.createFactory(
-				ArtifactFinderType.FILESYSTEM, includedSource);
+		contextFactory = DefaultExecutionContextFactory.createFactory();
+
+		final ArtifactSource artifactSource = new ArtifactSource();
+		repo.getArtifactSources().add(artifactSource);
+		artifactSource.setRepository(repo);
+		artifactSource.setName("junit 4.3.1 files");
+		artifactSource.setActive(true);
+		artifactSource.setInitialLookup("./src/test/resources/junit-4.3.1");
+		final ArtifactSourceMapping jarMapping = new ArtifactSourceMapping();
+		jarMapping.setSource(artifactSource);
+		artifactSource.getMappings().add(jarMapping);
+		jarMapping.setFrom("jar/");
+		jarMapping.setTo("/");
+		jarMapping.getIncludeds().add("**/*.jar");
+		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+		mapping.setSource(artifactSource);
+		artifactSource.getMappings().add(mapping);
+		mapping.setFrom("src/");
+		mapping.setTo("src/");
+		mapping.getIncludeds().add("**/*.java");
 
 		settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
@@ -82,7 +93,7 @@ public class JavaBundleTest extends AbstractTestServerClass {
 
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.getBundleProperties().put(JavaConstants.JAR_CLASSPATH,
-		"jar/luni-few-classes.jar");
+		"/jar/luni-few-classes.jar");
 		commonProcessor.setActive(true);
 		commonProcessor.setName("source processor");
 		commonProcessor.setGroup(group);
@@ -99,22 +110,32 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		bundleSource.setBundleProcessorType(commonProcessor);
 		bundleSource.setRelative("src/");
 		bundleSource.getIncludeds().add("**/*.java");
-		final ExecutionContext ctx = contextFactory
-		.createExecutionContext(username, password, getDescriptor(),
-				repositoryName);
+		final ExecutionContext ctx = contextFactory.createExecutionContext(
+				username, password, getDescriptor(), repositoryName);
 		ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		ctx.getDefaultConfigurationManager().saveRepository(repo);
 
-		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
-		.executeBundles(username, password, getDescriptor(),
-				contextFactory, settings, group);
-		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
+		DefaultScheduler.INSTANCE.initializeSettings(contextFactory, "user",
+				"password", getDescriptor());
+		DefaultScheduler.INSTANCE
+		.refreshJobs(settings, Collections.setOf(repo));
+		DefaultScheduler.INSTANCE.startScheduler();
+
+		DefaultScheduler.INSTANCE.fireSchedulable("username", "password",
+				artifactSource);
+		DefaultScheduler.INSTANCE
+		.fireSchedulable("username", "password", group);
 
 	}
 
 	@Override
 	protected JcrConnectionDescriptor getDescriptor() {
 		return DefaultJcrDescriptor.TEMP_DESCRIPTOR;
+	}
+
+	@Override
+	public String getExportedFileName() {
+		return "target/test-data/JavaBundleTest/junit-4.3.1-exported.xml";
 	}
 
 }
