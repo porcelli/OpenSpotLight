@@ -565,7 +565,18 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	public SLTreeLineReference getTreeLineReferences()
 			throws SLGraphSessionException;
 
-	/**
+    /**
+     * Gets line references in tree format for a specific artifact.
+     * 
+     * @param the artifact id
+     * @return the tree line references
+     * @throws SLGraphSessionException
+     *             the SL graph session exception
+     */
+    public SLTreeLineReference getTreeLineReferences(String artifactId)
+            throws SLGraphSessionException;
+
+    /**
 	 * Gets the type name.
 	 * 
 	 * @return the type name

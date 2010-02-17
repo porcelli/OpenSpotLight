@@ -1171,6 +1171,15 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
+    public SLTreeLineReference getTreeLineReferences(String artifactId) throws SLGraphSessionException {
+        synchronized (lock) {
+            return new SLTreeLineReferenceImpl(getID(), getLineReferences(artifactId));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public String getTypeName() throws SLGraphSessionException {
         synchronized (lock) {
             try {
