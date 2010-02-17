@@ -246,8 +246,14 @@ public class JavaBinaryProcessor implements
 
 	public static String discoverContextName(final StreamArtifact artifact)
 			throws IOException, SLException {
-		artifact.getContent().reset();
+		if (artifact.getContent().markSupported()) {
+			artifact.getContent().reset();
+		}
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		if (artifact.getContent().markSupported()) {
+			artifact.getContent().reset();
+		}
+
 		IOUtils.copy(artifact.getContent(), baos);
 		final String uniqueContextName = UUID.nameUUIDFromBytes(
 				Sha1.getSha1Signature(baos.toByteArray())).toString();
@@ -305,6 +311,7 @@ public class JavaBinaryProcessor implements
 	public LastProcessStatus processArtifact(final StreamArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context) throws Exception {
+		System.err.println(">>> " + artifact);
 		if (logger.isDebugEnabled()) {
 			logger.debug(" starting to process artifact " + artifact);
 		}

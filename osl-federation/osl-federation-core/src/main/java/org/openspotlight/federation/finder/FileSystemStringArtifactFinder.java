@@ -74,7 +74,8 @@ public class FileSystemStringArtifactFinder extends
 	public FileSystemStringArtifactFinder(final ArtifactSource artifactSource) {
 		super(StringArtifact.class, artifactSource.getRepository().getName());
 		Assertions.checkNotNull("artifactSource", artifactSource);
-		Assertions.checkCondition("sourceExists", new File(artifactSource
+		Assertions.checkCondition("sourceExists:"
+				+ artifactSource.getInitialLookup(), new File(artifactSource
 				.getInitialLookup()).exists());
 		this.artifactSource = artifactSource;
 	}

@@ -89,6 +89,7 @@ public class SLCommonToken extends CommonToken implements SLLineInfo {
         index = oldToken.getTokenIndex();
         charPositionInLine = oldToken.getCharPositionInLine();
         channel = oldToken.getChannel();
+        input = oldToken.getInputStream();
         if (oldToken instanceof CommonToken) {
             start = ((CommonToken)oldToken).getStartIndex();
             stop = ((CommonToken)oldToken).getStopIndex();

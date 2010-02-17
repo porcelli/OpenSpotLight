@@ -49,7 +49,7 @@ public class JavaParserPublicElementsPhase implements
 					treeNodes);
 			treeNodes.setTokenStream(dto.commonTokenStream);
 			final JavaExecutorSupport support = new JavaExecutorSupport(
-					currentContext.getCurrentNodeGroup(), context
+					currentContext.getNodeForUniqueBundleConfig(), context
 							.getGraphSession(), artifact
 							.getArtifactCompleteName());
 			walker.setExecutor(new JavaPublicElementsTreeExecutor(support,

@@ -48,12 +48,15 @@
  */
 package org.openspotlight.federation.finder;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -73,7 +76,8 @@ public class FileSystemStreamArtifactFinder extends
 	public FileSystemStreamArtifactFinder(final ArtifactSource artifactSource) {
 		super(StreamArtifact.class, artifactSource.getRepository().getName());
 		Assertions.checkNotNull("artifactSource", artifactSource);
-		Assertions.checkCondition("sourceExists", new File(artifactSource
+		Assertions.checkCondition("sourceExists:"
+				+ artifactSource.getInitialLookup(), new File(artifactSource
 				.getInitialLookup()).exists());
 		this.artifactSource = artifactSource;
 	}
@@ -107,9 +111,14 @@ public class FileSystemStreamArtifactFinder extends
 				return null;
 			}
 			final FileInputStream resource = new FileInputStream(file);
+
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			IOUtils.copy(resource, baos);
+			final ByteArrayInputStream bais = new ByteArrayInputStream(baos
+					.toByteArray());
 			final StreamArtifact streamArtifact = Artifact.createArtifact(
 					StreamArtifact.class, "/" + path, ChangeType.INCLUDED);
-			streamArtifact.setContent(resource);
+			streamArtifact.setContent(bais);
 			return streamArtifact;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

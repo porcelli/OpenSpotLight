@@ -58,7 +58,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 					.getArtifactFinder(StreamArtifact.class);
 			for (final String entry : entries) {
 				final StreamArtifact artifact = jarFinder.findByPath(entry);
-				Assertions.checkNotNull("artifact", artifact);
+				Assertions.checkNotNull("artifact:" + entry, artifact);
 				Assertions.checkCondition("artifactNameEndsWithJar:"
 						+ artifact.getArtifactCompleteName(), artifact
 						.getArtifactCompleteName().endsWith(".jar"));

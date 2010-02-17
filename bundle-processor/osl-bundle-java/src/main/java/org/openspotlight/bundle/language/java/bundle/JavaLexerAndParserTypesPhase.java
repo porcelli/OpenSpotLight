@@ -16,6 +16,7 @@ import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
+import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,10 @@ public class JavaLexerAndParserTypesPhase implements
 			logger.debug(" starting to process artifact " + artifact);
 		}
 		try {
+
+			final SLNode contextNode = currentContext
+					.getNodeForUniqueBundleConfig();
+
 			final SLArtifactStream stream = new SLArtifactStreamBasicImpl(
 					artifact.getArtifactCompleteName(), artifact.getContent(),
 					artifact.getVersion());
@@ -63,8 +68,7 @@ public class JavaLexerAndParserTypesPhase implements
 			parser.setTreeAdaptor(new SLCommonTreeAdaptor());
 
 			final JavaParserNodeHelper helper = new JavaParserNodeHelper(
-					currentContext.getCurrentNodeGroup(), context
-							.getGraphSession());
+					contextNode, context.getGraphSession());
 			final JavaParserExecutor parserExecutor = new JavaParserExecutor(
 					sourceLine, helper);
 			parser.setParserExecutor(parserExecutor);

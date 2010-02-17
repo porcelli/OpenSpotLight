@@ -1,22 +1,20 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import javax.jcr.ImportUUIDBehavior;
-import javax.jcr.Node;
-
+import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
 import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.JavaConstants;
+import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
@@ -46,93 +44,102 @@ import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.remote.server.UserAuthenticator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JavaBodyElementsPhaseTest {
 
 	public static void main(final String... args) throws Exception {
 		final JavaBodyElementsPhaseTest test = new JavaBodyElementsPhaseTest();
-		test.setupResources();
+
 		try {
-			test.shouldResoulveExpectedTokens();
-		} catch (final Exception e) {
-			e.printStackTrace();
-		} catch (final AssertionError e) {
-			e.printStackTrace();
-		}
+			final javax.jcr.Repository repository = JcrConnectionProvider
+					.createFromData(descriptor).getRepository();
 
-		final javax.jcr.Repository repository = JcrConnectionProvider
-				.createFromData(descriptor).getRepository();
+			final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
+			final RemoteRepository remote = saFactory
+					.getRemoteRepository(repository);
 
-		final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
-		final RemoteRepository remote = saFactory
-				.getRemoteRepository(repository);
+			final Registry registry = LocateRegistry
+					.createRegistry(Registry.REGISTRY_PORT);
+			registry.bind("jackrabbit.repository", remote);
 
-		final Registry registry = LocateRegistry
-				.createRegistry(Registry.REGISTRY_PORT);
-		registry.bind("jackrabbit.repository", remote);
+			RemoteGraphSessionServer server = null;
+			try {
+				server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
-		RemoteGraphSessionServer server = null;
-		try {
-			server = new RemoteGraphSessionServer(new UserAuthenticator() {
+					public boolean canConnect(final String userName,
+							final String password, final String clientHost) {
+						return true;
+					}
 
-				public boolean canConnect(final String userName,
-						final String password, final String clientHost) {
-					return true;
+					public boolean equals(final Object o) {
+						return this.getClass().equals(o.getClass());
+					}
+				}, 7070, 60 * 1000 * 10L, descriptor);
+				System.err.println("Server waiting connections on port 7070");
+			} finally {
+				if (server != null) {
+					server.shutdown();
 				}
+			}
 
-				public boolean equals(final Object o) {
-					return this.getClass().equals(o.getClass());
-				}
-			}, 7070, 60 * 1000 * 10L, descriptor);
-			System.err.println("Server waiting connections on port 7070");
+			test.setupResources();
+			try {
+				test.shouldResoulveExpectedTokens();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			} catch (final AssertionError e) {
+				e.printStackTrace();
+			}
+			System.err
+					.println("Server is still waiting connections on port 7070");
 			while (true) {
 				Thread.sleep(5000);
 			}
-		} finally {
-			if (server != null) {
-				server.shutdown();
-			}
-		}
 
+		} finally {
+			test.closeResources();
+		}
 	}
 
 	private ExecutionContextFactory includedFilesContextFactory;
+
 	private GlobalSettings settings;
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private Group group;
 
 	private final String username = "username";
+
 	private final String password = "password";
 	private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
-
 	private String repositoryName;
+
+	@After
+	public void closeResources() {
+		final RepositoryImpl repo = (RepositoryImpl) JcrConnectionProvider
+				.createFromData(descriptor).getRepository();
+		repo.shutdown();
+	}
 
 	@Before
 	public void setupResources() throws Exception {
+		logger.info("starting test");
 		JcrConnectionProvider.createFromData(descriptor)
 				.closeRepositoryAndCleanResources();
-
-		final SessionWithLock session = JcrConnectionProvider.createFromData(
-				descriptor).openSession();
-		final Node root = session.getRootNode();
-		final BufferedInputStream bufferedInputStream = new BufferedInputStream(
-				new FileInputStream("src/test/resources/exportedData.xml"));
-		session.importXML(root.getPath(), bufferedInputStream,
-				ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
-		session.save();
 		final Repository repo = new Repository();
-		repo.setName("name");
+		repo.setName("OSL");
 		repo.setActive(true);
 		repositoryName = repo.getName();
 		final ArtifactSource includedSource = new ArtifactSource();
 		includedSource.setRepository(repo);
-		includedSource.setName("classpath");
+		includedSource.setName("junit");
 		includedSource
-				.setInitialLookup("./src/test/resources/stringArtifacts/exampleFiles");
+				.setInitialLookup("src/test/resources/stringArtifacts/junit-4.3.1");
 		includedFilesContextFactory = TestExecutionContextFactory
-				.createFactory(ArtifactFinderType.LOCAL_SOURCE, includedSource);
+				.createFactory(ArtifactFinderType.FILESYSTEM, includedSource);
 
 		settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
@@ -141,16 +148,29 @@ public class JavaBodyElementsPhaseTest {
 				.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		group = new Group();
-		group.setName("sampleGroup");
+		group.setName("common");
 		group.setRepository(repo);
 		repo.getGroups().add(group);
 		group.setActive(true);
 
+		final BundleProcessorType jarProcessor = new BundleProcessorType();
+		jarProcessor.setActive(true);
+		jarProcessor.setName("jar-sources");
+		jarProcessor.setGroup(group);
+		jarProcessor.setGlobalPhase(JavaGlobalPhase.class);
+		jarProcessor.getArtifactPhases().add(JavaBinaryProcessor.class);
+		group.getBundleTypes().add(jarProcessor);
+		final BundleSource jarSource = new BundleSource();
+		jarProcessor.getSources().add(jarSource);
+		jarSource.setBundleProcessorType(jarProcessor);
+		jarSource.setRelative("/lib/");
+		jarSource.getIncludeds().add("/lib/luni-few-classes.jar");
+
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.getBundleProperties().put(JavaConstants.JAR_CLASSPATH,
-				"jar/lib/apache-harmony-5.0-lib/luni-few-classes.jar");
+				"/lib/luni-few-classes.jar");
 		commonProcessor.setActive(true);
-		commonProcessor.setName("source processor");
+		commonProcessor.setName("common-sources");
 		commonProcessor.setGroup(group);
 		commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
 		commonProcessor.getArtifactPhases().add(
@@ -163,31 +183,23 @@ public class JavaBodyElementsPhaseTest {
 		final BundleSource bundleSource = new BundleSource();
 		commonProcessor.getSources().add(bundleSource);
 		bundleSource.setBundleProcessorType(commonProcessor);
-		bundleSource.setRelative("src/");
-		bundleSource.getIncludeds().add("**/*.java");
+		bundleSource.setRelative("/src/");
+		bundleSource.getIncludeds().add("/src/**/*.java");
 		final ExecutionContext ctx = includedFilesContextFactory
 				.createExecutionContext(username, password, descriptor,
 						repositoryName);
 		ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		ctx.getDefaultConfigurationManager().saveRepository(repo);
-		try {
-			final SLNode ctxRoot = ctx.getGraphSession().getContext(
-					JavaConstants.ABSTRACT_CONTEXT).getRootNode();
-			final SLNode objectNode = ctxRoot.getNode("java.lang").getNode(
-					"Object");
-			Assert.assertThat(objectNode, Is.is(IsNull.notNullValue()));
-
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
 		ctx.closeResources();
 	}
 
 	@Test
 	public void shouldResoulveExpectedTokens() throws Exception {
+		logger.info("about to execute bundle");
 		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
 				.executeBundles(username, password, descriptor,
 						includedFilesContextFactory, settings, group);
+		logger.info("bundle executed");
 		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 
 		final ExecutionContext context = includedFilesContextFactory

@@ -66,12 +66,15 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.TransientProperty;
 
 /**
  * The Class BundleProcessorType.
  */
 @Name("bundle_processor_type")
 public class BundleProcessorType implements SimpleNodeType, Serializable {
+
+	private volatile transient String uniqueName = null;
 
 	private String name;
 
@@ -150,6 +153,16 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 	 */
 	public Set<BundleSource> getSources() {
 		return sources;
+	}
+
+	@TransientProperty
+	public String getUniqueName() {
+		String temp = uniqueName;
+		if (temp == null) {
+			temp = getGroup().getUniqueName() + "/" + getName();
+			uniqueName = temp;
+		}
+		return temp;
 	}
 
 	/*
