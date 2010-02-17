@@ -101,6 +101,14 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-slql-console</artifactId>
+			<version>0.7-SNAPSHOT</version> <!-- FIXME Maven gots hungry here. Needs to be solved! -->
+		</dependency>
 	</dependencies>
 </project>
