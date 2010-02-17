@@ -52,7 +52,9 @@ import org.antlr.runtime.CharStream;
 
 public interface SLArtifactStream extends CharStream {
 
-	public int getPhysicalLineCount();
+    public int getPhysicalLineCount();
 
-	public String getSourceName();
+    public String getSourceName();
+
+    public String getVersion();
 }

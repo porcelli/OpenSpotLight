@@ -132,7 +132,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 			final SLQueryApi query = getSession().createQueryApi();
 			query.select().type(JavaType.class.getName()).subTypes()
 					.selectEnd().where().type(JavaType.class.getName())
-					.subTypes().each().property("completeName").equalsTo()
+					.subTypes().each().property("qualifiedName").equalsTo()
 					.value(s).typeEnd().whereEnd();
 			final SLQueryResult result = query.execute();
 			return result;
@@ -340,7 +340,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 	 * @return the java type resolver
 	 */
 	@SuppressWarnings( { "cast", "boxing" })
-	public static TypeResolver<JavaType> createNewCached(
+	public static JavaTypeResolver createNewCached(
 			final SLContext abstractContext,
 			final List<SLContext> orderedActiveContexts,
 			final boolean enableBoxing, final SLGraphSession session) {

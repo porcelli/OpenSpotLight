@@ -61,13 +61,17 @@ public class DbPrimaryKeyProcessor implements
 		BundleProcessorArtifactPhase<PrimaryKeyConstraintArtifact> {
 
 	public void beforeProcessArtifact(
-			final PrimaryKeyConstraintArtifact artifact) {
+			final PrimaryKeyConstraintArtifact artifact,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context) {
 
 	}
 
 	public void didFinishToProcessArtifact(
 			final PrimaryKeyConstraintArtifact artifact,
-			final LastProcessStatus status) {
+			final LastProcessStatus status,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context) {
 
 	}
 

@@ -69,7 +69,7 @@ public class SLPersistentEventListenerImpl implements SLPersistentEventListener 
 		if (parent != null) {
 			parent.save();
 		} else {
-			event.getNode().getSession().save();
+			// event.getNode().getSession().save();
 		}
 	}
 

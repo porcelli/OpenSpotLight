@@ -81,16 +81,22 @@ public class ExampleBundleProcessor implements
 		return StringArtifact.class.equals(kindOfArtifact);
 	}
 
-	public void beforeProcessArtifact(final StringArtifact artifact) {
+	public void beforeProcessArtifact(final StringArtifact artifact,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context) {
 		logger.info("starting to process " + artifact);
 	}
 
-	public void didFinishProcessing(final ArtifactChanges<Artifact> changes) {
+	public void didFinishProcessing(final ArtifactChanges<Artifact> changes,
+			final ExecutionContext context,
+			final CurrentProcessorContext currentContext) {
 
 	}
 
 	public void didFinishToProcessArtifact(final StringArtifact artifact,
-			final LastProcessStatus status) {
+			final LastProcessStatus status,
+			final CurrentProcessorContext currentContext,
+			final ExecutionContext context) {
 		ExampleBundleProcessor.allStatus.add(status);
 
 		logger.info("processed " + artifact);

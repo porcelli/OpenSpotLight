@@ -212,7 +212,7 @@ public class DuplicateTest {
 		assertThat(n1_, is(n3_));
 
 		n3_.setCaption("someName");
-		session.save();
+//		session.save();
 		session.close();
 		session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 		final SLQueryApi query = session.createQueryApi();

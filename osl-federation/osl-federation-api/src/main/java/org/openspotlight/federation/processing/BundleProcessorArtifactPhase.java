@@ -60,7 +60,8 @@ public interface BundleProcessorArtifactPhase<T extends Artifact> {
 	 * @param artifact
 	 *            the artifact
 	 */
-	public void beforeProcessArtifact(T artifact);
+	public void beforeProcessArtifact(T artifact,
+			CurrentProcessorContext currentContext, ExecutionContext context);
 
 	/**
 	 * After process artifact.
@@ -70,7 +71,9 @@ public interface BundleProcessorArtifactPhase<T extends Artifact> {
 	 * @param status
 	 *            the status
 	 */
-	public void didFinishToProcessArtifact(T artifact, LastProcessStatus status);
+	public void didFinishToProcessArtifact(T artifact,
+			LastProcessStatus status, CurrentProcessorContext currentContext,
+			ExecutionContext context);
 
 	public Class<T> getArtifactType();
 

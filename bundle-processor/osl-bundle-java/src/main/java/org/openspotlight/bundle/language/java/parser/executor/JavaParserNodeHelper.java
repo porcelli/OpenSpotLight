@@ -72,31 +72,40 @@ public class JavaParserNodeHelper {
 		Assertions.checkNotNull("parent.K2", parent.getK2());
 
 		try {
+
+			final StringBuilder qualifiedNamePrefix = new StringBuilder();
+			if (parent.getK2() instanceof JavaPackage) {
+				qualifiedNamePrefix.append(parent.getK2().getName());
+			} else {
+				final JavaType parentAsJavaType = (JavaType) parent.getK2();
+				qualifiedNamePrefix.append(parentAsJavaType.getQualifiedName());
+			}
+			qualifiedNamePrefix.append('.');
 			final JavaType abstractNode = parent.getK1().addNode(
 					JavaType.class, typeName);
 			final T concreteNode = parent.getK2().addNode(type, typeName);
 			session.addLink(AbstractTypeBind.class, abstractNode, concreteNode,
 					false);
 			final Class<? extends SLLink> linkType;
-			final String completeName = Strings.tryToRemoveBegginingFrom(
-					JavaConstants.DEFAULT_PACKAGE + ".", (parent.getK2()
-							.getName()
-							+ "." + typeName).replaceAll("[$]", "."));
+			final String qualifiedName = Strings.tryToRemoveBegginingFrom(
+					JavaConstants.DEFAULT_PACKAGE,
+					qualifiedNamePrefix.toString() + typeName).replaceAll(
+					"[$]", ".");
 			if (parent.getK1() instanceof JavaPackage) {
 				linkType = PackageType.class;
 			} else {
 				linkType = InnerClass.class;
 			}
 			concreteNode.setSimpleName(typeName);
-			concreteNode.setCompleteName(completeName);
+			concreteNode.setQualifiedName(qualifiedName);
 			abstractNode.setSimpleName(typeName);
-			abstractNode.setCompleteName(completeName);
+			abstractNode.setQualifiedName(qualifiedName);
 
 			session.addLink(linkType, parent.getK2(), concreteNode, false);
 			if (logger.isDebugEnabled()) {
 				logger.debug("adding node " + concreteNode.getName()
 						+ " on parent " + parent.getK1().getName()
-						+ " with complete name " + completeName);
+						+ " with complete name " + qualifiedName);
 			}
 
 			return new Pair<SLNode, SLNode>(abstractNode, concreteNode);

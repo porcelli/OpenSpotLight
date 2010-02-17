@@ -86,7 +86,7 @@ public interface JavaType extends SLNode {
 	 * @return the complete name
 	 */
 	@SLProperty
-	public String getCompleteName();
+	public String getQualifiedName();
 
 	/**
 	 * Gets the final.
@@ -173,10 +173,10 @@ public interface JavaType extends SLNode {
 	/**
 	 * Sets the complete name.
 	 * 
-	 * @param newCompleteName
+	 * @param newQualifiedName
 	 *            the new complete name
 	 */
-	public void setCompleteName(String newCompleteName);
+	public void setQualifiedName(String newQualifiedName);
 
 	/**
 	 * Sets the final.

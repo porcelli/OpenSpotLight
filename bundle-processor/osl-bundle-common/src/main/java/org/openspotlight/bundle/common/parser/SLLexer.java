@@ -52,7 +52,13 @@ import org.antlr.runtime.CharStream;
 import org.antlr.runtime.Lexer;
 import org.antlr.runtime.RecognizerSharedState;
 import org.antlr.runtime.Token;
+import org.slf4j.Logger;
 
+/**
+ * This class overrides standard {@link Lexer} to construct custom tokens as well to log error messages.
+ * 
+ * @author porcelli
+ */
 public abstract class SLLexer extends Lexer {
 
     public SLLexer() {
@@ -68,6 +74,9 @@ public abstract class SLLexer extends Lexer {
         super(input, state);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Token emit() {
         SLCommonToken t = new SLCommonToken(input, state.type, state.channel, state.tokenStartCharIndex, getCharIndex() - 1);
         t.setLine(state.tokenStartLine);
@@ -79,4 +88,12 @@ public abstract class SLLexer extends Lexer {
         return t;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void emitErrorMessage( String msg ) {
+        getLogger().warn(msg);
+    }
+
+    public abstract Logger getLogger();
 }

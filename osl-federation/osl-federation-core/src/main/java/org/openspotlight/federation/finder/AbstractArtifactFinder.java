@@ -158,8 +158,12 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 	public final Set<String> retrieveAllArtifactNames(final String initialPath) {
 		final Set<String> result = new TreeSet<String>(
 				internalRetrieveAllArtifactNames(initialPath));
-		logger.info("(" + targetArtifactType.getSimpleName() + "):"
-				+ "retrieved names for path " + initialPath + ": " + result);
+		if (logger.isDebugEnabled()) {
+			logger
+					.debug("(" + targetArtifactType.getSimpleName() + "):"
+							+ "retrieved names for path " + initialPath + ": "
+							+ result);
+		}
 
 		return result;
 	}

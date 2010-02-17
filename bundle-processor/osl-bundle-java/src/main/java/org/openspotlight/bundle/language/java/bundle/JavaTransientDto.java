@@ -8,6 +8,7 @@ import org.openspotlight.bundle.common.parser.SLArtifactStream;
 import org.openspotlight.bundle.language.java.parser.JavaLexer;
 import org.openspotlight.bundle.language.java.parser.JavaParser;
 import org.openspotlight.bundle.language.java.parser.JavaPublicElementsTree;
+import org.openspotlight.bundle.language.java.parser.executor.JavaExecutorSupport;
 import org.openspotlight.bundle.language.java.parser.executor.JavaLexerExecutor;
 import org.openspotlight.bundle.language.java.parser.executor.JavaParserExecutor;
 import org.openspotlight.common.util.Assertions;
@@ -31,6 +32,8 @@ public class JavaTransientDto {
 		protected JavaLexerExecutor lexerExecutor;
 		protected CommonTokenStream commonTokenStream;
 		protected JavaParserExecutor parserExecutor;
+		protected JavaExecutorSupport support;
+
 		protected JavaParser parser;
 		protected Tree tree;
 		protected CommonTreeNodeStream treeNodes;
@@ -57,7 +60,7 @@ public class JavaTransientDto {
 			validate();
 			return new JavaTransientDto(stream, lexer, sourceLine,
 					lexerExecutor, commonTokenStream, parser, parserExecutor,
-					tree, treeNodes, walker);
+					tree, treeNodes, walker, support);
 		}
 
 		protected abstract void validate();
@@ -147,7 +150,14 @@ public class JavaTransientDto {
 			Assertions.checkNotNull("sourceLine", sourceLine);
 			Assertions.checkNotNull("lexerExecutor", lexerExecutor);
 			Assertions.checkNotNull("commonTokenStream", commonTokenStream);
+			Assertions.checkNotNull("support", support);
 
+		}
+
+		public TreeDtoBuilder withExecutorSupport(
+				final JavaExecutorSupport support) {
+			this.support = support;
+			return this;
 		}
 
 		public TreeDtoBuilder withTreeNodeStream(
@@ -171,6 +181,7 @@ public class JavaTransientDto {
 		return new TreeDtoBuilder(dto);
 	}
 
+	public final JavaExecutorSupport support;
 	public final SLArtifactStream stream;
 	public final JavaLexer lexer;
 	public final SourceLineInfoAggregator sourceLine;
@@ -188,8 +199,10 @@ public class JavaTransientDto {
 			final CommonTokenStream commonTokenStream, final JavaParser parser,
 			final JavaParserExecutor parserExecutor, final Tree tree,
 			final CommonTreeNodeStream treeNodes,
-			final JavaPublicElementsTree walker) {
+			final JavaPublicElementsTree walker,
+			final JavaExecutorSupport support) {
 		super();
+		this.support = support;
 		this.stream = stream;
 		this.lexer = lexer;
 		this.sourceLine = sourceLine;

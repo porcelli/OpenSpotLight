@@ -8,12 +8,23 @@ import example.pack.AnotherExampleInterface;
 public class ClassWithLotsOfStuff extends
 		AnotherExampleClass<ClassWithLotsOfStuff> implements
 		AnotherExampleInterface {
+	public String stuff;
+
 	/*
 	 * public void doAnotherStuff() throws ExampleException {
 	 * 
 	 * }
 	 */
 	public AnotherExampleClass.InnerClass doSomething() {
+		final ClassWithLotsOfStuff stuff = new ClassWithLotsOfStuff();
+		final AnotherExampleClass.InnerClass inner = new InnerClass();
+		final InnerClass inner2 = new InnerClass();
+		inner2.parent.parent.parent = null;
+		this.stuff = "";
+		final AnotherExampleClass<?> clazz = null;
+		clazz.doSomethingElse();
+		doSomething();
+		doStuff(0, null, 2.0d);
 		return null;
 	}
 

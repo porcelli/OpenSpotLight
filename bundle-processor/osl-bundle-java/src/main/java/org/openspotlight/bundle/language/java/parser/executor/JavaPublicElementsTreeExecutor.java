@@ -2,10 +2,7 @@ package org.openspotlight.bundle.language.java.parser.executor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
@@ -27,6 +24,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.References;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgument;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
+import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeParameter;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
@@ -42,148 +40,43 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedExtended;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedSuper;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLInvalidQueryElementException;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
-import org.openspotlight.graph.query.SLQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JavaPublicElemetsTreeExecutor {
-
-	private static class ByPropertyFinder {
-
-		private final String completeArtifactName;
-
-		private final SLGraphSession session;
-		private final Logger logger = LoggerFactory.getLogger(getClass());
-		private final SLNode contextRootNode;
-
-		public ByPropertyFinder(final String completeArtifactName,
-				final SLGraphSession session, final SLNode contextRootNode) {
-			super();
-			this.completeArtifactName = completeArtifactName;
-			this.session = session;
-			this.contextRootNode = contextRootNode;
-		}
-
-		@SuppressWarnings("unchecked")
-		private <T extends SLNode> T findByProperty(final Class<T> type,
-				final String propertyName, final String propertyValue)
-				throws SLGraphSessionException, SLQueryException,
-				SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
-			final SLQueryApi query1 = session.createQueryApi();
-			query1.select().type(type.getName()).subTypes().selectEnd().where()
-					.type(type.getName()).subTypes().each().property(
-							propertyName).equalsTo().value(propertyValue)
-					.typeEnd().whereEnd();
-			final NeedsSyncronizationList<SLNode> result1 = query1.execute()
-					.getNodes();
-			if (result1.size() > 0) {
-				synchronized (result1.getLockObject()) {
-					for (final SLNode found : result1) {
-						if (found.getContext().getRootNode().equals(
-								contextRootNode)) {
-							if (logger.isDebugEnabled()) {
-								logger.debug(completeArtifactName + ": "
-										+ "found on 1st try " + found.getName()
-										+ " for search on type:"
-										+ type.getSimpleName() + " with "
-										+ propertyName + "=" + propertyValue);
-							}
-							return (T) found;
-						}
-					}
-				}
-			}
-			if (logger.isDebugEnabled()) {
-				logger.debug(completeArtifactName + ": "
-						+ "not found any node for search on type:"
-						+ type.getSimpleName() + " with " + propertyName + "="
-						+ propertyValue);
-			}
-			return null;
-		}
-
-	}
-
-	private static enum WhatContext {
-		CONCRETE, ABSTRACT
-	}
-
-	private final HashMap<String, SLNode> importedNodeCache = new HashMap<String, SLNode>();
+public class JavaPublicElementsTreeExecutor {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final ByPropertyFinder currentContextFinder;
-	private final ByPropertyFinder abstractContextFinder;
 
 	private JavaPackage currentPackage;
-
-	private final String completeArtifactName;
-
 	private final String artifactVersion;
-
-	private final SLNode currentContext;
-
-	private final SLNode abstractContext;
-
-	private final SLGraphSession session;
-
-	private final List<String> includedPackages = new LinkedList<String>();
-
-	private final List<String> includedClasses = new LinkedList<String>();
-
-	private final List<String> includedStaticClasses = new LinkedList<String>();
-
-	private final List<String> includedStaticMethods = new LinkedList<String>();
-
-	private final Map<SLNode, SLNode> concreteAbstractCache = new HashMap<SLNode, SLNode>();
-	private final Map<SLNode, SLNode> abstractConcreteCache = new HashMap<SLNode, SLNode>();
-
+	private final String completeArtifactName;
 	private final int currentAnonymousInnerClassName = 1;
 
-	public JavaPublicElemetsTreeExecutor(final SLNode currentContext,
-			final SLGraphSession session, final String completeArtifactName,
+	private final JavaExecutorSupport support;
+
+	public JavaPublicElementsTreeExecutor(final JavaExecutorSupport support,
 			final String artifactVersion) throws Exception {
 		super();
-		this.currentContext = currentContext;
-		abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT)
-				.getRootNode();
-		this.session = session;
-		this.completeArtifactName = completeArtifactName;
-		currentContextFinder = new ByPropertyFinder(completeArtifactName,
-				session, currentContext);
-		abstractContextFinder = new ByPropertyFinder(completeArtifactName,
-				session, abstractContext);
+		this.support = support;
+		completeArtifactName = support.completeArtifactName;
 		this.artifactVersion = artifactVersion;
-		if (logger.isDebugEnabled()) {
-			logger.debug(completeArtifactName + ": " + "creating "
-					+ getClass().getSimpleName() + " with "
-					+ currentContext.getContext().getID() + ":"
-					+ currentContext.getName() + "/"
-					+ abstractContext.getContext().getID() + ":"
-					+ abstractContext.getName());
-		}
+
 	}
 
 	private void addIncludedClass(final String name) {
-		includedStaticClasses.add(fixIncludedName(name));
+		support.includedStaticClasses.add(fixIncludedName(name));
 	}
 
 	private void addIncludedStaticClass(final String name) {
-		includedClasses.add(fixIncludedName(name));
+		support.includedClasses.add(fixIncludedName(name));
 	}
 
 	public void addLineReference(final CommonTree commonTree, final SLNode node) {
@@ -245,11 +138,19 @@ public class JavaPublicElemetsTreeExecutor {
 			final List<JavaType> annotations30, final JavaType type31,
 			final List<VariableDeclarationDto> variables) {
 		try {
+			final String qualifiedParent = ((JavaType) peek).getQualifiedName()
+					+ ".";
 			final List<SLNode> nodes = new ArrayList<SLNode>();
 			for (final VariableDeclarationDto var : variables) {
 				final JavaDataField newField = peek.addNode(
 						JavaDataField.class, var.getName());
+				support.session
+						.addLink(DataType.class, newField, type31, false);
+
 				nodes.add(newField);
+				support.session.addLink(TypeDeclares.class, peek, newField,
+						false);
+				newField.setQualifiedName(qualifiedParent + var.getName());
 				for (final JavaModifier modifier : modifiers29) {
 
 					switch (modifier) {
@@ -278,7 +179,7 @@ public class JavaPublicElemetsTreeExecutor {
 
 				if (annotations30 != null) {
 					for (final JavaType annotation : annotations30) {
-						session.addLink(AnottatedBy.class, newField,
+						support.session.addLink(AnottatedBy.class, newField,
 								annotation, false);
 					}
 				}
@@ -335,31 +236,30 @@ public class JavaPublicElemetsTreeExecutor {
 								.getName() : "") + ", implements="
 						+ implementsStr);
 			}
-			final SLNode peek = findEquivalend(lalala, WhatContext.CONCRETE);
+			final SLNode peek = support.findEquivalend(lalala,
+					WhatContext.CONCRETE);
 			final T newClass = createNodeOnBothContexts(JavaType.class, type,
 					peek, string);
-			final JavaType newAbstractClass = findEquivalend(newClass,
+			final JavaType newAbstractClass = support.findEquivalend(newClass,
 					WhatContext.ABSTRACT);
+			final StringBuilder qualifiedNameBuff = new StringBuilder();
 			if (!(peek instanceof JavaPackage)) {
+				final JavaType typedType = (JavaType) peek;
 				newClass.setInner(true);
 				newAbstractClass.setInner(true);
-				session.addLink(InnerClass.class, newClass, peek, false);
-				SLNode abstractParent = findEquivalend(peek,
+				support.session
+						.addLink(InnerClass.class, newClass, peek, false);
+				SLNode abstractParent = support.findEquivalend(peek,
 						WhatContext.ABSTRACT);
 				if (abstractParent == null) {
 					abstractParent = peek;
 				}
-				session.addLink(InnerClass.class, newAbstractClass,
+				support.session.addLink(InnerClass.class, newAbstractClass,
 						abstractParent, false);
+				qualifiedNameBuff.append(typedType.getQualifiedName());
+			} else {
+				qualifiedNameBuff.append(peek.getName());
 			}
-			final StringBuilder qualifiedNameBuff = new StringBuilder();
-			SLNode parent = peek;
-			do {
-				qualifiedNameBuff.append(parent.getName());
-				qualifiedNameBuff.append('.');
-				parent = parent.getParent();
-			} while (parent instanceof JavaType);
-			qualifiedNameBuff.append(string);
 			if (logger.isDebugEnabled()
 					&& (currentPackage == null || newClass == null)) {
 				logger.debug("error on adding link "
@@ -369,21 +269,25 @@ public class JavaPublicElemetsTreeExecutor {
 								: "null") + " and "
 						+ (newClass != null ? newClass.getName() : "null"));
 			}
-			session.addLink(PackageType.class, currentPackage, newClass, false);
-			SLNode abstractParent = findEquivalend(currentPackage,
+			support.session.addLink(PackageType.class, currentPackage,
+					newClass, false);
+			SLNode abstractParent = support.findEquivalend(currentPackage,
 					WhatContext.ABSTRACT);
 			if (abstractParent == null) {
 				abstractParent = currentPackage;
 			}
-			session.addLink(PackageType.class, newAbstractClass,
+			support.session.addLink(PackageType.class, newAbstractClass,
 					abstractParent, false);
+			qualifiedNameBuff.append('.');
+			qualifiedNameBuff.append(string);
 			final String qualifiedName = Strings.tryToRemoveBegginingFrom(
 					JavaConstants.DEFAULT_PACKAGE + ".", qualifiedNameBuff
-							.toString().replaceAll("[$]", "."));
-			newClass.setCompleteName(qualifiedName);
+							.toString());
+			newClass.setQualifiedName(qualifiedName);
+
 			newClass.setSimpleName(string);
 			newAbstractClass.setSimpleName(string);
-			newAbstractClass.setCompleteName(qualifiedName);
+			newAbstractClass.setQualifiedName(qualifiedName);
 			if (modifiers7 != null) {
 				for (final JavaModifier modifier : modifiers7) {
 					switch (modifier) {
@@ -413,15 +317,18 @@ public class JavaPublicElemetsTreeExecutor {
 					: Extends.class;
 
 			if (normalClassExtends9 != null) {
-				session.addLink(linkType, newClass, normalClassExtends9, false);
-				addIncludedStaticClass(normalClassExtends9.getCompleteName());
-				SLNode superType = findEquivalend(normalClassExtends9,
+				support.session.addLink(linkType, newClass,
+						normalClassExtends9, false);
+				addIncludedStaticClass(normalClassExtends9.getQualifiedName());
+				SLNode superType = support.findEquivalend(normalClassExtends9,
 						WhatContext.ABSTRACT);
 				if (superType == null) {
 					superType = normalClassExtends9;
 				}
-				session.addLink(linkType, newAbstractClass, superType, false);
-				final SLQueryApi packagesQuery = session.createQueryApi();
+				support.session.addLink(linkType, newAbstractClass, superType,
+						false);
+				final SLQueryApi packagesQuery = support.session
+						.createQueryApi();
 				packagesQuery.select().type(JavaType.class.getName())
 						.subTypes().byLink(linkType.getName()).b().selectEnd()
 						.select().type(JavaPackage.class.getName()).byLink(
@@ -439,31 +346,32 @@ public class JavaPublicElemetsTreeExecutor {
 				}
 			} else {
 				final JavaType object = findSimpleType("Object");
-				session.addLink(Extends.class, newClass, object, false);
-				session.addLink(Extends.class, newAbstractClass, object, false);
+				support.session.addLink(Extends.class, newClass, object, false);
+				support.session.addLink(Extends.class, newAbstractClass,
+						object, false);
 			}
 			if (annotations8 != null) {
 				for (final JavaType annotation : annotations8) {
-					session.addLink(AnottatedBy.class, newClass, annotation,
-							false);
-					final JavaType abstractAnnotation = findEquivalend(
+					support.session.addLink(AnottatedBy.class, newClass,
+							annotation, false);
+					final JavaType abstractAnnotation = support.findEquivalend(
 							annotation, WhatContext.ABSTRACT);
 
-					session.addLink(AnottatedBy.class, newAbstractClass,
-							abstractAnnotation, false);
+					support.session.addLink(AnottatedBy.class,
+							newAbstractClass, abstractAnnotation, false);
 				}
 			}
 			if (normalClassImplements10 != null) {
 				for (final JavaType interfaceType : normalClassImplements10) {
-					addIncludedStaticClass(interfaceType.getCompleteName());
-					session.addLink(Implements.class, newClass, interfaceType,
-							false);
-					final JavaType abstractInterfaceType = findEquivalend(
-							interfaceType, WhatContext.ABSTRACT);
+					addIncludedStaticClass(interfaceType.getQualifiedName());
+					support.session.addLink(Implements.class, newClass,
+							interfaceType, false);
+					final JavaType abstractInterfaceType = support
+							.findEquivalend(interfaceType, WhatContext.ABSTRACT);
 
-					session.addLink(Implements.class, newAbstractClass,
+					support.session.addLink(Implements.class, newAbstractClass,
 							abstractInterfaceType, false);
-					SLQueryApi packagesQuery = session.createQueryApi();
+					SLQueryApi packagesQuery = support.session.createQueryApi();
 					packagesQuery.select().type(JavaType.class.getName())
 							.subTypes().byLink(Implements.class.getName()).b()
 							.selectEnd().select().type(
@@ -481,13 +389,13 @@ public class JavaPublicElemetsTreeExecutor {
 							}
 						}
 					}
-					session.addLink(Implements.class, newClass, interfaceType,
-							false);
-					final JavaType abstractInterface = findEquivalend(
+					support.session.addLink(Implements.class, newClass,
+							interfaceType, false);
+					final JavaType abstractInterface = support.findEquivalend(
 							interfaceType, WhatContext.ABSTRACT);
-					session.addLink(Implements.class, newAbstractClass,
+					support.session.addLink(Implements.class, newAbstractClass,
 							abstractInterface, false);
-					packagesQuery = session.createQueryApi();
+					packagesQuery = support.session.createQueryApi();
 					packagesQuery.select().type(JavaType.class.getName())
 							.subTypes()
 							.byLink(InterfaceExtends.class.getName()).b()
@@ -512,20 +420,21 @@ public class JavaPublicElemetsTreeExecutor {
 					final JavaTypeParameterized typeParameterized = newClass
 							.addNode(JavaTypeParameterized.class, typeParam
 									.getName());
-					session.addLink(TypeParameter.class, newClass,
+					support.session.addLink(TypeParameter.class, newClass,
 							typeParameterized, false);
 					if (typeParam.getTypeParameterExtends() != null) {
 						for (final JavaType ext : typeParam
 								.getTypeParameterExtends()) {
 							if (ext != null) {
-								session.addLink(TypeArgumentExtends.class,
+								support.session.addLink(
+										TypeArgumentExtends.class,
 										typeParameterized, ext, false);
 							}
 						}
 					}
 				}
 			}
-			addIncludedClass(newClass.getCompleteName());
+			addIncludedClass(newClass.getQualifiedName());
 
 			return newClass;
 		} catch (final Exception e) {
@@ -583,19 +492,22 @@ public class JavaPublicElemetsTreeExecutor {
 		try {
 			final T newNode = parent.addNode(type, name);
 			SLNode cachedParent;
-			if (parent.getContext().equals(abstractContext.getContext())) {
+			if (parent.getContext()
+					.equals(support.abstractContext.getContext())) {
 				cachedParent = parent;
 			} else {
-				cachedParent = findEquivalend(parent, WhatContext.ABSTRACT);
+				cachedParent = support.findEquivalend(parent,
+						WhatContext.ABSTRACT);
 			}
 			if (cachedParent == null) {
-				cachedParent = findEquivalend(parent, WhatContext.ABSTRACT);
+				cachedParent = support.findEquivalend(parent,
+						WhatContext.ABSTRACT);
 			}
 			final SLNode newAbstractNode = cachedParent.addNode(abstractType,
 					name);
-			putOnBothCaches(newNode, newAbstractNode);
-			session.addLink(AbstractTypeBind.class, newAbstractNode, newNode,
-					false);
+			support.putOnBothCaches(newNode, newAbstractNode);
+			support.session.addLink(AbstractTypeBind.class, newAbstractNode,
+					newNode, false);
 			return newNode;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -606,7 +518,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final Class<? extends SLNode> abstractType, final Class<T> type,
 			final String name) {
 		return this.createNodeOnBothContexts(abstractType, type,
-				currentContext, name);
+				support.currentContext, name);
 	}
 
 	@SuppressWarnings("unused")
@@ -635,9 +547,10 @@ public class JavaPublicElemetsTreeExecutor {
 						.getInterfaces()[0];
 				arrayNode = parent.addNode(sameType, arrayName);
 				arrayNode.setArray(true);
-				arrayNode.setCompleteName(simpleOne.getCompleteName() + "[]");
+				arrayNode.setQualifiedName(simpleOne.getQualifiedName() + "[]");
 				arrayNode.setSimpleName(arrayName);
-				session.addLink(ArrayOfType.class, arrayNode, simpleOne, false);
+				support.session.addLink(ArrayOfType.class, arrayNode,
+						simpleOne, false);
 			}
 			return arrayNode;
 		} catch (final Exception e) {
@@ -646,117 +559,18 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaType findByQualifiedTypes(final List<JavaType> types) {
-		final StringBuilder completeName = new StringBuilder();
+		final StringBuilder qualifiedName = new StringBuilder();
 		for (int i = 0, size = types.size(); i < size; i++) {
 			final JavaType currentType = types.get(i);
-			final String name = i == 0 ? currentType.getCompleteName()
+			final String name = i == 0 ? currentType.getQualifiedName()
 					: currentType.getSimpleName();
-			completeName.append(name);
+			qualifiedName.append(name);
 			if (i != size - 1) {
-				completeName.append('.');
+				qualifiedName.append('.');
 			}
 
 		}
-		return findSimpleType(completeName.toString());
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends SLNode, W extends SLNode> W findEquivalend(
-			final T source, final WhatContext whatContext) throws Exception {
-		if (!(source instanceof JavaPackage || source instanceof JavaType)) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("returning source node for "
-						+ source.getClass().getInterfaces()[0].getSimpleName()
-						+ " " + source.getName() + " within " + whatContext
-						+ " due to its type "
-						+ source.getClass().getInterfaces()[0].getSimpleName());
-			}
-			return (W) source;
-		}
-		T cached = null;
-		SLContext targetContext = null;
-		switch (whatContext) {
-		case ABSTRACT:
-			cached = (T) concreteAbstractCache.get(source);
-			targetContext = abstractContext.getContext();
-			break;
-		case CONCRETE:
-			cached = (T) abstractConcreteCache.get(source);
-			targetContext = currentContext.getContext();
-			break;
-		default:
-			throw Exceptions.logAndReturn(new IllegalStateException(
-					"Wrong number of elements on internal enum WhatContext"));
-		}
-		if (cached != null) {
-			return (W) cached;
-		}
-		if (source.getContext().equals(targetContext)) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("returning the same source for equivalent node "
-						+ source.getClass().getInterfaces()[0].getSimpleName()
-						+ " " + source.getName() + " within " + whatContext
-						+ " due to its context");
-			}
-			return (W) source;
-		}
-
-		NeedsSyncronizationCollection<AbstractTypeBind> links = session
-				.getLinks(AbstractTypeBind.class, source, null);
-		if (links.size() == 0) {
-			links = session.getLinks(AbstractTypeBind.class, null, source);// FIXME
-			// is
-			// this
-			// necessary?
-		}
-		if (links.size() == 0) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Didn't find equivalent node for "
-						+ source.getClass().getInterfaces()[0].getSimpleName()
-						+ " " + source.getName() + " within " + whatContext
-						+ " due to link mess");
-			}
-
-			return null;
-		}
-		W found = null;
-		synchronized (links.getLockObject()) {
-			for (final SLLink link : links) {
-				W tmpFound = null;
-				if (source.equals(link.getSource())) {
-					tmpFound = (W) link.getTarget();
-				} else if (source.equals(link.getTarget())) {
-					tmpFound = (W) link.getSource();
-				}
-				if (tmpFound != null
-						&& tmpFound.getContext().equals(targetContext)) {
-					found = tmpFound;
-					break;
-				}
-			}
-		}
-		if (found == null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Didn't find equivalent node for "
-						+ source.getClass().getInterfaces()[0].getSimpleName()
-						+ " " + source.getName() + " within " + whatContext);
-			}
-			return null;
-		}
-
-		switch (whatContext) {
-		case ABSTRACT:
-			putOnBothCaches(source, found);
-			break;
-		case CONCRETE:
-			putOnBothCaches(found, source);
-			break;
-		default:
-			throw Exceptions.logAndReturn(new IllegalStateException(
-					"Wrong number of elements on internal enum WhatContext"));
-		}
-		return found;
-
+		return findSimpleType(qualifiedName.toString());
 	}
 
 	public JavaTypeParameterizedExtended findExtendsParameterizedType(
@@ -770,54 +584,13 @@ public class JavaPublicElemetsTreeExecutor {
 			if (parameterizedNode == null) {
 				parameterizedNode = parent.addNode(
 						JavaTypeParameterizedExtended.class, parameterizedName);
-				parameterizedNode.setCompleteName("<? extends "
-						+ simpleOne.getCompleteName() + ">");
+				parameterizedNode.setQualifiedName("<? extends "
+						+ simpleOne.getQualifiedName() + ">");
 				parameterizedNode.setSimpleName(parameterizedName);
-				session.addLink(TypeArgumentExtends.class, parameterizedNode,
-						simpleOne, false);
+				support.session.addLink(TypeArgumentExtends.class,
+						parameterizedNode, simpleOne, false);
 			}
 			return parameterizedNode;
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-	}
-
-	private JavaType findOnContext(final String string,
-			final ByPropertyFinder finder) {
-		try {
-			final JavaType cached = (JavaType) importedNodeCache.get(string);
-			if (cached != null) {
-				return cached;
-			}
-			final List<String> possibleNames = new ArrayList<String>();
-			possibleNames.add(string);
-			if (!includedClasses.contains(string)) {
-				for (final String pack : includedPackages) {
-					possibleNames.add(pack + "." + string);
-				}
-				for (final String pack : includedClasses) {
-					possibleNames.add(pack);
-				}
-				for (final String pack : includedStaticClasses) {
-					possibleNames.add(pack + "." + string);
-
-				}
-			}
-
-			for (final String possibleName : possibleNames) {
-				final JavaType javaType = finder.findByProperty(JavaType.class,
-						"completeName", possibleName);
-				if (javaType != null) {
-					importedNodeCache.put(javaType.getSimpleName(), javaType);
-					importedNodeCache.put(javaType.getCompleteName(), javaType);
-					return javaType;
-				}
-			}
-			if (logger.isDebugEnabled()) {
-				logger.info(completeArtifactName
-						+ ": any node was found for type " + string);
-			}
-			return null;
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
@@ -831,7 +604,7 @@ public class JavaPublicElemetsTreeExecutor {
 			parameterizedNameBuilder.append('<');
 			for (int i = 0, size = typeArguments40.size(); i < size; i++) {
 				parameterizedNameBuilder.append('?');
-				if (i - 1 != size) {
+				if (i + 1 != size) {
 					parameterizedNameBuilder.append(',');
 				}
 			}
@@ -843,15 +616,15 @@ public class JavaPublicElemetsTreeExecutor {
 			if (parameterizedNode == null) {
 				parameterizedNode = parent.addNode(JavaTypeParameterized.class,
 						parameterizedName);
-				parameterizedNode.setCompleteName(simpleOne.getCompleteName()
+				parameterizedNode.setQualifiedName(simpleOne.getQualifiedName()
 						+ parameterizedNameBuilder.toString());
 				parameterizedNode.setSimpleName(parameterizedName);
 
-				session.addLink(ParameterizedTypeClass.class,
+				support.session.addLink(ParameterizedTypeClass.class,
 						parameterizedNode, simpleOne, false);
 				for (final JavaType argument : typeArguments40) {
-					session.addLink(TypeArgument.class, parameterizedNode,
-							argument, false);
+					support.session.addLink(TypeArgument.class,
+							parameterizedNode, argument, false);
 				}
 			}
 			return parameterizedNode;
@@ -861,20 +634,11 @@ public class JavaPublicElemetsTreeExecutor {
 	}
 
 	public JavaType findPrimitiveType(final String string) {
-		try {
-			final JavaTypePrimitive primitive = abstractContext.addNode(
-					JavaTypePrimitive.class, string);
-			return primitive;
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
+		return support.findPrimitiveType(string);
 	}
 
 	public JavaType findSimpleType(final String string) {
-		final JavaType foundType = internalFindSimpleType(string);
-		if (foundType == null) {
-			toString();
-		}
+		final JavaType foundType = support.internalFindSimpleType(string);
 		Assertions.checkNotNull("foundType:" + string, foundType);
 		return foundType;
 	}
@@ -883,7 +647,7 @@ public class JavaPublicElemetsTreeExecutor {
 			final JavaType typeReturn) {
 		try {
 			final JavaType simpleOne = findSimpleType(typeReturn
-					.getCompleteName());
+					.getQualifiedName());
 			final SLNode parent = simpleOne.getParent();
 			final String parameterizedName = "<? super " + simpleOne.getName()
 					+ ">";
@@ -892,11 +656,11 @@ public class JavaPublicElemetsTreeExecutor {
 			if (parameterizedNode == null) {
 				parameterizedNode = parent.addNode(
 						JavaTypeParameterizedSuper.class, parameterizedName);
-				parameterizedNode.setCompleteName("<? super "
-						+ simpleOne.getCompleteName() + ">");
+				parameterizedNode.setQualifiedName("<? super "
+						+ simpleOne.getQualifiedName() + ">");
 				parameterizedNode.setSimpleName(parameterizedName);
-				session.addLink(TypeArgumentSuper.class, parameterizedNode,
-						simpleOne, false);
+				support.session.addLink(TypeArgumentSuper.class,
+						parameterizedNode, simpleOne, false);
 			}
 			return parameterizedNode;
 		} catch (final Exception e) {
@@ -926,35 +690,40 @@ public class JavaPublicElemetsTreeExecutor {
 		try {
 			if (isStatic) {
 				if (starred) {
-					includedStaticClasses.add(string);
-					JavaType classNode = currentContextFinder.findByProperty(
-							JavaType.class, "completeName", string);
+					support.includedStaticClasses.add(string);
+					JavaType classNode = support.currentContextFinder
+							.findByProperty(JavaType.class, "qualifiedName",
+									string);
 					if (classNode == null) {
-						classNode = abstractContextFinder.findByProperty(
-								JavaType.class, "completeName", string);
+						classNode = support.abstractContextFinder
+								.findByProperty(JavaType.class,
+										"qualifiedName", string);
 					}
 
-					session.addLink(References.class, peek, classNode, false);
-					importedNodeCache.put(classNode.getCompleteName(),
+					support.session.addLink(References.class, peek, classNode,
+							false);
+					support.importedNodeCache.put(classNode.getQualifiedName(),
 							classNode);
-					importedNodeCache.put(classNode.getSimpleName(), classNode);
+					support.importedNodeCache.put(classNode.getSimpleName(),
+							classNode);
 					return classNode;
 				} else {
-					includedStaticMethods.add(string);
-					final JavaMethod methodNode = abstractContextFinder
+					support.includedStaticMethods.add(string);
+					final JavaMethod methodNode = support.abstractContextFinder
 							.findByProperty(JavaMethod.class, "qualifiedName",
 									string);
-					session.addLink(References.class, peek, methodNode, false);
-					importedNodeCache.put(methodNode.getQualifiedName(),
-							methodNode);
-					importedNodeCache.put(methodNode.getSimpleName(),
+					support.session.addLink(References.class, peek, methodNode,
+							false);
+					support.importedNodeCache.put(
+							methodNode.getQualifiedName(), methodNode);
+					support.importedNodeCache.put(methodNode.getSimpleName(),
 							methodNode);
 					return methodNode;
 				}
 			} else {
 				if (starred) {
-					includedPackages.add(string);
-					final JavaPackage packageNode = (JavaPackage) abstractContext
+					support.includedPackages.add(string);
+					final JavaPackage packageNode = (JavaPackage) support.abstractContext
 							.getNode(string);
 					if (logger.isDebugEnabled()
 							&& (packageNode == null || peek == null)) {
@@ -966,15 +735,18 @@ public class JavaPublicElemetsTreeExecutor {
 								+ (packageNode != null ? packageNode.getName()
 										: "null"));
 					}
-					session.addLink(References.class, peek, packageNode, false);
+					support.session.addLink(References.class, peek,
+							packageNode, false);
 					return packageNode;
 				} else {
-					includedClasses.add(string);
-					JavaType classNode = currentContextFinder.findByProperty(
-							JavaType.class, "completeName", string);
+					support.includedClasses.add(string);
+					JavaType classNode = support.currentContextFinder
+							.findByProperty(JavaType.class, "qualifiedName",
+									string);
 					if (classNode == null) {
-						classNode = abstractContextFinder.findByProperty(
-								JavaType.class, "completeName", string);
+						classNode = support.abstractContextFinder
+								.findByProperty(JavaType.class,
+										"qualifiedName", string);
 					}
 
 					if (logger.isDebugEnabled()
@@ -989,10 +761,12 @@ public class JavaPublicElemetsTreeExecutor {
 								+ " and string to find classnode = " + string);
 					}
 
-					session.addLink(References.class, peek, classNode, false);
-					importedNodeCache.put(classNode.getCompleteName(),
+					support.session.addLink(References.class, peek, classNode,
+							false);
+					support.importedNodeCache.put(classNode.getQualifiedName(),
 							classNode);
-					importedNodeCache.put(classNode.getSimpleName(), classNode);
+					support.importedNodeCache.put(classNode.getSimpleName(),
+							classNode);
 					return classNode;
 				}
 			}
@@ -1017,7 +791,7 @@ public class JavaPublicElemetsTreeExecutor {
 			for (int i = 0, size = formalParameters34.size(); i < size; i++) {
 				final VariableDeclarationDto param = formalParameters34.get(i);
 
-				completeMethodName.append(param.getType().getCompleteName());
+				completeMethodName.append(param.getType().getQualifiedName());
 				if (i != size - 1) {
 					completeMethodName.append(' ');
 					completeMethodName.append(',');
@@ -1039,10 +813,12 @@ public class JavaPublicElemetsTreeExecutor {
 						+ " inside its parent " + peek.getName() + " (id "
 						+ peek.getID() + ")");
 			}
-
+			support.session
+					.addLink(TypeDeclares.class, peek, javaMethod, false);
+			javaMethod.setNumberOfParameters(formalParameters34.size());
 			int i = 0;
 			for (final VariableDeclarationDto param : formalParameters34) {
-				final MethodParameterDefinition methodParametersTypeLink = session
+				final MethodParameterDefinition methodParametersTypeLink = support.session
 						.addLink(MethodParameterDefinition.class, javaMethod,
 								param.getType(), false);
 				methodParametersTypeLink.setOrder(i++);
@@ -1057,11 +833,11 @@ public class JavaPublicElemetsTreeExecutor {
 				final JavaDataParameter parameter = javaMethod.addNode(
 						JavaDataParameter.class, param.getName());
 				param.getTreeElement().setNode(parameter);
-				session.addLink(DataType.class, parameter, param.getType(),
-						false);
+				support.session.addLink(DataType.class, parameter, param
+						.getType(), false);
 
 			}
-			javaMethod.setCompleteName(complMethodName);
+			javaMethod.setQualifiedName(complMethodName);
 			javaMethod.setSimpleName(string);
 			final StringBuilder qualifiedNameBuff = new StringBuilder();
 			SLNode parent = peek;
@@ -1080,25 +856,27 @@ public class JavaPublicElemetsTreeExecutor {
 			javaMethod.setQualifiedName(qualifiedName + string);
 			if (annotations35 != null) {
 				for (final JavaType annotation : annotations35) {
-					session.addLink(AnottatedBy.class, javaMethod, annotation,
-							false);
+					support.session.addLink(AnottatedBy.class, javaMethod,
+							annotation, false);
 				}
 			}
 			if (annotations35 != null) {
 				for (final JavaType annotation : annotations35) {
-					session.addLink(AnottatedBy.class, javaMethod, annotation,
-							false);
+					support.session.addLink(AnottatedBy.class, javaMethod,
+							annotation, false);
 				}
 			}
 			if (!constructor) {
-				session.addLink(MethodReturns.class, javaMethod, type36, false);
+				support.session.addLink(MethodReturns.class, javaMethod,
+						type36, false);
 			} else {
-				session.addLink(MethodReturns.class, javaMethod, peek, false);
+				support.session.addLink(MethodReturns.class, javaMethod, peek,
+						false);
 			}
 			if (typeBodyDeclarationThrows37 != null) {
 				for (final JavaType annotation : typeBodyDeclarationThrows37) {
-					session.addLink(MethodThrows.class, javaMethod, annotation,
-							false);
+					support.session.addLink(MethodThrows.class, javaMethod,
+							annotation, false);
 				}
 			}
 
@@ -1140,34 +918,18 @@ public class JavaPublicElemetsTreeExecutor {
 
 	}
 
-	private JavaType internalFindSimpleType(final String string) {
-		if (JavaPrimitiveValidTypes.isPrimitive(string)) {
-			return findPrimitiveType(string);
-		}
-		JavaType type = findOnContext(string, currentContextFinder);
-		if (type == null) {
-			type = findOnContext(string, abstractContextFinder);
-		}
-		return type;
-	}
-
 	public JavaPackage packageDeclaration(final String string,
 			final CommonTree tree) {
 		final String packageName = string == null ? JavaConstants.DEFAULT_PACKAGE
 				: string;
 		if (string != null) {
-			importDeclaration(currentContext, false, true, packageName);
+			importDeclaration(support.currentContext, false, true, packageName);
 		}
-		importDeclaration(currentContext, false, true, "java.lang");
+		importDeclaration(support.currentContext, false, true, "java.lang");
 		currentPackage = this.createNodeOnBothContexts(JavaPackage.class,
 				packageName);
 		addLineReference(tree, currentPackage);
 		return currentPackage;
-	}
-
-	private void putOnBothCaches(final SLNode concrete, final SLNode abstractN) {
-		concreteAbstractCache.put(concrete, abstractN);
-		abstractConcreteCache.put(abstractN, concrete);
 	}
 
 	public JavaType resolveAnnotation(final String qualifiedName52) {

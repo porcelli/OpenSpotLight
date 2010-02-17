@@ -109,7 +109,8 @@ public class EachArtifactTask<T extends Artifact> extends
 					+ this.artifact.getLastProcessStatus());
 			return;
 		}
-		this.bundleProcessor.beforeProcessArtifact(this.artifact);
+		this.bundleProcessor.beforeProcessArtifact(this.artifact,
+				this.currentContextImpl, getBundleContext());
 		LastProcessStatus result = null;
 		try {
 			if (first && this.artifact instanceof ArtifactWithSyntaxInformation) {
@@ -118,11 +119,11 @@ public class EachArtifactTask<T extends Artifact> extends
 			}
 			result = this.bundleProcessor.processArtifact(this.artifact,
 					this.currentContextImpl, getBundleContext());
-			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
-				getBundleContext().getGraphSession().save();
-			} else {
-				logger.warn("Didn't save because of its save behavior");
-			}
+//			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
+//				getBundleContext().getGraphSession().save();
+//			} else {
+//				logger.warn("Didn't save because of its save behavior");
+//			}
 		} catch (final Exception e) {
 			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
 			Exceptions.catchAndLog(e);
@@ -161,7 +162,7 @@ public class EachArtifactTask<T extends Artifact> extends
 
 			}
 			this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
-					result);
+					result, this.currentContextImpl, getBundleContext());
 			if (ex != null) {
 				throw ex;
 			}

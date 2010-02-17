@@ -3,10 +3,10 @@ define message #testeInt = "Entre com o testeInt"
 define message @testeBool = "Entre com o testeBool"
 define message &testeFloat = "Entre com o testeFloat"
 
-select org.openspotlight.graph.test.domain.JavaType.*
-	where
+SeLecT org.openspotlight.graph.test.domain.JavaType.*
+	WHERE
 		org.openspotlight.graph.test.domain.JavaType.*
-			property caption == $testeString &&
+			pRoPerTY caption == $testeString &&
 			property intValue == #testeInt  &&
 			property boolValue == @testeBool &&
 			property decValue > &testeFloat;

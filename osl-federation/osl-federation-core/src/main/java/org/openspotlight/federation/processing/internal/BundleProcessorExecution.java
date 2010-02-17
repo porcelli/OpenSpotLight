@@ -179,8 +179,7 @@ public class BundleProcessorExecution {
 					.getBundleTypes()) {
 				final Repository repository = group.getRootRepository();
 				final CurrentProcessorContextImpl currentContext = new CurrentProcessorContextImpl();
-				currentContext.setBundleProperties(bundleProcessorType
-						.getBundleProperties());
+				currentContext.setBundleProcessor(bundleProcessorType);
 				currentContext.setCurrentGroup(group);
 				currentContext.setCurrentRepository(repository);
 
@@ -262,7 +261,7 @@ public class BundleProcessorExecution {
 								+ repository);
 			}
 			session.save();// here the new repository nodes needs to be seen by
-							// another opened sessions
+			// another opened sessions
 			final Set<Group> allGroups = new HashSet<Group>();
 			final AggregateVisitor<Group> visitor = new AggregateVisitor<Group>(
 					allGroups);

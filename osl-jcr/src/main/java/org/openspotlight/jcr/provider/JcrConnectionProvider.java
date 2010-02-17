@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -81,7 +82,7 @@ public abstract class JcrConnectionProvider {
 	 * based on Jack Rabbit.
 	 */
 	private static class JackRabbitConnectionProvider extends
-			JcrConnectionProvider {
+	JcrConnectionProvider {
 
 		/** The repository. */
 		private Repository repository;
@@ -146,21 +147,24 @@ public abstract class JcrConnectionProvider {
 		}
 
 		@Override
-		public Repository openRepository() {
+		public Repository internalOpenRepository() {
 			if (repository == null || repositoryClosed) {
 				try {
-					try {
-						Files.delete(getData().getConfigurationDirectory());
-					} catch (final SLException e) {
-						throw Exceptions.logAndReturnNew(e,
-								SLRuntimeException.class);
+					if (getData().isTemporary()) {
+						try {
+							Files.delete(getData().getConfigurationDirectory());
+						} catch (final SLException e) {
+							throw Exceptions.logAndReturnNew(e,
+									SLRuntimeException.class);
+
+						}
 					}
 
 					final RepositoryConfig config = RepositoryConfig.create(
 							ClassPathResource
-									.getResourceFromClassPath(getData()
-											.getXmlClasspathLocation()),
-							getData().getConfigurationDirectory());
+							.getResourceFromClassPath(getData()
+									.getXmlClasspathLocation()),
+									getData().getConfigurationDirectory());
 
 					repository = RepositoryImpl.create(config);
 					repositoryClosed = false;
@@ -171,6 +175,12 @@ public abstract class JcrConnectionProvider {
 			}
 
 			return repository;
+		}
+
+		@Override
+		protected void internalShutdownRepository() {
+			final RepositoryImpl repositoryTyped = (RepositoryImpl) getRepository();
+			repositoryTyped.shutdown();
 		}
 
 		/*
@@ -186,7 +196,7 @@ public abstract class JcrConnectionProvider {
 				final Session newSession = repository.login(getData()
 						.getCredentials());
 				final int sessionId = JackRabbitConnectionProvider.sessionIdFactory
-						.getAndIncrement();
+				.getAndIncrement();
 				final SessionWrapper wrappedSession = new SessionWrapper(
 						newSession, sessionId, new SessionClosingListener() {
 
@@ -194,7 +204,7 @@ public abstract class JcrConnectionProvider {
 									final SessionWrapper wrapper,
 									final Session session) {
 								JackRabbitConnectionProvider.openSessions
-										.remove(wrapper);
+								.remove(wrapper);
 
 							}
 						});
@@ -233,7 +243,7 @@ public abstract class JcrConnectionProvider {
 				break;
 			default:
 				throw Exceptions.logAndReturn(new IllegalStateException(
-						"Invalid jcr type"));
+				"Invalid jcr type"));
 			}
 			JcrConnectionProvider.cache.put(data, provider);
 		}
@@ -242,6 +252,7 @@ public abstract class JcrConnectionProvider {
 
 	/** The data. */
 	private final JcrConnectionDescriptor data;
+	private final AtomicReference<Thread> shutdownHook = new AtomicReference<Thread>();
 
 	/**
 	 * Instantiates a new jcr connection provider.
@@ -264,6 +275,7 @@ public abstract class JcrConnectionProvider {
 		JcrConnectionProvider.cache.remove(this);
 	}
 
+
 	/**
 	 * Gets the data.
 	 * 
@@ -280,6 +292,16 @@ public abstract class JcrConnectionProvider {
 	 */
 	public abstract Repository getRepository();
 
+	/**
+	 * Close repository.
+	 */
+	protected abstract Repository internalOpenRepository();
+
+	/**
+	 * Close repository.
+	 */
+	protected abstract void internalShutdownRepository();
+
 	public final boolean isTemporary() {
 		return data.isTemporary();
 	}
@@ -289,7 +311,22 @@ public abstract class JcrConnectionProvider {
 	 * 
 	 * @return the repository
 	 */
-	public abstract Repository openRepository();
+	public synchronized final Repository openRepository() {
+		final Repository repository = internalOpenRepository();
+		if (shutdownHook.get() == null) {
+			shutdownHook.set(new Thread(new Runnable() {
+
+				public void run() {
+
+					internalShutdownRepository();
+
+				}
+			}));
+
+			Runtime.getRuntime().addShutdownHook(shutdownHook.get());
+		}
+		return repository;
+	}
 
 	/**
 	 * Open session.
@@ -297,5 +334,16 @@ public abstract class JcrConnectionProvider {
 	 * @return the session
 	 */
 	public abstract SessionWithLock openSession();
+
+	/**
+	 * This method should be called once in the JVM lifetime. 
+	 */
+	public synchronized final void shutdownRepository() {
+		if(shutdownHook.get()!=null) {
+			Runtime.getRuntime().removeShutdownHook(shutdownHook.get());
+		}
+		shutdownHook.set(null);
+		internalShutdownRepository();
+	}
 
 }

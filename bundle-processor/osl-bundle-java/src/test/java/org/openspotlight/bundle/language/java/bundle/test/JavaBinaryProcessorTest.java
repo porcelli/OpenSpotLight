@@ -148,7 +148,7 @@ public class JavaBinaryProcessorTest {
 		mapping.setFrom("resources/");
 		mapping.setTo("jars");
 		artifactSource.getMappings().add(mapping);
-		mapping.getIncludeds().add("*.jar");
+		mapping.getIncludeds().add("**/dynamo-file-gen-1.0.1.jar");
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);

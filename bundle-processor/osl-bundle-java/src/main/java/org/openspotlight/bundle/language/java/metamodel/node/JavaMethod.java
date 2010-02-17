@@ -71,9 +71,6 @@ public interface JavaMethod extends SLNode {
 	public Boolean getAbstract();
 
 	@SLProperty
-	public String getCompleteName();
-
-	@SLProperty
 	public String getCompleteQualifiedName();
 
 	/**
@@ -91,6 +88,9 @@ public interface JavaMethod extends SLNode {
 	 */
 	@SLProperty
 	public Boolean getNative();
+
+	@SLProperty
+	public Integer getNumberOfParameters();
 
 	/**
 	 * Gets the private.
@@ -159,8 +159,6 @@ public interface JavaMethod extends SLNode {
 	 */
 	public void setAbstract(Boolean newAbstract);
 
-	public void setCompleteName(String newCompleteName);
-
 	public void setCompleteQualifiedName(String newCompleteQualifiedName);
 
 	/**
@@ -178,6 +176,8 @@ public interface JavaMethod extends SLNode {
 	 *            the new Native
 	 */
 	public void setNative(Boolean newNative);
+
+	public void setNumberOfParameters(Integer newNumberOfParameters);
 
 	/**
 	 * Sets the private.
