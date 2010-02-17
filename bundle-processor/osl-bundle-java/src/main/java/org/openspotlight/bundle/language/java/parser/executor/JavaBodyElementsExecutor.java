@@ -56,8 +56,10 @@ public class JavaBodyElementsExecutor {
 
 	private static interface MemberLookupPredicate {
 		List<SLNode> findMember(String param, SLNode parentFound)
-				throws Exception;
+		throws Exception;
 	}
+
+	private final boolean quiet = true;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -219,7 +221,7 @@ public class JavaBodyElementsExecutor {
 			final JavaDataVariable variable = parent.addNode(
 					JavaDataVariable.class, variableDeclarator29.getText());
 			support.session
-					.addLink(DataType.class, variable, typeAsNode, false);
+			.addLink(DataType.class, variable, typeAsNode, false);
 			typedVariableDeclarator.setNode(variable);
 			List<SLCommonTree> value = variablesFromContext.get(peek);
 			if (value == null) {
@@ -228,6 +230,10 @@ public class JavaBodyElementsExecutor {
 			}
 			value.add(typedVariableDeclarator);
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return;
+			}
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -272,6 +278,10 @@ public class JavaBodyElementsExecutor {
 			}
 			return new ExpressionDto(e4.resultType, e4, e5);
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return ExpressionDto.NULL_EXPRESSION;
+			}
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -283,6 +293,11 @@ public class JavaBodyElementsExecutor {
 					false);
 			return new ExpressionDto(e15.resultType, e15, e16);
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return ExpressionDto.NULL_EXPRESSION;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -301,6 +316,11 @@ public class JavaBodyElementsExecutor {
 			typedBlockTreeElement.setNode(newBlock);
 			return typedBlockTreeElement;
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return blockTreeElement;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -310,6 +330,11 @@ public class JavaBodyElementsExecutor {
 			final JavaType booleanType = support.findPrimitiveType("boolean");
 			return new ExpressionDto(booleanType, e1);
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return ExpressionDto.NULL_EXPRESSION;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -323,6 +348,11 @@ public class JavaBodyElementsExecutor {
 					false);
 			return new ExpressionDto(booleanType, e1, e2);
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return ExpressionDto.NULL_EXPRESSION;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -356,7 +386,7 @@ public class JavaBodyElementsExecutor {
 		try {
 
 			final JavaType type = (JavaType) ((SLCommonTree) commonTree)
-					.getNode();
+			.getNode();
 			SLNode leaf;
 			if (anonymousInnerClassBlock != null) {
 				leaf = ((SLCommonTree) anonymousInnerClassBlock).getNode();
@@ -380,8 +410,8 @@ public class JavaBodyElementsExecutor {
 					for (final JavaMethod method1 : constructors) {
 						final List<JavaType> types = new ArrayList<JavaType>();
 						final NeedsSyncronizationCollection<MethodParameterDefinition> links = support.session
-								.getLinks(MethodParameterDefinition.class,
-										method1, null);
+						.getLinks(MethodParameterDefinition.class,
+								method1, null);
 						for (final MethodParameterDefinition link : links) {
 							types.add((JavaType) link.getTarget());
 						}
@@ -398,8 +428,14 @@ public class JavaBodyElementsExecutor {
 							paramTypes);
 
 				} else {
-					throw Exceptions.logAndReturn(new IllegalStateException(
-							"no constructors found"));
+					Exceptions
+					.catchAndLog(new IllegalStateException(
+					"no constructors found. Implicit super constructor"));// FIXME
+					// add
+					// before:
+					// super
+					// constructors
+					return new ExpressionDto(type, type);
 				}
 			}
 			if (optionalArguments != null) {
@@ -417,6 +453,11 @@ public class JavaBodyElementsExecutor {
 				return new ExpressionDto(type, leaf);
 			}
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return ExpressionDto.NULL_EXPRESSION;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -443,6 +484,11 @@ public class JavaBodyElementsExecutor {
 			Assertions.checkNotNull("result", result);
 			return result;
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return ExpressionDto.NULL_EXPRESSION;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 
@@ -469,6 +515,11 @@ public class JavaBodyElementsExecutor {
 					.getNode(), node, false);
 			return new ExpressionDto(booleanType, e23);
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return ExpressionDto.NULL_EXPRESSION;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -518,12 +569,17 @@ public class JavaBodyElementsExecutor {
 			for (final SingleVarDto dto : formalParameters) {
 				final JavaDataParameter parameter = parent.addNode(
 						JavaDataParameter.class, dto.identifierTreeElement
-								.getText());
+						.getText());
 				dto.identifierTreeElement.setNode(parameter);
 				support.session.addLink(DataType.class, parameter,
 						dto.typeTreeElement.getNode(), false);
 			}
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -543,6 +599,11 @@ public class JavaBodyElementsExecutor {
 			final SLCommonTree typedStatement = (SLCommonTree) statement;
 			typedStatement.setNode(newBlock);
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
@@ -611,10 +672,10 @@ public class JavaBodyElementsExecutor {
 	}
 
 	private JavaType getJavaTypeFromField(final SLNode node)
-			throws SLGraphSessionException {
+	throws SLGraphSessionException {
 		JavaType resultType;
 		final NeedsSyncronizationCollection<DataType> link = support.session
-				.getLinks(DataType.class, node, null);
+		.getLinks(DataType.class, node, null);
 		resultType = (JavaType) link.iterator().next().getTarget();
 		return resultType;
 	}
@@ -626,6 +687,7 @@ public class JavaBodyElementsExecutor {
 			final List<ExpressionDto> optionalArguments) {
 
 		try {
+
 			final List<SLNode> methods = lookForMembers(parent, methodName,
 					getByMethodSimpleName);
 			final int size = optionalArguments == null ? 0 : optionalArguments
@@ -643,8 +705,8 @@ public class JavaBodyElementsExecutor {
 				for (final JavaMethod method1 : foundMethods) {
 					final List<JavaType> types = new ArrayList<JavaType>();
 					final NeedsSyncronizationCollection<MethodParameterDefinition> links = support.session
-							.getLinks(MethodParameterDefinition.class, method1,
-									null);
+					.getLinks(MethodParameterDefinition.class, method1,
+							null);
 					for (final MethodParameterDefinition link : links) {
 						types.add((JavaType) link.getTarget());
 					}
@@ -658,12 +720,17 @@ public class JavaBodyElementsExecutor {
 					}
 				}
 				method = methodResolver
-						.getBestMatch(methodAndTypes, paramTypes);
-			} else {
+				.getBestMatch(methodAndTypes, paramTypes);
+			} else if (foundMethods.size() == 1) {
 				method = foundMethods.get(0);
+			} else {
+				Exceptions.catchAndLog(new IllegalStateException(
+				"method not found!"));
+				return ExpressionDto.NULL_EXPRESSION;
+
 			}
 			final NeedsSyncronizationCollection<MethodReturns> links = support.session
-					.getLinks(MethodReturns.class, method, null);
+			.getLinks(MethodReturns.class, method, null);
 			final MethodReturns link = links.iterator().next();
 			final JavaType methodReturnType = (JavaType) link.getTarget();
 			if (optionalArguments != null) {
@@ -681,6 +748,11 @@ public class JavaBodyElementsExecutor {
 				return new ExpressionDto(methodReturnType, method);
 			}
 		} catch (final Exception e) {
+			if (quiet) {
+				Exceptions.catchAndLog(e);
+				return ExpressionDto.NULL_EXPRESSION;
+			}
+
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 
@@ -719,13 +791,13 @@ public class JavaBodyElementsExecutor {
 			return internalFind(currentClass.peek().getNode(), null, e54);
 		} else if (string.equals("super")) {
 			final SLNode superNode = extendedClasses.get(currentClass.peek())
-					.getNode();
+			.getNode();
 			return internalFind(superNode, null, e54);
 		} else if (!string.contains(".")) {
 			SLNode currentMember = lookForLocalVariable(string);
 			if (currentMember == null) {
 				final JavaType currentJavaType = (JavaType) currentClass.peek()
-						.getNode();
+				.getNode();
 
 				currentMember = lookForMember(currentJavaType, string,
 						getByNamePredicate);
@@ -746,22 +818,27 @@ public class JavaBodyElementsExecutor {
 			}
 			final String[] splitted = toWork.contains(".") ? toWork
 					.split("[.]") : new String[] { toWork };
-			SLNode currentNode = lookForLocalVariable(splitted[0]);
-			if (currentNode == null) {
-				final JavaType currentJavaType = (JavaType) currentClass.peek()
+					SLNode currentNode = lookForLocalVariable(splitted[0]);
+					if (currentNode == null) {
+						final JavaType currentJavaType = (JavaType) currentClass.peek()
 						.getNode();
 
-				currentNode = lookForMember(currentJavaType, string,
-						getByNamePredicate);
-			}
-			for (int i = 1, size = splitted.length; i < size; i++) {
-				if (!(currentNode instanceof JavaType)) {
-					currentNode = getJavaTypeFromField(currentNode);
-				}
-				currentNode = lookForMember((JavaType) currentNode, string,
-						getByNamePredicate);
-			}
-			return createMemberDto(currentNode, e54);
+						currentNode = lookForMember(currentJavaType, string,
+								getByNamePredicate);
+					}
+					for (int i = 1, size = splitted.length; i < size; i++) {
+						if (!(currentNode instanceof JavaType)) {
+							currentNode = getJavaTypeFromField(currentNode);
+						}
+						currentNode = lookForMember((JavaType) currentNode, string,
+								getByNamePredicate);
+					}
+					return createMemberDto(currentNode, e54);
+		}
+		final JavaType result = support.findOnContext(string,
+				support.abstractContextFinder);
+		if (result != null) {
+			return createMemberDto(result, e54);
 		}
 		return null;
 	}
@@ -771,18 +848,18 @@ public class JavaBodyElementsExecutor {
 			logger.debug("looking for visible var " + string);
 		}
 		final Collection<List<SLCommonTree>> currentVariablesList = variablesFromContext
-				.values();
+		.values();
 		for (final List<SLCommonTree> currentVariables : currentVariablesList) {
 			for (final SLCommonTree entry : currentVariables) {
 				if (string.equals(entry.getText().trim())) {
 					final SLNode node = entry.getNode();
 					if (logger.isDebugEnabled()) {
 						logger
-								.debug("found visible var "
-										+ string
-										+ " with node "
-										+ (node != null ? node.getName()
-												: "null node"));
+						.debug("found visible var "
+								+ string
+								+ " with node "
+								+ (node != null ? node.getName()
+										: "null node"));
 					}
 					return node;
 				}
@@ -798,7 +875,7 @@ public class JavaBodyElementsExecutor {
 
 	private SLNode lookForMember(final JavaType currentJavaType,
 			final String string, final MemberLookupPredicate predicate)
-			throws Exception {
+	throws Exception {
 		final List<SLNode> members = lookForMembers(currentJavaType, string,
 				predicate);
 		if (!members.isEmpty()) {
@@ -811,10 +888,10 @@ public class JavaBodyElementsExecutor {
 	private List<SLNode> lookForMembers(final JavaType javaType,
 			final String string, final MemberLookupPredicate predicate)
 			throws Exception {
-		final JavaType currentJavaType;
+		JavaType currentJavaType;
 		if (javaType instanceof JavaTypeParameterized) {
-			final NeedsSyncronizationCollection<ParameterizedTypeClass> links = support.session
-					.getLinks(ParameterizedTypeClass.class, javaType, null);
+			NeedsSyncronizationCollection<ParameterizedTypeClass> links = support.session
+			.getLinks(ParameterizedTypeClass.class, javaType, null);
 
 			JavaType foundJavaType = null;
 			for (final ParameterizedTypeClass l : links) {
@@ -828,29 +905,49 @@ public class JavaBodyElementsExecutor {
 				}
 			}
 			currentJavaType = foundJavaType;
-			Assertions.checkNotNull("currentJavaType", currentJavaType);
+			if (currentJavaType == null) {
+				links = support.session.getLinks(ParameterizedTypeClass.class,
+						null, javaType);
+
+				for (final ParameterizedTypeClass l : links) {
+					foundJavaType = (JavaType) l.getSource();
+					if (foundJavaType.getContext().equals(
+							support.abstractContext.getContext())
+							|| contexts.contains(foundJavaType.getContext())) {
+						break;
+					} else {
+						foundJavaType = null;
+					}
+				}
+				currentJavaType = foundJavaType;
+
+			}
+			// FIXME remove this
+			if (currentJavaType == null) {
+				currentJavaType = javaType;
+			}
 		} else {
 			currentJavaType = javaType;
 		}
 
 		final List<SLNode> result = new ArrayList<SLNode>();
 		final SLQueryApi query = support.session.createQueryApi();
-		query.select().type(JavaType.class.getName()).subTypes().selectEnd()
-				.where().type(JavaType.class.getName()).subTypes().each()
-				.property("qualifiedName").equalsTo().value(
-						currentJavaType.getQualifiedName()).typeEnd()
-				.whereEnd().keepResult().select()
-				.type(JavaType.class.getName()).subTypes().comma().byLink(
-						Extends.class.getName()).any().selectEnd().keepResult()
-				.select().type(JavaType.class.getName()).subTypes().comma()
-				.byLink(AbstractTypeBind.class.getName()).any().selectEnd()
-				.keepResult().select().type(JavaType.class.getName())
-				.subTypes().comma().byLink(Implements.class.getName()).any()
-				.selectEnd().keepResult().select().type(
-						JavaType.class.getName()).subTypes().comma().byLink(
-						AbstractTypeBind.class.getName()).any().selectEnd();
+		query.select().type(SLNode.class.getName()).subTypes().selectEnd()
+		.where().type(SLNode.class.getName()).subTypes().each()
+		.property("qualifiedName").equalsTo().value(
+				currentJavaType.getQualifiedName()).typeEnd()
+				.whereEnd().keepResult().select().type(SLNode.class.getName())
+				.subTypes().comma().byLink(Extends.class.getName()).any()
+				.selectEnd().keepResult().select().type(SLNode.class.getName())
+				.subTypes().comma().byLink(AbstractTypeBind.class.getName())
+				.any().selectEnd().keepResult().select().type(
+						SLNode.class.getName()).subTypes().comma().byLink(
+								Implements.class.getName()).any().selectEnd()
+								.keepResult().select().type(SLNode.class.getName()).subTypes()
+								.comma().byLink(AbstractTypeBind.class.getName()).any()
+								.selectEnd();
 		final NeedsSyncronizationList<SLNode> nodes = query.execute()
-				.getNodes();
+		.getNodes();
 		for (final SLNode currentNode : nodes) {
 			final List<SLNode> foundMember = predicate.findMember(string,
 					currentNode);

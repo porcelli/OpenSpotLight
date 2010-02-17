@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.openspotlight.bundle.common.AbstractTestServerClass;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
+import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
@@ -90,6 +91,7 @@ public class JavaBundleTest extends AbstractTestServerClass {
 				JavaLexerAndParserTypesPhase.class);
 		commonProcessor.getArtifactPhases().add(
 				JavaParserPublicElementsPhase.class);
+		commonProcessor.getArtifactPhases().add(JavaBodyElementsPhase.class);
 		group.getBundleTypes().add(commonProcessor);
 
 		final BundleSource bundleSource = new BundleSource();
