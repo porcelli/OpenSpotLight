@@ -70,7 +70,7 @@ import org.openspotlight.persist.annotation.TransientProperty;
  * should load this classes.
  */
 public abstract class Artifact implements SimpleNodeType, Serializable,
-		LogableObject {
+LogableObject {
 
 	/**
 	 * Creates the new artifact.
@@ -89,12 +89,12 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 
 		try {
 			final String internalArtifactName = artifactCompletePath
-					.substring(artifactCompletePath.lastIndexOf('/') + 1);
+			.substring(artifactCompletePath.lastIndexOf('/') + 1);
 			final String path = artifactCompletePath.substring(0,
 					artifactCompletePath.length()
-							- internalArtifactName.length());
+					- internalArtifactName.length());
 			final PathElement pathElement = PathElement
-					.createFromPathString(path);
+			.createFromPathString(path);
 			final A artifact = artifactType.newInstance();
 
 			artifact.setArtifactName(internalArtifactName);
@@ -125,16 +125,16 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 	private String artifactName;
 
 	/** The artifact complete name. */
-	private volatile String artifactCompleteName;
+	private volatile transient String artifactCompleteName;
 
 	/** The change type. */
 	private ChangeType changeType = ChangeType.INCLUDED;
 
 	/** The parent. */
-	private PathElement parent;
+	private transient PathElement parent;
 
 	/** The hashcode. */
-	private volatile int hashcode;
+	private volatile transient int hashcode;
 
 	public Artifact() {
 		transientMap = AddOnlyConcurrentMap.newMap();
@@ -165,7 +165,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 
 		final Artifact that = (Artifact) o;
 		return Equals.eachEquality(parent, that.parent)
-				&& Equals.eachEquality(artifactName, that.artifactName);
+		&& Equals.eachEquality(artifactName, that.artifactName);
 	}
 
 	/**
@@ -252,11 +252,11 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 			result = 31 * result + this.getClass().hashCode();
 			result = 31 * result + (parent != null ? parent.hashCode() : 0);
 			result = 31 * result
-					+ (artifactName != null ? artifactName.hashCode() : 0);
+			+ (artifactName != null ? artifactName.hashCode() : 0);
 			result = 31 * result
-					+ (artifactName != null ? artifactName.hashCode() : 0);
+			+ (artifactName != null ? artifactName.hashCode() : 0);
 			result = 31 * result
-					+ (changeType != null ? changeType.hashCode() : 0);
+			+ (changeType != null ? changeType.hashCode() : 0);
 			hashcode = result;
 		}
 		return result;
@@ -325,7 +325,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
 	 */
 	public String toString() {
 		return getClass().getName() + getArtifactCompleteName() + " "
-				+ getChangeType();
+		+ getChangeType();
 	}
 
 }

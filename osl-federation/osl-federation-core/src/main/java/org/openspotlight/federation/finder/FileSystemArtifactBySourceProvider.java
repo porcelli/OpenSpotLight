@@ -54,14 +54,14 @@ import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class FileSystemArtifactBySourceProvider implements
-		ArtifactFinderBySourceProvider {
+ArtifactFinderBySourceProvider {
 
 	public <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
 			final Class<? extends Artifact> artifactType, final S source) {
-		if (artifactType.equals(StringArtifact.class)) {
+		if (artifactType.equals(StringArtifact.class) && !source.isBinary()) {
 			return new FileSystemStringArtifactFinder(source);
 		}
-		if (artifactType.equals(StreamArtifact.class)) {
+		if (artifactType.equals(StreamArtifact.class) && source.isBinary()) {
 			return new FileSystemStreamArtifactFinder(source);
 		}
 		return null;

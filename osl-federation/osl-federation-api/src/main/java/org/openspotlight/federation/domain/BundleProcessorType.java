@@ -91,13 +91,13 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 	private boolean active;
 
 	/** The group. */
-	private Group group;
+	private transient Group group;
 
 	/** The sources. */
 	private Set<BundleSource> sources = new HashSet<BundleSource>();
 
 	/** The hash code. */
-	private volatile int hashCode;
+	private volatile transient int hashCode;
 
 	/*
 	 * (non-Javadoc)
@@ -114,7 +114,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
 		final BundleProcessorType that = (BundleProcessorType) o;
 		final boolean result = Equals.eachEquality(Arrays.of(group,
 				globalPhase, name), Arrays.andOf(that.group, that.globalPhase,
-				that.name));
+						that.name));
 		return result;
 	}
 

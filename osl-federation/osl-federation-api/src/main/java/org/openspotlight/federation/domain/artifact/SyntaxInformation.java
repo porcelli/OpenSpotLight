@@ -63,7 +63,7 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>,
 	}
 
 	/** The hashcode. */
-	private volatile int hashcode;
+	private volatile transient int hashcode;
 
 	/** The stream artifact. */
 	private Artifact parent;
