@@ -13,5 +13,7 @@ public class JavaReferenceConstants {
 	public static final String BODY = "Body";
 	public static final String FIELD_DECLARE = "Field Declare";
 	public static final String METHOD_DECLARE = "Method Declare";
+	public static final String VARIABLE_INIT = "Variable initialization";
+	public static final String EXPRESSION = "Expression";
 
 }

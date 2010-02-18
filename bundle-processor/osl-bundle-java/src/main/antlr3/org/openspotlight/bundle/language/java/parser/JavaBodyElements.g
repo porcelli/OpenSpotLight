@@ -237,8 +237,10 @@ variableDeclaratorAssign returns [ExpressionDto info]
 variableInitializer returns [ExpressionDto info]
     :   arrayInitializer 
         { $info=$arrayInitializer.info; } 
+        { createLineReference((SLCommonTree)$arrayInitializer.start,JavaReferenceConstants.VARIABLE_INIT, $info.leaf,$info.resultType); }
     |   expression 
         { $info=$expression.info; } 
+        { createLineReference((SLCommonTree)$expression.start,JavaReferenceConstants.VARIABLE_INIT, $info.leaf,$info.resultType); }
     ;
 
 arrayInitializer returns [ExpressionDto info]
@@ -434,80 +436,135 @@ expressionList returns [List<ExpressionDto> expressions]
 //ExpressionDto[JavaType resultType, SLNode leaf, List<ExpressionDto> participants]
 expression returns [ExpressionDto info]
     :   ^(BOOLEAN_EXPRESSION e1=expression 
-        { $info=executor.createBooleanExpression($e1.info); } )
+        { $info=executor.createBooleanExpression($e1.info);}
+        { createLineReference((SLCommonTree)$e1.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); }
+        )
     |   ^(EXPRESSION e2=expression 
-        { $info=$e2.info; } )
+        { $info=$e2.info; } 
+        { createLineReference((SLCommonTree)$e2.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(PARENTHESIZED_EXPRESSION e3=expression
-        { $info=$e3.info; } )
+        { $info=$e3.info; } 
+        { createLineReference((SLCommonTree)$e3.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(assignmentOperator e4=expression e5=expression
-        { $info=executor.createAssignExpression($e4.info, $e5.info); } )
+        { $info=executor.createAssignExpression($e4.info, $e5.info); }
+        { createLineReference((SLCommonTree)$e4.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e5.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(CONDITIONAL_EXPRESSION e6=expression e7=expression e8=expression
-        { $info=executor.createConditionalExpression($e6.info, $e7.info, $e8.info); } )
+        { $info=executor.createConditionalExpression($e6.info, $e7.info, $e8.info); } 
+        { createLineReference((SLCommonTree)$e6.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e7.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e8.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(DOUPLE_PIPE e9=expression e10=expression 
-        { $info=executor.createBooleanExpression($e9.info,$e10.info); } )
+        { $info=executor.createBooleanExpression($e9.info,$e10.info); } 
+        { createLineReference((SLCommonTree)$e9.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e10.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(DOUBLE_AMPERSAND e11=expression e12=expression 
-        { $info=executor.createBooleanExpression($e11.info,$e12.info); } )
+        { $info=executor.createBooleanExpression($e11.info,$e12.info); } 
+        { createLineReference((SLCommonTree)$e11.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e12.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(PIPE e13=expression e14=expression 
-        { $info=executor.createBinaryExpression($e13.info,$e14.info); } )
+        { $info=executor.createBinaryExpression($e13.info,$e14.info); } 
+        { createLineReference((SLCommonTree)$e13.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e14.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(CIRCUMFLEX e15=expression e16=expression 
-        { $info=executor.createBinaryExpression($e15.info,$e16.info); } )
+        { $info=executor.createBinaryExpression($e15.info,$e16.info); }  
+        { createLineReference((SLCommonTree)$e15.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e16.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(AMPERSAND e17=expression e18=expression 
-        { $info=executor.createBinaryExpression($e17.info,$e18.info); } )
+        { $info=executor.createBinaryExpression($e17.info,$e18.info); } 
+        { createLineReference((SLCommonTree)$e17.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e18.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(EQUALS e19=expression e20=expression 
-        { $info=executor.createBooleanExpression($e19.info,$e20.info); } )
+        { $info=executor.createBooleanExpression($e19.info,$e20.info); } 
+        { createLineReference((SLCommonTree)$e19.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e20.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(EXCLAMATION_EQUALS e21=expression e22=expression 
-        { $info=executor.createBooleanExpression($e21.info,$e22.info); } )
+        { $info=executor.createBooleanExpression($e21.info,$e22.info); } 
+        { createLineReference((SLCommonTree)$e21.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e22.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(INSTANCEOF e23=expression t1=type 
-        { $info=executor.createInstanceofExpression($e23.info,$t1.treeElement); } )
+        { $info=executor.createInstanceofExpression($e23.info,$t1.treeElement); }  
+        { createLineReference((SLCommonTree)$e23.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e24.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(relationalOp e24=expression e25=expression 
-        { $info=executor.createBooleanExpression($e24.info,$e25.info); } )
+        { $info=executor.createBooleanExpression($e24.info,$e25.info); } 
+        { createLineReference((SLCommonTree)$e25.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e24.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(shiftOp e26=expression e27=expression 
-        { $info=executor.createNumberExpression($e26.info,$e27.info); } )
+        { $info=executor.createNumberExpression($e26.info,$e27.info); } 
+        { createLineReference((SLCommonTree)$e26.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e27.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(PLUS e28=expression e29=expression 
-        { $info=executor.createPlusExpression($e28.info,$e29.info); } )
+        { $info=executor.createPlusExpression($e28.info,$e29.info); }  
+        { createLineReference((SLCommonTree)$e28.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e29.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(MINUS e30=expression e31=expression 
-        { $info=executor.createNumberExpression($e30.info,$e31.info); } )
+        { $info=executor.createNumberExpression($e30.info,$e31.info); } 
+        { createLineReference((SLCommonTree)$e30.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e31.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(STAR e32=expression e33=expression 
-        { $info=executor.createNumberExpression($e32.info,$e33.info); } )
+        { $info=executor.createNumberExpression($e32.info,$e33.info); } 
+        { createLineReference((SLCommonTree)$e32.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e33.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(SLASH e34=expression e35=expression 
-        { $info=executor.createNumberExpression($e34.info,$e35.info); } )
+        { $info=executor.createNumberExpression($e34.info,$e35.info); } 
+        { createLineReference((SLCommonTree)$e34.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e35.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(PERCENT e36=expression e37=expression 
-        { $info=executor.createNumberExpression($e36.info,$e37.info); } )
+        { $info=executor.createNumberExpression($e36.info,$e37.info); } 
+        { createLineReference((SLCommonTree)$e36.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e37.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(PREFIX_EXPRESSION e38=expression 
-        { $info=executor.createNumberExpression($e38.info); } )
+        { $info=executor.createNumberExpression($e38.info); }  
+        { createLineReference((SLCommonTree)$e38.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(POSTFIX_EXPRESSION e39=expression (DOUBLE_PLUS|DOUBLE_MINUS) 
-        { $info=executor.createNumberExpression($e39.info); } )
+        { $info=executor.createNumberExpression($e39.info); } 
+        { createLineReference((SLCommonTree)$e39.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(UNARY_PLUS e40=expression 
-        { $info=executor.createNumberExpression($e40.info); } )
+        { $info=executor.createNumberExpression($e40.info); }  
+        { createLineReference((SLCommonTree)$e40.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(UNARY_MINUS e41=expression 
-        { $info=executor.createNumberExpression($e41.info); } )
+        { $info=executor.createNumberExpression($e41.info); }  
+        { createLineReference((SLCommonTree)$e41.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(DOUBLE_PLUS e42=expression 
-        { $info=executor.createNumberExpression($e42.info); } )
+        { $info=executor.createNumberExpression($e42.info); } 
+        { createLineReference((SLCommonTree)$e42.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(DOUBLE_MINUS e43=expression 
-        { $info=executor.createNumberExpression($e43.info); } )
+        { $info=executor.createNumberExpression($e43.info); }  
+        { createLineReference((SLCommonTree)$e43.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(TILDE e44=expression 
-        { $info=executor.createBooleanExpression($e44.info); } )
+        { $info=executor.createBooleanExpression($e44.info); }  
+        { createLineReference((SLCommonTree)$e44.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(EXCLAMATION e45=expression 
-        { $info=executor.createBooleanExpression($e45.info); } )
+        { $info=executor.createBooleanExpression($e45.info); }  
+        { createLineReference((SLCommonTree)$e45.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(CAST_TYPE t2=type e46=expression 
         { $info=executor.createCastExpression($e46.info,$t2.treeElement); } )
     |   ^(CAST_EXPRESSION e47=expression e48=expression 
-        { $info=executor.createCastExpression($e47.info,$e48.info); } )
+        { $info=executor.createCastExpression($e47.info,$e48.info); }  
+        { createLineReference((SLCommonTree)$e47.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } 
+        { createLineReference((SLCommonTree)$e48.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
 
-    |   ^(SUPER_CONSTRUCTOR_INVOCATION e48=expression? a1=arguments 
-        { $info=executor.createSuperConstructorExpression($e48.info,$a1.expressions); } )
+    |   ^(SUPER_CONSTRUCTOR_INVOCATION e491=expression? a1=arguments 
+        { $info=executor.createSuperConstructorExpression($e491.info,$a1.expressions); }  
+        { createLineReference((SLCommonTree)$e491.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(SUPER_METHOD_INVOCATION e49=expression? DOT id1=Identifier ta1=typeArguments? a2=arguments 
-        { $info=executor.createSuperInvocationExpression($e49.info,$ta1.treeElements,$a2.expressions,$id1.text); } )
+        { $info=executor.createSuperInvocationExpression($e49.info,$ta1.treeElements,$a2.expressions,$id1.text); }  
+        { createLineReference((SLCommonTree)$e49.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(SUPER_FIELD_ACCESS e50=expression? DOT id2=Identifier 
-        { $info=executor.createSuperFieldExpression($e50.info,$id1.text); } )
+        { $info=executor.createSuperFieldExpression($e50.info,$id1.text); }
+        { createLineReference((SLCommonTree)$e50.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(TYPE_LITERAL t3=type DOT CLASS 
         { $info=executor.createTypeLiteralExpression($t3.treeElement); } )
     |   ^(THIS_EXPRESSION (e51=expression DOT)? THIS 
-        { $info=executor.createThisExpression(); } )
+        { $info=executor.createThisExpression(); }
+        { createLineReference((SLCommonTree)$e50.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(ARRAY_ACCESS e52=expression? dimensionValue 
-        { $info=executor.createArrayExpression($e52.info); } )
+        { $info=executor.createArrayExpression($e52.info); }
+        { createLineReference((SLCommonTree)$e52.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); } )
     |   ^(CLASS_INSTANCE_CREATION (e53=expression DOT)? t4=type a2=arguments acd1=anonymousClassDeclaration? 
-        { $info=executor.createClassInstanceExpression($e53.info, $t4.treeElement, $a2.expressions, $acd1.start); } )
+        { $info=executor.createClassInstanceExpression($e53.info, $t4.treeElement, $a2.expressions, $acd1.start); } 
+        { createLineReference((SLCommonTree)$e53.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(ARRAY_CREATION t5=type dimensionValue+ arrayInitializer? 
         { $info=executor.createArrayExpression($t5.treeElement,$arrayInitializer.info); } )
     |   ^(QUALIFIED_NAME
@@ -519,9 +576,11 @@ expression returns [ExpressionDto info]
             |e54=expression) (DOT id3=Identifier
             { sb.append('.');
               sb.append($id3.text); } )*
-        { $info=executor.createExpressionFromQualified(sb.toString(),$e54.info); } )
+        { $info=executor.createExpressionFromQualified(sb.toString(),$e54.info); } 
+        { createLineReference((SLCommonTree)$e54.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     |   ^(METHOD_INVOCATION (e55=expression DOT)? id4=Identifier ta2=typeArguments? a3=arguments 
-        { $info=executor.createMethodInvocation($e55.info,$id4.text,$ta2.treeElements,$a3.expressions); } )
+        { $info=executor.createMethodInvocation($e55.info,$id4.text,$ta2.treeElements,$a3.expressions); } 
+        { createLineReference((SLCommonTree)$e55.start,JavaReferenceConstants.EXPRESSION, $info.leaf,$info.resultType); })
     
     |   ^(INTEGER_LITERAL integerLiteral 
         { $info=executor.createIntegerLiteral(); } )
