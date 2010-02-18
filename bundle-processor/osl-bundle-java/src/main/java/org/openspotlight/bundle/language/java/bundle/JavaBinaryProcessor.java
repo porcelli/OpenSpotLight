@@ -42,27 +42,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JavaBinaryProcessor implements
-		BundleProcessorArtifactPhase<StreamArtifact> {
+BundleProcessorArtifactPhase<StreamArtifact> {
 	private static final String[] OBJ_NAMES = new String[] { "java.lang",
-			"Object" };
+	"Object" };
 
 	private static void addArrayField(final JavaGraphNodeSupport helper,
 			final JavaType newType, final FieldDeclaration field,
 			final TypeReference fieldType) throws Exception {
 		final ArrayTypeReference fieldTypeAsArray = (ArrayTypeReference) field
-				.getType();
+		.getType();
 		final TypeReference innerFieldType = fieldTypeAsArray.getType();
 		if (innerFieldType instanceof SimpleTypeReference) {
 			final String[] names = getNames(innerFieldType.getFullName());
 			helper.createField(newType, JavaType.class, names[0], names[1],
 					field.getName(), field.getAccess(), true, fieldTypeAsArray
-							.getArrayDimensions());
+					.getArrayDimensions());
 
 		} else if (innerFieldType instanceof PrimitiveTypeReference) {
 			helper.createField(newType, JavaTypePrimitive.class, "",
 					getPrimitiveName(innerFieldType), field.getName(), field
-							.getAccess(), true, fieldTypeAsArray
-							.getArrayDimensions());
+					.getAccess(), true, fieldTypeAsArray
+					.getArrayDimensions());
 		}
 	}
 
@@ -80,7 +80,7 @@ public class JavaBinaryProcessor implements
 
 	private static void addFieldInformation(final JavaGraphNodeSupport helper,
 			final TypeDefinition definition, final JavaType newType)
-			throws Exception {
+	throws Exception {
 		for (final FieldDeclaration field : definition.getFields()) {
 			if (!field.isPrivate()) {
 				final TypeReference fieldType = field.getType();
@@ -92,7 +92,7 @@ public class JavaBinaryProcessor implements
 				} else if (fieldType instanceof PrimitiveTypeReference) {
 					helper.createField(newType, JavaTypePrimitive.class, "",
 							getPrimitiveName(fieldType), field.getName(), field
-									.getAccess(), false, 0);
+							.getAccess(), false, 0);
 
 				} else if (fieldType instanceof ArrayTypeReference) {
 					addArrayField(helper, newType, field, fieldType);
@@ -122,13 +122,13 @@ public class JavaBinaryProcessor implements
 		} else if (innerType instanceof PrimitiveTypeReference) {
 			helper.createMethodReturnType(method, JavaTypePrimitive.class, "",
 					getPrimitiveName(innerType), true, methodReturTypeAsArr
-							.getArrayDimensions());
+					.getArrayDimensions());
 		}
 	}
 
 	private static void createMethodReturn(final JavaGraphNodeSupport helper,
 			final MethodDeclaration methodDecl, final JavaMethod method)
-			throws Exception {
+	throws Exception {
 		final TypeReference methodReturType = methodDecl.getReturnType();
 		if (methodReturType instanceof SimpleTypeReference) {
 			final String[] names = getNames(methodReturType.getFullName());
@@ -145,14 +145,14 @@ public class JavaBinaryProcessor implements
 	private static void createNodesFromJarData(
 			final List<TypeDefinition> types,
 			final JavaGraphNodeSupport helper, final SLGraphSession session)
-			throws Exception {
+	throws Exception {
 		final Map<TypeDefinition, JavaType> map = createTypes(types, helper);
-		int count = 0;
+		// int count = 0;
 		for (final TypeDefinition definition : types) {
 			if (!definition.isPrivate()) {
-				if (++count % 50 == 0) {
-					session.save();
-				}
+				// if (++count % 50 == 0) {
+				// session.save();
+				// }
 				addExtendsInfo(helper, definition);
 				addImplementsInfo(helper, definition);
 				final JavaType newType = map.get(definition);
@@ -163,14 +163,14 @@ public class JavaBinaryProcessor implements
 						final JavaMethod method = helper.createMethod(newType,
 								methodDecl.getFullName(), methodDecl.getName(),
 								methodDecl.isConstructor(), methodDecl
-										.getAccess());
+								.getAccess());
 						createMethodReturn(helper, methodDecl, method);
 						createThrownExceptionsOnMethod(helper, methodDecl,
 								method);
 						for (final MethodParameterDefinition paramDecl : methodDecl
 								.getParameters()) {
 							final TypeReference paramType = paramDecl
-									.getDataType();
+							.getDataType();
 							if (paramType instanceof SimpleTypeReference) {
 								final String[] names = getNames(paramType
 										.getFullName());
@@ -181,32 +181,32 @@ public class JavaBinaryProcessor implements
 							} else if (paramType instanceof PrimitiveTypeReference) {
 								helper.createMethodParameter(method,
 										JavaTypePrimitive.class, paramDecl
-												.getPosition(), "",
+										.getPosition(), "",
 										getPrimitiveName(paramType), false, 0);
 
 							} else if (paramType instanceof ArrayTypeReference) {
 								final ArrayTypeReference paramTypeAsArr = (ArrayTypeReference) paramType;
 								final TypeReference innerType = paramTypeAsArr
-										.getType();
+								.getType();
 								if (innerType instanceof SimpleTypeReference) {
 									final String[] names = getNames(innerType
 											.getFullName());
 									helper.createMethodParameter(method,
 											JavaType.class, paramDecl
-													.getPosition(), names[0],
+											.getPosition(), names[0],
 											names[1], true, paramTypeAsArr
-													.getArrayDimensions());
+											.getArrayDimensions());
 								} else if (innerType instanceof PrimitiveTypeReference) {
 									helper
-											.createMethodParameter(
-													method,
-													JavaTypePrimitive.class,
-													paramDecl.getPosition(),
-													"",
-													getPrimitiveName(innerType),
-													true,
-													paramTypeAsArr
-															.getArrayDimensions());
+									.createMethodParameter(
+											method,
+											JavaTypePrimitive.class,
+											paramDecl.getPosition(),
+											"",
+											getPrimitiveName(innerType),
+											true,
+											paramTypeAsArr
+											.getArrayDimensions());
 
 								}
 							}
@@ -220,7 +220,7 @@ public class JavaBinaryProcessor implements
 	private static void createThrownExceptionsOnMethod(
 			final JavaGraphNodeSupport helper,
 			final MethodDeclaration methodDecl, final JavaMethod method)
-			throws Exception {
+	throws Exception {
 		for (final TypeReference ex : methodDecl.getThrownExceptions()) {
 			final String[] names = getNames(ex.getFullName());
 			helper.addThrowsOnMethod(method, names[0], names[1]);
@@ -237,7 +237,7 @@ public class JavaBinaryProcessor implements
 						.getType());
 				final JavaType newType = helper.addTypeOnCurrentContext(
 						nodeType, definition.getPackageName(), definition
-								.getTypeName(), definition.getAccess());
+						.getTypeName(), definition.getAccess());
 				map.put(definition, newType);
 			}
 		}
@@ -245,7 +245,7 @@ public class JavaBinaryProcessor implements
 	}
 
 	public static String discoverContextName(final StreamArtifact artifact)
-			throws IOException, SLException {
+	throws IOException, SLException {
 		if (artifact.getContent().markSupported()) {
 			artifact.getContent().reset();
 		}
@@ -286,7 +286,7 @@ public class JavaBinaryProcessor implements
 
 	private static String getPrimitiveName(final TypeReference fieldType) {
 		return ((PrimitiveTypeReference) fieldType).getType().toString()
-				.toLowerCase();
+		.toLowerCase();
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -322,10 +322,10 @@ public class JavaBinaryProcessor implements
 			final String uniqueContextName = discoverContextName(artifact);
 			artifact.setUniqueContextName(uniqueContextName);
 			final SLContext slContext = context.getGraphSession()
-					.createContext(uniqueContextName);
+			.createContext(uniqueContextName);
 			slContext.getRootNode()
-					.setProperty(String.class, "classPathArtifactPath",
-							artifact.getArtifactCompleteName());
+			.setProperty(String.class, "classPathArtifactPath",
+					artifact.getArtifactCompleteName());
 			logger.info("creating context " + uniqueContextName
 					+ " for artifact " + artifact.getArtifactCompleteName());
 			final SLGraphSession session = context.getGraphSession();
@@ -334,11 +334,11 @@ public class JavaBinaryProcessor implements
 			final SLNode abstractContextRootNode = session.createContext(
 					JavaConstants.ABSTRACT_CONTEXT).getRootNode();
 			final JavaGraphNodeSupport helper = InvocationCacheFactory
-					.createIntoCached(JavaGraphNodeSupport.class,
-							new Class<?>[] { SLGraphSession.class,
-									SLNode.class, SLNode.class }, new Object[] {
-									session, currentContextRootNode,
-									abstractContextRootNode });
+			.createIntoCached(JavaGraphNodeSupport.class,
+					new Class<?>[] { SLGraphSession.class,
+				SLNode.class, SLNode.class }, new Object[] {
+				session, currentContextRootNode,
+				abstractContextRootNode });
 
 			createNodesFromJarData(types, helper, session);
 			return LastProcessStatus.PROCESSED;

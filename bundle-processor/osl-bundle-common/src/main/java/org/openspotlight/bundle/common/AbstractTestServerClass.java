@@ -46,15 +46,19 @@ public abstract class AbstractTestServerClass {
 			.openSession();
 			final Node node = session.getRootNode().getNode(
 					SLConsts.DEFAULT_JCR_ROOT_NAME);
-			if(getExportedFileName().contains("/")) {
-				new File(getExportedFileName().substring(0,getExportedFileName().lastIndexOf("/"))).mkdirs();
+			final String exportedFileName = getExportedFileName();
+			if (exportedFileName != null) {
+				if (exportedFileName.contains("/")) {
+					new File(exportedFileName.substring(0, exportedFileName
+							.lastIndexOf("/"))).mkdirs();
+				}
+				final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+						new FileOutputStream(exportedFileName));
+				session.exportSystemView(node.getPath(), bufferedOutputStream, false,
+						false);
+				bufferedOutputStream.flush();
+				bufferedOutputStream.close();
 			}
-			final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
-					new FileOutputStream(getExportedFileName()));
-			session.exportSystemView(node.getPath(), bufferedOutputStream, false,
-					false);
-			bufferedOutputStream.flush();
-			bufferedOutputStream.close();
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
@@ -76,9 +80,12 @@ public abstract class AbstractTestServerClass {
 					}
 				}, 7070, 60 * 1000 * 10L, getDescriptor());
 				System.err.println("Server waiting connections on port 7070");
-				while (true) {
-					Thread.sleep(5000);
+				if(!shutdownAtFinish()){
+					while (true) {
+						Thread.sleep(5000);
+					}
 				}
+				System.exit(0);
 			} catch (final Exception e) {
 				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 			}
@@ -106,6 +113,8 @@ public abstract class AbstractTestServerClass {
 
 	protected abstract JcrConnectionDescriptor getDescriptor();
 
-	public abstract String getExportedFileName();
+	protected abstract String getExportedFileName();
+
+	protected abstract boolean shutdownAtFinish();
 
 }

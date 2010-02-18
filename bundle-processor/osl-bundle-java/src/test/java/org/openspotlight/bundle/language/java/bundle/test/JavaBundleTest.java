@@ -138,4 +138,9 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		return "target/test-data/JavaBundleTest/junit-4.3.1-exported.xml";
 	}
 
+	@Override
+	protected boolean shutdownAtFinish() {
+		return false;
+	}
+
 }

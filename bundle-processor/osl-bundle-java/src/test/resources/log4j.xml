@@ -16,14 +16,11 @@
 			<param name="ConversionPattern" value="%d{yy/MM/dd HH:mm:ss:SSS} %p %c{2}: %m%n" />
 		</layout>
 	</appender>
-	<logger name="org.openspotlight.bundle.language.javazxczxc">
-		<priority value="debug" />
-		<appender-ref ref="console" />
-		<appender-ref ref="SocketAppender" />
-	</logger>
-	<logger name="org.openspotlight.common.util.Exceptions">
+	
+	<logger name="org.openspotlight">
 		<priority value="error" />
 		<appender-ref ref="console" />
 		<appender-ref ref="SocketAppender" />
 	</logger>
+	
 </log4j:configuration>

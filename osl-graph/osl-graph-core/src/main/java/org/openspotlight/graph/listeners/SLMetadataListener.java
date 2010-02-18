@@ -683,7 +683,6 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 						statement.append(classPairKeyNode.getPath()).append(
 						"/*[").append(SLConsts.PROPERTY_NAME_DIRECTION)
 						.append("=").append(direction).append(']');
-						treeSession.save();
 						final SLPersistentQuery query = treeSession
 						.createQuery(statement.toString(),
 								SLPersistentQuery.TYPE_XPATH);
