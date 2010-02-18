@@ -658,11 +658,6 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<dependency>
-				<groupId>antlr</groupId>
-				<artifactId>stringtemplate</artifactId>
-				<version>2.3b6</version>
-			</dependency>
 			<!-- Databases and JDBC Drivers -->
 			<dependency>
 				<groupId>net.sourceforge.jtds</groupId>

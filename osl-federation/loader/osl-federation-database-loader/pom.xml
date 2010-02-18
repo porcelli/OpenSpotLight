@@ -43,10 +43,6 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>antlr</groupId>
-			<artifactId>stringtemplate</artifactId>
-		</dependency>
 		<!-- xml easy manipulation -->
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
