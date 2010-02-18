@@ -17,8 +17,8 @@
 		</layout>
 	</appender>
 	
-	<logger name="org.openspotlight">
-		<priority value="error" />
+	<logger name="org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor">
+		<priority value="debug" />
 		<appender-ref ref="console" />
 		<appender-ref ref="SocketAppender" />
 	</logger>

@@ -60,6 +60,7 @@ import java.util.Set;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
@@ -573,15 +574,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
 				final SLNode source;
 				final SLNode target;
-				if (link.isBidirectional()) {
-					final SLNode[] sides = link.getSides();
-					source = sides[0];
-					target = sides[1];
-
-				} else {
-					source = link.getSource();
-					target = link.getTarget();
-				}
+				final SLNode[] sides = link.getSides();
+				source = sides[0];
+				target = sides[1];
 
 				final SLPersistentNode linkNode = event.getLinkNode();
 				final SLPersistentTreeSession treeSession = linkNode
@@ -681,8 +676,8 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 
 						final StringBuilder statement = new StringBuilder();
 						statement.append(classPairKeyNode.getPath()).append(
-						"/*[").append(SLConsts.PROPERTY_NAME_DIRECTION)
-						.append("=").append(direction).append(']');
+								"/*[").append(SLConsts.PROPERTY_NAME_DIRECTION)
+								.append("=").append(direction).append(']');
 						final SLPersistentQuery query = treeSession
 						.createQuery(statement.toString(),
 								SLPersistentQuery.TYPE_XPATH);
@@ -697,21 +692,23 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
 					if (metaLinkNode != null) {
 						if (linkProperty.getValue() != null) {
 							metaLinkNode.setProperty(String.class, propName,
-									linkProperty.getValue().getClass().getName());
+									linkProperty.getValue().getClass()
+									.getName());
 						}
 
 						final String propVisibilityName = SLCommonSupport
 						.toInternalPropertyName(propName + "."
 								+ SLConsts.PROPERTY_NAME_VISIBILITY);
 
-						metaLinkNode.setProperty(String.class, propVisibilityName,
-								event.getVisibility().toString());
+						metaLinkNode.setProperty(String.class,
+								propVisibilityName, event.getVisibility()
+								.toString());
 
 						linkPropertyKeyCache.add(propertyKey);
 					} else {
-						// Exceptions.catchAndLog(new NullPointerException(
-						// "metaLinkNode can't be null here"));// FIXME
-						linkPropertyKeyCache.add(propertyKey);
+						throw Exceptions.logAndReturn(new NullPointerException(
+						"metaLinkNode can't be null here"));// FIXME
+						// linkPropertyKeyCache.add(propertyKey);
 					}
 				}
 			} catch (final SLException e) {
