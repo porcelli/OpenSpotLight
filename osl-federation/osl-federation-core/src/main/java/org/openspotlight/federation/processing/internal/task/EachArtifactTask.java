@@ -70,7 +70,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EachArtifactTask<T extends Artifact> extends
-		RunnableWithBundleContext {
+RunnableWithBundleContext {
 
 	private static final Object SAVE_LOCK = new Object();
 	private final boolean first;
@@ -103,7 +103,7 @@ public class EachArtifactTask<T extends Artifact> extends
 		if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact
 				.getLastProcessStatus())
 				|| LastProcessStatus.EXCEPTION_DURRING_PROCESS
-						.equals(this.artifact.getLastProcessStatus())) {
+				.equals(this.artifact.getLastProcessStatus())) {
 			logger.info("ignoring " + this.artifact
 					+ " due to its last process status: "
 					+ this.artifact.getLastProcessStatus());
@@ -119,11 +119,11 @@ public class EachArtifactTask<T extends Artifact> extends
 			}
 			result = this.bundleProcessor.processArtifact(this.artifact,
 					this.currentContextImpl, getBundleContext());
-//			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
-//				getBundleContext().getGraphSession().save();
-//			} else {
-//				logger.warn("Didn't save because of its save behavior");
-//			}
+			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
+				getBundleContext().getGraphSession().save();
+			} else {
+				logger.warn("Didn't save because of its save behavior");
+			}
 		} catch (final Exception e) {
 			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
 			Exceptions.catchAndLog(e);
@@ -131,14 +131,14 @@ public class EachArtifactTask<T extends Artifact> extends
 					getBundleContext().getUser(),
 					LogEventType.ERROR,
 					"Error during artifact processing on bundle processor "
-							+ this.bundleProcessor.getClass().getName(),
+					+ this.bundleProcessor.getClass().getName(),
 					this.artifact);
 			throw e;
 		} finally {
 			this.artifact.setLastProcessStatus(result);
 			this.artifact.setLastProcessedDate(new Date());
 			final ArtifactFinder<T> finder = getBundleContext()
-					.getArtifactFinder(this.artifactType);
+			.getArtifactFinder(this.artifactType);
 			Exception ex = null;
 			if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
 				final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
@@ -147,10 +147,10 @@ public class EachArtifactTask<T extends Artifact> extends
 						if (ChangeType.EXCLUDED.equals(this.artifact
 								.getChangeType())) {
 							finderWithSaveCapabilitie
-									.markAsRemoved(this.artifact);
+							.markAsRemoved(this.artifact);
 						} else {
 							finderWithSaveCapabilitie
-									.addTransientArtifact(this.artifact);
+							.addTransientArtifact(this.artifact);
 						}
 						finderWithSaveCapabilitie.save();
 					}

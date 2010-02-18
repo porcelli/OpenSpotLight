@@ -150,15 +150,18 @@ public class JavaPublicElementsTreeExecutor {
 		try {
 			final String qualifiedParent = ((JavaType) peek).getQualifiedName()
 			+ ".";
+			final SLNode concreteParent = support.findEquivalend(peek,
+					WhatContext.CONCRETE);
 			final List<SLNode> nodes = new ArrayList<SLNode>();
 			for (final VariableDeclarationDto var : variables) {
-				final JavaDataField newField = peek.addNode(
+				final JavaDataField newField = concreteParent.addNode(
 						JavaDataField.class, var.getName());
 				support.session
 				.addLink(DataType.class, newField, type31, false);
 
 				nodes.add(newField);
-				support.session.addLink(TypeDeclares.class, peek, newField,
+				support.session.addLink(TypeDeclares.class, concreteParent,
+						newField,
 						false);
 				newField.setQualifiedName(qualifiedParent + var.getName());
 				for (final JavaModifier modifier : modifiers29) {
@@ -207,7 +210,7 @@ public class JavaPublicElementsTreeExecutor {
 	}
 
 	private <T extends JavaType> T createInnerTypeWithSateliteData(
-			final SLNode lalala, final String string,
+			final SLNode peek, final String string,
 			final List<JavaModifier> modifiers7,
 			final List<JavaType> annotations8,
 			final JavaType normalClassExtends9,
@@ -238,7 +241,7 @@ public class JavaPublicElementsTreeExecutor {
 						+ "creating type "
 						+ type.getSimpleName()
 						+ " with parent= "
-						+ lalala.getName()
+						+ peek.getName()
 						+ ", name="
 						+ string
 						+ ", modifiers="
@@ -250,29 +253,29 @@ public class JavaPublicElementsTreeExecutor {
 								.getName() : "") + ", implements="
 								+ implementsStr);
 			}
-			final SLNode peek = support.findEquivalend(lalala,
+			final SLNode concreteParent = support.findEquivalend(peek,
 					WhatContext.CONCRETE);
 			final T newClass = createNodeOnBothContexts(JavaType.class, type,
-					peek, string);
+					concreteParent, string);
 			final JavaType newAbstractClass = support.findEquivalend(newClass,
 					WhatContext.ABSTRACT);
 			final StringBuilder qualifiedNameBuff = new StringBuilder();
-			if (!(peek instanceof JavaPackage)) {
-				final JavaType typedType = (JavaType) peek;
+			if (!(concreteParent instanceof JavaPackage)) {
+				final JavaType typedType = (JavaType) concreteParent;
 				newClass.setInner(true);
 				newAbstractClass.setInner(true);
 				support.session
-				.addLink(InnerClass.class, newClass, peek, false);
-				SLNode abstractParent = support.findEquivalend(peek,
+				.addLink(InnerClass.class, newClass, concreteParent, false);
+				SLNode abstractParent = support.findEquivalend(concreteParent,
 						WhatContext.ABSTRACT);
 				if (abstractParent == null) {
-					abstractParent = peek;
+					abstractParent = concreteParent;
 				}
 				support.session.addLink(InnerClass.class, newAbstractClass,
 						abstractParent, false);
 				qualifiedNameBuff.append(typedType.getQualifiedName());
 			} else {
-				qualifiedNameBuff.append(peek.getName());
+				qualifiedNameBuff.append(concreteParent.getName());
 			}
 			if (logger.isDebugEnabled()
 					&& (currentPackage == null || newClass == null)) {
@@ -829,6 +832,9 @@ public class JavaPublicElementsTreeExecutor {
 			final List<JavaType> typeBodyDeclarationThrows37,
 			final boolean constructor) {
 		try {
+			final SLNode concreteParent = support.findEquivalend(peek,
+					WhatContext.CONCRETE);
+
 			final StringBuilder completeMethodName = new StringBuilder();
 			completeMethodName.append(string);
 			completeMethodName.append('(');
@@ -846,19 +852,21 @@ public class JavaPublicElementsTreeExecutor {
 			final String complMethodName = completeMethodName.toString();
 			final JavaMethod javaMethod;
 			if (constructor) {
-				javaMethod = peek.addNode(JavaMethodConstructor.class,
+				javaMethod = concreteParent.addNode(
+						JavaMethodConstructor.class,
 						complMethodName);
 			} else {
-				javaMethod = peek.addNode(JavaMethodMethod.class,
+				javaMethod = concreteParent.addNode(JavaMethodMethod.class,
 						complMethodName);
 			}
 			if (logger.isDebugEnabled()) {
 				logger.debug("creating method " + complMethodName
-						+ " inside its parent " + peek.getName() + " (id "
-						+ peek.getID() + ")");
+						+ " inside its parent " + concreteParent.getName()
+						+ " (id " + concreteParent.getID() + ")");
 			}
 			support.session
-			.addLink(TypeDeclares.class, peek, javaMethod, false);
+.addLink(TypeDeclares.class, concreteParent,
+					javaMethod, false);
 			javaMethod.setNumberOfParameters(formalParameters34.size());
 			// final int i = 0;
 			for (final VariableDeclarationDto param : formalParameters34) {
@@ -884,7 +892,7 @@ public class JavaPublicElementsTreeExecutor {
 			javaMethod.setQualifiedName(complMethodName);
 			javaMethod.setSimpleName(string);
 			final StringBuilder qualifiedNameBuff = new StringBuilder();
-			SLNode parent = peek;
+			SLNode parent = concreteParent;
 			do {
 				qualifiedNameBuff.append(parent.getName());
 				qualifiedNameBuff.append('.');
@@ -914,7 +922,8 @@ public class JavaPublicElementsTreeExecutor {
 				support.session.addLink(MethodReturns.class, javaMethod,
 						type36, false);
 			} else {
-				support.session.addLink(MethodReturns.class, javaMethod, peek,
+				support.session.addLink(MethodReturns.class, javaMethod,
+						concreteParent,
 						false);
 			}
 			if (typeBodyDeclarationThrows37 != null) {
