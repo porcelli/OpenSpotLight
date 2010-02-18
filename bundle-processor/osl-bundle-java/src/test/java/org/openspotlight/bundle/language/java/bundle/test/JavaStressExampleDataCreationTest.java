@@ -3,15 +3,10 @@ package org.openspotlight.bundle.language.java.bundle.test;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 
-import org.apache.jackrabbit.rmi.remote.RemoteRepository;
-import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
-import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
@@ -78,19 +73,7 @@ public class JavaStressExampleDataCreationTest {
 	public void setupResourcesAndCreateData() throws Exception {
 		JcrConnectionProvider.createFromData(descriptor)
 				.closeRepositoryAndCleanResources();
-		final javax.jcr.Repository repository = JcrConnectionProvider
-				.createFromData(descriptor).getRepository();
-
-		final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
-		final RemoteRepository remote = saFactory
-				.getRemoteRepository(repository);
-
-		final Registry registry = LocateRegistry
-				.createRegistry(Registry.REGISTRY_PORT);
-		registry.bind("jackrabbit.repository", remote);
-
-		RemoteGraphSessionServer server = null;
-		server = new RemoteGraphSessionServer(new UserAuthenticator() {
+		new RemoteGraphSessionServer(new UserAuthenticator() {
 
 			public boolean canConnect(final String userName,
 					final String password, final String clientHost) {

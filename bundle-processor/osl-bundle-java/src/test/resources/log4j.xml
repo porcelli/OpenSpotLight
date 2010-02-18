@@ -17,7 +17,19 @@
 		</layout>
 	</appender>
 	
-	<logger name="org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor">
+	<logger name="org.openspotlight.bundle.language.java">
+		<priority value="debug" />
+		<appender-ref ref="console" />
+		<appender-ref ref="SocketAppender" />
+	</logger>
+	
+	<logger name="org.openspotlight.common.util.Exceptions">
+		<priority value="debug" />
+		<appender-ref ref="console" />
+		<appender-ref ref="SocketAppender" />
+	</logger>
+	
+	<logger name="org.openspotlight.common.util.PatternMatcher">
 		<priority value="debug" />
 		<appender-ref ref="console" />
 		<appender-ref ref="SocketAppender" />
