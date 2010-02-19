@@ -91,7 +91,7 @@ public class Repository implements SimpleNodeType, Serializable {
 	/** The active. */
 	private boolean active;
 
-	private volatile int hashCode;
+	private volatile transient int hashCode;
 
 	public void acceptGroupVisitor(final GroupVisitor visitor) {
 		for (final Group entry : getGroups()) {

@@ -72,7 +72,7 @@ public class Column implements SimpleNodeType, Serializable {
 
 	private int decimalSize;
 
-	private TableArtifact table;
+	private transient TableArtifact table;
 
 	private volatile transient String description;
 
@@ -150,7 +150,7 @@ public class Column implements SimpleNodeType, Serializable {
 		String toString = description;
 		if (toString == null) {
 			toString = "Column " + name + " "
-					+ (table != null ? table.toString() : "no_table ");
+			+ (table != null ? table.toString() : "no_table ");
 			description = toString;
 		}
 		return toString;

@@ -65,7 +65,7 @@ import org.openspotlight.persist.annotation.TransientProperty;
  */
 @Name("path_element")
 public class PathElement implements Comparable<PathElement>, SimpleNodeType,
-		Serializable {
+Serializable {
 
 	private static final long serialVersionUID = -6520096568789344933L;
 
@@ -107,8 +107,8 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 		final String newPathString = pathString.startsWith("/") ? Strings
 				.removeBegginingFrom("/", pathString) : pathString;
 
-		return createFromPathString(initialPathElement.getCompletePath()
-				+ Artifact.SEPARATOR + newPathString);
+				return createFromPathString(initialPathElement.getCompletePath()
+						+ Artifact.SEPARATOR + newPathString);
 
 	}
 
@@ -116,12 +116,12 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 	private String name;
 
 	/** The parent. */
-	private PathElement parent;
+	private transient PathElement parent;
 
 	/** The hashcode. */
-	private volatile int hashcode;
+	private volatile transient int hashcode;
 
-	private volatile String completePathCache = null;
+	private volatile transient String completePathCache = null;
 
 	public PathElement() {
 
@@ -153,7 +153,7 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 		}
 		final PathElement that = (PathElement) o;
 		return Equals.eachEquality(name, that.name)
-				&& Equals.eachEquality(parent, that.parent);
+		&& Equals.eachEquality(parent, that.parent);
 
 	}
 
@@ -169,7 +169,7 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 				path = "/" + name;
 			} else {
 				path = getParent().getCompletePath() + Artifact.SEPARATOR
-						+ getName();
+				+ getName();
 			}
 			completePathCache = path;
 		}

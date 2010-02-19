@@ -72,14 +72,16 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  */
 @Name("artifact_source")
 public class ArtifactSource implements SimpleNodeType, Serializable,
-		LogableObject, Schedulable {
+LogableObject, Schedulable {
+
+	private boolean binary = false;
 
 	private static final long serialVersionUID = -2430120111043500137L;
 
 	private List<String> cronInformation = new ArrayList<String>();
 
 	/** The repository. */
-	private Repository repository;
+	private transient Repository repository;
 
 	/** The active. */
 	private boolean active;
@@ -93,7 +95,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable,
 	/** The mappings. */
 	private Set<ArtifactSourceMapping> mappings = new HashSet<ArtifactSourceMapping>();
 
-	private volatile int hashCode;
+	private volatile transient int hashCode;
 
 	public boolean equals(final Object o) {
 		if (!(o instanceof ArtifactSource)) {
@@ -102,7 +104,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable,
 		final ArtifactSource that = (ArtifactSource) o;
 		final boolean result = Equals.eachEquality(Arrays.of(this.getClass(),
 				name, repository), Arrays.andOf(that.getClass(), that.name,
-				that.repository));
+						that.repository));
 		return result;
 	}
 
@@ -166,6 +168,10 @@ public class ArtifactSource implements SimpleNodeType, Serializable,
 		return active;
 	}
 
+	public boolean isBinary() {
+		return binary;
+	}
+
 	/**
 	 * Sets the active.
 	 * 
@@ -174,6 +180,10 @@ public class ArtifactSource implements SimpleNodeType, Serializable,
 	 */
 	public void setActive(final boolean active) {
 		this.active = active;
+	}
+
+	public void setBinary(final boolean binary) {
+		this.binary = binary;
 	}
 
 	public void setCronInformation(final List<String> cronInformation) {
@@ -222,7 +232,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable,
 
 	public String toUniqueJobString() {
 		return getRepository().getName() + ":" + getName() + ":"
-				+ getInitialLookup();
+		+ getInitialLookup();
 	}
 
 }
