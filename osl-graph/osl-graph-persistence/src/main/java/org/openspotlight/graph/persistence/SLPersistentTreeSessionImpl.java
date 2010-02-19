@@ -167,6 +167,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         throws SLPersistentTreeSessionException {
         synchronized (lock) {
             try {
+                this.save();
                 return new SLPersistentQueryImpl(this, jcrSession, statement, type);
             } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

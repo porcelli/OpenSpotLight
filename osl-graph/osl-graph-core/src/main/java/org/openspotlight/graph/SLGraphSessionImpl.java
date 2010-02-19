@@ -1597,13 +1597,27 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 }
                 eventPoster.post(new SLGraphSessionSaveEvent(this));
                 logger.info("Starting to save graph");
-                treeSession.save();
+                this.saveJcr();
                 linkMemCounter.set(0);
                 SLNodeImpl.memCounter.set(0);
                 logger.info("Fisnihed to save graph");
                 logger.info("SLNodes : " + SLNodeImpl.counter.get());
                 logger.info("SLLinks : " + linkCounter.get());
+                logger.info("Fisnihed to save graph");
+            } catch (final SLException e) {
+                Exceptions.catchAndLog(e);
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to save the session.", e);
+            }
+        }
+    }
 
+    public void saveJcr() throws SLGraphSessionException {
+        synchronized (lock) {
+            try {
+                treeSession.save();
+                linkMemCounter.set(0);
+                SLNodeImpl.memCounter.set(0);
             } catch (final SLException e) {
                 Exceptions.catchAndLog(e);
                 throw new SLGraphSessionException(

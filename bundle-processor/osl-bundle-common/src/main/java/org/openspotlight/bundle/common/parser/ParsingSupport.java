@@ -48,7 +48,6 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLNode;
 
@@ -70,6 +69,9 @@ public abstract class ParsingSupport {
                                             final String statement,
                                             final SLNode... nodes ) {
         try {
+            if (lineInfo == null || lineInfo.getArtifact() == null) {
+                return;
+            }
             if (nodes != null) {
                 for (final SLNode node : nodes) {
                     if (node != null) {

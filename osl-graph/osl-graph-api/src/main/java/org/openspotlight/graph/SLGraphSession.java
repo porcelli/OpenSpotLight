@@ -568,4 +568,6 @@ public interface SLGraphSession extends LockContainer {
      */
     public void cleanCache() throws SLGraphSessionException;
 
+    public void saveJcr() throws SLGraphSessionException;
+
 }

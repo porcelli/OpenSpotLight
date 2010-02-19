@@ -74,7 +74,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 	private List<Group> groups = new ArrayList<Group>();
 
 	/** The repository. */
-	private Repository repository;
+	private transient Repository repository;
 
 	/** The type. */
 	private String type;
@@ -86,9 +86,9 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 	private boolean active;
 
 	/** The group. */
-	private Group group;
+	private transient Group group;
 
-	private volatile int hashCode;
+	private volatile transient int hashCode;
 
 	private List<BundleProcessorType> bundleTypes = new ArrayList<BundleProcessorType>();
 
@@ -261,6 +261,10 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 	}
 
 	public void setUniqueName(final String s) {
+	}
+
+	public String toString() {
+		return "Group: " + getUniqueName();
 	}
 
 	public String toUniqueJobString() {
