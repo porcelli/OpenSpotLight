@@ -67,7 +67,6 @@ import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SLLinkImpl.
  * 
@@ -78,7 +77,7 @@ public class SLLinkImpl implements SLLink {
     /** The session. */
     private final SLGraphSession            session;
 
-    private SLMetaLink                      metaLink    = null;
+    private SLMetaLink                      metaLink = null;
     /** The lock. */
     private final Lock                      lock;
 
@@ -87,12 +86,6 @@ public class SLLinkImpl implements SLLink {
 
     /** The event poster. */
     private final SLGraphSessionEventPoster eventPoster;
-
-    private volatile SLNode                 targetCache = null;
-
-    private volatile SLNode                 sourceCache = null;
-
-    private volatile SLNode[]               sidesCache  = null;
 
     /**
      * Instantiates a new sL link impl.
@@ -129,9 +122,6 @@ public class SLLinkImpl implements SLLink {
         lock = session.getLockObject();
         this.linkNode = linkNode;
         this.eventPoster = eventPoster;
-        sourceCache = source;
-        targetCache = target;
-        sidesCache = new SLNode[] {source, target};
     }
 
     /**
@@ -153,8 +143,6 @@ public class SLLinkImpl implements SLLink {
         lock = session.getLockObject();
         this.linkNode = linkNode;
         this.eventPoster = eventPoster;
-        sidesCache = sides;
-
     }
 
     /**
@@ -507,12 +495,7 @@ public class SLLinkImpl implements SLLink {
     public SLNode[] getSides() {
         synchronized (lock) {
             try {
-                SLNode[] sides = sidesCache;
-                if (sides == null || sides[0] == null || sides[1] == null) {
-                    sides = internalGetSides();
-                    sidesCache = sides;
-                }
-                return sides;
+                return internalGetSides();
             } catch (final SLException e) {
                 throw new SLRuntimeException(
                                              "Error on attempt to retrieve link sides.", e);
@@ -533,12 +516,7 @@ public class SLLinkImpl implements SLLink {
                                                         "SLLink.getSource() cannot be used on bidirecional links.");
             }
             try {
-                SLNode source = sourceCache;
-                if (source == null) {
-                    source = internalGetSource();
-                    sourceCache = source;
-                }
-                return source;
+                return internalGetSource();
             } catch (final SLException e) {
                 throw new SLRuntimeException(
                                              "Error on attempt to retrieve link source.", e);
@@ -559,12 +537,7 @@ public class SLLinkImpl implements SLLink {
                                                         "SLLink.getTarget() cannot be used on bidirecional links.");
             }
             try {
-                SLNode target = targetCache;
-                if (target == null) {
-                    target = internalGetTarget();
-                    targetCache = target;
-                }
-                return target;
+                return internalGetTarget();
             } catch (final SLException e) {
                 throw new SLRuntimeException(
                                              "Error on attempt to retrieve link source.", e);
