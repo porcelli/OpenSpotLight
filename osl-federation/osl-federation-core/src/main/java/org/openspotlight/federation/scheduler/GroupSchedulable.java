@@ -50,7 +50,6 @@ package org.openspotlight.federation.scheduler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -63,7 +62,7 @@ import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 
 public class GroupSchedulable implements
-		SchedulableCommandWithContextFactory<Group> {
+SchedulableCommandWithContextFactory<Group> {
 
 	private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
 
@@ -81,7 +80,6 @@ public class GroupSchedulable implements
 
 	}
 
-	private static final Semaphore GROUP_MUTEX = new Semaphore(1);
 
 	private ExecutionContextFactory factory;
 
@@ -92,23 +90,19 @@ public class GroupSchedulable implements
 
 	public void execute(final GlobalSettings settigns,
 			final ExecutionContext ctx, final Group schedulable)
-			throws Exception {
-		try {
-			GROUP_MUTEX.acquire();
-			final GroupVisitor visitor = new GroupVisitor();
-			SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
-					schedulable, visitor);
-			final Group[] groupsToExecute = visitor.getGroupsWithBundles()
-					.toArray(new Group[0]);
-			DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
-					password, descriptor, factory, settings, groupsToExecute);
-		} finally {
-			GROUP_MUTEX.release();
-		}
+	throws Exception {
+		final GroupVisitor visitor = new GroupVisitor();
+		SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
+				schedulable, visitor);
+		final Group[] groupsToExecute = visitor.getGroupsWithBundles()
+		.toArray(new Group[0]);
+		DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
+				password, descriptor, factory, settings, groupsToExecute);
+
 	}
 
 	public String getRepositoryNameBeforeExecution(final Group schedulable) {
-		return schedulable.getRepository().getName();
+		return schedulable.getRootRepository().getName();
 	}
 
 	public void setContextFactoryBeforeExecution(final GlobalSettings settings,
