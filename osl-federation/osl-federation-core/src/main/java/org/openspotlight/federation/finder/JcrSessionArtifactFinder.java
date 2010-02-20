@@ -71,11 +71,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JcrSessionArtifactFinder<A extends Artifact> extends
-		AbstractArtifactFinder<A> implements
-		ArtifactFinderWithSaveCapabilitie<A> {
+AbstractArtifactFinder<A> implements
+ArtifactFinderWithSaveCapabilitie<A> {
 
 	private static String ROOT_PATH = SharedConstants.DEFAULT_JCR_ROOT_NAME
-			+ "/{0}/artifacts";
+	+ "/{0}/artifacts";
 
 	public static <X extends Artifact> ArtifactFinder<X> createArtifactFinder(
 			final Class<X> artifactType, final Repository repository,
@@ -156,14 +156,14 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 			final String initialPath) {
 		try {
 			final String propertyName = MessageFormat
-					.format(SimplePersistSupport.PROPERTY_VALUE,
-							"artifactCompleteName");
+			.format(SimplePersistSupport.PROPERTY_VALUE,
+					"artifactCompleteName");
 			final String nodeName = SimplePersistSupport
-					.getJcrNodeName(this.artifactType);
+			.getJcrNodeName(this.artifactType);
 			final String xpath;
 			if (initialPath != null) {
 				xpath = MessageFormat.format(
-						"{0}//{1}[jcr:contains(@{2},''{3}'')]", this.rootPath,
+						"{0}//{1}[jcr:like(@{2},''%{3}%'')]", this.rootPath,
 						nodeName, propertyName, initialPath);
 			} else {
 				xpath = MessageFormat.format("{0}//{1}", this.rootPath,
@@ -171,7 +171,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 			}
 
 			final Query query = this.session.getWorkspace().getQueryManager()
-					.createQuery(xpath, Query.XPATH);
+			.createQuery(xpath, Query.XPATH);
 			final QueryResult result = query.execute();
 			final NodeIterator nodes = result.getNodes();
 			final Set<String> names = new HashSet<String>();
@@ -179,7 +179,7 @@ public class JcrSessionArtifactFinder<A extends Artifact> extends
 				final Node nextNode = nodes.nextNode();
 				if (nextNode.hasProperty(propertyName)) {
 					final String propVal = nextNode.getProperty(propertyName)
-							.getValue().getString();
+					.getValue().getString();
 					names.add(propVal);
 				}
 			}
