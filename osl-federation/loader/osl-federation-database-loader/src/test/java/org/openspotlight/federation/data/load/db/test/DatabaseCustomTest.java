@@ -93,7 +93,7 @@ public class DatabaseCustomTest {
 
 		final GlobalSettings configuration = new GlobalSettings();
 		configuration
-				.setArtifactFinderRegistryClass(SampleDatabaseCustomArtifactRegistry.class);
+		.setArtifactFinderRegistryClass(SampleDatabaseCustomArtifactRegistry.class);
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
 		configuration.setNumberOfParallelThreads(1);
 
@@ -102,7 +102,7 @@ public class DatabaseCustomTest {
 				"DatabaseArtifactLoaderTest").getArtifactSources().iterator()
 				.next();
 		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+		.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
 		finder = new DatabaseCustomArtifactFinder(bundle);
 	}
 
@@ -113,25 +113,25 @@ public class DatabaseCustomTest {
 				"sa", "");
 
 		connection
-				.prepareStatement(
-						"create alias newExampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\" ")
+		.prepareStatement(
+				"create alias newExampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\" ")
 				.execute();
 		connection
-				.prepareStatement(
-						"create alias newExampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\"")
+		.prepareStatement(
+				"create alias newExampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\"")
 				.execute();
 		connection.commit();
 		connection.close();
 
 		final Iterable<Artifact> loadedArtifacts = artifactLoader
-				.loadArtifactsFromSource(bundle);
+		.loadArtifactsFromSource(bundle);
 		assertThat(loadedArtifacts, is(notNullValue()));
 		assertThat(loadedArtifacts.iterator().hasNext(), is(true));
 
 		final RoutineArtifact exampleProcedure = (RoutineArtifact) finder
-				.findByPath("PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE");
+		.findByPath("/PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE");
 		final RoutineArtifact exampleFunction = (RoutineArtifact) finder
-				.findByPath("PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION");
+		.findByPath("/PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION");
 		assertThat(exampleProcedure.getType(), is(RoutineType.PROCEDURE));
 		assertThat(exampleFunction.getType(), is(RoutineType.FUNCTION));
 		connection = getConnection(
@@ -139,7 +139,7 @@ public class DatabaseCustomTest {
 				"sa", "");
 
 		connection.prepareStatement("drop alias newExampleProcedure ")
-				.execute();
+		.execute();
 		connection.prepareStatement("drop alias newExampleFunction ").execute();
 		connection.commit();
 		connection.close();
@@ -149,47 +149,47 @@ public class DatabaseCustomTest {
 	@Test
 	public void shouldLoadTablesAndViews() throws Exception {
 		final DbArtifactSource bundle = (DbArtifactSource) createH2DbConfiguration(
-				"DatabaseArtifactLoaderTest").getArtifactSources().iterator()
-				.next();
+		"DatabaseArtifactLoaderTest").getArtifactSources().iterator()
+		.next();
 		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+		.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
 		final Connection connection = getConnection(
 				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
 				"sa", "");
 		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+		.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
 		connection
-				.prepareStatement(
-						"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
+		.prepareStatement(
+				"create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
 				.execute();
 		connection
-				.prepareStatement(
-						"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable")
+		.prepareStatement(
+				"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable")
 				.execute();
 		connection
-				.prepareStatement(
-						"create table anotherTable(i int not null primary key, i_fk int)")
+		.prepareStatement(
+				"create table anotherTable(i int not null primary key, i_fk int)")
 				.execute();
 
 		connection
-				.prepareStatement(
-						"alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)")
+		.prepareStatement(
+				"alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)")
 				.execute();
 
 		connection.commit();
 		connection.close();
 
 		final Iterable<Artifact> loadedArtifacts = artifactLoader
-				.loadArtifactsFromSource(bundle);
+		.loadArtifactsFromSource(bundle);
 		final TableArtifact exampleTable = (TableArtifact) finder
-				.findByPath("PUBLIC/DB/TABLE/EXAMPLETABLE");
+		.findByPath("/PUBLIC/DB/TABLE/EXAMPLETABLE");
 		final TableArtifact exampleView = (TableArtifact) finder
-				.findByPath("PUBLIC/DB/VIEW/EXAMPLEVIEW");
+		.findByPath("/PUBLIC/DB/VIEW/EXAMPLEVIEW");
 		assertThat(exampleTable, is(TableArtifact.class));
 		final Set<DatabaseCustomArtifact> pks = finder
-				.listByPath(Constraints.PRIMARY_KEY.toString());
+		.listByPath(Constraints.PRIMARY_KEY.toString());
 		final Set<DatabaseCustomArtifact> fks = finder
-				.listByPath(Constraints.FOREIGN_KEY.toString());
+		.listByPath(Constraints.FOREIGN_KEY.toString());
 
 		assertThat(loadedArtifacts, is(notNullValue()));
 		assertThat(loadedArtifacts.iterator().hasNext(), is(true));

@@ -58,7 +58,8 @@ ArtifactFinderBySourceProvider {
 
 	public <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
 			final Class<? extends Artifact> artifactType, final S source) {
-		if (artifactType.equals(StringArtifact.class) && !source.isBinary()) {
+		if (artifactType.equals(StringArtifact.class) && !source.isBinary()
+				&& source.getClass().equals(ArtifactSource.class)) {
 			return new FileSystemStringArtifactFinder(source);
 		}
 		if (artifactType.equals(StreamArtifact.class) && source.isBinary()) {

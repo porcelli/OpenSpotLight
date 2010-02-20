@@ -83,7 +83,7 @@ import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 
 public class DatabaseCustomArtifactFinder extends
-		AbstractDatabaseArtifactFinder<DatabaseCustomArtifact> {
+AbstractDatabaseArtifactFinder<DatabaseCustomArtifact> {
 
 	public static enum Constraints {
 		FOREIGN_KEY, PRIMARY_KEY
@@ -121,17 +121,17 @@ public class DatabaseCustomArtifactFinder extends
 				final RoutineType typeAsEnum = RoutineType.getTypeByInt(type);
 				String description;
 				if (catalog != null) {
-					description = MessageFormat.format("{0}/{1}/{2}/{3}", //$NON-NLS-1$
+					description = MessageFormat.format("/{0}/{1}/{2}/{3}", //$NON-NLS-1$
 							schema, typeAsEnum, catalog, name);
 				} else {
-					description = MessageFormat.format("{0}/{1}/{2}", //$NON-NLS-1$
+					description = MessageFormat.format("/{0}/{1}/{2}", //$NON-NLS-1$
 							schema, typeAsEnum, name);
 
 				}
 
 				final RoutineArtifact newMetadata = Artifact
-						.createArtifact(RoutineArtifact.class, description,
-								ChangeType.INCLUDED);
+				.createArtifact(RoutineArtifact.class, description,
+						ChangeType.INCLUDED);
 				newMetadata.setCatalogName(catalog);
 				newMetadata.setSchemaName(schema);
 				newMetadata.setArtifactName(name);
@@ -140,7 +140,7 @@ public class DatabaseCustomArtifactFinder extends
 						catalog, schema, name, null);
 				while (columnsRs.next()) {
 					final String columnName = columnsRs
-							.getString("COLUMN_NAME"); //$NON-NLS-1$
+					.getString("COLUMN_NAME"); //$NON-NLS-1$
 					final int columnType = columnsRs.getInt("DATA_TYPE"); //$NON-NLS-1$
 					final int routineType = columnsRs.getInt("COLUMN_TYPE"); //$NON-NLS-1$
 					final int length = columnsRs.getInt("LENGTH"); //$NON-NLS-1$
@@ -180,10 +180,10 @@ public class DatabaseCustomArtifactFinder extends
 				final String tableType = tableRs.getString("TABLE_TYPE"); //$NON-NLS-1$
 				String description;
 				if (catalog != null) {
-					description = MessageFormat.format("{0}/{1}/{2}/{3}", //$NON-NLS-1$
+					description = MessageFormat.format("/{0}/{1}/{2}/{3}", //$NON-NLS-1$
 							schema, catalog, tableType, tableName);
 				} else {
-					description = MessageFormat.format("{0}/{1}/{2}", //$NON-NLS-1$
+					description = MessageFormat.format("/{0}/{1}/{2}", //$NON-NLS-1$
 							schema, tableType, tableName);
 
 				}
@@ -193,8 +193,8 @@ public class DatabaseCustomArtifactFinder extends
 				if (tableMetadata.containsKey(description)
 						&& !description.startsWith(Constraints.FOREIGN_KEY
 								.toString())
-						&& !description.startsWith(Constraints.PRIMARY_KEY
-								.toString())) {
+								&& !description.startsWith(Constraints.PRIMARY_KEY
+										.toString())) {
 					desc = (TableArtifact) tableMetadata.get(description);
 				} else {
 					if ("VIEW".equals(tableType)) { //$NON-NLS-1$
@@ -236,10 +236,10 @@ public class DatabaseCustomArtifactFinder extends
 					final String fromColumn = fkRs.getString("PKCOLUMN_NAME");
 
 					final String keyArtifactName = MessageFormat.format(
-							"{0}/{1}", Constraints.FOREIGN_KEY, fkName);
+							"/{0}/{1}", Constraints.FOREIGN_KEY, fkName);
 					final ForeignKeyConstraintArtifact fk = Artifact
-							.createArtifact(ForeignKeyConstraintArtifact.class,
-									keyArtifactName, ChangeType.INCLUDED);
+					.createArtifact(ForeignKeyConstraintArtifact.class,
+							keyArtifactName, ChangeType.INCLUDED);
 					fk.setToCatalogName(thatCatalog);
 					fk.setToColumnName(thatColumn);
 					fk.setToSchemaName(thatSchema);
@@ -261,10 +261,10 @@ public class DatabaseCustomArtifactFinder extends
 					final ColumnType type = ColumnType.getTypeByInt(columnRs
 							.getInt("DATA_TYPE")); //$NON-NLS-1$
 					final NullableSqlType nullable = NullableSqlType
-							.getNullableByInt(columnRs.getInt("NULLABLE")); //$NON-NLS-1$
+					.getNullableByInt(columnRs.getInt("NULLABLE")); //$NON-NLS-1$
 					final Integer columnSize = columnRs.getInt("COLUMN_SIZE"); //$NON-NLS-1$
 					final Integer decimalSize = columnRs
-							.getInt("DECIMAL_DIGITS"); //$NON-NLS-1$
+					.getInt("DECIMAL_DIGITS"); //$NON-NLS-1$
 
 					Column column = new Column();
 					column.setTable(desc);
@@ -281,11 +281,12 @@ public class DatabaseCustomArtifactFinder extends
 					if (pks != null) {
 						for (final String pkName : pks) {
 							final String pkArtifactName = MessageFormat.format(
-									"{0}/{1}", Constraints.PRIMARY_KEY, pkName);
+"/{0}/{1}",
+											Constraints.PRIMARY_KEY, pkName);
 							final PrimaryKeyConstraintArtifact pk = Artifact
-									.createArtifact(
-											PrimaryKeyConstraintArtifact.class,
-											pkArtifactName, ChangeType.INCLUDED);
+							.createArtifact(
+									PrimaryKeyConstraintArtifact.class,
+									pkArtifactName, ChangeType.INCLUDED);
 							pk.setConstraintName(pkName);
 							pk.setColumnName(column.getName());
 							pk.setTableName(column.getTable().getTableName());

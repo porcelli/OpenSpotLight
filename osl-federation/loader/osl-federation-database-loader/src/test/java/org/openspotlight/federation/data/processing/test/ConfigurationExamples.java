@@ -94,10 +94,10 @@ public class ConfigurationExamples {
 		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
 		mapping.setSource(artifactSource);
 		artifactSource.getMappings().add(mapping);
-		mapping.setFrom("*/");
+		mapping.setFrom("/PUBLIC");
 		mapping.setTo("/databaseArtifacts");
 		artifactSource.getMappings().add(mapping);
-		mapping.getIncludeds().add("*");
+		mapping.getIncludeds().add("**");
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
@@ -113,14 +113,14 @@ public class ConfigurationExamples {
 		return createDatabaseRepository("db2 Repository", "db2 Group",
 				"db2 Connection", "db2admin", "db2admin", DatabaseType.DB2,
 				"jdbc:db2://localhost:50000/SAMPLE",
-				"com.ibm.db2.jcc.DB2Driver");
+		"com.ibm.db2.jcc.DB2Driver");
 	}
 
 	public static Repository createH2DbConfiguration(final String dirName) {
 		return createDatabaseRepository("H2 Repository", "h2 Group",
 				"H2 Connection", "sa", null, DatabaseType.H2,
 				"jdbc:h2:./target/test-data/" + dirName + "/h2/db",
-				"org.h2.Driver");
+		"org.h2.Driver");
 	}
 
 	public static Repository createMySqlDbConfiguration() {
@@ -140,7 +140,7 @@ public class ConfigurationExamples {
 				"postgresql Group", "postgresql Connection", "postgres",
 				"postgres", DatabaseType.POSTGRES,
 				"jdbc:postgresql://localhost:5432/osl?charSet=UTF8",
-				"org.postgresql.Driver");
+		"org.postgresql.Driver");
 	}
 
 	public static Repository createSqlServerDbConfiguration() {
@@ -148,7 +148,7 @@ public class ConfigurationExamples {
 				"sqlserver Group", "sqlserver Connection", "sa", null,
 				DatabaseType.SQL_SERVER,
 				"jdbc:jtds:sqlserver://localhost:49385",
-				"net.sourceforge.jtds.jdbc.Driver");
+		"net.sourceforge.jtds.jdbc.Driver");
 	}
 
 }
