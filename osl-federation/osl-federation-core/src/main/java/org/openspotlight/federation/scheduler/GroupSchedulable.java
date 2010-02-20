@@ -48,8 +48,8 @@
  */
 package org.openspotlight.federation.scheduler;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -58,6 +58,7 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommandWithContextFactory;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.slf4j.Logger;
@@ -68,9 +69,9 @@ SchedulableCommandWithContextFactory<Group> {
 
 	private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
 
-		private final List<Group> groupsWithBundles = new ArrayList<Group>();
+		private final Set<Group> groupsWithBundles = new LinkedHashSet<Group>();
 
-		public List<Group> getGroupsWithBundles() {
+		public Set<Group> getGroupsWithBundles() {
 			return groupsWithBundles;
 		}
 
@@ -92,7 +93,6 @@ SchedulableCommandWithContextFactory<Group> {
 
 	}
 
-
 	private ExecutionContextFactory factory;
 
 	private JcrConnectionDescriptor descriptor;
@@ -101,18 +101,21 @@ SchedulableCommandWithContextFactory<Group> {
 	private GlobalSettings settings;
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(GroupSchedulable.class);
+	.getLogger(GroupSchedulable.class);
 
+	@SuppressWarnings("unchecked")
 	public void execute(final GlobalSettings settigns,
 			final ExecutionContext ctx, final Group schedulable)
 	throws Exception {
 		final GroupVisitor visitor = new GroupVisitor();
-		SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
-				schedulable, visitor);
-		final Group[] groupsToExecute = visitor.getGroupsWithBundles()
-		.toArray(new Group[0]);
+		SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, schedulable,
+				visitor, TransientProperty.class);
+		final Group[] groupsToExecute = visitor.getGroupsWithBundles().toArray(
+				new Group[0]);
 		if (logger.isDebugEnabled()) {
-			logger.debug("about to execute bundles " + visitor.getGroupsWithBundles() + " found inside group " + schedulable);
+			logger.debug("about to execute bundles "
+					+ visitor.getGroupsWithBundles() + " found inside group "
+					+ schedulable);
 		}
 		DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
 				password, descriptor, factory, settings, groupsToExecute);

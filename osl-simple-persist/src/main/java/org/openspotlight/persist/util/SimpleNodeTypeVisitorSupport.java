@@ -49,6 +49,7 @@
 package org.openspotlight.persist.util;
 
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +68,7 @@ import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMetho
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
  * Class with static method to accept visitor of beans of type
@@ -95,13 +97,14 @@ public class SimpleNodeTypeVisitorSupport {
 	@SuppressWarnings("unchecked")
 	public static <S extends SimpleNodeType> void acceptVisitorOn(
 			final Class<S> targetType, final SimpleNodeType rootNode,
-			final SimpleNodeTypeVisitor<S> visitor) {
+			final SimpleNodeTypeVisitor<S> visitor,
+			final Class<? extends Annotation>... annotationsToIgnore) {
 		try {
 			if (targetType.isAssignableFrom(rootNode.getClass())) {
 				visitor.visitBean((S) rootNode);
 			}
 			final List<S> allNodes = SimpleNodeTypeVisitorSupport.fillItems(
-					targetType, rootNode);
+					targetType, rootNode, annotationsToIgnore);
 			for (final S s : allNodes) {
 				visitor.visitBean(s);
 			}
@@ -112,11 +115,11 @@ public class SimpleNodeTypeVisitorSupport {
 
 	@SuppressWarnings("unchecked")
 	public static <S extends SimpleNodeType> List<S> fillItems(
-			final Class<S> targetType, final SimpleNodeType rootNode)
+			final Class<S> targetType, final SimpleNodeType rootNode,final Class<? extends Annotation>... annotationsToIgnore)
 			throws Exception {
 		final Set<SimpleNodeType> allItemsToVisit = new LinkedHashSet<SimpleNodeType>();
 		final Set<SimpleNodeType> currentItemsToVisit = SimpleNodeTypeVisitorSupport
-				.fillItems(rootNode);
+		.fillItems(rootNode,annotationsToIgnore);
 		int lastSize = 0;
 		while (currentItemsToVisit.size() != 0) {
 			allItemsToVisit.addAll(currentItemsToVisit);
@@ -130,7 +133,7 @@ public class SimpleNodeTypeVisitorSupport {
 			currentItemsToVisit.clear();
 			for (final SimpleNodeType node : copy) {
 				final Set<SimpleNodeType> newNodes = SimpleNodeTypeVisitorSupport
-						.fillItems(node);
+				.fillItems(node,annotationsToIgnore);
 				currentItemsToVisit.addAll(newNodes);
 			}
 			lastSize = allItemsToVisit.size();
@@ -146,7 +149,8 @@ public class SimpleNodeTypeVisitorSupport {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Set<SimpleNodeType> fillItems(final SimpleNodeType rootNode)
+	public static Set<SimpleNodeType> fillItems(final SimpleNodeType rootNode,
+			final Class<? extends Annotation>... annotationsToIgnore)
 			throws Exception {
 
 		if (rootNode == null) {
@@ -155,24 +159,29 @@ public class SimpleNodeTypeVisitorSupport {
 		final Set<SimpleNodeType> itemsToVisit = new LinkedHashSet<SimpleNodeType>();
 
 		final PropertyDescriptor[] allDescriptors = PropertyUtils
-				.getPropertyDescriptors(rootNode);
-		for (final PropertyDescriptor desc : allDescriptors) {
+		.getPropertyDescriptors(rootNode);
+		looping: for (final PropertyDescriptor desc : allDescriptors) {
 			final Method readMethod = desc.getReadMethod();
 			if (readMethod.isAnnotationPresent(ParentProperty.class)) {
-				continue;
+				continue looping;
+			}
+			for (final Class<? extends Annotation> annotation : annotationsToIgnore) {
+				if (readMethod.isAnnotationPresent(annotation)) {
+					continue looping;
+				}
 			}
 			final Class<?> currentType = desc.getPropertyType();
 			if (SimpleNodeType.class.isAssignableFrom(currentType)) {
 				final SimpleNodeType bean = (SimpleNodeType) readMethod
-						.invoke(rootNode);
+				.invoke(rootNode);
 				itemsToVisit.add(bean);
 			} else if (Iterable.class.isAssignableFrom(currentType)) {
 				final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection
-						.unwrapCollectionFromMethodReturn(readMethod);
+				.unwrapCollectionFromMethodReturn(readMethod);
 				if (SimpleNodeType.class.isAssignableFrom(metadata
 						.getItemType())) {
 					final Iterable<SimpleNodeType> collection = (Iterable<SimpleNodeType>) readMethod
-							.invoke(rootNode);
+					.invoke(rootNode);
 					if (collection != null) {
 						for (final SimpleNodeType t : collection) {
 							itemsToVisit.add(t);
@@ -181,11 +190,11 @@ public class SimpleNodeTypeVisitorSupport {
 				}
 			} else if (Map.class.isAssignableFrom(currentType)) {
 				final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata = Reflection
-						.unwrapMapFromMethodReturn(readMethod);
+				.unwrapMapFromMethodReturn(readMethod);
 				if (SimpleNodeType.class.isAssignableFrom(metadata
 						.getItemType().getK2())) {
 					final Map<Object, SimpleNodeType> map = (Map<Object, SimpleNodeType>) readMethod
-							.invoke(rootNode);
+					.invoke(rootNode);
 					if (map != null) {
 						for (final Entry<Object, SimpleNodeType> entry : map
 								.entrySet()) {
