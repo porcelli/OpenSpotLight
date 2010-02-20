@@ -70,7 +70,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
+import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.AutoboxedBy;
 import org.openspotlight.bundle.language.java.metamodel.link.Autoboxes;
 import org.openspotlight.bundle.language.java.metamodel.link.Extends;

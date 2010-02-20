@@ -13,8 +13,8 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.antlr.runtime.tree.CommonTree;
+import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
-import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.DataComparison;
 import org.openspotlight.bundle.language.java.metamodel.link.DataParameter;
 import org.openspotlight.bundle.language.java.metamodel.link.DataPropagation;

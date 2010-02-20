@@ -16,6 +16,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common-metamodel</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-bundle-common</artifactId>
 		</dependency>
 		<dependency>

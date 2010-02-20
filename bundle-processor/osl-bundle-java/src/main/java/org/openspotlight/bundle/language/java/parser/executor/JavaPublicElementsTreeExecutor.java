@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.antlr.runtime.tree.CommonTree;
+import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.AnottatedBy;
 import org.openspotlight.bundle.language.java.metamodel.link.ArrayOfType;
 import org.openspotlight.bundle.language.java.metamodel.link.DataType;
