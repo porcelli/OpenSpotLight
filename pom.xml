@@ -86,6 +86,7 @@
 		<module>osl-federation</module>
 		<module>osl-web</module>
 		<module>bundle-processor/osl-bundle-common</module>
+		<module>bundle-processor/osl-common-metamodel</module>
 		<module>bundle-processor/osl-bundle-java</module>
 		<module>bundle-processor/osl-bundle-db</module>
 	</modules>
@@ -276,6 +277,11 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-bundle-common</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-common-metamodel</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>

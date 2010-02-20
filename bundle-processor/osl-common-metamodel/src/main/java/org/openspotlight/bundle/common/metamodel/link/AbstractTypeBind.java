@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -47,22 +46,16 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.bundle.db.metamodel.link;
+package org.openspotlight.bundle.common.metamodel.link;
 
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Abstract Type Bind.
+ * The Interface for a link between Abstract Type Bind. Java Context A2B Java Type
  * 
- *
- * Column A2B Column
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Abstract Type Bind")
+@SLDescription( "Abstract Type Bind" )
 public interface AbstractTypeBind extends SLLink {
 }
-
-
-        

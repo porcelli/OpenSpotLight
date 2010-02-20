@@ -3,8 +3,8 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
+import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.InnerClass;
 import org.openspotlight.bundle.language.java.metamodel.link.PackageType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;

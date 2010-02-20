@@ -52,8 +52,8 @@ import static org.openspotlight.graph.util.GraphManipulationSupport.links;
 
 import java.util.Arrays;
 
+import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.db.DBConstants;
-import org.openspotlight.bundle.db.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.db.metamodel.link.CatalogTableView;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.link.ConstraintDatabaseColumn;

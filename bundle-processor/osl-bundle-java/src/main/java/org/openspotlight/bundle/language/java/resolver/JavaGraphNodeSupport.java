@@ -55,8 +55,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.objectweb.asm.Opcodes;
+import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.metamodel.link.AutoboxedBy;
 import org.openspotlight.bundle.language.java.metamodel.link.Autoboxes;
 import org.openspotlight.bundle.language.java.metamodel.link.DataType;
