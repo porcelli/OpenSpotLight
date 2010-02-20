@@ -154,13 +154,13 @@ public class ArtifactLoaderFactory {
 			try {
 				this.configuration = configuration;
 				final ArtifactFinderRegistry registry = this.configuration
-						.getArtifactFinderRegistryClass().newInstance();
+				.getArtifactFinderRegistryClass().newInstance();
 				artifactProviders = registry
-						.getRegisteredArtifactFinderProviders();
+				.getRegisteredArtifactFinderProviders();
 				Assertions.checkCondition("artifactProvidersNotEmpty",
 						artifactProviders.size() > 0);
 				sleepTime = configuration
-						.getDefaultSleepingIntervalInMilliseconds();
+				.getDefaultSleepingIntervalInMilliseconds();
 				Assertions.checkCondition("sleepTimePositive", sleepTime > 0);
 			} catch (final Exception e) {
 				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -206,11 +206,11 @@ public class ArtifactLoaderFactory {
 				for (final ArtifactFinderBySourceProvider provider : artifactProviders) {
 					for (final Class<? extends Artifact> type : artifactTypes) {
 						final ArtifactFinder<? extends Artifact> artifactFinder = provider
-								.getForType(type, source);
+						.getForType(type, source);
 						if (artifactFinder != null) {
 							sourcesToLoad
-									.add(new Pair<ArtifactFinder<?>, ArtifactSource>(
-											artifactFinder, source));
+							.add(new Pair<ArtifactFinder<?>, ArtifactSource>(
+									artifactFinder, source));
 							logger.info("added artifact finder"
 									+ artifactFinder + " for source "
 									+ source.getName() + ":"
@@ -221,8 +221,8 @@ public class ArtifactLoaderFactory {
 			}
 			if (sourcesToLoad.size() == 0) {
 				logger
-						.info("didn't find any artifact finder for artifact sources "
-								+ Arrays.toString(sources));
+				.info("didn't find any artifact finder for artifact sources "
+						+ Arrays.toString(sources));
 				return Collections.emptySet();
 			}
 			for (final Pair<ArtifactFinder<?>, ArtifactSource> pair : new ArrayList<Pair<ArtifactFinder<?>, ArtifactSource>>(
@@ -237,27 +237,28 @@ public class ArtifactLoaderFactory {
 										+ mapping.getSource().getName()
 										+ ""
 										+ mapping.getSource()
-												.getInitialLookup() + " "
+										.getInitialLookup() + " "
 										+ mapping.getFrom() + "->"
 										+ mapping.getTo());
 
 								final Set<String> rawNames = pair.getK1()
-										.retrieveAllArtifactNames(
-												mapping.getFrom());
+								.retrieveAllArtifactNames(
+										mapping.getFrom());
 
 								final FilterResult newNames = filterNamesByPattern(
+										Strings.rootPath(mapping.getFrom()),
 										rawNames, mapping.getIncludeds(),
 										mapping.getExcludeds(), false);
 
 								logger
-										.info("done finding names for source mapping "
-												+ mapping.getSource().getName()
-												+ ""
-												+ mapping.getSource()
-														.getInitialLookup()
-												+ " "
-												+ mapping.getFrom()
-												+ "->" + mapping.getTo());
+								.info("done finding names for source mapping "
+										+ mapping.getSource().getName()
+										+ ""
+										+ mapping.getSource()
+										.getInitialLookup()
+										+ " "
+										+ mapping.getFrom()
+										+ "->" + mapping.getTo());
 								logger.info("included names: "
 										+ newNames.getIncludedNames());
 								logger.info("excluded names: "
@@ -268,8 +269,8 @@ public class ArtifactLoaderFactory {
 										.getIncludedNames()) {
 
 									sourcesToProcess
-											.add(new SourcesToProcessItems(pair
-													.getK1(), name, mapping));
+									.add(new SourcesToProcessItems(pair
+											.getK1(), name, mapping));
 								}
 							}
 						} catch (final Exception e) {
@@ -298,9 +299,9 @@ public class ArtifactLoaderFactory {
 						try {
 
 							final Artifact loaded = sourceToProcess.artifactFinder
-									.findByPath(sourceToProcess.artifactName);
+							.findByPath(sourceToProcess.artifactName);
 							String currentPathString = loaded.getParent()
-									.getCompletePath();
+							.getCompletePath();
 							if (!currentPathString.startsWith("/")) {
 								currentPathString = "/" + currentPathString;
 							}
@@ -310,20 +311,20 @@ public class ArtifactLoaderFactory {
 							}
 							if (currentPathString.startsWith(toRemove)) {
 								currentPathString = Strings
-										.removeBegginingFrom(toRemove,
-												currentPathString);
+								.removeBegginingFrom(toRemove,
+										currentPathString);
 							}
 							String newPathString = null;
 							if (!currentPathString
 									.startsWith(sourceToProcess.mapping.getTo())) {
 								newPathString = sourceToProcess.mapping.getTo()
-										+ currentPathString;
+								+ currentPathString;
 							} else {
 								newPathString = currentPathString;
 							}
 
 							final PathElement newPath = PathElement
-									.createFromPathString(newPathString);
+							.createFromPathString(newPathString);
 							loaded.setParent(newPath);
 							loadedArtifacts.add(loaded);
 							logger.info("mapping artifact from "
@@ -356,7 +357,7 @@ public class ArtifactLoaderFactory {
 			executor = Executors.newFixedThreadPool(configuration
 					.getNumberOfParallelThreads());
 			artifactTypes = ArtifactTypeRegistry.INSTANCE
-					.getRegisteredArtifactTypes();
+			.getRegisteredArtifactTypes();
 		}
 	}
 

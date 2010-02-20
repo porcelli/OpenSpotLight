@@ -55,9 +55,11 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.openspotlight.common.MutableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +196,7 @@ public class PatternMatcher {
 	}
 
 	private static final Logger logger = LoggerFactory
-			.getLogger(PatternMatcher.class);
+	.getLogger(PatternMatcher.class);
 
 	/**
 	 * Filter the names using the Apache Ant expression syntax (and also the
@@ -210,7 +212,7 @@ public class PatternMatcher {
 	 *            the case sensitive
 	 * @return a filter result
 	 */
-	public static FilterResult filterNamesByPattern(
+	public static FilterResult filterNamesByPattern(final String rootPattern,
 			final Set<String> namesToFilter,
 			final Set<String> includedPatterns,
 			final Set<String> excludedPatterns, final boolean caseSensitive) {
@@ -221,14 +223,18 @@ public class PatternMatcher {
 		final Set<String> includedNames = new HashSet<String>();
 		final Set<String> excludedNames = new HashSet<String>();
 
-		for (final String nameToFilter : namesToFilter) {
-			for (final String included : includedPatterns) {
-				if (match(included, nameToFilter, caseSensitive)) {
+		for (final String included : includedPatterns) {
+			for (final String nameToFilter : namesToFilter) {
+				if (match(Strings.concatPaths(rootPattern, included),
+						nameToFilter, caseSensitive)) {
 					includedNames.add(nameToFilter);
 				}
 			}
-			for (final String excluded : excludedPatterns) {
-				if (match(excluded, nameToFilter, caseSensitive)) {
+		}
+		for (final String excluded : excludedPatterns) {
+			for (final String nameToFilter : namesToFilter) {
+				if (match(Strings.concatPaths(rootPattern, excluded),
+						nameToFilter, caseSensitive)) {
 					excludedNames.add(nameToFilter);
 					includedNames.remove(nameToFilter);
 				}
@@ -239,9 +245,10 @@ public class PatternMatcher {
 		ignoredNames.removeAll(excludedNames);
 
 		if (logger.isDebugEnabled()) {
-			final String prefix = "With parameters included="
-					+ includedPatterns.toString() + " and excluded="
-					+ excludedPatterns;
+			final String prefix = "root " + rootPattern
+			+ "with parameters included="
+			+ includedPatterns.toString() + " and excluded="
+			+ excludedPatterns;
 			logger.debug(prefix + " filtering names "
 					+ namesToFilter.toString());
 			logger.debug(prefix + " accepting names "

@@ -324,7 +324,7 @@ LogableObject {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return getClass().getName() + getArtifactCompleteName() + " "
+		return getClass().getSimpleName() + getArtifactCompleteName() + " "
 		+ getChangeType();
 	}
 

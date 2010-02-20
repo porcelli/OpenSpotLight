@@ -61,6 +61,36 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
  */
 public class Strings {
 
+	public static String concatPaths(final String... paths) {
+		if (paths == null) {
+			return null;
+		}
+		final StringBuilder sb = new StringBuilder();
+		for (final String path : paths) {
+			if (path == null) {
+				continue;
+			}
+			if (sb.toString().endsWith("/")) {
+				if (path.startsWith("/")) {
+					sb.append(path.substring(1));
+				} else {
+					sb.append(path);
+				}
+			} else {
+				if (sb.length() > 0) {
+					if (path.startsWith("/")) {
+						sb.append(path);
+					} else {
+						sb.append("/").append(path);
+					}
+				} else {
+					sb.append(path);
+				}
+			}
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Converts the first character to lower case.
 	 * 
@@ -77,7 +107,7 @@ public class Strings {
 			return toBeCorrected.toLowerCase();
 		}
 		final String newString = toBeCorrected.substring(0, 1).toLowerCase()
-				+ toBeCorrected.substring(1);
+		+ toBeCorrected.substring(1);
 		return newString;
 	}
 
@@ -97,7 +127,7 @@ public class Strings {
 			return toBeCorrected.toUpperCase();
 		}
 		final String newString = toBeCorrected.substring(0, 1).toUpperCase()
-				+ toBeCorrected.substring(1);
+		+ toBeCorrected.substring(1);
 		return newString;
 	}
 
@@ -159,6 +189,13 @@ public class Strings {
 				+ toChange.substring(toBeReplaced.length()
 						+ toChange.lastIndexOf(toBeReplaced));
 		return newString;
+	}
+
+	public static String rootPath(final String paths) {
+		if(paths.startsWith("/")) {
+			return paths;
+		}
+		return "/"+ paths;
 	}
 
 	/**

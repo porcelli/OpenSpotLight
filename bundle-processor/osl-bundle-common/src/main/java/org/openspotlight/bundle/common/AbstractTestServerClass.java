@@ -24,11 +24,12 @@ import org.openspotlight.remote.server.UserAuthenticator;
 public abstract class AbstractTestServerClass {
 
 	protected abstract void doWork(JcrConnectionProvider provider)
-			throws Exception;
+	throws Exception;
 
 	public void doWorkAndExposeServers(){
 		final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(
 				getDescriptor());
+		provider.closeRepositoryAndCleanResources();
 		final Repository repository = provider.openRepository();
 		try{
 			doWork(provider);

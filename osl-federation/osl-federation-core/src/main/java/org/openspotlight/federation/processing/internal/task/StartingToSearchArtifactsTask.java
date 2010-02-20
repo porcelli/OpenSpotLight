@@ -62,6 +62,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.task.Task;
 import org.openspotlight.common.task.TaskGroup;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.BundleProcessorType;
@@ -106,7 +107,7 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 	@SuppressWarnings("unchecked")
 	public void doIt() throws Exception {
 		final BundleProcessorGlobalPhase<? extends Artifact> bundleProcessor = bundleProcessorType
-				.getGlobalPhase().newInstance();
+		.getGlobalPhase().newInstance();
 
 		final Map<Class<? extends Artifact>, ArtifactChanges<Artifact>> changesByType = new HashMap<Class<? extends Artifact>, ArtifactChanges<Artifact>>();
 		final Map<Class<? extends Artifact>, ArtifactsToBeProcessed<Artifact>> returnByType = new HashMap<Class<? extends Artifact>, ArtifactsToBeProcessed<Artifact>>();
@@ -119,12 +120,13 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 			changesByType.put(artifactType, changes);
 			returnByType.put(artifactType, toBeReturned);
 			final ArtifactFinder<? extends Artifact> finder = getBundleContext()
-					.getArtifactFinder(artifactType);
+			.getArtifactFinder(artifactType);
 			for (final BundleSource src : bundleProcessorType.getSources()) {
 
 				final Set<String> rawNames = finder
-						.retrieveAllArtifactNames(src.getRelative());
-				final FilterResult newNames = filterNamesByPattern(rawNames,
+				.retrieveAllArtifactNames(src.getRelative());
+				final FilterResult newNames = filterNamesByPattern(Strings
+						.rootPath(src.getRelative()), rawNames,
 						src.getIncludeds(), src.getExcludeds(), false);
 				for (final String name : newNames.getIncludedNames()) {
 					final Artifact savedArtifact = finder.findByPath(name);
@@ -162,9 +164,9 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 				for (final Artifact artifactAlreadyProcessed : toBeReturned
 						.getArtifactsAlreadyProcessed()) {
 					artifactAlreadyProcessed
-							.setLastProcessedDate(lastProcessedDate);
+					.setLastProcessedDate(lastProcessedDate);
 					artifactAlreadyProcessed
-							.setLastProcessStatus(LastProcessStatus.PROCESSED);
+					.setLastProcessStatus(LastProcessStatus.PROCESSED);
 
 				}
 			} catch (final Exception e) {
@@ -172,7 +174,7 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 						.getArtifactsToBeProcessed()) {
 					artifactWithError.setLastProcessedDate(lastProcessedDate);
 					artifactWithError
-							.setLastProcessStatus(LastProcessStatus.EXCEPTION_DURRING_PROCESS);
+					.setLastProcessStatus(LastProcessStatus.EXCEPTION_DURRING_PROCESS);
 				}
 				throw e;
 			}
@@ -185,35 +187,35 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 			final SaveBehavior behavior = bundleProcessor.getSaveBehavior();
 			if (bundleProcessor instanceof BundleProcessorArtifactPhase<?>) {
 				artifactPhases
-						.add((BundleProcessorArtifactPhase<Artifact>) bundleProcessor);
+				.add((BundleProcessorArtifactPhase<Artifact>) bundleProcessor);
 			}
 
 			for (final Class<? extends BundleProcessorArtifactPhase<?>> bundleProcessorArtifactPhaseTypes : bundleProcessorType
 					.getArtifactPhases()) {
 				final BundleProcessorArtifactPhase<?> artifactPhase = bundleProcessorArtifactPhaseTypes
-						.newInstance();
+				.newInstance();
 				if (artifactPhase.getArtifactType().isAssignableFrom(
 						artifactType)) {
 					logger
-							.info(" selecting processor artifact phase for bundle type "
-									+ artifactPhase.getClass().getSimpleName()
-									+ " for artifact type "
-									+ artifactType.getSimpleName()
-									+ " due to its acceptable type "
-									+ artifactPhase.getArtifactType()
-											.getSimpleName());
+					.info(" selecting processor artifact phase for bundle type "
+							+ artifactPhase.getClass().getSimpleName()
+							+ " for artifact type "
+							+ artifactType.getSimpleName()
+							+ " due to its acceptable type "
+							+ artifactPhase.getArtifactType()
+							.getSimpleName());
 
 					artifactPhases
-							.add((BundleProcessorArtifactPhase<Artifact>) artifactPhase);
+					.add((BundleProcessorArtifactPhase<Artifact>) artifactPhase);
 				} else {
 					logger
-							.info(" ignoring processor artifact phase for bundle type "
-									+ artifactPhase.getClass().getSimpleName()
-									+ " for artifact type "
-									+ artifactType.getSimpleName()
-									+ " due to its acceptable type "
-									+ artifactPhase.getArtifactType()
-											.getSimpleName());
+					.info(" ignoring processor artifact phase for bundle type "
+							+ artifactPhase.getClass().getSimpleName()
+							+ " for artifact type "
+							+ artifactType.getSimpleName()
+							+ " due to its acceptable type "
+							+ artifactPhase.getArtifactType()
+							.getSimpleName());
 
 				}
 
@@ -223,9 +225,9 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 			final List<Task> allParentTasks = new LinkedList<Task>();
 			boolean first = true;
 			final ArtifactChanges<Artifact> changes = changesByType
-					.get(artifactType);
+			.get(artifactType);
 			final ArtifactsToBeProcessed<Artifact> toBeReturned = returnByType
-					.get(artifactType);
+			.get(artifactType);
 
 			for (final BundleProcessorArtifactPhase<Artifact> artifactPhase : artifactPhases) {
 
@@ -234,24 +236,24 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 						.getArtifactsToBeProcessed()) {
 
 					logger
-							.info(" Adding processor artifact phase for bundle type "
-									+ artifactPhase.getClass().getSimpleName()
-									+ " and artifact type "
-									+ artifactType.getSimpleName());
+					.info(" Adding processor artifact phase for bundle type "
+							+ artifactPhase.getClass().getSimpleName()
+							+ " and artifact type "
+							+ artifactType.getSimpleName());
 					final EachArtifactTask<Artifact> phaseTwo = new EachArtifactTask<Artifact>(
 							first, getRepositoryName(), artifactType,
 							artifactToProcess, behavior, artifactPhase,
 							currentContext);
 					final Task currentTask = currentGroup.prepareTask()
-							.withParentTasks(parentTasks)
-							.withReadableDescriptionAndUniqueId(
-									artifactPhase.getClass().getSimpleName()
-											+ ":"
-											+ artifactToProcess
-													.getArtifactCompleteName()
-											+ ":"
-											+ currentContext.getCurrentGroup()
-													.getUniqueName())
+					.withParentTasks(parentTasks)
+					.withReadableDescriptionAndUniqueId(
+							artifactPhase.getClass().getSimpleName()
+							+ ":"
+							+ artifactToProcess
+							.getArtifactCompleteName()
+							+ ":"
+							+ currentContext.getCurrentGroup()
+							.getUniqueName())
 							.withRunnable(phaseTwo).andPublishTask();
 					thisPhaseTasks.add(currentTask);
 					allParentTasks.add(currentTask);
@@ -267,17 +269,17 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 					changes, bundleProcessor, repository.getName(),
 					getBundleContext(), currentContext);
 			currentGroup.prepareTask().withParentTasks(allParentTasks)
-					.withReadableDescriptionAndUniqueId(
-							bundleProcessor.getClass().getSimpleName()
-									+ ":"
-									+ getRepositoryName()
-									+ ":"
-									+ artifactType.getSimpleName()
-									+ ":"
-									+ bundleProcessorType.getName()
-									+ ":"
-									+ bundleProcessorType.getGroup()
-											.getUniqueName()).withRunnable(
+			.withReadableDescriptionAndUniqueId(
+					bundleProcessor.getClass().getSimpleName()
+					+ ":"
+					+ getRepositoryName()
+					+ ":"
+					+ artifactType.getSimpleName()
+					+ ":"
+					+ bundleProcessorType.getName()
+					+ ":"
+					+ bundleProcessorType.getGroup()
+					.getUniqueName()).withRunnable(
 							phaseThree).andPublishTask();
 
 		}

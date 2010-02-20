@@ -72,18 +72,21 @@ import org.slf4j.LoggerFactory;
  * The Class ArtifactSourceSchedulable.
  */
 public class ArtifactSourceSchedulable implements
-		SchedulableCommand<ArtifactSource> {
+SchedulableCommand<ArtifactSource> {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@SuppressWarnings("unchecked")
 	public void execute(final GlobalSettings settigns,
 			final ExecutionContext ctx, final ArtifactSource schedulable) {
-
+		if (logger.isDebugEnabled()) {
+			logger.debug(" >>>> Executing artifact loadgin from source"
+					+ schedulable.toUniqueJobString());
+		}
 		final ArtifactLoader loader = ArtifactLoaderFactory
-				.createNewLoader(settigns);
+		.createNewLoader(settigns);
 		final Set<Class<? extends Artifact>> types = ArtifactTypeRegistry.INSTANCE
-				.getRegisteredArtifactTypes();
+		.getRegisteredArtifactTypes();
 
 		final Map<Class<? extends Artifact>, Set<Artifact>> newArtifactsByType = new HashMap<Class<? extends Artifact>, Set<Artifact>>();
 		final Map<Class<? extends Artifact>, Set<Artifact>> existentArtifactsByType = new HashMap<Class<? extends Artifact>, Set<Artifact>>();
@@ -92,7 +95,7 @@ public class ArtifactSourceSchedulable implements
 		}
 
 		final Iterable<Artifact> loadedArtifacts = loader
-				.loadArtifactsFromSource(schedulable);
+		.loadArtifactsFromSource(schedulable);
 
 		for (final Artifact artifact : loadedArtifacts) {
 			for (final Class<? extends Artifact> type : types) {
@@ -107,10 +110,11 @@ public class ArtifactSourceSchedulable implements
 		}
 		for (final Class<? extends Artifact> type : types) {
 			final ArtifactFinder<Artifact> finder = (ArtifactFinder<Artifact>) ctx
-					.getArtifactFinder(type);
+			.getArtifactFinder(type);
 			Set<Artifact> existentArtifacts;
 			if (finder != null) {
-				existentArtifacts = finder.listByPath(null);
+				existentArtifacts = finder.listByPath(schedulable
+						.getInitialLookup());
 				existentArtifactsByType.put(type, existentArtifacts);
 			} else {
 				existentArtifactsByType.put(type, Collections
@@ -119,22 +123,21 @@ public class ArtifactSourceSchedulable implements
 		}
 		for (final Class<? extends Artifact> type : types) {
 			final ArtifactFinder<Artifact> finder = (ArtifactFinder<Artifact>) ctx
-					.getArtifactFinder(type);
+			.getArtifactFinder(type);
 			if (finder instanceof ArtifactFinderWithSaveCapabilitie<?>) {
 				final ArtifactFinderWithSaveCapabilitie<Artifact> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<Artifact>) finder;
 				final Set<Artifact> existentArtifacts = existentArtifactsByType
-						.get(type);
+				.get(type);
 				final Set<Artifact> newArtifacts = newArtifactsByType.get(type);
 				final Set<Artifact> withDifferences = ArtifactFinderSupport
-						.applyDifferenceOnExistents(existentArtifacts,
-								newArtifacts);
+				.applyDifferenceOnExistents(existentArtifacts,
+						newArtifacts);
 				// FIXME this could be parallel
 				for (final Artifact toSave : withDifferences) {
 
 					finderWithSaveCapabilitie.addTransientArtifact(toSave);
 					finderWithSaveCapabilitie.save();
-					logger.info("saving transient artifact "
-							+ toSave.getArtifactCompleteName());
+					logger.info("saving transient artifact " + toSave);
 
 				}
 			}
