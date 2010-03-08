@@ -187,6 +187,41 @@ public class SimplePersistSupport {
 
 	}
 
+	public static final class InternalMethods{
+
+		@SuppressWarnings("unchecked")
+		public static void setParentPropertyOnSerializable(
+				final Serializable serializable, final SimpleNodeType parent)
+		throws Exception {
+			if (serializable == null) {
+				return;
+			}
+			if (serializable instanceof StreamPropertyWithParent<?>) {
+				final StreamPropertyWithParent<SimpleNodeType> property = (StreamPropertyWithParent<SimpleNodeType>) serializable;
+				property.setParent(parent);
+				return;
+			}
+			if (serializable instanceof Collection<?>) {
+				final Collection<?> collection = (Collection<?>) serializable;
+				for (final Object o : collection) {
+					setParentPropertyOnSerializable((Serializable) o, parent);
+				}
+				return;
+			}
+			if (serializable instanceof Map<?, ?>) {
+				final Map<?, ?> map = (Map<?, ?>) serializable;
+				for (final Map.Entry<?, ?> entry : map.entrySet()) {
+					setParentPropertyOnSerializable(
+							(Serializable) entry.getValue(), parent);
+				}
+				return;
+			}
+
+		}
+
+
+	}
+
 	/**
 	 * The Enum JcrNodeType.
 	 */
@@ -772,7 +807,7 @@ public class SimplePersistSupport {
 		}
 		final ObjectInputStream ois = new ObjectInputStream(is);
 		final Serializable serializable = (Serializable) ois.readObject();
-		setParentPropertyOnSerializable(serializable, parent);
+		InternalMethods.setParentPropertyOnSerializable(serializable, parent);
 		return serializable;
 	}
 
@@ -1026,6 +1061,7 @@ public class SimplePersistSupport {
 					final InputStream is = convertSerializableToStream(
 							unwrappedVal, (SimpleNodeType) bean, desc.getName());
 					descriptor.transientLazyProperties.put(desc.getName(), is);
+					propertyVal.getMetadata().markAsSaved();
 				}
 			}
 			if (desc.getReadMethod().isAnnotationPresent(KeyProperty.class)) {
@@ -1595,7 +1631,7 @@ public class SimplePersistSupport {
 		if (obj == null) {
 			return;
 		}
-		setParentPropertyOnSerializable(obj, null);
+		InternalMethods.setParentPropertyOnSerializable(obj, null);
 	}
 
 	/**
@@ -1974,35 +2010,6 @@ public class SimplePersistSupport {
 		desc.getWriteMethod().invoke(newObject, bean);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static void setParentPropertyOnSerializable(
-			final Serializable serializable, final SimpleNodeType parent)
-	throws Exception {
-		if (serializable == null) {
-			return;
-		}
-		if (serializable instanceof StreamPropertyWithParent<?>) {
-			final StreamPropertyWithParent<SimpleNodeType> property = (StreamPropertyWithParent<SimpleNodeType>) serializable;
-			property.setParent(parent);
-			return;
-		}
-		if (serializable instanceof Collection<?>) {
-			final Collection<?> collection = (Collection<?>) serializable;
-			for (final Object o : collection) {
-				setParentPropertyOnSerializable((Serializable) o, parent);
-			}
-			return;
-		}
-		if (serializable instanceof Map<?, ?>) {
-			final Map<?, ?> map = (Map<?, ?>) serializable;
-			for (final Map.Entry<?, ?> entry : map.entrySet()) {
-				setParentPropertyOnSerializable(
-						(Serializable) entry.getValue(), parent);
-			}
-			return;
-		}
-
-	}
 
 	/**
 	 * Sets the property from bean to descriptor.
