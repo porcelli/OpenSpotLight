@@ -1192,7 +1192,7 @@ public class SimplePersistSupport {
 		}
 		Assertions.checkNotNull("itemType", itemType);
 		final LazyProperty<?> newLazyProperty = LazyProperty.Factory.create(
-				itemType, (SimpleNodeType) parent);
+				itemType, (SimpleNodeType) newObject);
 		newLazyProperty.getMetadata().setPropertyName(desc.getName());
 		newLazyProperty.getMetadata().setParentUuid(uuid);
 		desc.getWriteMethod().invoke(newObject, newLazyProperty);
