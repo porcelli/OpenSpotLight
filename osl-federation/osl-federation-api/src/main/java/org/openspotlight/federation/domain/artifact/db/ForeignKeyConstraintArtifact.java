@@ -52,6 +52,8 @@ import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Equals.eachEquality;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
@@ -81,19 +83,19 @@ public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
 	private String toColumnName;
 
 	@Override
-	public boolean contentEquals(final Artifact other) {
+	public boolean contentEquals(final Artifact other, final Session session) {
 		if (!equals(other)) {
 			return false;
 		}
 		final ForeignKeyConstraintArtifact that = (ForeignKeyConstraintArtifact) other;
 		return eachEquality(
 
-		of(fromCatalogName, fromSchemaName, toCatalogName, toSchemaName,
-				fromTableName, fromColumnName, toTableName, toColumnName),
+				of(fromCatalogName, fromSchemaName, toCatalogName, toSchemaName,
+						fromTableName, fromColumnName, toTableName, toColumnName),
 
-		andOf(that.fromCatalogName, that.fromSchemaName, that.toCatalogName,
-				that.toSchemaName, that.fromTableName, that.fromColumnName,
-				that.toTableName, that.toColumnName));
+						andOf(that.fromCatalogName, that.fromSchemaName, that.toCatalogName,
+								that.toSchemaName, that.fromTableName, that.fromColumnName,
+								that.toTableName, that.toColumnName));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -105,11 +107,11 @@ public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
 
 		return eachEquality(
 
-		of(constraintName, getDatabaseName(), getDatabaseType(),
-				getServerName(), getUrl()),
+				of(constraintName, getDatabaseName(), getDatabaseType(),
+						getServerName(), getUrl()),
 
-		andOf(that.constraintName, that.getDatabaseName(), that
-				.getDatabaseType(), that.getServerName(), that.getUrl()));
+						andOf(that.constraintName, that.getDatabaseName(), that
+								.getDatabaseType(), that.getServerName(), that.getUrl()));
 	}
 
 	public String getConstraintName() {

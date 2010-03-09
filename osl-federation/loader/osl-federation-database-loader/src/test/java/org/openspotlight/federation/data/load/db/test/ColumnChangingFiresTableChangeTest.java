@@ -89,52 +89,52 @@ public class ColumnChangingFiresTableChangeTest {
 
 		final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
 		final DbArtifactSource dbBundle = (DbArtifactSource) repository
-				.getArtifactSources().iterator().next(); //$NON-NLS-1$
+		.getArtifactSources().iterator().next(); //$NON-NLS-1$
 		Connection conn = DatabaseSupport.createConnection(dbBundle);
 
 		conn
-				.prepareStatement(
-						"create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+		.prepareStatement(
+				"create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
 				.execute();
 		conn.close();
 		final GlobalSettings configuration = new GlobalSettings();
 		configuration
-				.setArtifactFinderRegistryClass(SampleDatabaseCustomArtifactRegistry.class);
+		.setArtifactFinderRegistryClass(SampleDatabaseCustomArtifactRegistry.class);
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
 		configuration.setNumberOfParallelThreads(4);
 
 		ArtifactLoader loader = ArtifactLoaderFactory
-				.createNewLoader(configuration);
+		.createNewLoader(configuration);
 
 		final Iterable<Artifact> firstLoadedItems = loader
-				.loadArtifactsFromSource(dbBundle);
+		.loadArtifactsFromSource(dbBundle);
 		loader.closeResources();
 		conn = DatabaseSupport.createConnection(dbBundle);
 
 		conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
-				.execute();
+		.execute();
 
 		conn.prepareStatement(
-				"create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
-				.execute();
+		"create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
+		.execute();
 		conn.close();
 
 		loader = ArtifactLoaderFactory.createNewLoader(configuration);
 
 		final Iterable<Artifact> lastLoadedItems = loader
-				.loadArtifactsFromSource(dbBundle);
+		.loadArtifactsFromSource(dbBundle);
 		loader.closeResources();
 		boolean found = false;
 		all: for (final Artifact first : firstLoadedItems) {
 			if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
 				assertThat(first.equals(first), is(true));
-				assertThat(first.contentEquals(first), is(true));
+				assertThat(first.contentEquals(first, null), is(true));
 				for (final Artifact last : lastLoadedItems) {
 					if (last.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
-					    System.out.println("first:" + first.toString());
-                        System.out.println("last:" + last.toString());
+						System.out.println("first:" + first.toString());
+						System.out.println("last:" + last.toString());
 						assertThat(last.equals(first), is(true));
-						assertThat(last.contentEquals(first), is(false));
+						assertThat(last.contentEquals(first, null), is(false));
 						found = true;
 						break all;
 					}

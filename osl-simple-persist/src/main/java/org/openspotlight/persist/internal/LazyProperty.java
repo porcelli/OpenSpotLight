@@ -16,6 +16,7 @@ import javax.jcr.Session;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
@@ -62,11 +63,9 @@ public final class LazyProperty<T> implements Serializable {
 		 * @param parent
 		 * @return
 		 */
-		public static <T> LazyProperty<T> create(final Class<T> propertyType,
-				final SimpleNodeType parent) {
-			Assertions.checkNotNull("propertyType", propertyType);
+		public static <T> LazyProperty<T> create(final SimpleNodeType parent) {
 			Assertions.checkNotNull("parent", parent);
-			return new LazyProperty<T>(propertyType, parent);
+			return new LazyProperty<T>(parent);
 		}
 
 		private Factory() {
@@ -106,6 +105,9 @@ public final class LazyProperty<T> implements Serializable {
 				lock.lock();
 				final T cachedValue = cached == null ? null : cached.get();
 				if (cachedValue == null) {
+					if (session == null && parentUuid == null) {
+						return null;
+					}
 					if (session == null) {
 						throw Exceptions
 						.logAndReturn(new IllegalStateException(
@@ -190,10 +192,6 @@ public final class LazyProperty<T> implements Serializable {
 			return propertyName;
 		}
 
-		public Class<T> getPropertyType() {
-			return propertyType;
-		}
-
 		/**
 		 * Return the transient value if there's any one setted
 		 * 
@@ -209,6 +207,10 @@ public final class LazyProperty<T> implements Serializable {
 			}
 		}
 
+		public boolean isBlank() {
+			return Strings.isEmpty(parentUuid) && transientValue == null;
+		}
+
 		public boolean isCacheLoaded() {
 			try {
 				lock.lock();
@@ -216,6 +218,10 @@ public final class LazyProperty<T> implements Serializable {
 			} finally {
 				lock.unlock();
 			}
+		}
+
+		public boolean isFilled() {
+			return !isBlank();
 		}
 
 		/**
@@ -271,8 +277,6 @@ public final class LazyProperty<T> implements Serializable {
 
 	private final Metadata metadata = new Metadata();
 
-	private final Class<T> propertyType;
-
 	private final SimpleNodeType parent;
 	private transient WeakReference<T> cached = null;
 	private T transientValue = null;
@@ -280,10 +284,7 @@ public final class LazyProperty<T> implements Serializable {
 
 	private boolean needsSave = false;
 
-	@SuppressWarnings("unchecked")
-	private LazyProperty(final Class<?> propertyType,
-			final SimpleNodeType parent) {
-		this.propertyType = (Class<T>) propertyType;
+	private LazyProperty(final SimpleNodeType parent) {
 		this.parent = parent;
 
 	}

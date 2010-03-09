@@ -101,7 +101,7 @@ ArtifactFinderWithSaveCapabilitie<A> {
 
 	private JcrSessionArtifactFinder(final Class<A> artifactType,
 			final Session session, final Repository repository) {
-		super(artifactType, repository.getName());
+		super(artifactType, repository.getName(), session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 		this.session = session;
 		this.artifactType = artifactType;
@@ -157,7 +157,7 @@ ArtifactFinderWithSaveCapabilitie<A> {
 		try {
 			final String propertyName = MessageFormat
 			.format(SimplePersistSupport.PROPERTY_VALUE,
-					"artifactCompleteName");
+			"artifactCompleteName");
 			final String nodeName = SimplePersistSupport
 			.getJcrNodeName(this.artifactType);
 			final String xpath;

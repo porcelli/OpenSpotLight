@@ -52,6 +52,8 @@ import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Equals.eachEquality;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
@@ -71,7 +73,7 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
 	private String columnName;
 
 	@Override
-	public boolean contentEquals(final Artifact other) {
+	public boolean contentEquals(final Artifact other, final Session session) {
 		if (!equals(other)) {
 			return false;
 		}
@@ -90,8 +92,8 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
 		return eachEquality(
 				of(constraintName, catalogName, schemaName, getDatabaseName(),
 						getDatabaseType(), getServerName(), getUrl()),
-				andOf(of(that.constraintName, that.catalogName,
-						that.schemaName, that.getDatabaseName(), that
+						andOf(of(that.constraintName, that.catalogName,
+								that.schemaName, that.getDatabaseName(), that
 								.getDatabaseType(), that.getServerName(), that
 								.getUrl())));
 	}
@@ -118,9 +120,9 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
 
 	public int hashCode() {
 		return HashCodes
-				.hashOf(constraintName, catalogName, schemaName,
-						getDatabaseName(), getDatabaseType(), getServerName(),
-						getUrl());
+		.hashOf(constraintName, catalogName, schemaName,
+				getDatabaseName(), getDatabaseType(), getServerName(),
+				getUrl());
 	}
 
 	public void setCatalogName(final String catalogName) {

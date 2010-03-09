@@ -52,6 +52,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
@@ -59,7 +61,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name("database")
 public class RoutineArtifact extends DatabaseCustomArtifact implements
-		SimpleNodeType, Serializable {
+SimpleNodeType, Serializable {
 	private static final long serialVersionUID = 3060861243165317562L;
 
 	private String tableName;
@@ -70,7 +72,7 @@ public class RoutineArtifact extends DatabaseCustomArtifact implements
 	private Set<RoutineParameter> parameters = new HashSet<RoutineParameter>();
 
 	@Override
-	public boolean contentEquals(final Artifact other) {
+	public boolean contentEquals(final Artifact other, final Session session) {
 		if (!(other instanceof RoutineArtifact)) {
 			return false;
 		}

@@ -25,7 +25,7 @@ public class ArtifactWithSyntaxPersisting {
 	String[] sampleLines = {
 			"ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD\n",
 			"     SDFSDFSDFSDFS FDS DFSDF\n", "     sdfsfasdfasd FDS DFSDF\n",
-			"\n" };
+	"\n" };
 
 	String[] samplePaths = { "dir1", "dir2", "dirthreebigger", "anotherPath" };
 
@@ -54,9 +54,10 @@ public class ArtifactWithSyntaxPersisting {
 		}
 		final StringArtifact sa = Artifact.createArtifact(StringArtifact.class,
 				path.toString(), ChangeType.INCLUDED);
-		sa.setContent(getContent());
+		sa.getContent().setTransient(getContent());
 		for (int i = 0; i < 16000; i++) {
-			sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT);
+			sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT,
+					null);
 		}
 
 		return sa;
@@ -79,7 +80,7 @@ public class ArtifactWithSyntaxPersisting {
 	public void shouldPersistLotsOfStuff() throws Exception {
 		final Set<StringArtifact> lotsOfStuff = createLotsOfStuff();
 		final JcrConnectionProvider provider = JcrConnectionProvider
-				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+		.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 		final SessionWithLock session = provider.openSession();
 		int count = 0;
 		final long start = System.currentTimeMillis();

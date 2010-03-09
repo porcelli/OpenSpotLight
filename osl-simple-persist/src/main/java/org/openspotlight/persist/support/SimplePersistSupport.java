@@ -57,9 +57,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,7 +184,7 @@ public class SimplePersistSupport {
 
 	}
 
-	public static final class InternalMethods{
+	public static final class InternalMethods {
 
 		@SuppressWarnings("unchecked")
 		public static void setParentPropertyOnSerializable(
@@ -211,14 +208,13 @@ public class SimplePersistSupport {
 			if (serializable instanceof Map<?, ?>) {
 				final Map<?, ?> map = (Map<?, ?>) serializable;
 				for (final Map.Entry<?, ?> entry : map.entrySet()) {
-					setParentPropertyOnSerializable(
-							(Serializable) entry.getValue(), parent);
+					setParentPropertyOnSerializable((Serializable) entry
+							.getValue(), parent);
 				}
 				return;
 			}
 
 		}
-
 
 	}
 
@@ -943,7 +939,7 @@ public class SimplePersistSupport {
 				continue;
 			}
 			if (LazyProperty.class.isAssignableFrom(desc.getPropertyType())) {
-				createEmptyLazyProperty(parent, newObject, desc,
+				createEmptyLazyProperty(newObject, desc,
 						beanDescriptor.uuid);
 				continue;
 			}
@@ -1161,38 +1157,11 @@ public class SimplePersistSupport {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <T> void createEmptyLazyProperty(final Object parent,
+	private static <T> void createEmptyLazyProperty(
 			final T newObject, final PropertyDescriptor desc, final String uuid)
 	throws IllegalAccessException, InvocationTargetException {
-		final Type genType = desc.getReadMethod().getGenericReturnType();
-		Class<? extends Serializable> itemType = null;
-		if (genType instanceof ParameterizedType) {
-			final ParameterizedType paramType = (ParameterizedType) genType;
-			final Type[] actualTypeArgs = paramType.getActualTypeArguments();
-			final Type theItemType = actualTypeArgs[0];
-			if (theItemType instanceof WildcardType) {
-				final WildcardType wildCardType = (WildcardType) theItemType;
-				final Type[] lowerBounds = wildCardType.getLowerBounds();
-				final Type[] upperBounds = wildCardType.getUpperBounds();
-				if (lowerBounds != null && lowerBounds.length > 0) {
-					itemType = (Class<? extends Serializable>) lowerBounds[0];
-				} else if (upperBounds != null && upperBounds.length > 0) {
-					itemType = (Class<? extends Serializable>) upperBounds[0];
-				}
-
-			} else if (theItemType instanceof Class<?>) {
-				itemType = (Class<? extends Serializable>) actualTypeArgs[0];
-
-			} else if (theItemType instanceof ParameterizedType) {
-				final ParameterizedType valueTypeTyped = (ParameterizedType) theItemType;
-				itemType = (Class<? extends Serializable>) valueTypeTyped
-				.getRawType();
-			}
-		}
-		Assertions.checkNotNull("itemType", itemType);
-		final LazyProperty<?> newLazyProperty = LazyProperty.Factory.create(
-				itemType, (SimpleNodeType) parent);
+		final LazyProperty<?> newLazyProperty = LazyProperty.Factory
+				.create((SimpleNodeType) newObject);
 		newLazyProperty.getMetadata().setPropertyName(desc.getName());
 		newLazyProperty.getMetadata().setParentUuid(uuid);
 		desc.getWriteMethod().invoke(newObject, newLazyProperty);
@@ -2009,7 +1978,6 @@ public class SimplePersistSupport {
 				propertyDesc, parent);
 		desc.getWriteMethod().invoke(newObject, bean);
 	}
-
 
 	/**
 	 * Sets the property from bean to descriptor.

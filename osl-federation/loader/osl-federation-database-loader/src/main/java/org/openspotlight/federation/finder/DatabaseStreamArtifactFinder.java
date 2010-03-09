@@ -67,8 +67,8 @@ import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 
 public class DatabaseStreamArtifactFinder extends
-		AbstractDatabaseArtifactFinder<StringArtifact> implements
-		ArtifactFinder<StringArtifact> {
+AbstractDatabaseArtifactFinder<StringArtifact> implements
+ArtifactFinder<StringArtifact> {
 
 	public DatabaseStreamArtifactFinder(final DbArtifactSource artifactSource) {
 		super(StringArtifact.class, artifactSource);
@@ -93,13 +93,13 @@ public class DatabaseStreamArtifactFinder extends
 				final ScriptType scriptType = ScriptType.valueOf(typeAsString);
 				final DatabaseType databaseType = artifactSource.getType();
 				final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE
-						.getScript(databaseType, scriptType);
+				.getScript(databaseType, scriptType);
 				if (scriptDescription == null) {
 					return null;
 				}
 
 				final Class<? extends DatabaseStreamHandler> streamHandlerType = scriptDescription
-						.getStreamHandlerClass();
+				.getStreamHandlerClass();
 				final DatabaseStreamHandler streamHandler;
 				if (streamHandlerType != null) {
 					streamHandler = streamHandlerType.newInstance();
@@ -148,7 +148,7 @@ public class DatabaseStreamArtifactFinder extends
 				final String contentAsString = new String(content);
 				final StringArtifact sa = Artifact.createArtifact(
 						StringArtifact.class, path, ChangeType.INCLUDED);
-				sa.setContent(contentAsString);
+				sa.getContent().setTransient(contentAsString);
 
 				return sa;
 

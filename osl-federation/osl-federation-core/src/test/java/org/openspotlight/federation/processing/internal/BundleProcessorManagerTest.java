@@ -100,11 +100,11 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 public class BundleProcessorManagerTest {
 
 	public static class SampleArtifactRegistry implements
-			ArtifactFinderRegistry {
+	ArtifactFinderRegistry {
 
 		public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
 			return Collections
-					.<ArtifactFinderBySourceProvider> setOf(new FileSystemArtifactBySourceProvider());
+			.<ArtifactFinderBySourceProvider> setOf(new FileSystemArtifactBySourceProvider());
 		}
 
 	}
@@ -143,12 +143,12 @@ public class BundleProcessorManagerTest {
 
 	@Test
 	public void shouldProcessMappedArtifactsUsingJcrStreamArtifacts()
-			throws Exception {
+	throws Exception {
 		ExampleBundleProcessor.allStatus.clear();
 
 		final ArtifactSource source = new ArtifactSource();
 		final String initialRawPath = Files
-				.getNormalizedFileName(new File(".."));
+		.getNormalizedFileName(new File(".."));
 		final String initial = initialRawPath.substring(0, initialRawPath
 				.lastIndexOf('/'));
 		final String finalStr = initialRawPath.substring(initial.length());
@@ -190,13 +190,13 @@ public class BundleProcessorManagerTest {
 		bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
 
 		final ArtifactLoader loader = ArtifactLoaderFactory
-				.createNewLoader(settings);
+		.createNewLoader(settings);
 
 		final Iterable<Artifact> artifacts = loader
-				.loadArtifactsFromSource(source);
+		.loadArtifactsFromSource(source);
 
 		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
-				.createFactory();
+		.createFactory();
 		final ExecutionContext context = contextFactory.createExecutionContext(
 				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
 				repository.getName());
@@ -204,7 +204,7 @@ public class BundleProcessorManagerTest {
 		context.getDefaultConfigurationManager().saveRepository(repository);
 
 		final ArtifactFinderWithSaveCapabilitie<StringArtifact> finder = (ArtifactFinderWithSaveCapabilitie<StringArtifact>) context
-				.getArtifactFinder(StringArtifact.class);
+		.getArtifactFinder(StringArtifact.class);
 
 		for (final Artifact a : artifacts) {
 			if (a instanceof StringArtifact) {
@@ -215,10 +215,10 @@ public class BundleProcessorManagerTest {
 		contextFactory.closeResources();
 
 		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
-				.executeBundles("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-						SingleGraphSessionExecutionContextFactory
-								.createFactory(), settings, group);
+		.executeBundles("username", "password",
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+				SingleGraphSessionExecutionContextFactory
+				.createFactory(), settings, group);
 		Assert.assertThat(ExampleBundleProcessor.allStatus
 				.contains(LastProcessStatus.ERROR), Is.is(false));
 		Assert.assertThat(ExampleBundleProcessor.allStatus
@@ -226,40 +226,41 @@ public class BundleProcessorManagerTest {
 				.is(false));
 		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 		final ConfigurationManager xmlManager = XmlConfigurationManagerFactory
-				.loadMutableFromFile("target/BundleProcessorManagerTest/exampleConfigurationFile.xml");
+		.loadMutableFromFile("target/BundleProcessorManagerTest/exampleConfigurationFile.xml");
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		xmlManager.saveGlobalSettings(settings);
 		xmlManager.saveRepository(repository);
 		final ExecutionContext context1 = contextFactory
-				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository
-								.getName());
+		.createExecutionContext("username", "password",
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository
+				.getName());
 		final String nodeName = "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java1";
 		final SLNode node = context1.getGraphSession().getContext(
 				SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
-				group.getUniqueName()).getNode(nodeName);
+						group.getUniqueName()).getNode(nodeName);
 		Assert.assertThat(node, Is.is(IsNull.notNullValue()));
 		final SLNode node2 = node.getNode(nodeName);
 		Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
 		final NeedsSyncronizationCollection<SLLink> links = context1
-				.getGraphSession().getLinks(node, node2);
+		.getGraphSession().getLinks(node, node2);
 		Assert.assertThat(links.size(), Is.is(IsNot.not(0)));
 		final StringArtifact sourceFile = context1
-				.getArtifactFinder(StringArtifact.class)
-				.findByPath(
-						"/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
+		.getArtifactFinder(StringArtifact.class)
+		.findByPath(
+				"/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
 		Assert.assertThat(sourceFile, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(sourceFile.getSyntaxInformationSet().size(), Is
+		Assert.assertThat(
+				sourceFile.getUnwrappedSyntaxInformation(null).size(), Is
 				.is(IsNot.not(0)));
 
 	}
 
 	@Test
 	public void shouldProcessMappedArtifactsUsingLocalFilesAndCallingAGroupListener()
-			throws Exception {
+	throws Exception {
 		ExampleBundleProcessor.allStatus.clear();
 		final String initialRawPath = Files.getNormalizedFileName(new File(
-				"../.."));
+		"../.."));
 
 		final ArtifactSource source = new ArtifactSource();
 		source.setName("classpath");
@@ -289,7 +290,7 @@ public class BundleProcessorManagerTest {
 		bundleSource.setRelative("/osl-federation");
 		bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
 		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
-				.createFactory();
+		.createFactory();
 		final ExecutionContext context = contextFactory.createExecutionContext(
 				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
 				repository.getName());
@@ -299,10 +300,10 @@ public class BundleProcessorManagerTest {
 		context.closeResources();
 
 		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
-				.executeBundles("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-						TestExecutionContextFactory.createFactory(
-								ArtifactFinderType.FILESYSTEM, source),
+		.executeBundles("username", "password",
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+				TestExecutionContextFactory.createFactory(
+						ArtifactFinderType.FILESYSTEM, source),
 						settings, group);
 		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 
@@ -313,19 +314,19 @@ public class BundleProcessorManagerTest {
 				.is(false));
 		Assert.assertThat(SampleGroupListener.count.get(), Is.is(1));
 		final ExecutionContext context1 = contextFactory
-				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository
-								.getName());
+		.createExecutionContext("username", "password",
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository
+				.getName());
 		final String nodeName = "/osl-federation/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java7";
 		final SLNode groupNode = context1.getGraphSession().getContext(
 				SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
-				group.getUniqueName());
+						group.getUniqueName());
 		final SLNode node = groupNode.getNode(nodeName);
 		Assert.assertThat(node, Is.is(IsNull.notNullValue()));
 		final SLNode node2 = node.getNode(nodeName);
 		Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
 		final NeedsSyncronizationCollection<SLLink> links = context1
-				.getGraphSession().getLinks(node, node2);
+		.getGraphSession().getLinks(node, node2);
 		Assert.assertThat(links.size(), Is.is(IsNot.not(0)));
 
 	}

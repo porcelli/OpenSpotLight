@@ -58,6 +58,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
+import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.processing.ArtifactChanges;
 import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
 import org.openspotlight.federation.processing.BundleProcessorSinglePhase;
@@ -70,7 +71,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExampleBundleProcessor implements
-		BundleProcessorSinglePhase<StringArtifact> {
+BundleProcessorSinglePhase<StringArtifact> {
 
 	public static List<LastProcessStatus> allStatus = new CopyOnWriteArrayList<LastProcessStatus>();
 
@@ -109,7 +110,7 @@ public class ExampleBundleProcessor implements
 	@SuppressWarnings("unchecked")
 	public Set<Class<? extends StringArtifact>> getArtifactTypes() {
 		return Collections
-				.<Class<? extends StringArtifact>> setOf(StringArtifact.class);
+		.<Class<? extends StringArtifact>> setOf(StringArtifact.class);
 	}
 
 	public SaveBehavior getSaveBehavior() {
@@ -121,6 +122,8 @@ public class ExampleBundleProcessor implements
 			final ExecutionContext context) throws Exception {
 		context.getLogger().log(context.getUser(), LogEventType.DEBUG,
 				"another test", artifact);
+		final ArtifactFinder<StringArtifact> finder = context
+				.getArtifactFinder(StringArtifact.class);
 		for (int i = 0; i < 10; i++) {
 			final SLNode groupNode = currentContext.getCurrentNodeGroup();
 			final String nodeName = artifact.getArtifactCompleteName() + i;
@@ -128,8 +131,9 @@ public class ExampleBundleProcessor implements
 			final SLNode node1 = node.addNode(nodeName);
 			context.getGraphSession().addLink(SLLink.class, node, node1, false);
 		}
-		artifact
-				.addSyntaxInformation(2, 4, 5, 6, SyntaxInformationType.COMMENT);
+
+		artifact.addSyntaxInformation(2, 4, 5, 6,
+				SyntaxInformationType.COMMENT, finder.finderSession());
 
 		return LastProcessStatus.PROCESSED;
 	}

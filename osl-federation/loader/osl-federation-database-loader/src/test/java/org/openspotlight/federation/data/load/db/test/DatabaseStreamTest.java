@@ -144,10 +144,10 @@ public abstract class DatabaseStreamTest {
 				validateAllTypes();
 			} else {
 				logger
-						.warn(format(
-								"Ignoring test {0} because system property {1} isn't set to true.",
-								this.getClass().getSimpleName(),
-								"runDatabaseVendorTests"));
+				.warn(format(
+						"Ignoring test {0} because system property {1} isn't set to true.",
+						this.getClass().getSimpleName(),
+				"runDatabaseVendorTests"));
 			}
 		} else {
 			validateAllTypes();
@@ -171,12 +171,12 @@ public abstract class DatabaseStreamTest {
 				bundle);
 		final GlobalSettings configuration = new GlobalSettings();
 		configuration
-				.setArtifactFinderRegistryClass(SampleDatabaseStreamArtifactRegistry.class);
+		.setArtifactFinderRegistryClass(SampleDatabaseStreamArtifactRegistry.class);
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
 		configuration.setNumberOfParallelThreads(4);
 
 		final ArtifactLoader loader = ArtifactLoaderFactory
-				.createNewLoader(configuration);
+		.createNewLoader(configuration);
 
 		conn = createConnection(bundle);
 		resetDatabase(conn);
@@ -185,13 +185,13 @@ public abstract class DatabaseStreamTest {
 		}
 
 		final Iterable<Artifact> loadedArtifacts = loader
-				.loadArtifactsFromSource(bundle);
+		.loadArtifactsFromSource(bundle);
 		final Set<String> failMessages = new HashSet<String>();
 		lookingTypes: for (final ScriptType typeToAssert : typesToAssert()) {
 			for (final Artifact artifact : loadedArtifacts) {
 				final StringArtifact streamArtifact = (StringArtifact) artifact;
 				final String relativeName = streamArtifact
-						.getArtifactCompleteName();
+				.getArtifactCompleteName();
 				if (relativeName.contains(typeToAssert.name())) {
 					assertThat(streamArtifact.getContent(), is(notNullValue()));
 					continue lookingTypes;
@@ -207,10 +207,10 @@ public abstract class DatabaseStreamTest {
 		for (final Artifact artifact : loadedArtifacts) {
 			final StringArtifact streamArtifact = (StringArtifact) artifact;
 			final String name = "./target/test-data/"
-					+ this.getClass().getSimpleName()
-					+ "/"
-					+ streamArtifact.getArtifactCompleteName().replaceAll(" ",
-							"");// DB2 has
+				+ this.getClass().getSimpleName()
+				+ "/"
+				+ streamArtifact.getArtifactCompleteName().replaceAll(" ",
+				"");// DB2 has
 			// some
 			// spaces
 			final String dirName = name.substring(0, name.lastIndexOf('/'));
@@ -218,7 +218,7 @@ public abstract class DatabaseStreamTest {
 			final OutputStream fos = new BufferedOutputStream(
 					new FileOutputStream(name + ".sql"));
 			final InputStream is = new ByteArrayInputStream(streamArtifact
-					.getContent().getBytes());
+					.getContent().get(null).getBytes());
 			while (true) {
 				final int data = is.read();
 				if (data == -1) {

@@ -51,14 +51,18 @@ package org.openspotlight.federation.domain.artifact;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openspotlight.persist.annotation.PersistPropertyAsStream;
+import javax.jcr.Session;
+
+import org.openspotlight.persist.annotation.TransientProperty;
+import org.openspotlight.persist.internal.LazyProperty;
 
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 
 	private static final long serialVersionUID = -3359480990669655877L;
 
 	/** The syntax information set. */
-	private Set<SyntaxInformation> syntaxInformationSet = new HashSet<SyntaxInformation>();
+	private LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory
+	.create(this);
 
 	public ArtifactWithSyntaxInformation() {
 		super();
@@ -80,27 +84,31 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
 	 */
 	public void addSyntaxInformation(final int lineStart, final int lineEnd,
 			final int columnStart, final int columnEnd,
-			final SyntaxInformationType type) {
+			final SyntaxInformationType type, final Session session) {
 		final SyntaxInformation syntaxInformation = new SyntaxInformation(this,
 				lineStart, lineEnd, columnStart, columnEnd, type);
-		syntaxInformationSet.add(syntaxInformation);
+		getUnwrappedSyntaxInformation(session).add(syntaxInformation);
 	}
 
-	/**
-	 * Clear syntax information set.
-	 */
-	public void clearSyntaxInformationSet() {
-		syntaxInformationSet.clear();
-	}
-
-	/**
-	 * Gets the syntax information set.
-	 * 
-	 * @return the syntax information set
-	 */
-	@PersistPropertyAsStream
-	public Set<SyntaxInformation> getSyntaxInformationSet() {
+	public LazyProperty<Set<SyntaxInformation>> getSyntaxInformationSet() {
 		return syntaxInformationSet;
+	}
+
+	@TransientProperty
+	public Set<SyntaxInformation> getUnwrappedSyntaxInformation(final Session session) {
+		try {
+			syntaxInformationSet.getMetadata().getLock().lock();
+			Set<SyntaxInformation> currentSet = syntaxInformationSet
+			.get(session);
+			if (currentSet == null) {
+				currentSet = new HashSet<SyntaxInformation>();
+				syntaxInformationSet.setTransient(currentSet);
+			}
+			return currentSet;
+		} finally {
+			syntaxInformationSet.getMetadata().getLock().unlock();
+		}
+
 	}
 
 	/**
@@ -119,7 +127,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
 	 */
 	public void removeSyntaxInformation(final int lineStart, final int lineEnd,
 			final int columnStart, final int columnEnd,
-			final SyntaxInformationType type) {
+			final SyntaxInformationType type, final Session session) {
 		final SyntaxInformation syntaxInformation = new SyntaxInformation();
 		syntaxInformation.setColumnEnd(columnEnd);
 		syntaxInformation.setColumnStart(columnStart);
@@ -127,28 +135,11 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
 		syntaxInformation.setLineStart(lineStart);
 		syntaxInformation.setParent(this);
 		syntaxInformation.setType(type);
-		syntaxInformationSet.remove(syntaxInformation);
+		getUnwrappedSyntaxInformation(session).remove(syntaxInformation);
 	}
 
-	/**
-	 * Removes the syntax information.
-	 * 
-	 * @param syntaxInformation
-	 *            the syntax information
-	 */
-	public void removeSyntaxInformation(
-			final SyntaxInformation syntaxInformation) {
-		syntaxInformationSet.remove(syntaxInformation);
-	}
-
-	/**
-	 * Sets the syntax information set.
-	 * 
-	 * @param syntaxInformationSet
-	 *            the new syntax information set
-	 */
 	public void setSyntaxInformationSet(
-			final Set<SyntaxInformation> syntaxInformationSet) {
+			final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet) {
 		this.syntaxInformationSet = syntaxInformationSet;
 	}
 

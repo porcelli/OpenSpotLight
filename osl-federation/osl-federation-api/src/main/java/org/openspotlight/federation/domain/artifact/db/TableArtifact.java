@@ -52,6 +52,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
@@ -59,7 +61,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name("database")
 public class TableArtifact extends DatabaseCustomArtifact implements
-		SimpleNodeType, Serializable {
+SimpleNodeType, Serializable {
 	private static final long serialVersionUID = -4527063248944852023L;
 
 	private String tableName;
@@ -68,7 +70,7 @@ public class TableArtifact extends DatabaseCustomArtifact implements
 	private Set<Column> columns = new HashSet<Column>();
 
 	@Override
-	public boolean contentEquals(final Artifact other) {
+	public boolean contentEquals(final Artifact other, final Session session) {
 		if (!(other instanceof TableArtifact)) {
 			return false;
 		}

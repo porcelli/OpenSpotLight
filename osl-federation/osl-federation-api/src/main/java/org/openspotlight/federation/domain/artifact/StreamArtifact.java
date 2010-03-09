@@ -50,43 +50,38 @@ package org.openspotlight.federation.domain.artifact;
 
 import java.io.InputStream;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.internal.LazyProperty;
 
 @Name("stream_artifact")
 public class StreamArtifact extends ArtifactWithSyntaxInformation {
 
 	private static final long serialVersionUID = -8912205023568005794L;
 
-	/** The content. */
-	private InputStream content;
+	private LazyProperty<InputStream> content = LazyProperty.Factory
+			.create(this);
 
 	@Override
-	public boolean contentEquals(final Artifact other) {
+	public boolean contentEquals(final Artifact other, final Session session) {
 		if (other instanceof StreamArtifact) {
 			final StreamArtifact that = (StreamArtifact) other;
-			return Equals.eachEquality(content, that.content);
+			return Equals.eachEquality(content == null ? null : content
+					.get(session), that.content == null ? null : that.content
+					.get(session));
 		}
 		return false;
 	}
 
-	/**
-	 * Gets the content.
-	 * 
-	 * @return the content
-	 */
-	public InputStream getContent() {
+	public LazyProperty<InputStream> getContent() {
 		return content;
 	}
 
-	/**
-	 * Sets the content.
-	 * 
-	 * @param content
-	 *            the new content
-	 */
-	public void setContent(final InputStream content) {
+	public void setContent(final LazyProperty<InputStream> content) {
 		this.content = content;
 	}
+
 
 }

@@ -82,7 +82,7 @@ import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStr
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
-		extends AbstractArtifactFinder<A> {
+extends AbstractArtifactFinder<A> {
 
 	/**
 	 * Execute the statement as a normal SQL query or as a
@@ -113,7 +113,7 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 
 	protected AbstractDatabaseArtifactFinder(final Class<A> artifactType,
 			final DbArtifactSource artifactSource) {
-		super(artifactType, artifactSource.getRepository().getName());
+		super(artifactType, artifactSource.getRepository().getName(), null);
 		this.artifactSource = artifactSource;
 	}
 
@@ -164,19 +164,19 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 		final String catalog = resultSet.getString(catalogColumnName);
 		final String name = nameHandler == null ? resultSet
 				.getString(nameColumnName) : nameHandler.fixName(resultSet
-				.getString(nameColumnName));
-		final String schema = resultSet.getString(schemaColumnName);
-		buffer.append(schema);
-		buffer.append('/');
-		buffer.append(script.getScriptType().name());
-		buffer.append('/');
-		if (catalog != null && !"".equals(catalog.trim())) {
-			buffer.append(catalog);
-			buffer.append('/');
-		}
-		buffer.append(name);
-		final String result = buffer.toString();
-		return result;
+						.getString(nameColumnName));
+				final String schema = resultSet.getString(schemaColumnName);
+				buffer.append(schema);
+				buffer.append('/');
+				buffer.append(script.getScriptType().name());
+				buffer.append('/');
+				if (catalog != null && !"".equals(catalog.trim())) {
+					buffer.append(catalog);
+					buffer.append('/');
+				}
+				buffer.append(name);
+				final String result = buffer.toString();
+				return result;
 	}
 
 	protected synchronized Connection getConnectionFromSource(
@@ -204,36 +204,36 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 					final DatabaseType databaseType = dbBundle.getType();
 					for (final ScriptType scriptType : ScriptType.values()) {
 						final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE
-								.getScript(databaseType, scriptType);
+						.getScript(databaseType, scriptType);
 						if (scriptDescription == null) {
 							continue;
 						}
 						final Class<? extends DatabaseArtifactNameHandler> dataHandlerType = scriptDescription
-								.getNameHandlerClass();
+						.getNameHandlerClass();
 						final DatabaseArtifactNameHandler nameHandler = dataHandlerType != null ? dataHandlerType
 								.newInstance()
 								: null;
 
-						final ResultSet resultSet = executeStatement(
-								scriptDescription.getDataSelect(), conn);
-						walkingOnResult: while (resultSet.next()) {
-							final String result = this.fillName(
-									scriptDescription, resultSet, nameHandler);
-							if (nameHandler != null) {
-								final boolean shouldProcess = nameHandler
+								final ResultSet resultSet = executeStatement(
+										scriptDescription.getDataSelect(), conn);
+								walkingOnResult: while (resultSet.next()) {
+									final String result = this.fillName(
+											scriptDescription, resultSet, nameHandler);
+									if (nameHandler != null) {
+										final boolean shouldProcess = nameHandler
 										.shouldIncludeName(result, scriptType,
 												resultSet);
-								if (!shouldProcess) {
-									continue walkingOnResult;
-								}
-							}
-							if (isMatchingWithoutCaseSentitiveness(result,
-									initialPath + "*")) {
-								loadedNames.add(result);
-							}
+										if (!shouldProcess) {
+											continue walkingOnResult;
+										}
+									}
+									if (isMatchingWithoutCaseSentitiveness(result,
+											initialPath + "*")) {
+										loadedNames.add(result);
+									}
 
-						}
-						resultSet.close();
+								}
+								resultSet.close();
 					}
 					return loadedNames;
 				} catch (final Exception e) {
@@ -267,7 +267,7 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 	protected byte[] loadFromSql(final String catalog, final String schema,
 			final String name, final DatabaseMetadataScript scriptDescription,
 			final DatabaseStreamHandler streamHandler, final Connection conn)
-			throws Exception {
+	throws Exception {
 		final Map<ColumnsNamesForMetadataSelect, String> columnValues = new EnumMap<ColumnsNamesForMetadataSelect, String>(
 				ColumnsNamesForMetadataSelect.class);
 
@@ -293,10 +293,10 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 			resultSet = executeStatement(sql, conn);
 			if (resultSet.next()) {
 				final int columnToUse = scriptDescription
-						.getContentColumnToUse() != null ? scriptDescription
+				.getContentColumnToUse() != null ? scriptDescription
 						.getContentColumnToUse().intValue() : 1;
-				final String content = resultSet.getString(columnToUse);
-				return content != null ? content.getBytes() : null;
+						final String content = resultSet.getString(columnToUse);
+						return content != null ? content.getBytes() : null;
 			}
 		} catch (final Exception e) {
 			logAndReturn("Error on Sql " + sql, e);
@@ -330,7 +330,7 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 			final String schema, final String name,
 			final DatabaseMetadataScript scriptDescription,
 			final DatabaseStreamHandler streamHandler, final Connection conn)
-			throws Exception {
+	throws Exception {
 		final Map<ColumnsNamesForMetadataSelect, String> columnValues = new EnumMap<ColumnsNamesForMetadataSelect, String>(
 				ColumnsNamesForMetadataSelect.class);
 
@@ -367,13 +367,13 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 					if (!hasAnyResult) {
 						hasAnyResult = true;
 						final StringBuilder baseForTemplate = new StringBuilder(
-								"detail.{");
+						"detail.{");
 						final ResultSetMetaData metadata = resultSet
-								.getMetaData();
+						.getMetaData();
 						count = metadata.getColumnCount();
 						for (int i = 1; i <= count; i++) {
 							final String columnName = metadata
-									.getColumnLabel(i).toLowerCase();
+							.getColumnLabel(i).toLowerCase();
 							final String content = resultSet.getString(i);
 							contentTemplate.setAttribute(columnName, content);
 							columnsFromDatabase.add(content);
@@ -391,7 +391,7 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 						}
 					}
 					final Object[] valuesAsArray = columnsFromDatabase
-							.toArray();
+					.toArray();
 					contentTemplate.setAttributeArray(attributeName,
 							valuesAsArray);
 				}

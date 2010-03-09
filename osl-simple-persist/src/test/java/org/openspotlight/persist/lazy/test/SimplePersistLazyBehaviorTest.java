@@ -26,8 +26,8 @@ public class SimplePersistLazyBehaviorTest {
 			ClassWithLazyProperty bean = new ClassWithLazyProperty();
 			bean.setTest("test");
 
-			bean.setBigPojoProperty(LazyProperty.Factory.create(
-					SerializablePojoProperty.class, bean));
+			bean.setBigPojoProperty(LazyProperty.Factory
+					.<SerializablePojoProperty> create(bean));
 			bean.getBigPojoProperty().setTransient(
 					new SerializablePojoProperty());
 			bean.getBigPojoProperty().get(session).setAnotherProperty("test");
@@ -50,8 +50,8 @@ public class SimplePersistLazyBehaviorTest {
 	public void shouldLooseWeakValue() throws Exception {
 		final ClassWithLazyProperty bean = new ClassWithLazyProperty();
 		bean.setTest("test");
-		bean.setBigPojoProperty(LazyProperty.Factory.create(
-				SerializablePojoProperty.class, bean));
+		bean.setBigPojoProperty(LazyProperty.Factory
+				.<SerializablePojoProperty> create(bean));
 		bean.getBigPojoProperty().getMetadata().setCached(
 				new SerializablePojoProperty());
 		bean.getBigPojoProperty().get(null).setAnotherProperty("test");
@@ -71,8 +71,8 @@ public class SimplePersistLazyBehaviorTest {
 			ClassWithLazyProperty bean = new ClassWithLazyProperty();
 			bean.setTest("test");
 
-			bean.setBigPojoProperty(LazyProperty.Factory.create(
-					SerializablePojoProperty.class, bean));
+			bean.setBigPojoProperty(LazyProperty.Factory
+					.<SerializablePojoProperty> create(bean));
 			bean.getBigPojoProperty().setTransient(
 					new SerializablePojoProperty());
 			bean.getBigPojoProperty().get(session).setAnotherProperty("test");

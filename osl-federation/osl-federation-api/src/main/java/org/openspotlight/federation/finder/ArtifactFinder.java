@@ -50,6 +50,8 @@ package org.openspotlight.federation.finder;
 
 import java.util.Set;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.artifact.Artifact;
 
@@ -82,6 +84,8 @@ public interface ArtifactFinder<A extends Artifact> extends Disposable {
 	 * @return the stream artifact
 	 */
 	public A findByRelativePath(A relativeTo, String path);
+
+	public Session finderSession();
 
 	public String getCurrentRepository();
 

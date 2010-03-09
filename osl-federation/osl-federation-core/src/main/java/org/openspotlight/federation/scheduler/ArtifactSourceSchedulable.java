@@ -131,7 +131,8 @@ SchedulableCommand<ArtifactSource> {
 				final Set<Artifact> newArtifacts = newArtifactsByType.get(type);
 				final Set<Artifact> withDifferences = ArtifactFinderSupport
 				.applyDifferenceOnExistents(existentArtifacts,
-						newArtifacts);
+								newArtifacts, finderWithSaveCapabilitie
+										.finderSession());
 				// FIXME this could be parallel
 				for (final Artifact toSave : withDifferences) {
 

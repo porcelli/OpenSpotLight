@@ -68,15 +68,16 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> existents = new HashSet<StringArtifact>();
 		final StringArtifact existent1 = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent1.setContent("abc");
+		existent1.getContent().setTransient("abc");
 		final StringArtifact existent2 = Artifact.createArtifact(
 				StringArtifact.class, "a/b/d", ChangeType.CHANGED);
-		existent2.setContent("def");
+		existent2.getContent().setTransient("def");
 		existents.add(existent1);
 		existents.add(existent2);
 		ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents);
 		assertThat(existents.size(), is(1));
-		assertThat(existents.iterator().next().getContent(), is(not("abc")));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is(not("abc")));
 	}
 
 	@Test
@@ -85,19 +86,20 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent.setContent("def");
+		existent.getContent().setTransient("def");
 		newOnes.add(newOne);
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.CHANGED));
 		assertThat(existents.iterator().next(), is(newOne));
-		assertThat(existents.iterator().next().getContent(), is("abc"));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is("abc"));
 	}
 
 	@Test
@@ -106,19 +108,20 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent.setContent("def");
+		existent.getContent().setTransient("def");
 		newOnes.add(newOne);
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.CHANGED));
 		assertThat(existents.iterator().next(), is(newOne));
-		assertThat(existents.iterator().next().getContent(), is("abc"));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is("abc"));
 	}
 
 	@Test
@@ -127,19 +130,20 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent.setContent("def");
+		existent.getContent().setTransient("def");
 		newOnes.add(newOne);
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.CHANGED));
 		assertThat(existents.iterator().next(), is(newOne));
-		assertThat(existents.iterator().next().getContent(), is("abc"));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is("abc"));
 	}
 
 	@Test
@@ -148,14 +152,14 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent.setContent("def");
+		existent.getContent().setTransient("def");
 		newOnes.add(newOne);
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.EXCLUDED));
@@ -168,14 +172,14 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent.setContent("abc");
+		existent.getContent().setTransient("abc");
 		newOnes.add(newOne);
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.EXCLUDED));
@@ -188,10 +192,10 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent.setContent("def");
+		existent.getContent().setTransient("def");
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.EXCLUDED));
@@ -204,10 +208,10 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		newOnes.add(newOne);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.INCLUDED));
@@ -220,19 +224,20 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		existent.setContent("def");
+		existent.getContent().setTransient("def");
 		newOnes.add(newOne);
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.INCLUDED));
 		assertThat(existents.iterator().next(), is(newOne));
-		assertThat(existents.iterator().next().getContent(), is("abc"));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is("abc"));
 
 	}
 
@@ -242,14 +247,14 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent.setContent("abc");
+		existent.getContent().setTransient("abc");
 		newOnes.add(newOne);
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.CHANGED));
@@ -262,14 +267,14 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> newOnes = new HashSet<StringArtifact>();
 		final StringArtifact newOne = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		newOne.setContent("abc");
+		newOne.getContent().setTransient("abc");
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.NOT_CHANGED);
-		existent.setContent("abc");
+		existent.getContent().setTransient("abc");
 		newOnes.add(newOne);
 		existents.add(existent);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				newOnes);
+				newOnes, null);
 		assertThat(existents.size(), is(1));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.NOT_CHANGED));
@@ -282,14 +287,14 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> excludeds = new HashSet<StringArtifact>();
 		final StringArtifact existent = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		existent.setContent("willBeExcluded");
+		existent.getContent().setTransient("willBeExcluded");
 		existents.add(existent);
 		final StringArtifact excluded = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		excluded.setContent("willBeExcluded");
+		excluded.getContent().setTransient("willBeExcluded");
 		excludeds.add(excluded);
 		existents = ArtifactFinderSupport.applyDifferenceOnExistents(existents,
-				excludeds);
+				excludeds, null);
 		assertThat(existents.size(), is(0));
 	}
 
@@ -298,15 +303,16 @@ public class ArtifactFinderSupportTest {
 		final Set<StringArtifact> existents = new HashSet<StringArtifact>();
 		final StringArtifact existent1 = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.INCLUDED);
-		existent1.setContent("def");
+		existent1.getContent().setTransient("def");
 		final StringArtifact existent2 = Artifact.createArtifact(
 				StringArtifact.class, "a/b/c", ChangeType.EXCLUDED);
-		existent2.setContent("abc");
+		existent2.getContent().setTransient("abc");
 		existents.add(existent1);
 		existents.add(existent2);
 		ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents);
 		assertThat(existents.size(), is(1));
-		assertThat(existents.iterator().next().getContent(), is("def"));
+		assertThat(existents.iterator().next().getContent().get(null),
+				is("def"));
 		assertThat(existents.iterator().next().getChangeType(),
 				is(ChangeType.NOT_CHANGED));
 

@@ -48,8 +48,11 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.internal.LazyProperty;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -62,34 +65,24 @@ public class StringArtifact extends ArtifactWithSyntaxInformation {
 
 	private static final long serialVersionUID = -8912205023568005794L;
 
-	/** The content. */
-	private String content;
+	private LazyProperty<String> content = LazyProperty.Factory.create(this);
 
 	@Override
-	public boolean contentEquals(final Artifact other) {
+	public boolean contentEquals(final Artifact other, final Session session) {
 		if (other instanceof StringArtifact) {
 			final StringArtifact that = (StringArtifact) other;
-			return Equals.eachEquality(content, that.content);
+			return Equals.eachEquality(content == null ? null : content
+					.get(session), that.content == null ? null : that.content
+							.get(session));
 		}
 		return false;
 	}
 
-	/**
-	 * Gets the content.
-	 * 
-	 * @return the content
-	 */
-	public String getContent() {
+	public LazyProperty<String> getContent() {
 		return content;
 	}
 
-	/**
-	 * Sets the content.
-	 * 
-	 * @param content
-	 *            the new content
-	 */
-	public void setContent(final String content) {
+	public void setContent(final LazyProperty<String> content) {
 		this.content = content;
 	}
 
