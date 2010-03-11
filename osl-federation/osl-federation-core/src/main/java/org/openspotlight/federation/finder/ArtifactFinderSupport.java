@@ -51,6 +51,8 @@ package org.openspotlight.federation.finder;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.jcr.Session;
+
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 
@@ -69,7 +71,7 @@ public class ArtifactFinderSupport {
 	 * @return the set< t>
 	 */
 	public static <T extends Artifact> Set<T> applyDifferenceOnExistents(
-			final Set<T> existents, final Set<T> newOnes) {
+			final Set<T> existents, final Set<T> newOnes, final Session session) {
 		final Set<T> result = new HashSet<T>();
 		final Set<T> delta = new HashSet<T>(newOnes);
 		for (final T existent : existents) {
@@ -77,9 +79,9 @@ public class ArtifactFinderSupport {
 				final T newOne = findTheEquivalent(existent, newOnes);
 				delta.remove(newOne);
 				if (newOne != null) {
-					final ChangeType defaultChangeType = newOne
-							.contentEquals(existent) ? ChangeType.NOT_CHANGED
-							: ChangeType.CHANGED;
+					final ChangeType defaultChangeType = newOne.contentEquals(
+							existent, session) ? ChangeType.NOT_CHANGED
+									: ChangeType.CHANGED;
 					switch (existent.getChangeType()) {
 					case INCLUDED:
 						if (!ChangeType.EXCLUDED.equals(newOne.getChangeType())) {
@@ -95,9 +97,9 @@ public class ArtifactFinderSupport {
 						newOne.setChangeType(defaultChangeType);
 					}
 					final boolean bothIncludedAndExcluded = ChangeType.INCLUDED
-							.equals(existent.getChangeType())
-							&& ChangeType.EXCLUDED.equals(newOne
-									.getChangeType());
+					.equals(existent.getChangeType())
+					&& ChangeType.EXCLUDED.equals(newOne
+							.getChangeType());
 					if (!bothIncludedAndExcluded) {
 						result.add(newOne);
 					}

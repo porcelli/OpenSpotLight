@@ -49,13 +49,13 @@
 package org.openspotlight.federation.domain.artifact;
 
 import org.openspotlight.common.util.Equals;
-import org.openspotlight.persist.annotation.StreamPropertyWithParent;
+import org.openspotlight.persist.internal.StreamPropertyWithParent;
 
 /**
  * The Class SyntaxInformation.
  */
 public class SyntaxInformation implements StreamPropertyWithParent<Artifact>,
-		Comparable<SyntaxInformation> {
+Comparable<SyntaxInformation> {
 	private static final long serialVersionUID = 9056717121341748618L;
 
 	private static int compare(final int anotherVal, final int thisVal) {

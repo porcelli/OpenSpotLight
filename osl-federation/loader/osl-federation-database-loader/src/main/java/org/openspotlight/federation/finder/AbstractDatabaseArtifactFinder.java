@@ -80,9 +80,14 @@ import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 		extends AbstractArtifactFinder<A> {
+
+	private static Logger logger = LoggerFactory
+			.getLogger(AbstractDatabaseArtifactFinder.class);
 
 	/**
 	 * Execute the statement as a normal SQL query or as a
@@ -113,7 +118,7 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 
 	protected AbstractDatabaseArtifactFinder(final Class<A> artifactType,
 			final DbArtifactSource artifactSource) {
-		super(artifactType, artifactSource.getRepository().getName());
+		super(artifactType, artifactSource.getRepository().getName(), null);
 		this.artifactSource = artifactSource;
 	}
 
@@ -147,7 +152,7 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 	private String fillName(final DatabaseMetadataScript script,
 			final ResultSet resultSet,
 			final DatabaseArtifactNameHandler nameHandler) throws SQLException {
-		final StringBuilder buffer = new StringBuilder();
+		final StringBuilder buffer = new StringBuilder("/");
 		String catalogColumnName = script.getColumnAliasMap().get(
 				ColumnsNamesForMetadataSelect.catalog_name);
 		String nameColumnName = script.getColumnAliasMap().get(
@@ -228,8 +233,18 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 								}
 							}
 							if (isMatchingWithoutCaseSentitiveness(result,
-									initialPath + "*")) {
+									initialPath + "**")) {
 								loadedNames.add(result);
+								if (logger.isDebugEnabled())
+									logger.debug("loading " + result
+											+ " due to its matching with "
+											+ initialPath + "**");
+							} else {
+								if (logger.isDebugEnabled())
+									logger.debug("not loading " + result
+											+ " due to its not matching with "
+											+ initialPath + "**");
+
 							}
 
 						}

@@ -1,5 +1,6 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
+import org.junit.Ignore;
 import org.openspotlight.bundle.common.AbstractTestServerClass;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
@@ -24,6 +25,7 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
+@Ignore
 public class JavaBundleTest extends AbstractTestServerClass {
 
 	public static void main(final String... args) {

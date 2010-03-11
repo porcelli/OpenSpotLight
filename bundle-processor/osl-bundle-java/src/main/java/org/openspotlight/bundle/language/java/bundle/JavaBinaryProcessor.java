@@ -2,10 +2,13 @@ package org.openspotlight.bundle.language.java.bundle;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.jcr.Session;
 
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.bundle.language.java.JavaConstants;
@@ -244,17 +247,16 @@ BundleProcessorArtifactPhase<StreamArtifact> {
 		return map;
 	}
 
-	public static String discoverContextName(final StreamArtifact artifact)
+	public static String discoverContextName(final StreamArtifact artifact, Session artifactSession)
 	throws IOException, SLException {
-		if (artifact.getContent().markSupported()) {
-			artifact.getContent().reset();
+		
+		InputStream is = artifact.getContent().get(artifactSession);
+		if (is.markSupported()) {
+			is.reset();
 		}
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		if (artifact.getContent().markSupported()) {
-			artifact.getContent().reset();
-		}
-
-		IOUtils.copy(artifact.getContent(), baos);
+		
+		IOUtils.copy(is, baos);
 		final String uniqueContextName = UUID.nameUUIDFromBytes(
 				Sha1.getSha1Signature(baos.toByteArray())).toString();
 		return uniqueContextName;
@@ -316,10 +318,11 @@ BundleProcessorArtifactPhase<StreamArtifact> {
 			logger.debug(" starting to process artifact " + artifact);
 		}
 		try {
+			Session artifactSession = context.getArtifactFinder(StreamArtifact.class).finderSession();
 			final CompiledTypesExtractor extractor = new CompiledTypesExtractor();
 			final List<TypeDefinition> types = extractor.getJavaTypes(artifact
-					.getContent(), artifact.getArtifactCompleteName());
-			final String uniqueContextName = discoverContextName(artifact);
+					.getContent().get(artifactSession), artifact.getArtifactCompleteName());
+			final String uniqueContextName = discoverContextName(artifact,artifactSession);
 			artifact.setUniqueContextName(uniqueContextName);
 			final SLContext slContext = context.getGraphSession()
 			.createContext(uniqueContextName);

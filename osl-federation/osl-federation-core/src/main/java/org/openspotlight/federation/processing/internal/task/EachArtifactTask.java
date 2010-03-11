@@ -49,6 +49,7 @@
 package org.openspotlight.federation.processing.internal.task;
 
 import java.util.Date;
+import java.util.HashSet;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
@@ -57,6 +58,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
+import org.openspotlight.federation.domain.artifact.SyntaxInformation;
 import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
@@ -115,7 +117,8 @@ RunnableWithBundleContext {
 		try {
 			if (first && this.artifact instanceof ArtifactWithSyntaxInformation) {
 				final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation) this.artifact;
-				artifactWithInfo.clearSyntaxInformationSet();
+				artifactWithInfo.getSyntaxInformationSet().setTransient(
+						new HashSet<SyntaxInformation>());
 			}
 			result = this.bundleProcessor.processArtifact(this.artifact,
 					this.currentContextImpl, getBundleContext());

@@ -52,6 +52,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.artifact.Artifact;
@@ -67,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * @param <A>
  */
 public abstract class AbstractArtifactFinder<A extends Artifact> implements
-		ArtifactFinder<A> {
+ArtifactFinder<A> {
 
 	private final Class<A> targetArtifactType;
 
@@ -75,10 +77,13 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 
 	private final String currentRepository;
 
+	private final Session session;
+
 	protected AbstractArtifactFinder(final Class<A> targetArtifactType,
-			final String currentRepository) {
+			final String currentRepository, final Session session) {
 		this.currentRepository = currentRepository;
 		this.targetArtifactType = targetArtifactType;
+		this.session = session;
 	}
 
 	private void didLoadArtifact(final A artifact) {
@@ -111,6 +116,10 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 		final A result = internalFindByRelativePath(relativeTo, path);
 		didLoadArtifact(result);
 		return result;
+	}
+
+	public Session finderSession() {
+		return session;
 	}
 
 	public final String getCurrentRepository() {
@@ -160,9 +169,9 @@ public abstract class AbstractArtifactFinder<A extends Artifact> implements
 				internalRetrieveAllArtifactNames(initialPath));
 		if (logger.isDebugEnabled()) {
 			logger
-					.debug("(" + targetArtifactType.getSimpleName() + "):"
-							+ "retrieved names for path " + initialPath + ": "
-							+ result);
+			.debug("(" + targetArtifactType.getSimpleName() + "):"
+					+ "retrieved names for path " + initialPath + ": "
+					+ result);
 		}
 
 		return result;

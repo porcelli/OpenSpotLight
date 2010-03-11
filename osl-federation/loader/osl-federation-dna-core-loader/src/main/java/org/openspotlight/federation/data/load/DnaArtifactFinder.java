@@ -83,7 +83,7 @@ import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public abstract class DnaArtifactFinder extends
-		AbstractArtifactFinder<StringArtifact> {
+AbstractArtifactFinder<StringArtifact> {
 
 	/**
 	 * JCR visitor to fill all valid artifact names
@@ -125,7 +125,7 @@ public abstract class DnaArtifactFinder extends
 	private final Map<ArtifactSource, Session> mappingSessions = new ConcurrentHashMap<ArtifactSource, Session>();
 
 	public DnaArtifactFinder(final ArtifactSource source) {
-		super(StringArtifact.class, source.getRepository().getName());
+		super(StringArtifact.class, source.getRepository().getName(), null);
 		artifactSource = source;
 	}
 
@@ -150,7 +150,7 @@ public abstract class DnaArtifactFinder extends
 	 * @throws Exception
 	 */
 	public synchronized Session getSessionForSource(final ArtifactSource source)
-			throws Exception {
+	throws Exception {
 		Session session = mappingSessions.get(source);
 		if (session == null) {
 			JcrEngine engine = mappingEngines.get(source);
@@ -176,7 +176,7 @@ public abstract class DnaArtifactFinder extends
 			}
 
 			final Node node = getSessionForSource(artifactSource).getRootNode()
-					.getNode(path);
+			.getNode(path);
 
 			final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
 			final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
@@ -189,7 +189,7 @@ public abstract class DnaArtifactFinder extends
 			}
 			final StringArtifact artifact = Artifact.createArtifact(
 					StringArtifact.class, path, ChangeType.INCLUDED);
-			artifact.setContent(new String(baos.toByteArray()));
+			artifact.getContent().setTransient(new String(baos.toByteArray()));
 			return artifact;
 		} catch (final Exception e) {
 			throw logAndReturnNew(e, ConfigurationException.class);
@@ -202,7 +202,7 @@ public abstract class DnaArtifactFinder extends
 		try {
 			final Set<String> result = new HashSet<String>();
 			final Node rootNode = getSessionForSource(artifactSource)
-					.getRootNode();
+			.getRootNode();
 			final Node initial = initialPath == null ? rootNode : rootNode
 					.getNode(initialPath);
 			initial.accept(withVisitor(new FillNamesVisitor(result)));
@@ -220,7 +220,7 @@ public abstract class DnaArtifactFinder extends
 			configureWithBundle(configuration
 					.repositorySource(repositorySource), source);
 			configuration.repository(repositoryName)
-					.setSource(repositorySource);
+			.setSource(repositorySource);
 			configuration.save();
 			final JcrEngine engine = configuration.build();
 			engine.start();

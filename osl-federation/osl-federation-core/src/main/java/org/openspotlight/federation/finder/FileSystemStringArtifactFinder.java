@@ -67,16 +67,17 @@ import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class FileSystemStringArtifactFinder extends
-		AbstractArtifactFinder<StringArtifact> {
+AbstractArtifactFinder<StringArtifact> {
 
 	private final ArtifactSource artifactSource;
 
 	public FileSystemStringArtifactFinder(final ArtifactSource artifactSource) {
-		super(StringArtifact.class, artifactSource.getRepository().getName());
+		super(StringArtifact.class, artifactSource.getRepository().getName(),
+				null);
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkCondition("sourceExists:"
 				+ artifactSource.getInitialLookup(), new File(artifactSource
-				.getInitialLookup()).exists());
+						.getInitialLookup()).exists());
 		this.artifactSource = artifactSource;
 	}
 
@@ -96,35 +97,35 @@ public class FileSystemStringArtifactFinder extends
 		Assertions.checkNotEmpty("rawPath", rawPath);
 		final String path = rawPath.startsWith("/") ? Strings
 				.removeBegginingFrom("/", rawPath) : rawPath;
-		try {
+				try {
 
-			final String location = MessageFormat.format("{0}/{1}",
-					artifactSource.getInitialLookup(), path);
+					final String location = MessageFormat.format("{0}/{1}",
+							artifactSource.getInitialLookup(), path);
 
-			final File file = new File(location);
-			if (!file.exists()) {
-				return null;
-			}
-			if (!file.isFile()) {
-				return null;
-			}
-			final FileInputStream resource = new FileInputStream(file);
-			final BufferedReader reader = new BufferedReader(
-					new InputStreamReader(resource));
-			final StringBuilder buffer = new StringBuilder();
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				buffer.append(line);
-				buffer.append('\n');
-			}
-			final String content = buffer.toString();
-			final StringArtifact streamArtifact = Artifact.createArtifact(
-					StringArtifact.class, "/" + path, ChangeType.INCLUDED);
-			streamArtifact.setContent(content);
-			return streamArtifact;
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
+					final File file = new File(location);
+					if (!file.exists()) {
+						return null;
+					}
+					if (!file.isFile()) {
+						return null;
+					}
+					final FileInputStream resource = new FileInputStream(file);
+					final BufferedReader reader = new BufferedReader(
+							new InputStreamReader(resource));
+					final StringBuilder buffer = new StringBuilder();
+					String line = null;
+					while ((line = reader.readLine()) != null) {
+						buffer.append(line);
+						buffer.append('\n');
+					}
+					final String content = buffer.toString();
+					final StringArtifact streamArtifact = Artifact.createArtifact(
+							StringArtifact.class, "/" + path, ChangeType.INCLUDED);
+					streamArtifact.getContent().setTransient(content);
+					return streamArtifact;
+				} catch (final Exception e) {
+					throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+				}
 
 	}
 
@@ -154,7 +155,7 @@ public class FileSystemStringArtifactFinder extends
 			for (final String p : pathList) {
 				if (new File(p).isFile()) {
 					final String correctRelativePath = Strings
-							.removeBegginingFrom(pathToRemove, p);
+					.removeBegginingFrom(pathToRemove, p);
 					result.add(correctRelativePath);
 				}
 			}
