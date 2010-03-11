@@ -69,7 +69,14 @@ import org.slf4j.LoggerFactory;
  * @param <A>
  */
 public abstract class AbstractArtifactFinder<A extends Artifact> implements
-ArtifactFinder<A> {
+		ArtifactFinder<A> {
+
+	public final boolean isMaybeChanged(String artifactName, A oldOne) {
+		return internalIsMaybeChanged(artifactName, oldOne);
+	}
+
+	protected abstract boolean internalIsMaybeChanged(String artifactName,
+			A oldOne);
 
 	private final Class<A> targetArtifactType;
 
@@ -169,9 +176,9 @@ ArtifactFinder<A> {
 				internalRetrieveAllArtifactNames(initialPath));
 		if (logger.isDebugEnabled()) {
 			logger
-			.debug("(" + targetArtifactType.getSimpleName() + "):"
-					+ "retrieved names for path " + initialPath + ": "
-					+ result);
+					.debug("(" + targetArtifactType.getSimpleName() + "):"
+							+ "retrieved names for path " + initialPath + ": "
+							+ result);
 		}
 
 		return result;

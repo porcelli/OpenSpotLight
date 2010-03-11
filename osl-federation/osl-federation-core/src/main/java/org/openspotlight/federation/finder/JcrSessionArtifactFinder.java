@@ -208,4 +208,9 @@ ArtifactFinderWithSaveCapabilitie<A> {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
+
+	@Override
+	protected boolean internalIsMaybeChanged(String artifactName, A oldOne) {
+		return true;
+	}
 }

@@ -57,6 +57,15 @@ import org.openspotlight.persist.internal.LazyProperty;
 @Name("stream_artifact")
 public class StreamArtifact extends ArtifactWithSyntaxInformation {
 
+	private long lastChange;
+	
+	public long getLastChange() {
+		return lastChange;
+	}
+
+	public void setLastChange(long lastChange) {
+		this.lastChange = lastChange;
+	}
 	private static final long serialVersionUID = -8912205023568005794L;
 
 	private LazyProperty<InputStream> content = LazyProperty.Factory

@@ -72,7 +72,7 @@ import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class LocalSourceStreamArtifactFinder<T extends Artifact> extends
-AbstractArtifactFinder<T> {
+		AbstractArtifactFinder<T> {
 
 	private final ArtifactSource artifactSource;
 
@@ -101,15 +101,40 @@ AbstractArtifactFinder<T> {
 		return null;
 	}
 
+	@Override
+	protected boolean internalIsMaybeChanged(String artifactName, T oldOne) {
+		String location = fixPathInformation(artifactName, oldOne
+				.getChangeType());
+		final File file = new File(location);
+		if (!file.exists()) {
+			return true;
+		}
+		if (!file.isFile()) {
+			return true;
+		}
+		if (oldOne instanceof StreamArtifact) {
+			if (file.lastModified() != ((StreamArtifact) oldOne)
+					.getLastChange()) {
+				return true;
+			}
+		} else if (oldOne instanceof StringArtifact) {
+			if (file.lastModified() != ((StringArtifact) oldOne)
+					.getLastChange()) {
+				return true;
+			}
+		} else {
+			return true;
+		}
+
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
 	protected T internalFindByPath(final String rawPath) {
-		Assertions.checkNotEmpty("rawPath", rawPath);
-		for (final ChangeType t : ChangeType.values()) {
+		for (final ChangeType changeType : ChangeType.values()) {
 			try {
 
-				final String location = MessageFormat.format("{0}/{1}/{2}",
-						artifactSource.getInitialLookup(), t.toString()
-						.toLowerCase(), rawPath);
+				final String location = fixPathInformation(rawPath, changeType);
 
 				final File file = new File(location);
 				if (!file.exists()) {
@@ -128,7 +153,8 @@ AbstractArtifactFinder<T> {
 					}
 					final String content = buffer.toString();
 					final StringArtifact streamArtifact = Artifact
-					.createArtifact(StringArtifact.class, rawPath, t);
+							.createArtifact(StringArtifact.class, rawPath,
+									changeType);
 					streamArtifact.getContent().setTransient(content);
 					return (T) streamArtifact;
 				} else if (artifactType.equals(StreamArtifact.class)) {
@@ -136,11 +162,10 @@ AbstractArtifactFinder<T> {
 
 					IOUtils.copy(resource, baos);
 					final StreamArtifact streamArtifact = Artifact
-					.createArtifact(StreamArtifact.class, rawPath,
-							ChangeType.INCLUDED);
+							.createArtifact(StreamArtifact.class, rawPath,
+									ChangeType.INCLUDED);
 					streamArtifact.getContent().setTransient(
-							new ByteArrayInputStream(baos
-									.toByteArray()));
+							new ByteArrayInputStream(baos.toByteArray()));
 					return (T) streamArtifact;
 				}
 			} catch (final Exception e) {
@@ -150,6 +175,14 @@ AbstractArtifactFinder<T> {
 
 		return null;
 
+	}
+
+	private String fixPathInformation(final String rawPath,
+			final ChangeType changeType) {
+		final String location = MessageFormat.format("{0}/{1}/{2}",
+				artifactSource.getInitialLookup(), changeType.toString()
+						.toLowerCase(), rawPath);
+		return location;
 	}
 
 	protected T internalFindByRelativePath(final StringArtifact relativeTo,
@@ -184,20 +217,18 @@ AbstractArtifactFinder<T> {
 			final Set<String> result = new HashSet<String>();
 			for (final ChangeType t : ChangeType.values()) {
 
-				final String location = MessageFormat.format("{0}/{1}/{2}",
-						artifactSource.getInitialLookup(), t.toString()
-						.toLowerCase(), rawPath);
+				final String location = fixPathInformation(rawPath, t);
 
 				final String pathToRemove = Files
-				.getNormalizedFileName(new File(artifactSource
-						.getInitialLookup()))
+						.getNormalizedFileName(new File(artifactSource
+								.getInitialLookup()))
 						+ "/" + t.toString().toLowerCase() + "/";
 				final Set<String> pathList = Files.listFileNamesFrom(location,
 						true);
 
 				for (final String p : pathList) {
 					final String correctRelativePath = Strings
-					.removeBegginingFrom(pathToRemove, p);
+							.removeBegginingFrom(pathToRemove, p);
 					result.add(correctRelativePath);
 				}
 			}

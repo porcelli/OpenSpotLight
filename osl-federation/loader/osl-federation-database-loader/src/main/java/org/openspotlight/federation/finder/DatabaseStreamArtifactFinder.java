@@ -159,4 +159,10 @@ ArtifactFinder<StringArtifact> {
 
 	}
 
+	@Override
+	protected boolean internalIsMaybeChanged(String artifactName,
+			StringArtifact oldOne) {
+		return true;
+	}
+
 }

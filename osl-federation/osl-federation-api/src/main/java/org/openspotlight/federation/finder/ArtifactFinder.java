@@ -62,6 +62,17 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 public interface ArtifactFinder<A extends Artifact> extends Disposable {
 
 	/**
+	 * This method verifies if the artifact with given name is changed comparing
+	 * with the old one. It may return false yes, but never false no. It is used
+	 * to get few optimizations on artifact loading process.
+	 * 
+	 * @param artifactName
+	 * @param oldOne
+	 * @return
+	 */
+	public boolean isMaybeChanged(String artifactName, A oldOne);
+
+	/**
 	 * Find by path.
 	 * 
 	 * @param path

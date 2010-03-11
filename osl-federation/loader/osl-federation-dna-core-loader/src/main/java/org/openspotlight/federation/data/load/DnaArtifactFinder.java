@@ -83,7 +83,15 @@ import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public abstract class DnaArtifactFinder extends
-AbstractArtifactFinder<StringArtifact> {
+		AbstractArtifactFinder<StringArtifact> {
+
+	@Override
+	protected boolean internalIsMaybeChanged(String artifactName,
+			StringArtifact oldOne) {
+		// TODO implement the logic needed to compare if the origin file is
+		// changed or not
+		return true;
+	}
 
 	/**
 	 * JCR visitor to fill all valid artifact names
@@ -150,7 +158,7 @@ AbstractArtifactFinder<StringArtifact> {
 	 * @throws Exception
 	 */
 	public synchronized Session getSessionForSource(final ArtifactSource source)
-	throws Exception {
+			throws Exception {
 		Session session = mappingSessions.get(source);
 		if (session == null) {
 			JcrEngine engine = mappingEngines.get(source);
@@ -176,7 +184,7 @@ AbstractArtifactFinder<StringArtifact> {
 			}
 
 			final Node node = getSessionForSource(artifactSource).getRootNode()
-			.getNode(path);
+					.getNode(path);
 
 			final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
 			final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
@@ -202,7 +210,7 @@ AbstractArtifactFinder<StringArtifact> {
 		try {
 			final Set<String> result = new HashSet<String>();
 			final Node rootNode = getSessionForSource(artifactSource)
-			.getRootNode();
+					.getRootNode();
 			final Node initial = initialPath == null ? rootNode : rootNode
 					.getNode(initialPath);
 			initial.accept(withVisitor(new FillNamesVisitor(result)));
@@ -220,7 +228,7 @@ AbstractArtifactFinder<StringArtifact> {
 			configureWithBundle(configuration
 					.repositorySource(repositorySource), source);
 			configuration.repository(repositoryName)
-			.setSource(repositorySource);
+					.setSource(repositorySource);
 			configuration.save();
 			final JcrEngine engine = configuration.build();
 			engine.start();

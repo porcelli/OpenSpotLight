@@ -69,7 +69,7 @@ import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class FileSystemStreamArtifactFinder extends
-AbstractArtifactFinder<StreamArtifact> {
+		AbstractArtifactFinder<StreamArtifact> {
 
 	private final ArtifactSource artifactSource;
 
@@ -79,7 +79,7 @@ AbstractArtifactFinder<StreamArtifact> {
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkCondition("sourceExists:"
 				+ artifactSource.getInitialLookup(), new File(artifactSource
-						.getInitialLookup()).exists());
+				.getInitialLookup()).exists());
 		this.artifactSource = artifactSource;
 	}
 
@@ -97,33 +97,32 @@ AbstractArtifactFinder<StreamArtifact> {
 
 	protected StreamArtifact internalFindByPath(final String rawPath) {
 		Assertions.checkNotEmpty("rawPath", rawPath);
-		final String path = rawPath.startsWith("/") ? Strings
-				.removeBegginingFrom("/", rawPath) : rawPath;
-				try {
+		try {
 
-					final String location = MessageFormat.format("{0}/{1}",
-							artifactSource.getInitialLookup(), path);
+			String[] pathInfo = fixPathInformation(rawPath);
+			final String path = pathInfo[0];
+			final String location = pathInfo[1];
 
-					final File file = new File(location);
-					if (!file.exists()) {
-						return null;
-					}
-					if (!file.isFile()) {
-						return null;
-					}
-					final FileInputStream resource = new FileInputStream(file);
+			final File file = new File(location);
+			if (!file.exists()) {
+				return null;
+			}
+			if (!file.isFile()) {
+				return null;
+			}
+			final FileInputStream resource = new FileInputStream(file);
 
-					final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					IOUtils.copy(resource, baos);
-					final ByteArrayInputStream bais = new ByteArrayInputStream(baos
-							.toByteArray());
-					final StreamArtifact streamArtifact = Artifact.createArtifact(
-							StreamArtifact.class, "/" + path, ChangeType.INCLUDED);
-					streamArtifact.getContent().setTransient(bais);
-					return streamArtifact;
-				} catch (final Exception e) {
-					throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-				}
+			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			IOUtils.copy(resource, baos);
+			final ByteArrayInputStream bais = new ByteArrayInputStream(baos
+					.toByteArray());
+			final StreamArtifact streamArtifact = Artifact.createArtifact(
+					StreamArtifact.class, "/" + path, ChangeType.INCLUDED);
+			streamArtifact.getContent().setTransient(bais);
+			return streamArtifact;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 
 	}
 
@@ -153,7 +152,7 @@ AbstractArtifactFinder<StreamArtifact> {
 			for (final String p : pathList) {
 				if (new File(p).isFile()) {
 					final String correctRelativePath = Strings
-					.removeBegginingFrom(pathToRemove, p);
+							.removeBegginingFrom(pathToRemove, p);
 					result.add(correctRelativePath);
 				}
 			}
@@ -162,4 +161,33 @@ AbstractArtifactFinder<StreamArtifact> {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
+
+	@Override
+	protected boolean internalIsMaybeChanged(String artifactName,
+			StreamArtifact oldOne) {
+		String[] pathInfo = fixPathInformation(artifactName);
+		final String location = pathInfo[1];
+
+		final File file = new File(location);
+		if (!file.exists()) {
+			return true;
+		}
+		if (!file.isFile()) {
+			return true;
+		}
+		if (file.lastModified() != oldOne.getLastChange()) {
+			return true;
+		}
+		return false;
+	}
+
+	private String[] fixPathInformation(String rawPath) {
+		final String path = rawPath.startsWith("/") ? Strings
+				.removeBegginingFrom("/", rawPath) : rawPath;
+		final String location = MessageFormat.format("{0}/{1}", artifactSource
+				.getInitialLookup(), path);
+
+		return new String[] { path, location };
+	}
+
 }

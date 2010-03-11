@@ -404,4 +404,10 @@ AbstractDatabaseArtifactFinder<DatabaseCustomArtifact> {
 		}
 	}
 
+	@Override
+	protected boolean internalIsMaybeChanged(String artifactName,
+			DatabaseCustomArtifact oldOne) {
+		return true;
+	}
+
 }

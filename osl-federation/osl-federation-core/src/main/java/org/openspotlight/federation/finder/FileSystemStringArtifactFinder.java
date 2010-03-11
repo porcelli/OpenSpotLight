@@ -67,7 +67,7 @@ import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class FileSystemStringArtifactFinder extends
-AbstractArtifactFinder<StringArtifact> {
+		AbstractArtifactFinder<StringArtifact> {
 
 	private final ArtifactSource artifactSource;
 
@@ -77,7 +77,7 @@ AbstractArtifactFinder<StringArtifact> {
 		Assertions.checkNotNull("artifactSource", artifactSource);
 		Assertions.checkCondition("sourceExists:"
 				+ artifactSource.getInitialLookup(), new File(artifactSource
-						.getInitialLookup()).exists());
+				.getInitialLookup()).exists());
 		this.artifactSource = artifactSource;
 	}
 
@@ -92,47 +92,56 @@ AbstractArtifactFinder<StringArtifact> {
 	public Class<? extends ArtifactSource> getSourceType() {
 		return ArtifactSource.class;
 	}
+	
+	private String[] fixPathInformation(String rawPath){
+		final String path = rawPath.startsWith("/") ? Strings
+				.removeBegginingFrom("/", rawPath) : rawPath;
+		final String location = MessageFormat.format("{0}/{1}",
+				artifactSource.getInitialLookup(), path);
+
+		return new String[]{path,location};
+	}
 
 	protected StringArtifact internalFindByPath(final String rawPath) {
 		Assertions.checkNotEmpty("rawPath", rawPath);
-		final String path = rawPath.startsWith("/") ? Strings
-				.removeBegginingFrom("/", rawPath) : rawPath;
-				try {
+		try {
+			
+			String[] pathInfo = fixPathInformation(rawPath);
+			final String path = pathInfo[0];
+			final String location = pathInfo[1];
 
-					final String location = MessageFormat.format("{0}/{1}",
-							artifactSource.getInitialLookup(), path);
-
-					final File file = new File(location);
-					if (!file.exists()) {
-						return null;
-					}
-					if (!file.isFile()) {
-						return null;
-					}
-					final FileInputStream resource = new FileInputStream(file);
-					final BufferedReader reader = new BufferedReader(
-							new InputStreamReader(resource));
-					final StringBuilder buffer = new StringBuilder();
-					String line = null;
-					while ((line = reader.readLine()) != null) {
-						buffer.append(line);
-						buffer.append('\n');
-					}
-					final String content = buffer.toString();
-					final StringArtifact streamArtifact = Artifact.createArtifact(
-							StringArtifact.class, "/" + path, ChangeType.INCLUDED);
-					streamArtifact.getContent().setTransient(content);
-					return streamArtifact;
-				} catch (final Exception e) {
-					throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-				}
+			final File file = new File(location);
+			if (!file.exists()) {
+				return null;
+			}
+			if (!file.isFile()) {
+				return null;
+			}
+			final FileInputStream resource = new FileInputStream(file);
+			final BufferedReader reader = new BufferedReader(
+					new InputStreamReader(resource));
+			final StringBuilder buffer = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				buffer.append(line);
+				buffer.append('\n');
+			}
+			final String content = buffer.toString();
+			final StringArtifact streamArtifact = Artifact.createArtifact(
+					StringArtifact.class, "/" + path, ChangeType.INCLUDED);
+			streamArtifact.getContent().setTransient(content);
+			return streamArtifact;
+		} catch (final Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 
 	}
 
 	protected Set<String> internalRetrieveAllArtifactNames(
 			final String initialPath) {
-		final String rawPath = initialPath == null ? "." : initialPath;
 		try {
+			final String rawPath = initialPath == null ? "." : initialPath;
+
 			String initialLookup = artifactSource.getInitialLookup();
 			if (initialLookup.endsWith("/")) {
 				initialLookup = initialLookup.substring(0, initialLookup
@@ -155,7 +164,7 @@ AbstractArtifactFinder<StringArtifact> {
 			for (final String p : pathList) {
 				if (new File(p).isFile()) {
 					final String correctRelativePath = Strings
-					.removeBegginingFrom(pathToRemove, p);
+							.removeBegginingFrom(pathToRemove, p);
 					result.add(correctRelativePath);
 				}
 			}
@@ -164,4 +173,25 @@ AbstractArtifactFinder<StringArtifact> {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
+
+	@Override
+	protected boolean internalIsMaybeChanged(String artifactName,
+			StringArtifact oldOne) {
+		String[] pathInfo = fixPathInformation(artifactName);
+		final String location = pathInfo[1];
+
+		final File file = new File(location);
+		if (!file.exists()) {
+			return true;
+		}
+		if (!file.isFile()) {
+			return true;
+		}
+		if (file.lastModified() != oldOne.getLastChange()) {
+			return true;
+		}
+		return false;
+	}
+
+	
 }
