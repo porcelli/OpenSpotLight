@@ -102,6 +102,7 @@ import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Reflection;
+import org.openspotlight.common.util.Sha1;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
@@ -189,7 +190,7 @@ public class SimplePersistSupport {
 		@SuppressWarnings("unchecked")
 		public static void setParentPropertyOnSerializable(
 				final Serializable serializable, final SimpleNodeType parent)
-		throws Exception {
+				throws Exception {
 			if (serializable == null) {
 				return;
 			}
@@ -318,9 +319,11 @@ public class SimplePersistSupport {
 	public static final String KEY_TYPE = "node_key_{0}_type";
 
 	private static Logger logger = LoggerFactory
-	.getLogger(SimplePersistSupport.class);
+			.getLogger(SimplePersistSupport.class);
 
 	private static final Value[] emptyValue = new Value[] {};
+
+	private static final String LAZY_PROPERTY_SHA1 = "lazy_property_{0}_sha1";
 
 	/**
 	 * Adds the or create jcr node.
@@ -344,7 +347,7 @@ public class SimplePersistSupport {
 	private static Node addUpdateOrRemoveJcrNode(final JcrNodeType nodeType,
 			final Session session, final Node parentNode,
 			final BeanDescriptor descriptor, final String propertyName)
-	throws Exception {
+			throws Exception {
 		Node result = null;
 		final String nodeName = SimplePersistSupport.getNodeName(nodeType,
 				descriptor, propertyName);
@@ -359,7 +362,7 @@ public class SimplePersistSupport {
 					final String hashProperty = nextNode.getProperty(
 							SimplePersistSupport.HASH_VALUE).getString();
 					final String expectedHash = descriptor.properties
-					.get(SimplePersistSupport.HASH_VALUE);
+							.get(SimplePersistSupport.HASH_VALUE);
 					if (expectedHash.equals(hashProperty)) {
 						result = nextNode;
 						break;
@@ -410,7 +413,9 @@ public class SimplePersistSupport {
 				}
 				result.setProperty(MessageFormat.format(LAZY_PROPERTY_VALUE,
 						entry.getKey()), entry.getValue());
-
+				result.setProperty(MessageFormat.format(LAZY_PROPERTY_SHA1,
+						entry.getKey()), Sha1
+						.getSha1SignatureEncodedAsBase64(entry.getValue()));
 			}
 
 			if (!result.hasProperty(INTERNAL_TIMESTAMP)) {
@@ -475,8 +480,8 @@ public class SimplePersistSupport {
 		}
 		if (result != null) {
 			result
-			.setProperty(SimplePersistSupport.PROPERTY_NAME,
-					propertyName);
+					.setProperty(SimplePersistSupport.PROPERTY_NAME,
+							propertyName);
 		}
 		return result;
 	}
@@ -607,7 +612,7 @@ public class SimplePersistSupport {
 		Assertions.checkNotNull("parentJcrNode", parentJcrNode);
 		try {
 			BeanDescriptor descriptor = SimplePersistSupport
-			.createDescriptorFromBean(bean, null);
+					.createDescriptorFromBean(bean, null);
 			final LinkedList<BeanDescriptor> list = new LinkedList<BeanDescriptor>();
 			while (descriptor != null) {
 				list.addFirst(descriptor);
@@ -745,7 +750,7 @@ public class SimplePersistSupport {
 	@SuppressWarnings("unchecked")
 	public static <T> T convertJcrToBean(final Session session,
 			final Node jcrNode, final LazyType multipleLoadingStrategy)
-	throws Exception {
+			throws Exception {
 		Assertions.checkNotNull("session", session);
 		Assertions.checkCondition("sessionAlive", session.isLive());
 		Assertions.checkNotNull("jcrNode", jcrNode);
@@ -763,10 +768,10 @@ public class SimplePersistSupport {
 			BeanDescriptor parentDescriptor = null;
 			for (final Node node : list) {
 				parentDescriptor = SimplePersistSupport
-				.createDescriptorFromJcr(node, parentDescriptor,
-						multipleLoadingStrategy, session);
+						.createDescriptorFromJcr(node, parentDescriptor,
+								multipleLoadingStrategy, session);
 				parent = SimplePersistSupport.createBeanFromDescriptor(
-						parentDescriptor, parent);
+						parentDescriptor, parent, session);
 			}
 			Assertions.checkCondition("correctInstance",
 					parent instanceof SimpleNodeType);
@@ -808,7 +813,7 @@ public class SimplePersistSupport {
 	}
 
 	private static InputStream convertToByteArrayInputStream(InputStream is)
-	throws IOException {
+			throws IOException {
 		if (!(is instanceof ByteArrayInputStream)) {
 			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			if (is.markSupported()) {
@@ -833,17 +838,17 @@ public class SimplePersistSupport {
 	 */
 	@SuppressWarnings("unchecked")
 	private static <T> T createBeanFromDescriptor(
-			final BeanDescriptor beanDescriptor, final Object parent)
-	throws Exception {
+			final BeanDescriptor beanDescriptor, final Object parent,
+			Session session) throws Exception {
 		if (beanDescriptor == null) {
 			return null;
 		}
 		final Class<T> typeClass = (Class<T>) Class
-		.forName(beanDescriptor.properties
-				.get(SimplePersistSupport.TYPE_NAME));
+				.forName(beanDescriptor.properties
+						.get(SimplePersistSupport.TYPE_NAME));
 		final T newObject = typeClass.newInstance();
 		final PropertyDescriptor[] allProperties = PropertyUtils
-		.getPropertyDescriptors(newObject);
+				.getPropertyDescriptors(newObject);
 		for (final PropertyDescriptor desc : allProperties) {
 			if (desc.getName().equals("class")) {
 				continue;
@@ -851,7 +856,7 @@ public class SimplePersistSupport {
 			if (desc.getReadMethod().isAnnotationPresent(
 					PersistPropertyAsStream.class)) {
 				final InputStream is = beanDescriptor.serializedProperties
-				.get(desc.getName());
+						.get(desc.getName());
 				if (is != null) {
 					final Serializable propVal = convertStreamToSerializable(
 							is, (SimpleNodeType) newObject);
@@ -866,12 +871,12 @@ public class SimplePersistSupport {
 			}
 			if (desc.getWriteMethod() == null) {
 				throw Exceptions
-				.logAndReturn(new IllegalStateException(
-						"Property "
-						+ typeClass.getName()
-						+ "#"
-						+ desc.getName()
-						+ " without setter. To ignore this use @TransientProperty annotation"));
+						.logAndReturn(new IllegalStateException(
+								"Property "
+										+ typeClass.getName()
+										+ "#"
+										+ desc.getName()
+										+ " without setter. To ignore this use @TransientProperty annotation"));
 			}
 			if (desc.getReadMethod().isAnnotationPresent(ParentProperty.class)) {
 				if (parent == null) {
@@ -898,49 +903,50 @@ public class SimplePersistSupport {
 			}
 			if (SimpleNodeType.class.isAssignableFrom(desc.getPropertyType())) {
 				SimplePersistSupport.setNodePropertyFromJcrToBean(
-						beanDescriptor, parent, newObject, desc, propertyName);
+						beanDescriptor, parent, newObject, desc, propertyName,
+						session);
 				continue;
 			}
 			if (Collection.class.isAssignableFrom(desc.getPropertyType())) {
 				final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection
-				.unwrapCollectionFromMethodReturn(desc.getReadMethod());
+						.unwrapCollectionFromMethodReturn(desc.getReadMethod());
 				if (SimpleNodeType.class.isAssignableFrom(metadata
 						.getItemType())) {
 					SimplePersistSupport
-					.setComplexCollectionPropertyFromDescriptorToBean(
-							beanDescriptor, newObject, desc);
+							.setComplexCollectionPropertyFromDescriptorToBean(
+									beanDescriptor, newObject, desc, session);
 				} else {
 					SimplePersistSupport
-					.setSimpleCollectionPropertyFromDescriptorToBean(
-							beanDescriptor, newObject, desc);
+							.setSimpleCollectionPropertyFromDescriptorToBean(
+									beanDescriptor, newObject, desc);
 				}
 				continue;
 			}
 			if (Map.class.isAssignableFrom(desc.getPropertyType())) {
 				final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata = Reflection
-				.unwrapMapFromMethodReturn(desc.getReadMethod());
+						.unwrapMapFromMethodReturn(desc.getReadMethod());
 				if (SimpleNodeType.class.isAssignableFrom(metadata
 						.getItemType().getK2())) {
 					SimplePersistSupport
-					.setComplexMapPropertyFromDescriptorToBean(
-							beanDescriptor, newObject, desc);
+							.setComplexMapPropertyFromDescriptorToBean(
+									beanDescriptor, newObject, desc, session);
 				} else {
 					SimplePersistSupport
-					.setSimpleMapPropertyFromDescriptorToBean(
-							beanDescriptor, newObject, desc);
+							.setSimpleMapPropertyFromDescriptorToBean(
+									beanDescriptor, newObject, desc);
 				}
 
 				continue;
 			}
 			if (InputStream.class.isAssignableFrom(desc.getPropertyType())) {
 				final InputStream streamValue = beanDescriptor.streamProperties
-				.get(desc.getName());
+						.get(desc.getName());
 				desc.getWriteMethod().invoke(newObject, streamValue);
 				continue;
 			}
 			if (LazyProperty.class.isAssignableFrom(desc.getPropertyType())) {
-				createEmptyLazyProperty(newObject, desc,
-						beanDescriptor.uuid);
+				createEmptyLazyProperty(newObject, desc, beanDescriptor.uuid,
+						session);
 				continue;
 			}
 			SimplePersistSupport.setPropertyFromDescriptorToBean(
@@ -975,7 +981,7 @@ public class SimplePersistSupport {
 		final List<String> attributesToHash = new ArrayList<String>();
 		descriptor.properties.put(SimplePersistSupport.TYPE_NAME, beanTypeName);
 		final PropertyDescriptor[] allProperties = PropertyUtils
-		.getPropertyDescriptors(bean);
+				.getPropertyDescriptors(bean);
 		for (final PropertyDescriptor desc : allProperties) {
 			if (desc.getName().equals("class")) {
 				continue;
@@ -987,7 +993,7 @@ public class SimplePersistSupport {
 			if (desc.getReadMethod().isAnnotationPresent(
 					PersistPropertyAsStream.class)) {
 				final Serializable propertyValue = (Serializable) desc
-				.getReadMethod().invoke(bean);
+						.getReadMethod().invoke(bean);
 				final InputStream is = convertSerializableToStream(
 						propertyValue, (SimpleNodeType) bean, desc.getName());
 				descriptor.serializedProperties.put(desc.getName(), is);
@@ -1008,7 +1014,7 @@ public class SimplePersistSupport {
 				final Object propertyVal = desc.getReadMethod().invoke(bean);
 				if (propertyVal != null) {
 					final BeanDescriptor propertyDescriptor = SimplePersistSupport
-					.createDescriptorFromBean(propertyVal, descriptor);
+							.createDescriptorFromBean(propertyVal, descriptor);
 					descriptor.nodeProperties.put(desc.getName(),
 							propertyDescriptor);
 				} else {
@@ -1018,7 +1024,7 @@ public class SimplePersistSupport {
 			}
 			if (Collection.class.isAssignableFrom(desc.getPropertyType())) {
 				final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection
-				.unwrapCollectionFromMethodReturn(desc.getReadMethod());
+						.unwrapCollectionFromMethodReturn(desc.getReadMethod());
 				if (SimpleNodeType.class.isAssignableFrom(metadata
 						.getItemType())) {
 					SimplePersistSupport.handlePropertyOfComplexCollection(
@@ -1031,7 +1037,7 @@ public class SimplePersistSupport {
 			}
 			if (Map.class.isAssignableFrom(desc.getPropertyType())) {
 				final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata = Reflection
-				.unwrapMapFromMethodReturn(desc.getReadMethod());
+						.unwrapMapFromMethodReturn(desc.getReadMethod());
 				if (SimpleNodeType.class.isAssignableFrom(metadata
 						.getItemType().getK2())) {
 					SimplePersistSupport.handlePropertyOfComplexMap(bean,
@@ -1044,23 +1050,22 @@ public class SimplePersistSupport {
 			}
 			if (InputStream.class.isAssignableFrom(desc.getPropertyType())) {
 				InputStream propertyVal = (InputStream) desc.getReadMethod()
-				.invoke(bean);
+						.invoke(bean);
 				propertyVal = convertToByteArrayInputStream(propertyVal);
 				descriptor.streamProperties.put(desc.getName(), propertyVal);
 			}
 			if (LazyProperty.class.isAssignableFrom(desc.getPropertyType())) {
 				final LazyProperty<?> propertyVal = (LazyProperty<?>) desc
-				.getReadMethod().invoke(bean);
+						.getReadMethod().invoke(bean);
 				if (propertyVal.getMetadata().needsSave()) {
-					Object unwrapped = propertyVal
-					.getMetadata().getTransient();
+					Object unwrapped = propertyVal.getMetadata().getTransient();
 					final InputStream is;
-					if(unwrapped instanceof Serializable){
+					if (unwrapped instanceof Serializable) {
 						final Serializable unwrappedVal = (Serializable) unwrapped;
-						is = convertSerializableToStream(
-								unwrappedVal, (SimpleNodeType) bean, desc.getName());
-					}else {//if(unwrapped instanceof InputStream){
-						is = (InputStream)unwrapped;
+						is = convertSerializableToStream(unwrappedVal,
+								(SimpleNodeType) bean, desc.getName());
+					} else {// if(unwrapped instanceof InputStream){
+						is = (InputStream) unwrapped;
 					}
 					descriptor.transientLazyProperties.put(desc.getName(), is);
 					propertyVal.getMetadata().markAsSaved();
@@ -1103,7 +1108,7 @@ public class SimplePersistSupport {
 	private static BeanDescriptor createDescriptorFromJcr(final Node jcrNode,
 			final BeanDescriptor parent,
 			final LazyType multipleLoadingStrategy, final Session session)
-	throws Exception {
+			throws Exception {
 		final BeanDescriptor descriptor = new BeanDescriptor();
 		descriptor.uuid = jcrNode.isNew() ? null : jcrNode.getUUID();
 		descriptor.parent = parent;
@@ -1144,7 +1149,7 @@ public class SimplePersistSupport {
 			}
 		}
 		final NodeIterator propertyNodes = jcrNode
-		.getNodes(JcrNodeType.NODE_PROPERTY.toString() + "_*");
+				.getNodes(JcrNodeType.NODE_PROPERTY.toString() + "_*");
 		while (propertyNodes.hasNext()) {
 			final Node property = propertyNodes.nextNode();
 			SimplePersistSupport.setJcrNodePropertyOnDescriptor(descriptor,
@@ -1163,13 +1168,29 @@ public class SimplePersistSupport {
 
 	}
 
-	private static <T> void createEmptyLazyProperty(
-			final T newObject, final PropertyDescriptor desc, final String uuid)
-	throws IllegalAccessException, InvocationTargetException {
+	private static <T> void createEmptyLazyProperty(final T newObject,
+			final PropertyDescriptor desc, final String uuid, Session session)
+			throws IllegalAccessException, InvocationTargetException {
 		final LazyProperty<?> newLazyProperty = LazyProperty.Factory
 				.create((SimpleNodeType) newObject);
 		newLazyProperty.getMetadata().setPropertyName(desc.getName());
 		newLazyProperty.getMetadata().setParentUuid(uuid);
+		Node node = null;
+		if (uuid != null) {
+			try {
+				node = session.getNodeByUUID(uuid);
+				String nodePropertyName = MessageFormat.format(
+						LAZY_PROPERTY_SHA1, desc.getName());
+				if (node.hasProperty(nodePropertyName)) {
+					Property prop = node.getProperty(nodePropertyName);
+					String sha1 = prop.getValue().getString();
+					newLazyProperty.getMetadata().internalSetSha1(sha1);
+				}
+			} catch (Exception e) {
+				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+			}
+
+		}
 		desc.getWriteMethod().invoke(newObject, newLazyProperty);
 	}
 
@@ -1236,7 +1257,7 @@ public class SimplePersistSupport {
 	private static <T> void executeXpathAndFillSet(final String rootPath,
 			final Session session, final LazyType multipleLoadingStrategy,
 			final String propertyWhereXpath, final Set<T> resultNodes)
-	throws InvalidQueryException, RepositoryException, Exception {
+			throws InvalidQueryException, RepositoryException, Exception {
 		String xpath = MessageFormat.format("{0}//*[{1}]", rootPath,
 				propertyWhereXpath);
 		if (xpath.endsWith("[]")) {
@@ -1244,7 +1265,7 @@ public class SimplePersistSupport {
 		}
 		xpath += " order by @" + INTERNAL_TIMESTAMP;
 		final Query query = session.getWorkspace().getQueryManager()
-		.createQuery(xpath, Query.XPATH);
+				.createQuery(xpath, Query.XPATH);
 		final QueryResult result = query.execute();
 		final NodeIterator nodes = result.getNodes();
 		while (nodes.hasNext()) {
@@ -1319,7 +1340,7 @@ public class SimplePersistSupport {
 	 */
 	public static String getJcrNodeName(final Class<? extends Object> class1) {
 		return JcrNodeType.NODE.toString() + "_"
-		+ SimplePersistSupport.getNodeName(class1);
+				+ SimplePersistSupport.getNodeName(class1);
 	}
 
 	/**
@@ -1334,7 +1355,7 @@ public class SimplePersistSupport {
 			return class1.getAnnotation(Name.class).value();
 		} else {
 			return class1.getName().replaceAll("[.]", "_").replaceAll("[$]",
-			"_");
+					"_");
 		}
 	}
 
@@ -1352,7 +1373,7 @@ public class SimplePersistSupport {
 	private static String getNodeName(final JcrNodeType nodeType,
 			final BeanDescriptor descriptor, final String propertyName) {
 		final String nodeName = nodeType.toString() + "_"
-		+ (propertyName == null ? descriptor.nodeName : propertyName);
+				+ (propertyName == null ? descriptor.nodeName : propertyName);
 		return nodeName;
 	}
 
@@ -1364,7 +1385,7 @@ public class SimplePersistSupport {
 				return jcrNode.getProperty(propertyName).getValues();
 			} catch (final ValueFormatException e) {
 				final Value value = jcrNode.getProperty(propertyName)
-				.getValue();
+						.getValue();
 				return new Value[] { value };
 			} catch (final PathNotFoundException e) {
 				return emptyValue;
@@ -1395,7 +1416,7 @@ public class SimplePersistSupport {
 	private static <T> void handleParentProperty(final T bean,
 			final BeanDescriptor defaultBeanParentDescriptor,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc)
-	throws IllegalAccessException, InvocationTargetException, Exception {
+			throws IllegalAccessException, InvocationTargetException, Exception {
 		final BeanDescriptor parentDescriptor;
 		if (defaultBeanParentDescriptor == null) {
 
@@ -1403,11 +1424,11 @@ public class SimplePersistSupport {
 
 			if (parent != null && descriptor.parent != null) {
 				throw Exceptions
-				.logAndReturn(new IllegalStateException(
-						MessageFormat
-						.format(
-								"Bean {0} of class {1} with more than one parent. Recheck the annotations",
-								bean, bean.getClass())));
+						.logAndReturn(new IllegalStateException(
+								MessageFormat
+										.format(
+												"Bean {0} of class {1} with more than one parent. Recheck the annotations",
+												bean, bean.getClass())));
 
 			}
 			parentDescriptor = SimplePersistSupport.createDescriptorFromBean(
@@ -1437,22 +1458,22 @@ public class SimplePersistSupport {
 	private static <T> void handlePropertyOfComplexCollection(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final UnwrappedCollectionTypeFromMethodReturn<Object> metadata)
-	throws Exception {
+			throws Exception {
 
 		final ComplexMultiplePropertyDescriptor multiplePropertyDescriptor = new ComplexMultiplePropertyDescriptor();
 		multiplePropertyDescriptor.multipleType = metadata.getCollectionType()
-		.getName();
+				.getName();
 		multiplePropertyDescriptor.valueType = metadata.getItemType().getName();
 		final Collection<Object> collection = (Collection<Object>) desc
-		.getReadMethod().invoke(bean);
+				.getReadMethod().invoke(bean);
 		if (collection != null) {
 			for (final Object value : collection) {
 				final BeanDescriptor valueAsDescriptor = SimplePersistSupport
-				.createDescriptorFromBean(value, descriptor);
+						.createDescriptorFromBean(value, descriptor);
 
 				multiplePropertyDescriptor.valuesAsBeanDescriptors
-				.add(new Pair<String, BeanDescriptor>(null,
-						valueAsDescriptor));
+						.add(new Pair<String, BeanDescriptor>(null,
+								valueAsDescriptor));
 			}
 		}
 		descriptor.multipleComplexProperties.put(desc.getName(),
@@ -1477,24 +1498,24 @@ public class SimplePersistSupport {
 	private static <T> void handlePropertyOfComplexMap(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata)
-	throws Exception {
+			throws Exception {
 		final ComplexMultiplePropertyDescriptor multiplePropertyDescriptor = new ComplexMultiplePropertyDescriptor();
 		multiplePropertyDescriptor.multipleType = Map.class.getName();
 		multiplePropertyDescriptor.keyType = metadata.getItemType().getK1()
-		.getName();
+				.getName();
 		multiplePropertyDescriptor.valueType = metadata.getItemType().getK2()
-		.getName();
+				.getName();
 		final Map<Object, Object> map = (Map<Object, Object>) desc
-		.getReadMethod().invoke(bean);
+				.getReadMethod().invoke(bean);
 		if (map != null) {
 			for (final Entry<Object, Object> entry : map.entrySet()) {
 				final String keyAsString = Conversion.convert(entry.getKey(),
 						String.class);
 				final BeanDescriptor valueAsDescriptor = SimplePersistSupport
-				.createDescriptorFromBean(entry.getValue(), descriptor);
+						.createDescriptorFromBean(entry.getValue(), descriptor);
 				multiplePropertyDescriptor.valuesAsBeanDescriptors
-				.add(new Pair<String, BeanDescriptor>(keyAsString,
-						valueAsDescriptor));
+						.add(new Pair<String, BeanDescriptor>(keyAsString,
+								valueAsDescriptor));
 			}
 		}
 		descriptor.multipleComplexProperties.put(desc.getName(),
@@ -1523,14 +1544,14 @@ public class SimplePersistSupport {
 	private static <T> void handlePropertyOfSimpleCollection(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final UnwrappedCollectionTypeFromMethodReturn<Object> metadata)
-	throws IllegalAccessException, InvocationTargetException,
-	SLException {
+			throws IllegalAccessException, InvocationTargetException,
+			SLException {
 		final SimpleMultiplePropertyDescriptor multiplePropertyDescriptor = new SimpleMultiplePropertyDescriptor();
 		multiplePropertyDescriptor.multipleType = metadata.getCollectionType()
-		.getName();
+				.getName();
 		multiplePropertyDescriptor.valueType = metadata.getItemType().getName();
 		final Collection<Object> collection = (Collection<Object>) desc
-		.getReadMethod().invoke(bean);
+				.getReadMethod().invoke(bean);
 		if (collection != null) {
 			for (final Object value : collection) {
 				String valueAsString = Conversion.convert(value, String.class);
@@ -1566,16 +1587,16 @@ public class SimplePersistSupport {
 	private static <T> void handlePropertyOfSimpleMap(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata)
-	throws IllegalAccessException, InvocationTargetException,
-	SLException {
+			throws IllegalAccessException, InvocationTargetException,
+			SLException {
 		final SimpleMultiplePropertyDescriptor multiplePropertyDescriptor = new SimpleMultiplePropertyDescriptor();
 		multiplePropertyDescriptor.multipleType = Map.class.getName();
 		multiplePropertyDescriptor.keyType = metadata.getItemType().getK1()
-		.getName();
+				.getName();
 		multiplePropertyDescriptor.valueType = metadata.getItemType().getK2()
-		.getName();
+				.getName();
 		final Map<Object, Object> map = (Map<Object, Object>) desc
-		.getReadMethod().invoke(bean);
+				.getReadMethod().invoke(bean);
 		if (map != null) {
 			for (final Entry<Object, Object> entry : map.entrySet()) {
 				final String keyAsString = Conversion.convert(entry.getKey(),
@@ -1595,14 +1616,14 @@ public class SimplePersistSupport {
 
 	private static boolean isCorrectNode(final Node jcrNode) throws Exception {
 		return jcrNode.getName().startsWith(JcrNodeType.NODE.toString())
-		|| jcrNode.getName().startsWith(
-				JcrNodeType.MULTIPLE_NODE_PROPERTY.toString())
+				|| jcrNode.getName().startsWith(
+						JcrNodeType.MULTIPLE_NODE_PROPERTY.toString())
 				|| jcrNode.getName().startsWith(
 						JcrNodeType.NODE_PROPERTY.toString());
 	}
 
 	private static void nullParentProperty(final Serializable obj)
-	throws Exception {
+			throws Exception {
 		if (obj == null) {
 			return;
 		}
@@ -1638,21 +1659,21 @@ public class SimplePersistSupport {
 				.entrySet()) {
 			final String keyValue = MessageFormat.format(
 					SimplePersistSupport.MULTIPLE_PROPERTY_KEY_VALUE, entry
-					.getKey());
+							.getKey());
 			final String type = MessageFormat.format(
 					SimplePersistSupport.MULTIPLE_PROPERTY_MULTIPLE_TYPE, entry
-					.getKey());
+							.getKey());
 			final String valueType = MessageFormat.format(
 					SimplePersistSupport.MULTIPLE_PROPERTY_VALUE_TYPE, entry
-					.getKey());
+							.getKey());
 			final String keyType = MessageFormat.format(
 					SimplePersistSupport.MULTIPLE_PROPERTY_KEY_TYPE, entry
-					.getKey());
+							.getKey());
 			final ComplexMultiplePropertyDescriptor desc = entry.getValue();
 			final String nodeName = SimplePersistSupport.getNodeName(
 					JcrNodeType.MULTIPLE_NODE_PROPERTY, null, entry.getKey());
 			final NodeIterator existentNodesIterator = parent
-			.getNodes(nodeName);
+					.getNodes(nodeName);
 			final LinkedHashMap<String, Node> existentNodes = new LinkedHashMap<String, Node>();
 			while (existentNodesIterator.hasNext()) {
 				final Node existentNode = existentNodesIterator.nextNode();
@@ -1663,9 +1684,9 @@ public class SimplePersistSupport {
 			}
 			for (final Pair<String, BeanDescriptor> propertyEntry : desc.valuesAsBeanDescriptors) {
 				final Node propertyNode = SimplePersistSupport
-				.addUpdateOrRemoveJcrNode(
-						JcrNodeType.MULTIPLE_NODE_PROPERTY, session,
-						parent, propertyEntry.getK2(), entry.getKey());
+						.addUpdateOrRemoveJcrNode(
+								JcrNodeType.MULTIPLE_NODE_PROPERTY, session,
+								parent, propertyEntry.getK2(), entry.getKey());
 				setPropertyOnJcrNode(propertyNode, type, desc.multipleType);
 				setPropertyOnJcrNode(propertyNode, valueType, desc.valueType);
 				if (desc.keyType != null) {
@@ -1705,25 +1726,25 @@ public class SimplePersistSupport {
 	 */
 	private static void saveSimplePropertiesOnJcr(
 			final BeanDescriptor descriptor, final Node result)
-	throws ValueFormatException, VersionException, LockException,
-	ConstraintViolationException, RepositoryException {
+			throws ValueFormatException, VersionException, LockException,
+			ConstraintViolationException, RepositoryException {
 		for (final Map.Entry<String, SimpleMultiplePropertyDescriptor> entry : descriptor.multipleSimpleProperties
 				.entrySet()) {
 			final String keys = MessageFormat
-			.format(SimplePersistSupport.MULTIPLE_PROPERTY_KEYS, entry
-					.getKey());
+					.format(SimplePersistSupport.MULTIPLE_PROPERTY_KEYS, entry
+							.getKey());
 			final String values = MessageFormat.format(
 					SimplePersistSupport.MULTIPLE_PROPERTY_VALUES, entry
-					.getKey());
+							.getKey());
 			final String type = MessageFormat.format(
 					SimplePersistSupport.MULTIPLE_PROPERTY_MULTIPLE_TYPE, entry
-					.getKey());
+							.getKey());
 			final String valueType = MessageFormat.format(
 					SimplePersistSupport.MULTIPLE_PROPERTY_VALUE_TYPE, entry
-					.getKey());
+							.getKey());
 			final String keyType = MessageFormat.format(
 					SimplePersistSupport.MULTIPLE_PROPERTY_KEY_TYPE, entry
-					.getKey());
+							.getKey());
 			final SimpleMultiplePropertyDescriptor desc = entry.getValue();
 			setPropertyOnJcrNode(result, type, desc.multipleType);
 			setPropertyOnJcrNode(result, valueType, desc.valueType);
@@ -1753,20 +1774,20 @@ public class SimplePersistSupport {
 	@SuppressWarnings("unchecked")
 	private static <T> void setComplexCollectionPropertyFromDescriptorToBean(
 			final BeanDescriptor beanDescriptor, final T newObject,
-			final PropertyDescriptor desc) throws Exception {
+			final PropertyDescriptor desc, Session session) throws Exception {
 		final ComplexMultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleComplexProperties
-		.get(desc.getName());
+				.get(desc.getName());
 		final Class<? extends Collection> type = (Class<? extends Collection>) desc
-		.getPropertyType();
+				.getPropertyType();
 		if (multipleBeanDescriptor != null) {
 			final Collection<Object> instance = org.openspotlight.common.util.Collections
-			.createNewCollection(type,
-					multipleBeanDescriptor.valuesAsBeanDescriptors
-					.size());
+					.createNewCollection(type,
+							multipleBeanDescriptor.valuesAsBeanDescriptors
+									.size());
 			for (final Pair<String, BeanDescriptor> valueAsDescriptor : multipleBeanDescriptor.valuesAsBeanDescriptors) {
 				final Object valueAsObject = SimplePersistSupport
-				.createBeanFromDescriptor(valueAsDescriptor.getK2(),
-						newObject);
+						.createBeanFromDescriptor(valueAsDescriptor.getK2(),
+								newObject, session);
 				instance.add(valueAsObject);
 			}
 			desc.getWriteMethod().invoke(newObject, instance);
@@ -1787,17 +1808,17 @@ public class SimplePersistSupport {
 	 */
 	private static <T> void setComplexMapPropertyFromDescriptorToBean(
 			final BeanDescriptor beanDescriptor, final T newObject,
-			final PropertyDescriptor desc) throws Exception {
+			final PropertyDescriptor desc, Session session) throws Exception {
 		final ComplexMultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleComplexProperties
-		.get(desc.getName());
+				.get(desc.getName());
 		if (multipleBeanDescriptor != null) {
 			final Map<Object, Object> map = new HashMap<Object, Object>();
 			final Class<?> keyType = Class
-			.forName(multipleBeanDescriptor.keyType);
+					.forName(multipleBeanDescriptor.keyType);
 			for (final Pair<String, BeanDescriptor> valueAsDescriptor : multipleBeanDescriptor.valuesAsBeanDescriptors) {
 				final Object valueAsObject = SimplePersistSupport
-				.createBeanFromDescriptor(valueAsDescriptor.getK2(),
-						newObject);
+						.createBeanFromDescriptor(valueAsDescriptor.getK2(),
+								newObject, session);
 				final Object keyAsObject = Conversion.convert(valueAsDescriptor
 						.getK1(), keyType);
 				map.put(keyAsObject, valueAsObject);
@@ -1823,31 +1844,31 @@ public class SimplePersistSupport {
 	private static void setJcrComplexMultiplePropertyOnDescriptor(
 			final BeanDescriptor descriptor, final Node property,
 			final LazyType multipleLoadingStrategy, final Session session)
-	throws Exception {
+			throws Exception {
 		final String propertyName = Strings.removeBegginingFrom(
 				JcrNodeType.MULTIPLE_NODE_PROPERTY.toString() + "_", property
-				.getName());
+						.getName());
 		final String keyValueDescription = MessageFormat.format(
 				SimplePersistSupport.MULTIPLE_PROPERTY_KEY_VALUE, propertyName);
 		final String typeDescription = MessageFormat.format(
 				SimplePersistSupport.MULTIPLE_PROPERTY_MULTIPLE_TYPE,
 				propertyName);
 		final String valueTypeDescription = MessageFormat
-		.format(SimplePersistSupport.MULTIPLE_PROPERTY_VALUE_TYPE,
-				propertyName);
+				.format(SimplePersistSupport.MULTIPLE_PROPERTY_VALUE_TYPE,
+						propertyName);
 		final String keyTypeDescription = MessageFormat.format(
 				SimplePersistSupport.MULTIPLE_PROPERTY_KEY_TYPE, propertyName);
 		ComplexMultiplePropertyDescriptor desc = descriptor.multipleComplexProperties
-		.get(propertyName);
+				.get(propertyName);
 		if (desc == null) {
 			desc = new ComplexMultiplePropertyDescriptor();
 			desc.multipleType = property.getProperty(typeDescription)
-			.getString();
+					.getString();
 			desc.valueType = property.getProperty(valueTypeDescription)
-			.getString();
+					.getString();
 			if (property.hasProperty(keyTypeDescription)) {
 				desc.keyType = property.getProperty(keyTypeDescription)
-				.getString();
+						.getString();
 			}
 			descriptor.multipleComplexProperties.put(propertyName, desc);
 		}
@@ -1857,8 +1878,8 @@ public class SimplePersistSupport {
 		}
 		// FIXME here needs to apply lazy loading!
 		final BeanDescriptor beanDescriptor = SimplePersistSupport
-		.createDescriptorFromJcr(property, descriptor,
-				multipleLoadingStrategy, session);
+				.createDescriptorFromJcr(property, descriptor,
+						multipleLoadingStrategy, session);
 		final Pair<String, BeanDescriptor> pair = new Pair<String, BeanDescriptor>(
 				keyString, beanDescriptor);
 		desc.valuesAsBeanDescriptors.add(pair);
@@ -1881,13 +1902,13 @@ public class SimplePersistSupport {
 	private static void setJcrNodePropertyOnDescriptor(
 			final BeanDescriptor descriptor, final Node property,
 			final LazyType multipleLoadingStrategy, final Session session)
-	throws Exception {
+			throws Exception {
 
 		final String propName = property.getProperty(
 				SimplePersistSupport.PROPERTY_NAME).getString();
 		final BeanDescriptor propertyDesc = SimplePersistSupport
-		.createDescriptorFromJcr(property, descriptor,
-				multipleLoadingStrategy, session);
+				.createDescriptorFromJcr(property, descriptor,
+						multipleLoadingStrategy, session);
 		descriptor.nodeProperties.put(propName, propertyDesc);
 	}
 
@@ -1976,12 +1997,12 @@ public class SimplePersistSupport {
 	private static <T> void setNodePropertyFromJcrToBean(
 			final BeanDescriptor beanDescriptor, final Object parent,
 			final T newObject, final PropertyDescriptor desc,
-			final String propertyName) throws Exception,
+			final String propertyName, Session session) throws Exception,
 			IllegalAccessException, InvocationTargetException {
 		final BeanDescriptor propertyDesc = beanDescriptor.nodeProperties
-		.get(propertyName);
+				.get(propertyName);
 		final Object bean = SimplePersistSupport.createBeanFromDescriptor(
-				propertyDesc, parent);
+				propertyDesc, parent, session);
 		desc.getWriteMethod().invoke(newObject, bean);
 	}
 
@@ -2008,8 +2029,8 @@ public class SimplePersistSupport {
 	private static <T> void setPropertyFromBeanToDescriptor(final T bean,
 			final BeanDescriptor descriptor, final PropertyDescriptor desc,
 			final String typeDescription, final String valueDescription)
-	throws IllegalAccessException, InvocationTargetException,
-	SLException {
+			throws IllegalAccessException, InvocationTargetException,
+			SLException {
 		final String propValue = MessageFormat.format(valueDescription, desc
 				.getName());
 		final String propType = MessageFormat.format(typeDescription, desc
@@ -2049,14 +2070,14 @@ public class SimplePersistSupport {
 			final BeanDescriptor beanDescriptor, final T newObject,
 			final PropertyDescriptor desc, final String propertyName,
 			final String type, final String value)
-	throws ClassNotFoundException, SLException, IllegalAccessException,
-	InvocationTargetException {
+			throws ClassNotFoundException, SLException, IllegalAccessException,
+			InvocationTargetException {
 		final String propertyTypeString = beanDescriptor.properties
-		.get(MessageFormat.format(type, propertyName));
+				.get(MessageFormat.format(type, propertyName));
 		final String propertyValueAsString = beanDescriptor.properties
-		.get(MessageFormat.format(value, propertyName));
+				.get(MessageFormat.format(value, propertyName));
 		Class<?> propertyType = Conversion
-		.getPrimitiveClass(propertyTypeString);
+				.getPrimitiveClass(propertyTypeString);
 		if (propertyType == null) {
 			if (propertyTypeString == null) {
 				return;// no property at all
@@ -2070,7 +2091,7 @@ public class SimplePersistSupport {
 
 	private static void setPropertyOnJcrNode(final Node jcrNode,
 			final String propertyName, final String propertyValue)
-	throws RepositoryException {
+			throws RepositoryException {
 		if (jcrNode.hasProperty(propertyName)) {
 			final String value = jcrNode.getProperty(propertyName).getString();
 			if (!Equals.eachEquality(value, propertyValue)) {
@@ -2083,7 +2104,7 @@ public class SimplePersistSupport {
 
 	private static void setPropertyOnJcrNode(final Node jcrNode,
 			final String propertyName, final String propertyValue[])
-	throws RepositoryException {
+			throws RepositoryException {
 		if (jcrNode.hasProperty(propertyName)) {
 			final Value[] rawValues = getValuesAsArray(jcrNode, propertyName);
 			final String[] values = new String[rawValues != null ? rawValues.length
@@ -2131,14 +2152,14 @@ public class SimplePersistSupport {
 			final PropertyDescriptor desc) throws ClassNotFoundException,
 			SLException, IllegalAccessException, InvocationTargetException {
 		final SimpleMultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleSimpleProperties
-		.get(desc.getName());
+				.get(desc.getName());
 		final Class<? extends Collection> type = (Class<? extends Collection>) desc
-		.getPropertyType();
+				.getPropertyType();
 		final Collection<Object> instance = org.openspotlight.common.util.Collections
-		.createNewCollection(type,
-				multipleBeanDescriptor.valuesAsStrings.size());
+				.createNewCollection(type,
+						multipleBeanDescriptor.valuesAsStrings.size());
 		final Class<?> valueType = Class
-		.forName(multipleBeanDescriptor.valueType);
+				.forName(multipleBeanDescriptor.valueType);
 		for (final String valueAsString : multipleBeanDescriptor.valuesAsStrings) {
 			Object valueAsObject = null;
 			if (valueAsString != null) {
@@ -2172,12 +2193,12 @@ public class SimplePersistSupport {
 			final PropertyDescriptor desc) throws ClassNotFoundException,
 			SLException, IllegalAccessException, InvocationTargetException {
 		final SimpleMultiplePropertyDescriptor multipleBeanDescriptor = beanDescriptor.multipleSimpleProperties
-		.get(desc.getName());
+				.get(desc.getName());
 		final List<Object> values = new ArrayList<Object>();
 		final List<Object> keys = new ArrayList<Object>();
 
 		final Class<?> valueType = Class
-		.forName(multipleBeanDescriptor.valueType);
+				.forName(multipleBeanDescriptor.valueType);
 		for (final String valueAsString : multipleBeanDescriptor.valuesAsStrings) {
 			Object valueAsObject = null;
 			if (valueAsString != null) {

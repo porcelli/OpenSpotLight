@@ -50,8 +50,6 @@ package org.openspotlight.federation.domain.artifact;
 
 import java.io.InputStream;
 
-import javax.jcr.Session;
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.internal.LazyProperty;
@@ -65,12 +63,12 @@ public class StreamArtifact extends ArtifactWithSyntaxInformation {
 			.create(this);
 
 	@Override
-	public boolean contentEquals(final Artifact other, final Session session) {
+	public boolean contentEquals(final Artifact other) {
 		if (other instanceof StreamArtifact) {
 			final StreamArtifact that = (StreamArtifact) other;
 			return Equals.eachEquality(content == null ? null : content
-					.get(session), that.content == null ? null : that.content
-					.get(session));
+					.getMetadata().getSha1(), that.content == null ? null : that.content
+					.getMetadata().getSha1());
 		}
 		return false;
 	}

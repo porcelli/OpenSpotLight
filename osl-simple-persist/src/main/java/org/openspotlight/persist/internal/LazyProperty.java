@@ -1,7 +1,9 @@
 package org.openspotlight.persist.internal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
 import java.lang.ref.WeakReference;
@@ -14,9 +16,11 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.Session;
 
+import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Sha1;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
@@ -46,6 +50,8 @@ import org.openspotlight.persist.support.SimplePersistSupport;
  * @param <T>
  */
 public final class LazyProperty<T> implements Serializable {
+
+	private String sha1;
 
 	/**
 	 * Factory class.
@@ -82,6 +88,41 @@ public final class LazyProperty<T> implements Serializable {
 	 * 
 	 */
 	public final class Metadata implements Serializable {
+
+		public String getSha1() {
+			return sha1;
+		}
+
+		private String createSha1(T content) {
+			if (content == null)
+				return null;
+			try {
+				if (content instanceof Serializable) {
+
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					ObjectOutputStream oos = new ObjectOutputStream(baos);
+					oos.writeObject(content);
+					oos.flush();
+					oos.close();
+					return Sha1.getSha1SignatureEncodedAsBase64(baos
+							.toByteArray());
+				} else {
+					InputStream is = (InputStream) content;
+					return Sha1.getSha1SignatureEncodedAsBase64(is);
+
+				}
+			} catch (Exception e) {
+				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+			}
+		}
+
+		/**
+		 * This method should not be used outside {@link SimplePersistSupport}.
+		 * @param sha1
+		 */
+		public void internalSetSha1(String sha1) {
+			LazyProperty.this.sha1 = sha1;
+		}
 
 		/**
 		 * 
@@ -330,6 +371,7 @@ public final class LazyProperty<T> implements Serializable {
 		try {
 			lock.lock();
 			this.transientValue = newValue;
+			sha1 = getMetadata().createSha1(this.transientValue);
 			needsSave = true;
 		} finally {
 			lock.unlock();

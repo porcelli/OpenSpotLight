@@ -52,8 +52,6 @@ import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Equals.eachEquality;
 
-import javax.jcr.Session;
-
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
@@ -73,7 +71,7 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
 	private String columnName;
 
 	@Override
-	public boolean contentEquals(final Artifact other, final Session session) {
+	public boolean contentEquals(final Artifact other) {
 		if (!equals(other)) {
 			return false;
 		}

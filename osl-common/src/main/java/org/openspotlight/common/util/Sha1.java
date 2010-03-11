@@ -101,8 +101,12 @@ public class Sha1 {
 			throws SLException {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
+			if (content.markSupported())
+				content.reset();
 			final ByteArrayOutputStream output = new ByteArrayOutputStream();
 			IOUtils.copy(content, output);
+			if (content.markSupported())
+				content.reset();
 			return DIGESTER.digest(output.toByteArray());
 		} catch (final Exception e) {
 			throw logAndReturnNew(e, SLException.class);
@@ -129,6 +133,25 @@ public class Sha1 {
 	 * @throws SLException
 	 */
 	public static String getSha1SignatureEncodedAsBase64(final byte[] content)
+			throws SLException {
+		checkNotNull("content", content);//$NON-NLS-1$
+		try {
+			final byte[] sha1 = getSha1Signature(content);
+			final String result = new String(encodeBase64(sha1));
+			return result;
+		} catch (final Exception e) {
+			throw logAndReturnNew(e, SLException.class);
+		}
+	}
+
+	/**
+	 * Returns a sha-1 signature for that content as a base64 string.
+	 * 
+	 * @param content
+	 * @return a base64 string representing the signature
+	 * @throws SLException
+	 */
+	public static String getSha1SignatureEncodedAsBase64(final InputStream content)
 			throws SLException {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {

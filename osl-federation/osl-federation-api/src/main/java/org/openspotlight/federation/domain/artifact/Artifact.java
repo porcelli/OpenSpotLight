@@ -51,8 +51,6 @@ package org.openspotlight.federation.domain.artifact;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.jcr.Session;
-
 import org.openspotlight.common.collection.AddOnlyConcurrentMap;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Equals;
@@ -149,7 +147,7 @@ LogableObject {
 	 *            the other
 	 * @return true, if successful
 	 */
-	public abstract boolean contentEquals(Artifact other, Session session);
+	public abstract boolean contentEquals(Artifact other);
 
 	/*
 	 * (non-Javadoc)

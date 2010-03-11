@@ -52,8 +52,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.jcr.Session;
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
@@ -72,7 +70,7 @@ SimpleNodeType, Serializable {
 	private Set<RoutineParameter> parameters = new HashSet<RoutineParameter>();
 
 	@Override
-	public boolean contentEquals(final Artifact other, final Session session) {
+	public boolean contentEquals(final Artifact other) {
 		if (!(other instanceof RoutineArtifact)) {
 			return false;
 		}

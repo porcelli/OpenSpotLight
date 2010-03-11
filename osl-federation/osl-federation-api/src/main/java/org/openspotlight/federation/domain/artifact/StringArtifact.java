@@ -48,8 +48,6 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
-import javax.jcr.Session;
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.internal.LazyProperty;
@@ -68,12 +66,12 @@ public class StringArtifact extends ArtifactWithSyntaxInformation {
 	private LazyProperty<String> content = LazyProperty.Factory.create(this);
 
 	@Override
-	public boolean contentEquals(final Artifact other, final Session session) {
+	public boolean contentEquals(final Artifact other) {
 		if (other instanceof StringArtifact) {
 			final StringArtifact that = (StringArtifact) other;
 			return Equals.eachEquality(content == null ? null : content
-					.get(session), that.content == null ? null : that.content
-							.get(session));
+					.getMetadata().getSha1(), that.content == null ? null : that.content
+							.getMetadata().getSha1());
 		}
 		return false;
 	}

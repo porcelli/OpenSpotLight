@@ -80,7 +80,7 @@ public class ArtifactFinderSupport {
 				delta.remove(newOne);
 				if (newOne != null) {
 					final ChangeType defaultChangeType = newOne.contentEquals(
-							existent, session) ? ChangeType.NOT_CHANGED
+							existent) ? ChangeType.NOT_CHANGED
 									: ChangeType.CHANGED;
 					switch (existent.getChangeType()) {
 					case INCLUDED:

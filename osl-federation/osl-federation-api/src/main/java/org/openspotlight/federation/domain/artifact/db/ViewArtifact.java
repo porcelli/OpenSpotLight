@@ -48,8 +48,6 @@
  */
 package org.openspotlight.federation.domain.artifact.db;
 
-import javax.jcr.Session;
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
@@ -60,7 +58,7 @@ public class ViewArtifact extends TableArtifact {
 	private static final long serialVersionUID = -3337935385738334416L;
 
 	@Override
-	public boolean contentEquals(final Artifact other, final Session session) {
+	public boolean contentEquals(final Artifact other) {
 		if (!(other instanceof ViewArtifact)) {
 			return false;
 		}
