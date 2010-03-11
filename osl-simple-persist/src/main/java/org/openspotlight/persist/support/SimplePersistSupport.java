@@ -1052,10 +1052,16 @@ public class SimplePersistSupport {
 				final LazyProperty<?> propertyVal = (LazyProperty<?>) desc
 				.getReadMethod().invoke(bean);
 				if (propertyVal.getMetadata().needsSave()) {
-					final Serializable unwrappedVal = (Serializable) propertyVal
+					Object unwrapped = propertyVal
 					.getMetadata().getTransient();
-					final InputStream is = convertSerializableToStream(
-							unwrappedVal, (SimpleNodeType) bean, desc.getName());
+					final InputStream is;
+					if(unwrapped instanceof Serializable){
+						final Serializable unwrappedVal = (Serializable) unwrapped;
+						is = convertSerializableToStream(
+								unwrappedVal, (SimpleNodeType) bean, desc.getName());
+					}else {//if(unwrapped instanceof InputStream){
+						is = (InputStream)unwrapped;
+					}
 					descriptor.transientLazyProperties.put(desc.getName(), is);
 					propertyVal.getMetadata().markAsSaved();
 				}

@@ -35,4 +35,10 @@
 		<appender-ref ref="SocketAppender" />
 	</logger>
 	
+	<logger name="org.openspotlight.federation.finder">
+		<priority value="debug" />
+		<appender-ref ref="console" />
+		<appender-ref ref="SocketAppender" />
+	</logger>
+ 
 </log4j:configuration>

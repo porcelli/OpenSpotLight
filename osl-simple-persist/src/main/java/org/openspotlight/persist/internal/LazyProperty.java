@@ -3,6 +3,7 @@ package org.openspotlight.persist.internal;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.io.StreamCorruptedException;
 import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -110,8 +111,8 @@ public final class LazyProperty<T> implements Serializable {
 					}
 					if (session == null) {
 						throw Exceptions
-						.logAndReturn(new IllegalStateException(
-								"trying to retrieve a value with a null session"));
+								.logAndReturn(new IllegalStateException(
+										"trying to retrieve a value with a null session"));
 					}
 					Assertions.checkNotEmpty("parentUuid", parentUuid);
 					Assertions.checkNotEmpty("propertyName", propertyName);
@@ -122,21 +123,28 @@ public final class LazyProperty<T> implements Serializable {
 								propertyName);
 						try {
 							final Property property = node
-							.getProperty(jcrPropertyName);
+									.getProperty(jcrPropertyName);
 							final InputStream is = property.getStream();
 
 							if (is.markSupported()) {
 								is.reset();
 							}
-							final ObjectInputStream ois = new ObjectInputStream(
-									is);
-							final Serializable serializable = (Serializable) ois
-							.readObject();
-							SimplePersistSupport.InternalMethods
-							.setParentPropertyOnSerializable(
-									serializable, parent);
-							setCached((T) serializable);
-							return (T) serializable;
+							try {
+								final ObjectInputStream ois = new ObjectInputStream(
+										is);
+								final Serializable serializable = (Serializable) ois
+										.readObject();
+								SimplePersistSupport.InternalMethods
+										.setParentPropertyOnSerializable(
+												serializable, parent);
+								setCached((T) serializable);
+								return (T) serializable;
+							} catch (StreamCorruptedException ex) {
+								if (is.markSupported()) {
+									is.reset();
+								}
+								return (T) is;
+							}
 						} catch (final PathNotFoundException ex) {
 							return null;
 						}

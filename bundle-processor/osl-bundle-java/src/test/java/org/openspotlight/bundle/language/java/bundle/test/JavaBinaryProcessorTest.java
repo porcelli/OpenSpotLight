@@ -140,6 +140,7 @@ public class JavaBinaryProcessorTest {
 		artifactSource.setRepository(repository);
 		artifactSource.setName("jar files");
 		artifactSource.setActive(true);
+		artifactSource.setBinary(true);
 		artifactSource.setInitialLookup("src/test/");
 
 		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
@@ -148,7 +149,7 @@ public class JavaBinaryProcessorTest {
 		mapping.setFrom("resources/");
 		mapping.setTo("jars");
 		artifactSource.getMappings().add(mapping);
-		mapping.getIncludeds().add("**/dynamo-file-gen-1.0.1.jar");
+		mapping.getIncludeds().add("**dynamo-file-gen-1.0.1.jar");
 		final BundleProcessorType commonProcessor = new BundleProcessorType();
 		commonProcessor.setActive(true);
 		commonProcessor.setGroup(group);
@@ -213,6 +214,9 @@ public class JavaBinaryProcessorTest {
 		final ExecutionContext context = contextFactory.createExecutionContext(
 				"", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
 						.getName());
+		Set<String> list = context.getArtifactFinder(StreamArtifact.class).retrieveAllArtifactNames(null);
+		for(String s: list)
+			System.err.println(s);
 		final StreamArtifact jarArtifact = context.getArtifactFinder(
 				StreamArtifact.class).findByPath(
 				"/jars/resources/dynamo-file-gen-1.0.1.jar");
