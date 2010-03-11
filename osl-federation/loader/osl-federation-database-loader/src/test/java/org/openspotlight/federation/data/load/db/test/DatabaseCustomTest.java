@@ -191,6 +191,11 @@ public class DatabaseCustomTest {
 		final Set<DatabaseCustomArtifact> fks = finder
 		.listByPath(Constraints.FOREIGN_KEY.toString());
 
+		Set<String> names = finder.retrieveAllArtifactNames(null);
+		
+		for(String name: names)
+			System.err.println(name);
+		
 		assertThat(loadedArtifacts, is(notNullValue()));
 		assertThat(loadedArtifacts.iterator().hasNext(), is(true));
 

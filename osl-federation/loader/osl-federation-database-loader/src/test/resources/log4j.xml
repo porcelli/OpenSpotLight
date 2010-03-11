@@ -9,34 +9,16 @@
 		</layout>
 	</appender>
 	<logger
-		name="org.openspotlight.federation.processing.internal.ExampleBundleProcessor">
+		name="org.openspotlight.federation.finder">
 		<priority value="debug" />
 		<appender-ref ref="console" />
 	</logger>
-	<!--
-
-		<logger
-		name="org.openspotlight.federation.scheduler.ArtifactSourceSchedulable">
-		<priority value="debug" /> <appender-ref ref="console" /> </logger>
-		<logger name="org.openspotlight.common.util.PatternMatcher"> <priority
-		value="debug" /> <appender-ref ref="console" /> </logger> <logger
-		name="org.openspotlight.federation.finder.FileSystemStreamArtifactFinder">
-		<priority value="debug" /> <appender-ref ref="console" /> </logger>
-		<logger
-		name="org.openspotlight.federation.finder.FileSystemStringArtifactFinder">
-		<priority value="debug" /> <appender-ref ref="console" /> </logger>
-	-->
-	<logger name="org.openspotlight.federation.finder.JcrSessionArtifactFinder">
+	<logger
+		name="org.openspotlight.federation.loader">
 		<priority value="debug" />
 		<appender-ref ref="console" />
 	</logger>
-	
-	
 	<logger name="org.openspotlight.common.util.PatternMatcher">
-		<priority value="debug" />
-		<appender-ref ref="console" />
-	</logger>
-	<logger name="org.openspotlight.federation.scheduler.GroupSchedulable">
 		<priority value="debug" />
 		<appender-ref ref="console" />
 	</logger>

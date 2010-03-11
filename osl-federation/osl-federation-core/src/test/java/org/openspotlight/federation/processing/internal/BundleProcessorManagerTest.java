@@ -247,11 +247,11 @@ public class BundleProcessorManagerTest {
 		final StringArtifact sourceFile = context1
 		.getArtifactFinder(StringArtifact.class)
 		.findByPath(
-				"/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
+		"/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
 		Assert.assertThat(sourceFile, Is.is(IsNull.notNullValue()));
 		Assert.assertThat(
-				sourceFile.getUnwrappedSyntaxInformation(null).size(), Is
-				.is(IsNot.not(0)));
+				sourceFile.getUnwrappedSyntaxInformation(context1.getArtifactFinder(StringArtifact.class).finderSession()).size(), Is
+						.is(IsNot.not(0)));
 
 	}
 

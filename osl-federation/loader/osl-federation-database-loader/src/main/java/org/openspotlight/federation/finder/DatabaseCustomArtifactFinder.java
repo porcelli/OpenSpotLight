@@ -65,6 +65,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
@@ -365,8 +366,27 @@ AbstractDatabaseArtifactFinder<DatabaseCustomArtifact> {
 	protected Set<String> internalRetrieveAllArtifactNames(
 			final String initialPath) {
 		try {
-			final String pathToMatch = initialPath.endsWith("/") ? initialPath
-					+ "*" : initialPath + "/*";
+			String pathToMatch;
+			if(Strings.isEmpty(initialPath)){
+				pathToMatch = "*";
+			}else{
+				if(!initialPath.endsWith("*")){
+					pathToMatch = initialPath + "*";
+				}else{
+					pathToMatch = initialPath;
+				}
+				if(!initialPath.startsWith("*")){
+					pathToMatch = "*"+initialPath;
+				}else{
+					pathToMatch = initialPath;
+				}
+				if(!pathToMatch.endsWith("**")){
+					pathToMatch = pathToMatch + "*";
+				}
+				if(!pathToMatch.startsWith("**")){
+					pathToMatch = "*"+pathToMatch;
+				}
+			}
 			final Set<String> artifactNames = new HashSet<String>();
 			final DbArtifactSource dbBundle = (DbArtifactSource) artifactSource;
 			final Map<String, DatabaseCustomArtifact> result = getResultFrom(dbBundle);

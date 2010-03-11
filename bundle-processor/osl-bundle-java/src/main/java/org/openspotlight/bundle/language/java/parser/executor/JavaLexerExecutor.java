@@ -48,6 +48,8 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
+import javax.jcr.Session;
+
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.metrics.SyntaxInformationAggregator;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
@@ -61,9 +63,9 @@ public final class JavaLexerExecutor {
 	private final SourceLineInfoAggregator sourceLineAggregator;
 
 	public JavaLexerExecutor(final ArtifactWithSyntaxInformation javaArtifact,
-			final SourceLineInfoAggregator sourceLineAggregator) {
+			final SourceLineInfoAggregator sourceLineAggregator, Session artifactSession) {
 		this.javaArtifact = javaArtifact;
-		syntaxAggregator = new SyntaxInformationAggregator(this.javaArtifact);
+		syntaxAggregator = new SyntaxInformationAggregator(this.javaArtifact,artifactSession);
 		this.sourceLineAggregator = sourceLineAggregator;
 	}
 
