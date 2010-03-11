@@ -3,6 +3,8 @@ package org.openspotlight.bundle.language.java.bundle;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.jcr.Session;
+
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Collections;
@@ -51,6 +53,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 		final String classpahtEntries = currentContext.getBundleProperties()
 				.get(JavaConstants.JAR_CLASSPATH);
 		final Set<String> contexts = new LinkedHashSet<String>();
+		Session artifactSession = context.getArtifactFinder(StringArtifact.class).finderSession();
 		if (classpahtEntries != null) {
 			final String[] entries = classpahtEntries
 					.split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
@@ -64,7 +67,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 						.getArtifactCompleteName().endsWith(".jar"));
 				String ctxName = artifact.getUniqueContextName();
 				if (ctxName == null) {
-					ctxName = JavaBinaryProcessor.discoverContextName(artifact);
+					ctxName = JavaBinaryProcessor.discoverContextName(artifact,artifactSession);
 					if (logger.isDebugEnabled()) {
 						logger.debug("context unique name for "
 								+ artifact.getArtifactCompleteName() + " = "

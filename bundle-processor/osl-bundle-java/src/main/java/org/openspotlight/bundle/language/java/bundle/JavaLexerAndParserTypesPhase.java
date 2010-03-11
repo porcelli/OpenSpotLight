@@ -1,5 +1,7 @@
 package org.openspotlight.bundle.language.java.bundle;
 
+import javax.jcr.Session;
+
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
@@ -49,17 +51,18 @@ public class JavaLexerAndParserTypesPhase implements
 			logger.debug(" starting to process artifact " + artifact);
 		}
 		try {
+			Session artifactSession = context.getArtifactFinder(StringArtifact.class).finderSession();
 
 			final SLNode contextNode = currentContext
 					.getNodeForUniqueBundleConfig();
 
 			final SLArtifactStream stream = new SLArtifactStreamBasicImpl(
-					artifact.getArtifactCompleteName(), artifact.getContent(),
+					artifact.getArtifactCompleteName(), artifact.getContent().get(artifactSession),
 					artifact.getVersion());
 			final JavaLexer lexer = new JavaLexer(stream);
 			final SourceLineInfoAggregator sourceLine = new SourceLineInfoAggregator();
 			final JavaLexerExecutor lexerExecutor = new JavaLexerExecutor(
-					artifact, sourceLine);
+					artifact, sourceLine,artifactSession);
 			lexer.setLexerExecutor(lexerExecutor);
 			final CommonTokenStream commonTokenStream = new CommonTokenStream(
 					lexer);
