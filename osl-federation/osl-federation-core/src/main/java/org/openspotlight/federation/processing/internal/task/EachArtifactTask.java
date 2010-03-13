@@ -59,7 +59,7 @@ import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformatio
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.SyntaxInformation;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.SaveBehavior;
@@ -140,7 +140,7 @@ RunnableWithBundleContext {
 		} finally {
 			this.artifact.setLastProcessStatus(result);
 			this.artifact.setLastProcessedDate(new Date());
-			final ArtifactFinder<T> finder = getBundleContext()
+			final OriginArtifactLoader<T> finder = getBundleContext()
 			.getArtifactFinder(this.artifactType);
 			Exception ex = null;
 			if (finder instanceof ArtifactFinderWithSaveCapabilitie) {

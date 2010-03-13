@@ -61,7 +61,7 @@ public class DatabaseCustomArtifactFinderBySourceProvider implements
 
 	private final Map<ArtifactSource, DatabaseCustomArtifactFinder> cache = new HashMap<ArtifactSource, DatabaseCustomArtifactFinder>();
 
-	public synchronized <S extends ArtifactSource> ArtifactFinder<? extends Artifact> getForType(
+	public synchronized <S extends ArtifactSource> OriginArtifactLoader<? extends Artifact> getForType(
 			final Class<? extends Artifact> artifactType, final S source) {
 		if (DatabaseCustomArtifact.class.isAssignableFrom(artifactType)
 				&& source instanceof DbArtifactSource) {

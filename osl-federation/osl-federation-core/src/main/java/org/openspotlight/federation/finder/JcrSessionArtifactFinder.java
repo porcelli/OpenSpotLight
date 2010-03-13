@@ -77,7 +77,7 @@ ArtifactFinderWithSaveCapabilitie<A> {
 	private static String ROOT_PATH = SharedConstants.DEFAULT_JCR_ROOT_NAME
 	+ "/{0}/artifacts";
 
-	public static <X extends Artifact> ArtifactFinder<X> createArtifactFinder(
+	public static <X extends Artifact> OriginArtifactLoader<X> createArtifactFinder(
 			final Class<X> artifactType, final Repository repository,
 			final Session session) {
 		Assertions.checkNotNull("session", session);

@@ -59,7 +59,7 @@ import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.JcrSessionArtifactFinder;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.JcrSessionConfigurationManagerFactory;
@@ -143,7 +143,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	private final String repositoryName;
 	private final DisposingListener<DefaultExecutionContext> listener;
 	private final Lock lock = new Lock();
-	private final ConcurrentHashMap<? extends Artifact, AtomicLazyResource<ArtifactFinder<? extends Artifact>>> artifactFinderReferences = new ConcurrentHashMap<Artifact, AtomicLazyResource<ArtifactFinder<? extends Artifact>>>();
+	private final ConcurrentHashMap<? extends Artifact, AtomicLazyResource<OriginArtifactLoader<? extends Artifact>>> artifactFinderReferences = new ConcurrentHashMap<Artifact, AtomicLazyResource<OriginArtifactLoader<? extends Artifact>>>();
 
 	private final AtomicLazyResource<AuthenticatedUser> lazyAuthenticatedUserReference = new AtomicLazyResource<AuthenticatedUser>() {
 
@@ -192,7 +192,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
 	public void closeResources() {
 		synchronized (lock) {
-			for (final AtomicLazyResource<ArtifactFinder<? extends Artifact>> lazyReference : artifactFinderReferences
+			for (final AtomicLazyResource<OriginArtifactLoader<? extends Artifact>> lazyReference : artifactFinderReferences
 					.values()) {
 				lazyReference.closeResources();
 			}
@@ -205,22 +205,22 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 	}
 
 	@SuppressWarnings("unchecked")
-	public <A extends Artifact> ArtifactFinder<A> getArtifactFinder(
+	public <A extends Artifact> OriginArtifactLoader<A> getArtifactFinder(
 			final Class<A> type) {
 		synchronized (lock) {
-			AtomicLazyResource<ArtifactFinder<? extends Artifact>> lazyReference = artifactFinderReferences
+			AtomicLazyResource<OriginArtifactLoader<? extends Artifact>> lazyReference = artifactFinderReferences
 					.get(type);
 			if (lazyReference == null) {
-				lazyReference = new AtomicLazyResource<ArtifactFinder<? extends Artifact>>() {
+				lazyReference = new AtomicLazyResource<OriginArtifactLoader<? extends Artifact>>() {
 					@Override
-					protected ArtifactFinder<? extends Artifact> createReference() {
+					protected OriginArtifactLoader<? extends Artifact> createReference() {
 						final Repository typedRepository = new Repository();
 						typedRepository.setName(repositoryName);
 						return internalCreateFinder(type, typedRepository);
 					}
 				};
 			}
-			return (ArtifactFinder<A>) lazyReference.get();
+			return (OriginArtifactLoader<A>) lazyReference.get();
 		}
 	}
 
@@ -260,9 +260,9 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 		return username;
 	}
 
-	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
+	protected <A extends Artifact> OriginArtifactLoader<A> internalCreateFinder(
 			final Class<A> type, final Repository typedRepository) {
-		final ArtifactFinder<A> newFinder = JcrSessionArtifactFinder
+		final OriginArtifactLoader<A> newFinder = JcrSessionArtifactFinder
 				.<A> createArtifactFinder(type, typedRepository,
 						(Session) getDefaultConnectionProvider().openSession());
 		return newFinder;

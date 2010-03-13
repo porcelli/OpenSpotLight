@@ -57,7 +57,7 @@ import org.junit.Test;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -85,10 +85,10 @@ public class DefaultExecutionContextFactoryTest {
 
 	@Test
 	public void shouldUseAllResourcesInsideContext() throws Exception {
-		final ArtifactFinder<StringArtifact> streamArtifactFinder = context
+		final OriginArtifactLoader<StringArtifact> streamArtifactFinder = context
 				.getArtifactFinder(StringArtifact.class);
 		Assert.assertThat(streamArtifactFinder, Is.is(IsNull.notNullValue()));
-		final ArtifactFinder<TableArtifact> tableArtifactFinder = context
+		final OriginArtifactLoader<TableArtifact> tableArtifactFinder = context
 				.getArtifactFinder(TableArtifact.class);
 		Assert.assertThat(tableArtifactFinder, Is.is(IsNull.notNullValue()));
 		final ConfigurationManager configurationManager = context

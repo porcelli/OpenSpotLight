@@ -59,7 +59,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.ArtifactFinderSupport;
 import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
 import org.openspotlight.federation.loader.ArtifactLoader;
@@ -109,7 +109,7 @@ SchedulableCommand<ArtifactSource> {
 			}
 		}
 		for (final Class<? extends Artifact> type : types) {
-			final ArtifactFinder<Artifact> finder = (ArtifactFinder<Artifact>) ctx
+			final OriginArtifactLoader<Artifact> finder = (OriginArtifactLoader<Artifact>) ctx
 			.getArtifactFinder(type);
 			Set<Artifact> existentArtifacts;
 			if (finder != null) {
@@ -122,7 +122,7 @@ SchedulableCommand<ArtifactSource> {
 			}
 		}
 		for (final Class<? extends Artifact> type : types) {
-			final ArtifactFinder<Artifact> finder = (ArtifactFinder<Artifact>) ctx
+			final OriginArtifactLoader<Artifact> finder = (OriginArtifactLoader<Artifact>) ctx
 			.getArtifactFinder(type);
 			if (finder instanceof ArtifactFinderWithSaveCapabilitie<?>) {
 				final ArtifactFinderWithSaveCapabilitie<Artifact> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<Artifact>) finder;

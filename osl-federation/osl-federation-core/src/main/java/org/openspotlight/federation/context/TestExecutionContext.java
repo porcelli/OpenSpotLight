@@ -57,7 +57,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.FileSystemStreamArtifactFinder;
 import org.openspotlight.federation.finder.FileSystemStringArtifactFinder;
 import org.openspotlight.federation.finder.LocalSourceStreamArtifactFinder;
@@ -98,24 +98,24 @@ public class TestExecutionContext extends SingleGraphSessionExecutionContext {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <A extends Artifact> ArtifactFinder<A> internalCreateFinder(
+	protected <A extends Artifact> OriginArtifactLoader<A> internalCreateFinder(
 			final Class<A> artifactType, final Repository typedRepository) {
 		Assertions.checkCondition("compatibleArtifactType",
 				StringArtifact.class.equals(artifactType)
 						|| StreamArtifact.class.equals(artifactType));
-		ArtifactFinder<A> finder;
+		OriginArtifactLoader<A> finder;
 		switch (type) {
 		case LOCAL_SOURCE:
-			finder = (ArtifactFinder<A>) new LocalSourceStreamArtifactFinder(
+			finder = (OriginArtifactLoader<A>) new LocalSourceStreamArtifactFinder(
 					artifactType, source);
 
 			break;
 		case FILESYSTEM:
 			if (artifactType.equals(StringArtifact.class)) {
-				finder = (ArtifactFinder<A>) new FileSystemStringArtifactFinder(
+				finder = (OriginArtifactLoader<A>) new FileSystemStringArtifactFinder(
 						source);
 			} else {
-				finder = (ArtifactFinder<A>) new FileSystemStreamArtifactFinder(
+				finder = (OriginArtifactLoader<A>) new FileSystemStreamArtifactFinder(
 						source);
 			}
 

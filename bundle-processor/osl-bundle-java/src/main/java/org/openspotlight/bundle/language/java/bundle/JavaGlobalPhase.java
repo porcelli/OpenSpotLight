@@ -12,7 +12,7 @@ import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.processing.ArtifactChanges;
 import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
 import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
@@ -57,7 +57,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 		if (classpahtEntries != null) {
 			final String[] entries = classpahtEntries
 					.split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
-			final ArtifactFinder<StreamArtifact> jarFinder = context
+			final OriginArtifactLoader<StreamArtifact> jarFinder = context
 					.getArtifactFinder(StreamArtifact.class);
 			for (final String entry : entries) {
 				final StreamArtifact artifact = jarFinder.findByPath(entry);

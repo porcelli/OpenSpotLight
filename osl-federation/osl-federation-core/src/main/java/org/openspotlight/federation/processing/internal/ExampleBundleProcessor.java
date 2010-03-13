@@ -58,7 +58,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.processing.ArtifactChanges;
 import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
 import org.openspotlight.federation.processing.BundleProcessorSinglePhase;
@@ -122,7 +122,7 @@ BundleProcessorSinglePhase<StringArtifact> {
 			final ExecutionContext context) throws Exception {
 		context.getLogger().log(context.getUser(), LogEventType.DEBUG,
 				"another test", artifact);
-		final ArtifactFinder<StringArtifact> finder = context
+		final OriginArtifactLoader<StringArtifact> finder = context
 				.getArtifactFinder(StringArtifact.class);
 		for (int i = 0; i < 10; i++) {
 			final SLNode groupNode = currentContext.getCurrentNodeGroup();

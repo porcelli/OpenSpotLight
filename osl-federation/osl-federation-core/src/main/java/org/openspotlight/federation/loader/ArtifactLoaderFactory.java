@@ -71,7 +71,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.PathElement;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.registry.ArtifactTypeRegistry;
 import org.slf4j.Logger;
@@ -94,7 +94,7 @@ public class ArtifactLoaderFactory {
 		private static class SourcesToProcessItems {
 
 			/** The artifact finder. */
-			final ArtifactFinder<?> artifactFinder;
+			final OriginArtifactLoader<?> artifactFinder;
 
 			/** The artifact name. */
 			final String artifactName;
@@ -115,7 +115,7 @@ public class ArtifactLoaderFactory {
 			 *            the mapping
 			 */
 			public SourcesToProcessItems(
-					final ArtifactFinder<?> artifactFinder,
+					final OriginArtifactLoader<?> artifactFinder,
 					final String artifactName,
 					final ArtifactSourceMapping mapping) {
 				this.artifactFinder = artifactFinder;
@@ -191,7 +191,7 @@ public class ArtifactLoaderFactory {
 		 */
 		public Iterable<Artifact> loadArtifactsFromSource(
 				final ArtifactSource... sources) {
-			final Queue<Pair<ArtifactFinder<?>, ArtifactSource>> sourcesToLoad = new ConcurrentLinkedQueue<Pair<ArtifactFinder<?>, ArtifactSource>>();
+			final Queue<Pair<OriginArtifactLoader<?>, ArtifactSource>> sourcesToLoad = new ConcurrentLinkedQueue<Pair<OriginArtifactLoader<?>, ArtifactSource>>();
 			final Queue<ArtifactLoaderImpl.SourcesToProcessItems> sourcesToProcess = new ConcurrentLinkedQueue<ArtifactLoaderImpl.SourcesToProcessItems>();
 			final Queue<Artifact> loadedArtifacts = new ConcurrentLinkedQueue<Artifact>();
 
@@ -205,11 +205,11 @@ public class ArtifactLoaderFactory {
 						+ source.getName() + ":" + source.getInitialLookup());
 				for (final ArtifactFinderBySourceProvider provider : artifactProviders) {
 					for (final Class<? extends Artifact> type : artifactTypes) {
-						final ArtifactFinder<? extends Artifact> artifactFinder = provider
+						final OriginArtifactLoader<? extends Artifact> artifactFinder = provider
 						.getForType(type, source);
 						if (artifactFinder != null) {
 							sourcesToLoad
-							.add(new Pair<ArtifactFinder<?>, ArtifactSource>(
+							.add(new Pair<OriginArtifactLoader<?>, ArtifactSource>(
 									artifactFinder, source));
 							logger.info("added artifact finder"
 									+ artifactFinder + " for source "
@@ -225,7 +225,7 @@ public class ArtifactLoaderFactory {
 						+ Arrays.toString(sources));
 				return Collections.emptySet();
 			}
-			for (final Pair<ArtifactFinder<?>, ArtifactSource> pair : new ArrayList<Pair<ArtifactFinder<?>, ArtifactSource>>(
+			for (final Pair<OriginArtifactLoader<?>, ArtifactSource> pair : new ArrayList<Pair<OriginArtifactLoader<?>, ArtifactSource>>(
 					sourcesToLoad)) {
 				executor.execute(new Runnable() {
 

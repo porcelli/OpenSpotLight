@@ -70,7 +70,7 @@ import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.processing.ArtifactChanges;
 import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
@@ -119,7 +119,7 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 			final ArtifactsToBeProcessedImpl<Artifact> toBeReturned = new ArtifactsToBeProcessedImpl<Artifact>();
 			changesByType.put(artifactType, changes);
 			returnByType.put(artifactType, toBeReturned);
-			final ArtifactFinder<? extends Artifact> finder = getBundleContext()
+			final OriginArtifactLoader<? extends Artifact> finder = getBundleContext()
 			.getArtifactFinder(artifactType);
 			for (final BundleSource src : bundleProcessorType.getSources()) {
 

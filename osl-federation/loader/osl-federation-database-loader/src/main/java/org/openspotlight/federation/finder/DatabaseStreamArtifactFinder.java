@@ -68,7 +68,7 @@ import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStr
 
 public class DatabaseStreamArtifactFinder extends
 AbstractDatabaseArtifactFinder<StringArtifact> implements
-ArtifactFinder<StringArtifact> {
+OriginArtifactLoader<StringArtifact> {
 
 	public DatabaseStreamArtifactFinder(final DbArtifactSource artifactSource) {
 		super(StringArtifact.class, artifactSource);

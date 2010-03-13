@@ -64,7 +64,7 @@ import org.junit.Test;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.finder.FileSystemStringArtifactFinder;
 import org.openspotlight.federation.finder.JcrSessionArtifactFinder;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -106,7 +106,7 @@ public class JcrSessionArtifactFinderTest {
 		session.logout();
 	}
 
-	private ArtifactFinder<StringArtifact> streamArtifactFinder;
+	private OriginArtifactLoader<StringArtifact> streamArtifactFinder;
 
 	/** The session. */
 	private Session session = null;
