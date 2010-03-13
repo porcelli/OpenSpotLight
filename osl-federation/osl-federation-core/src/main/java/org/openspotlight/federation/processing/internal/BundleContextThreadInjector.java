@@ -50,8 +50,8 @@ package org.openspotlight.federation.processing.internal;
 
 import java.util.Map;
 
-import org.openspotlight.common.task.RunnableListener;
 import org.openspotlight.common.task.exception.RunnableWithException;
+import org.openspotlight.common.taskexec.RunnableListener;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;

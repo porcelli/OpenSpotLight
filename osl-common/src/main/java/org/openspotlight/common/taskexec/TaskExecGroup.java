@@ -1,13 +1,13 @@
-package org.openspotlight.common.task;
+package org.openspotlight.common.taskexec;
 
 import org.openspotlight.common.concurrent.Priority;
 
-public interface TaskGroup {
+public interface TaskExecGroup {
 
 	public String getName();
 
 	public Priority getPriority();
 
-	public TaskBuilder prepareTask();
+	public TaskExecBuilder prepareTask();
 
 }

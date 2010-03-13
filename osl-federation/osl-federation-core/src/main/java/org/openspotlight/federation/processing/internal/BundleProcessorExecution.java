@@ -54,9 +54,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.openspotlight.common.SharedConstants;
-import org.openspotlight.common.task.TaskGroup;
-import org.openspotlight.common.task.TaskManager;
-import org.openspotlight.common.task.TaskPool;
+import org.openspotlight.common.taskexec.TaskExecGroup;
+import org.openspotlight.common.taskexec.TaskExecManager;
+import org.openspotlight.common.taskexec.TaskExecPool;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -87,7 +87,7 @@ public class BundleProcessorExecution {
 
 	private final GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
 	/** The executor. */
-	private final TaskPool pool;
+	private final TaskExecPool pool;
 	private final String username;
 	private final String password;
 	private final JcrConnectionDescriptor descriptor;
@@ -146,7 +146,7 @@ public class BundleProcessorExecution {
 			Exceptions.logAndThrow(new IllegalStateException(
 			"Default Thread sleep time in millis must be positive!"));
 		}
-		pool = TaskManager.INSTANCE.createTaskPool("bundle-processor", threads);
+		pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor", threads);
 		final BundleContextThreadInjector listener = new BundleContextThreadInjector(
 				contextFactory, repositoryNames, username, password, descriptor);
 		pool.addListener(listener);
@@ -194,7 +194,7 @@ public class BundleProcessorExecution {
 				+ ":"
 				+ bundleProcessorType.getGlobalPhase().getName();
 				final String seachId = idPrefix + ":searchArtifacts";
-				final TaskGroup searchArtifacts = pool.createTaskGroup(seachId,
+				final TaskExecGroup searchArtifacts = pool.createTaskGroup(seachId,
 						priority);
 
 				final StartingToSearchArtifactsTask searchTask = new StartingToSearchArtifactsTask(
@@ -204,7 +204,7 @@ public class BundleProcessorExecution {
 				.withReadableDescriptionAndUniqueId(seachId)
 				.withRunnable(searchTask).andPublishTask();
 				final String saveId = idPrefix + ":saveGraph";
-				final TaskGroup saveGraph = pool.createTaskGroup(saveId,
+				final TaskExecGroup saveGraph = pool.createTaskGroup(saveId,
 						++priority);
 				saveGraph.prepareTask().withReadableDescriptionAndUniqueId(
 						saveId).withRunnable(

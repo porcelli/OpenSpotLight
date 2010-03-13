@@ -9,11 +9,11 @@ import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openspotlight.common.task.Task;
-import org.openspotlight.common.task.TaskGroup;
-import org.openspotlight.common.task.TaskManager;
-import org.openspotlight.common.task.TaskPool;
 import org.openspotlight.common.task.exception.RunnableWithException;
+import org.openspotlight.common.taskexec.TaskExec;
+import org.openspotlight.common.taskexec.TaskExecGroup;
+import org.openspotlight.common.taskexec.TaskExecManager;
+import org.openspotlight.common.taskexec.TaskExecPool;
 
 public class TaskManagerTest {
 
@@ -46,23 +46,23 @@ public class TaskManagerTest {
 		new TaskManagerTest().shouldExecuteTasksOnPoolWithEigth();
 	}
 
-	private void createSleepingTasks(final TaskPool pool,
+	private void createSleepingTasks(final TaskExecPool pool,
 			final List<String> list) {
 		createTasks(pool, list, true);
 	}
 
-	private void createTasks(final TaskPool pool, final List<String> list) {
+	private void createTasks(final TaskExecPool pool, final List<String> list) {
 		createTasks(pool, list, false);
 	}
 
-	private void createTasks(final TaskPool pool, final List<String> list,
+	private void createTasks(final TaskExecPool pool, final List<String> list,
 			final boolean sleeping) {
-		final TaskGroup group2 = pool.createTaskGroup("group-2", 2);
-		final TaskGroup group1 = pool.createTaskGroup("group-1", 1);
-		final Task task5 = group2.prepareTask().withReadableDescription(
+		final TaskExecGroup group2 = pool.createTaskGroup("group-2", 2);
+		final TaskExecGroup group1 = pool.createTaskGroup("group-1", 1);
+		final TaskExec task5 = group2.prepareTask().withReadableDescription(
 				"thisThread").withUniqueId("5").withRunnable(
 				new Worker("5", list, sleeping)).andPublishTask();
-		final Task task6 = group2.prepareTask().withReadableDescription(
+		final TaskExec task6 = group2.prepareTask().withReadableDescription(
 				"thisThread").withUniqueId("6").withRunnable(
 				new Worker("6", list, sleeping)).withParentTasks(task5)
 				.andPublishTask();
@@ -71,26 +71,26 @@ public class TaskManagerTest {
 				.withRunnable(new Worker("7", list, sleeping)).withParentTasks(
 						task6).andPublishTask();
 
-		final Task task1 = group1.prepareTask().withReadableDescription(
+		final TaskExec task1 = group1.prepareTask().withReadableDescription(
 				"thisThread").withUniqueId("1").withRunnable(
 				new Worker("1", list, sleeping)).andPublishTask();
 
-		final Task task1_1 = group1.prepareTask().withReadableDescription(
+		final TaskExec task1_1 = group1.prepareTask().withReadableDescription(
 				"thisThread-1_1").withUniqueId("1_1").withRunnable(
 				new Worker("1_1", list, sleeping)).withParentTasks(task1)
 				.andPublishTask();
 
-		final Task task1_2 = group1.prepareTask().withReadableDescription(
+		final TaskExec task1_2 = group1.prepareTask().withReadableDescription(
 				"thisThread-1_2").withUniqueId("1_2").withRunnable(
 				new Worker("1_2", list, sleeping)).withParentTasks(task1,
 				task1_1).andPublishTask();
 
-		final Task task1_3 = group1.prepareTask().withReadableDescription(
+		final TaskExec task1_3 = group1.prepareTask().withReadableDescription(
 				"thisThread-1_3").withUniqueId("1_3").withRunnable(
 				new Worker("1_3", list, sleeping)).withParentTasks(task1,
 				task1_2).andPublishTask();
 
-		final Task task1_4 = group1.prepareTask().withReadableDescription(
+		final TaskExec task1_4 = group1.prepareTask().withReadableDescription(
 				"thisThread-1_4").withUniqueId("1_4").withRunnable(
 				new Worker("1_4", list, sleeping)).withParentTasks(task1,
 				task1_3).andPublishTask();
@@ -100,7 +100,7 @@ public class TaskManagerTest {
 						new RunnableWithException() {
 
 							public void run() throws Exception {
-								final Task task2_1 = group1.prepareTask()
+								final TaskExec task2_1 = group1.prepareTask()
 										.withReadableDescription(
 												"thisThread-2_1").withUniqueId(
 												"2_1").withRunnable(
@@ -110,7 +110,7 @@ public class TaskManagerTest {
 												task1_3, task1_4)
 										.andPublishTask();
 
-								final Task task2_2 = group1.prepareTask()
+								final TaskExec task2_2 = group1.prepareTask()
 										.withReadableDescription(
 												"thisThread-2_2").withUniqueId(
 												"2_2").withRunnable(
@@ -120,7 +120,7 @@ public class TaskManagerTest {
 												task1_3, task1_4, task2_1)
 										.andPublishTask();
 
-								final Task task2_3 = group1.prepareTask()
+								final TaskExec task2_3 = group1.prepareTask()
 										.withReadableDescription(
 												"thisThread-2_3").withUniqueId(
 												"2_3").withRunnable(
@@ -130,7 +130,7 @@ public class TaskManagerTest {
 												task1_3, task1_4, task2_2)
 										.andPublishTask();
 
-								final Task task2_4 = group1.prepareTask()
+								final TaskExec task2_4 = group1.prepareTask()
 										.withReadableDescription(
 												"thisThread-2_4").withUniqueId(
 												"2_4").withRunnable(
@@ -140,7 +140,7 @@ public class TaskManagerTest {
 												task1_3, task1_4, task2_3)
 										.andPublishTask();
 
-								final Task task3 = group1
+								final TaskExec task3 = group1
 										.prepareTask()
 										.withReadableDescription("thisThread-3")
 										.withUniqueId("3")
@@ -167,7 +167,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithEigth() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				8);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -179,7 +179,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithFive() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				5);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -191,7 +191,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithFour() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				4);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -203,7 +203,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithSeven() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				7);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -215,7 +215,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithSix() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				6);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -227,7 +227,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithSixteen() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				16);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -239,7 +239,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithThree() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				3);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -251,7 +251,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithTwoTasks() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				2);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -263,7 +263,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnSinglePool() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				1);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
@@ -275,7 +275,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithEigth() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				8);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
@@ -287,7 +287,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithFive() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				5);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
@@ -299,7 +299,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithFour() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				4);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
@@ -311,7 +311,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithSeven() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				7);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
@@ -323,7 +323,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithSix() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				6);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
@@ -335,7 +335,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithSixteen() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				16);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
@@ -347,7 +347,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithThree() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				3);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
@@ -359,7 +359,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnPoolWithTwoTasks() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				2);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);
@@ -371,7 +371,7 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteTasksOnSinglePool() throws Exception {
 
-		final TaskPool pool = TaskManager.INSTANCE.createTaskPool("test-pool",
+		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
 				1);
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createTasks(pool, list);

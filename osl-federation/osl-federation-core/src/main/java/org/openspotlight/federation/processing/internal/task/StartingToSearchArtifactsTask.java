@@ -59,8 +59,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.task.Task;
-import org.openspotlight.common.task.TaskGroup;
+import org.openspotlight.common.taskexec.TaskExec;
+import org.openspotlight.common.taskexec.TaskExecGroup;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
@@ -91,12 +91,12 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 	private final BundleProcessorType bundleProcessorType;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Repository repository;
-	private final TaskGroup currentGroup;
+	private final TaskExecGroup currentGroup;
 
 	public StartingToSearchArtifactsTask(
 			final CurrentProcessorContextImpl currentContext,
 			final BundleProcessorType bundleProcessorType,
-			final Repository repository, final TaskGroup currentGroup) {
+			final Repository repository, final TaskExecGroup currentGroup) {
 		super(repository.getName());
 		this.currentContext = currentContext;
 		this.bundleProcessorType = bundleProcessorType;
@@ -221,8 +221,8 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 
 			}
 
-			final List<Task> parentTasks = new LinkedList<Task>();
-			final List<Task> allParentTasks = new LinkedList<Task>();
+			final List<TaskExec> parentTasks = new LinkedList<TaskExec>();
+			final List<TaskExec> allParentTasks = new LinkedList<TaskExec>();
 			boolean first = true;
 			final ArtifactChanges<Artifact> changes = changesByType
 			.get(artifactType);
@@ -231,7 +231,7 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 
 			for (final BundleProcessorArtifactPhase<Artifact> artifactPhase : artifactPhases) {
 
-				final List<Task> thisPhaseTasks = new LinkedList<Task>();
+				final List<TaskExec> thisPhaseTasks = new LinkedList<TaskExec>();
 				for (final Artifact artifactToProcess : toBeReturned
 						.getArtifactsToBeProcessed()) {
 
@@ -244,7 +244,7 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 							first, getRepositoryName(), artifactType,
 							artifactToProcess, behavior, artifactPhase,
 							currentContext);
-					final Task currentTask = currentGroup.prepareTask()
+					final TaskExec currentTask = currentGroup.prepareTask()
 					.withParentTasks(parentTasks)
 					.withReadableDescriptionAndUniqueId(
 							artifactPhase.getClass().getSimpleName()

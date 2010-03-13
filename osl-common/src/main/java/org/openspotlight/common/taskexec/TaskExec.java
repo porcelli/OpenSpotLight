@@ -1,17 +1,17 @@
-package org.openspotlight.common.task;
+package org.openspotlight.common.taskexec;
 
 import java.util.List;
 
 import org.openspotlight.common.task.exception.RunnableWithException;
 
-public interface Task extends RunnableWithException {
+public interface TaskExec extends RunnableWithException {
 	public void awaitToRun() throws InterruptedException;
 
 	public void awaitToRunChild() throws InterruptedException;
 
 	public boolean didRun();
 
-	public List<Task> getParentTasks();
+	public List<TaskExec> getParentTasks();
 
 	public String getReadableDescription();
 

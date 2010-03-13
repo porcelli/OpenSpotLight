@@ -1,11 +1,11 @@
-package org.openspotlight.common.task;
+package org.openspotlight.common.taskexec;
 
 
-public interface TaskPool {
+public interface TaskExecPool {
 
 	public void addListener(RunnableListener listener);
 
-	public TaskGroup createTaskGroup(String taskGroupName, int... priority);
+	public TaskExecGroup createTaskGroup(String taskGroupName, int... priority);
 
 	public String getPoolName();
 

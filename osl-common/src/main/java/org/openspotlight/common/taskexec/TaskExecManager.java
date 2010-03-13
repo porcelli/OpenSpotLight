@@ -1,4 +1,4 @@
-package org.openspotlight.common.task;
+package org.openspotlight.common.taskexec;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
@@ -29,24 +29,24 @@ import org.openspotlight.common.util.Exceptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public enum TaskManager {
+public enum TaskExecManager {
 
 	INSTANCE;
 
-	private static class TaskBuilderImpl implements TaskBuilder {
+	private static class TaskBuilderImpl implements TaskExecBuilder {
 		private final TaskGroupImpl taskGroup;
 		private final AtomicBoolean published = new AtomicBoolean(false);
 		private final AtomicBoolean started = new AtomicBoolean(false);
 		private String description = null;
 		private RunnableWithException thisRunnable;
 		private String taskId;
-		private final CopyOnWriteArrayList<Task> parents = new CopyOnWriteArrayList<Task>();
+		private final CopyOnWriteArrayList<TaskExec> parents = new CopyOnWriteArrayList<TaskExec>();
 
 		public TaskBuilderImpl(final TaskGroupImpl taskGroup) {
 			this.taskGroup = taskGroup;
 		}
 
-		public Task andPublishTask() {
+		public TaskExec andPublishTask() {
 			checkCondition("notPublished", published.get() == false);
 			final TaskImpl task = new TaskImpl(parents, description,
 					thisRunnable, taskId);
@@ -55,23 +55,23 @@ public enum TaskManager {
 			return task;
 		}
 
-		public TaskBuilder withParentTasks(final Iterable<Task> parent) {
+		public TaskExecBuilder withParentTasks(final Iterable<TaskExec> parent) {
 			checkCondition("notStarted", started.get() == false);
-			for (final Task t : parent) {
+			for (final TaskExec t : parent) {
 				parents.add(t);
 			}
 			return this;
 		}
 
-		public TaskBuilder withParentTasks(final Task... parent) {
+		public TaskExecBuilder withParentTasks(final TaskExec... parent) {
 			checkCondition("notStarted", started.get() == false);
-			for (final Task t : parent) {
+			for (final TaskExec t : parent) {
 				parents.add(t);
 			}
 			return this;
 		}
 
-		public TaskBuilder withReadableDescription(
+		public TaskExecBuilder withReadableDescription(
 				final String readableDescription) {
 			checkNotEmpty("readableDescription", readableDescription);
 			checkCondition("notPublished", published.get() == false);
@@ -81,7 +81,7 @@ public enum TaskManager {
 			return this;
 		}
 
-		public TaskBuilder withReadableDescriptionAndUniqueId(
+		public TaskExecBuilder withReadableDescriptionAndUniqueId(
 				final String readableDescriptionAndUniqueId) {
 			checkNotEmpty("readableDescriptionAndUniqueId",
 					readableDescriptionAndUniqueId);
@@ -90,7 +90,7 @@ public enum TaskManager {
 			return this;
 		}
 
-		public TaskBuilder withRunnable(final RunnableWithException runnable) {
+		public TaskExecBuilder withRunnable(final RunnableWithException runnable) {
 			checkNotNull("runnable", runnable);
 			checkCondition("notPublished", published.get() == false);
 			checkCondition("notStarded", started.get() == false);
@@ -99,7 +99,7 @@ public enum TaskManager {
 			return this;
 		}
 
-		public TaskBuilder withUniqueId(final String uniqueId) {
+		public TaskExecBuilder withUniqueId(final String uniqueId) {
 			checkNotEmpty("uniqueId", uniqueId);
 			checkCondition("notPublished", published.get() == false);
 			checkCondition("notStarded", started.get() == false);
@@ -110,7 +110,7 @@ public enum TaskManager {
 
 	}
 
-	private static class TaskGroupImpl implements TaskGroup {
+	private static class TaskGroupImpl implements TaskExecGroup {
 		private final Logger logger = LoggerFactory.getLogger(getClass());
 
 		private final Priority thisGroupPriority;
@@ -149,7 +149,7 @@ public enum TaskManager {
 			this.poolName = poolName;
 		}
 
-		public void addTaskToPool(final Task task)
+		public void addTaskToPool(final TaskExec task)
 				throws TaskAlreadyOnPoolException, TaskAlreadyRunnedException,
 				TaskRunningException, PoolAlreadyStoppedException,
 				RunningPriorityBigger {
@@ -210,14 +210,14 @@ public enum TaskManager {
 			return thisGroupPriority;
 		}
 
-		public TaskBuilder prepareTask() {
+		public TaskExecBuilder prepareTask() {
 			return new TaskBuilderImpl(this);
 		}
 	}
 
-	private static class TaskImpl implements Task {
+	private static class TaskImpl implements TaskExec {
 
-		private final List<Task> parentTasks;
+		private final List<TaskExec> parentTasks;
 
 		private final String readableDescription;
 
@@ -229,7 +229,7 @@ public enum TaskManager {
 
 		private final Logger logger = LoggerFactory.getLogger(getClass());
 
-		public TaskImpl(final List<Task> parentTasks,
+		public TaskImpl(final List<TaskExec> parentTasks,
 				final String readableDescription,
 				final RunnableWithException runnable, final String uniqueId) {
 			this.parentTasks = parentTasks;
@@ -243,7 +243,7 @@ public enum TaskManager {
 				logger.debug("verifying if parents did run for task "
 						+ getUniqueId() + " " + getReadableDescription());
 			}
-			for (final Task parent : parentTasks) {
+			for (final TaskExec parent : parentTasks) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("verifying if parent " + parent.getUniqueId()
 							+ " " + parent.getReadableDescription()
@@ -273,7 +273,7 @@ public enum TaskManager {
 			return latch.getCount() == 0l;
 		}
 
-		public List<Task> getParentTasks() {
+		public List<TaskExec> getParentTasks() {
 			return parentTasks;
 		}
 
@@ -303,7 +303,7 @@ public enum TaskManager {
 		}
 	}
 
-	private static class TaskPoolImpl implements TaskPool {
+	private static class TaskPoolImpl implements TaskExecPool {
 
 		private final String poolName;
 		private final int poolSize;
@@ -330,7 +330,7 @@ public enum TaskManager {
 			listeners.add(listener);
 		}
 
-		public TaskGroup createTaskGroup(final String taskGroupName,
+		public TaskExecGroup createTaskGroup(final String taskGroupName,
 				final int... priorities) throws RunningPriorityBigger {
 			try {
 				lock.lock();
@@ -579,7 +579,7 @@ public enum TaskManager {
 		}
 	}
 
-	public TaskPool createTaskPool(final String poolName, final int poolSize) {
+	public TaskExecPool createTaskPool(final String poolName, final int poolSize) {
 		checkNotEmpty("poolName", poolName);
 		return new TaskPoolImpl(poolName, poolSize);
 	}
