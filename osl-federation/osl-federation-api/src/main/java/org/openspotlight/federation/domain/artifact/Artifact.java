@@ -72,6 +72,17 @@ import org.openspotlight.persist.annotation.TransientProperty;
 public abstract class Artifact implements SimpleNodeType, Serializable,
 LogableObject {
 
+
+	private long lastChange;
+	
+	public long getLastChange() {
+		return lastChange;
+	}
+
+	public void setLastChange(long lastChange) {
+		this.lastChange = lastChange;
+	}
+	
 	/**
 	 * Creates the new artifact.
 	 * 

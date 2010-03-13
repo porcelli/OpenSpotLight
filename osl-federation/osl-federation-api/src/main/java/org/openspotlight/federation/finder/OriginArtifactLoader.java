@@ -86,7 +86,7 @@ public interface OriginArtifactLoader extends Disposable {
 		 * @param oldOne
 		 * @return
 		 */
-		public <A extends Artifact> boolean isMaybeChanged(String artifactName,
+		public <A extends Artifact> boolean isMaybeChanged(ArtifactSource source,String artifactName,
 				A oldOne);
 
 	}

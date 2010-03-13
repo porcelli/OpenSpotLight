@@ -26,6 +26,7 @@ import org.openspotlight.common.task.exception.TaskAlreadyOnPoolException;
 import org.openspotlight.common.task.exception.TaskAlreadyRunnedException;
 import org.openspotlight.common.task.exception.TaskRunningException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.task.ExecutorInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -323,7 +324,7 @@ public enum TaskExecManager {
 		public TaskPoolImpl(final String poolName, final int poolSize) {
 			this.poolName = poolName;
 			this.poolSize = poolSize;
-			executor = GossipExecutor.newFixedThreadPool(poolSize, poolName);
+			executor = ExecutorInstance.INSTANCE.getExecutorInstance();
 		}
 
 		public void addListener(final RunnableListener listener) {

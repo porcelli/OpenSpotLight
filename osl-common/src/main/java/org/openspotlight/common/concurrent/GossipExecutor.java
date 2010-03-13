@@ -182,7 +182,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
 	 *            the n threads
 	 * @return the cautious executor
 	 */
-	public static GossipExecutor newFixedThreadPool(final int nThreads,
+	public static GossipExecutor newExecutor(final int nThreads,
 			final String poolName) {
 
 		final GossipExecutor ex = new GossipExecutor(nThreads, nThreads, 0L,

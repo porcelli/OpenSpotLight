@@ -48,11 +48,19 @@
  */
 package org.openspotlight.federation.finder;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.PathElement;
+import org.openspotlight.task.ExecutorInstance;
 
 public abstract class AbstractOriginArtifactLoader implements
 		OriginArtifactLoader {
@@ -67,8 +75,8 @@ public abstract class AbstractOriginArtifactLoader implements
 		}
 
 		public final <A extends Artifact> boolean isMaybeChanged(
-				String artifactName, A oldOne) {
-			return internalIsMaybeChanged(artifactName, oldOne);
+				ArtifactSource source, String artifactName, A oldOne) {
+			return internalIsMaybeChanged(source, artifactName, oldOne);
 		}
 
 		public final boolean isTypeSupported(Class<? extends Artifact> type) {
@@ -110,7 +118,7 @@ public abstract class AbstractOriginArtifactLoader implements
 	}
 
 	protected abstract <A extends Artifact> boolean internalIsMaybeChanged(
-			String artifactName, A oldOne);
+			ArtifactSource source, String artifactName, A oldOne);
 
 	protected abstract Set<Class<? extends Artifact>> internalGetAvailableTypes();
 
@@ -132,8 +140,29 @@ public abstract class AbstractOriginArtifactLoader implements
 	}
 
 	protected <A extends Artifact> Set<A> internalListByPath(
-			Class<A> type, ArtifactSource source, String path){
-		
+			final Class<A> type, final ArtifactSource source,
+			final String initialPath) {
+		try {
+			Set<String> paths = getInternalMethods().retrieveOriginalNames(
+					type, source, initialPath);
+			List<Callable<A>> tasks = new ArrayList<Callable<A>>();
+			for (final String path : paths) {
+				Callable<A> callable = new Callable<A>() {
+					public A call() throws Exception {
+						return internalFindByPath(type, source, path);
+					}
+				};
+				tasks.add(callable);
+			}
+			List<Future<A>> futures = ExecutorInstance.INSTANCE
+					.getExecutorInstance().invokeAll(tasks);
+			Set<A> result = new HashSet<A>();
+			for (Future<A> f : futures)
+				result.add(f.get());
+			return result;
+		} catch (Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
 	}
 
 	private <A extends Artifact> A fillSomeData(Class<A> type,
