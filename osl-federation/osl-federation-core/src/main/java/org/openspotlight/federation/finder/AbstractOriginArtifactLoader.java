@@ -49,6 +49,7 @@
 package org.openspotlight.federation.finder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,6 +87,11 @@ public abstract class AbstractOriginArtifactLoader implements
 		public final <A extends Artifact> Set<String> retrieveOriginalNames(
 				Class<A> type, ArtifactSource source, String initialPath) {
 			return internalRetrieveOriginalNames(type, source, initialPath);
+		}
+
+		public <A extends Artifact> boolean accept(ArtifactSource source,
+				Class<A> type) {
+			return internalAccept(source, type);
 		}
 
 	}
@@ -167,12 +173,15 @@ public abstract class AbstractOriginArtifactLoader implements
 
 	private <A extends Artifact> A fillSomeData(Class<A> type,
 			ArtifactSource source, A artifact) {
-		artifact.setRepositoryName(source.getRepository().getName());
+		if (artifact != null)
+			artifact.setRepositoryName(source.getRepository().getName());
 		return artifact;
 	}
 
 	private <A extends Artifact> Set<A> fillSomeData(Class<A> type,
 			ArtifactSource source, Set<A> artifacts) {
+		if (artifacts == null)
+			return Collections.emptySet();
 		for (A artifact : artifacts)
 			artifact.setRepositoryName(source.getRepository().getName());
 		return artifacts;
@@ -180,4 +189,9 @@ public abstract class AbstractOriginArtifactLoader implements
 
 	protected abstract void internalCloseResources();
 
+	protected abstract <A extends Artifact> boolean internalAccept(ArtifactSource source,
+			Class<A> type);
+
+	
+	
 }

@@ -63,6 +63,9 @@ public interface OriginArtifactLoader extends Disposable {
 
 	public interface LoaderInternalMethods {
 
+		public <A extends Artifact> boolean accept(ArtifactSource source,
+				Class<A> type);
+
 		/**
 		 * Retrieve all artifact names.
 		 * 
@@ -86,8 +89,8 @@ public interface OriginArtifactLoader extends Disposable {
 		 * @param oldOne
 		 * @return
 		 */
-		public <A extends Artifact> boolean isMaybeChanged(ArtifactSource source,String artifactName,
-				A oldOne);
+		public <A extends Artifact> boolean isMaybeChanged(
+				ArtifactSource source, String artifactName, A oldOne);
 
 	}
 

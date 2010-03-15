@@ -50,9 +50,12 @@ package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
@@ -65,7 +68,16 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
 	private static final long serialVersionUID = 3443359462450366393L;
 
-	private Class<? extends ArtifactFinderRegistry> artifactFinderRegistryClass;
+	private Set<Class<? extends OriginArtifactLoader>> loaderRegistry = new HashSet<Class<? extends OriginArtifactLoader>>();
+
+	public Set<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
+		return loaderRegistry;
+	}
+
+	public void setLoaderRegistry(
+			Set<Class<? extends OriginArtifactLoader>> loaderRegistry) {
+		this.loaderRegistry = loaderRegistry;
+	}
 
 	@SuppressWarnings("unchecked")
 	private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
@@ -83,10 +95,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 	private String systemPassword;
 
 	public GlobalSettings() {
-	}
-
-	public Class<? extends ArtifactFinderRegistry> getArtifactFinderRegistryClass() {
-		return artifactFinderRegistryClass;
 	}
 
 	public long getDefaultSleepingIntervalInMilliseconds() {
@@ -122,11 +130,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
 	public String getSystemUser() {
 		return systemUser;
-	}
-
-	public void setArtifactFinderRegistryClass(
-			final Class<? extends ArtifactFinderRegistry> artifactFinderRegistryClass) {
-		this.artifactFinderRegistryClass = artifactFinderRegistryClass;
 	}
 
 	public void setDefaultSleepingIntervalInMilliseconds(
