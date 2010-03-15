@@ -178,4 +178,9 @@ public class FileSystemOriginArtifactLoader extends
 		return false;
 	}
 
+	@Override
+	protected boolean isMultithreaded() {
+		return true;
+	}
+
 }

@@ -177,4 +177,9 @@ public class LocalSourceOriginArtifactLoader extends
 		return false;
 	}
 
+	@Override
+	protected boolean isMultithreaded() {
+		return true;
+	}
+
 }
