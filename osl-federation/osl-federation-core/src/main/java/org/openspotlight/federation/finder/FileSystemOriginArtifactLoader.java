@@ -166,7 +166,7 @@ public class FileSystemOriginArtifactLoader extends
 	@Override
 	protected <A extends Artifact> boolean internalAccept(
 			ArtifactSource source, Class<A> type) {
-		if (!availableTypes.contains(source))
+		if (!availableTypes.contains(type))
 			return false;
 		File f = new File(source.getInitialLookup());
 		if (!f.exists() || !f.isDirectory())

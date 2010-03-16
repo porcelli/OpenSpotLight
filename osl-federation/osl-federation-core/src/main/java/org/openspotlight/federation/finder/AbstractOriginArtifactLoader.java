@@ -58,13 +58,18 @@ import java.util.concurrent.Future;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.PathElement;
 import org.openspotlight.task.ExecutorInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractOriginArtifactLoader implements
 		OriginArtifactLoader {
+
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected abstract boolean isMultithreaded();
 
@@ -101,7 +106,15 @@ public abstract class AbstractOriginArtifactLoader implements
 		public final <A extends Artifact> Set<String> retrieveOriginalNames(
 				Class<A> type, ArtifactSource source, String initialPath) {
 			try {
-				return internalRetrieveOriginalNames(type, source, initialPath);
+				Set<String> result = internalRetrieveOriginalNames(type,
+						source, initialPath);
+				if (logger.isDebugEnabled()) {
+					logger.debug("returned "
+							+ Strings.bigCollectionsToString(result) + " for ("
+							+ type.getSimpleName() + ", " + source.getName()
+							+ ", " + initialPath + ")");
+				}
+				return result;
 			} catch (Exception e) {
 				throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 			}
@@ -121,8 +134,14 @@ public abstract class AbstractOriginArtifactLoader implements
 	public final <A extends Artifact> A findByPath(Class<A> type,
 			ArtifactSource source, String path) {
 		try {
-			return fillSomeData(type, source, internalFindByPath(type, source,
-					path));
+			A result = fillSomeData(type, source, internalFindByPath(type,
+					source, path));
+			if (logger.isDebugEnabled()) {
+				logger.debug("returned " + result + " for ("
+						+ type.getSimpleName() + ", " + source.getName() + ", "
+						+ path + ")");
+			}
+			return result;
 		} catch (Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
@@ -170,30 +189,36 @@ public abstract class AbstractOriginArtifactLoader implements
 
 	protected <A extends Artifact> Set<A> internalListByPath(
 			final Class<A> type, final ArtifactSource source,
-			final String initialPath) throws Exception{
-			Set<String> paths = getInternalMethods().retrieveOriginalNames(
-					type, source, initialPath);
-			Set<A> result = new HashSet<A>();
-			if (isMultithreaded()) {
-				List<Callable<A>> tasks = new ArrayList<Callable<A>>();
-				for (final String path : paths) {
-					Callable<A> callable = new Callable<A>() {
-						public A call() throws Exception {
-							return internalFindByPath(type, source, path);
-						}
-					};
-					tasks.add(callable);
-				}
-				List<Future<A>> futures = ExecutorInstance.INSTANCE
-						.getExecutorInstance().invokeAll(tasks);
-				for (Future<A> f : futures)
-					result.add(f.get());
-			} else {
-				for (final String path : paths) {
-					result.add(internalFindByPath(type, source, path));
-				}
+			final String initialPath) throws Exception {
+		Set<String> paths = getInternalMethods().retrieveOriginalNames(type,
+				source, initialPath);
+		Set<A> result = new HashSet<A>();
+		if (isMultithreaded()) {
+			List<Callable<A>> tasks = new ArrayList<Callable<A>>();
+			for (final String path : paths) {
+				Callable<A> callable = new Callable<A>() {
+					public A call() throws Exception {
+						return internalFindByPath(type, source, path);
+					}
+				};
+				tasks.add(callable);
 			}
-			return result;
+			List<Future<A>> futures = ExecutorInstance.INSTANCE
+					.getExecutorInstance().invokeAll(tasks);
+			for (Future<A> f : futures)
+				result.add(f.get());
+		} else {
+			for (final String path : paths) {
+				result.add(internalFindByPath(type, source, path));
+			}
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("returned " + Strings.bigCollectionsToString(result)
+					+ " for (" + type.getSimpleName() + ", " + source.getName()
+					+ ", " + initialPath + ")");
+		}
+
+		return result;
 	}
 
 	private <A extends Artifact> A fillSomeData(Class<A> type,

@@ -2,10 +2,10 @@ package org.openspotlight.federation.finder;
 
 import org.openspotlight.common.concurrent.MultipleProvider;
 
-public class PersistentAbstractManagerProvider extends
+public class PersistentArtifactManagerProvider extends
 		MultipleProvider<PersistentArtifactManager> {
 
-	public PersistentAbstractManagerProvider(
+	public PersistentArtifactManagerProvider(
 			ItemFactory<PersistentArtifactManager> factory) {
 		super(factory);
 	}

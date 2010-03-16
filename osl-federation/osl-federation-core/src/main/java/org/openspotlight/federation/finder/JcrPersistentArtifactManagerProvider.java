@@ -6,7 +6,7 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 
 public class JcrPersistentArtifactManagerProvider extends
-		PersistentAbstractManagerProvider {
+		PersistentArtifactManagerProvider {
 
 	private static class JcrPersistentArtifactManagerItemFactory implements
 			ItemFactory<PersistentArtifactManager> {

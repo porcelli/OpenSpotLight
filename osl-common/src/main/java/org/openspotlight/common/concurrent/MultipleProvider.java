@@ -16,6 +16,10 @@ import org.openspotlight.common.Disposable;
  */
 public class MultipleProvider<T> implements Disposable {
 
+	public boolean useOnePerThread(){
+		return useOnePerThread;
+	}
+	
 	/**
 	 * constructor
 	 * 

@@ -19,6 +19,7 @@ import org.openspotlight.common.SharedConstants;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
 public class JcrPersistenArtifactManager extends
@@ -35,9 +36,10 @@ public class JcrPersistenArtifactManager extends
 
 	private final String rootPath;
 
-	private final Session session;
+	private final SessionWithLock session;
 
-	public JcrPersistenArtifactManager(Session session, Repository repository) {
+	public JcrPersistenArtifactManager(SessionWithLock session,
+			Repository repository) {
 		this.session = session;
 		this.rootPath = getArtifactRootPathFor(repository);
 		this.repositoryName = repository.getName();
@@ -114,7 +116,9 @@ public class JcrPersistenArtifactManager extends
 
 	@Override
 	protected void internalSaveTransientData() throws Exception {
-		session.save();
+		synchronized (session.getLockObject()) {
+			session.save();
+		}
 	}
 
 	@Override
@@ -127,7 +131,7 @@ public class JcrPersistenArtifactManager extends
 
 	public static final String PROPERTY_NAME_ARTIFACT_PATH = "artifactCompleteName";
 
-	public static final String PROPERTY_NAME_OLD_ARTIFACT_PATH = "oldPath";
+	public static final String PROPERTY_NAME_OLD_ARTIFACT_PATH = "originalName";
 
 	private <A> Set<String> privateRetrieveNames(Class<A> type,
 			String initialPath, String propertyName)
