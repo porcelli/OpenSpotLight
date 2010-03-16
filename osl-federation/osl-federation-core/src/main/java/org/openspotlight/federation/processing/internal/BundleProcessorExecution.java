@@ -101,8 +101,6 @@ public class BundleProcessorExecution {
 	/** The default sleep interval in millis. */
 	private final long defaultSleepIntervalInMillis;
 
-	/** The threads. */
-	private final int threads;
 
 	/** The queue. */
 
@@ -135,19 +133,13 @@ public class BundleProcessorExecution {
 
 		this.groups = groups;
 		this.contextFactory = contextFactory;
-		threads = settings.getNumberOfParallelThreads();
-		if (threads <= 0) {
-			Exceptions.logAndThrow(new IllegalStateException(
-					"Default Thread size must be positive!"));
-		}
 		defaultSleepIntervalInMillis = settings
 				.getDefaultSleepingIntervalInMilliseconds();
 		if (defaultSleepIntervalInMillis <= 0) {
 			Exceptions.logAndThrow(new IllegalStateException(
 					"Default Thread sleep time in millis must be positive!"));
 		}
-		pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor",
-				threads);
+		pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor");
 		final BundleContextThreadInjector listener = new BundleContextThreadInjector(
 				contextFactory, repositories, username, password, descriptor);
 		pool.addListener(listener);

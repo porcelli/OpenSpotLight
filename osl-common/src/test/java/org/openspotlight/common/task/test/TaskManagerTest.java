@@ -43,7 +43,7 @@ public class TaskManagerTest {
 	private static final Random random = new Random();
 
 	public static void main(final String... args) throws Exception {
-		new TaskManagerTest().shouldExecuteTasksOnPoolWithEigth();
+		new TaskManagerTest().shouldExecuteSleepingTasksOnPoolWithEigth();
 	}
 
 	private void createSleepingTasks(final TaskExecPool pool,
@@ -167,8 +167,8 @@ public class TaskManagerTest {
 	@Test
 	public void shouldExecuteSleepingTasksOnPoolWithEigth() throws Exception {
 
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				8);
+		final TaskExecPool pool = TaskExecManager.INSTANCE
+				.createTaskPool("test-pool");
 		final List<String> list = new CopyOnWriteArrayList<String>();
 		createSleepingTasks(pool, list);
 		pool.startExecutorBlockingUntilFinish();
@@ -176,209 +176,214 @@ public class TaskManagerTest {
 				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
 	}
 
-	@Test
-	public void shouldExecuteSleepingTasksOnPoolWithFive() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				5);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createSleepingTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteSleepingTasksOnPoolWithFour() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				4);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createSleepingTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteSleepingTasksOnPoolWithSeven() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				7);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createSleepingTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteSleepingTasksOnPoolWithSix() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				6);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createSleepingTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteSleepingTasksOnPoolWithSixteen() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				16);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createSleepingTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteSleepingTasksOnPoolWithThree() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				3);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createSleepingTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteSleepingTasksOnPoolWithTwoTasks() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				2);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createSleepingTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteSleepingTasksOnSinglePool() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				1);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createSleepingTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnPoolWithEigth() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				8);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnPoolWithFive() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				5);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnPoolWithFour() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				4);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnPoolWithSeven() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				7);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnPoolWithSix() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				6);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnPoolWithSixteen() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				16);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnPoolWithThree() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				3);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnPoolWithTwoTasks() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				2);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
-
-	@Test
-	public void shouldExecuteTasksOnSinglePool() throws Exception {
-
-		final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool",
-				1);
-		final List<String> list = new CopyOnWriteArrayList<String>();
-		createTasks(pool, list);
-		pool.startExecutorBlockingUntilFinish();
-		Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
-				"1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
-	}
+	//
+	// @Test
+	// public void shouldExecuteSleepingTasksOnPoolWithFive() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 5);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createSleepingTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteSleepingTasksOnPoolWithFour() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 4);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createSleepingTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteSleepingTasksOnPoolWithSeven() throws Exception
+	// {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 7);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createSleepingTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteSleepingTasksOnPoolWithSix() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 6);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createSleepingTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteSleepingTasksOnPoolWithSixteen() throws
+	// Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 16);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createSleepingTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteSleepingTasksOnPoolWithThree() throws Exception
+	// {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 3);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createSleepingTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteSleepingTasksOnPoolWithTwoTasks() throws
+	// Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 2);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createSleepingTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteSleepingTasksOnSinglePool() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 1);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createSleepingTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnPoolWithEigth() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool");
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnPoolWithFive() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool");
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnPoolWithFour() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 4);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnPoolWithSeven() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 7);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnPoolWithSix() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 6);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnPoolWithSixteen() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 16);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnPoolWithThree() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 3);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnPoolWithTwoTasks() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 2);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
+	//
+	// @Test
+	// public void shouldExecuteTasksOnSinglePool() throws Exception {
+	//
+	// final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool(
+	// "test-pool", 1);
+	// final List<String> list = new CopyOnWriteArrayList<String>();
+	// createTasks(pool, list);
+	// pool.startExecutorBlockingUntilFinish();
+	// Assert.assertThat(list, Is.is(Arrays.asList("1", "1_1", "1_2", "1_3",
+	// "1_4", "2_1", "2_2", "2_3", "2_4", "3", "4", "5", "6", "7")));
+	// }
 
 	@After
 	public void sleep() throws Exception {

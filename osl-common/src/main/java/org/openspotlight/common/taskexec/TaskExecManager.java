@@ -307,7 +307,6 @@ public enum TaskExecManager {
 	private static class TaskPoolImpl implements TaskExecPool {
 
 		private final String poolName;
-		private final int poolSize;
 		private final CountDownLatch stopped = new CountDownLatch(1);
 		private final BlockingQueue<TaskImpl> queue = new LinkedBlockingQueue<TaskImpl>();
 		private final List<String> alreadyRunnedTaskIds = new CopyOnWriteArrayList<String>();
@@ -321,9 +320,9 @@ public enum TaskExecManager {
 
 		private final CopyOnWriteArrayList<RunnableListener> listeners = new CopyOnWriteArrayList<RunnableListener>();
 
-		public TaskPoolImpl(final String poolName, final int poolSize) {
+		public TaskPoolImpl(final String poolName) {
 			this.poolName = poolName;
-			this.poolSize = poolSize;
+
 			executor = ExecutorInstance.INSTANCE.getExecutorInstance();
 		}
 
@@ -375,7 +374,7 @@ public enum TaskExecManager {
 		}
 
 		public void startExecutorOnBackground() {
-			for (int i = 0; i < poolSize; i++) {
+			for (int i = 0, size = executor.getLargestPoolSize(); i < size; i++) {
 				executor.execute(new Worker(listeners, poolName + "_" + i,
 						stopped, queue, alreadyRunnedTaskIds, runningTaskIds,
 						lock, currentPriorityRunning, existentPriorities,
@@ -580,9 +579,9 @@ public enum TaskExecManager {
 		}
 	}
 
-	public TaskExecPool createTaskPool(final String poolName, final int poolSize) {
+	public TaskExecPool createTaskPool(final String poolName) {
 		checkNotEmpty("poolName", poolName);
-		return new TaskPoolImpl(poolName, poolSize);
+		return new TaskPoolImpl(poolName);
 	}
 
 }
