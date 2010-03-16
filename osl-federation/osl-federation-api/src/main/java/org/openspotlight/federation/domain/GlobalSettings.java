@@ -147,16 +147,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 		this.maxResultListSize = maxResultListSize;
 	}
 
-	/**
-	 * Sets the number of parallel threads.
-	 * 
-	 * @param numberOfParallelThreads
-	 *            the new number of parallel threads
-	 */
-	public void setNumberOfParallelThreads(final int numberOfParallelThreads) {
-		this.numberOfParallelThreads = numberOfParallelThreads;
-	}
-
 	@SuppressWarnings("unchecked")
 	public void setSchedulableCommandMap(
 			final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap) {
