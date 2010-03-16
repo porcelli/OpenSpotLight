@@ -127,10 +127,10 @@ public class BundleProcessorExecution {
 		this.username = username;
 		this.password = password;
 		this.descriptor = descriptor;
-		final String[] repositoryNames = new String[groups.length];
+		final Repository[] repositories = new Repository[groups.length];
 		for (int i = 0, size = groups.length; i < size; i++) {
-			repositoryNames[i] = groups[i].getRootRepository().getName();
-			activeReposities.add(repositoryNames[i]);
+			repositories[i] = groups[i].getRootRepository();
+			activeReposities.add(repositories[i].getName());
 		}
 
 		this.groups = groups;
@@ -138,17 +138,18 @@ public class BundleProcessorExecution {
 		threads = settings.getNumberOfParallelThreads();
 		if (threads <= 0) {
 			Exceptions.logAndThrow(new IllegalStateException(
-			"Default Thread size must be positive!"));
+					"Default Thread size must be positive!"));
 		}
 		defaultSleepIntervalInMillis = settings
-		.getDefaultSleepingIntervalInMilliseconds();
+				.getDefaultSleepingIntervalInMilliseconds();
 		if (defaultSleepIntervalInMillis <= 0) {
 			Exceptions.logAndThrow(new IllegalStateException(
-			"Default Thread sleep time in millis must be positive!"));
+					"Default Thread sleep time in millis must be positive!"));
 		}
-		pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor", threads);
+		pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor",
+				threads);
 		final BundleContextThreadInjector listener = new BundleContextThreadInjector(
-				contextFactory, repositoryNames, username, password, descriptor);
+				contextFactory, repositories, username, password, descriptor);
 		pool.addListener(listener);
 
 	}
@@ -161,7 +162,7 @@ public class BundleProcessorExecution {
 	 * @throws InterruptedException
 	 */
 	public GlobalExecutionStatus execute() throws BundleExecutionException,
-	InterruptedException {
+			InterruptedException {
 		setupParentNodesAndCallGroupListeners();
 		final List<Group> groupsWithBundles = findGroupsWithBundles();
 
@@ -184,32 +185,32 @@ public class BundleProcessorExecution {
 				currentContext.setCurrentRepository(repository);
 
 				final String idPrefix = bundleProcessorType.getGlobalPhase()
-				.getSimpleName()
-				+ ":"
-				+ repository.getName()
-				+ ":"
-				+ currentContext.getCurrentGroup().toUniqueJobString()
-				+ ":"
-				+ bundleProcessorType.getName()
-				+ ":"
-				+ bundleProcessorType.getGlobalPhase().getName();
+						.getSimpleName()
+						+ ":"
+						+ repository.getName()
+						+ ":"
+						+ currentContext.getCurrentGroup().toUniqueJobString()
+						+ ":"
+						+ bundleProcessorType.getName()
+						+ ":"
+						+ bundleProcessorType.getGlobalPhase().getName();
 				final String seachId = idPrefix + ":searchArtifacts";
-				final TaskExecGroup searchArtifacts = pool.createTaskGroup(seachId,
-						priority);
+				final TaskExecGroup searchArtifacts = pool.createTaskGroup(
+						seachId, priority);
 
 				final StartingToSearchArtifactsTask searchTask = new StartingToSearchArtifactsTask(
 						currentContext, bundleProcessorType, repository,
 						searchArtifacts);
 				searchArtifacts.prepareTask()
-				.withReadableDescriptionAndUniqueId(seachId)
-				.withRunnable(searchTask).andPublishTask();
+						.withReadableDescriptionAndUniqueId(seachId)
+						.withRunnable(searchTask).andPublishTask();
 				final String saveId = idPrefix + ":saveGraph";
 				final TaskExecGroup saveGraph = pool.createTaskGroup(saveId,
 						++priority);
 				saveGraph.prepareTask().withReadableDescriptionAndUniqueId(
 						saveId).withRunnable(
-								new SaveGraphTask(repository.getName()))
-								.andPublishTask();
+						new SaveGraphTask(repository.getName()))
+						.andPublishTask();
 				++priority;
 
 			}
@@ -245,20 +246,23 @@ public class BundleProcessorExecution {
 
 	private void setupParentNodesAndCallGroupListeners() {
 		try {
+			Repository defaultRepo = new Repository();
+			defaultRepo.setName(SLConsts.DEFAULT_REPOSITORY_NAME);
+			defaultRepo.setActive(true);
 			final ExecutionContext context = contextFactory
-			.createExecutionContext(username, password, descriptor,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
+					.createExecutionContext(username, password, descriptor,
+							defaultRepo);
 			final SessionWithLock session = context
-			.getDefaultConnectionProvider().openSession();
-			final Set<String> repositoryNames = new HashSet<String>();
+					.getDefaultConnectionProvider().openSession();
+			final Set<Repository> repositories = new HashSet<Repository>();
 			for (final Group group : groups) {
-				repositoryNames.add(group.getRootRepository().getName());
+				repositories.add(group.getRootRepository());
 			}
 
-			for (final String repository : repositoryNames) {
+			for (final Repository repository : repositories) {
 				JCRUtil.getOrCreateByPath(session, session.getRootNode(),
 						SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
-						+ repository);
+								+ repository.getName());
 			}
 			session.save();// here the new repository nodes needs to be seen by
 			// another opened sessions
@@ -270,23 +274,20 @@ public class BundleProcessorExecution {
 						group, visitor);
 			}
 
-			for (final String repositoryName : repositoryNames) {
+			for (final Repository repository : repositories) {
 
 				final ExecutionContext internalContext = contextFactory
-				.createExecutionContext(username, password, descriptor,
-						repositoryName);
+						.createExecutionContext(username, password, descriptor,
+								repository);
 				final GroupDifferences differences = GroupSupport
-				.getDifferences(session, repositoryName);
+						.getDifferences(session, repository.getName());
 
 				final SLContext groupContext = internalContext
-				.getGraphSession().createContext(
-						SLConsts.DEFAULT_GROUP_CONTEXT);
+						.getGraphSession().createContext(
+								SLConsts.DEFAULT_GROUP_CONTEXT);
 				for (final Group group : allGroups) {
 					groupContext.getRootNode().addNode(group.getName());
 				}
-				final Repository repository = context
-				.getDefaultConfigurationManager().getRepositoryByName(
-						repositoryName);
 				final Set<GroupListener> groupListenerInstances = new HashSet<GroupListener>();
 				if (repository.getGroupListeners() != null) {
 					for (final Class<? extends GroupListener> listenerType : repository
@@ -298,10 +299,10 @@ public class BundleProcessorExecution {
 					adding: for (final String added : differences
 							.getAddedGroups()) {
 						final SLNode groupAsSLNode = groupContext.getRootNode()
-						.getNode(added);
+								.getNode(added);
 						try {
 							final ListenerAction response = instance
-							.groupAdded(groupAsSLNode, internalContext);
+									.groupAdded(groupAsSLNode, internalContext);
 							if (ListenerAction.IGNORE.equals(response)) {
 								continue adding;
 							}
@@ -309,21 +310,21 @@ public class BundleProcessorExecution {
 							Exceptions.catchAndLog(e);
 						}
 					}
-				removing: for (final String removed : differences
-						.getRemovedGroups()) {
-					final SLNode groupAsSLNode = groupContext.getRootNode()
-					.getNode(removed);
-					try {
-						final ListenerAction response = instance
-						.groupRemoved(groupAsSLNode,
-								internalContext);
-						if (ListenerAction.IGNORE.equals(response)) {
-							continue removing;
+					removing: for (final String removed : differences
+							.getRemovedGroups()) {
+						final SLNode groupAsSLNode = groupContext.getRootNode()
+								.getNode(removed);
+						try {
+							final ListenerAction response = instance
+									.groupRemoved(groupAsSLNode,
+											internalContext);
+							if (ListenerAction.IGNORE.equals(response)) {
+								continue removing;
+							}
+						} catch (final Exception e) {
+							Exceptions.catchAndLog(e);
 						}
-					} catch (final Exception e) {
-						Exceptions.catchAndLog(e);
 					}
-				}
 				}
 				internalContext.closeResources();
 			}

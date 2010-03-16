@@ -52,13 +52,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.util.Collections;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
-import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.federation.processing.ArtifactChanges;
 import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
 import org.openspotlight.federation.processing.BundleProcessorSinglePhase;
@@ -71,7 +72,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExampleBundleProcessor implements
-BundleProcessorSinglePhase<StringArtifact> {
+		BundleProcessorSinglePhase<StringArtifact> {
 
 	public static List<LastProcessStatus> allStatus = new CopyOnWriteArrayList<LastProcessStatus>();
 
@@ -110,7 +111,7 @@ BundleProcessorSinglePhase<StringArtifact> {
 	@SuppressWarnings("unchecked")
 	public Set<Class<? extends StringArtifact>> getArtifactTypes() {
 		return Collections
-		.<Class<? extends StringArtifact>> setOf(StringArtifact.class);
+				.<Class<? extends StringArtifact>> setOf(StringArtifact.class);
 	}
 
 	public SaveBehavior getSaveBehavior() {
@@ -122,8 +123,6 @@ BundleProcessorSinglePhase<StringArtifact> {
 			final ExecutionContext context) throws Exception {
 		context.getLogger().log(context.getUser(), LogEventType.DEBUG,
 				"another test", artifact);
-		final OriginArtifactLoader<StringArtifact> finder = context
-				.getArtifactFinder(StringArtifact.class);
 		for (int i = 0; i < 10; i++) {
 			final SLNode groupNode = currentContext.getCurrentNodeGroup();
 			final String nodeName = artifact.getArtifactCompleteName() + i;
@@ -132,8 +131,11 @@ BundleProcessorSinglePhase<StringArtifact> {
 			context.getGraphSession().addLink(SLLink.class, node, node1, false);
 		}
 
+		Session session = (Session) context.getPersistentArtifactManager()
+				.getPersistentEngine();
+
 		artifact.addSyntaxInformation(2, 4, 5, 6,
-				SyntaxInformationType.COMMENT, finder.finderSession());
+				SyntaxInformationType.COMMENT, session);
 
 		return LastProcessStatus.PROCESSED;
 	}

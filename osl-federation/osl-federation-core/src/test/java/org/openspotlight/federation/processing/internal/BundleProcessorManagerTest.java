@@ -50,7 +50,6 @@ package org.openspotlight.federation.processing.internal;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.core.Is;
@@ -61,15 +60,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
-import org.openspotlight.common.util.Collections;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.context.SingleGraphSessionExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
-import org.openspotlight.federation.domain.ArtifactFinderRegistry;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
@@ -81,11 +76,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
-import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
-import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 import org.openspotlight.federation.loader.ArtifactLoader;
-import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
@@ -99,15 +90,6 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class BundleProcessorManagerTest {
 
-	public static class SampleArtifactRegistry implements
-	ArtifactFinderRegistry {
-
-		public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
-			return Collections
-			.<ArtifactFinderBySourceProvider> setOf(new FileSystemArtifactBySourceProvider());
-		}
-
-	}
 
 	public static class SampleGroupListener implements GroupListener {
 
@@ -121,13 +103,11 @@ public class BundleProcessorManagerTest {
 
 		public ListenerAction groupRemoved(final SLNode groupNode,
 				final ExecutionContext context) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 	}
 
-	private static final int PARALLEL_THREADS = 8;
 
 	@Before
 	public void cleanGroupListenerCount() throws Exception {
@@ -165,10 +145,8 @@ public class BundleProcessorManagerTest {
 		source.setName("sourceName");
 
 		final GlobalSettings settings = new GlobalSettings();
-		settings.setArtifactFinderRegistryClass(SampleArtifactRegistry.class);
 
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(PARALLEL_THREADS);
 		final Repository repository = new Repository();
 		repository.setActive(true);
 		repository.setName("repository");

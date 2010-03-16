@@ -8,7 +8,6 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.jcr.ValueFormatException;
 import javax.jcr.query.InvalidQueryException;
 import javax.jcr.query.Query;
@@ -22,7 +21,7 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.support.SimplePersistSupport;
 
-public class JcrPersistenArtifactManager extends
+public class JcrPersistentArtifactManager extends
 		AbstractPersistentArtifactManager {
 
 	private static String ROOT_PATH = SharedConstants.DEFAULT_JCR_ROOT_NAME
@@ -38,7 +37,7 @@ public class JcrPersistenArtifactManager extends
 
 	private final SessionWithLock session;
 
-	public JcrPersistenArtifactManager(SessionWithLock session,
+	public JcrPersistentArtifactManager(SessionWithLock session,
 			Repository repository) {
 		this.session = session;
 		this.rootPath = getArtifactRootPathFor(repository);
@@ -165,6 +164,10 @@ public class JcrPersistenArtifactManager extends
 	@Override
 	protected boolean isMultithreaded() {
 		return false;
+	}
+
+	public Object getPersistentEngine() {
+		return session;
 	}
 
 }

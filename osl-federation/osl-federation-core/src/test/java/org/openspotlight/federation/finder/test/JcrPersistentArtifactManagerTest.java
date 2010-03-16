@@ -7,8 +7,6 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
-import javax.jcr.Session;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,9 +14,10 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
-import org.openspotlight.federation.finder.JcrPersistenArtifactManager;
+import org.openspotlight.federation.finder.JcrPersistentArtifactManager;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.SessionWithLock;
 
 public class JcrPersistentArtifactManagerTest {
 	/** The provider. */
@@ -28,7 +27,7 @@ public class JcrPersistentArtifactManagerTest {
 
 	private static Repository repository;
 
-	private static JcrPersistenArtifactManager persistenArtifactManager;
+	private static JcrPersistentArtifactManager persistenArtifactManager;
 
 	/**
 	 * Setup.
@@ -40,7 +39,7 @@ public class JcrPersistentArtifactManagerTest {
 	public static void setup() throws Exception {
 		provider = JcrConnectionProvider
 				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		final Session session = provider.openSession();
+		final SessionWithLock session = provider.openSession();
 		artifactSource = new ArtifactSource();
 		artifactSource.setName("classpath");
 		artifactSource.setInitialLookup("./src");
@@ -50,7 +49,7 @@ public class JcrPersistentArtifactManagerTest {
 		final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
 		final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(
 				StringArtifact.class, artifactSource, null);
-		persistenArtifactManager = new JcrPersistenArtifactManager(session,
+		persistenArtifactManager = new JcrPersistentArtifactManager(session,
 				repository);
 		for (StringArtifact artifact : artifacts)
 			persistenArtifactManager.addTransient(artifact);

@@ -17,6 +17,8 @@ import org.openspotlight.persist.support.SimplePersistSupport.InternalMethods;
  */
 public interface PersistentArtifactManager extends Disposable {
 
+	public Object getPersistentEngine();
+
 	/**
 	 * 
 	 * @return {@link InternalMethods} instance

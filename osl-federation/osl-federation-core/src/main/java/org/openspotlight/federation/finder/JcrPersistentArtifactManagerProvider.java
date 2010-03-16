@@ -21,7 +21,7 @@ public class JcrPersistentArtifactManagerProvider extends
 
 		public PersistentArtifactManager createNew() {
 			SessionWithLock session = provider.openSession();
-			JcrPersistenArtifactManager manager = new JcrPersistenArtifactManager(
+			JcrPersistentArtifactManager manager = new JcrPersistentArtifactManager(
 					session, repository);
 			return manager;
 		}

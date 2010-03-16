@@ -54,21 +54,22 @@ import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.common.taskexec.RunnableListener;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public class BundleContextThreadInjector implements RunnableListener {
 
 	private final ExecutionContextFactory factory;
-	private final String[] repositoryNames;
+	private final Repository[] repositories;
 	private final String username;
 	private final String password;
 	private final JcrConnectionDescriptor descriptor;
 
 	public BundleContextThreadInjector(final ExecutionContextFactory factory,
-			final String[] repositoryNames, final String username,
+			final Repository[] repositories, final String username,
 			final String password, final JcrConnectionDescriptor descriptor) {
 		this.factory = factory;
-		this.repositoryNames = repositoryNames;
+		this.repositories = repositories;
 		this.descriptor = descriptor;
 		this.username = username;
 		this.password = password;
@@ -90,17 +91,18 @@ public class BundleContextThreadInjector implements RunnableListener {
 	}
 
 	public void beforeSetupWorker(final Map<String, Object> threadLocalMap) {
-		for (final String repository : repositoryNames) {
-			threadLocalMap.put(repository, factory.createExecutionContext(
-					username, password, descriptor, repository));
+		for (final Repository repository : repositories) {
+			threadLocalMap.put(repository.getName(), factory
+					.createExecutionContext(username, password, descriptor,
+							repository));
 		}
 
 	}
 
 	public void beforeShutdownWorker(final Map<String, Object> threadLocalMap) {
-		for (final String repository : repositoryNames) {
+		for (final Repository repository : repositories) {
 			final ExecutionContext execCtx = (ExecutionContext) threadLocalMap
-					.get(repository);
+					.get(repository.getName());
 			execCtx.closeResources();
 		}
 	}

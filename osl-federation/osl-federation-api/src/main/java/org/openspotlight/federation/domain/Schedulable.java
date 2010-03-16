@@ -59,6 +59,8 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * The Interface Schedulable.
  */
 public interface Schedulable extends SimpleNodeType {
+	
+	public Repository getRepositoryForSchedulable();
 	/**
 	 * The Interface SchedulableCommand.
 	 */

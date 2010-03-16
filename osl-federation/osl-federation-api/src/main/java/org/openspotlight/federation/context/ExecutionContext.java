@@ -50,7 +50,7 @@ package org.openspotlight.federation.context;
 
 import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.finder.OriginArtifactLoader;
+import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -60,8 +60,7 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 public interface ExecutionContext extends Disposable {
 	public boolean artifactFinderSupportsThisType(Class<? extends Artifact> type);
 
-	public <A extends Artifact> OriginArtifactLoader<A> getArtifactFinder(
-			Class<A> type);
+	public PersistentArtifactManager getPersistentArtifactManager();
 
 	public ConfigurationManager getDefaultConfigurationManager();
 
