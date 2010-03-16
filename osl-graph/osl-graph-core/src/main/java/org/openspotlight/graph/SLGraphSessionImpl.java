@@ -56,8 +56,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
@@ -108,9 +106,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SLGraphSessionImpl implements SLGraphSession {
 
-    static AtomicLong                        linkCounter;
-    static AtomicInteger                     linkMemCounter;
-
     private final Logger                     logger = LoggerFactory.getLogger(getClass());
 
     private final Lock                       lock;
@@ -154,9 +149,6 @@ public class SLGraphSessionImpl implements SLGraphSession {
         Assertions.checkNotNull("treeSession", treeSession);
         Assertions.checkNotNull("policyEnforcement", policyEnforcement);
         Assertions.checkNotNull("user", user);
-
-        linkCounter = new AtomicLong();
-        linkMemCounter = new AtomicInteger();
 
         this.treeSession = treeSession;
         lock = treeSession.getLockObject();
@@ -268,8 +260,6 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 }
 
                 if (newLink) {
-                    linkCounter.incrementAndGet();
-                    linkMemCounter.incrementAndGet();
                     linkNode = addLinkNode(pairKeyNode, linkClass, source,
                                            target, direction);
                 }
@@ -1598,11 +1588,6 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 eventPoster.post(new SLGraphSessionSaveEvent(this));
                 logger.info("Starting to save graph");
                 this.saveJcr();
-                linkMemCounter.set(0);
-                SLNodeImpl.memCounter.set(0);
-                logger.info("Fisnihed to save graph");
-                logger.info("SLNodes : " + SLNodeImpl.counter.get());
-                logger.info("SLLinks : " + linkCounter.get());
                 logger.info("Fisnihed to save graph");
             } catch (final SLException e) {
                 Exceptions.catchAndLog(e);
@@ -1616,8 +1601,6 @@ public class SLGraphSessionImpl implements SLGraphSession {
         synchronized (lock) {
             try {
                 treeSession.save();
-                linkMemCounter.set(0);
-                SLNodeImpl.memCounter.set(0);
             } catch (final SLException e) {
                 Exceptions.catchAndLog(e);
                 throw new SLGraphSessionException(

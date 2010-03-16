@@ -49,7 +49,10 @@
 package org.openspotlight.bundle.common.parser;
 
 import org.antlr.runtime.CommonToken;
+import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
+import org.antlr.runtime.TokenStream;
+import org.antlr.runtime.tree.CommonErrorNode;
 import org.antlr.runtime.tree.CommonTreeAdaptor;
 import org.antlr.runtime.tree.Tree;
 
@@ -110,4 +113,14 @@ public class SLCommonTreeAdaptor extends CommonTreeAdaptor {
     public Token createToken( final Token fromToken ) {
         return new SLCommonToken(fromToken);
     }
+
+    @Override
+    public Object errorNode( final TokenStream input,
+                             final Token start,
+                             final Token stop,
+                             final RecognitionException e ) {
+        final SLCommonTree t = new SLCommonTree();
+        return t;
+    }
+
 }

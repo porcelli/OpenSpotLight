@@ -52,6 +52,7 @@ import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import gnu.cajo.invoke.Remote;
 import gnu.cajo.utils.extra.TransparentItemProxy;
 
 import java.lang.reflect.InvocationHandler;
@@ -415,6 +416,8 @@ public class RemoteObjectFactory {
         try {
             clientHost = InetAddress.getLocalHost().getHostAddress().toString();
             final String connectionString = format("//{0}:{1}/RemoteObjectServer", host, new Integer(port).toString());
+            Remote.config(host, port, clientHost, 0);
+            System.out.println("NOVA!");
             this.fromServer = (RemoteObjectServer)TransparentItemProxy.getItem(connectionString,
                                                                                new Class<?>[] {RemoteObjectServer.class});
 
