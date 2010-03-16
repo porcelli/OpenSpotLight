@@ -55,7 +55,9 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 /**
- * The Interface OriginArtifactLoader.
+ * The Interface OriginArtifactLoader. It should work on a multi threaded
+ * environmnent. It should be very easy to do, since there's no need to store
+ * any state on this class.
  */
 public interface OriginArtifactLoader extends Disposable {
 
