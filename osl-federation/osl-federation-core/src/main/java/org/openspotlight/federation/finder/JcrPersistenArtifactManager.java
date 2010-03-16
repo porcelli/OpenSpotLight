@@ -116,9 +116,7 @@ public class JcrPersistenArtifactManager extends
 
 	@Override
 	protected void internalSaveTransientData() throws Exception {
-		synchronized (session.getLockObject()) {
-			session.save();
-		}
+		session.save();
 	}
 
 	@Override
