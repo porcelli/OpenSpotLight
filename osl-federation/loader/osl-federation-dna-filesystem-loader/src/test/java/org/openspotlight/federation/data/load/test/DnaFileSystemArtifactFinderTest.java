@@ -67,7 +67,6 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings("all")
 public class DnaFileSystemArtifactFinderTest {
 
 	@Test
@@ -79,11 +78,13 @@ public class DnaFileSystemArtifactFinderTest {
 		final Repository repository = new Repository();
 		repository.setName("repository");
 		artifactSource.setRepository(repository);
-		final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder(
-				artifactSource);
+		final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
 
 		final StringArtifact sa = finder
-				.findByPath("osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
+				.findByPath(
+						StringArtifact.class,
+						artifactSource,
+						"osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
 
 		assertThat(sa, is(notNullValue()));
 		assertThat(sa.getContent(), is(notNullValue()));
@@ -100,11 +101,11 @@ public class DnaFileSystemArtifactFinderTest {
 		repository.setName("repository");
 		artifactSource.setRepository(repository);
 		artifactSource.setName("Dna FileSystem");
-		final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder(
-				artifactSource);
+		final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
 
-		final Set<String> names = finder
-				.retrieveAllArtifactNames("osl-federation-dna-filesystem-loader");
+		final Set<String> names = finder.getInternalMethods()
+				.retrieveOriginalNames(StringArtifact.class, artifactSource,
+						"osl-federation-dna-filesystem-loader");
 		assertThat(names.size(), is(not(0)));
 		finder.closeResources();
 	}
