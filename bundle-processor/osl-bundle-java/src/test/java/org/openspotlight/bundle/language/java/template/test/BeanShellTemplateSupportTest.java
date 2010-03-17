@@ -18,6 +18,7 @@ import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 
@@ -27,6 +28,12 @@ public class BeanShellTemplateSupportTest {
 
 	public static void main(final String... args) {
 		Interpreter.main(args);
+	}
+
+	private Repository repository = new Repository();
+	{
+		repository.setActive(true);
+		repository.setName("name");
 	}
 
 	@Test
@@ -43,9 +50,9 @@ public class BeanShellTemplateSupportTest {
 		final Interpreter interpreter = new Interpreter();
 		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
 				.createFactory();
-		final ExecutionContext context = contextFactory
-				.createExecutionContext("user", "pass",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, "example");
+		final ExecutionContext context = contextFactory.createExecutionContext(
+				"user", "pass", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+				repository);
 		interpreter.set("session", context.getGraphSession());
 		interpreter.set("currentContextName", "exampleContext");
 		SLContext exampleContext = context.getGraphSession().getContext(

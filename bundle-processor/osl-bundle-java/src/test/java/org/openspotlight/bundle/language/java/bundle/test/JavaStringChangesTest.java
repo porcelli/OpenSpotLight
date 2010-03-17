@@ -10,10 +10,9 @@ import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
+import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.GlobalSettings;
@@ -40,43 +39,37 @@ public class JavaStringChangesTest {
 
 	private final String password = "password";
 	private final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
-	private String repositoryName;
 
 	@Before
 	public void setupResources() throws Exception {
 		final Repository repo = new Repository();
 		repo.setName("name");
 		repo.setActive(true);
-		repositoryName = repo.getName();
 		final ArtifactSource includedSource = new ArtifactSource();
 		includedSource.setRepository(repo);
 		includedSource.setName("classpath");
 		includedSource
 				.setInitialLookup("./src/test/resources/stringArtifacts/new_file");
-		includedFilesContextFactory = TestExecutionContextFactory
-				.createFactory(ArtifactFinderType.LOCAL_SOURCE, includedSource);
+		includedFilesContextFactory = DefaultExecutionContextFactory
+				.createFactory();
 
 		final ArtifactSource changedSource = new ArtifactSource();
 		changedSource.setRepository(repo);
 		changedSource.setName("classpath");
 		changedSource
 				.setInitialLookup("./src/test/resources/stringArtifacts/changed_file");
-		changedFilesContextFactory = TestExecutionContextFactory.createFactory(
-				ArtifactFinderType.LOCAL_SOURCE, changedSource);
+		changedFilesContextFactory = DefaultExecutionContextFactory
+				.createFactory();
 
 		final ArtifactSource removedSource = new ArtifactSource();
 		removedSource.setRepository(repo);
 		removedSource.setName("classpath");
 		removedSource
 				.setInitialLookup("./src/test/resources/stringArtifacts/removed_file");
-		removedFilesContextFactory = TestExecutionContextFactory.createFactory(
-				ArtifactFinderType.LOCAL_SOURCE, removedSource);
-
+		removedFilesContextFactory = DefaultExecutionContextFactory
+				.createFactory();
 		settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
-		settings
-				.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		group = new Group();
 		group.setName("sampleGroup");
@@ -101,8 +94,8 @@ public class JavaStringChangesTest {
 		bundleSource.setRelative("tests/");
 		bundleSource.getIncludeds().add("**/*.java");
 		final ExecutionContext ctx = includedFilesContextFactory
-				.createExecutionContext(username, password, descriptor,
-						repositoryName);
+				.createExecutionContext(username, password, descriptor, group
+						.getRootRepository());
 		ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		ctx.getDefaultConfigurationManager().saveRepository(repo);
 		ctx.closeResources();
@@ -124,8 +117,8 @@ public class JavaStringChangesTest {
 				password, descriptor, includedFilesContextFactory, settings,
 				group);
 		final ExecutionContext context = includedFilesContextFactory
-				.createExecutionContext(username, password, descriptor,
-						repositoryName);
+				.createExecutionContext(username, password, descriptor, group
+						.getRootRepository());
 		final SLContext ctx = context.getGraphSession().getContext(
 				SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode = ctx.getRootNode().getNode(

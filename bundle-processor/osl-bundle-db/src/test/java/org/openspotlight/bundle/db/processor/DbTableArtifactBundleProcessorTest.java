@@ -53,7 +53,6 @@ import static org.openspotlight.common.util.Files.delete;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Random;
-import java.util.Set;
 
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
@@ -72,7 +71,6 @@ import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.ArtifactFinderRegistry;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
@@ -81,8 +79,6 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
-import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
-import org.openspotlight.federation.finder.DatabaseCustomArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
@@ -111,16 +107,6 @@ public class DbTableArtifactBundleProcessorTest {
 		}
 	}
 
-	public static class SampleDbArtifactRegistry implements
-			ArtifactFinderRegistry {
-
-		public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
-			return SLCollections
-					.<ArtifactFinderBySourceProvider> setOf(new DatabaseCustomArtifactFinderBySourceProvider());
-		}
-
-	}
-
 	private static ExecutionContextFactory contextFactory;
 	private static RepositoryData data;
 	private static DefaultScheduler scheduler;
@@ -133,8 +119,7 @@ public class DbTableArtifactBundleProcessorTest {
 	private static RepositoryData createRepositoryData() {
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
-		settings.setArtifactFinderRegistryClass(SampleDbArtifactRegistry.class);
+
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		final Repository repository = new Repository();
 		repository.setName("sampleRepository");
@@ -198,7 +183,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext context = contextFactory.createExecutionContext(
 				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				data.repository.getName());
+				data.repository);
 
 		context.getDefaultConfigurationManager().saveGlobalSettings(
 				data.settings);
@@ -209,8 +194,8 @@ public class DbTableArtifactBundleProcessorTest {
 		scheduler = DefaultScheduler.INSTANCE;
 		scheduler.initializeSettings(contextFactory, "user", "password",
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		scheduler
-				.refreshJobs(data.settings, SLCollections.setOf(data.repository));
+		scheduler.refreshJobs(data.settings, SLCollections
+				.setOf(data.repository));
 		scheduler.startScheduler();
 
 	}
@@ -241,8 +226,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext1 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext1 = executionContext1.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
@@ -270,8 +254,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext2 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext2 = executionContext2.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
@@ -308,8 +291,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext1 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext1 = executionContext1.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
@@ -338,8 +320,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext2 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext2 = executionContext2.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
@@ -375,8 +356,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext1 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext1 = executionContext1.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
@@ -398,8 +378,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext2 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext2 = executionContext2.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
@@ -429,8 +408,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext1 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext1 = executionContext1.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
@@ -473,8 +451,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext2 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext2 = executionContext2.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
@@ -535,8 +512,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext1 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext1 = executionContext1.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
@@ -567,8 +543,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext2 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext2 = executionContext2.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode2 = groupContext2.getRootNode().getNode(
@@ -608,8 +583,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext1 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext1 = executionContext1.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode1 = groupContext1.getRootNode().getNode(
@@ -648,8 +622,7 @@ public class DbTableArtifactBundleProcessorTest {
 
 		final ExecutionContext executionContext2 = contextFactory
 				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-								.getName());
+						DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
 		final SLContext groupContext2 = executionContext2.getGraphSession()
 				.getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode2 = groupContext2.getRootNode().getNode(

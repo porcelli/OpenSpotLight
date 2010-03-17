@@ -33,7 +33,6 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		test.doWorkAndExposeServers();
 	}
 
-	private String repositoryName;
 	private ExecutionContextFactory contextFactory;
 	private GlobalSettings settings;
 	private Group group;
@@ -46,7 +45,6 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		final Repository repo = new Repository();
 		repo.setName("name");
 		repo.setActive(true);
-		repositoryName = repo.getName();
 		contextFactory = DefaultExecutionContextFactory.createFactory();
 
 		final ArtifactSource artifactSource = new ArtifactSource();
@@ -70,9 +68,6 @@ public class JavaBundleTest extends AbstractTestServerClass {
 
 		settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
-		settings
-		.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		group = new Group();
 		group.setName("sampleGroup");
@@ -113,7 +108,7 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		bundleSource.setRelative("src/");
 		bundleSource.getIncludeds().add("**/*.java");
 		final ExecutionContext ctx = contextFactory.createExecutionContext(
-				username, password, getDescriptor(), repositoryName);
+				username, password, getDescriptor(), group.getRootRepository());
 		ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		ctx.getDefaultConfigurationManager().saveRepository(repo);
 

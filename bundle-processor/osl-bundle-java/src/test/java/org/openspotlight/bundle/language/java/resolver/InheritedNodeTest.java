@@ -9,6 +9,7 @@ import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
@@ -57,12 +58,18 @@ public class InheritedNodeTest {
 		return null;
 	}
 
+	private Repository repository = new Repository();
+	{
+		repository.setActive(true);
+		repository.setName("name");
+	}
+	
 	@Test
 	public void shouldFindNodesByItsProperties() throws Exception {
 		final ExecutionContextFactory factory = DefaultExecutionContextFactory
 				.createFactory();
 		final ExecutionContext context = factory.createExecutionContext("sa",
-				"sa", DefaultJcrDescriptor.TEMP_DESCRIPTOR, "name");
+				"sa", DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
 		SLGraphSession graphSession = context.getGraphSession();
 		JavaTypeClass newClass = graphSession.createContext("context")
 				.getRootNode().addNode(JavaTypeClass.class, "newClass");

@@ -51,6 +51,7 @@ package org.openspotlight.federation.scheduler;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 
 public class GlobalSettingsSupport {
 
@@ -59,6 +60,7 @@ public class GlobalSettingsSupport {
 				GroupSchedulable.class);
 		settings.getSchedulableCommandMap().put(ArtifactSource.class,
 				ArtifactSourceSchedulable.class);
+		settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
 	}
 
 	private GlobalSettingsSupport() {

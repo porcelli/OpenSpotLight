@@ -51,18 +51,19 @@ public class JavaLexerAndParserTypesPhase implements
 			logger.debug(" starting to process artifact " + artifact);
 		}
 		try {
-			Session artifactSession = context.getArtifactFinder(StringArtifact.class).finderSession();
+			Session artifactSession = (Session) context
+					.getPersistentArtifactManager().getPersistentEngine();
 
 			final SLNode contextNode = currentContext
 					.getNodeForUniqueBundleConfig();
 
 			final SLArtifactStream stream = new SLArtifactStreamBasicImpl(
-					artifact.getArtifactCompleteName(), artifact.getContent().get(artifactSession),
-					artifact.getVersion());
+					artifact.getArtifactCompleteName(), artifact.getContent()
+							.get(artifactSession), artifact.getVersion());
 			final JavaLexer lexer = new JavaLexer(stream);
 			final SourceLineInfoAggregator sourceLine = new SourceLineInfoAggregator();
 			final JavaLexerExecutor lexerExecutor = new JavaLexerExecutor(
-					artifact, sourceLine,artifactSession);
+					artifact, sourceLine, artifactSession);
 			lexer.setLexerExecutor(lexerExecutor);
 			final CommonTokenStream commonTokenStream = new CommonTokenStream(
 					lexer);
