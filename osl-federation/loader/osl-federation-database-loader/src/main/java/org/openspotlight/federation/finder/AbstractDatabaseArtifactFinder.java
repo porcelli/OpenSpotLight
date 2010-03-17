@@ -72,6 +72,7 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
@@ -83,8 +84,8 @@ import org.openspotlight.federation.template.CustomizedStringTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
-		extends AbstractArtifactFinder<A> {
+public abstract class AbstractDatabaseArtifactFinder extends
+		AbstractOriginArtifactLoader {
 
 	private static Logger logger = LoggerFactory
 			.getLogger(AbstractDatabaseArtifactFinder.class);
@@ -112,17 +113,9 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 		return rs;
 	}
 
-	protected final DbArtifactSource artifactSource;
-
 	private final Map<DbArtifactSource, Connection> connectionMap = new ConcurrentHashMap<DbArtifactSource, Connection>();
 
-	protected AbstractDatabaseArtifactFinder(final Class<A> artifactType,
-			final DbArtifactSource artifactSource) {
-		super(artifactType, artifactSource.getRepository().getName(), null);
-		this.artifactSource = artifactSource;
-	}
-
-	public synchronized void closeResources() {
+	protected synchronized void internalCloseResources() {
 		final ArrayList<Connection> connections = new ArrayList<Connection>(
 				this.connectionMap.values());
 		for (final Connection conn : connections) {
@@ -196,10 +189,12 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 
 	}
 
-	protected Set<String> internalRetrieveAllArtifactNames(
-			final String initialPath) {
+	@Override
+	protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(
+			Class<A> type, ArtifactSource source, String initialPath)
+			throws Exception {
 
-		final DbArtifactSource dbBundle = (DbArtifactSource) this.artifactSource;
+		final DbArtifactSource dbBundle = (DbArtifactSource) source;
 		try {
 			final Connection conn = this.getConnectionFromSource(dbBundle);
 			synchronized (conn) {
@@ -208,6 +203,9 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 				try {
 					final DatabaseType databaseType = dbBundle.getType();
 					for (final ScriptType scriptType : ScriptType.values()) {
+						if (!scriptType.acceptType(type)) {
+							continue;
+						}
 						final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE
 								.getScript(databaseType, scriptType);
 						if (scriptDescription == null) {
@@ -233,7 +231,8 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 								}
 							}
 							if (isMatchingWithoutCaseSentitiveness(result,
-									initialPath + "**")) {
+									initialPath + "**")
+									&& scriptType.acceptName(result)) {
 								loadedNames.add(result);
 								if (logger.isDebugEnabled())
 									logger.debug("loading " + result
@@ -430,6 +429,18 @@ public abstract class AbstractDatabaseArtifactFinder<A extends Artifact>
 				resultSet.close();
 			}
 		}
+	}
+
+	@Override
+	protected <A extends Artifact> boolean internalIsMaybeChanged(
+			ArtifactSource source, String artifactName, A oldOne)
+			throws Exception {
+		return true;
+	}
+
+	@Override
+	protected boolean isMultithreaded() {
+		return false;
 	}
 
 }

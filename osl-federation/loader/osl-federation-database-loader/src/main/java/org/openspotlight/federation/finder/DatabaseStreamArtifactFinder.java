@@ -51,13 +51,14 @@ package org.openspotlight.federation.finder;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
 import java.sql.Connection;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
@@ -67,102 +68,111 @@ import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 
 public class DatabaseStreamArtifactFinder extends
-AbstractDatabaseArtifactFinder<StringArtifact> implements
-OriginArtifactLoader<StringArtifact> {
+		AbstractDatabaseArtifactFinder {
 
-	public DatabaseStreamArtifactFinder(final DbArtifactSource artifactSource) {
-		super(StringArtifact.class, artifactSource);
-	}
-
-	protected StringArtifact internalFindByPath(final String path) {
-		try {
-
-			final Connection conn = getConnectionFromSource(artifactSource);
-			synchronized (conn) {
-				final StringTokenizer tok = new StringTokenizer(path, "/"); //$NON-NLS-1$
-				final int numberOfTokens = tok.countTokens();
-				String catalog;
-				final String schema = tok.nextToken();
-				final String typeAsString = tok.nextToken();
-				if (numberOfTokens == 4) {
-					catalog = tok.nextToken();
-				} else {
-					catalog = null;
-				}
-				final String name = tok.nextToken();
-				final ScriptType scriptType = ScriptType.valueOf(typeAsString);
-				final DatabaseType databaseType = artifactSource.getType();
-				final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE
-				.getScript(databaseType, scriptType);
-				if (scriptDescription == null) {
-					return null;
-				}
-
-				final Class<? extends DatabaseStreamHandler> streamHandlerType = scriptDescription
-				.getStreamHandlerClass();
-				final DatabaseStreamHandler streamHandler;
-				if (streamHandlerType != null) {
-					streamHandler = streamHandlerType.newInstance();
-				} else {
-					streamHandler = null;
-				}
-				byte[] content;
-				switch (scriptDescription.getPreferedType()) {
-				case SQL:
-					content = loadFromSql(catalog, schema, name,
-							scriptDescription, streamHandler, conn);
-					break;
-				case TEMPLATE:
-					content = loadFromTemplate(catalog, schema, name,
-							scriptDescription, streamHandler, conn);
-					break;
-				default:
-					content = null;
-					logAndReturn(new ConfigurationException(
-							"Invalid prefered type"));
-				}
-				if (content == null) {
-					if (scriptDescription.isTryAgainIfNoResult()) {
-						switch (scriptDescription.getPreferedType()) {
-						case SQL:
-							content = loadFromTemplate(catalog, schema, name,
-									scriptDescription, streamHandler, conn);
-
-							break;
-						case TEMPLATE:
-							content = loadFromSql(catalog, schema, name,
-									scriptDescription, streamHandler, conn);
-							break;
-
-						}
-					}
-				}
-				if (content == null) {
-					return null;
-				}
-
-				if (streamHandler != null) {
-					content = streamHandler.afterStreamProcessing(schema,
-							scriptType, catalog, name, content, conn);
-				}
-				final String contentAsString = new String(content);
-				final StringArtifact sa = Artifact.createArtifact(
-						StringArtifact.class, path, ChangeType.INCLUDED);
-				sa.getContent().setTransient(contentAsString);
-
-				return sa;
-
-			}
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-
+	@Override
+	protected <A extends Artifact> boolean internalAccept(
+			ArtifactSource source, Class<A> type) throws Exception {
+		return source instanceof DbArtifactSource
+				&& availableTypes.contains(type);
 	}
 
 	@Override
-	protected boolean internalIsMaybeChanged(String artifactName,
-			StringArtifact oldOne) {
-		return true;
+	protected <A extends Artifact> A internalFindByPath(Class<A> type,
+			ArtifactSource source, String path) throws Exception {
+		DbArtifactSource artifactSource = (DbArtifactSource) source;
+
+		final Connection conn = getConnectionFromSource(artifactSource);
+		synchronized (conn) {
+			final StringTokenizer tok = new StringTokenizer(path, "/"); //$NON-NLS-1$
+			final int numberOfTokens = tok.countTokens();
+			String catalog;
+			final String schema = tok.nextToken();
+			final String typeAsString = tok.nextToken();
+			if (numberOfTokens == 4) {
+				catalog = tok.nextToken();
+			} else {
+				catalog = null;
+			}
+			final String name = tok.nextToken();
+			final ScriptType scriptType = ScriptType.valueOf(typeAsString);
+			final DatabaseType databaseType = artifactSource.getType();
+			final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE
+					.getScript(databaseType, scriptType);
+			if (scriptDescription == null) {
+				return null;
+			}
+
+			final Class<? extends DatabaseStreamHandler> streamHandlerType = scriptDescription
+					.getStreamHandlerClass();
+			final DatabaseStreamHandler streamHandler;
+			if (streamHandlerType != null) {
+				streamHandler = streamHandlerType.newInstance();
+			} else {
+				streamHandler = null;
+			}
+			byte[] content;
+			switch (scriptDescription.getPreferedType()) {
+			case SQL:
+				content = loadFromSql(catalog, schema, name, scriptDescription,
+						streamHandler, conn);
+				break;
+			case TEMPLATE:
+				content = loadFromTemplate(catalog, schema, name,
+						scriptDescription, streamHandler, conn);
+				break;
+			default:
+				content = null;
+				logAndReturn(new ConfigurationException("Invalid prefered type"));
+			}
+			if (content == null) {
+				if (scriptDescription.isTryAgainIfNoResult()) {
+					switch (scriptDescription.getPreferedType()) {
+					case SQL:
+						content = loadFromTemplate(catalog, schema, name,
+								scriptDescription, streamHandler, conn);
+
+						break;
+					case TEMPLATE:
+						content = loadFromSql(catalog, schema, name,
+								scriptDescription, streamHandler, conn);
+						break;
+
+					}
+				}
+			}
+			if (content == null) {
+				return null;
+			}
+
+			if (streamHandler != null) {
+				content = streamHandler.afterStreamProcessing(schema,
+						scriptType, catalog, name, content, conn);
+			}
+			final String contentAsString = new String(content);
+			final StringArtifact sa = Artifact.createArtifact(
+					StringArtifact.class, path, ChangeType.INCLUDED);
+			sa.getContent().setTransient(contentAsString);
+			@SuppressWarnings("unchecked")
+			A a = (A) sa;
+			return a;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private final Set<Class<? extends Artifact>> availableTypes = SLCollections
+			.<Class<? extends Artifact>> setOf(StringArtifact.class);
+
+	@Override
+	protected Set<Class<? extends Artifact>> internalGetAvailableTypes()
+			throws Exception {
+		return availableTypes;
+	}
+
+	@Override
+	protected boolean internalIsTypeSupported(Class<? extends Artifact> type)
+			throws Exception {
+		return StringArtifact.class.equals(type);
 	}
 
 }

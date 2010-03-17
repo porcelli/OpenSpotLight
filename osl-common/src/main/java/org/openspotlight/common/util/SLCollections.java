@@ -76,7 +76,7 @@ import org.openspotlight.common.concurrent.UnsafeDummyLockContainer;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public class Collections {
+public class SLCollections {
 
 	/**
 	 * Creates an immutable map in a null pointer safe way
@@ -173,7 +173,7 @@ public class Collections {
 	/**
 	 * Should not be instantiated
 	 */
-	private Collections() {
+	private SLCollections() {
 		logAndThrow(new IllegalStateException(Messages
 				.getString("invalidConstructor"))); //$NON-NLS-1$
 	}

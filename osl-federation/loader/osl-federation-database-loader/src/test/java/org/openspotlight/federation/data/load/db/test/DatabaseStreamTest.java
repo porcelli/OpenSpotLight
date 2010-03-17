@@ -77,7 +77,6 @@ import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.DatabaseStreamArtifactFinder;
 import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.loader.ArtifactLoader;
-import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,10 +169,7 @@ public abstract class DatabaseStreamTest {
 		final DatabaseStreamArtifactFinder finder = new DatabaseStreamArtifactFinder(
 				bundle);
 		final GlobalSettings configuration = new GlobalSettings();
-		configuration
-		.setArtifactFinderRegistryClass(SampleDatabaseStreamArtifactRegistry.class);
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
-		configuration.setNumberOfParallelThreads(4);
 
 		final ArtifactLoader loader = ArtifactLoaderFactory
 		.createNewLoader(configuration);

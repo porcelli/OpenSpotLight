@@ -63,7 +63,6 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.loader.ArtifactLoader;
-import org.openspotlight.federation.loader.ArtifactLoaderFactory;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
@@ -98,10 +97,7 @@ public class ColumnChangingFiresTableChangeTest {
 				.execute();
 		conn.close();
 		final GlobalSettings configuration = new GlobalSettings();
-		configuration
-		.setArtifactFinderRegistryClass(SampleDatabaseCustomArtifactRegistry.class);
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
-		configuration.setNumberOfParallelThreads(4);
 
 		ArtifactLoader loader = ArtifactLoaderFactory
 		.createNewLoader(configuration);

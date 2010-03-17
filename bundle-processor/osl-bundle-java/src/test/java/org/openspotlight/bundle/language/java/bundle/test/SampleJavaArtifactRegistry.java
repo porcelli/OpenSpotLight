@@ -51,7 +51,7 @@ package org.openspotlight.bundle.language.java.bundle.test;
 
 import java.util.Set;
 
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.ArtifactFinderRegistry;
 import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
 import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
@@ -59,7 +59,7 @@ import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 public class SampleJavaArtifactRegistry implements ArtifactFinderRegistry {
 
 	public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
-		return Collections
+		return SLCollections
 				.<ArtifactFinderBySourceProvider> setOf(new FileSystemArtifactBySourceProvider());
 	}
 

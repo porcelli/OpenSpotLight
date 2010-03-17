@@ -92,10 +92,7 @@ public class DatabaseCustomTest {
 		delete("./target/test-data"); //$NON-NLS-1$
 
 		final GlobalSettings configuration = new GlobalSettings();
-		configuration
-		.setArtifactFinderRegistryClass(SampleDatabaseCustomArtifactRegistry.class);
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
-		configuration.setNumberOfParallelThreads(1);
 
 		artifactLoader = ArtifactLoaderFactory.createNewLoader(configuration);
 		bundle = (DbArtifactSource) createH2DbConfiguration(

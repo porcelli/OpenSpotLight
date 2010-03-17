@@ -7,7 +7,7 @@ import javax.jcr.Session;
 
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
@@ -35,7 +35,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 
 	@SuppressWarnings("unchecked")
 	public Set<Class<? extends Artifact>> getArtifactTypes() {
-		return Collections.<Class<? extends Artifact>> setOf(
+		return SLCollections.<Class<? extends Artifact>> setOf(
 				StreamArtifact.class, StringArtifact.class);
 	}
 

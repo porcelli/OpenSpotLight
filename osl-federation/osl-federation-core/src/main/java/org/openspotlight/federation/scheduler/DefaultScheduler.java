@@ -61,7 +61,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -396,7 +396,7 @@ public enum DefaultScheduler implements SLScheduler {
 		oslCronCommands.clear();
 		oslCronCommands.putAll(jobMap);
 		try {
-			final Set<String> jobsToRemove = Collections.setOf(quartzScheduler
+			final Set<String> jobsToRemove = SLCollections.setOf(quartzScheduler
 					.getJobNames(DEFAULT_GROUP));
 			final Set<String> newJobNames = new HashSet<String>(jobMap.keySet());
 			newJobNames.removeAll(jobsToRemove);

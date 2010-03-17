@@ -49,7 +49,7 @@
 
 package org.openspotlight.federation.data.load;
 
-import static org.openspotlight.common.util.Collections.setOf;
+import static org.openspotlight.common.util.SLCollections.setOf;
 
 import java.util.Set;
 

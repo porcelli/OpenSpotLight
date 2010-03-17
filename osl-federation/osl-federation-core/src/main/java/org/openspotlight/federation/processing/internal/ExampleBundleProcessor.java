@@ -54,7 +54,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jcr.Session;
 
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
@@ -110,7 +110,7 @@ public class ExampleBundleProcessor implements
 
 	@SuppressWarnings("unchecked")
 	public Set<Class<? extends StringArtifact>> getArtifactTypes() {
-		return Collections
+		return SLCollections
 				.<Class<? extends StringArtifact>> setOf(StringArtifact.class);
 	}
 

@@ -1780,7 +1780,7 @@ public class SimplePersistSupport {
 		final Class<? extends Collection> type = (Class<? extends Collection>) desc
 				.getPropertyType();
 		if (multipleBeanDescriptor != null) {
-			final Collection<Object> instance = org.openspotlight.common.util.Collections
+			final Collection<Object> instance = org.openspotlight.common.util.SLCollections
 					.createNewCollection(type,
 							multipleBeanDescriptor.valuesAsBeanDescriptors
 									.size());
@@ -2155,7 +2155,7 @@ public class SimplePersistSupport {
 				.get(desc.getName());
 		final Class<? extends Collection> type = (Class<? extends Collection>) desc
 				.getPropertyType();
-		final Collection<Object> instance = org.openspotlight.common.util.Collections
+		final Collection<Object> instance = org.openspotlight.common.util.SLCollections
 				.createNewCollection(type,
 						multipleBeanDescriptor.valuesAsStrings.size());
 		final Class<?> valueType = Class

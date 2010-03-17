@@ -68,7 +68,7 @@ import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -115,7 +115,7 @@ public class DbTableArtifactBundleProcessorTest {
 			ArtifactFinderRegistry {
 
 		public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
-			return Collections
+			return SLCollections
 					.<ArtifactFinderBySourceProvider> setOf(new DatabaseCustomArtifactFinderBySourceProvider());
 		}
 
@@ -210,7 +210,7 @@ public class DbTableArtifactBundleProcessorTest {
 		scheduler.initializeSettings(contextFactory, "user", "password",
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 		scheduler
-				.refreshJobs(data.settings, Collections.setOf(data.repository));
+				.refreshJobs(data.settings, SLCollections.setOf(data.repository));
 		scheduler.startScheduler();
 
 	}

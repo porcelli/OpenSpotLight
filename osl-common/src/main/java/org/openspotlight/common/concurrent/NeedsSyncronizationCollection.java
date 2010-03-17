@@ -53,7 +53,7 @@ import java.util.Collection;
 /**
  * This is a {@link Collection} with a {@link LockContainer} used to
  * synchronize all its methods. Its behavior works like
- * {@link Collections#synchronizedCollection(Collection)}. The
+ * {@link SLCollections#synchronizedCollection(Collection)}. The
  * synchronization during iterations to avoid
  * {@link ConcurrentModificationException} needs to be done with
  * {@link LockContainer#getLockObject()} instead of the intrinsic object

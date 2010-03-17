@@ -13,7 +13,7 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.Strings;
@@ -83,7 +83,7 @@ public class FileSystemOriginArtifactLoader extends
 	}
 
 	@SuppressWarnings("unchecked")
-	private static final Set<Class<? extends Artifact>> availableTypes = Collections
+	private static final Set<Class<? extends Artifact>> availableTypes = SLCollections
 			.<Class<? extends Artifact>> setOf(StringArtifact.class,
 					StreamArtifact.class);
 

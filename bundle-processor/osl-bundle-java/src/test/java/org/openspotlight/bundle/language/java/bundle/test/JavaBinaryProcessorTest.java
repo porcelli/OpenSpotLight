@@ -62,7 +62,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -105,7 +105,7 @@ public class JavaBinaryProcessorTest {
 			ArtifactFinderRegistry {
 
 		public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
-			return Collections
+			return SLCollections
 					.<ArtifactFinderBySourceProvider> setOf(new FileSystemArtifactBySourceProvider());
 		}
 
@@ -192,7 +192,7 @@ public class JavaBinaryProcessorTest {
 		scheduler.initializeSettings(contextFactory, "user", "password",
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 		scheduler
-				.refreshJobs(data.settings, Collections.setOf(data.repository));
+				.refreshJobs(data.settings, SLCollections.setOf(data.repository));
 		scheduler.startScheduler();
 
 	}

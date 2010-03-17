@@ -8,7 +8,7 @@ import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -120,7 +120,7 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		DefaultScheduler.INSTANCE.initializeSettings(contextFactory, "user",
 				"password", getDescriptor());
 		DefaultScheduler.INSTANCE
-		.refreshJobs(settings, Collections.setOf(repo));
+		.refreshJobs(settings, SLCollections.setOf(repo));
 		DefaultScheduler.INSTANCE.startScheduler();
 
 		DefaultScheduler.INSTANCE.fireSchedulable("username", "password",
