@@ -54,6 +54,7 @@ import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 
 import java.sql.Connection;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,8 +62,12 @@ import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
+import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
+import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
-import org.openspotlight.federation.loader.ArtifactLoader;
+import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
@@ -88,38 +93,41 @@ public class ColumnChangingFiresTableChangeTest {
 
 		final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
 		final DbArtifactSource dbBundle = (DbArtifactSource) repository
-		.getArtifactSources().iterator().next(); //$NON-NLS-1$
+				.getArtifactSources().iterator().next(); //$NON-NLS-1$
 		Connection conn = DatabaseSupport.createConnection(dbBundle);
 
 		conn
-		.prepareStatement(
-				"create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+				.prepareStatement(
+						"create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
 				.execute();
 		conn.close();
 		final GlobalSettings configuration = new GlobalSettings();
 		configuration.setDefaultSleepingIntervalInMilliseconds(500);
+		GlobalSettings globalSettings = new GlobalSettings();
+		globalSettings.getLoaderRegistry().add(
+				DatabaseCustomArtifactFinder.class);
+		PersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR, dbBundle.getRepository());
 
-		ArtifactLoader loader = ArtifactLoaderFactory
-		.createNewLoader(configuration);
+		ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings,
+				dbBundle, provider);
 
-		final Iterable<Artifact> firstLoadedItems = loader
-		.loadArtifactsFromSource(dbBundle);
-		loader.closeResources();
+		Set<DatabaseCustomArtifact> firstLoadedItems = provider.get()
+				.listByPath(DatabaseCustomArtifact.class, null);
 		conn = DatabaseSupport.createConnection(dbBundle);
 
 		conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
-		.execute();
+				.execute();
 
 		conn.prepareStatement(
-		"create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
-		.execute();
+				"create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
+				.execute();
 		conn.close();
 
-		loader = ArtifactLoaderFactory.createNewLoader(configuration);
+		Set<DatabaseCustomArtifact> lastLoadedItems = provider.get()
+				.listByPath(DatabaseCustomArtifact.class, null);
+		conn = DatabaseSupport.createConnection(dbBundle);
 
-		final Iterable<Artifact> lastLoadedItems = loader
-		.loadArtifactsFromSource(dbBundle);
-		loader.closeResources();
 		boolean found = false;
 		all: for (final Artifact first : firstLoadedItems) {
 			if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
