@@ -84,9 +84,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
 	private long defaultSleepingIntervalInMilliseconds;
 
-	/** The number of parallel threads. */
-	private int numberOfParallelThreads;
-
 	/** The max result list size. */
 	private int maxResultListSize;
 
@@ -108,15 +105,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 	 */
 	public int getMaxResultListSize() {
 		return maxResultListSize;
-	}
-
-	/**
-	 * Gets the number of parallel threads.
-	 * 
-	 * @return the number of parallel threads
-	 */
-	public int getNumberOfParallelThreads() {
-		return numberOfParallelThreads;
 	}
 
 	@SuppressWarnings("unchecked")

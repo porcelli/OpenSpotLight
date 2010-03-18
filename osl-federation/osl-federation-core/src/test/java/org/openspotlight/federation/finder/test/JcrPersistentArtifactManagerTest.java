@@ -64,10 +64,9 @@ public class JcrPersistentArtifactManagerTest {
 
 	@Test
 	public void shouldFindArtifacts() throws Exception {
-		final StringArtifact sa = persistenArtifactManager
-				.findByPath(
-						StringArtifact.class,
-						"/test/java/org/openspotlight/federation/finder/test/JcrSessionArtifactFinderTest.java");
+		final StringArtifact sa = persistenArtifactManager.findByPath(
+				StringArtifact.class,
+				"/test/resources/artifacts/included/folder/file_included2");
 		assertThat(sa, is(notNullValue()));
 		assertThat(sa.getContent(), is(notNullValue()));
 

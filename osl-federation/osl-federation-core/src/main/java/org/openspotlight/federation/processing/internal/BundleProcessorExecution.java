@@ -101,7 +101,6 @@ public class BundleProcessorExecution {
 	/** The default sleep interval in millis. */
 	private final long defaultSleepIntervalInMillis;
 
-
 	/** The queue. */
 
 	private final Set<String> activeReposities = new HashSet<String>();
@@ -139,7 +138,8 @@ public class BundleProcessorExecution {
 			Exceptions.logAndThrow(new IllegalStateException(
 					"Default Thread sleep time in millis must be positive!"));
 		}
-		pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor");
+		pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor",
+				Runtime.getRuntime().availableProcessors() * 2);
 		final BundleContextThreadInjector listener = new BundleContextThreadInjector(
 				contextFactory, repositories, username, password, descriptor);
 		pool.addListener(listener);

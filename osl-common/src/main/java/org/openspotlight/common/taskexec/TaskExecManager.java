@@ -26,7 +26,6 @@ import org.openspotlight.common.task.exception.TaskAlreadyOnPoolException;
 import org.openspotlight.common.task.exception.TaskAlreadyRunnedException;
 import org.openspotlight.common.task.exception.TaskRunningException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.task.ExecutorInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -307,6 +306,7 @@ public enum TaskExecManager {
 	private static class TaskPoolImpl implements TaskExecPool {
 
 		private final String poolName;
+		private final int poolSize;
 		private final CountDownLatch stopped = new CountDownLatch(1);
 		private final BlockingQueue<TaskImpl> queue = new LinkedBlockingQueue<TaskImpl>();
 		private final List<String> alreadyRunnedTaskIds = new CopyOnWriteArrayList<String>();
@@ -320,10 +320,10 @@ public enum TaskExecManager {
 
 		private final CopyOnWriteArrayList<RunnableListener> listeners = new CopyOnWriteArrayList<RunnableListener>();
 
-		public TaskPoolImpl(final String poolName) {
+		public TaskPoolImpl(final String poolName, final int poolSize) {
 			this.poolName = poolName;
-
-			executor = ExecutorInstance.INSTANCE.getExecutorInstance();
+			this.poolSize = poolSize;
+			executor = GossipExecutor.newFixedThreadPool(poolSize, poolName);
 		}
 
 		public void addListener(final RunnableListener listener) {
@@ -374,7 +374,7 @@ public enum TaskExecManager {
 		}
 
 		public void startExecutorOnBackground() {
-			for (int i = 0, size = executor.getLargestPoolSize(); i < size; i++) {
+			for (int i = 0; i < poolSize; i++) {
 				executor.execute(new Worker(listeners, poolName + "_" + i,
 						stopped, queue, alreadyRunnedTaskIds, runningTaskIds,
 						lock, currentPriorityRunning, existentPriorities,
@@ -579,9 +579,9 @@ public enum TaskExecManager {
 		}
 	}
 
-	public TaskExecPool createTaskPool(final String poolName) {
+	public TaskExecPool createTaskPool(final String poolName, final int poolSize) {
 		checkNotEmpty("poolName", poolName);
-		return new TaskPoolImpl(poolName);
+		return new TaskPoolImpl(poolName, poolSize);
 	}
 
 }

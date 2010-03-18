@@ -233,7 +233,7 @@ public enum ArtifactLoaderManager {
 				}
 			} else {
 				List<Future<Void>> results = ExecutorInstance.INSTANCE
-						.getExecutorInstance().invokeAll(tasks);
+						.invokeAll(tasks);
 				for (Future<Void> f : results) {
 					f.get();
 				}

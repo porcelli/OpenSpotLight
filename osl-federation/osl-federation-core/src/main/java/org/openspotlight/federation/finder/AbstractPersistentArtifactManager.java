@@ -165,7 +165,7 @@ public abstract class AbstractPersistentArtifactManager implements
 				tasks.add(callable);
 			}
 			List<Future<A>> futures = ExecutorInstance.INSTANCE
-					.getExecutorInstance().invokeAll(tasks);
+					.invokeAll(tasks);
 			for (Future<A> f : futures)
 				result.add(f.get());
 		} else {
@@ -192,7 +192,7 @@ public abstract class AbstractPersistentArtifactManager implements
 				tasks.add(callable);
 			}
 			List<Future<A>> futures = ExecutorInstance.INSTANCE
-					.getExecutorInstance().invokeAll(tasks);
+					.invokeAll(tasks);
 			for (Future<A> f : futures)
 				result.add(f.get());
 		} else {

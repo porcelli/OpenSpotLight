@@ -103,7 +103,7 @@ public class CautiousExecutorTest {
 	@Test
 	public void setup() throws Exception {
 
-		executor = GossipExecutor.newExecutor(4, "testPool");
+		executor = GossipExecutor.newFixedThreadPool(4, "testPool");
 		executor.addTaskListener(taskListener);
 		executor.addThreadListener(threadListener);
 		for (int i = 0; i < 100; i++) {

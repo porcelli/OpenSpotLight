@@ -1,20 +1,35 @@
 package org.openspotlight.task;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 import org.openspotlight.common.concurrent.GossipExecutor;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
 
 public enum ExecutorInstance {
 
 	INSTANCE;
 
-	private final GossipExecutor executor;
-
 	private ExecutorInstance() {
-		int threads = 2 * Runtime.getRuntime().availableProcessors();
-		executor = GossipExecutor.newExecutor(threads,"defaultPool");
 	}
 
-	public synchronized GossipExecutor getExecutorInstance() {
-		return executor;
+	public <T> List<Future<T>> invokeAll(Collection<Callable<T>> itemsToExecute) {
+		try {
+			int threads = 2 * Runtime.getRuntime().availableProcessors();
+			GossipExecutor executor = GossipExecutor.newFixedThreadPool(
+					threads, "temporary-pool-" + UUID.randomUUID().toString());
+			List<Future<T>> future;
+			future = executor.invokeAll(itemsToExecute);
+			executor.shutdown();
+			return future;
+		} catch (InterruptedException e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+
 	}
 
 }
