@@ -1,5 +1,7 @@
 package org.openspotlight.storage.domain.node;
 
+import org.openspotlight.storage.STStorageSession;
+
 /**
  * Created by IntelliJ IDEA.
  * User: feu
@@ -9,7 +11,7 @@ package org.openspotlight.storage.domain.node;
  */
 public interface STANodeEntryFactory {
 
-    STNodeEntryBuilder createWithName(String name);
+    STNodeEntryBuilder createWithName(STStorageSession session, String name);
 
     interface STNodeEntryBuilder{
         <T> STNodeEntryBuilder withKey(String name, Class<T> type, T value);

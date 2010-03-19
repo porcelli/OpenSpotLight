@@ -59,7 +59,19 @@
   </component>
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="STListPropertyImpl.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/property/STListPropertyImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="17" column="42" selection-start="560" selection-end="560" vertical-scroll-proportion="0.3258786">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -69,11 +81,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STAData.java" />
-        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STASimplePropertyAcessor.java" />
-        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STASimplePropertyAccessor.java" />
-        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STPojoProperty.java" />
-        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STAAccessorSimpleProperty.java" />
         <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STSerializableMapProperty.java" />
         <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STSimpleProperty.java" />
         <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STAAccessorStreamProperty.java" />
@@ -85,6 +92,11 @@
         <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STAAccessorSetProperty.java" />
         <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STAAccessorPojoProperty.java" />
         <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/node/STNodeEntry.java" />
+        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/node/STANodeEntryFactory.java" />
+        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STStorageSession.java" />
+        <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/node/STNodeEntryImpl.java" />
+        <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/property/SLListPropertyImpl.java" />
+        <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/property/STListPropertyImpl.java" />
       </list>
     </option>
   </component>
@@ -114,7 +126,7 @@
     <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+    <navigator currentView="PackagesPane" proportions="" version="1" splitterProportion="0.5">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -127,96 +139,7 @@
     </navigator>
     <panes>
       <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage-core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage-core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage-core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage-api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
+        <subPane />
       </pane>
       <pane id="Favorites" />
       <pane id="Scope">
@@ -236,6 +159,48 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="osl-storage" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage-core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage-core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="org.openspotlight.storage.domain" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage-core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="org.openspotlight.storage.domain" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="node" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -279,6 +244,28 @@
               <option name="myItemId" value="domain" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="property" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage-api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="org.openspotlight.storage" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domain" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
@@ -287,6 +274,7 @@
   <component name="PropertiesComponent">
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="project.structure.last.edited" value="Modules" />
+    <property name="OverrideImplement.combined" value="true" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="MemberChooser.sorted" value="false" />
@@ -301,6 +289,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="org.openspotlight.storage.domain.node.org.openspotlight.storage.domain" />
       <recent name="org.openspotlight.storage.domain.node" />
     </key>
   </component>
@@ -438,24 +427,24 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1280" height="774" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24918832" sideWeight="0.6605505" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32874617" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24918832" sideWeight="0.6605505" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32874617" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32874617" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
     </layout>
@@ -493,26 +482,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STPojoProperty.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="320" selection-end="320" vertical-scroll-proportion="0.38613862" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STStreamProperty.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="17" selection-start="255" selection-end="255" vertical-scroll-proportion="0.32673267" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STSerializableMapProperty.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="17" selection-start="249" selection-end="249" vertical-scroll-proportion="0.21086262" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STSimpleProperty.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="20" selection-start="295" selection-end="295" vertical-scroll-proportion="0.23003195" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STAAccessorStreamProperty.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="19" column="69" selection-start="572" selection-end="572" vertical-scroll-proportion="0.0" />
@@ -526,11 +495,6 @@
     <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STACollection.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="43" selection-start="446" selection-end="446" vertical-scroll-proportion="0.30612245" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STListProperty.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="43" selection-start="276" selection-end="276" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STAAccessorSerializableListProperty.java">
@@ -568,9 +532,52 @@
         <state line="21" column="42" selection-start="348" selection-end="670" vertical-scroll-proportion="0.41243863" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/node/STANodeEntryFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="28" selection-start="297" selection-end="375" vertical-scroll-proportion="0.24920128">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/node/STNodeEntry.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="48" selection-start="805" selection-end="805" vertical-scroll-proportion="0.42172524" />
+        <state line="22" column="37" selection-start="805" selection-end="805" vertical-scroll-proportion="0.36421725">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STStorageSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="67" selection-start="842" selection-end="842" vertical-scroll-proportion="0.49099836">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/node/STNodeEntryImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="74" selection-start="331" selection-end="331" vertical-scroll-proportion="0.1767594">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STListProperty.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="0" selection-start="296" selection-end="296" vertical-scroll-proportion="0.24920128">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/property/STListPropertyImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="42" selection-start="560" selection-end="560" vertical-scroll-proportion="0.3258786">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
       </provider>
     </entry>
   </component>
