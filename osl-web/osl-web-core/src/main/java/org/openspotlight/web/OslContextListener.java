@@ -135,9 +135,13 @@ public class OslContextListener implements ServletContextListener,
 			WebExecutionContextFactory.INSTANCE.contextStarted();
 			final ExecutionContextFactory factory = WebExecutionContextFactory.INSTANCE
 					.getFactory();
+			Repository dummyRepo = new Repository();
+			dummyRepo.setActive(true);
+			dummyRepo.setName(SLConsts.DEFAULT_REPOSITORY_NAME);
+			
 			final ExecutionContext context = factory.createExecutionContext(
 					SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD, descriptor,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
+					dummyRepo);
 
 			GlobalSettings settings = context.getDefaultConfigurationManager()
 					.getGlobalSettings();

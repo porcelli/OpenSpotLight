@@ -65,6 +65,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.TransientProperty;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -72,7 +73,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  */
 @Name("artifact_source")
 public class ArtifactSource implements SimpleNodeType, Serializable,
-LogableObject, Schedulable {
+		LogableObject, Schedulable {
 
 	private boolean binary = false;
 
@@ -104,7 +105,7 @@ LogableObject, Schedulable {
 		final ArtifactSource that = (ArtifactSource) o;
 		final boolean result = Equals.eachEquality(Arrays.of(this.getClass(),
 				name, repository), Arrays.andOf(that.getClass(), that.name,
-						that.repository));
+				that.repository));
 		return result;
 	}
 
@@ -232,7 +233,12 @@ LogableObject, Schedulable {
 
 	public String toUniqueJobString() {
 		return getRepository().getName() + ":" + getName() + ":"
-		+ getInitialLookup();
+				+ getInitialLookup();
+	}
+
+	@TransientProperty
+	public Repository getRepositoryForSchedulable() {
+		return getRepository();
 	}
 
 }

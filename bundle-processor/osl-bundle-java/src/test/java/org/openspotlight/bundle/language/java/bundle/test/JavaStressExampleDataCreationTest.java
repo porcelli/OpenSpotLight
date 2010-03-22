@@ -14,10 +14,9 @@ import org.junit.Ignore;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
+import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.GlobalSettings;
@@ -66,7 +65,6 @@ public class JavaStressExampleDataCreationTest {
 	private final String password = "password";
 	private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 
-	private String repositoryName;
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -89,20 +87,15 @@ public class JavaStressExampleDataCreationTest {
 		final Repository repo = new Repository();
 		repo.setName("name");
 		repo.setActive(true);
-		repositoryName = repo.getName();
 		final ArtifactSource includedSource = new ArtifactSource();
 		includedSource.setRepository(repo);
 		includedSource.setName("classpath");
 		includedSource
 				.setInitialLookup("./src/test/resources/stringArtifacts/stressData");
-		includedFilesContextFactory = TestExecutionContextFactory
-				.createFactory(ArtifactFinderType.LOCAL_SOURCE, includedSource);
+		includedFilesContextFactory = DefaultExecutionContextFactory.createFactory();
 
 		settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
-		settings
-				.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		group = new Group();
 		group.setName("sampleGroup");
@@ -125,7 +118,7 @@ public class JavaStressExampleDataCreationTest {
 		bundleJarSource.getIncludeds().add("**/*.jar");
 		ExecutionContext ctx = includedFilesContextFactory
 				.createExecutionContext(username, password, descriptor,
-						repositoryName);
+						group.getRootRepository());
 		ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		ctx.getDefaultConfigurationManager().saveRepository(repo);
 		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
@@ -133,7 +126,7 @@ public class JavaStressExampleDataCreationTest {
 						includedFilesContextFactory, settings, group);
 		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 		ctx = includedFilesContextFactory.createExecutionContext(username,
-				password, descriptor, repositoryName);
+				password, descriptor, group.getRootRepository());
 		final SLNode ctxRoot = ctx.getGraphSession().getContext(
 				JavaConstants.ABSTRACT_CONTEXT).getRootNode();
 		final SLNode objectNode = ctxRoot.getNode("java.lang")

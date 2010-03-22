@@ -61,6 +61,18 @@ import org.openspotlight.common.util.HashCodes;
  * @param <K2>
  */
 public class Pair<K1, K2> {
+	
+	/**
+	 * static factory method
+	 * @param <K1>
+	 * @param <K2>
+	 * @param k1
+	 * @param k2
+	 * @return
+	 */
+	public static <K1, K2> Pair<K1, K2> create(K1 k1, K2 k2){
+		return new Pair<K1, K2>(k1, k2);
+	}
     /**
      * First item.
      */

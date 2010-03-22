@@ -54,6 +54,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public enum WebExecutionContextFactory {
@@ -74,12 +75,15 @@ public enum WebExecutionContextFactory {
 			final HttpServletRequest request) {
 		final String repositoryName = OslServletDataSupport
 				.getCurrentRepository(ctx, request);
+		Repository repo = new Repository();
+		repo.setActive(true);
+		repo.setName(repositoryName);
 		final JcrConnectionDescriptor descriptor = OslServletDataSupport
 				.getJcrDescriptor(ctx, request);
 		final String password = OslServletDataSupport.getPassword(ctx, request);
 		final String username = OslServletDataSupport.getUserName(ctx, request);
 		final ExecutionContext newContext = factory.createExecutionContext(
-				username, password, descriptor, repositoryName);
+				username, password, descriptor, repo);
 		return newContext;
 	}
 

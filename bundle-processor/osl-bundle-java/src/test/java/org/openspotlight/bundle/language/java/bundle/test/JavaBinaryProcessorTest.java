@@ -62,11 +62,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.ArtifactFinderRegistry;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
@@ -76,8 +75,6 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
-import org.openspotlight.federation.finder.ArtifactFinderBySourceProvider;
-import org.openspotlight.federation.finder.FileSystemArtifactBySourceProvider;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -101,16 +98,6 @@ public class JavaBinaryProcessorTest {
 		}
 	}
 
-	public static class SampleJavaArtifactRegistry implements
-			ArtifactFinderRegistry {
-
-		public Set<ArtifactFinderBySourceProvider> getRegisteredArtifactFinderProviders() {
-			return Collections
-					.<ArtifactFinderBySourceProvider> setOf(new FileSystemArtifactBySourceProvider());
-		}
-
-	}
-
 	private static ExecutionContextFactory contextFactory;
 	private static RepositoryData data;
 	private static DefaultScheduler scheduler;
@@ -123,9 +110,7 @@ public class JavaBinaryProcessorTest {
 	private static RepositoryData createRepositoryData() {
 		final GlobalSettings settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
-		settings
-				.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
+
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		final Repository repository = new Repository();
 		repository.setName("sampleRepository");
@@ -180,8 +165,8 @@ public class JavaBinaryProcessorTest {
 
 		final ExecutionContext context = contextFactory.createExecutionContext(
 				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				data.repository.getName());
-
+				data.repository);
+		
 		context.getDefaultConfigurationManager().saveGlobalSettings(
 				data.settings);
 		context.getDefaultConfigurationManager()
@@ -191,8 +176,8 @@ public class JavaBinaryProcessorTest {
 		scheduler = DefaultScheduler.INSTANCE;
 		scheduler.initializeSettings(contextFactory, "user", "password",
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		scheduler
-				.refreshJobs(data.settings, Collections.setOf(data.repository));
+		scheduler.refreshJobs(data.settings, SLCollections
+				.setOf(data.repository));
 		scheduler.startScheduler();
 
 	}
@@ -212,14 +197,15 @@ public class JavaBinaryProcessorTest {
 		reloadArtifactsAndCallBundleProcessor();
 
 		final ExecutionContext context = contextFactory.createExecutionContext(
-				"", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository
-						.getName());
-		Set<String> list = context.getArtifactFinder(StreamArtifact.class).retrieveAllArtifactNames(null);
-		for(String s: list)
+				"", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
+		Set<String> list = context.getPersistentArtifactManager()
+				.getInternalMethods().retrieveNames(StreamArtifact.class, null);
+		for (String s : list)
 			System.err.println(s);
-		final StreamArtifact jarArtifact = context.getArtifactFinder(
-				StreamArtifact.class).findByPath(
-				"/jars/resources/dynamo-file-gen-1.0.1.jar");
+		final StreamArtifact jarArtifact = context
+				.getPersistentArtifactManager().findByPath(
+						StreamArtifact.class,
+						"/jars/resources/dynamo-file-gen-1.0.1.jar");
 		Assert.assertThat(jarArtifact.getLastProcessStatus(), Is
 				.is(LastProcessStatus.PROCESSED));
 		Assert.assertThat(jarArtifact.getUniqueContextName(), Is.is(IsNull

@@ -7,12 +7,11 @@ import javax.jcr.Session;
 
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
 import org.openspotlight.federation.processing.ArtifactChanges;
 import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
 import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
@@ -35,7 +34,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 
 	@SuppressWarnings("unchecked")
 	public Set<Class<? extends Artifact>> getArtifactTypes() {
-		return Collections.<Class<? extends Artifact>> setOf(
+		return SLCollections.<Class<? extends Artifact>> setOf(
 				StreamArtifact.class, StringArtifact.class);
 	}
 
@@ -53,21 +52,23 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 		final String classpahtEntries = currentContext.getBundleProperties()
 				.get(JavaConstants.JAR_CLASSPATH);
 		final Set<String> contexts = new LinkedHashSet<String>();
-		Session artifactSession = context.getArtifactFinder(StringArtifact.class).finderSession();
+		Session artifactSession = (Session) context
+				.getPersistentArtifactManager().getPersistentEngine();
 		if (classpahtEntries != null) {
 			final String[] entries = classpahtEntries
 					.split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
-			final ArtifactFinder<StreamArtifact> jarFinder = context
-					.getArtifactFinder(StreamArtifact.class);
 			for (final String entry : entries) {
-				final StreamArtifact artifact = jarFinder.findByPath(entry);
+				final StreamArtifact artifact = context
+						.getPersistentArtifactManager().findByPath(
+								StreamArtifact.class, entry);
 				Assertions.checkNotNull("artifact:" + entry, artifact);
 				Assertions.checkCondition("artifactNameEndsWithJar:"
 						+ artifact.getArtifactCompleteName(), artifact
 						.getArtifactCompleteName().endsWith(".jar"));
 				String ctxName = artifact.getUniqueContextName();
 				if (ctxName == null) {
-					ctxName = JavaBinaryProcessor.discoverContextName(artifact,artifactSession);
+					ctxName = JavaBinaryProcessor.discoverContextName(artifact,
+							artifactSession);
 					if (logger.isDebugEnabled()) {
 						logger.debug("context unique name for "
 								+ artifact.getArtifactCompleteName() + " = "

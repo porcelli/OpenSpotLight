@@ -59,8 +59,8 @@ import java.util.Set;
 /**
  * This class has a lot of static factory methods to create {@link Collection
  * collections} with a {@link LockContainer} used to synchronize all its
- * methods. Its behavior works like static methods from {@link Collections}
- * class such as {@link Collections#synchronizedCollection(Collection)}. The
+ * methods. Its behavior works like static methods from {@link SLCollections}
+ * class such as {@link SLCollections#synchronizedCollection(Collection)}. The
  * synchronization during iterations to avoid
  * {@link ConcurrentModificationException} needs to be done with
  * {@link LockContainer#getLockObject()} instead of the intrinsic object lock.

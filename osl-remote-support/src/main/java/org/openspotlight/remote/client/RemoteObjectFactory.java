@@ -68,7 +68,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.reflection.MethodIdentificationSupport;
 import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
 import org.openspotlight.remote.annotation.CachedInvocation;
@@ -206,7 +206,7 @@ public class RemoteObjectFactory {
                                     final InvocationHandler invocationHandlerForTest = Proxy.getInvocationHandler(o);
                                     if (invocationHandlerForTest instanceof RemoteReferenceHandler<?>) {
                                         //here, it *needs* to wrap only the references before sending it to the server
-                                        final Collection<Object> newCollection = Collections.createNewCollection(
+                                        final Collection<Object> newCollection = SLCollections.createNewCollection(
                                                                                                                  collection.getClass(),
                                                                                                                  collection.size());
                                         for (final Object item : collection) {
@@ -291,7 +291,7 @@ public class RemoteObjectFactory {
                 } else if (result instanceof CollectionOfRemoteInvocationResponse) {
 
                     final CollectionOfRemoteInvocationResponse resultCollection = (CollectionOfRemoteInvocationResponse)result;
-                    final Collection<Object> remoteResultCollection = (Collection<Object>)Collections.createNewCollection(
+                    final Collection<Object> remoteResultCollection = (Collection<Object>)SLCollections.createNewCollection(
                                                                                                                           resultCollection.getResultType(),
 
                                                                                                                           resultCollection.getResult().size());

@@ -270,4 +270,9 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
 	public String toUniqueJobString() {
 		return getUniqueName();
 	}
+
+	@TransientProperty
+	public Repository getRepositoryForSchedulable() {
+		return getRootRepository();
+	}
 }

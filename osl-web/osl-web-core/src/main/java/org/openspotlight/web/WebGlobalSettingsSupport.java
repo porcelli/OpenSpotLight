@@ -55,8 +55,6 @@ public class WebGlobalSettingsSupport {
 
 	public static void initializeSettings(final GlobalSettings settings) {
 		GlobalSettingsSupport.initializeScheduleMap(settings);
-		settings
-				.setArtifactFinderRegistryClass(WebArtifactFinderRegistry.class);
 	}
 
 	private WebGlobalSettingsSupport() {

@@ -49,6 +49,7 @@
 package org.openspotlight.federation.context;
 
 import org.openspotlight.common.DisposingListener;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.security.idm.AuthenticatedUser;
@@ -67,11 +68,11 @@ public class SingleGraphSessionExecutionContext extends DefaultExecutionContext 
 
 	SingleGraphSessionExecutionContext(final String username,
 			final String password, final JcrConnectionDescriptor descriptor,
-			final String repositoryName,
+			final Repository repository,
 			final DisposingListener<DefaultExecutionContext> listener,
 			final AuthenticatedUser user,
 			final SLGraphSession uniqueGraphSession) {
-		super(username, password, descriptor, repositoryName, listener);
+		super(username, password, descriptor,  listener, repository);
 		this.uniqueGraphSession = uniqueGraphSession;
 		this.user = user;
 

@@ -82,7 +82,6 @@ public abstract class AbstractConfigurationManagerTest {
 		final GlobalSettings setting = new GlobalSettings();
 		setting.setDefaultSleepingIntervalInMilliseconds(500);
 		setting.setMaxResultListSize(50);
-		setting.setNumberOfParallelThreads(50);
 
 		final Repository repository = new Repository();
 		repository.setActive(true);

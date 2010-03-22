@@ -54,12 +54,45 @@ import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 /**
  * Helper class with convenient String methods.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Strings {
+
+	public static <T> String bigCollectionsToString(Collection<T> col) {
+		if (col == null)
+			return "[<null collection>]";
+		Iterator<T> it = col.iterator();
+		T first = null, second = null, third = null;
+		int size = col.size();
+		if (size == 0)
+			return "[<empty collection>]";
+
+		if (size >= 1) {
+			first = it.next();
+			if (size == 1) {
+				return "[" + first + "]";
+			}
+		}
+		if (size >= 2) {
+			second = it.next();
+			if (size == 2) {
+				return "[" + first + ", " + second + "]";
+			}
+		}
+		third = it.next();
+		if (size == 3) {
+			return "[" + first + ", " + second + ", " + third + "]";
+		}
+		return "[" + first + ", " + second + ", " + third + "... + " + size
+				+ " items]";
+
+	}
 
 	public static String concatPaths(final String... paths) {
 		if (paths == null) {
@@ -107,7 +140,7 @@ public class Strings {
 			return toBeCorrected.toLowerCase();
 		}
 		final String newString = toBeCorrected.substring(0, 1).toLowerCase()
-		+ toBeCorrected.substring(1);
+				+ toBeCorrected.substring(1);
 		return newString;
 	}
 
@@ -127,7 +160,7 @@ public class Strings {
 			return toBeCorrected.toUpperCase();
 		}
 		final String newString = toBeCorrected.substring(0, 1).toUpperCase()
-		+ toBeCorrected.substring(1);
+				+ toBeCorrected.substring(1);
 		return newString;
 	}
 
@@ -192,10 +225,10 @@ public class Strings {
 	}
 
 	public static String rootPath(final String paths) {
-		if(paths.startsWith("/")) {
+		if (paths.startsWith("/")) {
 			return paths;
 		}
-		return "/"+ paths;
+		return "/" + paths;
 	}
 
 	/**

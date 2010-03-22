@@ -55,6 +55,7 @@ import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
@@ -91,10 +92,10 @@ public class SingleGraphSessionExecutionContextFactory implements
 	public synchronized ExecutionContext createExecutionContext(
 			final String username, final String password,
 			final JcrConnectionDescriptor descriptor,
-			final String repositoryName) {
+			final Repository repository) {
 
 		try {
-			SLGraphSession graphSession = sessionMap.get(repositoryName);
+			SLGraphSession graphSession = sessionMap.get(repository.getName());
 			if (user == null || graphSession == null) {
 				final SecurityFactory securityFactory = AbstractFactory
 						.getDefaultInstance(SecurityFactory.class);
@@ -103,11 +104,11 @@ public class SingleGraphSessionExecutionContextFactory implements
 						.authenticate(simpleUser, password);
 				final SLGraph graph = AbstractFactory.getDefaultInstance(
 						SLGraphFactory.class).createGraph(descriptor);
-				graphSession = graph.openSession(user, repositoryName);
-				sessionMap.put(repositoryName, graphSession);
+				graphSession = graph.openSession(user, repository.getName());
+				sessionMap.put(repository.getName(), graphSession);
 			}
 			final SingleGraphSessionExecutionContext newContext = new SingleGraphSessionExecutionContext(
-					username, password, descriptor, repositoryName, this, user,
+					username, password, descriptor, repository, this, user,
 					graphSession);
 			openedContexts.add(newContext);
 			return newContext;

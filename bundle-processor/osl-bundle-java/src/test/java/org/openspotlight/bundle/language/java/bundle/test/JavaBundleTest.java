@@ -8,7 +8,7 @@ import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -33,7 +33,6 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		test.doWorkAndExposeServers();
 	}
 
-	private String repositoryName;
 	private ExecutionContextFactory contextFactory;
 	private GlobalSettings settings;
 	private Group group;
@@ -46,7 +45,6 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		final Repository repo = new Repository();
 		repo.setName("name");
 		repo.setActive(true);
-		repositoryName = repo.getName();
 		contextFactory = DefaultExecutionContextFactory.createFactory();
 
 		final ArtifactSource artifactSource = new ArtifactSource();
@@ -70,9 +68,6 @@ public class JavaBundleTest extends AbstractTestServerClass {
 
 		settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
-		settings
-		.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		group = new Group();
 		group.setName("sampleGroup");
@@ -113,14 +108,14 @@ public class JavaBundleTest extends AbstractTestServerClass {
 		bundleSource.setRelative("src/");
 		bundleSource.getIncludeds().add("**/*.java");
 		final ExecutionContext ctx = contextFactory.createExecutionContext(
-				username, password, getDescriptor(), repositoryName);
+				username, password, getDescriptor(), group.getRootRepository());
 		ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		ctx.getDefaultConfigurationManager().saveRepository(repo);
 
 		DefaultScheduler.INSTANCE.initializeSettings(contextFactory, "user",
 				"password", getDescriptor());
 		DefaultScheduler.INSTANCE
-		.refreshJobs(settings, Collections.setOf(repo));
+		.refreshJobs(settings, SLCollections.setOf(repo));
 		DefaultScheduler.INSTANCE.startScheduler();
 
 		DefaultScheduler.INSTANCE.fireSchedulable("username", "password",

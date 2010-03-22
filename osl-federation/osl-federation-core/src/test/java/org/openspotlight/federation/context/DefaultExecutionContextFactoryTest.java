@@ -55,9 +55,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.domain.artifact.db.TableArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -79,18 +79,19 @@ public class DefaultExecutionContextFactoryTest {
 
 	@Before
 	public void setupContext() throws Exception {
+		Repository repo = new Repository();
+		repo.setName("test");
+		repo.setActive(true);
+
 		context = factory.createExecutionContext("testUser", "testPassword",
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR, "test");
+				DefaultJcrDescriptor.TEMP_DESCRIPTOR, repo);
 	}
 
 	@Test
 	public void shouldUseAllResourcesInsideContext() throws Exception {
-		final ArtifactFinder<StringArtifact> streamArtifactFinder = context
-				.getArtifactFinder(StringArtifact.class);
-		Assert.assertThat(streamArtifactFinder, Is.is(IsNull.notNullValue()));
-		final ArtifactFinder<TableArtifact> tableArtifactFinder = context
-				.getArtifactFinder(TableArtifact.class);
-		Assert.assertThat(tableArtifactFinder, Is.is(IsNull.notNullValue()));
+		final PersistentArtifactManager manager = context
+				.getPersistentArtifactManager();
+		Assert.assertThat(manager, Is.is(IsNull.notNullValue()));
 		final ConfigurationManager configurationManager = context
 				.getDefaultConfigurationManager();
 		Assert.assertThat(configurationManager, Is.is(IsNull.notNullValue()));
@@ -101,8 +102,7 @@ public class DefaultExecutionContextFactoryTest {
 		Assert.assertThat(graphSession, Is.is(IsNull.notNullValue()));
 		final DetailedLogger logger = context.getLogger();
 		Assert.assertThat(logger, Is.is(IsNull.notNullValue()));
-		streamArtifactFinder.findByPath("/tmp");
-		tableArtifactFinder.findByPath("/tmp");
+		manager.findByPath(StringArtifact.class, "/tmp");
 
 		configurationManager.saveGlobalSettings(new GlobalSettings());
 

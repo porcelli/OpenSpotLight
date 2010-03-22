@@ -80,7 +80,7 @@ import org.jboss.identity.idm.spi.store.IdentityStoreInvocationContext;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -202,7 +202,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 					final SLAttributeEntry attribute = new SLAttributeEntry();
 					attribute.setName(entry.getKey());
 					attribute.setParent(id);
-					attribute.setEntries(Collections.setOf(entry.getValue()));
+					attribute.setEntries(SLCollections.setOf(entry.getValue()));
 					id.getAttributes().add(attribute);
 				}
 			}
@@ -521,7 +521,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 			throws IdentityException {
 		try {
 			final SLIdentityObject typedIdObj = (SLIdentityObject) identity;
-			final Set<String> allAttributesToRemove = Collections
+			final Set<String> allAttributesToRemove = SLCollections
 					.setOf(attributeNames);
 			for (final SLAttributeEntry attribute : new ArrayList<SLAttributeEntry>(
 					typedIdObj.getAttributes())) {

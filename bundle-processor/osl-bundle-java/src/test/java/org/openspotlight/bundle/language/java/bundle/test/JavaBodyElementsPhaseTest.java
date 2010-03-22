@@ -24,10 +24,9 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
+import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
 import org.openspotlight.federation.domain.GlobalSettings;
@@ -115,7 +114,6 @@ public class JavaBodyElementsPhaseTest {
 
 	private final String password = "password";
 	private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
-	private String repositoryName;
 
 	@After
 	public void closeResources() {
@@ -132,20 +130,16 @@ public class JavaBodyElementsPhaseTest {
 		final Repository repo = new Repository();
 		repo.setName("OSL");
 		repo.setActive(true);
-		repositoryName = repo.getName();
 		final ArtifactSource includedSource = new ArtifactSource();
 		includedSource.setRepository(repo);
 		includedSource.setName("junit");
 		includedSource
 				.setInitialLookup("src/test/resources/stringArtifacts/junit-4.3.1");
-		includedFilesContextFactory = TestExecutionContextFactory
-				.createFactory(ArtifactFinderType.FILESYSTEM, includedSource);
+		includedFilesContextFactory = DefaultExecutionContextFactory
+				.createFactory();
 
 		settings = new GlobalSettings();
 		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		settings.setNumberOfParallelThreads(1);
-		settings
-				.setArtifactFinderRegistryClass(SampleJavaArtifactRegistry.class);
 		GlobalSettingsSupport.initializeScheduleMap(settings);
 		group = new Group();
 		group.setName("common");
@@ -186,8 +180,8 @@ public class JavaBodyElementsPhaseTest {
 		bundleSource.setRelative("/src/");
 		bundleSource.getIncludeds().add("/src/**/*.java");
 		final ExecutionContext ctx = includedFilesContextFactory
-				.createExecutionContext(username, password, descriptor,
-						repositoryName);
+				.createExecutionContext(username, password, descriptor, group
+						.getRootRepository());
 		ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
 		ctx.getDefaultConfigurationManager().saveRepository(repo);
 		ctx.closeResources();
@@ -203,8 +197,8 @@ public class JavaBodyElementsPhaseTest {
 		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 
 		final ExecutionContext context = includedFilesContextFactory
-				.createExecutionContext(username, password, descriptor,
-						repositoryName);
+				.createExecutionContext(username, password, descriptor, group
+						.getRootRepository());
 		final SLContext ctx = context.getGraphSession().getContext(
 				SLConsts.DEFAULT_GROUP_CONTEXT);
 		final SLNode groupNode = ctx.getRootNode().getNode(

@@ -51,7 +51,7 @@ package org.openspotlight.common.util.test;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Collections.setOf;
+import static org.openspotlight.common.util.SLCollections.setOf;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 
 import java.util.Set;

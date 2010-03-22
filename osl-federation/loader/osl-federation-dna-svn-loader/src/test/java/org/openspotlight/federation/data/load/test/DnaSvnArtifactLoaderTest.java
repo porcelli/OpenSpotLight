@@ -56,6 +56,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
+import org.apache.tools.ant.taskdefs.GUnzip;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
@@ -85,8 +86,9 @@ public class DnaSvnArtifactLoaderTest {
 		repository.setName("repository");
 		bundle.setRepository(repository);
 
-		final DNASvnArtifactFinder finder = new DNASvnArtifactFinder(bundle);
-		final StringArtifact sa = finder.findByPath("source/osl/pom.xml");
+		final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
+		final StringArtifact sa = finder.findByPath(StringArtifact.class,
+				bundle, "source/osl/pom.xml");
 
 		assertThat(sa, is(notNullValue()));
 		assertThat(sa.getContent(), is(notNullValue()));
@@ -109,9 +111,11 @@ public class DnaSvnArtifactLoaderTest {
 		final Repository repository = new Repository();
 		repository.setName("repository");
 		bundle.setRepository(repository);
-		final DNASvnArtifactFinder finder = new DNASvnArtifactFinder(bundle);
+		final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
 		final Set<String> allNames = finder
-				.retrieveAllArtifactNames("source/osl/osl-common/src/main/java/org/openspotlight/common/");
+				.getInternalMethods()
+				.retrieveOriginalNames(StringArtifact.class, bundle,
+						"source/osl/osl-common/src/main/java/org/openspotlight/common/");
 		assertThat(allNames.size(), is(not(0)));
 
 		finder.closeResources();

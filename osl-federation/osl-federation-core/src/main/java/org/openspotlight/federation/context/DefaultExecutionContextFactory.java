@@ -51,6 +51,7 @@ package org.openspotlight.federation.context;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.openspotlight.common.DisposingListener;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public class DefaultExecutionContextFactory implements ExecutionContextFactory,
@@ -73,9 +74,9 @@ public class DefaultExecutionContextFactory implements ExecutionContextFactory,
 
 	public ExecutionContext createExecutionContext(final String username,
 			final String password, final JcrConnectionDescriptor descriptor,
-			final String repositoryName) {
+			final Repository repository) {
 		final DefaultExecutionContext newContext = new DefaultExecutionContext(
-				username, password, descriptor, repositoryName, this);
+				username, password, descriptor, this, repository);
 		openedContexts.add(newContext);
 		return newContext;
 	}

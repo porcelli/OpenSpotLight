@@ -79,7 +79,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
@@ -632,7 +632,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 					if (o instanceof RemoteReference<?>) {
 						// here it needs to use the correct reference instead of
 						// using the remote one
-						final Collection<Object> newCollection = Collections
+						final Collection<Object> newCollection = SLCollections
 								.createNewCollection(collection.getClass(),
 										collection.size());
 						for (final Object item : collection) {
@@ -904,7 +904,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 		final Class<? extends Collection<?>> collectionType = metadata
 				.getCollectionType();
 		final Class<W> remoteReferenceType = (Class<W>) metadata.getItemType();
-		final Collection<RemoteReference<W>> remoteReferencesCollection = Collections
+		final Collection<RemoteReference<W>> remoteReferencesCollection = SLCollections
 				.createNewCollection(collectionType, collection.size());
 
 		for (final W o : collection) {

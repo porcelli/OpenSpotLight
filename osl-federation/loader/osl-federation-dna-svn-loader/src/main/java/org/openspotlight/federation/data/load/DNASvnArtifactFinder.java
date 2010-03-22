@@ -53,7 +53,9 @@ import org.jboss.dna.connector.svn.SVNRepositorySource;
 import org.jboss.dna.jcr.JcrConfiguration;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
+import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System Connector.
@@ -62,10 +64,6 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
  */
 public class DNASvnArtifactFinder extends DnaArtifactFinder {
 
-    public DNASvnArtifactFinder(
-                                 final ArtifactSource source ) {
-        super(source);
-    }
 
     @Override
     protected void configureWithBundle( final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
@@ -79,5 +77,13 @@ public class DNASvnArtifactFinder extends DnaArtifactFinder {
                                                                                                                                                                                                                                  true);
 
     }
+
+
+	@Override
+	protected <A extends Artifact> boolean internalAccept(
+			ArtifactSource source, Class<A> type) throws Exception {
+		return source instanceof DnaSvnArtifactSource
+				&& StringArtifact.class.equals(type);
+	}
 
 }

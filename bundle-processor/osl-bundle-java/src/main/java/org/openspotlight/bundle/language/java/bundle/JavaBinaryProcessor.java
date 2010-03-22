@@ -318,7 +318,7 @@ BundleProcessorArtifactPhase<StreamArtifact> {
 			logger.debug(" starting to process artifact " + artifact);
 		}
 		try {
-			Session artifactSession = context.getArtifactFinder(StreamArtifact.class).finderSession();
+			Session artifactSession = (Session) context.getPersistentArtifactManager().getPersistentEngine();
 			final CompiledTypesExtractor extractor = new CompiledTypesExtractor();
 			final List<TypeDefinition> types = extractor.getJavaTypes(artifact
 					.getContent().get(artifactSession), artifact.getArtifactCompleteName());

@@ -61,7 +61,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -105,11 +105,11 @@ public enum DefaultScheduler implements SLScheduler {
 	}
 
 	public static class OslInternalImmediateCommand extends
-	OslInternalSchedulerCommand {
+			OslInternalSchedulerCommand {
 
 		private final String identifier;
 
-		@SuppressWarnings( "unchecked" )
+		@SuppressWarnings("unchecked")
 		public OslInternalImmediateCommand(final Schedulable schedulable,
 				final Class<? extends SchedulableCommand> commandType,
 				final AtomicReference<InternalData> internalData,
@@ -164,12 +164,12 @@ public enum DefaultScheduler implements SLScheduler {
 				final GlobalSettings settingsCopy = settings.get();
 				final InternalData data = internalData.get();
 				final SchedulableCommand<Schedulable> command = commandType
-				.newInstance();
+						.newInstance();
 				final String repositoryName = command
-				.getRepositoryNameBeforeExecution(schedulable);
+						.getRepositoryNameBeforeExecution(schedulable);
 				context = data.contextFactory.createExecutionContext(
 						data.username, data.password, data.descriptor,
-						repositoryName);
+						schedulable.getRepositoryForSchedulable());
 
 				if (command instanceof SchedulableCommandWithContextFactory) {
 					final SchedulableCommandWithContextFactory<Schedulable> commandWithFactory = (SchedulableCommandWithContextFactory<Schedulable>) command;
@@ -208,7 +208,7 @@ public enum DefaultScheduler implements SLScheduler {
 	}
 
 	public static class SchedulableVisitor implements
-	SimpleNodeTypeVisitor<Schedulable> {
+			SimpleNodeTypeVisitor<Schedulable> {
 
 		private final List<Schedulable> beans = new LinkedList<Schedulable>();
 
@@ -252,7 +252,7 @@ public enum DefaultScheduler implements SLScheduler {
 		final Set<String> ids = internalFireCommand(username, password,
 				schedulables);
 		final long sleep = settings.get()
-		.getDefaultSleepingIntervalInMilliseconds();
+				.getDefaultSleepingIntervalInMilliseconds();
 		while (isExecutingAnyOfImmediateCommands(ids)) {
 			try {
 				Thread.sleep(sleep);
@@ -281,7 +281,7 @@ public enum DefaultScheduler implements SLScheduler {
 			final GlobalSettings settings, final Set<Repository> repositories) {
 		@SuppressWarnings("unused")
 		final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> commandMap = settings
-		.getSchedulableCommandMap();
+				.getSchedulableCommandMap();
 
 		final RepositorySet repositorySet = new RepositorySet();
 		repositorySet.setRepositories(repositories);
@@ -294,7 +294,7 @@ public enum DefaultScheduler implements SLScheduler {
 			for (final String cronInformation : s.getCronInformation()) {
 
 				final Class<? extends SchedulableCommand> commandType = settings
-				.getSchedulableCommandMap().get(s.getClass());
+						.getSchedulableCommandMap().get(s.getClass());
 
 				Assertions.checkNotNull("commandType:" + s.getClass(),
 						commandType);
@@ -310,9 +310,8 @@ public enum DefaultScheduler implements SLScheduler {
 
 	public void initializeSettings(
 			final ExecutionContextFactory contextFactory,
-			final String username,
-			final String password,
-			final JcrConnectionDescriptor descriptor ) {
+			final String username, final String password,
+			final JcrConnectionDescriptor descriptor) {
 		Assertions.checkNotEmpty("username", username);
 		Assertions.checkNotEmpty("password", password);
 		Assertions.checkNotNull("contextFactory", contextFactory);
@@ -323,11 +322,10 @@ public enum DefaultScheduler implements SLScheduler {
 		internalData.set(newData);
 	}
 
-	@SuppressWarnings( "unchecked" )
+	@SuppressWarnings("unchecked")
 	private <T extends Schedulable> Set<String> internalFireCommand(
-			final String username,
-			final String password,
-			final T... schedulables ) {
+			final String username, final String password,
+			final T... schedulables) {
 		Assertions.checkNotNull("schedulables", schedulables);
 		Assertions.checkNotNull("internalData", internalData.get());
 		Assertions.checkNotNull("settings", settings.get());
@@ -342,12 +340,12 @@ public enum DefaultScheduler implements SLScheduler {
 				while (commandType == null && lastClass != null
 						&& !Object.class.equals(lastClass)) {
 					commandType = settingsReference.getSchedulableCommandMap()
-					.get(lastClass);
+							.get(lastClass);
 					if (commandType != null) {
 						break;
 					}
-					lastClass = (Class<? extends Schedulable>)lastClass
-					.getSuperclass();
+					lastClass = (Class<? extends Schedulable>) lastClass
+							.getSuperclass();
 				}
 
 				Assertions.checkNotNull(
@@ -376,7 +374,7 @@ public enum DefaultScheduler implements SLScheduler {
 		return ids;
 	}
 
-	private boolean isExecutingAnyOfImmediateCommands( final Set<String> ids ) {
+	private boolean isExecutingAnyOfImmediateCommands(final Set<String> ids) {
 		final Set<String> executingKeys = new HashSet<String>(
 				oslImmediateCommands.keySet());
 		for (final String id : ids) {
@@ -387,8 +385,8 @@ public enum DefaultScheduler implements SLScheduler {
 		return false;
 	}
 
-	public synchronized void refreshJobs( final GlobalSettings settings,
-			final Set<Repository> repositories ) {
+	public synchronized void refreshJobs(final GlobalSettings settings,
+			final Set<Repository> repositories) {
 		Assertions.checkNotNull("settings", settings);
 		Assertions.checkNotNull("repositories", repositories);
 		Assertions.checkNotNull("internalData", internalData.get());
@@ -398,7 +396,7 @@ public enum DefaultScheduler implements SLScheduler {
 		oslCronCommands.clear();
 		oslCronCommands.putAll(jobMap);
 		try {
-			final Set<String> jobsToRemove = Collections.setOf(quartzScheduler
+			final Set<String> jobsToRemove = SLCollections.setOf(quartzScheduler
 					.getJobNames(DEFAULT_GROUP));
 			final Set<String> newJobNames = new HashSet<String>(jobMap.keySet());
 			newJobNames.removeAll(jobsToRemove);
@@ -425,7 +423,7 @@ public enum DefaultScheduler implements SLScheduler {
 
 	}
 
-	public void removeIfImediate( final OslInternalSchedulerCommand command ) {
+	public void removeIfImediate(final OslInternalSchedulerCommand command) {
 		Assertions.checkNotNull("command", command);
 		if (IMMEDIATE.equals(command.getCronInformation())) {
 			oslImmediateCommands.remove(command.getUniqueName());

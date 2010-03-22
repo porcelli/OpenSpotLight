@@ -70,7 +70,31 @@ import org.openspotlight.persist.annotation.TransientProperty;
  * should load this classes.
  */
 public abstract class Artifact implements SimpleNodeType, Serializable,
-LogableObject {
+		LogableObject {
+
+	private String originalName;
+
+	public void updateOriginalName(ArtifactSource source, String originalName) {
+		this.originalName = source + ":" + originalName;
+	}
+
+	public String getOriginalName() {
+		return originalName;
+	}
+
+	public void setOriginalName(String originalName) {
+		this.originalName = originalName;
+	}
+
+	private long lastChange;
+
+	public long getLastChange() {
+		return lastChange;
+	}
+
+	public void setLastChange(long lastChange) {
+		this.lastChange = lastChange;
+	}
 
 	/**
 	 * Creates the new artifact.
@@ -89,12 +113,12 @@ LogableObject {
 
 		try {
 			final String internalArtifactName = artifactCompletePath
-			.substring(artifactCompletePath.lastIndexOf('/') + 1);
+					.substring(artifactCompletePath.lastIndexOf('/') + 1);
 			final String path = artifactCompletePath.substring(0,
 					artifactCompletePath.length()
-					- internalArtifactName.length());
+							- internalArtifactName.length());
 			final PathElement pathElement = PathElement
-			.createFromPathString(path);
+					.createFromPathString(path);
 			final A artifact = artifactType.newInstance();
 
 			artifact.setArtifactName(internalArtifactName);
@@ -165,7 +189,7 @@ LogableObject {
 
 		final Artifact that = (Artifact) o;
 		return Equals.eachEquality(parent, that.parent)
-		&& Equals.eachEquality(artifactName, that.artifactName);
+				&& Equals.eachEquality(artifactName, that.artifactName);
 	}
 
 	/**
@@ -252,11 +276,11 @@ LogableObject {
 			result = 31 * result + this.getClass().hashCode();
 			result = 31 * result + (parent != null ? parent.hashCode() : 0);
 			result = 31 * result
-			+ (artifactName != null ? artifactName.hashCode() : 0);
+					+ (artifactName != null ? artifactName.hashCode() : 0);
 			result = 31 * result
-			+ (artifactName != null ? artifactName.hashCode() : 0);
+					+ (artifactName != null ? artifactName.hashCode() : 0);
 			result = 31 * result
-			+ (changeType != null ? changeType.hashCode() : 0);
+					+ (changeType != null ? changeType.hashCode() : 0);
 			hashcode = result;
 		}
 		return result;
@@ -325,7 +349,7 @@ LogableObject {
 	 */
 	public String toString() {
 		return getClass().getSimpleName() + getArtifactCompleteName() + " "
-		+ getChangeType();
+				+ getChangeType();
 	}
 
 }

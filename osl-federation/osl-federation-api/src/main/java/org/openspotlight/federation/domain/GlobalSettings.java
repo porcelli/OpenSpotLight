@@ -50,9 +50,12 @@ package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
@@ -65,15 +68,21 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
 	private static final long serialVersionUID = 3443359462450366393L;
 
-	private Class<? extends ArtifactFinderRegistry> artifactFinderRegistryClass;
+	private Set<Class<? extends OriginArtifactLoader>> loaderRegistry = new HashSet<Class<? extends OriginArtifactLoader>>();
+
+	public Set<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
+		return loaderRegistry;
+	}
+
+	public void setLoaderRegistry(
+			Set<Class<? extends OriginArtifactLoader>> loaderRegistry) {
+		this.loaderRegistry = loaderRegistry;
+	}
 
 	@SuppressWarnings("unchecked")
 	private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
 
 	private long defaultSleepingIntervalInMilliseconds;
-
-	/** The number of parallel threads. */
-	private int numberOfParallelThreads;
 
 	/** The max result list size. */
 	private int maxResultListSize;
@@ -83,10 +92,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 	private String systemPassword;
 
 	public GlobalSettings() {
-	}
-
-	public Class<? extends ArtifactFinderRegistry> getArtifactFinderRegistryClass() {
-		return artifactFinderRegistryClass;
 	}
 
 	public long getDefaultSleepingIntervalInMilliseconds() {
@@ -102,15 +107,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 		return maxResultListSize;
 	}
 
-	/**
-	 * Gets the number of parallel threads.
-	 * 
-	 * @return the number of parallel threads
-	 */
-	public int getNumberOfParallelThreads() {
-		return numberOfParallelThreads;
-	}
-
 	@SuppressWarnings("unchecked")
 	public Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> getSchedulableCommandMap() {
 		return schedulableCommandMap;
@@ -122,11 +118,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
 	public String getSystemUser() {
 		return systemUser;
-	}
-
-	public void setArtifactFinderRegistryClass(
-			final Class<? extends ArtifactFinderRegistry> artifactFinderRegistryClass) {
-		this.artifactFinderRegistryClass = artifactFinderRegistryClass;
 	}
 
 	public void setDefaultSleepingIntervalInMilliseconds(
@@ -142,16 +133,6 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 	 */
 	public void setMaxResultListSize(final int maxResultListSize) {
 		this.maxResultListSize = maxResultListSize;
-	}
-
-	/**
-	 * Sets the number of parallel threads.
-	 * 
-	 * @param numberOfParallelThreads
-	 *            the new number of parallel threads
-	 */
-	public void setNumberOfParallelThreads(final int numberOfParallelThreads) {
-		this.numberOfParallelThreads = numberOfParallelThreads;
 	}
 
 	@SuppressWarnings("unchecked")

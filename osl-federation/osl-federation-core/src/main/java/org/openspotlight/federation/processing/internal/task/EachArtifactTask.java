@@ -59,8 +59,7 @@ import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformatio
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.SyntaxInformation;
-import org.openspotlight.federation.finder.ArtifactFinder;
-import org.openspotlight.federation.finder.ArtifactFinderWithSaveCapabilitie;
+import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
@@ -72,11 +71,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EachArtifactTask<T extends Artifact> extends
-RunnableWithBundleContext {
+		RunnableWithBundleContext {
 
 	private static final Object SAVE_LOCK = new Object();
 	private final boolean first;
-	private final Class<T> artifactType;
 
 	private final T artifact;
 	private final SaveBehavior saveBehavior;
@@ -84,28 +82,24 @@ RunnableWithBundleContext {
 	private final CurrentProcessorContextImpl currentContextImpl;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@SuppressWarnings("unchecked")
 	public EachArtifactTask(final boolean first, final String repositoryName,
-			final Class<? extends Artifact> artifactType, final T artifact,
-			final SaveBehavior saveBehavior,
+			final T artifact, final SaveBehavior saveBehavior,
 			final BundleProcessorArtifactPhase<T> bundleProcessor,
 			final CurrentProcessorContextImpl currentContextImpl) {
 		super(repositoryName);
 		this.first = first;
-		this.artifactType = (Class<T>) artifactType;
 		this.artifact = artifact;
 		this.saveBehavior = saveBehavior;
 		this.bundleProcessor = bundleProcessor;
 		this.currentContextImpl = currentContextImpl;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void doIt() throws Exception {
 
 		if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact
 				.getLastProcessStatus())
 				|| LastProcessStatus.EXCEPTION_DURRING_PROCESS
-				.equals(this.artifact.getLastProcessStatus())) {
+						.equals(this.artifact.getLastProcessStatus())) {
 			logger.info("ignoring " + this.artifact
 					+ " due to its last process status: "
 					+ this.artifact.getLastProcessStatus());
@@ -134,35 +128,29 @@ RunnableWithBundleContext {
 					getBundleContext().getUser(),
 					LogEventType.ERROR,
 					"Error during artifact processing on bundle processor "
-					+ this.bundleProcessor.getClass().getName(),
+							+ this.bundleProcessor.getClass().getName(),
 					this.artifact);
 			throw e;
 		} finally {
 			this.artifact.setLastProcessStatus(result);
 			this.artifact.setLastProcessedDate(new Date());
-			final ArtifactFinder<T> finder = getBundleContext()
-			.getArtifactFinder(this.artifactType);
+			final PersistentArtifactManager manager = getBundleContext()
+					.getPersistentArtifactManager();
 			Exception ex = null;
-			if (finder instanceof ArtifactFinderWithSaveCapabilitie) {
-				final ArtifactFinderWithSaveCapabilitie<T> finderWithSaveCapabilitie = (ArtifactFinderWithSaveCapabilitie<T>) finder;
-				try {
-					synchronized (SAVE_LOCK) {
-						if (ChangeType.EXCLUDED.equals(this.artifact
-								.getChangeType())) {
-							finderWithSaveCapabilitie
-							.markAsRemoved(this.artifact);
-						} else {
-							finderWithSaveCapabilitie
-							.addTransientArtifact(this.artifact);
-						}
-						finderWithSaveCapabilitie.save();
+			try {
+				synchronized (SAVE_LOCK) {
+					if (ChangeType.EXCLUDED.equals(this.artifact
+							.getChangeType())) {
+						manager.markAsRemoved(this.artifact);
+					} else {
+						manager.addTransient(this.artifact);
 					}
-
-				} catch (final Exception e) {
-					Exceptions.catchAndLog(e);
-					ex = e;
+					manager.saveTransientData();
 				}
 
+			} catch (final Exception e) {
+				Exceptions.catchAndLog(e);
+				ex = e;
 			}
 			this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
 					result, this.currentContextImpl, getBundleContext());

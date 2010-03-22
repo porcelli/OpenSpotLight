@@ -61,6 +61,7 @@ import org.openspotlight.persist.internal.LazyProperty;
 @Name("string_artifact")
 public class StringArtifact extends ArtifactWithSyntaxInformation {
 
+
 	private static final long serialVersionUID = -8912205023568005794L;
 
 	private LazyProperty<String> content = LazyProperty.Factory.create(this);

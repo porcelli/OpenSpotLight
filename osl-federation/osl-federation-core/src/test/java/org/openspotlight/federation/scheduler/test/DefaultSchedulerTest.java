@@ -60,9 +60,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
+import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.TestExecutionContextFactory;
-import org.openspotlight.federation.context.TestExecutionContextFactory.ArtifactFinderType;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
@@ -145,8 +144,8 @@ public class DefaultSchedulerTest {
 		group.setRepository(repository);
 		group.setType("types");
 		repository.getGroups().add(group);
-		scheduler.initializeSettings(TestExecutionContextFactory.createFactory(
-				ArtifactFinderType.FILESYSTEM, source), "user", "password",
+		scheduler.initializeSettings(DefaultExecutionContextFactory
+				.createFactory(), "user", "password",
 				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 		scheduler.refreshJobs(settings, repositories);
 		scheduler.startScheduler();

@@ -69,11 +69,13 @@ import org.jboss.dna.jcr.JcrEngine;
 import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.AbstractArtifactFinder;
+import org.openspotlight.federation.finder.AbstractOriginArtifactLoader;
 import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 
 /**
@@ -82,8 +84,93 @@ import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-public abstract class DnaArtifactFinder extends
-AbstractArtifactFinder<StringArtifact> {
+public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
+
+	@Override
+	protected void internalCloseResources() throws Exception {
+		for (final Map.Entry<ArtifactSource, JcrEngine> entry : mappingEngines
+				.entrySet()) {
+			entry.getValue().shutdown();
+		}
+		for (final Map.Entry<ArtifactSource, Session> entry : mappingSessions
+				.entrySet()) {
+			entry.getValue().logout();
+		}
+	}
+
+	@Override
+	protected <A extends Artifact> A internalFindByPath(Class<A> type,
+			ArtifactSource source, String rawPath) throws Exception {
+		String path;
+		if (rawPath.startsWith("/")) {
+			path = rawPath.substring(1);
+		} else {
+			path = rawPath;
+		}
+
+		final Node node = getSessionForSource(source).getRootNode().getNode(
+				path);
+
+		final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
+		final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
+		final InputStream is = value.getStream();
+
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		int available;
+		while ((available = is.read()) != -1) {
+			baos.write(available);
+		}
+		final StringArtifact artifact = Artifact.createArtifact(
+				StringArtifact.class, path, ChangeType.INCLUDED);
+		artifact.getContent().setTransient(new String(baos.toByteArray()));
+		@SuppressWarnings("unchecked")
+		A typed = (A) artifact;
+		return typed;
+	}
+
+	@Override
+	protected Set<Class<? extends Artifact>> internalGetAvailableTypes()
+			throws Exception {
+		return acceptableTypes;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Set<Class<? extends Artifact>> acceptableTypes = SLCollections
+			.<Class<? extends Artifact>> setOf(StreamArtifact.class);
+
+	@Override
+	protected <A extends Artifact> boolean internalIsMaybeChanged(
+			ArtifactSource source, String artifactName, A oldOne)
+			throws Exception {
+		// TODO implement the logic needed to compare if the origin file is
+		// changed or not
+		return true;
+	}
+
+	@Override
+	protected boolean internalIsTypeSupported(Class<? extends Artifact> type)
+			throws Exception {
+		return acceptableTypes.contains(type);
+	}
+
+	@Override
+	protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(
+			Class<A> type, ArtifactSource source, String initialPath)
+			throws Exception {
+		final Set<String> result = new HashSet<String>();
+		final Node rootNode = getSessionForSource(source).getRootNode();
+		final Node initial = initialPath == null ? rootNode : rootNode
+				.getNode(initialPath);
+		initial.accept(withVisitor(new FillNamesVisitor(result)));
+
+		return result;
+	}
+
+	@Override
+	protected boolean isMultithreaded() {
+		// FIXME paralelize this class (it is really possible)
+		return false;
+	}
 
 	/**
 	 * JCR visitor to fill all valid artifact names
@@ -114,8 +201,6 @@ AbstractArtifactFinder<StringArtifact> {
 
 	}
 
-	private final ArtifactSource artifactSource;
-
 	private static final String repositoryName = "repository"; //$NON-NLS-1$
 
 	private static final String repositorySource = "repositorySource"; //$NON-NLS-1$
@@ -123,22 +208,6 @@ AbstractArtifactFinder<StringArtifact> {
 	private final Map<ArtifactSource, JcrEngine> mappingEngines = new ConcurrentHashMap<ArtifactSource, JcrEngine>();
 
 	private final Map<ArtifactSource, Session> mappingSessions = new ConcurrentHashMap<ArtifactSource, Session>();
-
-	public DnaArtifactFinder(final ArtifactSource source) {
-		super(StringArtifact.class, source.getRepository().getName(), null);
-		artifactSource = source;
-	}
-
-	public synchronized final void closeResources() {
-		for (final Map.Entry<ArtifactSource, JcrEngine> entry : mappingEngines
-				.entrySet()) {
-			entry.getValue().shutdown();
-		}
-		for (final Map.Entry<ArtifactSource, Session> entry : mappingSessions
-				.entrySet()) {
-			entry.getValue().logout();
-		}
-	}
 
 	protected abstract void configureWithBundle(
 			RepositorySourceDefinition<JcrConfiguration> repositorySource2,
@@ -149,8 +218,8 @@ AbstractArtifactFinder<StringArtifact> {
 	 * @return the jcr session
 	 * @throws Exception
 	 */
-	public synchronized Session getSessionForSource(final ArtifactSource source)
-	throws Exception {
+	protected synchronized Session getSessionForSource(
+			final ArtifactSource source) throws Exception {
 		Session session = mappingSessions.get(source);
 		if (session == null) {
 			JcrEngine engine = mappingEngines.get(source);
@@ -166,61 +235,14 @@ AbstractArtifactFinder<StringArtifact> {
 		return session;
 	}
 
-	protected StringArtifact internalFindByPath(final String rawPath) {
-		try {
-			String path;
-			if (rawPath.startsWith("/")) {
-				path = rawPath.substring(1);
-			} else {
-				path = rawPath;
-			}
-
-			final Node node = getSessionForSource(artifactSource).getRootNode()
-			.getNode(path);
-
-			final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
-			final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
-			final InputStream is = value.getStream();
-
-			final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			int available;
-			while ((available = is.read()) != -1) {
-				baos.write(available);
-			}
-			final StringArtifact artifact = Artifact.createArtifact(
-					StringArtifact.class, path, ChangeType.INCLUDED);
-			artifact.getContent().setTransient(new String(baos.toByteArray()));
-			return artifact;
-		} catch (final Exception e) {
-			throw logAndReturnNew(e, ConfigurationException.class);
-		}
-
-	}
-
-	protected Set<String> internalRetrieveAllArtifactNames(
-			final String initialPath) {
-		try {
-			final Set<String> result = new HashSet<String>();
-			final Node rootNode = getSessionForSource(artifactSource)
-			.getRootNode();
-			final Node initial = initialPath == null ? rootNode : rootNode
-					.getNode(initialPath);
-			initial.accept(withVisitor(new FillNamesVisitor(result)));
-
-			return result;
-		} catch (final Exception e) {
-			throw logAndReturnNew(e, ConfigurationException.class);
-		}
-	}
-
-	public synchronized void setupSource(final ArtifactSource source) {
+	protected synchronized void setupSource(final ArtifactSource source) {
 		try {
 
 			final JcrConfiguration configuration = new JcrConfiguration();
 			configureWithBundle(configuration
 					.repositorySource(repositorySource), source);
 			configuration.repository(repositoryName)
-			.setSource(repositorySource);
+					.setSource(repositorySource);
 			configuration.save();
 			final JcrEngine engine = configuration.build();
 			engine.start();

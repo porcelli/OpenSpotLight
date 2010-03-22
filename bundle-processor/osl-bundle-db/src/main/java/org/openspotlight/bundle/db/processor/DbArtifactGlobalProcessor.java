@@ -54,7 +54,7 @@ import java.util.Set;
 
 import org.openspotlight.bundle.db.processor.DbProcessorHelper.ParentVo;
 import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
-import org.openspotlight.common.util.Collections;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
@@ -79,7 +79,7 @@ public class DbArtifactGlobalProcessor implements
 
 	@SuppressWarnings("unchecked")
 	public Set<Class<? extends DatabaseCustomArtifact>> getArtifactTypes() {
-		return Collections.setOf(TableArtifact.class,
+		return SLCollections.setOf(TableArtifact.class,
 				ForeignKeyConstraintArtifact.class,
 				PrimaryKeyConstraintArtifact.class);
 	}
