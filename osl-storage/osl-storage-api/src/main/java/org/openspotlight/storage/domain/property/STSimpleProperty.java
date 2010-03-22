@@ -1,5 +1,7 @@
 package org.openspotlight.storage.domain.property;
 
+import org.openspotlight.storage.STStorageSession;
+
 import java.io.Serializable;
 
 /**
@@ -13,6 +15,6 @@ public interface STSimpleProperty extends STAProperty {
 
     <T extends Serializable> Class<T> getType();
     
-    <T extends Serializable> T getValue();
+    <T extends Serializable> T getValue(STStorageSession session);
 
 }

@@ -13,4 +13,5 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 public interface STAProperty extends STAData {
     STNodeEntry getParent();
     String getPropertyName();
+    
 }

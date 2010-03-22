@@ -9,5 +9,5 @@ import java.util.List;
  * Time: 2:32:40 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface STSerializableListProperty extends STListProperty, STASerializableProperty<List>{
+public interface STSerializableListProperty extends STListProperty{
 }

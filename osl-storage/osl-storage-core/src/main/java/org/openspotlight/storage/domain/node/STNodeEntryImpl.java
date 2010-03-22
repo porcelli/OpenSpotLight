@@ -44,138 +44,161 @@ public class STNodeEntryImpl implements STNodeEntry {
         return uniqueKey;
     }
 
-    public STNodeEntryBuilder createWithName(STStorageSession session, String name) {
-        return session.getInternalMethods().nodeEntryCreateWithName(this, session, name);
+    public STNodeEntryBuilder createWithName(final STStorageSession session, final String name) {
+        return session.getInternalMethods().nodeEntryCreateWithName(this, name);
 
     }
 
     public List<STListProperty> getListProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetListProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetListProperties(this);
 
     }
 
     public <T> STListProperty setListProperty(STStorageSession session, Class<T> valueType, String name, List<T> value) {
-        return session.getInternalMethods().nodeEntrySetListProperty(this, session, valueType, name, value);
+        return session.getInternalMethods().nodeEntrySetListProperty(this, valueType, name, value);
 
     }
 
     public <T> STListProperty getListProperty(STStorageSession session, Class<T> valueType, String name) {
-        return session.getInternalMethods().nodeEntryGetListProperty(this, session, valueType, name);
+        return session.getInternalMethods().nodeEntryGetListProperty(this, valueType, name);
 
     }
 
     public List<STSimpleProperty> getSimpleProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetSimpleProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetSimpleProperties(this);
 
     }
 
     public <T> STSimpleProperty setSimpleProperty(STStorageSession session, Class<T> type, String name, T value) {
-        return session.getInternalMethods().nodeEntrySetSimpleProperty(this, session, type, name, value);
+        return session.getInternalMethods().nodeEntrySetSimpleProperty(this, type, name, value);
 
     }
 
     public <T> STSimpleProperty getSimpleProperty(STStorageSession session, Class<T> type, String name) {
-        return session.getInternalMethods().nodeEntryGetSimpleProperty(this, session, type, name);
+        return session.getInternalMethods().nodeEntryGetSimpleProperty(this, type, name);
 
     }
 
     public List<STStreamProperty> getStreamProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetStreamProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetStreamProperties(this);
 
     }
 
     public <T> STStreamProperty setStreamProperty(STStorageSession session, String name, T value) {
-        return session.getInternalMethods().nodeEntrySetStreamProperty(this, session, name, value);
+        return session.getInternalMethods().nodeEntrySetStreamProperty(this, name, value);
 
     }
 
     public <T> STStreamProperty getStreamProperty(STStorageSession session, String name) {
-        return session.getInternalMethods().nodeEntryGetStreamProperty(this, session, name);
+        return session.getInternalMethods().nodeEntryGetStreamProperty(this, name);
 
     }
 
     public List<STMapProperty> getMapProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetMapProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetMapProperties(this);
 
     }
 
     public <K, V> STMapProperty setMapProperty(STStorageSession session, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
-        return session.getInternalMethods().nodeEntrySetMapProperty(this, session, keyType, valueType, name, value);
+        return session.getInternalMethods().nodeEntrySetMapProperty(this, keyType, valueType, name, value);
 
     }
 
     public <K, V> STMapProperty getMapProperty(STStorageSession session, Class<K> keyType, Class<V> valueType, String name) {
-        return session.getInternalMethods().nodeEntryGetMapProperty(this, session, keyType, valueType, name);
+        return session.getInternalMethods().nodeEntryGetMapProperty(this, keyType, valueType, name);
 
     }
 
     public List<STSerializableListProperty> getSerializableListProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetSerializableListProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetSerializableListProperties(this);
 
     }
 
     public <T> STSerializableListProperty setSerializableListProperty(STStorageSession session, Class<T> valueType, String name, List<T> value) {
-        return session.getInternalMethods().nodeEntrySetSerializableListProperty(this, session, valueType, name, value);
+        return session.getInternalMethods().nodeEntrySetSerializableListProperty(this, valueType, name, value);
 
     }
 
     public <T> STSerializableListProperty getSerializableListProperty(STStorageSession session, Class<T> valueType, String name) {
-        return session.getInternalMethods().nodeEntryGetSerializableListProperty(this, session, valueType, name);
+        return session.getInternalMethods().nodeEntryGetSerializableListProperty(this, valueType, name);
 
     }
 
     public List<STSerializableMapProperty> getSerializableMapProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetSerializableMapProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetSerializableMapProperties(this);
 
     }
 
     public <K, V> STSerializableMapProperty setSerializableMapProperty(STStorageSession session, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
-        return session.getInternalMethods().nodeEntrySetSerializableMapProperty(this, session, keyType, valueType, name, value);
+        return session.getInternalMethods().nodeEntrySetSerializableMapProperty(this, keyType, valueType, name, value);
 
     }
 
     public <K, V> STSerializableMapProperty getSerializableMapProperty(STStorageSession session, Class<K> keyType, Class<V> valueType, String name) {
-        return session.getInternalMethods().nodeEntryGetSerializableMapProperty(this, session, keyType, valueType, name);
+        return session.getInternalMethods().nodeEntryGetSerializableMapProperty(this, keyType, valueType, name);
 
     }
 
     public List<STSerializableSetProperty> getSerializableSetProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetSerializableSetProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetSerializableSetProperties(this);
 
     }
 
     public <T> STSerializableSetProperty setSerializableSetProperty(STStorageSession session, Class<T> valueType, String name, Set<T> value) {
-        return session.getInternalMethods().nodeEntrySetSerializableSetProperty(this, session, valueType, name, value);
+        return session.getInternalMethods().nodeEntrySetSerializableSetProperty(this, valueType, name, value);
 
     }
 
     public <T> STSerializableSetProperty getSerializableSetProperty(STStorageSession session, Class<T> valueType, String name) {
-        return session.getInternalMethods().nodeEntryGetSerializableSetProperty(this, session, valueType, name);
+        return session.getInternalMethods().nodeEntryGetSerializableSetProperty(this, valueType, name);
 
     }
 
     public List<STPojoProperty> getPojoProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetPojoProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetPojoProperties(this);
     }
 
     public <T> STPojoProperty setPojoProperty(STStorageSession session, Class<T> type, String name, T value) {
-        return session.getInternalMethods().nodeEntrySetPojoProperty(this, session, type, name, value);
+        return session.getInternalMethods().nodeEntrySetPojoProperty(this, type, name, value);
     }
 
     public <T> STPojoProperty getPojoProperty(STStorageSession session, Class<T> type, String name) {
-        return session.getInternalMethods().nodeEntryGetPojoProperty(this, session, type, name);
+        return session.getInternalMethods().nodeEntryGetPojoProperty(this, type, name);
     }
 
     public List<STSetProperty> getSetProperties(STStorageSession session) {
-        return session.getInternalMethods().nodeEntryGetSetProperties(this, session);
+        return session.getInternalMethods().nodeEntryGetSetProperties(this);
     }
 
     public <T> STSetProperty setSetProperty(STStorageSession session, Class<T> valueType, String name, Set<T> value) {
-        return session.getInternalMethods().nodeEntrySetSetProperty(this, session, valueType, name, value);
+        return session.getInternalMethods().nodeEntrySetSetProperty(this, valueType, name, value);
 
     }
 
     public <T> STSetProperty getSetProperty(STStorageSession session, Class<T> valueType, String name) {
-        return session.getInternalMethods().nodeEntryGetSetProperty(this, session, valueType, name);
+        return session.getInternalMethods().nodeEntryGetSetProperty(this, valueType, name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        STNodeEntryImpl that = (STNodeEntryImpl) o;
+
+        if (localKey != null ? !localKey.equals(that.localKey) : that.localKey != null) return false;
+        if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
+            return false;
+        if (uniqueKey != null ? !uniqueKey.equals(that.uniqueKey) : that.uniqueKey != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
+        result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
+        result = 31 * result + (uniqueKey != null ? uniqueKey.hashCode() : 0);
+        return result;
     }
 }

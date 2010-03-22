@@ -9,15 +9,19 @@ import java.util.List;
  * Created by IntelliJ IDEA.
  * User: feu
  * Date: Mar 19, 2010
- * Time: 5:51:48 PM
+ * Time: 6:02:41 PM
  * To change this template use File | Settings | File Templates.
  */
-public class STListPropertyImpl implements STListProperty {
+public class STSerializableListPropertyImpl implements STSerializableListProperty {
 
-    public STListPropertyImpl(Class<?> valueType, STNodeEntry parent, String propertyName) {
+    public STSerializableListPropertyImpl(Class<?> valueType, STNodeEntry parent, String propertyName) {
         this.valueType = valueType;
         this.parent = parent;
         this.propertyName = propertyName;
+    }
+
+    public <T> List<T> getItems(STStorageSession session) {
+        return session.getInternalMethods().serializableListPropertyGetItems(this);
     }
 
     @Override
@@ -25,7 +29,7 @@ public class STListPropertyImpl implements STListProperty {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        STListPropertyImpl that = (STListPropertyImpl) o;
+        STSerializableListPropertyImpl that = (STSerializableListPropertyImpl) o;
 
         if (parent != null ? !parent.equals(that.parent) : that.parent != null) return false;
         if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) return false;
@@ -40,10 +44,6 @@ public class STListPropertyImpl implements STListProperty {
         result = 31 * result + (parent != null ? parent.hashCode() : 0);
         result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
         return result;
-    }
-
-    public <T> List<T> getItems(STStorageSession session) {
-        return session.getInternalMethods().listPropertyGetItems(this);
     }
 
     private final Class<?> valueType;

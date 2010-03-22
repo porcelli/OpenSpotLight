@@ -1,5 +1,7 @@
 package org.openspotlight.storage.domain.property;
 
+import org.openspotlight.storage.STStorageSession;
+
 import java.util.Set;
 
 /**
@@ -9,5 +11,7 @@ import java.util.Set;
  * Time: 2:11:19 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface STSetProperty extends STACollection<Set>{
+public interface STSetProperty extends STAMultipleProperty{
+
+    <T> Set<T> getItems(STStorageSession session);
 }

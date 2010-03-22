@@ -9,5 +9,5 @@ import java.util.Set;
  * Time: 2:36:44 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface STSerializableSetProperty extends STSetProperty, STASerializableProperty<Set>{
+public interface STSerializableSetProperty extends STSetProperty{
 }

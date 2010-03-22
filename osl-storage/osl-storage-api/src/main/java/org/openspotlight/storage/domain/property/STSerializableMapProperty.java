@@ -9,7 +9,7 @@ import java.util.Map;
  * Time: 2:40:19 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface STSerializableMapProperty extends STMapProperty, STASerializableProperty<Map>{
+public interface STSerializableMapProperty extends STMapProperty{
 
     
 }

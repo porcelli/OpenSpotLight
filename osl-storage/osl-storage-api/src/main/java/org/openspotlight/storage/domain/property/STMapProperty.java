@@ -14,5 +14,4 @@ import java.util.Map;
 public interface STMapProperty extends STAMultipleProperty{
     <T> Class<T> getKeyType();
     <K,T> Map<K,T> getMap(STStorageSession session);
-    <K,T> void setTransient(Map<K,T> newMap);
 }
