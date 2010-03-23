@@ -24,49 +24,44 @@
  * Boston, MA  02110-1301  USA
  *
  * ***********************************************************************
- * OpenSpotLight - Plataforma de Governan�a de TI de C�digo Aberto
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
  * *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribui��o de direito autoral declarada e atribu�da pelo autor.
- * Todas as contribui��es de terceiros est�o distribu�das sob licen�a da
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
  *
- * Este programa � software livre; voc� pode redistribu�-lo e/ou modific�-lo sob os
- * termos da Licen�a P�blica Geral Menor do GNU conforme publicada pela Free Software
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
  * Foundation.
  *
- * Este programa � distribu�do na expectativa de que seja �til, por�m, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia impl�cita de COMERCIABILIDADE OU ADEQUA��O A UMA
- * FINALIDADE ESPEC�FICA. Consulte a Licen�a P�blica Geral Menor do GNU para mais detalhes.
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
  *
- * Voc� deve ter recebido uma c�pia da Licen�a P�blica Geral Menor do GNU junto com este
- * programa; se n�o, escreva para:
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para:
  * Free Software Foundation, Inc.
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.storage.domain.property;
+package org.openspotlight.storage.redis.guice;
 
-import org.openspotlight.storage.STStorageSession;
-
-import java.util.List;
+import com.google.inject.Singleton;
+import org.jredis.JRedis;
+import org.jredis.ri.alphazero.JRedisClient;
+import org.openspotlight.guice.ThreadLocalProvider;
 
 /**
- * Created by IntelliJ IDEA.
- * User: feu
- * Date: Mar 19, 2010
- * Time: 4:06:00 PM
- * To change this template use File | Settings | File Templates.
+ * Created by User: feu - Date: Mar 23, 2010 - Time: 4:53:17 PM
  */
-public interface STAAccessorListProperty {
+@Singleton
+public class JRedisProvider extends ThreadLocalProvider<JRedis> {
 
-    List<STListProperty> getListProperties(STStorageSession session);
-
-    <T> void setListProperty(STStorageSession session, Class<T> valueType, String name, List<T> value);
-
-    <T> STListProperty getListProperty(STStorageSession session, Class<T> valueType, String name);
-
-
+    @Override
+    protected JRedis createInstance() {
+        return new JRedisClient();
+    }
 }

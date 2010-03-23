@@ -76,8 +76,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <T> STSetProperty nodeEntrySetSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void nodeEntrySetSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public List<STSetProperty> nodeEntryGetSetProperties(STNodeEntry stNodeEntry) {
@@ -92,8 +92,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <T> STListProperty nodeEntrySetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void nodeEntrySetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STListProperty nodeEntryGetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
@@ -104,8 +104,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <T> STSimpleProperty nodeEntrySetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void nodeEntrySetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STSimpleProperty nodeEntryGetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name) {
@@ -116,8 +116,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <T> STStreamProperty nodeEntrySetStreamProperty(STNodeEntry stNodeEntry, String name, T value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void nodeEntrySetStreamProperty(STNodeEntry stNodeEntry, String name, T value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public STStreamProperty nodeEntryGetStreamProperty(STNodeEntry stNodeEntry, String name) {
@@ -128,8 +128,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <K, V> STMapProperty nodeEntrySetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <K, V> void nodeEntrySetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <K, V> STMapProperty nodeEntryGetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name) {
@@ -140,8 +140,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <T> STSerializableListProperty nodeEntrySetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void nodeEntrySetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STSerializableListProperty nodeEntryGetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
@@ -152,8 +152,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <K, V> STSerializableMapProperty nodeEntrySetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <K, V> void nodeEntrySetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <K, V> STSerializableMapProperty nodeEntryGetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name) {
@@ -164,8 +164,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <T> STSerializableSetProperty nodeEntrySetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void nodeEntrySetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STSerializableSetProperty nodeEntryGetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
@@ -176,8 +176,8 @@ public class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public <T> STPojoProperty nodeEntrySetPojoProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public <T> void nodeEntrySetPojoProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value) {
+            return ;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STPojoProperty nodeEntryGetPojoProperty(STNodeEntry stNodeEntry, Class<T> type, String name) {

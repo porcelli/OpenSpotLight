@@ -24,24 +24,24 @@
  * Boston, MA  02110-1301  USA
  *
  * ***********************************************************************
- * OpenSpotLight - Plataforma de Governana de TI de C—digo Aberto
+ * OpenSpotLight - Plataforma de Governanï¿½a de TI de Cï¿½digo Aberto
  * *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribui‹o de direito autoral declarada e atribu’da pelo autor.
- * Todas as contribui›es de terceiros est‹o distribu’das sob licena da
+ * @author ou por expressa atribuiï¿½ï¿½o de direito autoral declarada e atribuï¿½da pelo autor.
+ * Todas as contribuiï¿½ï¿½es de terceiros estï¿½o distribuï¿½das sob licenï¿½a da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
  *
- * Este programa  software livre; voc pode redistribu’-lo e/ou modific‡-lo sob os
- * termos da Licena Pœblica Geral Menor do GNU conforme publicada pela Free Software
+ * Este programa ï¿½ software livre; vocï¿½ pode redistribuï¿½-lo e/ou modificï¿½-lo sob os
+ * termos da Licenï¿½a Pï¿½blica Geral Menor do GNU conforme publicada pela Free Software
  * Foundation.
  *
- * Este programa  distribu’do na expectativa de que seja œtil, porm, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia impl’cita de COMERCIABILIDADE OU ADEQUA‚ÌO A UMA
- * FINALIDADE ESPECêFICA. Consulte a Licena Pœblica Geral Menor do GNU para mais detalhes.
+ * Este programa ï¿½ distribuï¿½do na expectativa de que seja ï¿½til, porï¿½m, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implï¿½cita de COMERCIABILIDADE OU ADEQUAï¿½ï¿½O A UMA
+ * FINALIDADE ESPECï¿½FICA. Consulte a Licenï¿½a Pï¿½blica Geral Menor do GNU para mais detalhes.
  *
- * Voc deve ter recebido uma c—pia da Licena Pœblica Geral Menor do GNU junto com este
- * programa; se n‹o, escreva para:
+ * Vocï¿½ deve ter recebido uma cï¿½pia da Licenï¿½a Pï¿½blica Geral Menor do GNU junto com este
+ * programa; se nï¿½o, escreva para:
  * Free Software Foundation, Inc.
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
@@ -65,7 +65,7 @@ public interface STAAccessorSerializableSetProperty {
     
     List<STSerializableSetProperty> getSerializableSetProperties(STStorageSession session);
 
-    <T> STSerializableSetProperty setSerializableSetProperty(STStorageSession session, Class<T> valueType, String name, Set<T> value);
+    <T> void setSerializableSetProperty(STStorageSession session, Class<T> valueType, String name, Set<T> value);
 
     <T> STSerializableSetProperty getSerializableSetProperty(STStorageSession session, Class<T> valueType, String name);
     
