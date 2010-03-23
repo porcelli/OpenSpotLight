@@ -9,6 +9,9 @@ jrat.xml
 .wtpmodules
 .pmd
 
+#redis
+*.aof 
+
 #ANTLR temp files
 *.tokens
 
