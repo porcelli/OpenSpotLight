@@ -10,7 +10,7 @@ jrat.xml
 .pmd
 
 #redis
-*.aof 
+*.aof
 
 #ANTLR temp files
 *.tokens
