@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_osl-storage-core" default="compile.module.osl-storage-core">
+  <dirname property="module.osl-storage-core.basedir" file="${ant.file.module_osl-storage-core}"/>
+  
+  <property name="module.jdk.home.osl-storage-core" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.osl-storage-core" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.osl-storage-core" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.osl-storage-core" value="${compiler.args}"/>
+  
+  <property name="osl-storage-core.output.dir" value="/Users/feu/git/osl-lab/osl-storage/out/production/osl-storage-core"/>
+  <property name="osl-storage-core.testoutput.dir" value="/Users/feu/git/osl-lab/osl-storage/out/test/osl-storage-core"/>
+  
+  <path id="osl-storage-core.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="osl-storage-core.module.classpath">
+    <path refid="${module.jdk.classpath.osl-storage-core}"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/compile/google-collect-1.0.jar"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/compile/guice-2.0.jar"/>
+    <pathelement location="${osl-storage-api.output.dir}"/>
+    <pathelement location="${osl-storage-api.testoutput.dir}"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/test/junit-4.4.jar"/>
+  </path>
+  
+  <path id="osl-storage-core.runtime.module.classpath">
+    <pathelement location="${osl-storage-core.output.dir}"/>
+    <pathelement location="${osl-storage-core.testoutput.dir}"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/compile/google-collect-1.0.jar"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/compile/guice-2.0.jar"/>
+    <pathelement location="${osl-storage-api.output.dir}"/>
+    <pathelement location="${osl-storage-api.testoutput.dir}"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/test/junit-4.4.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.osl-storage-core">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.osl-storage-core">
+    <patternset refid="excluded.from.module.osl-storage-core"/>
+  </patternset>
+  
+  <path id="osl-storage-core.module.sourcepath">
+    <dirset dir="${module.osl-storage-core.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="osl-storage-core.module.test.sourcepath">
+    <dirset dir="${module.osl-storage-core.basedir}">
+      <include name="src/test/java"/>
+      <include name="src/test/resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.osl-storage-core" depends="compile.module.osl-storage-core.production,compile.module.osl-storage-core.tests" description="Compile module osl-storage-core"/>
+  
+  <target name="compile.module.osl-storage-core.production" depends="compile.module.osl-storage-api" description="Compile module osl-storage-core; production classes">
+    <mkdir dir="${osl-storage-core.output.dir}"/>
+    <javac destdir="${osl-storage-core.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.osl-storage-core}/javac">
+      <compilerarg line="${compiler.args.osl-storage-core}"/>
+      <bootclasspath refid="osl-storage-core.module.bootclasspath"/>
+      <classpath refid="osl-storage-core.module.classpath"/>
+      <src refid="osl-storage-core.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.osl-storage-core"/>
+    </javac>
+    
+    <copy todir="${osl-storage-core.output.dir}">
+      <fileset dir="${module.osl-storage-core.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.osl-storage-core.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.osl-storage-core.tests" depends="compile.module.osl-storage-core.production" description="compile module osl-storage-core; test classes" unless="skip.tests">
+    <mkdir dir="${osl-storage-core.testoutput.dir}"/>
+    <javac destdir="${osl-storage-core.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.osl-storage-core}/javac">
+      <compilerarg line="${compiler.args.osl-storage-core}"/>
+      <classpath refid="osl-storage-core.module.classpath"/>
+      <classpath>
+        <path refid="osl-storage-core.module.classpath"/>
+        <pathelement location="${osl-storage-core.output.dir}"/>
+      </classpath>
+      <src refid="osl-storage-core.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.osl-storage-core"/>
+    </javac>
+    
+    <copy todir="${osl-storage-core.testoutput.dir}">
+      <fileset dir="${module.osl-storage-core.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.osl-storage-core.basedir}/src/test/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.osl-storage-core" description="cleanup module">
+    <delete dir="${osl-storage-core.output.dir}"/>
+    <delete dir="${osl-storage-core.testoutput.dir}"/>
+  </target>
+</project>

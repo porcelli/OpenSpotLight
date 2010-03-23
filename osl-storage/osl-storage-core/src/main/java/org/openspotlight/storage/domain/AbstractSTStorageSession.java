@@ -49,27 +49,28 @@
 
 package org.openspotlight.storage.domain;
 
+import com.google.common.collect.ImmutableList;
 import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STANodeEntryFactory;
+import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.property.*;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
-public class AbstractSTStorageSession implements STStorageSession{
+public class AbstractSTStorageSession implements STStorageSession {
 
-    private AtomicReference<WeakReference<>>
+    private final STStorageSessionInternalMethods internalMethods = new STStorageSessionInternalMethodsImpl();
 
-    private final class STStorageSessionInternalMethodsImpl implements STStorageSessionInternalMethods{
+    private final class STStorageSessionInternalMethodsImpl implements STStorageSessionInternalMethods {
 
         public <T> STSetProperty nodeEntryGetSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -84,7 +85,7 @@ public class AbstractSTStorageSession implements STStorageSession{
         }
 
         public STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return createWithName(AbstractSTStorageSession.this,name).withParent(stNodeEntry);
         }
 
         public List<STListProperty> nodeEntryGetListProperties(STNodeEntry stNodeEntry) {
@@ -226,14 +227,58 @@ public class AbstractSTStorageSession implements STStorageSession{
     }
 
     public STNodeEntryBuilder createWithName(String name) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.createWithName(this, name);
     }
 
     public STStorageSessionInternalMethods getInternalMethods() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return internalMethods;
     }
 
     public STNodeEntryBuilder createWithName(STStorageSession session, String name) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    private static final class STNodeEntryBuilderImpl implements STNodeEntryBuilder {
+
+        private STNodeEntryBuilderImpl(String name) {
+            this.name = name;
+        }
+
+        private final String name;
+
+        private STNodeEntry parent = null;
+
+        private Set<STKeyEntry<?>> keys = new HashSet<STKeyEntry<?>>();
+
+        public <T extends Serializable> STNodeEntryBuilder withKey(String name, Class<T> type, T value) {
+            this.keys.add(STKeyEntryImpl.create(type, value, name));
+            return this;
+        }
+
+        public STNodeEntryBuilder withParent(STNodeEntry parent) {
+            if (this.parent != null) {
+                throw new IllegalStateException();
+            }
+            this.parent = parent;
+            return this;
+        }
+
+        public STNodeEntry andCreate() {
+            STLocalKeyImpl localKey = new STLocalKeyImpl(keys,name);
+
+            STUniqueKeyImpl uniqueKey ;
+            if(parent!=null){
+                List<STLocalKey> allKeys = parent.getUniqueKey().getAllKeys();
+                allKeys.add(localKey);
+                uniqueKey = new STUniqueKeyImpl(allKeys);
+
+            }else{
+                uniqueKey =new STUniqueKeyImpl(ImmutableList.<STLocalKey>builder().add(localKey).build());
+            }
+
+
+            return new STNodeEntryImpl(name,localKey,uniqueKey);
+        }
+    }
+
 }

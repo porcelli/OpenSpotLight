@@ -49,11 +49,139 @@
 
 package org.openspotlight.storage.redis;
 
+import org.jredis.JRedis;
+import org.junit.Test;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 4:41:46 PM
  */
 public class RawStorageTest {
 
-    
+    private static class Singleton {
+
+        private static ThreadLocal<JRedis> threadLocal = new ThreadLocal<JRedis>();
+
+        public static JRedis get() {
+            synchronized (Thread.currentThread()) {
+
+                JRedis r = threadLocal.get();
+                if (r == null) {
+                    r = new org.jredis.ri.alphazero.JRedisClient();
+                    threadLocal.set(r);
+                }
+                return r;
+            }
+        }
+
+    }
+
+    @Test
+    public void shouldUseRedis() throws Exception {
+
+
+        /*
+         * name
+         * ids
+         * simple-properties
+         * pojo-properties
+         * stream-properties
+         * list-properties
+         * map-properties
+         * set-properties
+         * serializable-list-properties
+         * serializable-map-properties
+         * serializable-set-properties
+         */
+
+                ExecutorService
+        pool = Executors.newFixedThreadPool(4);
+        List<Callable<Void>> callables = new LinkedList<Callable<Void>>();
+
+
+        for (int nodeHashT = 0; nodeHashT < 1000; nodeHashT++) {
+            final int nodeHash = nodeHashT;
+            callables.add(new Callable<Void>() {
+                public Void call() throws Exception {
+                    Singleton.get().sadd("5-node-hashs", nodeHash);
+                    return null;
+                }
+
+            });
+
+
+            callables.add(new Callable<Void>() {
+                public Void call() throws Exception {
+                    Singleton.get().set("5-node:" + nodeHash + "::node-name", "<node-name>" + nodeHash);
+                    return null;
+                }
+
+            });
+            for (int propertyT = 0; propertyT < 100; propertyT++) {
+                final int property = propertyT;
+                //keys
+                callables.add(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        Singleton.get().sadd("5-node:" + nodeHash + "::key-names", property);
+                        return null;
+                    }
+
+                });
+                callables.add(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        Singleton.get().set("5-node:" + nodeHash + "::key:" + property + "::type", "<key-type>" + property);
+                        return null;
+                    }
+
+                });
+                callables.add(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        Singleton.get().set("5-node:" + nodeHash + "::key:" + property + ":value", "<key-value>" + property);
+                        return null;
+                    }
+
+                });
+
+                //simple properties
+                callables.add(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        Singleton.get().sadd("5-node:" + nodeHash + "::simple-properties-names", property);
+                        return null;
+                    }
+
+                });
+                callables.add(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        Singleton.get().set("5-node:" + nodeHash + "::simple-property:" + property + "::type", "<key-type>" + property);
+                        return null;
+                    }
+
+                });
+                callables.add(new Callable<Void>() {
+                    public Void call() throws Exception {
+                        Singleton.get().set("5-node:" + nodeHash + "::simple-property:" + property + "::value", "<key-value>" + property);
+                        return null;
+                    }
+
+                });
+
+            }
+
+        }
+        List<Future<Void>> futures = pool.invokeAll(callables);
+
+        for (Future<Void> f : futures) {
+            f.get();
+        }
+
+
+    }
+
 
 }
