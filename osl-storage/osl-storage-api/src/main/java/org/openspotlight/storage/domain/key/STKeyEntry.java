@@ -49,7 +49,7 @@
 
 package org.openspotlight.storage.domain.key;
 
-import org.openspotlight.storage.STAData;
+import org.openspotlight.storage.domain.STAData;
 import java.io.Serializable;
 
 /**

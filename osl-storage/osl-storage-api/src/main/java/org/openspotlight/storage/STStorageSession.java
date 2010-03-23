@@ -66,6 +66,13 @@ import java.util.Set;
  */
 public interface STStorageSession extends STNodeEntryFactory {
 
+
+    public static enum FlushMode{
+        AUTO, EXPLICIT
+    }
+
+    public FlushMode getFlushMode();
+
     /**
      * This method was created to avoid casts to the Persistent storage internal classes.
      *
@@ -73,6 +80,8 @@ public interface STStorageSession extends STNodeEntryFactory {
      * @return Internal API classes for internal storage session management.
      */
     public <T> T get();
+
+    
 
     STNodeEntryBuilder createWithName(String name);
 
@@ -154,4 +163,7 @@ public interface STStorageSession extends STNodeEntryFactory {
 
         <T extends Serializable> T simplePropertyGetValue(org.openspotlight.storage.domain.property.STSimpleProperty stSimpleProperty);
     }
+
+    
+    void flushTransient();
 }

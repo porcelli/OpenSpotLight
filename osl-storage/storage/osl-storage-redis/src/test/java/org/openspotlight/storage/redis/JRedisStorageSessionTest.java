@@ -68,7 +68,7 @@ import static org.junit.Assert.assertThat;
  */
 public class JRedisStorageSessionTest {
 
-    final Injector injector = Guice.createInjector(new JRedisStorageModule());
+    final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.FlushMode.AUTO));
 
     @Test
     public void shouldInstantiateOneSessionPerThread() throws Exception {

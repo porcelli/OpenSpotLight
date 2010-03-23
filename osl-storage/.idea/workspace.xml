@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STAData.java" line="57" />
+    <bookmark url="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/STAData.java" line="57" />
   </component>
   <component name="ChangeListManager" verified="true">
     <list default="true" id="06d0ae2b-b0ca-4889-83e4-146562e41991" name="Default" comment="" />
@@ -67,7 +67,83 @@
   </component>
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="JRedisSTStorageSessionImpl.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/JRedisSTStorageSessionImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="59" column="57" selection-start="2698" selection-end="2698" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JRedisSTStorageSessionProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisSTStorageSessionProvider.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="65" column="76" selection-start="2983" selection-end="2983" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JRedisStorageModule.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisStorageModule.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="70" column="67" selection-start="3081" selection-end="3081" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JRedisStorageSessionTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/test/java/org/openspotlight/storage/redis/JRedisStorageSessionTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="68" column="13" selection-start="2886" selection-end="2886" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RawStorageTest.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/test/java/org/openspotlight/storage/redis/RawStorageTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="104" column="36" selection-start="3749" selection-end="3749" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AbstractSTStorageSession.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/AbstractSTStorageSession.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="65" column="59" selection-start="2912" selection-end="2912" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="STStorageSession.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STStorageSession.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="83" column="4" selection-start="3302" selection-end="3302" vertical-scroll-proportion="0.6373938">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -77,22 +153,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/domain/property/STAAccessorSimpleProperty.java" />
-        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STStorageSession.java" />
         <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/node/STNodeEntryImpl.java" />
-        <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/AbstractSTStorageSession.java" />
         <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/RedisStorageModule.java" />
         <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/RedisThreadLocalProvider.java" />
         <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/ThreadLocalProvider.java" />
         <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/RedisSTStorageSessionImpl.java" />
         <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/JRedisProvider.java" />
-        <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/JRedisSTStorageSessionImpl.java" />
         <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/RedisStorageModule.java" />
+        <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisProvider.java" />
+        <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/guice/ThreadLocalProvider.java" />
+        <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisSTStorageSessionProvider.java" />
+        <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/AbstractSTStorageSession.java" />
         <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisStorageModule.java" />
         <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/test/java/org/openspotlight/storage/redis/JRedisStorageSessionTest.java" />
-        <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisProvider.java" />
-        <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisSTStorageSessionProvider.java" />
-        <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/guice/ThreadLocalProvider.java" />
+        <option value="$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/JRedisSTStorageSessionImpl.java" />
+        <option value="$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/AbstractSTStorageSession.java" />
+        <option value="$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STStorageSession.java" />
       </list>
     </option>
   </component>
@@ -206,6 +282,44 @@
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="storage" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osl-storage-redis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="redis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -315,28 +429,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage-redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="osl-storage-core" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -356,10 +448,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -414,26 +502,8 @@
               <option name="myItemId" value="openspotlight" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-          </PATH>
-          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osl-storage-core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
+              <option name="myItemId" value="storage" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -451,11 +521,19 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
+              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="compile" />
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="openspotlight" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -684,22 +762,22 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="22" width="1280" height="746" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3258786" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3258786" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290735" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39935064" sideWeight="0.6629393" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24756494" sideWeight="0.6597444" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24756494" sideWeight="0.6629393" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3290735" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3290735" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32874617" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -782,53 +860,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STStorageSession.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="30" selection-start="3752" selection-end="3752" vertical-scroll-proportion="0.4935065">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/node/STNodeEntryImpl.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="116" column="51" selection-start="4394" selection-end="4394" vertical-scroll-proportion="-7.1153846">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/test/java/org/openspotlight/storage/redis/RawStorageTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="57" selection-start="3047" selection-end="3047" vertical-scroll-proportion="0.83243245">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/domain/AbstractSTStorageSession.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="103" column="32" selection-start="4894" selection-end="4894" vertical-scroll-proportion="-7.576923">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/JRedisSTStorageSessionImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="21" selection-start="2611" selection-end="2611" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/test/java/org/openspotlight/storage/redis/JRedisStorageSessionTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="33" selection-start="2799" selection-end="2799" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -841,27 +876,70 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisStorageModule.java">
+    <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/guice/ThreadLocalProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="5" selection-start="2588" selection-end="2588" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="72" column="43" selection-start="3149" selection-end="3149" vertical-scroll-proportion="0.8108108">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisSTStorageSessionProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="60" selection-start="2781" selection-end="2781" vertical-scroll-proportion="0.0">
+        <state line="65" column="76" selection-start="2983" selection-end="2983" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/guice/ThreadLocalProvider.java">
+    <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/guice/JRedisStorageModule.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="0" selection-start="2787" selection-end="2787" vertical-scroll-proportion="0.2918919">
+        <state line="70" column="67" selection-start="3081" selection-end="3081" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/test/java/org/openspotlight/storage/redis/RawStorageTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="104" column="36" selection-start="3749" selection-end="3749" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/test/java/org/openspotlight/storage/redis/JRedisStorageSessionTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="13" selection-start="2886" selection-end="2886" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/storage/osl-storage-redis/src/main/java/org/openspotlight/storage/redis/JRedisSTStorageSessionImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="59" column="57" selection-start="2698" selection-end="2698" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/osl-storage-core/src/main/java/org/openspotlight/storage/AbstractSTStorageSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="65" column="59" selection-start="2912" selection-end="2912" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/osl-storage-api/src/main/java/org/openspotlight/storage/STStorageSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="83" column="4" selection-start="3302" selection-end="3302" vertical-scroll-proportion="0.6373938">
           <folding />
         </state>
       </provider>

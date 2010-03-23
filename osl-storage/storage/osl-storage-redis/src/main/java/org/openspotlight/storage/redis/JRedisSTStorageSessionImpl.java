@@ -51,7 +51,8 @@ package org.openspotlight.storage.redis;
 
 import com.google.inject.Inject;
 import org.jredis.JRedis;
-import org.openspotlight.storage.domain.AbstractSTStorageSession;
+import org.openspotlight.storage.AbstractSTStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
@@ -59,11 +60,21 @@ import org.openspotlight.storage.domain.AbstractSTStorageSession;
 public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
 
     @Inject
-    public JRedisSTStorageSessionImpl(JRedis jredis) {
+    public JRedisSTStorageSessionImpl(JRedis jredis, FlushMode flushMode) {
+        super(flushMode);
         this.jredis = jredis;
     }
 
     private final JRedis jredis;
 
 
+    @Override
+    protected void flushNewItem(STNodeEntry entry) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void flushRemovedItem(STNodeEntry entry) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

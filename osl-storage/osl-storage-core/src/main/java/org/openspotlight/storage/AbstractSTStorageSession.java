@@ -47,10 +47,10 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.storage.domain;
+package org.openspotlight.storage;
 
 import com.google.common.collect.ImmutableList;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
@@ -58,17 +58,65 @@ import org.openspotlight.storage.domain.property.*;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
-public class AbstractSTStorageSession implements STStorageSession {
+public abstract class AbstractSTStorageSession implements STStorageSession {
+
+    private final FlushMode flushMode;
+
+    protected AbstractSTStorageSession(FlushMode flushMode) {
+        this.flushMode = flushMode;
+    }
+
+    protected void handleException(Exception e) {
+        throw new RuntimeException(e);
+    }
+
+    protected final List<STNodeEntry> newNodes = new LinkedList<STNodeEntry>();
+
+    protected final List<STAData> dirtyProperties = new LinkedList<STAData>();
+
+    protected final List<STNodeEntry> removedNodes = new LinkedList<STNodeEntry>();
 
     private final STStorageSessionInternalMethods internalMethods = new STStorageSessionInternalMethodsImpl();
+
+
+    protected abstract void flushNewItem(STNodeEntry entry) throws Exception;
+
+    protected abstract void flushRemovedItem(STNodeEntry entry) throws Exception;
+
+    private void handleNewItem(STNodeEntry entry) {
+        try {
+            switch (getFlushMode()) {
+                case AUTO:
+                    flushNewItem(entry);
+                    break;
+                case EXPLICIT:
+                    newNodes.add(entry);
+                    break;
+            }
+        } catch (Exception e) {
+            handleException(e);
+        }
+    }
+
+    private void handleRemovedItem(STNodeEntry entry) {
+        try {
+            switch (getFlushMode()) {
+                case AUTO:
+                    flushRemovedItem(entry);
+                    break;
+                case EXPLICIT:
+                    removedNodes.add(entry);
+                    break;
+            }
+        } catch (Exception e) {
+            handleException(e);
+        }
+    }
 
     private final class STStorageSessionInternalMethodsImpl implements STStorageSessionInternalMethods {
 
@@ -77,7 +125,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T> void nodeEntrySetSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public List<STSetProperty> nodeEntryGetSetProperties(STNodeEntry stNodeEntry) {
@@ -85,7 +133,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name) {
-            return createWithName(AbstractSTStorageSession.this,name).withParent(stNodeEntry);
+            return createWithName(AbstractSTStorageSession.this, name).withParent(stNodeEntry);
         }
 
         public List<STListProperty> nodeEntryGetListProperties(STNodeEntry stNodeEntry) {
@@ -93,7 +141,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T> void nodeEntrySetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STListProperty nodeEntryGetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
@@ -105,7 +153,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T> void nodeEntrySetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STSimpleProperty nodeEntryGetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name) {
@@ -117,7 +165,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T> void nodeEntrySetStreamProperty(STNodeEntry stNodeEntry, String name, T value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public STStreamProperty nodeEntryGetStreamProperty(STNodeEntry stNodeEntry, String name) {
@@ -129,7 +177,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <K, V> void nodeEntrySetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <K, V> STMapProperty nodeEntryGetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name) {
@@ -141,7 +189,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T> void nodeEntrySetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STSerializableListProperty nodeEntryGetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
@@ -153,7 +201,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <K, V> void nodeEntrySetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <K, V> STSerializableMapProperty nodeEntryGetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name) {
@@ -165,7 +213,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T> void nodeEntrySetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STSerializableSetProperty nodeEntryGetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
@@ -177,7 +225,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T> void nodeEntrySetPojoProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value) {
-            return ;  //To change body of implemented methods use File | Settings | File Templates.
+            return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         public <T> STPojoProperty nodeEntryGetPojoProperty(STNodeEntry stNodeEntry, Class<T> type, String name) {
@@ -222,6 +270,10 @@ public class AbstractSTStorageSession implements STStorageSession {
     }
 
 
+    public FlushMode getFlushMode() {
+        return flushMode;
+    }
+
     public <T> T get() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -238,7 +290,7 @@ public class AbstractSTStorageSession implements STStorageSession {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    private static final class STNodeEntryBuilderImpl implements STNodeEntryBuilder {
+    private final class STNodeEntryBuilderImpl implements STNodeEntryBuilder {
 
         private STNodeEntryBuilderImpl(String name) {
             this.name = name;
@@ -264,21 +316,59 @@ public class AbstractSTStorageSession implements STStorageSession {
         }
 
         public STNodeEntry andCreate() {
-            STLocalKeyImpl localKey = new STLocalKeyImpl(keys,name);
+            STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
-            STUniqueKeyImpl uniqueKey ;
-            if(parent!=null){
+            STUniqueKeyImpl uniqueKey;
+            if (parent != null) {
                 List<STLocalKey> allKeys = parent.getUniqueKey().getAllKeys();
                 allKeys.add(localKey);
                 uniqueKey = new STUniqueKeyImpl(allKeys);
 
-            }else{
-                uniqueKey =new STUniqueKeyImpl(ImmutableList.<STLocalKey>builder().add(localKey).build());
+            } else {
+                uniqueKey = new STUniqueKeyImpl(ImmutableList.<STLocalKey>builder().add(localKey).build());
             }
 
 
-            return new STNodeEntryImpl(name,localKey,uniqueKey);
+            STNodeEntryImpl result = new STNodeEntryImpl(name, localKey, uniqueKey);
+            AbstractSTStorageSession.this.handleNewItem(result);
+            return result;
         }
     }
 
+    public void flushTransient() {
+
+        for (STNodeEntry newNode : newNodes) {
+            try {
+                flushNewItem(newNode);
+            } catch (Exception e) {
+                handleException(e);
+            }
+        }
+        for (STNodeEntry removedNode : removedNodes) {
+            try {
+                flushRemovedItem(removedNode);
+            } catch (Exception e) {
+                handleException(e);
+            }
+        }
+
+        for (STAData data : dirtyProperties) {
+            try {
+                flushDirtyProperty(data);
+            } catch (Exception e) {
+                handleException(e);
+            }
+        }
+
+
+        this.newNodes.clear();
+        this.removedNodes.clear();
+        this.dirtyProperties.clear();
+
+    }
+
+    private void flushDirtyProperty(STAData data) {
+        //FIXME implement
+
+    }
 }

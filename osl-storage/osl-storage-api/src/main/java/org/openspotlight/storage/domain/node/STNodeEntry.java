@@ -49,7 +49,7 @@
 
 package org.openspotlight.storage.domain.node;
 
-import org.openspotlight.storage.STAData;
+import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.property.*;

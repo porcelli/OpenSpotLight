@@ -57,9 +57,17 @@ import org.openspotlight.storage.STStorageSession;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:41:43 PM
  */
 public class JRedisStorageModule extends AbstractModule {
+
+    private final STStorageSession.FlushMode flushMode;
+
+    public JRedisStorageModule(STStorageSession.FlushMode flushMode) {
+        this.flushMode = flushMode;
+    }
+
     @Override
     protected void configure() {
         bind(JRedis.class).toProvider(JRedisProvider.class);
         bind(STStorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
+        bind(STStorageSession.FlushMode.class).toInstance(flushMode);
     }
 }
