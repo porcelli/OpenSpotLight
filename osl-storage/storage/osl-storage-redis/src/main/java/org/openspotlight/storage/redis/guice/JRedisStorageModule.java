@@ -58,9 +58,9 @@ import org.openspotlight.storage.STStorageSession;
  */
 public class JRedisStorageModule extends AbstractModule {
 
-    private final STStorageSession.FlushMode flushMode;
+    private final STStorageSession.STFlushMode flushMode;
 
-    public JRedisStorageModule(STStorageSession.FlushMode flushMode) {
+    public JRedisStorageModule(STStorageSession.STFlushMode flushMode) {
         this.flushMode = flushMode;
     }
 
@@ -68,6 +68,6 @@ public class JRedisStorageModule extends AbstractModule {
     protected void configure() {
         bind(JRedis.class).toProvider(JRedisProvider.class);
         bind(STStorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
-        bind(STStorageSession.FlushMode.class).toInstance(flushMode);
+        bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
     }
 }

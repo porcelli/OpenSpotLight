@@ -60,7 +60,7 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
 
     @Inject
-    public JRedisSTStorageSessionImpl(JRedis jredis, FlushMode flushMode) {
+    public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode) {
         super(flushMode);
         this.jredis = jredis;
     }

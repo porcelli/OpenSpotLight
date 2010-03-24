@@ -49,8 +49,10 @@
 
 package org.openspotlight.storage;
 
-import org.openspotlight.storage.domain.node.STNodeEntryFactory;
+import org.openspotlight.storage.domain.key.STLocalKey;
+import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.property.*;
 
 import java.io.InputStream;
@@ -65,23 +67,66 @@ import java.util.Set;
  * any kind of connection state. This implementation must not be shared between threads.
  */
 public interface STStorageSession extends STNodeEntryFactory {
+    List<STNodeEntry> findByCriteria(STCriteria criteria);
+    STNodeEntry findUniqueByCriteria(STCriteria criteria);
+
+    public interface STPartition {
+        String getPartitionName();
+    }
+
+    public interface STCriteriaBuilder {
+        STCriteriaBuilder withProperty(String propertyName);
+
+        STCriteriaBuilder withNodeEntry(String nodeName);
+
+        <T extends Serializable> STCriteriaBuilder equals(Class<T> type, T value);
+
+        <T extends Serializable> STCriteriaBuilder notEquals(Class<T> type, T value);
+
+        STCriteriaBuilder and();
+
+        STCriteria buildCriteria();
+
+        STCriteriaBuilder withLocalKey(STLocalKey localKey);
+
+        STCriteriaBuilder withUniqueKey(STUniqueKey uniqueKey);
+    }
 
 
-    public static enum FlushMode{
+    public interface STCriteria {
+
+        public interface STCriteriaItem<T extends Serializable> {
+            public T getValue();
+
+            public Class<T> getType();
+
+            public String getPropertyName();
+
+            public boolean isNot();
+        }
+
+        public String getNodeName();
+
+        public List<STCriteriaItem<?>> getCriteriaItems();
+
+        public List<STNodeEntry> andFind(STStorageSession session);
+
+        public STNodeEntry andFindUnique(STStorageSession session);
+
+
+    }
+
+    public static enum STFlushMode {
         AUTO, EXPLICIT
     }
 
-    public FlushMode getFlushMode();
+    public STFlushMode getFlushMode();
 
-    /**
-     * This method was created to avoid casts to the Persistent storage internal classes.
-     *
-     * @param <T>
-     * @return Internal API classes for internal storage session management.
-     */
-    public <T> T get();
+    public STPartition getCurrentPartition();
 
-    
+    public STStorageSession withPartition(STPartition partition);
+
+    public STCriteriaBuilder createCriteria();
 
     STNodeEntryBuilder createWithName(String name);
 
@@ -159,11 +204,11 @@ public interface STStorageSession extends STNodeEntryFactory {
 
         <T> Set<T> serializableSetPropertyGetItems(org.openspotlight.storage.domain.property.STSerializableSetProperty stSerializableSetProperty);
 
-        <K,T> Map<K,T> serializableMapGetMap(org.openspotlight.storage.domain.property.STSerializableMapProperty stSerializableMapProperty);
+        <K, T> Map<K, T> serializableMapGetMap(org.openspotlight.storage.domain.property.STSerializableMapProperty stSerializableMapProperty);
 
         <T extends Serializable> T simplePropertyGetValue(org.openspotlight.storage.domain.property.STSimpleProperty stSimpleProperty);
     }
 
-    
+
     void flushTransient();
 }

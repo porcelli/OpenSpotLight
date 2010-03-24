@@ -65,15 +65,187 @@ import java.util.*;
  */
 public abstract class AbstractSTStorageSession implements STStorageSession {
 
-    private final FlushMode flushMode;
+    private static class STCriteriaItemImpl<T extends Serializable> implements STCriteria.STCriteriaItem<T>{
+        private STCriteriaItemImpl(T value, Class<T> type, String propertyName, boolean not) {
+            this.value = value;
+            this.type = type;
+            this.propertyName = propertyName;
+            this.not = not;
+        }
 
-    protected AbstractSTStorageSession(FlushMode flushMode) {
+        private final T value;
+
+        private final Class<T> type;
+
+        private final String propertyName;
+
+        private final boolean not;
+
+        public T getValue() {
+            return value;
+        }
+
+        public Class<T> getType() {
+            return type;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public boolean isNot() {
+            return not;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            STCriteriaItemImpl that = (STCriteriaItemImpl) o;
+
+            if (not != that.not) return false;
+            if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null)
+                return false;
+            if (type != null ? !type.equals(that.type) : that.type != null) return false;
+            if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = value != null ? value.hashCode() : 0;
+            result = 31 * result + (type != null ? type.hashCode() : 0);
+            result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
+            result = 31 * result + (not ? 1 : 0);
+            return result;
+        }
+    }
+
+    private static class STCriteriaImpl implements STCriteria{
+        private STCriteriaImpl(String nodeName, List<STCriteriaItem<?>> criteriaItems) {
+            this.nodeName = nodeName;
+            this.criteriaItems = ImmutableList.copyOf(criteriaItems);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            STCriteriaImpl that = (STCriteriaImpl) o;
+
+            if (criteriaItems != null ? !criteriaItems.equals(that.criteriaItems) : that.criteriaItems != null)
+                return false;
+            if (nodeName != null ? !nodeName.equals(that.nodeName) : that.nodeName != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = nodeName != null ? nodeName.hashCode() : 0;
+            result = 31 * result + (criteriaItems != null ? criteriaItems.hashCode() : 0);
+            return result;
+        }
+
+        private final String nodeName;
+
+        private final List<STCriteriaItem<?>> criteriaItems;
+
+        public String getNodeName() {
+            return nodeName;
+        }
+
+        public List<STCriteriaItem<?>> getCriteriaItems() {
+            return criteriaItems;
+        }
+
+        public List<STNodeEntry> andFind(STStorageSession session) {
+            return session.findByCriteria(this);
+        }
+
+        public STNodeEntry andFindUnique(STStorageSession session) {
+            return session.findUniqueByCriteria(this);
+        }
+    }
+
+    private static class STCriteriaBuilderImpl implements STCriteriaBuilder{
+
+        public STCriteriaBuilder withProperty(String propertyName) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public STCriteriaBuilder withNodeEntry(String nodeName) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public <T extends Serializable> STCriteriaBuilder equals(Class<T> type, T value) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public <T extends Serializable> STCriteriaBuilder notEquals(Class<T> type, T value) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public STCriteriaBuilder and() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public STCriteria buildCriteria() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public STCriteriaBuilder withLocalKey(STLocalKey localKey) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public STCriteriaBuilder withUniqueKey(STUniqueKey uniqueKey) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+    }
+
+    protected abstract List<STNodeEntry> internalFindByCriteria(STCriteria criteria);
+
+    protected abstract STNodeEntry internalFindUniqueByCriteria(STCriteria criteria);
+
+    public List<STNodeEntry> findByCriteria(STCriteria criteria) {
+        return internalFindByCriteria(criteria);
+    }
+
+    public STNodeEntry findUniqueByCriteria(STCriteria criteria) {
+        return internalFindUniqueByCriteria(criteria);
+    }
+
+    public STCriteriaBuilder createCriteria() {
+        return new STCriteriaBuilderImpl();
+    }
+
+    protected AbstractSTStorageSession(STFlushMode flushMode, STPartition partition) {
         this.flushMode = flushMode;
+        this.partition = partition;
+
+    }
+
+
+    protected abstract STStorageSession createNewInstance(STFlushMode flushMode, STPartition partition);
+
+    public STPartition getCurrentPartition() {
+        return partition;
+    }
+
+    public STStorageSession withPartition(STPartition partition) {
+        return createNewInstance(this.flushMode,partition);
     }
 
     protected void handleException(Exception e) {
         throw new RuntimeException(e);
     }
+
+    private final STFlushMode flushMode;
+
+    private final STPartition partition;
 
     protected final List<STNodeEntry> newNodes = new LinkedList<STNodeEntry>();
 
@@ -270,12 +442,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
 
-    public FlushMode getFlushMode() {
+    public STFlushMode getFlushMode() {
         return flushMode;
-    }
-
-    public <T> T get() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public STNodeEntryBuilder createWithName(String name) {
@@ -333,6 +501,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             AbstractSTStorageSession.this.handleNewItem(result);
             return result;
         }
+
+        
     }
 
     public void flushTransient() {

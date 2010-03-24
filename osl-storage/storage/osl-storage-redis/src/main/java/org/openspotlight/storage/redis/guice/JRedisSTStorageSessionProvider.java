@@ -62,13 +62,13 @@ import org.openspotlight.storage.redis.JRedisSTStorageSessionImpl;
 public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorageSession>{
 
     @Inject
-    public JRedisSTStorageSessionProvider(JRedisProvider jRedisProvider, STStorageSession.FlushMode flushMode) {
+    public JRedisSTStorageSessionProvider(JRedisProvider jRedisProvider, STStorageSession.STFlushMode flushMode) {
         this.jRedisProvider = jRedisProvider;
         this.flushMode = flushMode;
     }
 
     private final JRedisProvider jRedisProvider;
-    private final STStorageSession.FlushMode flushMode;
+    private final STStorageSession.STFlushMode flushMode;
 
     @Override
     protected STStorageSession createInstance() {
