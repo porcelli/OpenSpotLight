@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_osl-storage-api" default="compile.module.osl-storage-api">
+  <dirname property="module.osl-storage-api.basedir" file="${ant.file.module_osl-storage-api}"/>
+  
+  <property name="module.jdk.home.osl-storage-api" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.osl-storage-api" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.osl-storage-api" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.osl-storage-api" value="${compiler.args}"/>
+  
+  <property name="osl-storage-api.output.dir" value="/Users/feu/git/osl-lab/osl-storage/out/production/osl-storage-api"/>
+  <property name="osl-storage-api.testoutput.dir" value="/Users/feu/git/osl-lab/osl-storage/out/test/osl-storage-api"/>
+  
+  <path id="osl-storage-api.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="osl-storage-api.module.classpath">
+    <path refid="${module.jdk.classpath.osl-storage-api}"/>
+  </path>
+  
+  <path id="osl-storage-api.runtime.module.classpath">
+    <pathelement location="${osl-storage-api.output.dir}"/>
+    <pathelement location="${osl-storage-api.testoutput.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.osl-storage-api">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.osl-storage-api">
+    <patternset refid="excluded.from.module.osl-storage-api"/>
+  </patternset>
+  
+  <path id="osl-storage-api.module.sourcepath">
+    <dirset dir="${module.osl-storage-api.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="osl-storage-api.module.test.sourcepath">
+    <dirset dir="${module.osl-storage-api.basedir}">
+      <include name="src/test/java"/>
+      <include name="src/test/resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.osl-storage-api" depends="compile.module.osl-storage-api.production,compile.module.osl-storage-api.tests" description="Compile module osl-storage-api"/>
+  
+  <target name="compile.module.osl-storage-api.production" description="Compile module osl-storage-api; production classes">
+    <mkdir dir="${osl-storage-api.output.dir}"/>
+    <javac destdir="${osl-storage-api.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.osl-storage-api}/javac">
+      <compilerarg line="${compiler.args.osl-storage-api}"/>
+      <bootclasspath refid="osl-storage-api.module.bootclasspath"/>
+      <classpath refid="osl-storage-api.module.classpath"/>
+      <src refid="osl-storage-api.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.osl-storage-api"/>
+    </javac>
+    
+    <copy todir="${osl-storage-api.output.dir}">
+      <fileset dir="${module.osl-storage-api.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.osl-storage-api.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.osl-storage-api.tests" depends="compile.module.osl-storage-api.production" description="compile module osl-storage-api; test classes" unless="skip.tests">
+    <mkdir dir="${osl-storage-api.testoutput.dir}"/>
+    <javac destdir="${osl-storage-api.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.osl-storage-api}/javac">
+      <compilerarg line="${compiler.args.osl-storage-api}"/>
+      <classpath refid="osl-storage-api.module.classpath"/>
+      <classpath>
+        <path refid="osl-storage-api.module.classpath"/>
+        <pathelement location="${osl-storage-api.output.dir}"/>
+      </classpath>
+      <src refid="osl-storage-api.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.osl-storage-api"/>
+    </javac>
+    
+    <copy todir="${osl-storage-api.testoutput.dir}">
+      <fileset dir="${module.osl-storage-api.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.osl-storage-api.basedir}/src/test/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.osl-storage-api" description="cleanup module">
+    <delete dir="${osl-storage-api.output.dir}"/>
+    <delete dir="${osl-storage-api.testoutput.dir}"/>
+  </target>
+</project>

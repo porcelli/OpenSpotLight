@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_osl-storage-redis" default="compile.module.osl-storage-redis">
+  <dirname property="module.osl-storage-redis.basedir" file="${ant.file.module_osl-storage-redis}"/>
+  
+  <property name="module.jdk.home.osl-storage-redis" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.osl-storage-redis" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.osl-storage-redis" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.osl-storage-redis" value="${compiler.args}"/>
+  
+  <property name="osl-storage-redis.output.dir" value="/Users/feu/git/osl-lab/osl-storage/out/production/osl-storage-redis"/>
+  <property name="osl-storage-redis.testoutput.dir" value="/Users/feu/git/osl-lab/osl-storage/out/test/osl-storage-redis"/>
+  
+  <path id="osl-storage-redis.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="osl-storage-redis.module.classpath">
+    <path refid="${module.jdk.classpath.osl-storage-redis}"/>
+    <pathelement location="${basedir}/storage/osl-storage-redis/lib/compile/jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar"/>
+    <pathelement location="${osl-storage-api.output.dir}"/>
+    <pathelement location="${osl-storage-api.testoutput.dir}"/>
+    <pathelement location="${osl-storage-core.output.dir}"/>
+    <pathelement location="${osl-storage-core.testoutput.dir}"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/compile/google-collect-1.0.jar"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/compile/guice-2.0.jar"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/test/junit-4.4.jar"/>
+  </path>
+  
+  <path id="osl-storage-redis.runtime.module.classpath">
+    <pathelement location="${osl-storage-redis.output.dir}"/>
+    <pathelement location="${osl-storage-redis.testoutput.dir}"/>
+    <pathelement location="${basedir}/storage/osl-storage-redis/lib/compile/jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar"/>
+    <pathelement location="${osl-storage-api.output.dir}"/>
+    <pathelement location="${osl-storage-api.testoutput.dir}"/>
+    <pathelement location="${osl-storage-core.output.dir}"/>
+    <pathelement location="${osl-storage-core.testoutput.dir}"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/compile/google-collect-1.0.jar"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/compile/guice-2.0.jar"/>
+    <pathelement location="${basedir}/osl-storage-core/lib/test/junit-4.4.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.osl-storage-redis">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.osl-storage-redis">
+    <patternset refid="excluded.from.module.osl-storage-redis"/>
+  </patternset>
+  
+  <path id="osl-storage-redis.module.sourcepath">
+    <dirset dir="${module.osl-storage-redis.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="osl-storage-redis.module.test.sourcepath">
+    <dirset dir="${module.osl-storage-redis.basedir}">
+      <include name="src/test/java"/>
+      <include name="src/test/resources"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.osl-storage-redis" depends="compile.module.osl-storage-redis.production,compile.module.osl-storage-redis.tests" description="Compile module osl-storage-redis"/>
+  
+  <target name="compile.module.osl-storage-redis.production" depends="compile.module.osl-storage-api,compile.module.osl-storage-core" description="Compile module osl-storage-redis; production classes">
+    <mkdir dir="${osl-storage-redis.output.dir}"/>
+    <javac destdir="${osl-storage-redis.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.osl-storage-redis}/javac">
+      <compilerarg line="${compiler.args.osl-storage-redis}"/>
+      <bootclasspath refid="osl-storage-redis.module.bootclasspath"/>
+      <classpath refid="osl-storage-redis.module.classpath"/>
+      <src refid="osl-storage-redis.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.osl-storage-redis"/>
+    </javac>
+    
+    <copy todir="${osl-storage-redis.output.dir}">
+      <fileset dir="${module.osl-storage-redis.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.osl-storage-redis.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.osl-storage-redis.tests" depends="compile.module.osl-storage-redis.production" description="compile module osl-storage-redis; test classes" unless="skip.tests">
+    <mkdir dir="${osl-storage-redis.testoutput.dir}"/>
+    <javac destdir="${osl-storage-redis.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.osl-storage-redis}/javac">
+      <compilerarg line="${compiler.args.osl-storage-redis}"/>
+      <classpath refid="osl-storage-redis.module.classpath"/>
+      <classpath>
+        <path refid="osl-storage-redis.module.classpath"/>
+        <pathelement location="${osl-storage-redis.output.dir}"/>
+      </classpath>
+      <src refid="osl-storage-redis.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.osl-storage-redis"/>
+    </javac>
+    
+    <copy todir="${osl-storage-redis.testoutput.dir}">
+      <fileset dir="${module.osl-storage-redis.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.osl-storage-redis.basedir}/src/test/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.osl-storage-redis" description="cleanup module">
+    <delete dir="${osl-storage-redis.output.dir}"/>
+    <delete dir="${osl-storage-redis.testoutput.dir}"/>
+  </target>
+</project>
