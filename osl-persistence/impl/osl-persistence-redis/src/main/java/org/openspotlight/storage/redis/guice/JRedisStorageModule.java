@@ -51,6 +51,7 @@ package org.openspotlight.storage.redis.guice;
 
 import com.google.inject.AbstractModule;
 import org.jredis.JRedis;
+import org.openspotlight.storage.DefaultPartition;
 import org.openspotlight.storage.STStorageSession;
 
 /**
@@ -60,8 +61,11 @@ public class JRedisStorageModule extends AbstractModule {
 
     private final STStorageSession.STFlushMode flushMode;
 
-    public JRedisStorageModule(STStorageSession.STFlushMode flushMode) {
+    private final STStorageSession.STPartition defaultPartition;
+
+    public JRedisStorageModule(STStorageSession.STFlushMode flushMode, STStorageSession.STPartition defaultPartition) {
         this.flushMode = flushMode;
+        this.defaultPartition = defaultPartition;
     }
 
     @Override
@@ -69,5 +73,6 @@ public class JRedisStorageModule extends AbstractModule {
         bind(JRedis.class).toProvider(JRedisProvider.class);
         bind(STStorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
         bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
+        bind(STStorageSession.STPartition.class).annotatedWith(DefaultPartition.class).toInstance(defaultPartition);
     }
 }

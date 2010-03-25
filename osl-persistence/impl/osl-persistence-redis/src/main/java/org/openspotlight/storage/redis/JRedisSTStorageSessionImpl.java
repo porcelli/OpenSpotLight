@@ -61,7 +61,7 @@ import java.util.List;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
 public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
-    protected JRedisSTStorageSessionImpl(STFlushMode flushMode, STPartition partition) {
+    public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode, STPartition partition) {
         super(flushMode, partition);
     }
 

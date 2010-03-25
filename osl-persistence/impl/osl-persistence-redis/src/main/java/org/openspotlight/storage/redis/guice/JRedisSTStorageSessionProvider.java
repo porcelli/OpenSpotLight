@@ -52,6 +52,7 @@ package org.openspotlight.storage.redis.guice;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.openspotlight.guice.ThreadLocalProvider;
+import org.openspotlight.storage.DefaultPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.JRedisSTStorageSessionImpl;
 
@@ -59,19 +60,21 @@ import org.openspotlight.storage.redis.JRedisSTStorageSessionImpl;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:57:04 PM
  */
 @Singleton
-public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorageSession>{
+public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorageSession> {
 
     @Inject
-    public JRedisSTStorageSessionProvider(JRedisProvider jRedisProvider, STStorageSession.STFlushMode flushMode) {
+    public JRedisSTStorageSessionProvider(JRedisProvider jRedisProvider, STStorageSession.STFlushMode flushMode, @DefaultPartition STStorageSession.STPartition partition) {
         this.jRedisProvider = jRedisProvider;
         this.flushMode = flushMode;
+        this.partition = partition;
     }
 
+    private final STStorageSession.STPartition partition;
     private final JRedisProvider jRedisProvider;
     private final STStorageSession.STFlushMode flushMode;
 
     @Override
     protected STStorageSession createInstance() {
-        return new JRedisSTStorageSessionImpl(jRedisProvider.get(),flushMode);
+        return new JRedisSTStorageSessionImpl(jRedisProvider.get(), flushMode, partition);
     }
 }

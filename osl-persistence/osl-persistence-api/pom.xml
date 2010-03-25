@@ -12,5 +12,15 @@
 	<artifactId>osl-persistence-api</artifactId>
 	<packaging>jar</packaging>
 	<name>OpenSpotLight Persistence Api</name>
-
+	<dependencies>
+		<dependency>
+			<groupId>google</groupId>
+			<artifactId>guice</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+		</dependency>
+	</dependencies>
 </project>

@@ -68,7 +68,22 @@ import static org.junit.Assert.assertThat;
  */
 public class JRedisStorageSessionTest {
 
-    final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO));
+    private enum ExamplePartition implements STStorageSession.STPartition {
+
+        DEFAULT("default");
+
+        private final String partitionName;
+
+        public String getPartitionName() {
+            return partitionName;
+        }
+
+        ExamplePartition(String partitionName) {
+            this.partitionName = partitionName;
+        }
+    }
+
+    final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExamplePartition.DEFAULT));
 
     @Test
     public void shouldInstantiateOneSessionPerThread() throws Exception {
