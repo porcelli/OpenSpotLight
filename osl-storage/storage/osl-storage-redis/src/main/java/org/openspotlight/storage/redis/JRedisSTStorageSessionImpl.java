@@ -52,29 +52,41 @@ package org.openspotlight.storage.redis;
 import com.google.inject.Inject;
 import org.jredis.JRedis;
 import org.openspotlight.storage.AbstractSTStorageSession;
+import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import java.util.List;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
 public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
-
-    @Inject
-    public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode) {
-        super(flushMode);
-        this.jredis = jredis;
+    protected JRedisSTStorageSessionImpl(STFlushMode flushMode, STPartition partition) {
+        super(flushMode, partition);
     }
 
-    private final JRedis jredis;
-
+    @Override
+    protected List<STNodeEntry> internalFindByCriteria(STCriteria criteria) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     @Override
-    protected void flushNewItem(STNodeEntry entry) {
+    protected STNodeEntry internalFindUniqueByCriteria(STCriteria criteria) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected STStorageSession createNewInstance(STFlushMode flushMode, STPartition partition) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void flushNewItem(STNodeEntry entry) throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    protected void flushRemovedItem(STNodeEntry entry) {
+    protected void flushRemovedItem(STNodeEntry entry) throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

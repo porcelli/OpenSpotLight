@@ -68,6 +68,7 @@ import java.util.Set;
  */
 public interface STStorageSession extends STNodeEntryFactory {
     List<STNodeEntry> findByCriteria(STCriteria criteria);
+
     STNodeEntry findUniqueByCriteria(STCriteria criteria);
 
     public interface STPartition {
@@ -92,22 +93,44 @@ public interface STStorageSession extends STNodeEntryFactory {
         STCriteriaBuilder withUniqueKey(STUniqueKey uniqueKey);
     }
 
+    public interface STPropertyCriteriaItem<T extends Serializable> extends STCriteriaItem {
+        public T getValue();
+
+        public Class<T> getType();
+
+        public String getPropertyName();
+
+        public boolean isNot();
+    }
+
+
+    public interface STUniqueKeyCriteriaItem extends STCriteriaItem {
+        public STUniqueKey getValue();
+
+        public boolean isNot();
+    }
+
+    public interface STLocalKeyCriteriaItem extends STCriteriaItem {
+        public STLocalKey getValue();
+
+        public boolean isNot();
+    }
+
+    public interface STCriteriaItem {
+
+        public String getNodeEntryName();
+
+
+
+    }
+
 
     public interface STCriteria {
 
-        public interface STCriteriaItem<T extends Serializable> {
-            public T getValue();
-
-            public Class<T> getType();
-
-            public String getPropertyName();
-
-            public boolean isNot();
-        }
 
         public String getNodeName();
 
-        public List<STCriteriaItem<?>> getCriteriaItems();
+        public List<STCriteriaItem> getCriteriaItems();
 
         public List<STNodeEntry> andFind(STStorageSession session);
 
