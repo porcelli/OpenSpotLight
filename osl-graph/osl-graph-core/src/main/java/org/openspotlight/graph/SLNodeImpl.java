@@ -58,8 +58,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
@@ -89,9 +87,6 @@ import org.slf4j.LoggerFactory;
  * @author Vitor Hugo Chagas
  */
 public class SLNodeImpl implements SLNode, SLPNodeGetter {
-    static final AtomicLong                 counter    = new AtomicLong();
-    static final AtomicInteger              memCounter = new AtomicInteger();
-
     private SLMetaNodeType                  metaType   = null;
 
     private final Lock                      lock;
@@ -169,8 +164,6 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 if (pChildNode == null) {
                     type = clazz;
                     pChildNode = pNode.addNode(encodedName);
-                    counter.incrementAndGet();
-                    memCounter.incrementAndGet();
                     SLCommonSupport.setInternalStringProperty(pChildNode,
                                                               SLConsts.PROPERTY_NAME_DECODED_NAME, name);
                 } else {
@@ -189,9 +182,6 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 if (typeName == null) {
                     nodeProxy.setProperty(String.class, VisibilityLevel.PUBLIC,
                                           SLConsts.PROPERTY_CAPTION_NAME, name);
-                }
-                if (needsSave()) {
-                    getSession().saveJcr();
                 }
                 eventPoster.post(new SLNodeAddedEvent(nodeProxy, pChildNode,
                                                       persistenceMode, linkTypesForLinkDeletion,
@@ -1222,13 +1212,6 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 return false;
             }
         }
-    }
-
-    private boolean needsSave() {
-//        if (SLGraphSessionImpl.linkMemCounter.get() + memCounter.get() > 5000) {
-//            return true;
-//        }
-        return false;
     }
 
     /**
