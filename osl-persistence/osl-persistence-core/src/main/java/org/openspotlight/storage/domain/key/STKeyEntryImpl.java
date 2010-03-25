@@ -50,6 +50,7 @@
 package org.openspotlight.storage.domain.key;
 
 import java.io.Serializable;
+import static org.openspotlight.common.util.Compare.npeSafeCompare;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:42:37 AM
@@ -105,6 +106,15 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
         int result = type != null ? type.hashCode() : 0;
         result = 31 * result + (value != null ? value.hashCode() : 0);
         result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
+        return result;
+    }
+
+    public int compareTo(STKeyEntry o) {
+        int result = npeSafeCompare(propertyName,o.getPropertyName());
+                if(result!=0) return result;
+        result = type.getName().compareTo(o.getType().getName());
+                if(result!=0) return result;
+        result = npeSafeCompare(value,o.getValue());
         return result;
     }
 }

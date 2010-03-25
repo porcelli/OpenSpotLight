@@ -52,6 +52,7 @@ package org.openspotlight.storage.domain.property;
 import org.openspotlight.storage.STStorageSession;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -62,7 +63,7 @@ import java.util.List;
  */
 public interface STAAccessorStreamProperty {
     
-    List<STStreamProperty> getStreamProperties(STStorageSession session);
+    Set<STStreamProperty> getStreamProperties(STStorageSession session);
 
     <T> void setStreamProperty(STStorageSession session, String name, T value);
 

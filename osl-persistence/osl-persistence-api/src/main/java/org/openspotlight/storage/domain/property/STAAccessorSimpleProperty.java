@@ -52,6 +52,7 @@ package org.openspotlight.storage.domain.property;
 import org.openspotlight.storage.STStorageSession;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -62,7 +63,7 @@ import java.util.List;
  */
 public interface STAAccessorSimpleProperty {
 
-    List<STSimpleProperty> getSimpleProperties(STStorageSession session);
+    Set<STSimpleProperty> getSimpleProperties(STStorageSession session);
 
     <T> void setSimpleProperty(STStorageSession session, Class<T> type, String name, T value);
 

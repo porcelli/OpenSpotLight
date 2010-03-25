@@ -56,6 +56,7 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
@@ -66,7 +67,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
     }
 
     @Override
-    protected List<STNodeEntry> internalFindByCriteria(STCriteria criteria) {
+    protected Set<STNodeEntry> internalFindByCriteria(STCriteria criteria) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -82,7 +83,10 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
 
     @Override
     protected void flushNewItem(STNodeEntry entry) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+
+
+
     }
 
     @Override

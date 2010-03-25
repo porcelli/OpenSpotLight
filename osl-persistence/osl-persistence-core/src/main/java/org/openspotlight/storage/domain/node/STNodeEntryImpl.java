@@ -98,7 +98,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public List<STListProperty> getListProperties(STStorageSession session) {
+    public Set<STListProperty> getListProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetListProperties(this);
 
     }
@@ -113,7 +113,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public List<STSimpleProperty> getSimpleProperties(STStorageSession session) {
+    public Set<STSimpleProperty> getSimpleProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetSimpleProperties(this);
 
     }
@@ -128,7 +128,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public List<STStreamProperty> getStreamProperties(STStorageSession session) {
+    public Set<STStreamProperty> getStreamProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetStreamProperties(this);
 
     }
@@ -143,7 +143,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public List<STMapProperty> getMapProperties(STStorageSession session) {
+    public Set<STMapProperty> getMapProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetMapProperties(this);
 
     }
@@ -158,7 +158,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public List<STSerializableListProperty> getSerializableListProperties(STStorageSession session) {
+    public Set<STSerializableListProperty> getSerializableListProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetSerializableListProperties(this);
 
     }
@@ -173,7 +173,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public List<STSerializableMapProperty> getSerializableMapProperties(STStorageSession session) {
+    public Set<STSerializableMapProperty> getSerializableMapProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetSerializableMapProperties(this);
 
     }
@@ -188,7 +188,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public List<STSerializableSetProperty> getSerializableSetProperties(STStorageSession session) {
+    public Set<STSerializableSetProperty> getSerializableSetProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetSerializableSetProperties(this);
 
     }
@@ -203,7 +203,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public List<STPojoProperty> getPojoProperties(STStorageSession session) {
+    public Set<STPojoProperty> getPojoProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetPojoProperties(this);
     }
 
@@ -215,7 +215,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         return session.getInternalMethods().nodeEntryGetPojoProperty(this, type, name);
     }
 
-    public List<STSetProperty> getSetProperties(STStorageSession session) {
+    public Set<STSetProperty> getSetProperties(STStorageSession session) {
         return session.getInternalMethods().nodeEntryGetSetProperties(this);
     }
 

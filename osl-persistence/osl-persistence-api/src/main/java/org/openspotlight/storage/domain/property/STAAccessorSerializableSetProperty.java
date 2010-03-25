@@ -63,7 +63,7 @@ import java.util.Set;
  */
 public interface STAAccessorSerializableSetProperty {
     
-    List<STSerializableSetProperty> getSerializableSetProperties(STStorageSession session);
+    Set<STSerializableSetProperty> getSerializableSetProperties(STStorageSession session);
 
     <T> void setSerializableSetProperty(STStorageSession session, Class<T> valueType, String name, Set<T> value);
 

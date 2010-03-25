@@ -60,7 +60,7 @@ import java.util.Set;
  * Time: 1:51:50 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface STLocalKey extends STAData {
+public interface STLocalKey extends STAData, Comparable {
 
     Set<STKeyEntry<?>> getEntries();
 

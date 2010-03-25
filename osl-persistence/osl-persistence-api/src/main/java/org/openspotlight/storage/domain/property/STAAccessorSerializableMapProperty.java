@@ -53,6 +53,7 @@ import org.openspotlight.storage.STStorageSession;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -64,7 +65,7 @@ import java.util.Map;
 public interface STAAccessorSerializableMapProperty {
 
 
-    List<STSerializableMapProperty> getSerializableMapProperties(STStorageSession session);
+    Set<STSerializableMapProperty> getSerializableMapProperties(STStorageSession session);
 
     <K,V> void setSerializableMapProperty(STStorageSession session, Class<K> keyType, Class<V> valueType, String name, Map<K,V> value);
 

@@ -52,6 +52,7 @@ package org.openspotlight.storage.domain.property;
 import org.openspotlight.storage.STStorageSession;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -61,7 +62,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface STAAccessorSerializableListProperty {
-    List<STSerializableListProperty> getSerializableListProperties(STStorageSession session);
+    Set<STSerializableListProperty> getSerializableListProperties(STStorageSession session);
 
     <T> void setSerializableListProperty(STStorageSession session, Class<T> valueType, String name, List<T> value);
 

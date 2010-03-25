@@ -52,6 +52,7 @@ package org.openspotlight.storage.domain.property;
 import org.openspotlight.storage.STStorageSession;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -62,7 +63,7 @@ import java.util.List;
  */
 public interface STAAccessorPojoProperty {
 
-    List<STPojoProperty> getPojoProperties(STStorageSession session);
+    Set<STPojoProperty> getPojoProperties(STStorageSession session);
 
     <T> void setPojoProperty(STStorageSession session, Class<T> type, String name, T value);
 

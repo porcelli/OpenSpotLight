@@ -49,7 +49,7 @@
 
 package org.openspotlight.storage;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSortedSet;
 import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
@@ -59,11 +59,38 @@ import org.openspotlight.storage.domain.property.*;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
+import static java.text.MessageFormat.format;
 
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
 public abstract class AbstractSTStorageSession implements STStorageSession {
+
+    protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethods();
+
+    protected class STStorageSessionSupportMethods{
+
+        
+        
+        public String getLocalKeyAsStringHash(STLocalKey localKey){
+            return null;
+        }
+
+        public byte[] getLocalKeyAsByteHash(STLocalKey localKey){
+            return null;
+        }
+
+        public String getGlobalKeyAsStringHash(STLocalKey localKey){
+            return null;
+        }
+
+        public byte[] getGlobalKeyAsByteHash(STLocalKey localKey){
+            return null;
+        }
+
+
+        
+    }
 
     private static class STUniqueKeyCriteriaItemImpl implements STUniqueKeyCriteriaItem {
         private STUniqueKeyCriteriaItemImpl(STUniqueKey value, boolean not, String nodeEntryName) {
@@ -233,9 +260,9 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     private static class STCriteriaImpl implements STCriteria {
-        private STCriteriaImpl(String nodeName, List<STCriteriaItem> criteriaItems) {
+        private STCriteriaImpl(String nodeName, Set<STCriteriaItem> criteriaItems) {
             this.nodeName = nodeName;
-            this.criteriaItems = ImmutableList.copyOf(criteriaItems);
+            this.criteriaItems = ImmutableSortedSet.copyOf(criteriaItems);
         }
 
         @Override
@@ -261,17 +288,17 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private final String nodeName;
 
-        private final List<STCriteriaItem> criteriaItems;
+        private final Set<STCriteriaItem> criteriaItems;
 
         public String getNodeName() {
             return nodeName;
         }
 
-        public List<STCriteriaItem> getCriteriaItems() {
+        public Set<STCriteriaItem> getCriteriaItems() {
             return criteriaItems;
         }
 
-        public List<STNodeEntry> andFind(STStorageSession session) {
+        public Set<STNodeEntry> andFind(STStorageSession session) {
             return session.findByCriteria(this);
         }
 
@@ -296,7 +323,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private Serializable transientPropertyValue;
 
-        List<STCriteriaItem> items = new LinkedList();
+        Set<STCriteriaItem> items = new LinkedHashSet();
 
         private void breakIfNotNull(Object o) {
             if (o != null) throw new IllegalStateException();
@@ -338,6 +365,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             transientPropertyType = type;
             transientPropertyValue = value;
             transientNot = false;
+            and();
             return this;
         }
 
@@ -351,12 +379,13 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             transientPropertyType = type;
             transientPropertyValue = value;
             transientNot = true;
+            and();
             return this;
         }
 
         public STCriteriaBuilder and() {
             STCriteriaItem item = null;
-            breakIfNull(transientPropertyName);
+            breakIfNull(transientNodeEntryName);
             if (transientUniqueKey != null) {
                 item = new STUniqueKeyCriteriaItemImpl(transientUniqueKey, false, transientNodeEntryName);
 
@@ -372,10 +401,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
                 item = new STPropertyCriteriaItemImpl(transientPropertyValue, transientPropertyType, transientPropertyName, transientNot, transientNodeEntryName);
 
-            } else {
-                breakHere();
             }
-            transientNodeEntryName = null;
             transientPropertyName = null;
             transientNot = null;
             transientUniqueKey = null;
@@ -388,10 +414,13 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
         public STCriteria buildCriteria() {
-            breakIfNull(transientPropertyName);
+            breakIfNull(transientNodeEntryName);
             if(this.items.size()==0) breakHere();
 
-            return new STCriteriaImpl(transientNodeEntryName, this.items);
+            STCriteriaImpl result = new STCriteriaImpl(transientNodeEntryName, this.items);
+            and();
+
+            return result;
         }
 
         public STCriteriaBuilder withLocalKey(STLocalKey localKey) {
@@ -403,6 +432,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             breakIfNotNull(transientLocalKey);
 
             transientLocalKey = localKey;
+            and();
             return this;
         }
 
@@ -416,15 +446,16 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             breakIfNotNull(transientUniqueKey);
 
             transientUniqueKey = uniqueKey;
+            and();
             return this;
         }
     }
 
-    protected abstract List<STNodeEntry> internalFindByCriteria(STCriteria criteria);
+    protected abstract Set<STNodeEntry> internalFindByCriteria(STCriteria criteria);
 
     protected abstract STNodeEntry internalFindUniqueByCriteria(STCriteria criteria);
 
-    public List<STNodeEntry> findByCriteria(STCriteria criteria) {
+    public Set<STNodeEntry> findByCriteria(STCriteria criteria) {
         return internalFindByCriteria(criteria);
     }
 
@@ -461,11 +492,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     private final STPartition partition;
 
-    protected final List<STNodeEntry> newNodes = new LinkedList<STNodeEntry>();
+    protected final Set<STNodeEntry> newNodes = new LinkedHashSet<STNodeEntry>();
 
-    protected final List<STAData> dirtyProperties = new LinkedList<STAData>();
+    protected final Set<STAData> dirtyProperties = new LinkedHashSet<STAData>();
 
-    protected final List<STNodeEntry> removedNodes = new LinkedList<STNodeEntry>();
+    protected final Set<STNodeEntry> removedNodes = new LinkedHashSet<STNodeEntry>();
 
     private final STStorageSessionInternalMethods internalMethods = new STStorageSessionInternalMethodsImpl();
 
@@ -514,7 +545,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List<STSetProperty> nodeEntryGetSetProperties(STNodeEntry stNodeEntry) {
+        public Set<STSetProperty> nodeEntryGetSetProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -522,7 +553,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return createWithName(AbstractSTStorageSession.this, name).withParent(stNodeEntry);
         }
 
-        public List<STListProperty> nodeEntryGetListProperties(STNodeEntry stNodeEntry) {
+        public Set<STListProperty> nodeEntryGetListProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -534,7 +565,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List<STSimpleProperty> nodeEntryGetSimpleProperties(STNodeEntry stNodeEntry) {
+        public Set<STSimpleProperty> nodeEntryGetSimpleProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -546,7 +577,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List<STStreamProperty> nodeEntryGetStreamProperties(STNodeEntry stNodeEntry) {
+        public Set<STStreamProperty> nodeEntryGetStreamProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -558,7 +589,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List<STMapProperty> nodeEntryGetMapProperties(STNodeEntry stNodeEntry) {
+        public Set<STMapProperty> nodeEntryGetMapProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -570,7 +601,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List<STSerializableListProperty> nodeEntryGetSerializableListProperties(STNodeEntry stNodeEntry) {
+        public Set<STSerializableListProperty> nodeEntryGetSerializableListProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -582,7 +613,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List<STSerializableMapProperty> nodeEntryGetSerializableMapProperties(STNodeEntry stNodeEntry) {
+        public Set<STSerializableMapProperty> nodeEntryGetSerializableMapProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -594,7 +625,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List<STSerializableSetProperty> nodeEntryGetSerializableSetProperties(STNodeEntry stNodeEntry) {
+        public Set<STSerializableSetProperty> nodeEntryGetSerializableSetProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -606,7 +637,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        public List<STPojoProperty> nodeEntryGetPojoProperties(STNodeEntry stNodeEntry) {
+        public Set<STPojoProperty> nodeEntryGetPojoProperties(STNodeEntry stNodeEntry) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
@@ -669,7 +700,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     public STNodeEntryBuilder createWithName(STStorageSession session, String name) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new STNodeEntryBuilderImpl(name);
     }
 
     private final class STNodeEntryBuilderImpl implements STNodeEntryBuilder {
@@ -702,12 +733,12 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
             STUniqueKeyImpl uniqueKey;
             if (parent != null) {
-                List<STLocalKey> allKeys = parent.getUniqueKey().getAllKeys();
+                Set<STLocalKey> allKeys = parent.getUniqueKey().getAllKeys();
                 allKeys.add(localKey);
                 uniqueKey = new STUniqueKeyImpl(allKeys);
 
             } else {
-                uniqueKey = new STUniqueKeyImpl(ImmutableList.<STLocalKey>builder().add(localKey).build());
+                uniqueKey = new STUniqueKeyImpl(ImmutableSortedSet.<STLocalKey>builder().add(localKey).build());
             }
 
 

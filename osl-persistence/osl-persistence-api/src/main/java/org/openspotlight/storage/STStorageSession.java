@@ -67,7 +67,7 @@ import java.util.Set;
  * any kind of connection state. This implementation must not be shared between threads.
  */
 public interface STStorageSession extends STNodeEntryFactory {
-    List<STNodeEntry> findByCriteria(STCriteria criteria);
+    Set<STNodeEntry> findByCriteria(STCriteria criteria);
 
     STNodeEntry findUniqueByCriteria(STCriteria criteria);
 
@@ -130,9 +130,9 @@ public interface STStorageSession extends STNodeEntryFactory {
 
         public String getNodeName();
 
-        public List<STCriteriaItem> getCriteriaItems();
+        public Set<STCriteriaItem> getCriteriaItems();
 
-        public List<STNodeEntry> andFind(STStorageSession session);
+        public Set<STNodeEntry> andFind(STStorageSession session);
 
         public STNodeEntry andFindUnique(STStorageSession session);
 
@@ -161,53 +161,53 @@ public interface STStorageSession extends STNodeEntryFactory {
 
         <T> void nodeEntrySetSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value);
 
-        List<STSetProperty> nodeEntryGetSetProperties(STNodeEntry stNodeEntry);
+        Set<STSetProperty> nodeEntryGetSetProperties(STNodeEntry stNodeEntry);
 
         STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name);
 
-        List<STListProperty> nodeEntryGetListProperties(STNodeEntry stNodeEntry);
+        Set<STListProperty> nodeEntryGetListProperties(STNodeEntry stNodeEntry);
 
         <T> void nodeEntrySetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value);
 
         <T> STListProperty nodeEntryGetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name);
 
-        List<STSimpleProperty> nodeEntryGetSimpleProperties(STNodeEntry stNodeEntry);
+        Set<STSimpleProperty> nodeEntryGetSimpleProperties(STNodeEntry stNodeEntry);
 
         <T> void nodeEntrySetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value);
 
         <T> STSimpleProperty nodeEntryGetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name);
 
-        List<STStreamProperty> nodeEntryGetStreamProperties(STNodeEntry stNodeEntry);
+        Set<STStreamProperty> nodeEntryGetStreamProperties(STNodeEntry stNodeEntry);
 
         <T> void nodeEntrySetStreamProperty(STNodeEntry stNodeEntry, String name, T value);
 
         STStreamProperty nodeEntryGetStreamProperty(STNodeEntry stNodeEntry, String name);
 
-        List<STMapProperty> nodeEntryGetMapProperties(STNodeEntry stNodeEntry);
+        Set<STMapProperty> nodeEntryGetMapProperties(STNodeEntry stNodeEntry);
 
         <K, V> void nodeEntrySetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value);
 
         <K, V> STMapProperty nodeEntryGetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name);
 
-        List<STSerializableListProperty> nodeEntryGetSerializableListProperties(STNodeEntry stNodeEntry);
+        Set<STSerializableListProperty> nodeEntryGetSerializableListProperties(STNodeEntry stNodeEntry);
 
         <T> void nodeEntrySetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value);
 
         <T> STSerializableListProperty nodeEntryGetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name);
 
-        List<STSerializableMapProperty> nodeEntryGetSerializableMapProperties(STNodeEntry stNodeEntry);
+        Set<STSerializableMapProperty> nodeEntryGetSerializableMapProperties(STNodeEntry stNodeEntry);
 
         <K, V> void nodeEntrySetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value);
 
         <K, V> STSerializableMapProperty nodeEntryGetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name);
 
-        List<STSerializableSetProperty> nodeEntryGetSerializableSetProperties(STNodeEntry stNodeEntry);
+        Set<STSerializableSetProperty> nodeEntryGetSerializableSetProperties(STNodeEntry stNodeEntry);
 
         <T> void nodeEntrySetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value);
 
         <T> STSerializableSetProperty nodeEntryGetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name);
 
-        List<STPojoProperty> nodeEntryGetPojoProperties(STNodeEntry stNodeEntry);
+        Set<STPojoProperty> nodeEntryGetPojoProperties(STNodeEntry stNodeEntry);
 
         <T> void nodeEntrySetPojoProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value);
 

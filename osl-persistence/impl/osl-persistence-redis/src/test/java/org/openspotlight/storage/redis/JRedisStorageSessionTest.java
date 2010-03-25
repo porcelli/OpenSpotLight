@@ -53,13 +53,18 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Test;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 
@@ -92,17 +97,38 @@ public class JRedisStorageSessionTest {
         assertThat(session1, is(session2));
 
         final List<STStorageSession> sessions = new CopyOnWriteArrayList<STStorageSession>();
+        final CountDownLatch latch = new CountDownLatch(1);
 
         new Thread() {
             @Override
             public void run() {
+                try{
                 sessions.add(injector.getInstance(STStorageSession.class));
+                }finally{
+                    latch.countDown();
+                }
             }
         }.start();
-        Thread.sleep(500);
+        latch.await(5, TimeUnit.SECONDS);
         assertThat(sessions.size(), is(1));
         assertThat(session1, is(not(sessions.get(0))));
     }
 
+
+    @Test
+    public void shouldInsertNewNodeEntryAndFindUniqueWithAutoFlush() {
+        STStorageSession session1 = injector.getInstance(STStorageSession.class);
+        STNodeEntry foundNewNode1 = session1.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
+                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session1);
+        assertThat(foundNewNode1, is(nullValue()));
+
+        STNodeEntry newNode1 = session1.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        foundNewNode1 = session1.createCriteria().withNodeEntry("newNode1").withProperty("sequence")
+                .equals(Integer.class, 1).withProperty("name").equals(String.class, "name")
+                .buildCriteria().andFindUnique(session1);
+        assertThat(foundNewNode1, is(notNullValue()));
+        assertThat(foundNewNode1, is(newNode1));
+    }
 
 }

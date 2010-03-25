@@ -53,6 +53,7 @@ import org.openspotlight.storage.domain.STAData;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -64,7 +65,7 @@ import java.util.List;
  */
 public interface STUniqueKey extends STAData {
 
-    List<STLocalKey> getAllKeys();
+    Set<STLocalKey> getAllKeys();
 
     Serializable getRawKey();
 

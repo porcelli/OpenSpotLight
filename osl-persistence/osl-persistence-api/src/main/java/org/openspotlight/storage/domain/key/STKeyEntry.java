@@ -59,8 +59,10 @@ import java.io.Serializable;
  * Time: 1:47:15 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface STKeyEntry<T extends Serializable> extends STAData {
+public interface STKeyEntry<T extends Serializable> extends STAData, Comparable<STKeyEntry> {
 
+
+    String getPropertyName();
 
     Class<T> getType();
 

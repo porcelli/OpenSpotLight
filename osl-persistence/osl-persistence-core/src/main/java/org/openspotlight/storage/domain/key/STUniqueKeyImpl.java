@@ -49,32 +49,30 @@
 
 package org.openspotlight.storage.domain.key;
 
-import com.google.common.collect.ImmutableList;
-import org.openspotlight.storage.domain.key.STLocalKey;
-import org.openspotlight.storage.domain.key.STUniqueKey;
+import com.google.common.collect.ImmutableSortedSet;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:48:26 AM
  */
 public class STUniqueKeyImpl implements STUniqueKey {
-    public STUniqueKeyImpl(List<STLocalKey> allKeys) {
-        this.allKeys = ImmutableList.copyOf(allKeys);
+    public STUniqueKeyImpl(Set<STLocalKey> allKeys) {
+        this.allKeys = ImmutableSortedSet.copyOf(allKeys);
         this.rawKey = null;
     }
 
-    public STUniqueKeyImpl(List<STLocalKey> allKeys, Serializable rawKey) {
-        this.allKeys = ImmutableList.copyOf(allKeys);
+    public STUniqueKeyImpl(Set<STLocalKey> allKeys, Serializable rawKey) {
+        this.allKeys = ImmutableSortedSet.copyOf(allKeys);
         this.rawKey = rawKey;
     }
 
-    private final List<STLocalKey> allKeys;
+    private final Set<STLocalKey> allKeys;
 
     private final Serializable rawKey;
 
-    public List<STLocalKey> getAllKeys() {
+    public Set<STLocalKey> getAllKeys() {
         return allKeys;
     }
 

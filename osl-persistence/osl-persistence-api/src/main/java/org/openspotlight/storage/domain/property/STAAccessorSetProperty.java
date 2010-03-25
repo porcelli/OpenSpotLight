@@ -63,7 +63,7 @@ import java.util.Set;
  */
 public interface STAAccessorSetProperty {
 
-    List<STSetProperty> getSetProperties(STStorageSession session);
+    Set<STSetProperty> getSetProperties(STStorageSession session);
 
     <T> void setSetProperty(STStorageSession session, Class<T> valueType, String name, Set<T> value);
 

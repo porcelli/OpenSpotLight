@@ -48,8 +48,7 @@
  */
 
 package org.openspotlight.storage.domain.key;
-
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 
 import java.util.Set;
 
@@ -58,11 +57,7 @@ import java.util.Set;
  */
 public class STLocalKeyImpl implements STLocalKey {
     public STLocalKeyImpl(Set<STKeyEntry<?>> entries, String nodeEntryName) {
-        if (entries instanceof ImmutableSet) {
-            this.entries = entries;
-        } else {
-            this.entries = ImmutableSet.copyOf(entries);
-        }
+        this.entries = ImmutableSortedSet.copyOf(entries);
         this.nodeEntryName = nodeEntryName;
     }
 
@@ -97,5 +92,9 @@ public class STLocalKeyImpl implements STLocalKey {
         int result = entries != null ? entries.hashCode() : 0;
         result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
         return result;
+    }
+
+    public int compareTo(Object o) {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
