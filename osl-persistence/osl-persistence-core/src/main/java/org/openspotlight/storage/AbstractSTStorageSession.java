@@ -55,11 +55,11 @@ import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.property.*;
+import static org.openspotlight.common.util.Sha1.*;
 
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
-import static java.text.MessageFormat.format;
 
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
@@ -68,28 +68,48 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethods();
 
-    protected class STStorageSessionSupportMethods{
+    protected class STStorageSessionSupportMethods {
 
-        
-        
-        public String getLocalKeyAsStringHash(STLocalKey localKey){
-            return null;
+
+
+        public String getLocalKeyAsStringHash(STLocalKey localKey) {
+            return getSha1SignatureEncodedAsBase64(getLocalKeyAsSimpleString(localKey));
         }
 
-        public byte[] getLocalKeyAsByteHash(STLocalKey localKey){
-            return null;
-        }
-
-        public String getGlobalKeyAsStringHash(STLocalKey localKey){
-            return null;
-        }
-
-        public byte[] getGlobalKeyAsByteHash(STLocalKey localKey){
-            return null;
+        public String getUniqueKeyAsStringHash(STUniqueKey uniqueKey) {
+            return getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey));
         }
 
 
-        
+        public byte[] getLocalKeyAsByteHash(STLocalKey localKey) {
+            return getSha1Signature(getLocalKeyAsSimpleString(localKey));
+        }
+
+
+        public byte[] getUniqueKeyAsByteHash(STUniqueKey uniqueKey) {
+            return getSha1Signature(getUniqueKeyAsSimpleString(uniqueKey));
+
+        }
+
+
+        public String getLocalKeyAsSimpleString(STLocalKey localKey) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(localKey.getNodeEntryName());
+            for (STKeyEntry entry : localKey.getEntries()) {
+                sb.append(":").append(entry.getPropertyName()).append(":")
+                        .append(entry.getType().getName()).append(":").append(entry.getValue());
+            }
+            return sb.toString();
+        }
+
+        public String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey) {
+            StringBuilder sb = new StringBuilder();
+            for (STLocalKey entry : uniqueKey.getAllKeys()) {
+                sb.append(getLocalKeyAsSimpleString(entry)).append(":");
+            }
+            return sb.toString();
+        }
+
     }
 
     private static class STUniqueKeyCriteriaItemImpl implements STUniqueKeyCriteriaItem {
@@ -415,7 +435,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         public STCriteria buildCriteria() {
             breakIfNull(transientNodeEntryName);
-            if(this.items.size()==0) breakHere();
+            if (this.items.size() == 0) breakHere();
 
             STCriteriaImpl result = new STCriteriaImpl(transientNodeEntryName, this.items);
             and();

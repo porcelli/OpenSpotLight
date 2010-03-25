@@ -53,17 +53,25 @@ import com.google.inject.Inject;
 import org.jredis.JRedis;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
 public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
+
+    private final String KEY_NAMES="key-names";
+
+    private final JRedis jRedis;
     public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode, STPartition partition) {
         super(flushMode, partition);
+        this.jRedis = jredis;
     }
 
     @Override
@@ -83,6 +91,14 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
 
     @Override
     protected void flushNewItem(STNodeEntry entry) throws Exception {
+        Map<String,Object> itemsToSave = new HashMap<String,Object>();
+        String itemId = supportMethods.getUniqueKeyAsSimpleString(entry.getUniqueKey());
+
+
+        String localItemId = supportMethods.getLocalKeyAsSimpleString(entry.getLocalKey());
+        for(STKeyEntry<?> k: entry.getLocalKey().getEntries()){
+            
+        }
 
 
 

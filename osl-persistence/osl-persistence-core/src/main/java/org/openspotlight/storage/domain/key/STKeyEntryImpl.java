@@ -117,5 +117,16 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
         result = npeSafeCompare(value,o.getValue());
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "STKeyEntryImpl{" +
+                "type=" + type +
+                ", value=" + value +
+                ", propertyName='" + propertyName + '\'' +
+                '}';
+    }
+
+    
 }
 
