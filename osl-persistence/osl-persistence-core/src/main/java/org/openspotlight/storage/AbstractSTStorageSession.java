@@ -49,17 +49,20 @@
 
 package org.openspotlight.storage;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.property.*;
-import static org.openspotlight.common.util.Sha1.*;
 
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
+
+import static org.openspotlight.common.util.Sha1.getSha1Signature;
+import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
@@ -69,7 +72,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethods();
 
     protected class STStorageSessionSupportMethods {
-
 
 
         public String getLocalKeyAsStringHash(STLocalKey localKey) {
@@ -159,6 +161,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
+
+        
     }
 
     private static class STLocalKeyCriteriaItemImpl implements STLocalKeyCriteriaItem {
@@ -209,6 +213,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
+
     }
 
     private static class STPropertyCriteriaItemImpl<T extends Serializable> implements STPropertyCriteriaItem<T> {
@@ -277,12 +282,14 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
+
+
     }
 
     private static class STCriteriaImpl implements STCriteria {
         private STCriteriaImpl(String nodeName, Set<STCriteriaItem> criteriaItems) {
             this.nodeName = nodeName;
-            this.criteriaItems = ImmutableSortedSet.copyOf(criteriaItems);
+            this.criteriaItems = ImmutableSet.copyOf(criteriaItems);
         }
 
         @Override
@@ -471,16 +478,29 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
     }
 
-    protected abstract Set<STNodeEntry> internalFindByCriteria(STCriteria criteria);
+    protected abstract Set<STNodeEntry> internalFindByCriteria(STCriteria criteria) throws Exception;
 
-    protected abstract STNodeEntry internalFindUniqueByCriteria(STCriteria criteria);
 
     public Set<STNodeEntry> findByCriteria(STCriteria criteria) {
-        return internalFindByCriteria(criteria);
+        try {
+            return internalFindByCriteria(criteria);
+        } catch (Exception e) {
+            handleException(e);
+            return null;
+        }
     }
 
     public STNodeEntry findUniqueByCriteria(STCriteria criteria) {
-        return internalFindUniqueByCriteria(criteria);
+        try {
+            Set<STNodeEntry> result = internalFindByCriteria(criteria);
+            if(result==null) return null;
+            if (result.size() == 0) return null;
+            if (result.size() == 1) return result.iterator().next();
+            throw new IllegalStateException();
+        } catch (Exception e) {
+            handleException(e);
+            return null;
+        }
     }
 
     public STCriteriaBuilder createCriteria() {
@@ -758,7 +778,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                 uniqueKey = new STUniqueKeyImpl(allKeys);
 
             } else {
-                uniqueKey = new STUniqueKeyImpl(ImmutableSortedSet.<STLocalKey>builder().add(localKey).build());
+                uniqueKey = new STUniqueKeyImpl(ImmutableSet.<STLocalKey>builder().add(localKey).build());
             }
 
 

@@ -52,6 +52,7 @@ package org.openspotlight.storage.domain.key;
 import com.google.common.collect.ImmutableSortedSet;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -98,5 +99,26 @@ public class STUniqueKeyImpl implements STUniqueKey {
         int result = allKeys != null ? allKeys.hashCode() : 0;
         result = 31 * result + (rawKey != null ? rawKey.hashCode() : 0);
         return result;
+    }
+
+    public int compareTo(STUniqueKey o) {
+
+        Iterator<STLocalKey> thisIt = getAllKeys().iterator();
+        Iterator<STLocalKey> thatIt = o.getAllKeys().iterator();
+        while(true){
+            boolean thisHasNext = thisIt.hasNext();
+            boolean thatHasNext = thatIt.hasNext();
+
+            if(thisHasNext && thatHasNext){
+                STLocalKey thisNext = thisIt.next();
+                STLocalKey thatNext = thatIt.next();
+                int result = thisNext.compareTo(thatNext);
+                if(result!=0) return result;
+            }else{
+                if(thisHasNext && !thatHasNext) return 1;
+                if(!thisHasNext && thatHasNext) return -1;
+                return 0;
+            }
+        }
     }
 }

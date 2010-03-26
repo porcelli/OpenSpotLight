@@ -49,38 +49,70 @@
 
 package org.openspotlight.storage.redis;
 
-import com.google.inject.Inject;
+import com.google.common.collect.Lists;
 import org.jredis.JRedis;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import static java.text.MessageFormat.format;
+import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
-public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
+public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
-    private final String KEY_NAMES="key-names";
+    private final String SET_WITH_ALL_KEYS = "all-unique-keys";
+    private final String SET_WITH_ALL_LOCAL_KEYS = "local-keys:{0}:unique-keys";
+    private final String SET_WITH_NODE_KEYS_NAMES = "node-unique-key:{0}:key-names";
+    private final String SET_WITH_NODE_PROPERTY_NAMES = "node-unique-key:{0}:property-names";
+    private final String SET_WITH_PROPERTY_NODE_IDS = "property-name:{0}:property-type:{1}:property-value:{2}:node-unique-keys";
+    private final String KEY_WITH_PROPERTY_VALUE = "node-unique-key:{0}:property-name:{1}:value";
+    private final String KEY_WITH_PROPERTY_TYPE = "node-unique-key:{0}:property-name:{1}:type";
 
     private final JRedis jRedis;
+
+
     public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode, STPartition partition) {
         super(flushMode, partition);
         this.jRedis = jredis;
     }
 
     @Override
-    protected Set<STNodeEntry> internalFindByCriteria(STCriteria criteria) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    protected Set<STNodeEntry> internalFindByCriteria(STCriteria criteria) throws Exception {
+        List<String> inter = Lists.newLinkedList();
+        for (STCriteriaItem c : criteria.getCriteriaItems()) {
+            if (c instanceof STPropertyCriteriaItem) {
+                STPropertyCriteriaItem p = (STPropertyCriteriaItem) c;
+                inter.add(format(SET_WITH_PROPERTY_NODE_IDS, p.getPropertyName(), p.getType().getName(), p.getValue()));
+            }
+        }
+        List<byte[]> ids;
+        if (inter.size() > 1) {
+            ids = jRedis.sinter(inter.get(0), inter.subList(1, inter.size()).toArray(new String[0]));
+        } else if (inter.size() == 1) {
+            ids = jRedis.sinter(inter.get(0));
 
-    @Override
-    protected STNodeEntry internalFindUniqueByCriteria(STCriteria criteria) {
+        } else {
+            ids = Collections.emptyList();
+        }
+        List<String> idsAsString = Lists.newLinkedList();
+        if (ids != null) {
+            for (byte[] b : ids) {
+                String s = toStr(b);
+                idsAsString.add(s);
+                System.err.println(s);
+            }
+        }
+        //Here needs to mount the key elements... and after the simple properties
+
+
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -91,22 +123,40 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession{
 
     @Override
     protected void flushNewItem(STNodeEntry entry) throws Exception {
-        Map<String,Object> itemsToSave = new HashMap<String,Object>();
-        String itemId = supportMethods.getUniqueKeyAsSimpleString(entry.getUniqueKey());
 
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(entry.getUniqueKey());
+        jRedis.sadd(SET_WITH_ALL_KEYS, uniqueKey);
 
-        String localItemId = supportMethods.getLocalKeyAsSimpleString(entry.getLocalKey());
-        for(STKeyEntry<?> k: entry.getLocalKey().getEntries()){
-            
+        String localKey = supportMethods.getLocalKeyAsStringHash(entry.getLocalKey());
+        jRedis.sadd(format(SET_WITH_ALL_LOCAL_KEYS, localKey), uniqueKey);
+
+        for (STKeyEntry<?> k : entry.getLocalKey().getEntries()) {
+            jRedis.sadd(format(SET_WITH_NODE_KEYS_NAMES, uniqueKey), k.getPropertyName());
+            jRedis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), k.getPropertyName());
+            jRedis.sadd(format(SET_WITH_PROPERTY_NODE_IDS, k.getPropertyName(), k.getType().getName(),
+                    k.getValue()), uniqueKey);
+            jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()), k.getType().getName());
+            jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), k.getValue());
         }
-
-
 
 
     }
 
     @Override
     protected void flushRemovedItem(STNodeEntry entry) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(entry.getUniqueKey());
+        jRedis.srem(SET_WITH_ALL_KEYS, uniqueKey);
+
+        String localKey = supportMethods.getLocalKeyAsStringHash(entry.getLocalKey());
+        jRedis.srem(format(SET_WITH_ALL_LOCAL_KEYS, localKey), uniqueKey);
+
+        for (STKeyEntry<?> k : entry.getLocalKey().getEntries()) {
+            jRedis.del(format(SET_WITH_NODE_KEYS_NAMES, uniqueKey));
+            jRedis.del(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey));
+            jRedis.srem(format(SET_WITH_PROPERTY_NODE_IDS, k.getPropertyName(), k.getType().getName(),
+                    k.getValue()), uniqueKey);
+            jRedis.del(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()));
+            jRedis.del(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()));
+        }
     }
 }
