@@ -65,8 +65,8 @@ import java.util.Set;
  */
 public interface STUniqueKey extends STAData , Comparable<STUniqueKey>{
 
-    Set<STLocalKey> getAllKeys();
+    STLocalKey getLocalKey();
 
-    Serializable getRawKey();
+    STUniqueKey getParentKey();
 
 }

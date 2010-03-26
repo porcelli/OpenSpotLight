@@ -106,9 +106,12 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         public String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey) {
             StringBuilder sb = new StringBuilder();
-            for (STLocalKey entry : uniqueKey.getAllKeys()) {
-                sb.append(getLocalKeyAsSimpleString(entry)).append(":");
+            STUniqueKey currentKey = uniqueKey;
+            while(currentKey!=null){
+                sb.append(getLocalKeyAsSimpleString(currentKey.getLocalKey())).append(":");
+                currentKey = currentKey.getParentKey();
             }
+            
             return sb.toString();
         }
 
@@ -771,17 +774,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public STNodeEntry andCreate() {
             STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
-            STUniqueKeyImpl uniqueKey;
-            if (parent != null) {
-                Set<STLocalKey> allKeys = parent.getUniqueKey().getAllKeys();
-                allKeys.add(localKey);
-                uniqueKey = new STUniqueKeyImpl(allKeys);
-
-            } else {
-                uniqueKey = new STUniqueKeyImpl(ImmutableSet.<STLocalKey>builder().add(localKey).build());
-            }
-
-
+            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey,parent.getUniqueKey());
             STNodeEntryImpl result = new STNodeEntryImpl(name, localKey, uniqueKey);
             AbstractSTStorageSession.this.handleNewItem(result);
             return result;

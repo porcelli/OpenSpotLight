@@ -59,26 +59,22 @@ import java.util.Set;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:48:26 AM
  */
 public class STUniqueKeyImpl implements STUniqueKey {
-    public STUniqueKeyImpl(Set<STLocalKey> allKeys) {
-        this.allKeys = ImmutableSortedSet.copyOf(allKeys);
-        this.rawKey = null;
+
+    public STUniqueKeyImpl(STLocalKey localKey, STUniqueKey parentKey) {
+        this.localKey = localKey;
+        this.parentKey = parentKey;
     }
 
-    public STUniqueKeyImpl(Set<STLocalKey> allKeys, Serializable rawKey) {
-        this.allKeys = ImmutableSortedSet.copyOf(allKeys);
-        this.rawKey = rawKey;
+    private final STLocalKey localKey;
+
+    private final STUniqueKey parentKey;
+
+    public STLocalKey getLocalKey() {
+        return localKey;
     }
 
-    private final Set<STLocalKey> allKeys;
-
-    private final Serializable rawKey;
-
-    public Set<STLocalKey> getAllKeys() {
-        return allKeys;
-    }
-
-    public Serializable getRawKey() {
-        return rawKey;
+    public STUniqueKey getParentKey() {
+        return parentKey;
     }
 
     @Override
@@ -88,37 +84,37 @@ public class STUniqueKeyImpl implements STUniqueKey {
 
         STUniqueKeyImpl that = (STUniqueKeyImpl) o;
 
-        if (allKeys != null ? !allKeys.equals(that.allKeys) : that.allKeys != null) return false;
-        if (rawKey != null ? !rawKey.equals(that.rawKey) : that.rawKey != null) return false;
+        if (localKey != null ? !localKey.equals(that.localKey) : that.localKey != null) return false;
+        if (parentKey != null ? !parentKey.equals(that.parentKey) : that.parentKey != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = allKeys != null ? allKeys.hashCode() : 0;
-        result = 31 * result + (rawKey != null ? rawKey.hashCode() : 0);
+        int result = localKey != null ? localKey.hashCode() : 0;
+        result = 31 * result + (parentKey != null ? parentKey.hashCode() : 0);
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "STUniqueKeyImpl{" +
+                "localKey=" + localKey +
+                '}';
+    }
+
     public int compareTo(STUniqueKey o) {
-
-        Iterator<STLocalKey> thisIt = getAllKeys().iterator();
-        Iterator<STLocalKey> thatIt = o.getAllKeys().iterator();
+        STUniqueKey thisKey = this;
+        STUniqueKey thatKey = o;
         while(true){
-            boolean thisHasNext = thisIt.hasNext();
-            boolean thatHasNext = thatIt.hasNext();
-
-            if(thisHasNext && thatHasNext){
-                STLocalKey thisNext = thisIt.next();
-                STLocalKey thatNext = thatIt.next();
-                int result = thisNext.compareTo(thatNext);
-                if(result!=0) return result;
-            }else{
-                if(thisHasNext && !thatHasNext) return 1;
-                if(!thisHasNext && thatHasNext) return -1;
-                return 0;
-            }
+            if(thisKey==null && thatKey==null) return 0;
+            if(thisKey!=null && thatKey==null) return 1;
+            if(thisKey==null && thatKey!=null) return -1;
+            int result = thisKey.getLocalKey().compareTo(thatKey.getLocalKey());
+            if(result!=0) return result;
+            thisKey = thisKey.getParentKey();
+            thatKey = thatKey.getParentKey();
         }
     }
 }

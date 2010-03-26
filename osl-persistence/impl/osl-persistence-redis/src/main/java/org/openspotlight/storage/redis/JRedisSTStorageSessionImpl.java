@@ -54,6 +54,7 @@ import org.jredis.JRedis;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STKeyEntry;
+import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import java.util.Collections;
@@ -70,6 +71,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     private final String SET_WITH_ALL_KEYS = "all-unique-keys";
     private final String SET_WITH_ALL_LOCAL_KEYS = "local-keys:{0}:unique-keys";
+    private final String ZSET_WITH_ALL_PARENTS_UNIQUE_KEYS = "node-unique-key:{0}:parent-unique-keys";
     private final String SET_WITH_NODE_KEYS_NAMES = "node-unique-key:{0}:key-names";
     private final String SET_WITH_NODE_PROPERTY_NAMES = "node-unique-key:{0}:property-names";
     private final String SET_WITH_PROPERTY_NODE_IDS = "property-name:{0}:property-type:{1}:property-value:{2}:node-unique-keys";
@@ -107,11 +109,13 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             for (byte[] b : ids) {
                 String s = toStr(b);
                 idsAsString.add(s);
-                System.err.println(s);
             }
         }
-        //Here needs to mount the key elements... and after the simple properties
 
+
+        for(String s: idsAsString){
+              jRedis.
+        }
 
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -126,6 +130,9 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
         String uniqueKey = supportMethods.getUniqueKeyAsStringHash(entry.getUniqueKey());
         jRedis.sadd(SET_WITH_ALL_KEYS, uniqueKey);
+        for(STLocalKey parents: entry.getUniqueKey().getAllKeys()){
+            
+        }
 
         String localKey = supportMethods.getLocalKeyAsStringHash(entry.getLocalKey());
         jRedis.sadd(format(SET_WITH_ALL_LOCAL_KEYS, localKey), uniqueKey);
