@@ -232,6 +232,18 @@ public interface STStorageSession extends STNodeEntryFactory {
         <T extends Serializable> T simplePropertyGetValue(org.openspotlight.storage.domain.property.STSimpleProperty stSimpleProperty);
     }
 
+    interface STUniqueKeyBuilder {
+
+        <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, T value);
+
+        STUniqueKeyBuilder withParent(String nodeEntryName);
+
+        STUniqueKey andCreate();
+
+    }
+
+    STUniqueKeyBuilder createKey(String nodeEntryName);
+    
 
     void flushTransient();
 }

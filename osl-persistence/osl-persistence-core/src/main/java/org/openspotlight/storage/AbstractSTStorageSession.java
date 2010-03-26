@@ -819,4 +819,38 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         //FIXME implement
 
     }
+
+    public STUniqueKeyBuilder createKey(String nodeEntryName) {
+        return new STUniqueKeyBuilderImpl(nodeEntryName);
+    }
+
+
+
+    private static class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder{
+
+        private final String name;
+
+        finish this
+
+        public STUniqueKeyBuilderImpl(String name) {
+            this.name = name;
+        }
+
+        public <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, T value) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public STUniqueKeyBuilder withParent(String nodeEntryName) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public STUniqueKey andCreate() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        private STUniqueKeyBuilderImpl child;
+
+
+
+    }
 }
