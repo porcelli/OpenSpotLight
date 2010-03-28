@@ -49,10 +49,12 @@
 
 package org.openspotlight.storage.domain.node;
 
+import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
-import org.openspotlight.storage.domain.property.*;
+
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -61,21 +63,22 @@ import org.openspotlight.storage.domain.property.*;
  * Time: 1:46:28 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface STNodeEntry extends STAData, STNodeEntryFactory, STAAccessorListProperty,
-        STAAccessorMapProperty,
-        STAAccessorPojoProperty,
-        STAAccessorSerializableListProperty,
-        STAAccessorSerializableMapProperty,
-        STAAccessorSerializableSetProperty,
-        STAAccessorSetProperty,
-        STAAccessorSimpleProperty,
-        STAAccessorStreamProperty, Comparable<STNodeEntry>{
+public interface STNodeEntry extends STAData, STNodeEntryFactory,
+    Comparable<STNodeEntry>{
 
     String getNodeEntryName();
 
     STLocalKey getLocalKey();
 
     STUniqueKey getUniqueKey();
+
+    STProperty getProperty(STStorageSession session, String name);
+
+    Set<String> getPropertyNames();
+    
+    Set<STProperty> getProperties(STStorageSession session);
+
+
 
 
 }

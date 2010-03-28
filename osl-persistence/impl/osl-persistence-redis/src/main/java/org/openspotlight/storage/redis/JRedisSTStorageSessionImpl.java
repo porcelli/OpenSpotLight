@@ -51,19 +51,14 @@ package org.openspotlight.storage.redis;
 
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
-import com.google.inject.internal.ImmutableSet;
-import com.google.inject.internal.Sets;
 import org.jredis.JRedis;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.openspotlight.common.util.Conversion.convert;
 
-import org.jredis.RedisException;
-import org.openspotlight.common.exception.SLException;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STKeyEntry;
-import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
@@ -184,7 +179,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             jRedis.sadd(format(SET_WITH_PROPERTY_NODE_IDS, k.getPropertyName(), k.getType().getName(),
                     k.getValue()), uniqueKey);
             jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()), k.getType().getName());
-            jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), convert(k.getValue(),String.class));
+            jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), convert(k.getValue(), String.class));
         }
 
 

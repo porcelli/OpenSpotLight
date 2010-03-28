@@ -50,14 +50,11 @@
 package org.openspotlight.storage;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
 import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
-import org.openspotlight.storage.domain.property.*;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -584,153 +581,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     private final class STStorageSessionInternalMethodsImpl implements STStorageSessionInternalMethods {
 
-        public <T> STSetProperty nodeEntryGetSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> void nodeEntrySetSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public Set<STSetProperty> nodeEntryGetSetProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
 
         public STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name) {
             return createWithName(AbstractSTStorageSession.this, name).withParent(stNodeEntry);
         }
 
-        public Set<STListProperty> nodeEntryGetListProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> void nodeEntrySetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> STListProperty nodeEntryGetListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public Set<STSimpleProperty> nodeEntryGetSimpleProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> void nodeEntrySetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> STSimpleProperty nodeEntryGetSimpleProperty(STNodeEntry stNodeEntry, Class<T> type, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public Set<STStreamProperty> nodeEntryGetStreamProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> void nodeEntrySetStreamProperty(STNodeEntry stNodeEntry, String name, T value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public STStreamProperty nodeEntryGetStreamProperty(STNodeEntry stNodeEntry, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public Set<STMapProperty> nodeEntryGetMapProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <K, V> void nodeEntrySetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <K, V> STMapProperty nodeEntryGetMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public Set<STSerializableListProperty> nodeEntryGetSerializableListProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> void nodeEntrySetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, List<T> value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> STSerializableListProperty nodeEntryGetSerializableListProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public Set<STSerializableMapProperty> nodeEntryGetSerializableMapProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <K, V> void nodeEntrySetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name, Map<K, V> value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <K, V> STSerializableMapProperty nodeEntryGetSerializableMapProperty(STNodeEntry stNodeEntry, Class<K> keyType, Class<V> valueType, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public Set<STSerializableSetProperty> nodeEntryGetSerializableSetProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> void nodeEntrySetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name, Set<T> value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> STSerializableSetProperty nodeEntryGetSerializableSetProperty(STNodeEntry stNodeEntry, Class<T> valueType, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public Set<STPojoProperty> nodeEntryGetPojoProperties(STNodeEntry stNodeEntry) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> void nodeEntrySetPojoProperty(STNodeEntry stNodeEntry, Class<T> type, String name, T value) {
-            return;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> STPojoProperty nodeEntryGetPojoProperty(STNodeEntry stNodeEntry, Class<T> type, String name) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> List<T> listPropertyGetItems(STListProperty stListProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> Set<T> setPropertyGetItems(STSetProperty stSetProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <K, T> Map<K, T> mapPropertyGetMap(STMapProperty stMapProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> List<T> serializableListPropertyGetItems(STSerializableListProperty stSerializableListProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public InputStream streamPropertyGetValue(STStreamProperty stStreamProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T extends Serializable> T pojoPropertyGetValue(STPojoProperty stPojoProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T> Set<T> serializableSetPropertyGetItems(STSerializableSetProperty stSerializableSetProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <K, T> Map<K, T> serializableMapGetMap(STSerializableMapProperty stSerializableMapProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <T extends Serializable> T simplePropertyGetValue(STSimpleProperty stSimpleProperty) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
     }
 
 
