@@ -71,6 +71,10 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethods();
 
+    protected final STNodeEntry createEntryWithKey(STUniqueKey uniqueKey){
+        return new STNodeEntryImpl(uniqueKey);
+    }
+
     protected class STStorageSessionSupportMethods {
 
 
@@ -107,11 +111,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey) {
             StringBuilder sb = new StringBuilder();
             STUniqueKey currentKey = uniqueKey;
-            while(currentKey!=null){
+            while (currentKey != null) {
                 sb.append(getLocalKeyAsSimpleString(currentKey.getLocalKey())).append(":");
                 currentKey = currentKey.getParentKey();
             }
-            
+
             return sb.toString();
         }
 
@@ -165,7 +169,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return result;
         }
 
-        
+
     }
 
     private static class STLocalKeyCriteriaItemImpl implements STLocalKeyCriteriaItem {
@@ -496,7 +500,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     public STNodeEntry findUniqueByCriteria(STCriteria criteria) {
         try {
             Set<STNodeEntry> result = internalFindByCriteria(criteria);
-            if(result==null) return null;
+            if (result == null) return null;
             if (result.size() == 0) return null;
             if (result.size() == 1) return result.iterator().next();
             throw new IllegalStateException();
@@ -774,8 +778,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public STNodeEntry andCreate() {
             STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
-            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey,parent.getUniqueKey());
-            STNodeEntryImpl result = new STNodeEntryImpl(name, localKey, uniqueKey);
+            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parent!=null?parent.getUniqueKey():null);
+            STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey);
             AbstractSTStorageSession.this.handleNewItem(result);
             return result;
         }
@@ -825,31 +829,45 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
 
+    private static class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
 
-    private static class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder{
+        private Set<STKeyEntry<?>> localEntries = new HashSet<STKeyEntry<?>>();
 
         private final String name;
 
-        finish this
+        private final STUniqueKeyBuilderImpl child;
 
         public STUniqueKeyBuilderImpl(String name) {
             this.name = name;
+            this.child = null;
         }
 
-        public <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, T value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        private STUniqueKeyBuilderImpl(String name, STUniqueKeyBuilderImpl child) {
+            this.name = name;
+            this.child = child;
+        }
+
+        public <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, Serializable value) {
+            this.localEntries.add(STKeyEntryImpl.<T>create(type, (T)value, propertyName));
+            return this;
         }
 
         public STUniqueKeyBuilder withParent(String nodeEntryName) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            return new STUniqueKeyBuilderImpl(nodeEntryName, this);
         }
 
         public STUniqueKey andCreate() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+            STUniqueKey currentKey = null;
+            STUniqueKeyBuilderImpl currentBuilder = this;
+            while (currentBuilder != null) {
+                STLocalKey localKey = new STLocalKeyImpl(currentBuilder.localEntries, currentBuilder.name);
+                currentKey = new STUniqueKeyImpl(localKey, currentKey);
+                currentBuilder = currentBuilder.child;
+            }
+            return currentKey;
+
         }
-
-        private STUniqueKeyBuilderImpl child;
-
 
 
     }

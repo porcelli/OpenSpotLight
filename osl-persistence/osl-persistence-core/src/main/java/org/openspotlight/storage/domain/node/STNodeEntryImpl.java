@@ -67,10 +67,10 @@ import java.util.Set;
  */
 public class STNodeEntryImpl implements STNodeEntry {
 
-    public STNodeEntryImpl(final String nodeEntryName, final STLocalKey localKey, final STUniqueKey uniqueKey) {
+    public STNodeEntryImpl(STUniqueKey uniqueKey) {
 
-        this.nodeEntryName = nodeEntryName;
-        this.localKey = localKey;
+        this.nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
+        this.localKey = uniqueKey.getLocalKey();
         this.uniqueKey = uniqueKey
                 ;
     }
@@ -249,5 +249,9 @@ public class STNodeEntryImpl implements STNodeEntry {
         result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
         result = 31 * result + (uniqueKey != null ? uniqueKey.hashCode() : 0);
         return result;
+    }
+
+    public int compareTo(STNodeEntry o) {
+        return this.getLocalKey().compareTo(o.getLocalKey());
     }
 }

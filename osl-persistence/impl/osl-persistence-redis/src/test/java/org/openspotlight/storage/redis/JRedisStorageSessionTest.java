@@ -51,6 +51,8 @@ package org.openspotlight.storage.redis;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.jredis.JRedis;
+import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
@@ -89,6 +91,11 @@ public class JRedisStorageSessionTest {
     }
 
     final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExamplePartition.DEFAULT));
+
+    @Before
+    public void cleanPreviousData() throws Exception{
+        injector.getInstance(JRedis.class).flushall();
+    }
 
     @Test
     public void shouldInstantiateOneSessionPerThread() throws Exception {

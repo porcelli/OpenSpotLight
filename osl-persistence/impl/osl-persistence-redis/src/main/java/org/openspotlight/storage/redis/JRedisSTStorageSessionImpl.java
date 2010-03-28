@@ -49,8 +49,17 @@
 
 package org.openspotlight.storage.redis;
 
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
+import com.google.inject.internal.ImmutableSet;
+import com.google.inject.internal.Sets;
 import org.jredis.JRedis;
+
+import static com.google.common.collect.Sets.newHashSet;
+import static org.openspotlight.common.util.Conversion.convert;
+
+import org.jredis.RedisException;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STKeyEntry;
@@ -58,10 +67,12 @@ import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.Class.forName;
 import static java.text.MessageFormat.format;
 import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
 
@@ -78,6 +89,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     private final String KEY_WITH_PROPERTY_VALUE = "node-unique-key:{0}:property-name:{1}:value";
     private final String KEY_WITH_PROPERTY_TYPE = "node-unique-key:{0}:property-name:{1}:type";
     private final String KEY_WITH_PARENT_UNIQUE_ID = "node-unique-key:{0}:parent-unique-id";
+    private final String KEY_WITH_NODE_ENTRY_NAME = "node-unique-key:{0}:node-entry-name";
 
     private final JRedis jRedis;
 
@@ -96,15 +108,48 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
                 inter.add(format(SET_WITH_PROPERTY_NODE_IDS, p.getPropertyName(), p.getType().getName(), p.getValue()));
             }
         }
-        List<byte[]> ids;
+        List<String> ids;
         if (inter.size() > 1) {
-            ids = jRedis.sinter(inter.get(0), inter.subList(1, inter.size()).toArray(new String[0]));
+            ids = listBytesToListString(jRedis.sinter(inter.get(0), inter.subList(1, inter.size()).toArray(new String[0])));
         } else if (inter.size() == 1) {
-            ids = jRedis.sinter(inter.get(0));
+            ids = listBytesToListString(jRedis.sinter(inter.get(0)));
 
         } else {
             ids = Collections.emptyList();
         }
+        Set<STNodeEntry> nodeEntries = newHashSet();
+        for (String id : ids) {
+            String parentKey = id;
+            STNodeEntry nodeEntry = loadNode(parentKey);
+            nodeEntries.add(nodeEntry);
+        }
+
+        return ImmutableSortedSet.copyOf(nodeEntries);
+    }
+
+    private STNodeEntry loadNode(String parentKey) throws Exception {
+        STUniqueKeyBuilder keyBuilder = null;
+        do {
+            List<String> keyPropertyNames = listBytesToListString(jRedis.smembers(format(SET_WITH_NODE_KEYS_NAMES, parentKey)));
+            String nodeEntryName = toStr(jRedis.get(format(KEY_WITH_NODE_ENTRY_NAME, parentKey)));
+            keyBuilder = keyBuilder == null ? createKey(nodeEntryName) : keyBuilder.withParent(nodeEntryName);
+
+            for (String keyName : keyPropertyNames) {
+                String typeName = toStr(jRedis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, keyName)));
+                String typeValueAsString = toStr(jRedis.get(format(KEY_WITH_PROPERTY_VALUE, parentKey, keyName)));
+                Class<? extends Serializable> type = (Class<? extends Serializable>) forName(typeName);
+                Serializable value = convert(typeValueAsString, type);
+                keyBuilder.withEntry(keyName, type, value);
+            }
+            parentKey = toStr(jRedis.get(format(KEY_WITH_PARENT_UNIQUE_ID, parentKey)));
+
+        } while (parentKey != null);
+        STUniqueKey uniqueKey = keyBuilder.andCreate();
+        STNodeEntry nodeEntry = createEntryWithKey(uniqueKey);
+        return nodeEntry;
+    }
+
+    private List<String> listBytesToListString(List<byte[]> ids) {
         List<String> idsAsString = Lists.newLinkedList();
         if (ids != null) {
             for (byte[] b : ids) {
@@ -112,13 +157,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
                 idsAsString.add(s);
             }
         }
-
-        
-        for(String s: idsAsString){
-              jRedis.
-        }
-
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return idsAsString;
     }
 
     @Override
@@ -131,9 +170,10 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
         String uniqueKey = supportMethods.getUniqueKeyAsStringHash(entry.getUniqueKey());
         jRedis.sadd(SET_WITH_ALL_KEYS, uniqueKey);
+        jRedis.set(format(KEY_WITH_NODE_ENTRY_NAME, uniqueKey), entry.getNodeEntryName());
         STUniqueKey parentKey = entry.getUniqueKey().getParentKey();
-        if(parentKey!=null){
-            jRedis.set(format(KEY_WITH_PARENT_UNIQUE_ID,uniqueKey),supportMethods.getUniqueKeyAsStringHash(parentKey));
+        if (parentKey != null) {
+            jRedis.set(format(KEY_WITH_PARENT_UNIQUE_ID, uniqueKey), supportMethods.getUniqueKeyAsStringHash(parentKey));
         }
         String localKey = supportMethods.getLocalKeyAsStringHash(entry.getLocalKey());
         jRedis.sadd(format(SET_WITH_ALL_LOCAL_KEYS, localKey), uniqueKey);
@@ -144,7 +184,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             jRedis.sadd(format(SET_WITH_PROPERTY_NODE_IDS, k.getPropertyName(), k.getType().getName(),
                     k.getValue()), uniqueKey);
             jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()), k.getType().getName());
-            jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), k.getValue());
+            jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), convert(k.getValue(),String.class));
         }
 
 

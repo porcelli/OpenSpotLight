@@ -48,6 +48,7 @@
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-common</artifactId>
+            <scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -69,7 +69,7 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory, STAAccessorLis
         STAAccessorSerializableSetProperty,
         STAAccessorSetProperty,
         STAAccessorSimpleProperty,
-        STAAccessorStreamProperty {
+        STAAccessorStreamProperty, Comparable<STNodeEntry>{
 
     String getNodeEntryName();
 

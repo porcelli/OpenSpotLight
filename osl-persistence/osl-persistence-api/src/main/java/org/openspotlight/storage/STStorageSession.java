@@ -234,7 +234,7 @@ public interface STStorageSession extends STNodeEntryFactory {
 
     interface STUniqueKeyBuilder {
 
-        <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, T value);
+        <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, Serializable value);
 
         STUniqueKeyBuilder withParent(String nodeEntryName);
 
