@@ -50,17 +50,25 @@
 package org.openspotlight.storage.domain.node;
 
 import com.google.inject.internal.ImmutableSet;
+import org.apache.commons.io.IOUtils;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.channels.Channel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.nio.channels.Channels.newChannel;
 import static java.text.MessageFormat.format;
 
 /**
@@ -79,6 +87,9 @@ public class STNodeEntryImpl implements STNodeEntry {
         this.uniqueKey = uniqueKey;
         for (STProperty property : properties) {
             this.propertiesByName.put(property.getPropertyName(), property);
+        }
+        for (STKeyEntry<?> keyEntry : localKey.getEntries()) {
+            this.propertiesByName.put(keyEntry.getPropertyName(), new STPropertyImpl(this, keyEntry.getPropertyName(), STProperty.STPropertyDescription.KEY, keyEntry.getType()));
         }
     }
 
@@ -123,7 +134,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     public Set<STProperty> getProperties(STStorageSession session) {
         if (propertiesByName.isEmpty()) {
-            Set<STProperty> result = session.getInternalMethods().nodeEntryLoadProperties(session, this);
+            Set<STProperty> result = session.getInternalMethods().nodeEntryLoadProperties(this);
             for (STProperty property : result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
@@ -152,7 +163,8 @@ public class STNodeEntryImpl implements STNodeEntry {
         STNodeEntryImpl that = (STNodeEntryImpl) o;
 
         if (localKey != null ? !localKey.equals(that.localKey) : that.localKey != null) return false;
-        if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null) return false;
+        if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
+            return false;
         return !(uniqueKey != null ? !uniqueKey.equals(that.uniqueKey) : that.uniqueKey != null);
     }
 
@@ -184,10 +196,120 @@ public class STNodeEntryImpl implements STNodeEntry {
             if (currentProperty != null) {
                 validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SIMPLE);
             } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SIMPLE, propertyType, false);
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SIMPLE, propertyType);
             }
             currentProperty.setValue(session, value);
 
+            return currentProperty;
+        }
+
+        public <V extends Serializable> STProperty setListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value) {
+            STProperty currentProperty = parent.getProperty(session, name);
+            if (currentProperty != null) {
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.LIST);
+            } else {
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.LIST, List.class, parameterizedType);
+            }
+            currentProperty.setValue(session, value);
+
+            return currentProperty;
+        }
+
+        public <V extends Serializable> STProperty setSetProperty(STStorageSession session, String name, Class<V> parameterizedType, Set<V> value) {
+            STProperty currentProperty = parent.getProperty(session, name);
+            if (currentProperty != null) {
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SET);
+            } else {
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SET, Set.class, parameterizedType);
+            }
+            currentProperty.setValue(session, value);
+
+            return currentProperty;
+        }
+
+        public <K extends Serializable, V extends Serializable> STProperty setMapProperty(STStorageSession session, String name, Class<K> keyType, Class<V> valueType, Map<K, V> value) {
+            STProperty currentProperty = parent.getProperty(session, name);
+            if (currentProperty != null) {
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.MAP);
+            } else {
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.MAP, Map.class, keyType, valueType);
+            }
+            currentProperty.setValue(session, value);
+
+            return currentProperty;
+        }
+
+        public <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value) {
+            STProperty currentProperty = parent.getProperty(session, name);
+            if (currentProperty != null) {
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_LIST);
+            } else {
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_LIST, List.class, parameterizedType);
+            }
+            currentProperty.setValue(session, value);
+
+            return currentProperty;
+        }
+
+        public <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<V> parameterizedType, Set<V> value) {
+            STProperty currentProperty = parent.getProperty(session, name);
+            if (currentProperty != null) {
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_SET);
+            } else {
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_SET, Set.class, parameterizedType);
+            }
+            currentProperty.setValue(session, value);
+
+            return currentProperty;
+        }
+
+        public <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<K> keyType, Class<V> valueType, Map<K, V> value) {
+            STProperty currentProperty = parent.getProperty(session, name);
+            if (currentProperty != null) {
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_MAP);
+            } else {
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_MAP, Map.class, keyType, valueType);
+            }
+            currentProperty.setValue(session, value);
+
+            return currentProperty;
+        }
+
+        public <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<S> propertyType, S value) {
+            STProperty currentProperty = parent.getProperty(session, name);
+            if (currentProperty != null) {
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_POJO);
+            } else {
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_POJO, propertyType);
+            }
+            currentProperty.setValue(session, value);
+
+            return currentProperty;
+        }
+
+        public STProperty setInputStreamProperty(STStorageSession session, String name, InputStream value) {
+            STProperty currentProperty = parent.getProperty(session, name);
+            if (currentProperty != null) {
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.INPUT_STREAM);
+            } else {
+                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.INPUT_STREAM, InputStream.class);
+            }
+            InputStream newValue;
+            if (value == null) {
+                newValue = null;
+            } else {
+                ByteArrayOutputStream input = new ByteArrayOutputStream();
+                try {
+                    if (value.markSupported()) {
+                        value.reset();
+                    }
+                    IOUtils.copy(value, input);
+                } catch (Exception e) {
+                    throw new IllegalStateException(e.getMessage(), e);
+                }
+                newValue = new ByteArrayInputStream(input.toByteArray());
+            }
+            currentProperty.setValue(session, newValue);
             return currentProperty;
         }
 
@@ -199,38 +321,6 @@ public class STNodeEntryImpl implements STNodeEntry {
                                     currentProperty.getDescription(), toValidate));
                 }
             }
-        }
-
-        public <V extends Serializable> STProperty setListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <V extends Serializable> STProperty setSetProperty(STStorageSession session, String name, Class<V> parameterizedType, Set<V> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <K extends Serializable, V extends Serializable> STProperty setMapProperty(STStorageSession session, String name, Class<K> keyType, Class<V> valueType, Map<K, V> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<V> parameterizedType, Set<V> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<K> keyType, Class<V> valueType, Map<K, V> value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<S> propertyType, S value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        public STProperty setInputStreamProperty(STStorageSession session, String name, InputStream value) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 }

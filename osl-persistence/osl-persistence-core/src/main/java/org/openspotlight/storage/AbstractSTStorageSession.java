@@ -590,8 +590,10 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public <T> T propertyGetPropertyAs(STProperty stProperty, Class<T> type) {
             switch (stProperty.getDescription()) {
                 case SIMPLE:
-                    return internalPropertyGetSimplePropertyAs(stProperty,type);
-                case LIST:
+                                    return internalPropertyGetSimplePropertyAs(stProperty,type);
+                case KEY:
+                                    return internalPropertyGetKeyPropertyAs(stProperty,type);
+                                                case LIST:
                     return internalPropertyGetListPropertyAs(stProperty,type);
                 case SET:
                     return internalPropertyGetSetPropertyAs(stProperty,type);
@@ -621,6 +623,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
     }
+
+    protected abstract <T> T internalPropertyGetKeyPropertyAs(STProperty stProperty, Class<T> type);
 
     protected abstract <T> T internalPropertyGetInputStreamPropertyAs(STProperty stProperty, Class<T> type);
 

@@ -17,13 +17,13 @@ import java.util.Set;
 public class STPropertyImpl implements STProperty {
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType, Class<?> firstParameterizedType,
-                          Class<?> secondParameterizedType, boolean key) {
+                          Class<?> secondParameterizedType) {
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         this.firstParameterizedType = firstParameterizedType;
         this.secondParameterizedType = secondParameterizedType;
-        this.key = key;
+        this.key = STPropertyDescription.KEY.equals(description);
         hasParameterizedTypes = true;
         serialized = description.getSerialized().equals(STPropertyDescription.STSerializedType.SERIALIZED);
         difficultToLoad = description.getLoadWeight().equals(STPropertyDescription.STLoadWeight.DIFFICULT);
@@ -31,12 +31,12 @@ public class STPropertyImpl implements STProperty {
     }
 
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
-                          Class<?> propertyType, Class<?> firstParameterizedType, boolean key) {
+                          Class<?> propertyType, Class<?> firstParameterizedType) {
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         this.firstParameterizedType = firstParameterizedType;
-        this.key = key;
+        this.key = STPropertyDescription.KEY.equals(description);
         this.secondParameterizedType = null;
         hasParameterizedTypes = true;
         serialized = description.getSerialized().equals(STPropertyDescription.STSerializedType.SERIALIZED);
@@ -45,11 +45,11 @@ public class STPropertyImpl implements STProperty {
     }
 
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
-                          Class<?> propertyType, boolean key) {
+                          Class<?> propertyType) {
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
-        this.key = key;
+        this.key = STPropertyDescription.KEY.equals(description);
         this.firstParameterizedType = null;
         this.secondParameterizedType = null;
         this.hasParameterizedTypes = false;

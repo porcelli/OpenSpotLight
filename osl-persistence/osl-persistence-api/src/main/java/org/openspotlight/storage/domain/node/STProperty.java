@@ -41,6 +41,7 @@ public interface STProperty {
     STPropertyDescription getDescription();
 
     enum STPropertyDescription {
+        KEY(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
         SIMPLE(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
         LIST(STSerializedType.NOT_SERIALIZED, STLoadWeight.DIFFICULT),
         SET(STSerializedType.NOT_SERIALIZED, STLoadWeight.DIFFICULT),
