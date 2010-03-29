@@ -64,6 +64,9 @@ import java.util.Set;
  * any kind of connection state. This implementation must not be shared between threads.
  */
 public interface STStorageSession extends STNodeEntryFactory {
+
+    STStorageSessionSupportMethods getSupportMethods();
+    
     Set<STNodeEntry> findByCriteria(STCriteria criteria);
 
     STNodeEntry findUniqueByCriteria(STCriteria criteria);
@@ -119,7 +122,6 @@ public interface STStorageSession extends STNodeEntryFactory {
     public interface STCriteriaItem {
 
         public String getNodeEntryName();
-
 
 
     }
@@ -183,7 +185,21 @@ public interface STStorageSession extends STNodeEntryFactory {
     }
 
     STUniqueKeyBuilder createKey(String nodeEntryName);
-    
+
+    public interface STStorageSessionSupportMethods {
+        String getLocalKeyAsStringHash(STLocalKey localKey);
+
+        String getUniqueKeyAsStringHash(STUniqueKey uniqueKey);
+
+        byte[] getLocalKeyAsByteHash(STLocalKey localKey);
+
+        byte[] getUniqueKeyAsByteHash(STUniqueKey uniqueKey);
+
+        String getLocalKeyAsSimpleString(STLocalKey localKey);
+
+        String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey);
+    }
+
 
     void flushTransient();
 }

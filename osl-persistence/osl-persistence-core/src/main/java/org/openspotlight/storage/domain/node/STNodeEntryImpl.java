@@ -79,15 +79,8 @@ public class STNodeEntryImpl implements STNodeEntry {
         for (STProperty property : properties) {
             this.propertiesByName.put(property.getPropertyName(), property);
         }
-        loadKeyProperties();
     }
 
-    private void loadKeyProperties() {
-        for (STKeyEntry<?> keyEntry : localKey.getEntries()) {
-            this.propertiesByName.put(keyEntry.getPropertyName(), new STPropertyImpl(this, keyEntry.getPropertyName(),
-                    STProperty.STPropertyDescription.KEY, keyEntry.getType()));
-        }
-    }
 
     public STNodeEntryImpl(STUniqueKey uniqueKey) {
 
@@ -125,12 +118,13 @@ public class STNodeEntryImpl implements STNodeEntry {
     }
 
     public STProperty getProperty(STStorageSession session, String name) {
+        loadPropertiesOnce(session);
         return propertiesByName.get(name);
     }
 
     public <T> T getPropertyValue(STStorageSession session, String name) {
+        loadPropertiesOnce(session);
         STProperty property = getProperty(session, name);
-
         return property != null ? property.<T>getValue(session) : null;
     }
 
@@ -161,19 +155,23 @@ public class STNodeEntryImpl implements STNodeEntry {
         session.removeNode(this);
     }
 
-    public Set<String> getPropertyNames() {
+    public Set<String> getPropertyNames(STStorageSession session) {
+        loadPropertiesOnce(session);
         return ImmutableSet.copyOf(propertiesByName.keySet());
     }
 
     public Set<STProperty> getProperties(STStorageSession session) {
+        loadPropertiesOnce(session);
+        return ImmutableSet.copyOf(propertiesByName.values());
+    }
+
+    private void loadPropertiesOnce(STStorageSession session) {
         if (propertiesByName.isEmpty()) {
             Set<STProperty> result = session.getInternalMethods().nodeEntryLoadProperties(this);
-            loadKeyProperties();
             for (STProperty property : result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
         }
-        return ImmutableSet.copyOf(propertiesByName.values());
     }
 
     public STNodeEntryBuilder createWithName(final STStorageSession session, final String name) {
@@ -352,10 +350,10 @@ public class STNodeEntryImpl implements STNodeEntry {
 
         private void validatePropertyDescription(STProperty currentProperty, STProperty.STPropertyDescription toValidate) {
             if (verifyBefore) {
-                if (!currentProperty.getDescription().equals(toValidate)) {
+                if (!currentProperty.getInternalMethods().getDescription().equals(toValidate)) {
                     throw new IllegalArgumentException(
                             format("wrong type of property: should be {0} instead of {1}",
-                                    currentProperty.getDescription(), toValidate));
+                                    currentProperty.getInternalMethods().getDescription(), toValidate));
                 }
             }
         }

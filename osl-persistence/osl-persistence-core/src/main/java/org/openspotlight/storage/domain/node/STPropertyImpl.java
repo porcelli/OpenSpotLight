@@ -16,6 +16,7 @@ public class STPropertyImpl implements STProperty {
                           Class<?> propertyType, Class<?> firstParameterizedType,
                           Class<?> secondParameterizedType) {
         if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
+        if(description==null) throw new IllegalArgumentException();
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
@@ -31,6 +32,8 @@ public class STPropertyImpl implements STProperty {
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType, Class<?> firstParameterizedType) {
         if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
+        if(description==null) throw new IllegalArgumentException();
+
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
@@ -46,6 +49,8 @@ public class STPropertyImpl implements STProperty {
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType) {
         if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
+        if(description==null) throw new IllegalArgumentException();
+        
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
@@ -58,6 +63,7 @@ public class STPropertyImpl implements STProperty {
         this.description = description;
     }
 
+    private final STPropertyInternalMethods propertyInternalMethods = new STPropertyInternalMethodsImpl();
 
     private final STNodeEntry parent;
 
@@ -85,17 +91,15 @@ public class STPropertyImpl implements STProperty {
 
     public <T> void setValue(STStorageSession session, T value) {
         if (key) throw new IllegalStateException("key properties are immutable");
-        if (isDifficultToLoad()) {
-            weakReference = new WeakReference<T>(value);
-        } else {
-            this.value = value;
-        }
+        this.value = value;
         session.getInternalMethods().propertySetProperty(this, value);
     }
 
     public <T, R> R getValueAs(STStorageSession session, Class<T> type) {
         R result;
-        if (isDifficultToLoad()) {
+        if (value != null)
+            return (R) value;
+        if (getInternalMethods().isDifficultToLoad()) {
             result = (R) weakReference != null ? (R) weakReference.get() : null;
             if (result == null) {
                 result = (R) session.getInternalMethods().propertyGetPropertyAs(this, type);
@@ -104,15 +108,20 @@ public class STPropertyImpl implements STProperty {
                 }
             }
         } else {
-            if (value == null) value = (R) session.getInternalMethods().propertyGetPropertyAs(this, type);
+            value = session.getInternalMethods().propertyGetPropertyAs(this, type);
             result = (R) value;
         }
         return result;
     }
 
+    public STNodeEntry getParent() {
+        return parent;
+    }
+
+
     public <R> R getValue(STStorageSession session) {
         R result;
-        if (isDifficultToLoad()) {
+        if (getInternalMethods().isDifficultToLoad()) {
             result = (R) weakReference != null ? (R) weakReference.get() : null;
             if (result == null) {
                 result = (R) session.getInternalMethods().propertyGetValue(this);
@@ -128,55 +137,60 @@ public class STPropertyImpl implements STProperty {
 
     }
 
-    public <R> R getTransientValue() {
-        R result;
-        if (isDifficultToLoad()) {
-            result = (R) weakReference != null ? (R) weakReference.get() : null;
-
-        } else {
-            result = (R) value;
-        }
-        return result;
-    }
-
-    public STNodeEntry getParent() {
-        return parent;
-    }
-
     public String getPropertyName() {
         return propertyName;
     }
 
-    public boolean isKey() {
-        return key;
+    public STPropertyInternalMethods getInternalMethods() {
+        return propertyInternalMethods;
     }
 
-    public <T> Class<T> getPropertyType() {
-        return (Class<T>) propertyType;
-    }
+    private class STPropertyInternalMethodsImpl implements STPropertyInternalMethods {
 
-    public <T> Class<T> getFirstParameterizedType() {
-        return (Class<T>) firstParameterizedType;
-    }
+        public <R> R getTransientValue() {
+            return (R) value;
+        }
 
-    public <T> Class<T> getSecondParameterizedType() {
-        return (Class<T>) secondParameterizedType;
-    }
 
-    public boolean hasParameterizedTypes() {
-        return hasParameterizedTypes;
-    }
+        public boolean isKey() {
+            return key;
+        }
 
-    public boolean isSerialized() {
-        return serialized;
-    }
+        public <T> void setValueOnLoad(T value) {
+            STPropertyImpl.this.value = value;
+        }
 
-    public boolean isDifficultToLoad() {
-        return difficultToLoad;
-    }
+        public void removeTransientValueIfExpensive() {
+            if (difficultToLoad) value = null;
+        }
 
-    public STPropertyDescription getDescription() {
-        return description;
+        public <T> Class<T> getPropertyType() {
+            return (Class<T>) propertyType;
+        }
+
+        public <T> Class<T> getFirstParameterizedType() {
+            return (Class<T>) firstParameterizedType;
+        }
+
+        public <T> Class<T> getSecondParameterizedType() {
+            return (Class<T>) secondParameterizedType;
+        }
+
+        public boolean hasParameterizedTypes() {
+            return hasParameterizedTypes;
+        }
+
+        public boolean isSerialized() {
+            return serialized;
+        }
+
+        public boolean isDifficultToLoad() {
+            return difficultToLoad;
+        }
+
+        public STPropertyDescription getDescription() {
+            return description;
+        }
     }
 
 }

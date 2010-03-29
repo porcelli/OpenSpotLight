@@ -94,9 +94,13 @@ public class JRedisStorageSessionTest {
 
     final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExamplePartition.DEFAULT));
 
+    private JRedis jRedis;
+
     @Before
     public void cleanPreviousData() throws Exception {
-        injector.getInstance(JRedis.class).flushall();
+        jRedis = injector.getInstance(JRedis.class);
+        jRedis.flushall();
+        
     }
 
     @Test
@@ -121,6 +125,20 @@ public class JRedisStorageSessionTest {
         latch.await(5, TimeUnit.SECONDS);
         assertThat(sessions.size(), is(1));
         assertThat(session1, is(not(sessions.get(0))));
+    }
+
+
+    @Test
+    public void shouldCreateTheSameKey() throws Exception{
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry aNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry sameNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        String aKeyAsString = session.getSupportMethods().getUniqueKeyAsSimpleString(aNode.getUniqueKey());
+        String sameKeyAsString = session.getSupportMethods().getUniqueKeyAsSimpleString(sameNode.getUniqueKey());
+        assertThat(aKeyAsString,is(sameKeyAsString));
+
     }
 
 
@@ -188,25 +206,26 @@ public class JRedisStorageSessionTest {
         newNode.getVerifiedOperations().setSimpleProperty(session, "integerProperty", Integer.class, 2);
         newNode.getVerifiedOperations().setSimpleProperty(session, "floatProperty", Float.class, 2.1f);
         newNode.getVerifiedOperations().setSimpleProperty(session, "doubleProperty", Double.class, 2.1d);
+        
 
         STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
                 .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
 
 
-        assertThat(newNode.getProperty(session, "stringProperty").<String>getTransientValue(),
+        assertThat(newNode.getProperty(session, "stringProperty").getInternalMethods().<String>getTransientValue(),
                 is("value"));
 
-        assertThat(newNode.getProperty(session, "dateProperty").<Date>getTransientValue(),
+        assertThat(newNode.getProperty(session, "dateProperty").getInternalMethods().<Date>getTransientValue(),
                 is(newDate));
 
 
-        assertThat(newNode.getProperty(session, "integerProperty").<Integer>getTransientValue(),
+        assertThat(newNode.getProperty(session, "integerProperty").getInternalMethods().<Integer>getTransientValue(),
                 is(2));
 
-        assertThat(newNode.getProperty(session, "floatProperty").<Float>getTransientValue(),
+        assertThat(newNode.getProperty(session, "floatProperty").getInternalMethods().<Float>getTransientValue(),
                 is(2.1f));
 
-        assertThat(newNode.getProperty(session, "doubleProperty").<Double>getTransientValue(),
+        assertThat(newNode.getProperty(session, "doubleProperty").getInternalMethods().<Double>getTransientValue(),
                 is(2.1d));
 
         assertThat(newNode.<String>getPropertyValue(session, "stringProperty"),
@@ -226,21 +245,23 @@ public class JRedisStorageSessionTest {
                 is(2.1d));
 
 
-        assertThat(newNode.<String>getPropertyValue(session, "stringProperty"),
-                is(loadedNode.<String>getPropertyValue(session, "stringProperty")));
 
-        assertThat(newNode.<Date>getPropertyValue(session, "dateProperty"),
-                is(loadedNode.<Date>getPropertyValue(session, "dateProperty")));
+        assertThat(loadedNode.<String>getPropertyValue(session, "stringProperty"),
+                is("value"));
+
+        assertThat(loadedNode.<Date>getPropertyValue(session, "dateProperty").toString(),
+                is(newDate.toString()));
 
 
-        assertThat(newNode.<Integer>getPropertyValue(session, "integerProperty"),
-                is(loadedNode.<Integer>getPropertyValue(session, "integerProperty")));
+        assertThat(loadedNode.<Integer>getPropertyValue(session, "integerProperty"),
+                is(2));
 
-        assertThat(newNode.<Float>getPropertyValue(session, "floatProperty"),
-                is(loadedNode.<Float>getPropertyValue(session, "floatProperty")));
+        assertThat(loadedNode.<Float>getPropertyValue(session, "floatProperty"),
+                is(2.1f));
 
-        assertThat(newNode.<Double>getPropertyValue(session, "doubleProperty"),
-                is(loadedNode.<Double>getPropertyValue(session, "doubleProperty")));
+        assertThat(loadedNode.<Double>getPropertyValue(session, "doubleProperty"),
+                is(2.1d));
+
 
 
         STNodeEntry anotherLoadedNode = session.createCriteria().withNodeEntry("newNode1")

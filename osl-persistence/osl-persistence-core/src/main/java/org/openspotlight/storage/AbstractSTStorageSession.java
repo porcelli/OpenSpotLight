@@ -69,13 +69,17 @@ import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64
  */
 public abstract class AbstractSTStorageSession implements STStorageSession {
 
-    protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethods();
+    protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethodsImpl();
+
+    public STStorageSessionSupportMethods getSupportMethods(){
+        return supportMethods;
+    }
 
     protected final STNodeEntry createEntryWithKey(STUniqueKey uniqueKey) {
         return new STNodeEntryImpl(uniqueKey);
     }
 
-    protected class STStorageSessionSupportMethods {
+    public final class STStorageSessionSupportMethodsImpl implements STStorageSessionSupportMethods {
 
 
         public String getLocalKeyAsStringHash(STLocalKey localKey) {
@@ -600,7 +604,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public <T> T propertyGetPropertyAs(STProperty stProperty, Class<T> type) {
             try {
                 if (internalHasSavedProperty(stProperty)) {
-                    switch (stProperty.getDescription()) {
+                    switch (stProperty.getInternalMethods().getDescription()) {
                         case SIMPLE:
                             return internalPropertyGetSimplePropertyAs(stProperty, type);
                         case KEY:
@@ -770,7 +774,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     private void flushDirtyProperty(STProperty dirtyProperty) {
         try {
-            switch (dirtyProperty.getDescription()) {
+
+            switch (dirtyProperty.getInternalMethods().getDescription()) {
 
                 case SIMPLE:
                     internalFlushSimpleProperty(dirtyProperty);
@@ -861,7 +866,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     protected final <T> T internalPropertyGetValue(STProperty stProperty) throws Exception {
         try {
             Class<T> type = (Class<T>) internalPropertyDiscoverType(stProperty);
-            switch (stProperty.getDescription()) {
+            switch (stProperty.getInternalMethods().getDescription()) {
 
                 case KEY:
                     return this.<T>internalPropertyGetKeyPropertyAs(stProperty, type);

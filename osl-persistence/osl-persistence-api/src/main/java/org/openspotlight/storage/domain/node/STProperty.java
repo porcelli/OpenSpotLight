@@ -2,11 +2,6 @@ package org.openspotlight.storage.domain.node;
 
 import org.openspotlight.storage.STStorageSession;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Created by IntelliJ IDEA.
  * User: feuteston
@@ -20,29 +15,38 @@ public interface STProperty {
 
     <T> void setValue(STStorageSession session, T value);
 
-    String getPropertyName();
-
-    <T> Class<T> getPropertyType();
-
-    <T> Class<T> getFirstParameterizedType();
-
-    <T> Class<T> getSecondParameterizedType();
-
-    boolean hasParameterizedTypes();
-
-    boolean isSerialized();
-
-    boolean isDifficultToLoad();
-
-    boolean isKey();
-
     <T, R> R getValueAs(STStorageSession session, Class<T> type);
 
     <T> T getValue(STStorageSession session);
 
-    <T> T getTransientValue();
-    
-    STPropertyDescription getDescription();
+    String getPropertyName();
+
+    public STPropertyInternalMethods getInternalMethods();
+
+    interface STPropertyInternalMethods {
+        <T> void setValueOnLoad(T value);
+
+        void removeTransientValueIfExpensive();
+
+
+        <T> Class<T> getPropertyType();
+
+        <T> Class<T> getFirstParameterizedType();
+
+        <T> Class<T> getSecondParameterizedType();
+
+        boolean hasParameterizedTypes();
+
+        boolean isSerialized();
+
+        boolean isDifficultToLoad();
+
+        boolean isKey();
+
+        <T> T getTransientValue();
+
+        STPropertyDescription getDescription();
+    }
 
     enum STPropertyDescription {
         KEY(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
@@ -64,19 +68,19 @@ public interface STProperty {
             this.loadWeight = loadWeight;
         }
 
-        enum STSerializedType {
+        public enum STSerializedType {
             SERIALIZED, NOT_SERIALIZED
         }
 
-        enum STLoadWeight {
+        public enum STLoadWeight {
             EASY, DIFFICULT
         }
 
-        STSerializedType getSerialized() {
+        public STSerializedType getSerialized() {
             return serialized;
         }
 
-        STLoadWeight getLoadWeight() {
+        public STLoadWeight getLoadWeight() {
             return loadWeight;
         }
     }

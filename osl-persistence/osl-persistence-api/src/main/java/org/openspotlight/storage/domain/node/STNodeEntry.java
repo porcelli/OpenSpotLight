@@ -88,7 +88,7 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
     void removeNode(STStorageSession session);
 
-    Set<String> getPropertyNames();
+    Set<String> getPropertyNames(STStorageSession session);
 
     Set<STProperty> getProperties(STStorageSession session);
 
