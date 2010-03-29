@@ -58,6 +58,8 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -177,7 +179,79 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldWorkWithSimplePropertiesOnAutoFlush() throws Exception {
 
-        throw new UnsupportedOperationException();
+        Date newDate = new Date();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry newNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        newNode.getVerifiedOperations().setSimpleProperty(session, "stringProperty", String.class, "value");
+        newNode.getVerifiedOperations().setSimpleProperty(session, "dateProperty", Date.class, newDate);
+        newNode.getVerifiedOperations().setSimpleProperty(session, "integerProperty", Integer.class, 2);
+        newNode.getVerifiedOperations().setSimpleProperty(session, "floatProperty", Float.class, 2.1f);
+        newNode.getVerifiedOperations().setSimpleProperty(session, "doubleProperty", Double.class, 2.1d);
+
+        STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
+                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+
+
+        assertThat(newNode.getProperty(session, "stringProperty").<String>getTransientValue(),
+                is("value"));
+
+        assertThat(newNode.getProperty(session, "dateProperty").<Date>getTransientValue(),
+                is(newDate));
+
+
+        assertThat(newNode.getProperty(session, "integerProperty").<Integer>getTransientValue(),
+                is(2));
+
+        assertThat(newNode.getProperty(session, "floatProperty").<Float>getTransientValue(),
+                is(2.1f));
+
+        assertThat(newNode.getProperty(session, "doubleProperty").<Double>getTransientValue(),
+                is(2.1d));
+
+        assertThat(newNode.<String>getPropertyValue(session, "stringProperty"),
+                is("value"));
+
+        assertThat(newNode.<Date>getPropertyValue(session, "dateProperty"),
+                is(newDate));
+
+
+        assertThat(newNode.<Integer>getPropertyValue(session, "integerProperty"),
+                is(2));
+
+        assertThat(newNode.<Float>getPropertyValue(session, "floatProperty"),
+                is(2.1f));
+
+        assertThat(newNode.<Double>getPropertyValue(session, "doubleProperty"),
+                is(2.1d));
+
+
+        assertThat(newNode.<String>getPropertyValue(session, "stringProperty"),
+                is(loadedNode.<String>getPropertyValue(session, "stringProperty")));
+
+        assertThat(newNode.<Date>getPropertyValue(session, "dateProperty"),
+                is(loadedNode.<Date>getPropertyValue(session, "dateProperty")));
+
+
+        assertThat(newNode.<Integer>getPropertyValue(session, "integerProperty"),
+                is(loadedNode.<Integer>getPropertyValue(session, "integerProperty")));
+
+        assertThat(newNode.<Float>getPropertyValue(session, "floatProperty"),
+                is(loadedNode.<Float>getPropertyValue(session, "floatProperty")));
+
+        assertThat(newNode.<Double>getPropertyValue(session, "doubleProperty"),
+                is(loadedNode.<Double>getPropertyValue(session, "doubleProperty")));
+
+
+        STNodeEntry anotherLoadedNode = session.createCriteria().withNodeEntry("newNode1")
+                .withProperty("stringProperty").equals(String.class, "value").buildCriteria().andFindUnique(session);
+
+        assertThat(anotherLoadedNode, is(loadedNode));
+
+        STNodeEntry noLoadedNode = session.createCriteria().withNodeEntry("newNode1")
+                .withProperty("stringProperty").equals(String.class, "invalid").buildCriteria().andFindUnique(session);
+
+        assertThat(noLoadedNode, is(nullValue()));
     }
 
     @Test
@@ -280,6 +354,11 @@ public class JRedisStorageSessionTest {
     public void shouldWorkWithWeakReferences() throws Exception {
 
         throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldFindMultipleResults() throws Exception {
+
     }
 
 }

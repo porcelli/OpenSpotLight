@@ -128,6 +128,12 @@ public class STNodeEntryImpl implements STNodeEntry {
         return propertiesByName.get(name);
     }
 
+    public <T> T getPropertyValue(STStorageSession session, String name) {
+        STProperty property = getProperty(session, name);
+
+        return property != null ? property.<T>getValue(session) : null;
+    }
+
     public Set<STNodeEntry> getChildren(STStorageSession session) {
         Set<STNodeEntry> children = childrenWeakReference != null ? childrenWeakReference.get() : null;
         if (children == null) {
@@ -212,9 +218,9 @@ public class STNodeEntryImpl implements STNodeEntry {
 
         private final boolean verifyBefore;
 
-        private final STNodeEntry parent;
+        private final STNodeEntryImpl parent;
 
-        public STPropertyOperationImpl(boolean verifyBefore, STNodeEntry parent) {
+        public STPropertyOperationImpl(boolean verifyBefore, STNodeEntryImpl parent) {
             this.verifyBefore = verifyBefore;
             this.parent = parent;
         }
@@ -225,8 +231,10 @@ public class STNodeEntryImpl implements STNodeEntry {
                 validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SIMPLE);
             } else {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SIMPLE, propertyType);
+                parent.propertiesByName.put(name, currentProperty);
             }
             currentProperty.setValue(session, value);
+
 
             return currentProperty;
         }
@@ -239,7 +247,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.LIST, List.class, parameterizedType);
             }
             currentProperty.setValue(session, value);
-
+            parent.propertiesByName.put(name, currentProperty);
             return currentProperty;
         }
 
@@ -251,7 +259,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SET, Set.class, parameterizedType);
             }
             currentProperty.setValue(session, value);
-
+            parent.propertiesByName.put(name, currentProperty);
             return currentProperty;
         }
 
@@ -263,7 +271,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.MAP, Map.class, keyType, valueType);
             }
             currentProperty.setValue(session, value);
-
+            parent.propertiesByName.put(name, currentProperty);
             return currentProperty;
         }
 
@@ -275,7 +283,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_LIST, List.class, parameterizedType);
             }
             currentProperty.setValue(session, value);
-
+            parent.propertiesByName.put(name, currentProperty);
             return currentProperty;
         }
 
@@ -287,7 +295,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_SET, Set.class, parameterizedType);
             }
             currentProperty.setValue(session, value);
-
+            parent.propertiesByName.put(name, currentProperty);
             return currentProperty;
         }
 
@@ -299,7 +307,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_MAP, Map.class, keyType, valueType);
             }
             currentProperty.setValue(session, value);
-
+            parent.propertiesByName.put(name, currentProperty);
             return currentProperty;
         }
 
@@ -311,7 +319,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_POJO, propertyType);
             }
             currentProperty.setValue(session, value);
-
+            parent.propertiesByName.put(name, currentProperty);
             return currentProperty;
         }
 
@@ -338,6 +346,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 newValue = new ByteArrayInputStream(input.toByteArray());
             }
             currentProperty.setValue(session, newValue);
+            parent.propertiesByName.put(name, currentProperty);
             return currentProperty;
         }
 

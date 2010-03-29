@@ -15,6 +15,7 @@ public class STPropertyImpl implements STProperty {
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType, Class<?> firstParameterizedType,
                           Class<?> secondParameterizedType) {
+        if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
@@ -29,6 +30,7 @@ public class STPropertyImpl implements STProperty {
 
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType, Class<?> firstParameterizedType) {
+        if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
@@ -43,6 +45,7 @@ public class STPropertyImpl implements STProperty {
 
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType) {
+        if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
@@ -82,13 +85,12 @@ public class STPropertyImpl implements STProperty {
 
     public <T> void setValue(STStorageSession session, T value) {
         if (key) throw new IllegalStateException("key properties are immutable");
-
-        session.getInternalMethods().propertySetProperty(this, value);
         if (isDifficultToLoad()) {
             weakReference = new WeakReference<T>(value);
         } else {
             this.value = value;
         }
+        session.getInternalMethods().propertySetProperty(this, value);
     }
 
     public <T, R> R getValueAs(STStorageSession session, Class<T> type) {
@@ -101,9 +103,37 @@ public class STPropertyImpl implements STProperty {
                     weakReference = new WeakReference<T>((T) result);
                 }
             }
-            return result;
         } else {
             if (value == null) value = (R) session.getInternalMethods().propertyGetPropertyAs(this, type);
+            result = (R) value;
+        }
+        return result;
+    }
+
+    public <R> R getValue(STStorageSession session) {
+        R result;
+        if (isDifficultToLoad()) {
+            result = (R) weakReference != null ? (R) weakReference.get() : null;
+            if (result == null) {
+                result = (R) session.getInternalMethods().propertyGetValue(this);
+                if (result != null) {
+                    weakReference = new WeakReference<R>((R) result);
+                }
+            }
+        } else {
+            if (value == null) value = (R) session.getInternalMethods().propertyGetValue(this);
+            result = (R) value;
+        }
+        return result;
+
+    }
+
+    public <R> R getTransientValue() {
+        R result;
+        if (isDifficultToLoad()) {
+            result = (R) weakReference != null ? (R) weakReference.get() : null;
+
+        } else {
             result = (R) value;
         }
         return result;

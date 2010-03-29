@@ -52,10 +52,6 @@ package org.openspotlight.storage.redis;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
 import org.jredis.JRedis;
-
-import static com.google.common.collect.Sets.newHashSet;
-import static org.openspotlight.common.util.Conversion.convert;
-
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STKeyEntry;
@@ -63,14 +59,17 @@ import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STProperty;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Class.forName;
 import static java.text.MessageFormat.format;
 import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
+import static org.openspotlight.common.util.Conversion.convert;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
@@ -101,7 +100,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         for (STCriteriaItem c : criteria.getCriteriaItems()) {
             if (c instanceof STPropertyCriteriaItem) {
                 STPropertyCriteriaItem p = (STPropertyCriteriaItem) c;
-                inter.add(format(SET_WITH_PROPERTY_NODE_IDS, p.getPropertyName(), p.getType().getName(), p.getValue()));
+                inter.add(format(SET_WITH_PROPERTY_NODE_IDS, p.getPropertyName(), p.getType().getName(), convert(p.getValue(), String.class)).replaceAll(" ", ""));
             }
         }
         List<String> ids;
@@ -178,7 +177,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             jRedis.sadd(format(SET_WITH_NODE_KEYS_NAMES, uniqueKey), k.getPropertyName());
             jRedis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), k.getPropertyName());
             jRedis.sadd(format(SET_WITH_PROPERTY_NODE_IDS, k.getPropertyName(), k.getType().getName(),
-                    k.getValue()), uniqueKey);
+                    convert(k.getValue(), String.class)).replaceAll(" ", ""), uniqueKey);
             jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()), k.getType().getName());
             jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), convert(k.getValue(), String.class));
         }
@@ -198,10 +197,30 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             jRedis.del(format(SET_WITH_NODE_KEYS_NAMES, uniqueKey));
             jRedis.del(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey));
             jRedis.srem(format(SET_WITH_PROPERTY_NODE_IDS, k.getPropertyName(), k.getType().getName(),
-                    k.getValue()), uniqueKey);
+                    convert(k.getValue(), String.class)).replaceAll(" ", ""), uniqueKey);
             jRedis.del(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()));
             jRedis.del(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()));
         }
+    }
+
+    @Override
+    protected boolean internalHasSavedProperty(STProperty stProperty) throws Exception {
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(stProperty.getParent().getUniqueKey());
+
+        return jRedis.exists(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, stProperty.getPropertyName()));
+
+    }
+
+    @Override
+    protected Class<?> internalPropertyDiscoverType(STProperty stProperty) throws Exception {
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(stProperty.getParent().getUniqueKey());
+
+        String typeName = toStr(jRedis.get(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, stProperty.getPropertyName())));
+
+        Class<?> type = forName(typeName);
+        return type;
+
+
     }
 
     @Override
@@ -215,12 +234,12 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected <T> T internalPropertyGetKeyPropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected <T> T internalPropertyGetKeyPropertyAs(STProperty stProperty, Class<T> type) throws Exception {
+        return this.<T>internalPropertyGetSimplePropertyAs(stProperty, type);
     }
 
     @Override
-    protected <T> T internalPropertyGetInputStreamPropertyAs(STProperty stProperty, Class<T> type) {
+    protected InputStream internalPropertyGetInputStreamProperty(STProperty stProperty) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -260,8 +279,12 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected <T> T internalPropertyGetSimplePropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected <T> T internalPropertyGetSimplePropertyAs(STProperty stProperty, Class<T> type) throws Exception {
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(stProperty.getParent().getUniqueKey());
+
+        String typeValueAsString = toStr(jRedis.get(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, stProperty.getPropertyName())));
+        T value = convert(typeValueAsString, type);
+        return value;
     }
 
     @Override
@@ -310,7 +333,16 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected void internalFlushSimpleProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    protected void internalFlushSimpleProperty(STProperty dirtyProperty) throws Exception {
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+
+        jRedis.sadd(format(SET_WITH_NODE_KEYS_NAMES, uniqueKey), dirtyProperty.getPropertyName());
+        jRedis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), dirtyProperty.getPropertyName());
+        jRedis.sadd(format(SET_WITH_PROPERTY_NODE_IDS, dirtyProperty.getPropertyName(), dirtyProperty.<Object>getPropertyType().getName(),
+                convert(dirtyProperty.getValue(this), String.class)).replaceAll(" ", ""), uniqueKey);
+
+        jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.<Object>getPropertyType().getName());
+        jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), convert(dirtyProperty.<Object>getTransientValue(), String.class));
+
     }
 }

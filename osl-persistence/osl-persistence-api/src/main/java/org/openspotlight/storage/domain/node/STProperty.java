@@ -38,6 +38,10 @@ public interface STProperty {
 
     <T, R> R getValueAs(STStorageSession session, Class<T> type);
 
+    <T> T getValue(STStorageSession session);
+
+    <T> T getTransientValue();
+    
     STPropertyDescription getDescription();
 
     enum STPropertyDescription {

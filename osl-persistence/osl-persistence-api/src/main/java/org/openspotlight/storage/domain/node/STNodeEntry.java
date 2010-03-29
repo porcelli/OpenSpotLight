@@ -78,6 +78,8 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
     STProperty getProperty(STStorageSession session, String name);
 
+    <T> T getPropertyValue(STStorageSession session, String name);
+
     Set<STNodeEntry> getChildren(STStorageSession session);
 
     Set<STNodeEntry> getChildrenForcingReload(STStorageSession session);

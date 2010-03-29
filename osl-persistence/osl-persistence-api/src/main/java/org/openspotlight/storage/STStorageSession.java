@@ -168,6 +168,8 @@ public interface STStorageSession extends STNodeEntryFactory {
         STNodeEntry nodeEntryGetParent(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 
         Set<STNodeEntry> nodeEntryGetChildren(STNodeEntry stNodeEntry);
+
+        <T> T propertyGetValue(STProperty stProperty);
     }
 
     interface STUniqueKeyBuilder {

@@ -55,6 +55,7 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -597,30 +598,37 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T> T propertyGetPropertyAs(STProperty stProperty, Class<T> type) {
-            switch (stProperty.getDescription()) {
-                case SIMPLE:
-                    return internalPropertyGetSimplePropertyAs(stProperty, type);
-                case KEY:
-                    return internalPropertyGetKeyPropertyAs(stProperty, type);
-                case LIST:
-                    return internalPropertyGetListPropertyAs(stProperty, type);
-                case SET:
-                    return internalPropertyGetSetPropertyAs(stProperty, type);
-                case MAP:
-                    return internalPropertyGetMapPropertyAs(stProperty, type);
-                case SERIALIZED_LIST:
-                    return internalPropertyGetSerializedListPropertyAs(stProperty, type);
-                case SERIALIZED_SET:
-                    return internalPropertyGetSerializedSetPropertyAs(stProperty, type);
-                case SERIALIZED_MAP:
-                    return internalPropertyGetSerializedMapPropertyAs(stProperty, type);
-                case SERIALIZED_POJO:
-                    return internalPropertyGetSerializedPojoPropertyAs(stProperty, type);
-                case INPUT_STREAM:
-                    return internalPropertyGetInputStreamPropertyAs(stProperty, type);
-                default:
-                    throw new IllegalArgumentException("missing entry on Property description");
+            try {
+                if (internalHasSavedProperty(stProperty)) {
+                    switch (stProperty.getDescription()) {
+                        case SIMPLE:
+                            return internalPropertyGetSimplePropertyAs(stProperty, type);
+                        case KEY:
+                            return internalPropertyGetKeyPropertyAs(stProperty, type);
+                        case LIST:
+                            return internalPropertyGetListPropertyAs(stProperty, type);
+                        case SET:
+                            return internalPropertyGetSetPropertyAs(stProperty, type);
+                        case MAP:
+                            return internalPropertyGetMapPropertyAs(stProperty, type);
+                        case SERIALIZED_LIST:
+                            return internalPropertyGetSerializedListPropertyAs(stProperty, type);
+                        case SERIALIZED_SET:
+                            return internalPropertyGetSerializedSetPropertyAs(stProperty, type);
+                        case SERIALIZED_MAP:
+                            return internalPropertyGetSerializedMapPropertyAs(stProperty, type);
+                        case SERIALIZED_POJO:
+                            return internalPropertyGetSerializedPojoPropertyAs(stProperty, type);
+                        case INPUT_STREAM:
+                            return (T) internalPropertyGetInputStreamProperty(stProperty);
+                        default:
+                            throw new IllegalArgumentException("missing entry on Property description");
+                    }
+                }
+            } catch (Exception e) {
+                handleException(e);
             }
+            return null;
         }
 
         public <T> void propertySetProperty(STProperty stProperty, T value) {
@@ -629,47 +637,50 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             } else {
                 dirtyProperties.add(stProperty);
             }
+
         }
 
         public Set<STProperty> nodeEntryLoadProperties(STNodeEntry stNodeEntry) {
-            return internalNodeEntryLoadProperties(stNodeEntry);
+            try {
+                return internalNodeEntryLoadProperties(stNodeEntry);
+            } catch (Exception e) {
+                handleException(e);
+            }
+            return null;
         }
 
         public STNodeEntry nodeEntryGetParent(STNodeEntry stNodeEntry) {
-            return internalNodeEntryGetParent(stNodeEntry);
+            try {
+                return internalNodeEntryGetParent(stNodeEntry);
+            } catch (Exception e) {
+                handleException(e);
+            }
+            return null;
         }
 
         public Set<STNodeEntry> nodeEntryGetChildren(STNodeEntry stNodeEntry) {
-            return internalNodeEntryGetChildren(stNodeEntry);
+            try {
+                return internalNodeEntryGetChildren(stNodeEntry);
+            } catch (Exception e) {
+                handleException(e);
+            }
+            return null;
+        }
+
+        public <T> T propertyGetValue(STProperty stProperty) {
+            try {
+                if (internalHasSavedProperty(stProperty)) {
+                    return AbstractSTStorageSession.this.<T>internalPropertyGetValue(stProperty);
+                }
+            } catch (Exception e) {
+                handleException(e);
+            }
+            return null;
         }
 
     }
 
-    protected abstract Set<STNodeEntry> internalNodeEntryGetChildren(STNodeEntry stNodeEntry);
-
-    protected abstract STNodeEntry internalNodeEntryGetParent(STNodeEntry stNodeEntry);
-
-    protected abstract <T> T internalPropertyGetKeyPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetInputStreamPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetSerializedPojoPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetSerializedMapPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetSerializedSetPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetSerializedListPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetMapPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetSetPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetListPropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract <T> T internalPropertyGetSimplePropertyAs(STProperty stProperty, Class<T> type);
-
-    protected abstract Set<STProperty> internalNodeEntryLoadProperties(STNodeEntry stNodeEntry);
+    protected abstract boolean internalHasSavedProperty(STProperty stProperty) throws Exception;
 
 
     public STFlushMode getFlushMode() {
@@ -758,61 +769,45 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     private void flushDirtyProperty(STProperty dirtyProperty) {
-        switch (dirtyProperty.getDescription()) {
+        try {
+            switch (dirtyProperty.getDescription()) {
 
-            case SIMPLE:
-                internalFlushSimpleProperty(dirtyProperty);
-                break;
-            case LIST:
-                internalFlushListProperty(dirtyProperty);
-                break;
-            case SET:
-                internalFlushSetProperty(dirtyProperty);
-                break;
-            case MAP:
-                internalFlushMapProperty(dirtyProperty);
-                break;
-            case SERIALIZED_LIST:
-                internalFlushSerializedListProperty(dirtyProperty);
-                break;
-            case SERIALIZED_SET:
-                internalFlushSerializedSetProperty(dirtyProperty);
-                break;
-            case SERIALIZED_MAP:
-                internalFlushSerializedMapProperty(dirtyProperty);
-                break;
-            case SERIALIZED_POJO:
-                internalFlushSerializedPojoProperty(dirtyProperty);
-                break;
-            case INPUT_STREAM:
-                internalFlushInputStreamProperty(dirtyProperty);
-                break;
-            default:
-                throw new IllegalArgumentException("missing entry on Property description");
+                case SIMPLE:
+                    internalFlushSimpleProperty(dirtyProperty);
+                    break;
+                case LIST:
+                    internalFlushListProperty(dirtyProperty);
+                    break;
+                case SET:
+                    internalFlushSetProperty(dirtyProperty);
+                    break;
+                case MAP:
+                    internalFlushMapProperty(dirtyProperty);
+                    break;
+                case SERIALIZED_LIST:
+                    internalFlushSerializedListProperty(dirtyProperty);
+                    break;
+                case SERIALIZED_SET:
+                    internalFlushSerializedSetProperty(dirtyProperty);
+                    break;
+                case SERIALIZED_MAP:
+                    internalFlushSerializedMapProperty(dirtyProperty);
+                    break;
+                case SERIALIZED_POJO:
+                    internalFlushSerializedPojoProperty(dirtyProperty);
+                    break;
+                case INPUT_STREAM:
+                    internalFlushInputStreamProperty(dirtyProperty);
+                    break;
+                default:
+                    throw new IllegalArgumentException("missing entry on Property description");
 
+            }
+        } catch (Exception e) {
+            handleException(e);
         }
-
     }
 
-    protected abstract void internalFlushInputStreamProperty(STProperty dirtyProperty);
-
-    protected abstract void internalFlushSerializedPojoProperty(STProperty dirtyProperty);
-
-    protected abstract void internalFlushSerializedMapProperty(STProperty dirtyProperty);
-
-    protected abstract void internalFlushSerializedSetProperty(STProperty dirtyProperty);
-
-    protected abstract void internalFlushSerializedListProperty(STProperty dirtyProperty);
-
-
-    protected abstract void internalFlushMapProperty(STProperty dirtyProperty);
-
-
-    protected abstract void internalFlushSetProperty(STProperty dirtyProperty);
-
-    protected abstract void internalFlushListProperty(STProperty dirtyProperty);
-
-    protected abstract void internalFlushSimpleProperty(STProperty dirtyProperty);
 
     public STUniqueKeyBuilder createKey(String nodeEntryName) {
         return new STUniqueKeyBuilderImpl(nodeEntryName);
@@ -861,4 +856,90 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
 
     }
+
+
+    protected final <T> T internalPropertyGetValue(STProperty stProperty) throws Exception {
+        try {
+            Class<T> type = (Class<T>) internalPropertyDiscoverType(stProperty);
+            switch (stProperty.getDescription()) {
+
+                case KEY:
+                    return this.<T>internalPropertyGetKeyPropertyAs(stProperty, type);
+                case SIMPLE:
+                    return this.<T>internalPropertyGetSimplePropertyAs(stProperty, type);
+                case LIST:
+                    return this.<T>internalPropertyGetListPropertyAs(stProperty, type);
+                case SET:
+                    return this.<T>internalPropertyGetSetPropertyAs(stProperty, type);
+                case MAP:
+                    return this.<T>internalPropertyGetMapPropertyAs(stProperty, type);
+                case SERIALIZED_LIST:
+                    return this.<T>internalPropertyGetSerializedListPropertyAs(stProperty, type);
+                case SERIALIZED_SET:
+                    return this.<T>internalPropertyGetSerializedSetPropertyAs(stProperty, type);
+                case SERIALIZED_MAP:
+                    return this.<T>internalPropertyGetSerializedMapPropertyAs(stProperty, type);
+                case SERIALIZED_POJO:
+                    return this.<T>internalPropertyGetSerializedPojoPropertyAs(stProperty, type);
+                case INPUT_STREAM:
+                    return (T) this.internalPropertyGetInputStreamProperty(stProperty);
+                default:
+                    throw new IllegalArgumentException("missing entry on Property description");
+            }
+        } catch (Exception e) {
+            handleException(e);
+            return null;
+        }
+
+    }
+
+    protected abstract void internalFlushInputStreamProperty(STProperty dirtyProperty) throws Exception;
+
+    protected abstract void internalFlushSerializedPojoProperty(STProperty dirtyProperty) throws Exception;
+
+    protected abstract void internalFlushSerializedMapProperty(STProperty dirtyProperty) throws Exception;
+
+    protected abstract void internalFlushSerializedSetProperty(STProperty dirtyProperty) throws Exception;
+
+    protected abstract void internalFlushSerializedListProperty(STProperty dirtyProperty) throws Exception;
+
+
+    protected abstract void internalFlushMapProperty(STProperty dirtyProperty) throws Exception;
+
+
+    protected abstract void internalFlushSetProperty(STProperty dirtyProperty) throws Exception;
+
+    protected abstract void internalFlushListProperty(STProperty dirtyProperty) throws Exception;
+
+    protected abstract void internalFlushSimpleProperty(STProperty dirtyProperty) throws Exception;
+
+
+    protected abstract Class<?> internalPropertyDiscoverType(STProperty stProperty) throws Exception;
+
+    protected abstract Set<STNodeEntry> internalNodeEntryGetChildren(STNodeEntry stNodeEntry) throws Exception;
+
+    protected abstract STNodeEntry internalNodeEntryGetParent(STNodeEntry stNodeEntry) throws Exception;
+
+    protected abstract <T> T internalPropertyGetKeyPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract InputStream internalPropertyGetInputStreamProperty(STProperty stProperty) throws Exception;
+
+    protected abstract <T> T internalPropertyGetSerializedPojoPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract <T> T internalPropertyGetSerializedMapPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract <T> T internalPropertyGetSerializedSetPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract <T> T internalPropertyGetSerializedListPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract <T> T internalPropertyGetMapPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract <T> T internalPropertyGetSetPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract <T> T internalPropertyGetListPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract <T> T internalPropertyGetSimplePropertyAs(STProperty stProperty, Class<T> type) throws Exception;
+
+    protected abstract Set<STProperty> internalNodeEntryLoadProperties(STNodeEntry stNodeEntry) throws Exception;
+
 }
