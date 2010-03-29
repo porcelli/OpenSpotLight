@@ -82,6 +82,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     private final String SET_WITH_ALL_KEYS = "all-unique-keys";
     private final String SET_WITH_ALL_LOCAL_KEYS = "local-keys:{0}:unique-keys";
     private final String SET_WITH_NODE_KEYS_NAMES = "node-unique-key:{0}:key-names";
+    private final String SET_WITH_NODE_CHILDREN_KEYS = "node-unique-key:{0}:children-unique-keys";
+    private final String SET_WITH_NODE_CHILDREN_NAMED_KEYS = "node-unique-key:{0}:node-name:{1}:children-unique-keys";
     private final String SET_WITH_NODE_PROPERTY_NAMES = "node-unique-key:{0}:property-names";
     private final String SET_WITH_PROPERTY_NODE_IDS = "property-name:{0}:property-type:{1}:property-value:{2}:node-unique-keys";
     private final String KEY_WITH_PROPERTY_VALUE = "node-unique-key:{0}:property-name:{1}:value";

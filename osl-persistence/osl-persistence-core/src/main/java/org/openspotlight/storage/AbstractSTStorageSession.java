@@ -50,6 +50,7 @@
 package org.openspotlight.storage;
 
 import com.google.common.collect.ImmutableSet;
+import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
@@ -59,6 +60,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
@@ -71,7 +73,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethodsImpl();
 
-    public STStorageSessionSupportMethods getSupportMethods(){
+    public STStorageSessionSupportMethods getSupportMethods() {
         return supportMethods;
     }
 
@@ -81,23 +83,49 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     public final class STStorageSessionSupportMethodsImpl implements STStorageSessionSupportMethods {
 
+        private final WeakHashMap<STAData, Object> cache = new WeakHashMap<STAData, Object>();
+
+        private <T> T getFromCache(STAData key) {
+            T fromCache = (T) cache.get(key);
+            return fromCache;
+        }
+
+
+        private <T> T fillCache(STAData key, T toCache) {
+            cache.put(key, toCache);
+            return toCache;
+        }
 
         public String getLocalKeyAsStringHash(STLocalKey localKey) {
-            return getSha1SignatureEncodedAsBase64(getLocalKeyAsSimpleString(localKey));
+            String fromCache = getFromCache(localKey);
+            if (fromCache != null) return fromCache;
+
+            return fillCache(localKey, getSha1SignatureEncodedAsBase64(getLocalKeyAsSimpleString(localKey)));
         }
 
         public String getUniqueKeyAsStringHash(STUniqueKey uniqueKey) {
-            return getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey));
+            String fromCache = getFromCache(uniqueKey);
+            if (fromCache != null) return fromCache;
+
+            return fillCache(uniqueKey, getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey)));
         }
 
 
         public byte[] getLocalKeyAsByteHash(STLocalKey localKey) {
-            return getSha1Signature(getLocalKeyAsSimpleString(localKey));
+            byte[] fromCache = getFromCache(localKey);
+            if (fromCache != null) return fromCache;
+
+
+            return fillCache(localKey, getSha1Signature(getLocalKeyAsSimpleString(localKey)));
         }
 
 
         public byte[] getUniqueKeyAsByteHash(STUniqueKey uniqueKey) {
-            return getSha1Signature(getUniqueKeyAsSimpleString(uniqueKey));
+
+            byte[] fromCache = getFromCache(uniqueKey);
+            if (fromCache != null) return fromCache;
+
+            return fillCache(uniqueKey, getSha1Signature(getUniqueKeyAsSimpleString(uniqueKey)));
 
         }
 
