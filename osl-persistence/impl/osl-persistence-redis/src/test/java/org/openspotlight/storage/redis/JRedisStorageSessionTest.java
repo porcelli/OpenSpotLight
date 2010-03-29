@@ -93,7 +93,7 @@ public class JRedisStorageSessionTest {
     final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExamplePartition.DEFAULT));
 
     @Before
-    public void cleanPreviousData() throws Exception{
+    public void cleanPreviousData() throws Exception {
         injector.getInstance(JRedis.class).flushall();
     }
 
@@ -109,9 +109,9 @@ public class JRedisStorageSessionTest {
         new Thread() {
             @Override
             public void run() {
-                try{
-                sessions.add(injector.getInstance(STStorageSession.class));
-                }finally{
+                try {
+                    sessions.add(injector.getInstance(STStorageSession.class));
+                } finally {
                     latch.countDown();
                 }
             }
@@ -136,6 +136,150 @@ public class JRedisStorageSessionTest {
                 .buildCriteria().andFindUnique(session1);
         assertThat(foundNewNode1, is(notNullValue()));
         assertThat(foundNewNode1, is(newNode1));
+    }
+
+    @Test
+    public void shouldInsertNewNodeEntryAndFindUniqueWithExplicitFlush() {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldCreateHierarchyAndLoadParentNode() {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldCreateHierarchyAndLoadChildrenNodes() {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithPartitions() {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldSaveSubPartitionsOnExplicitFlush() {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSimplePropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSimplePropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithListPropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithListPropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSetPropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSetPropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithMapPropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithMapPropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSerializedPojoPropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSerializedPojoPropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithInputStreamPropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithInputStreamPropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSerializedListPropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSerializedListPropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSerializedSetPropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSerializedSetPropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSerializedMapPropertiesOnExplicitFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithSerializedMapPropertiesOnAutoFlush() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldWorkWithWeakReferences() throws Exception {
+
+        throw new UnsupportedOperationException();
     }
 
 }
