@@ -53,6 +53,7 @@ import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
+import org.openspotlight.storage.domain.node.STProperty;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -155,6 +156,11 @@ public interface STStorageSession extends STNodeEntryFactory {
 
         public STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name);
 
+        <T> T propertyGetPropertyAs(org.openspotlight.storage.domain.node.STProperty stProperty, Class<T> type);
+
+        <T> void propertySetProperty(org.openspotlight.storage.domain.node.STProperty stProperty, T value);
+
+        Set<STProperty> nodeEntryLoadProperties(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
     }
 
     interface STUniqueKeyBuilder {

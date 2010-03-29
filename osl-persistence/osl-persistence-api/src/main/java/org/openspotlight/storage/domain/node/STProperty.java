@@ -2,6 +2,11 @@ package org.openspotlight.storage.domain.node;
 
 import org.openspotlight.storage.STStorageSession;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Created by IntelliJ IDEA.
  * User: feuteston
@@ -10,24 +15,28 @@ import org.openspotlight.storage.STStorageSession;
  * To change this template use File | Settings | File Templates.
  */
 public interface STProperty {
-    
+
     STNodeEntry getParent();
-    
+
     <T> void setValue(STStorageSession session, T value);
-    
+
     String getPropertyName();
 
     <T> Class<T> getPropertyType();
 
     <T> Class<T> getFirstParameterizedType();
 
-    <T> Class<T> getFirstSecondType();
+    <T> Class<T> getSecondParameterizedType();
+
+    boolean hasParameterizedTypes();
 
     boolean isSerialized();
 
     boolean isDifficultToLoad();
 
-    <T> T getValueAs(STStorageSession session, Class<T> type);
+    boolean isKey();
+
+    <T, R> R getValueAs(STStorageSession session, Class<T> type);
 
     STPropertyDescription getDescription();
 
@@ -40,8 +49,7 @@ public interface STProperty {
         SERIALIZED_SET(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
         SERIALIZED_MAP(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
         SERIALIZED_POJO(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
-        INPUT_STREAM(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT)
-                        ;
+        INPUT_STREAM(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT);
 
         private final STSerializedType serialized;
         private final STLoadWeight loadWeight;

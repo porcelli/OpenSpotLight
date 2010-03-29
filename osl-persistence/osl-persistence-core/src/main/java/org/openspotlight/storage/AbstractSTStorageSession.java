@@ -54,6 +54,7 @@ import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
+import org.openspotlight.storage.domain.node.STProperty;
 
 import java.io.Serializable;
 import java.util.*;
@@ -586,7 +587,61 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return createWithName(AbstractSTStorageSession.this, name).withParent(stNodeEntry);
         }
 
+        public <T> T propertyGetPropertyAs(STProperty stProperty, Class<T> type) {
+            switch (stProperty.getDescription()) {
+                case SIMPLE:
+                    return internalPropertyGetSimplePropertyAs(stProperty,type);
+                case LIST:
+                    return internalPropertyGetListPropertyAs(stProperty,type);
+                case SET:
+                    return internalPropertyGetSetPropertyAs(stProperty,type);
+                case MAP:
+                    return internalPropertyGetMapPropertyAs(stProperty,type);
+                case SERIALIZED_LIST:
+                    return internalPropertyGetSerializedListPropertyAs(stProperty,type);
+                case SERIALIZED_SET:
+                    return internalPropertyGetSerializedSetPropertyAs(stProperty,type);
+                case SERIALIZED_MAP:
+                    return internalPropertyGetSerializedMapPropertyAs(stProperty,type);
+                case SERIALIZED_POJO:
+                    return internalPropertyGetSerializedPojoPropertyAs(stProperty,type);
+                case INPUT_STREAM:
+                    return internalPropertyGetInputStreamPropertyAs(stProperty,type);
+                default:
+                    throw new IllegalArgumentException("missing entry on Property description");
+            }
+        }
+
+        public <T> void propertySetProperty(STProperty stProperty, T value) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public Set<STProperty> nodeEntryLoadProperties(STNodeEntry stNodeEntry) {
+            return internalNodeEntryLoadProperties(stNodeEntry);
+        }
+
     }
+
+    protected abstract <T> T internalPropertyGetInputStreamPropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract <T> T internalPropertyGetSerializedPojoPropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract <T> T internalPropertyGetSerializedMapPropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract <T> T internalPropertyGetSerializedSetPropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract <T> T internalPropertyGetSerializedListPropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract <T> T internalPropertyGetMapPropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract <T> T internalPropertyGetSetPropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract <T> T internalPropertyGetListPropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract <T> T internalPropertyGetSimplePropertyAs(STProperty stProperty, Class<T> type);
+
+    protected abstract Set<STProperty> internalNodeEntryLoadProperties(STNodeEntry stNodeEntry);
+
 
 
     public STFlushMode getFlushMode() {
