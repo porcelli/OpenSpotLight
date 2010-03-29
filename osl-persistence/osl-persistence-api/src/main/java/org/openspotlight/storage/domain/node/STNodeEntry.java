@@ -78,6 +78,14 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
     STProperty getProperty(STStorageSession session, String name);
 
+    Set<STNodeEntry> getChildren(STStorageSession session);
+
+    Set<STNodeEntry> getChildrenForcingReload(STStorageSession session);
+
+    STNodeEntry getParent(STStorageSession session);
+
+    void removeNode(STStorageSession session);
+
     Set<String> getPropertyNames();
 
     Set<STProperty> getProperties(STStorageSession session);
@@ -97,6 +105,8 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
      * @return
      */
     STPropertyOperation getUnverifiedOperations();
+
+
 
     interface STPropertyOperation {
 

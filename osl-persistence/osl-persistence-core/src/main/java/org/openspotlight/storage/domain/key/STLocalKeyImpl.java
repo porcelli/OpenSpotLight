@@ -48,6 +48,7 @@
  */
 
 package org.openspotlight.storage.domain.key;
+
 import com.google.common.collect.ImmutableSortedSet;
 
 import java.util.Iterator;
@@ -105,21 +106,21 @@ public class STLocalKeyImpl implements STLocalKey {
 
     public int compareTo(STLocalKey o) {
         int result = this.getNodeEntryName().compareTo(o.getNodeEntryName());
-        if(result!=0) return result;
+        if (result != 0) return result;
         Iterator<STKeyEntry<?>> thisIt = getEntries().iterator();
         Iterator<STKeyEntry<?>> thatIt = o.getEntries().iterator();
-        while(true){
+        while (true) {
             boolean thisHasNext = thisIt.hasNext();
             boolean thatHasNext = thatIt.hasNext();
 
-            if(thisHasNext && thatHasNext){
+            if (thisHasNext && thatHasNext) {
                 STKeyEntry<?> thisNext = thisIt.next();
                 STKeyEntry<?> thatNext = thatIt.next();
                 result = thisNext.compareTo(thatNext);
-                if(result!=0) return result;
-            }else{
-                if(thisHasNext && !thatHasNext) return 1;
-                if(!thisHasNext && thatHasNext) return -1;
+                if (result != 0) return result;
+            } else {
+                if (thisHasNext && !thatHasNext) return 1;
+                if (!thisHasNext && thatHasNext) return -1;
                 return 0;
             }
         }

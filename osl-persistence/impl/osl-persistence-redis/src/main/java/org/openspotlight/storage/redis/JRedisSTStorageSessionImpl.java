@@ -61,6 +61,7 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.domain.node.STProperty;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -201,5 +202,115 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             jRedis.del(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()));
             jRedis.del(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()));
         }
+    }
+
+    @Override
+    protected Set<STNodeEntry> internalNodeEntryGetChildren(STNodeEntry stNodeEntry) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected STNodeEntry internalNodeEntryGetParent(STNodeEntry stNodeEntry) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetKeyPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetInputStreamPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetSerializedPojoPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetSerializedMapPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetSerializedSetPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetSerializedListPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetMapPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetSetPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetListPropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected <T> T internalPropertyGetSimplePropertyAs(STProperty stProperty, Class<T> type) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected Set<STProperty> internalNodeEntryLoadProperties(STNodeEntry stNodeEntry) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushInputStreamProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushSerializedPojoProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushSerializedMapProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushSerializedSetProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushSerializedListProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushMapProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushSetProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushListProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void internalFlushSimpleProperty(STProperty dirtyProperty) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

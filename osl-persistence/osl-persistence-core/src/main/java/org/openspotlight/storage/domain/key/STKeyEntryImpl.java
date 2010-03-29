@@ -50,6 +50,7 @@
 package org.openspotlight.storage.domain.key;
 
 import java.io.Serializable;
+
 import static org.openspotlight.common.util.Compare.npeSafeCompare;
 
 /**
@@ -57,8 +58,8 @@ import static org.openspotlight.common.util.Compare.npeSafeCompare;
  */
 public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
 
-    public static <T extends Serializable> STKeyEntry<T> create(Class<T> type, T value, String propertyName){
-        return new STKeyEntryImpl<T>(type,value,propertyName);
+    public static <T extends Serializable> STKeyEntry<T> create(Class<T> type, T value, String propertyName) {
+        return new STKeyEntryImpl<T>(type, value, propertyName);
     }
 
 
@@ -110,11 +111,11 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
     }
 
     public int compareTo(STKeyEntry o) {
-        int result = npeSafeCompare(propertyName,o.getPropertyName());
-                if(result!=0) return result;
+        int result = npeSafeCompare(propertyName, o.getPropertyName());
+        if (result != 0) return result;
         result = type.getName().compareTo(o.getType().getName());
-                if(result!=0) return result;
-        result = npeSafeCompare(value,o.getValue());
+        if (result != 0) return result;
+        result = npeSafeCompare(value, o.getValue());
         return result;
     }
 
@@ -127,6 +128,6 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
                 '}';
     }
 
-    
+
 }
 

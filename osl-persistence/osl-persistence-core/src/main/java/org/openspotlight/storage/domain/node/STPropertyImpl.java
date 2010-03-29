@@ -3,9 +3,6 @@ package org.openspotlight.storage.domain.node;
 import org.openspotlight.storage.STStorageSession;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -87,9 +84,9 @@ public class STPropertyImpl implements STProperty {
         if (key) throw new IllegalStateException("key properties are immutable");
 
         session.getInternalMethods().propertySetProperty(this, value);
-        if(isDifficultToLoad()){
+        if (isDifficultToLoad()) {
             weakReference = new WeakReference<T>(value);
-        }else{
+        } else {
             this.value = value;
         }
     }

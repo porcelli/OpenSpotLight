@@ -68,6 +68,9 @@ public interface STStorageSession extends STNodeEntryFactory {
 
     STNodeEntry findUniqueByCriteria(STCriteria criteria);
 
+    void removeNode(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
+
+
     public interface STPartition {
         String getPartitionName();
     }
@@ -161,6 +164,10 @@ public interface STStorageSession extends STNodeEntryFactory {
         <T> void propertySetProperty(org.openspotlight.storage.domain.node.STProperty stProperty, T value);
 
         Set<STProperty> nodeEntryLoadProperties(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
+
+        STNodeEntry nodeEntryGetParent(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
+
+        Set<STNodeEntry> nodeEntryGetChildren(STNodeEntry stNodeEntry);
     }
 
     interface STUniqueKeyBuilder {

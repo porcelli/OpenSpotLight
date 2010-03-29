@@ -50,15 +50,16 @@
 package org.openspotlight.storage;
 
 import com.google.common.collect.ImmutableSet;
-import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
+import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 
@@ -69,7 +70,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethods();
 
-    protected final STNodeEntry createEntryWithKey(STUniqueKey uniqueKey){
+    protected final STNodeEntry createEntryWithKey(STUniqueKey uniqueKey) {
         return new STNodeEntryImpl(uniqueKey);
     }
 
@@ -355,7 +356,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private Serializable transientPropertyValue;
 
-        Set<STCriteriaItem> items = new LinkedHashSet();
+        Set<STCriteriaItem> items;
+
+        public STCriteriaBuilderImpl() {
+            items = newLinkedHashSet();
+        }
 
         private void breakIfNotNull(Object o) {
             if (o != null) throw new IllegalStateException();
@@ -508,6 +513,10 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
     }
 
+    public void removeNode(STNodeEntry stNodeEntry) {
+        handleRemovedItem(stNodeEntry);
+    }
+
     public STCriteriaBuilder createCriteria() {
         return new STCriteriaBuilderImpl();
     }
@@ -537,11 +546,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     private final STPartition partition;
 
-    protected final Set<STNodeEntry> newNodes = new LinkedHashSet<STNodeEntry>();
+    protected final Set<STNodeEntry> newNodes = newLinkedHashSet();
 
-    protected final Set<STAData> dirtyProperties = new LinkedHashSet<STAData>();
+    protected final Set<STProperty> dirtyProperties = newLinkedHashSet();
 
-    protected final Set<STNodeEntry> removedNodes = new LinkedHashSet<STNodeEntry>();
+    protected final Set<STNodeEntry> removedNodes = newLinkedHashSet();
 
     private final STStorageSessionInternalMethods internalMethods = new STStorageSessionInternalMethodsImpl();
 
@@ -590,39 +599,55 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public <T> T propertyGetPropertyAs(STProperty stProperty, Class<T> type) {
             switch (stProperty.getDescription()) {
                 case SIMPLE:
-                                    return internalPropertyGetSimplePropertyAs(stProperty,type);
+                    return internalPropertyGetSimplePropertyAs(stProperty, type);
                 case KEY:
-                                    return internalPropertyGetKeyPropertyAs(stProperty,type);
-                                                case LIST:
-                    return internalPropertyGetListPropertyAs(stProperty,type);
+                    return internalPropertyGetKeyPropertyAs(stProperty, type);
+                case LIST:
+                    return internalPropertyGetListPropertyAs(stProperty, type);
                 case SET:
-                    return internalPropertyGetSetPropertyAs(stProperty,type);
+                    return internalPropertyGetSetPropertyAs(stProperty, type);
                 case MAP:
-                    return internalPropertyGetMapPropertyAs(stProperty,type);
+                    return internalPropertyGetMapPropertyAs(stProperty, type);
                 case SERIALIZED_LIST:
-                    return internalPropertyGetSerializedListPropertyAs(stProperty,type);
+                    return internalPropertyGetSerializedListPropertyAs(stProperty, type);
                 case SERIALIZED_SET:
-                    return internalPropertyGetSerializedSetPropertyAs(stProperty,type);
+                    return internalPropertyGetSerializedSetPropertyAs(stProperty, type);
                 case SERIALIZED_MAP:
-                    return internalPropertyGetSerializedMapPropertyAs(stProperty,type);
+                    return internalPropertyGetSerializedMapPropertyAs(stProperty, type);
                 case SERIALIZED_POJO:
-                    return internalPropertyGetSerializedPojoPropertyAs(stProperty,type);
+                    return internalPropertyGetSerializedPojoPropertyAs(stProperty, type);
                 case INPUT_STREAM:
-                    return internalPropertyGetInputStreamPropertyAs(stProperty,type);
+                    return internalPropertyGetInputStreamPropertyAs(stProperty, type);
                 default:
                     throw new IllegalArgumentException("missing entry on Property description");
             }
         }
 
         public <T> void propertySetProperty(STProperty stProperty, T value) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            if (flushMode.equals(STFlushMode.AUTO)) {
+                flushDirtyProperty(stProperty);
+            } else {
+                dirtyProperties.add(stProperty);
+            }
         }
 
         public Set<STProperty> nodeEntryLoadProperties(STNodeEntry stNodeEntry) {
             return internalNodeEntryLoadProperties(stNodeEntry);
         }
 
+        public STNodeEntry nodeEntryGetParent(STNodeEntry stNodeEntry) {
+            return internalNodeEntryGetParent(stNodeEntry);
+        }
+
+        public Set<STNodeEntry> nodeEntryGetChildren(STNodeEntry stNodeEntry) {
+            return internalNodeEntryGetChildren(stNodeEntry);
+        }
+
     }
+
+    protected abstract Set<STNodeEntry> internalNodeEntryGetChildren(STNodeEntry stNodeEntry);
+
+    protected abstract STNodeEntry internalNodeEntryGetParent(STNodeEntry stNodeEntry);
 
     protected abstract <T> T internalPropertyGetKeyPropertyAs(STProperty stProperty, Class<T> type);
 
@@ -645,7 +670,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     protected abstract <T> T internalPropertyGetSimplePropertyAs(STProperty stProperty, Class<T> type);
 
     protected abstract Set<STProperty> internalNodeEntryLoadProperties(STNodeEntry stNodeEntry);
-
 
 
     public STFlushMode getFlushMode() {
@@ -692,7 +716,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public STNodeEntry andCreate() {
             STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
-            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parent!=null?parent.getUniqueKey():null);
+            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parent != null ? parent.getUniqueKey() : null);
             STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey);
             AbstractSTStorageSession.this.handleNewItem(result);
             return result;
@@ -718,7 +742,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             }
         }
 
-        for (STAData data : dirtyProperties) {
+        for (STProperty data : dirtyProperties) {
             try {
                 flushDirtyProperty(data);
             } catch (Exception e) {
@@ -733,10 +757,62 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     }
 
-    private void flushDirtyProperty(STAData data) {
-        //FIXME implement
+    private void flushDirtyProperty(STProperty dirtyProperty) {
+        switch (dirtyProperty.getDescription()) {
+
+            case SIMPLE:
+                internalFlushSimpleProperty(dirtyProperty);
+                break;
+            case LIST:
+                internalFlushListProperty(dirtyProperty);
+                break;
+            case SET:
+                internalFlushSetProperty(dirtyProperty);
+                break;
+            case MAP:
+                internalFlushMapProperty(dirtyProperty);
+                break;
+            case SERIALIZED_LIST:
+                internalFlushSerializedListProperty(dirtyProperty);
+                break;
+            case SERIALIZED_SET:
+                internalFlushSerializedSetProperty(dirtyProperty);
+                break;
+            case SERIALIZED_MAP:
+                internalFlushSerializedMapProperty(dirtyProperty);
+                break;
+            case SERIALIZED_POJO:
+                internalFlushSerializedPojoProperty(dirtyProperty);
+                break;
+            case INPUT_STREAM:
+                internalFlushInputStreamProperty(dirtyProperty);
+                break;
+            default:
+                throw new IllegalArgumentException("missing entry on Property description");
+
+        }
 
     }
+
+    protected abstract void internalFlushInputStreamProperty(STProperty dirtyProperty);
+
+    protected abstract void internalFlushSerializedPojoProperty(STProperty dirtyProperty);
+
+    protected abstract void internalFlushSerializedMapProperty(STProperty dirtyProperty);
+
+    protected abstract void internalFlushSerializedSetProperty(STProperty dirtyProperty);
+
+    protected abstract void internalFlushSerializedListProperty(STProperty dirtyProperty);
+
+
+    protected abstract void internalFlushMapProperty(STProperty dirtyProperty);
+
+
+    protected abstract void internalFlushSetProperty(STProperty dirtyProperty);
+
+    protected abstract void internalFlushListProperty(STProperty dirtyProperty);
+
+    protected abstract void internalFlushSimpleProperty(STProperty dirtyProperty);
 
     public STUniqueKeyBuilder createKey(String nodeEntryName) {
         return new STUniqueKeyBuilderImpl(nodeEntryName);
@@ -762,7 +838,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
         public <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, Serializable value) {
-            this.localEntries.add(STKeyEntryImpl.<T>create(type, (T)value, propertyName));
+            this.localEntries.add(STKeyEntryImpl.<T>create(type, (T) value, propertyName));
             return this;
         }
 

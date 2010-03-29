@@ -60,24 +60,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.channels.Channel;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.nio.channels.Channels.newChannel;
 import static java.text.MessageFormat.format;
 
-/**
- * Created by IntelliJ IDEA.
- * User: feu
- * Date: Mar 19, 2010
- * Time: 4:48:58 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public class STNodeEntryImpl implements STNodeEntry {
 
     public STNodeEntryImpl(STUniqueKey uniqueKey, Set<STProperty> properties) {
@@ -88,8 +79,13 @@ public class STNodeEntryImpl implements STNodeEntry {
         for (STProperty property : properties) {
             this.propertiesByName.put(property.getPropertyName(), property);
         }
+        loadKeyProperties();
+    }
+
+    private void loadKeyProperties() {
         for (STKeyEntry<?> keyEntry : localKey.getEntries()) {
-            this.propertiesByName.put(keyEntry.getPropertyName(), new STPropertyImpl(this, keyEntry.getPropertyName(), STProperty.STPropertyDescription.KEY, keyEntry.getType()));
+            this.propertiesByName.put(keyEntry.getPropertyName(), new STPropertyImpl(this, keyEntry.getPropertyName(),
+                    STProperty.STPropertyDescription.KEY, keyEntry.getType()));
         }
     }
 
@@ -99,6 +95,10 @@ public class STNodeEntryImpl implements STNodeEntry {
         this.localKey = uniqueKey.getLocalKey();
         this.uniqueKey = uniqueKey;
     }
+
+    private WeakReference<STNodeEntry> parentWeakReference = null;
+
+    private WeakReference<Set<STNodeEntry>> childrenWeakReference = null;
 
     private final Map<String, STProperty> propertiesByName = new HashMap<String, STProperty>();
 
@@ -128,6 +128,33 @@ public class STNodeEntryImpl implements STNodeEntry {
         return propertiesByName.get(name);
     }
 
+    public Set<STNodeEntry> getChildren(STStorageSession session) {
+        Set<STNodeEntry> children = childrenWeakReference != null ? childrenWeakReference.get() : null;
+        if (children == null) {
+            children = getChildrenForcingReload(session);
+        }
+        return children;
+    }
+
+    public Set<STNodeEntry> getChildrenForcingReload(STStorageSession session) {
+        Set<STNodeEntry> children = session.getInternalMethods().nodeEntryGetChildren(this);
+        childrenWeakReference = new WeakReference<Set<STNodeEntry>>(children);
+        return children;
+    }
+
+    public STNodeEntry getParent(STStorageSession session) {
+        STNodeEntry parent = parentWeakReference != null ? parentWeakReference.get() : null;
+        if (parent == null) {
+            parent = session.getInternalMethods().nodeEntryGetParent(this);
+            parentWeakReference = new WeakReference<STNodeEntry>(parent);
+        }
+        return parent;
+    }
+
+    public void removeNode(STStorageSession session) {
+        session.removeNode(this);
+    }
+
     public Set<String> getPropertyNames() {
         return ImmutableSet.copyOf(propertiesByName.keySet());
     }
@@ -135,6 +162,7 @@ public class STNodeEntryImpl implements STNodeEntry {
     public Set<STProperty> getProperties(STStorageSession session) {
         if (propertiesByName.isEmpty()) {
             Set<STProperty> result = session.getInternalMethods().nodeEntryLoadProperties(this);
+            loadKeyProperties();
             for (STProperty property : result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
