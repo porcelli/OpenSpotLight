@@ -2,6 +2,7 @@ package org.openspotlight.storage.domain.node;
 
 import org.openspotlight.storage.STStorageSession;
 
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
 /**
@@ -16,7 +17,7 @@ public class STPropertyImpl implements STProperty {
                           Class<?> propertyType, Class<?> firstParameterizedType,
                           Class<?> secondParameterizedType) {
         if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
-        if(description==null) throw new IllegalArgumentException();
+        if (description == null) throw new IllegalArgumentException();
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
@@ -32,7 +33,7 @@ public class STPropertyImpl implements STProperty {
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType, Class<?> firstParameterizedType) {
         if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
-        if(description==null) throw new IllegalArgumentException();
+        if (description == null) throw new IllegalArgumentException();
 
         this.parent = parent;
         this.propertyName = propertyName;
@@ -49,8 +50,8 @@ public class STPropertyImpl implements STProperty {
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType) {
         if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
-        if(description==null) throw new IllegalArgumentException();
-        
+        if (description == null) throw new IllegalArgumentException();
+
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
@@ -95,7 +96,7 @@ public class STPropertyImpl implements STProperty {
         session.getInternalMethods().propertySetProperty(this, value);
     }
 
-    public <T, R> R getValueAs(STStorageSession session, Class<T> type) {
+    public <R> R getValueAs(STStorageSession session, Class<R> type) {
         R result;
         if (value != null)
             return (R) value;
@@ -104,14 +105,27 @@ public class STPropertyImpl implements STProperty {
             if (result == null) {
                 result = (R) session.getInternalMethods().propertyGetPropertyAs(this, type);
                 if (result != null) {
-                    weakReference = new WeakReference<T>((T) result);
+                    weakReference = new WeakReference<R>((R) result);
                 }
             }
         } else {
             value = session.getInternalMethods().propertyGetPropertyAs(this, type);
             result = (R) value;
         }
+        resetIfStream(result);
+
         return result;
+    }
+
+    private <R> void resetIfStream(R result) {
+        try {
+            if (result instanceof InputStream) {
+                InputStream is = (InputStream) result;
+                if (is.markSupported()) is.reset();
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public STNodeEntry getParent() {
@@ -133,6 +147,8 @@ public class STPropertyImpl implements STProperty {
             if (value == null) value = (R) session.getInternalMethods().propertyGetValue(this);
             result = (R) value;
         }
+        resetIfStream(result);
+
         return result;
 
     }

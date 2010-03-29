@@ -15,7 +15,7 @@ public interface STProperty {
 
     <T> void setValue(STStorageSession session, T value);
 
-    <T, R> R getValueAs(STStorageSession session, Class<T> type);
+    <T> T getValueAs(STStorageSession session, Class<T> type);
 
     <T> T getValue(STStorageSession session);
 

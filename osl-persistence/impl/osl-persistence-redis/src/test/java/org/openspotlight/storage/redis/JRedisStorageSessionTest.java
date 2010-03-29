@@ -51,6 +51,7 @@ package org.openspotlight.storage.redis;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.apache.commons.io.IOUtils;
 import org.jredis.JRedis;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,7 +59,9 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
-import java.io.Serializable;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -100,7 +103,7 @@ public class JRedisStorageSessionTest {
     public void cleanPreviousData() throws Exception {
         jRedis = injector.getInstance(JRedis.class);
         jRedis.flushall();
-        
+
     }
 
     @Test
@@ -129,7 +132,7 @@ public class JRedisStorageSessionTest {
 
 
     @Test
-    public void shouldCreateTheSameKey() throws Exception{
+    public void shouldCreateTheSameKey() throws Exception {
         STStorageSession session = injector.getInstance(STStorageSession.class);
         STNodeEntry aNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
@@ -137,7 +140,7 @@ public class JRedisStorageSessionTest {
                 .withKey("name", String.class, "name").andCreate();
         String aKeyAsString = session.getSupportMethods().getUniqueKeyAsSimpleString(aNode.getUniqueKey());
         String sameKeyAsString = session.getSupportMethods().getUniqueKeyAsSimpleString(sameNode.getUniqueKey());
-        assertThat(aKeyAsString,is(sameKeyAsString));
+        assertThat(aKeyAsString, is(sameKeyAsString));
 
     }
 
@@ -206,7 +209,7 @@ public class JRedisStorageSessionTest {
         newNode.getVerifiedOperations().setSimpleProperty(session, "integerProperty", Integer.class, 2);
         newNode.getVerifiedOperations().setSimpleProperty(session, "floatProperty", Float.class, 2.1f);
         newNode.getVerifiedOperations().setSimpleProperty(session, "doubleProperty", Double.class, 2.1d);
-        
+
 
         STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
                 .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
@@ -245,7 +248,6 @@ public class JRedisStorageSessionTest {
                 is(2.1d));
 
 
-
         assertThat(loadedNode.<String>getPropertyValue(session, "stringProperty"),
                 is("value"));
 
@@ -261,7 +263,6 @@ public class JRedisStorageSessionTest {
 
         assertThat(loadedNode.<Double>getPropertyValue(session, "doubleProperty"),
                 is(2.1d));
-
 
 
         STNodeEntry anotherLoadedNode = session.createCriteria().withNodeEntry("newNode1")
@@ -332,7 +333,38 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldWorkWithInputStreamPropertiesOnAutoFlush() throws Exception {
 
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry newNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+
+        InputStream stream = new ByteArrayInputStream("streamValue".getBytes());
+
+        newNode.getVerifiedOperations().setInputStreamProperty(session, "streamProperty", stream);
+
+
+        STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
+                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+
+
+        assertThat(IOUtils.contentEquals(newNode.getProperty(session, "streamProperty").getInternalMethods().<InputStream>getTransientValue(), stream),
+                is(true));
+
+        InputStream loaded1 = loadedNode.<InputStream>getPropertyValue(session, "streamProperty");
+
+        ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
+        IOUtils.copy(loaded1, temporary1);
+        String asString1 = new String(temporary1.toByteArray());
+        ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
+        InputStream loaded2 = loadedNode.getProperty(session, "streamProperty").<InputStream>getValueAs(session, InputStream.class);
+
+        IOUtils.copy(loaded2, temporary2);
+        String asString2 = new String(temporary2.toByteArray());
+        assertThat(asString1,
+                is("streamValue"));
+        assertThat(asString2,
+                is("streamValue"));
+
+
     }
 
     @Test

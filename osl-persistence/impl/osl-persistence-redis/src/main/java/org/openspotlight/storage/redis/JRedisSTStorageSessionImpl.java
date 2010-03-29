@@ -51,6 +51,7 @@ package org.openspotlight.storage.redis;
 
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.openspotlight.common.exception.SLException;
@@ -62,6 +63,8 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STProperty;
 import org.openspotlight.storage.domain.node.STPropertyImpl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Collections;
@@ -248,8 +251,12 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected InputStream internalPropertyGetInputStreamProperty(STProperty stProperty) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected InputStream internalPropertyGetInputStreamProperty(STProperty stProperty)throws Exception{
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(stProperty.getParent().getUniqueKey());
+
+        byte[] fromStorage = jRedis.get(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, stProperty.getPropertyName()));
+        
+        return new ByteArrayInputStream(fromStorage);
     }
 
     @Override
@@ -341,8 +348,21 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected void internalFlushInputStreamProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    protected void internalFlushInputStreamProperty(STProperty dirtyProperty) throws Exception{
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+
+        InputStream valueAsStream = dirtyProperty.getInternalMethods().<InputStream>getTransientValue();
+        if(valueAsStream.markSupported()){
+            valueAsStream.reset();
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        IOUtils.copy(valueAsStream,outputStream);
+
+        jRedis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), dirtyProperty.getPropertyName());
+
+        jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
+        jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), outputStream.toByteArray() );
+        jRedis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.INPUT_STREAM, String.class));
     }
 
     @Override
