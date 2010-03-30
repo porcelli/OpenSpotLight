@@ -732,7 +732,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private final String name;
 
-        private STNodeEntry parent = null;
+        private STUniqueKey parentKey = null;
 
         private Set<STKeyEntry<?>> keys = new HashSet<STKeyEntry<?>>();
 
@@ -741,18 +741,22 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return this;
         }
 
-        public STNodeEntryBuilder withParent(STNodeEntry parent) {
-            if (this.parent != null) {
+        public STNodeEntryBuilder withParentKey(STUniqueKey parentKey) {
+            if (this.parentKey != null) {
                 throw new IllegalStateException();
             }
-            this.parent = parent;
+            this.parentKey = parentKey;
             return this;
+        }
+
+        public STNodeEntryBuilder withParent(STNodeEntry parent){
+            return withParentKey(parent.getUniqueKey());
         }
 
         public STNodeEntry andCreate() {
             STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
-            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parent != null ? parent.getUniqueKey() : null);
+            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parentKey);
             STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey);
             AbstractSTStorageSession.this.handleNewItem(result);
             return result;

@@ -176,7 +176,27 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldCreateHierarchyAndLoadParentNode() {
 
-        throw new UnsupportedOperationException();
+        STStorageSession session1 = injector.getInstance(STStorageSession.class);
+
+        STNodeEntry newNode1 = session1.createWithName("sameName").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode2 = session1.createWithName("sameName").withParent(newNode1).withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode3 = session1.createWithName("sameName").withParent(newNode2).withKey("sequence", Integer.class, 3)
+                .withKey("name", String.class, "name").andCreate();
+
+
+        STNodeEntry foundNewNode3 = session1.createCriteria().withNodeEntry("sameName").withProperty("sequence")
+                .equals(Integer.class, 3).withProperty("name").equals(String.class, "name")
+                .buildCriteria().andFindUnique(session1);
+        assertThat(foundNewNode3, is(notNullValue()));
+        STNodeEntry foundNewNode2 = foundNewNode3.getParent(session1);
+        STNodeEntry foundNewNode1 = foundNewNode2.getParent(session1);
+        assertThat(foundNewNode3, is(newNode3));
+        assertThat(foundNewNode2, is(newNode2));
+        assertThat(foundNewNode1, is(newNode1));
+
+
     }
 
     @Test
@@ -477,8 +497,8 @@ public class JRedisStorageSessionTest {
         STNodeEntry newNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
 
-        Map<String,Integer> aMap = ImmutableMap.<String,Integer>builder().put("1",1).put("2",2).build();
-        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class,Integer.class, aMap);
+        Map<String, Integer> aMap = ImmutableMap.<String, Integer>builder().put("1", 1).put("2", 2).build();
+        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, Integer.class, aMap);
 
 
         STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
@@ -488,9 +508,9 @@ public class JRedisStorageSessionTest {
         assertThat((Object) newNode.getProperty(session, "mapProperty").getInternalMethods().<Map>getTransientValue(),
                 is((Object) aMap));
 
-        Map<String,Integer> loaded1 = loadedNode.<Map>getPropertyValue(session, "mapProperty");
+        Map<String, Integer> loaded1 = loadedNode.<Map>getPropertyValue(session, "mapProperty");
 
-        Map<String,Integer> loaded2 = loadedNode.getProperty(session, "mapProperty").<Map>getValueAs(session, Map.class);
+        Map<String, Integer> loaded2 = loadedNode.getProperty(session, "mapProperty").<Map>getValueAs(session, Map.class);
 
         assertThat((Object) loaded1, is((Object) aMap));
         assertThat((Object) loaded2, is((Object) aMap));

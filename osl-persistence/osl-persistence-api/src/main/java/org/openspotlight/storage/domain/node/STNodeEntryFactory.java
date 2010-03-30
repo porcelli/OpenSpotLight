@@ -50,6 +50,7 @@
 package org.openspotlight.storage.domain.node;
 
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.key.STUniqueKey;
 
 import java.io.Serializable;
 
@@ -69,6 +70,7 @@ public interface STNodeEntryFactory {
         <T extends Serializable> STNodeEntryBuilder withKey(String name, Class<T> type, T value);
 
         STNodeEntryBuilder withParent(STNodeEntry parent);
+        STNodeEntryBuilder withParentKey(STUniqueKey parentKey);
 
         STNodeEntry andCreate();
     }

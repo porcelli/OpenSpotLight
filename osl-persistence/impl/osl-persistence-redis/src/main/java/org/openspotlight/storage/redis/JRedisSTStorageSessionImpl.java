@@ -239,8 +239,10 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected STNodeEntry internalNodeEntryGetParent(STNodeEntry stNodeEntry) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected STNodeEntry internalNodeEntryGetParent(STNodeEntry stNodeEntry) throws Exception{
+        STUniqueKey parentKey = stNodeEntry.getUniqueKey().getParentKey();
+        if(parentKey==null) return null;
+        return createEntryWithKey(parentKey);
     }
 
     @Override
