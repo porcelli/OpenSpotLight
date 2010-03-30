@@ -60,13 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by IntelliJ IDEA.
- * User: feu
- * Date: Mar 19, 2010
- * Time: 1:46:28 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public interface STNodeEntry extends STAData, STNodeEntryFactory,
         Comparable<STNodeEntry> {
 
@@ -82,7 +76,11 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
     Set<STNodeEntry> getChildren(STStorageSession session);
 
+    Set<STNodeEntry> getChildrenNamed(STStorageSession session, String name);
+
     Set<STNodeEntry> getChildrenForcingReload(STStorageSession session);
+
+    Set<STNodeEntry> getChildrenNamedForcingReload(STStorageSession session, String name);
 
     STNodeEntry getParent(STStorageSession session);
 
@@ -107,7 +105,6 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
      * @return
      */
     STPropertyOperation getUnverifiedOperations();
-
 
 
     interface STPropertyOperation {

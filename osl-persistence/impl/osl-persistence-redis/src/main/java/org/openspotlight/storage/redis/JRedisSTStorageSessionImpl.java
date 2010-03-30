@@ -49,6 +49,7 @@
 
 package org.openspotlight.storage.redis;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.IOUtils;
@@ -177,7 +178,10 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         jRedis.set(format(KEY_WITH_NODE_ENTRY_NAME, uniqueKey), entry.getNodeEntryName());
         STUniqueKey parentKey = entry.getUniqueKey().getParentKey();
         if (parentKey != null) {
-            jRedis.set(format(KEY_WITH_PARENT_UNIQUE_ID, uniqueKey), supportMethods.getUniqueKeyAsStringHash(parentKey));
+            String parentAsString = supportMethods.getUniqueKeyAsStringHash(parentKey);
+            jRedis.set(format(KEY_WITH_PARENT_UNIQUE_ID, uniqueKey), parentAsString);
+            jRedis.sadd(format(SET_WITH_NODE_CHILDREN_KEYS, parentAsString), uniqueKey);
+            jRedis.sadd(format(SET_WITH_NODE_CHILDREN_NAMED_KEYS, parentAsString,entry.getNodeEntryName()), uniqueKey);
         }
         String localKey = supportMethods.getLocalKeyAsStringHash(entry.getLocalKey());
         jRedis.sadd(format(SET_WITH_ALL_LOCAL_KEYS, localKey), uniqueKey);
@@ -191,7 +195,6 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), convert(k.getValue(), String.class));
             jRedis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, k.getPropertyName()), convert(STProperty.STPropertyDescription.KEY, String.class));
         }
-
 
     }
 
@@ -211,6 +214,18 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             jRedis.del(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()));
             jRedis.del(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()));
         }
+    }
+
+    @Override
+    protected Set<STNodeEntry> internalNodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name) throws Exception{
+        String parentKey = supportMethods.getUniqueKeyAsStringHash(stNodeEntry.getUniqueKey());
+        String keyName = name==null?format(SET_WITH_NODE_CHILDREN_KEYS, parentKey):format(SET_WITH_NODE_CHILDREN_NAMED_KEYS, parentKey,name);
+        List<String> childrenKeys = listBytesToListString(jRedis.smembers(keyName));
+        ImmutableSet.Builder<STNodeEntry> builder = ImmutableSet.builder();
+        for(String id: childrenKeys){
+             builder.add(loadNode(id));
+        }
+        return builder.build();
     }
 
     @Override
@@ -234,8 +249,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected Set<STNodeEntry> internalNodeEntryGetChildren(STNodeEntry stNodeEntry) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected Set<STNodeEntry> internalNodeEntryGetChildren(STNodeEntry stNodeEntry) throws Exception{
+        return internalNodeEntryGetNamedChildren(stNodeEntry,null);
     }
 
     @Override

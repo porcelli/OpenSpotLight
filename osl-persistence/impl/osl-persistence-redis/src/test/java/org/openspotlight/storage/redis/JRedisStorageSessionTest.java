@@ -176,31 +176,31 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldCreateHierarchyAndLoadParentNode() {
 
-        STStorageSession session1 = injector.getInstance(STStorageSession.class);
+        STStorageSession session = injector.getInstance(STStorageSession.class);
 
-        STNodeEntry newNode1 = session1.createWithName("sameName").withKey("sequence", Integer.class, 1)
+        STNodeEntry newNode1 = session.createWithName("sameName").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode2 = session1.createWithName("sameName").withParent(newNode1).withKey("sequence", Integer.class, 1)
+        STNodeEntry newNode2 = session.createWithName("sameName").withParent(newNode1).withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode3 = session1.createWithName("sameName").withParent(newNode2).withKey("sequence", Integer.class, 3)
+        STNodeEntry newNode3 = session.createWithName("sameName").withParent(newNode2).withKey("sequence", Integer.class, 3)
                 .withKey("name", String.class, "name").andCreate();
 
 
-        STNodeEntry foundNewNode3 = session1.createCriteria().withNodeEntry("sameName").withProperty("sequence")
+        STNodeEntry foundNewNode3 = session.createCriteria().withNodeEntry("sameName").withProperty("sequence")
                 .equals(Integer.class, 3).withProperty("name").equals(String.class, "name")
-                .buildCriteria().andFindUnique(session1);
+                .buildCriteria().andFindUnique(session);
         assertThat(foundNewNode3, is(notNullValue()));
-        STNodeEntry foundNewNode2 = foundNewNode3.getParent(session1);
-        STNodeEntry foundNewNode1 = foundNewNode2.getParent(session1);
+        STNodeEntry foundNewNode2 = foundNewNode3.getParent(session);
+        STNodeEntry foundNewNode1 = foundNewNode2.getParent(session);
         assertThat(foundNewNode3, is(newNode3));
         assertThat(foundNewNode2, is(newNode2));
         assertThat(foundNewNode1, is(newNode1));
-        assertThat(foundNewNode1.<String>getPropertyValue(session1, "name"), is("name"));
-        assertThat(foundNewNode2.<String>getPropertyValue(session1, "name"), is("name"));
-        assertThat(foundNewNode3.<String>getPropertyValue(session1, "name"), is("name"));
-        assertThat(foundNewNode1.<Integer>getPropertyValue(session1, "sequence"), is(1));
-        assertThat(foundNewNode2.<Integer>getPropertyValue(session1, "sequence"), is(1));
-        assertThat(foundNewNode3.<Integer>getPropertyValue(session1, "sequence"), is(3));
+        assertThat(foundNewNode1.<String>getPropertyValue(session, "name"), is("name"));
+        assertThat(foundNewNode2.<String>getPropertyValue(session, "name"), is("name"));
+        assertThat(foundNewNode3.<String>getPropertyValue(session, "name"), is("name"));
+        assertThat(foundNewNode1.<Integer>getPropertyValue(session, "sequence"), is(1));
+        assertThat(foundNewNode2.<Integer>getPropertyValue(session, "sequence"), is(1));
+        assertThat(foundNewNode3.<Integer>getPropertyValue(session, "sequence"), is(3));
         assertThat(foundNewNode1.getNodeEntryName(), is("sameName"));
         assertThat(foundNewNode2.getNodeEntryName(), is("sameName"));
         assertThat(foundNewNode3.getNodeEntryName(), is("sameName"));
@@ -211,7 +211,73 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldCreateHierarchyAndLoadChildrenNodes() {
 
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+
+        STNodeEntry root = session.createWithName("root")
+                .withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry child1 = session.createWithName("child")
+                .withParent(root)
+                .withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry child2 = session.createWithName("child")
+                .withParent(root)
+                .withKey("sequence", Integer.class, 2)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry child3 = session.createWithName("child")
+                .withParent(root)
+                .withKey("sequence", Integer.class, 3)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry child4 = session.createWithName("child")
+                .withParent(root)
+                .withKey("sequence", Integer.class, 4)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry childAnotherType1 = session.createWithName("childAnotherType")
+                .withParent(root)
+                .withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry childAnotherType2 = session.createWithName("childAnotherType")
+                .withParent(root)
+                .withKey("sequence", Integer.class, 2)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry childAnotherType3 = session.createWithName("childAnotherType")
+                .withParent(root)
+                .withKey("sequence", Integer.class, 3)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry childAnotherType4 = session.createWithName("childAnotherType")
+                .withParent(root)
+                .withKey("sequence", Integer.class, 4)
+                .withKey("name", String.class, "name").andCreate();
+
+        Set<STNodeEntry> allChildren = root.getChildren(session);
+        assertThat(allChildren.size(),is(8));
+        assertThat(allChildren.contains(child1),is(true));
+        assertThat(allChildren.contains(child2),is(true));
+        assertThat(allChildren.contains(child3),is(true));
+        assertThat(allChildren.contains(child4),is(true));
+        assertThat(allChildren.contains(childAnotherType1),is(true));
+        assertThat(allChildren.contains(childAnotherType2),is(true));
+        assertThat(allChildren.contains(childAnotherType3),is(true));
+        assertThat(allChildren.contains(childAnotherType4),is(true));
+
+
+        Set<STNodeEntry> childrenType2 = root.getChildrenNamed(session,"childAnotherType");
+
+        assertThat(childrenType2.size(),is(4));
+        assertThat(childrenType2.contains(childAnotherType1),is(true));
+        assertThat(childrenType2.contains(childAnotherType2),is(true));
+        assertThat(childrenType2.contains(childAnotherType3),is(true));
+        assertThat(childrenType2.contains(childAnotherType4),is(true));
+
+        Set<STNodeEntry> childrenType1 = root.getChildrenNamed(session,"child");
+
+        assertThat(childrenType1.size(),is(4));
+        assertThat(childrenType1.contains(child1),is(true));
+        assertThat(childrenType1.contains(child2),is(true));
+        assertThat(childrenType1.contains(child3),is(true));
+        assertThat(childrenType1.contains(child4),is(true));
+
+
     }
 
     @Test

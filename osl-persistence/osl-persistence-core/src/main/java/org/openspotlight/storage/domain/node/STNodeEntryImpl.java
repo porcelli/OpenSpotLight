@@ -52,7 +52,6 @@ package org.openspotlight.storage.domain.node;
 import com.google.inject.internal.ImmutableSet;
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 
@@ -61,11 +60,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
+import static com.google.common.collect.Maps.newHashMap;
 import static java.text.MessageFormat.format;
 
 
@@ -74,30 +74,36 @@ public class STNodeEntryImpl implements STNodeEntry {
     public STNodeEntryImpl(STUniqueKey uniqueKey, Set<STProperty> properties) {
 
         this.nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
+        if(nodeEntryName==null) throw new IllegalStateException();
         this.localKey = uniqueKey.getLocalKey();
         this.uniqueKey = uniqueKey;
-        for (STProperty property : properties) {
-            this.propertiesByName.put(property.getPropertyName(), property);
+        propertiesByName = newHashMap();
+        if (properties != null) {
+            for (STProperty property : properties) {
+                this.propertiesByName.put(property.getPropertyName(), property);
+            }
         }
+        verifiedOperations = new STPropertyOperationImpl(true, this);
+        unverifiedOperations = new STPropertyOperationImpl(false, this);
+        namedChildrenWeakReference = new WeakHashMap<Set<STNodeEntry>, String>();
     }
 
 
     public STNodeEntryImpl(STUniqueKey uniqueKey) {
-
-        this.nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
-        this.localKey = uniqueKey.getLocalKey();
-        this.uniqueKey = uniqueKey;
+        this(uniqueKey, null);
     }
 
     private WeakReference<STNodeEntry> parentWeakReference = null;
 
     private WeakReference<Set<STNodeEntry>> childrenWeakReference = null;
 
-    private final Map<String, STProperty> propertiesByName = new HashMap<String, STProperty>();
+    private WeakHashMap<Set<STNodeEntry>, String> namedChildrenWeakReference;
 
-    private final STPropertyOperation verifiedOperations = new STPropertyOperationImpl(true, this);
+    private final Map<String, STProperty> propertiesByName;
 
-    private final STPropertyOperation unverifiedOperations = new STPropertyOperationImpl(false, this);
+    private final STPropertyOperation verifiedOperations;
+
+    private final STPropertyOperation unverifiedOperations;
 
     private final String nodeEntryName;
 
@@ -136,9 +142,33 @@ public class STNodeEntryImpl implements STNodeEntry {
         return children;
     }
 
+    public Set<STNodeEntry> getChildrenNamed(STStorageSession session, String name) {
+
+        Set<STNodeEntry> thisChildren = null;
+        if (namedChildrenWeakReference.containsValue(name)) {
+            for (Map.Entry<Set<STNodeEntry>, String> entry : namedChildrenWeakReference.entrySet()) {
+                if (name.equals(entry.getValue())) {
+                    thisChildren = entry.getKey();
+                    break;
+                }
+            }
+        }
+
+        if (thisChildren == null) {
+            thisChildren = getChildrenNamedForcingReload(session,name);
+        }
+        return thisChildren;
+    }
+
     public Set<STNodeEntry> getChildrenForcingReload(STStorageSession session) {
         Set<STNodeEntry> children = session.getInternalMethods().nodeEntryGetChildren(this);
         childrenWeakReference = new WeakReference<Set<STNodeEntry>>(children);
+        return children;
+    }
+
+    public Set<STNodeEntry> getChildrenNamedForcingReload(STStorageSession session, String name) {
+        Set<STNodeEntry> children = session.getInternalMethods().nodeEntryGetNamedChildren(this, name);
+        namedChildrenWeakReference.put(children, name);
         return children;
     }
 

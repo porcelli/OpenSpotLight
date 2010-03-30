@@ -172,6 +172,8 @@ public interface STStorageSession extends STNodeEntryFactory {
         Set<STNodeEntry> nodeEntryGetChildren(STNodeEntry stNodeEntry);
 
         <T> T propertyGetValue(STProperty stProperty);
+
+        Set<STNodeEntry> nodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name);
     }
 
     interface STUniqueKeyBuilder {

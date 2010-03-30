@@ -703,7 +703,19 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;
         }
 
+        public Set<STNodeEntry> nodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name) {
+            try {
+                return internalNodeEntryGetNamedChildren(stNodeEntry,name);
+
+            } catch (Exception e) {
+                handleException(e);
+            }
+            return null;
+        }
+
     }
+
+    protected abstract Set<STNodeEntry> internalNodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name) throws Exception;
 
     protected abstract boolean internalHasSavedProperty(STProperty stProperty) throws Exception;
 
