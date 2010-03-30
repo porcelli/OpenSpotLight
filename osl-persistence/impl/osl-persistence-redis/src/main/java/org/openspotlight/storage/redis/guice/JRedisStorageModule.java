@@ -50,9 +50,12 @@
 package org.openspotlight.storage.redis.guice;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
 import org.jredis.JRedis;
 import org.openspotlight.storage.DefaultPartition;
 import org.openspotlight.storage.STStorageSession;
+
+import java.util.Map;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:41:43 PM
@@ -63,9 +66,12 @@ public class JRedisStorageModule extends AbstractModule {
 
     private final STStorageSession.STPartition defaultPartition;
 
-    public JRedisStorageModule(STStorageSession.STFlushMode flushMode, STStorageSession.STPartition defaultPartition) {
+    private final Map<STStorageSession.STPartition,JRedisServerDetail> mappedServerConfig;
+
+    public JRedisStorageModule(STStorageSession.STFlushMode flushMode, STStorageSession.STPartition defaultPartition, Map<STStorageSession.STPartition, JRedisServerDetail> mappedServerConfig) {
         this.flushMode = flushMode;
         this.defaultPartition = defaultPartition;
+        this.mappedServerConfig = mappedServerConfig;
     }
 
     @Override
@@ -74,5 +80,7 @@ public class JRedisStorageModule extends AbstractModule {
         bind(STStorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
         bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
         bind(STStorageSession.STPartition.class).annotatedWith(DefaultPartition.class).toInstance(defaultPartition);
+        bind(new TypeLiteral<Map<STStorageSession.STPartition,JRedisServerDetail>>(){}).toInstance(mappedServerConfig);
+        bind(JRedisFactory.class).to(JRedisFacoryImpl.class);
     }
 }

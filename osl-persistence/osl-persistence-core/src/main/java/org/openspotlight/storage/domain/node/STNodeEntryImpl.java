@@ -263,7 +263,6 @@ public class STNodeEntryImpl implements STNodeEntry {
             }
             currentProperty.setValue(session, value);
 
-
             return currentProperty;
         }
 

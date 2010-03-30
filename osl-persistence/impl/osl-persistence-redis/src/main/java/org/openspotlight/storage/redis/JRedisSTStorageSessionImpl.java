@@ -52,17 +52,20 @@ package org.openspotlight.storage.redis;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.storage.AbstractSTStorageSession;
+import org.openspotlight.storage.DefaultPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STProperty;
 import org.openspotlight.storage.domain.node.STPropertyImpl;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 
 import java.io.*;
 import java.util.Collections;
@@ -98,10 +101,13 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     private final JRedis jRedis;
 
+    private final JRedisFactory factory;
 
-    public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode, STPartition partition) {
+    @Inject
+    public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode, @DefaultPartition STPartition partition, JRedisFactory factory) {
         super(flushMode, partition);
         this.jRedis = jredis;
+        this.factory = factory;
     }
 
     @Override

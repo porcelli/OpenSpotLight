@@ -49,10 +49,13 @@
 
 package org.openspotlight.storage.redis.guice;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.jredis.JRedis;
 import org.jredis.ri.alphazero.JRedisClient;
 import org.openspotlight.guice.ThreadLocalProvider;
+import org.openspotlight.storage.DefaultPartition;
+import org.openspotlight.storage.STStorageSession;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:53:17 PM
@@ -60,8 +63,18 @@ import org.openspotlight.guice.ThreadLocalProvider;
 @Singleton
 public class JRedisProvider extends ThreadLocalProvider<JRedis> {
 
+    private final STStorageSession.STPartition partition;
+
+    @Inject
+    public JRedisProvider(@DefaultPartition STStorageSession.STPartition partition, JRedisFactory factory) {
+        this.partition = partition;
+        this.factory = factory;
+    }
+
+    private final JRedisFactory factory;
+
     @Override
     protected JRedis createInstance() {
-        return new JRedisClient();
+        return factory.create(partition);
     }
 }

@@ -59,6 +59,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
 import java.io.ByteArrayInputStream;
@@ -86,9 +87,32 @@ import static org.junit.Assert.assertThat;
  */
 public class JRedisStorageSessionTest {
 
+    private enum JRedisServerConfigExample implements JRedisServerDetail {
+        DEFAULT("localhost", 6379),
+        FIRST("localhost", 6380),
+        SECOND("localhost", 6381);
+
+        private JRedisServerConfigExample(String serverName, int serverPort) {
+            this.serverName = serverName;
+            this.serverPort = serverPort;
+        }
+
+        private final String serverName;
+
+        private final int serverPort;
+
+        public String getServerName() {
+            return serverName;
+        }
+
+        public int getServerPort() {
+            return serverPort;
+        }
+    }
+
     private enum ExamplePartition implements STStorageSession.STPartition {
 
-        DEFAULT("default");
+        DEFAULT("default"), FIRST("first"), SECOND("second");
 
         private final String partitionName;
 
@@ -101,9 +125,19 @@ public class JRedisStorageSessionTest {
         }
     }
 
-    final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExamplePartition.DEFAULT));
+    final Map<STStorageSession.STPartition, JRedisServerDetail> mappedServerConfig;
+
+    {
+        mappedServerConfig = ImmutableMap.<STStorageSession.STPartition, JRedisServerDetail>builder()
+                .put(ExamplePartition.DEFAULT, JRedisServerConfigExample.DEFAULT)
+                .put(ExamplePartition.FIRST, JRedisServerConfigExample.FIRST)
+                .put(ExamplePartition.SECOND, JRedisServerConfigExample.SECOND).build();
+    }
+
+    final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExamplePartition.DEFAULT, mappedServerConfig));
 
     private JRedis jRedis;
+
 
     @Before
     public void cleanPreviousData() throws Exception {
@@ -250,32 +284,32 @@ public class JRedisStorageSessionTest {
                 .withKey("name", String.class, "name").andCreate();
 
         Set<STNodeEntry> allChildren = root.getChildren(session);
-        assertThat(allChildren.size(),is(8));
-        assertThat(allChildren.contains(child1),is(true));
-        assertThat(allChildren.contains(child2),is(true));
-        assertThat(allChildren.contains(child3),is(true));
-        assertThat(allChildren.contains(child4),is(true));
-        assertThat(allChildren.contains(childAnotherType1),is(true));
-        assertThat(allChildren.contains(childAnotherType2),is(true));
-        assertThat(allChildren.contains(childAnotherType3),is(true));
-        assertThat(allChildren.contains(childAnotherType4),is(true));
+        assertThat(allChildren.size(), is(8));
+        assertThat(allChildren.contains(child1), is(true));
+        assertThat(allChildren.contains(child2), is(true));
+        assertThat(allChildren.contains(child3), is(true));
+        assertThat(allChildren.contains(child4), is(true));
+        assertThat(allChildren.contains(childAnotherType1), is(true));
+        assertThat(allChildren.contains(childAnotherType2), is(true));
+        assertThat(allChildren.contains(childAnotherType3), is(true));
+        assertThat(allChildren.contains(childAnotherType4), is(true));
 
 
-        Set<STNodeEntry> childrenType2 = root.getChildrenNamed(session,"childAnotherType");
+        Set<STNodeEntry> childrenType2 = root.getChildrenNamed(session, "childAnotherType");
 
-        assertThat(childrenType2.size(),is(4));
-        assertThat(childrenType2.contains(childAnotherType1),is(true));
-        assertThat(childrenType2.contains(childAnotherType2),is(true));
-        assertThat(childrenType2.contains(childAnotherType3),is(true));
-        assertThat(childrenType2.contains(childAnotherType4),is(true));
+        assertThat(childrenType2.size(), is(4));
+        assertThat(childrenType2.contains(childAnotherType1), is(true));
+        assertThat(childrenType2.contains(childAnotherType2), is(true));
+        assertThat(childrenType2.contains(childAnotherType3), is(true));
+        assertThat(childrenType2.contains(childAnotherType4), is(true));
 
-        Set<STNodeEntry> childrenType1 = root.getChildrenNamed(session,"child");
+        Set<STNodeEntry> childrenType1 = root.getChildrenNamed(session, "child");
 
-        assertThat(childrenType1.size(),is(4));
-        assertThat(childrenType1.contains(child1),is(true));
-        assertThat(childrenType1.contains(child2),is(true));
-        assertThat(childrenType1.contains(child3),is(true));
-        assertThat(childrenType1.contains(child4),is(true));
+        assertThat(childrenType1.size(), is(4));
+        assertThat(childrenType1.contains(child1), is(true));
+        assertThat(childrenType1.contains(child2), is(true));
+        assertThat(childrenType1.contains(child3), is(true));
+        assertThat(childrenType1.contains(child4), is(true));
 
 
     }
