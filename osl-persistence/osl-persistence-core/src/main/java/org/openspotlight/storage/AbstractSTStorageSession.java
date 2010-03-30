@@ -86,8 +86,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         private final WeakHashMap<STAData, Object> cache = new WeakHashMap<STAData, Object>();
 
         private <T> T getFromCache(STAData key) {
-            T fromCache = (T) cache.get(key);
-            return fromCache;
+            return (T) cache.get(key);
         }
 
 
@@ -637,12 +636,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                             return internalPropertyGetSimplePropertyAs(stProperty, type);
                         case KEY:
                             return internalPropertyGetKeyPropertyAs(stProperty, type);
-                        case LIST:
-                            return internalPropertyGetListPropertyAs(stProperty, type);
-                        case SET:
-                            return internalPropertyGetSetPropertyAs(stProperty, type);
-                        case MAP:
-                            return internalPropertyGetMapPropertyAs(stProperty, type);
                         case SERIALIZED_LIST:
                             return internalPropertyGetSerializedListPropertyAs(stProperty, type);
                         case SERIALIZED_SET:
@@ -808,15 +801,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                 case SIMPLE:
                     internalFlushSimpleProperty(dirtyProperty);
                     break;
-                case LIST:
-                    internalFlushListProperty(dirtyProperty);
-                    break;
-                case SET:
-                    internalFlushSetProperty(dirtyProperty);
-                    break;
-                case MAP:
-                    internalFlushMapProperty(dirtyProperty);
-                    break;
                 case SERIALIZED_LIST:
                     internalFlushSerializedListProperty(dirtyProperty);
                     break;
@@ -900,12 +884,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                     return this.<T>internalPropertyGetKeyPropertyAs(stProperty, type);
                 case SIMPLE:
                     return this.<T>internalPropertyGetSimplePropertyAs(stProperty, type);
-                case LIST:
-                    return this.<T>internalPropertyGetListPropertyAs(stProperty, type);
-                case SET:
-                    return this.<T>internalPropertyGetSetPropertyAs(stProperty, type);
-                case MAP:
-                    return this.<T>internalPropertyGetMapPropertyAs(stProperty, type);
                 case SERIALIZED_LIST:
                     return this.<T>internalPropertyGetSerializedListPropertyAs(stProperty, type);
                 case SERIALIZED_SET:
@@ -937,13 +915,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     protected abstract void internalFlushSerializedListProperty(STProperty dirtyProperty) throws Exception;
 
 
-    protected abstract void internalFlushMapProperty(STProperty dirtyProperty) throws Exception;
-
-
-    protected abstract void internalFlushSetProperty(STProperty dirtyProperty) throws Exception;
-
-    protected abstract void internalFlushListProperty(STProperty dirtyProperty) throws Exception;
-
     protected abstract void internalFlushSimpleProperty(STProperty dirtyProperty) throws Exception;
 
 
@@ -964,12 +935,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     protected abstract <T> T internalPropertyGetSerializedSetPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
 
     protected abstract <T> T internalPropertyGetSerializedListPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
-
-    protected abstract <T> T internalPropertyGetMapPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
-
-    protected abstract <T> T internalPropertyGetSetPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
-
-    protected abstract <T> T internalPropertyGetListPropertyAs(STProperty stProperty, Class<T> type) throws Exception;
 
     protected abstract <T> T internalPropertyGetSimplePropertyAs(STProperty stProperty, Class<T> type) throws Exception;
 

@@ -237,42 +237,6 @@ public class STNodeEntryImpl implements STNodeEntry {
             return currentProperty;
         }
 
-        public <V extends Serializable> STProperty setListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value) {
-            STProperty currentProperty = parent.getProperty(session, name);
-            if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.LIST);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.LIST, List.class, parameterizedType);
-            }
-            currentProperty.setValue(session, value);
-            parent.propertiesByName.put(name, currentProperty);
-            return currentProperty;
-        }
-
-        public <V extends Serializable> STProperty setSetProperty(STStorageSession session, String name, Class<V> parameterizedType, Set<V> value) {
-            STProperty currentProperty = parent.getProperty(session, name);
-            if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SET);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SET, Set.class, parameterizedType);
-            }
-            currentProperty.setValue(session, value);
-            parent.propertiesByName.put(name, currentProperty);
-            return currentProperty;
-        }
-
-        public <K extends Serializable, V extends Serializable> STProperty setMapProperty(STStorageSession session, String name, Class<K> keyType, Class<V> valueType, Map<K, V> value) {
-            STProperty currentProperty = parent.getProperty(session, name);
-            if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.MAP);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.MAP, Map.class, keyType, valueType);
-            }
-            currentProperty.setValue(session, value);
-            parent.propertiesByName.put(name, currentProperty);
-            return currentProperty;
-        }
-
         public <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {

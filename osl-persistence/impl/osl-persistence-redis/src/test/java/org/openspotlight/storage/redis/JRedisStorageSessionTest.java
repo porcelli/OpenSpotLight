@@ -49,6 +49,8 @@
 
 package org.openspotlight.storage.redis;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.commons.io.IOUtils;
@@ -62,12 +64,16 @@ import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -276,52 +282,78 @@ public class JRedisStorageSessionTest {
         assertThat(noLoadedNode, is(nullValue()));
     }
 
-    @Test
-    public void shouldWorkWithListPropertiesOnExplicitFlush() throws Exception {
+    public static class PojoClass implements Serializable {
 
-        throw new UnsupportedOperationException();
-    }
+        private String aString;
 
-    @Test
-    public void shouldWorkWithListPropertiesOnAutoFlush() throws Exception {
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
 
-        throw new UnsupportedOperationException();
-    }
+            PojoClass pojoClass = (PojoClass) o;
 
-    @Test
-    public void shouldWorkWithSetPropertiesOnExplicitFlush() throws Exception {
+            if (anInt != pojoClass.anInt) return false;
+            if (aString != null ? !aString.equals(pojoClass.aString) : pojoClass.aString != null) return false;
 
-        throw new UnsupportedOperationException();
-    }
+            return true;
+        }
 
-    @Test
-    public void shouldWorkWithSetPropertiesOnAutoFlush() throws Exception {
+        @Override
+        public int hashCode() {
+            int result = aString != null ? aString.hashCode() : 0;
+            result = 31 * result + anInt;
+            return result;
+        }
 
-        throw new UnsupportedOperationException();
-    }
+        public String getaString() {
+            return aString;
+        }
 
-    @Test
-    public void shouldWorkWithMapPropertiesOnExplicitFlush() throws Exception {
+        public void setaString(String aString) {
+            this.aString = aString;
+        }
 
-        throw new UnsupportedOperationException();
-    }
+        public int getAnInt() {
+            return anInt;
+        }
 
-    @Test
-    public void shouldWorkWithMapPropertiesOnAutoFlush() throws Exception {
+        public void setAnInt(int anInt) {
+            this.anInt = anInt;
+        }
 
-        throw new UnsupportedOperationException();
-    }
+        private int anInt;
 
-    @Test
-    public void shouldWorkWithSerializedPojoPropertiesOnExplicitFlush() throws Exception {
-
-        throw new UnsupportedOperationException();
     }
 
     @Test
     public void shouldWorkWithSerializedPojoPropertiesOnAutoFlush() throws Exception {
 
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry newNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+
+        PojoClass pojo1 = new PojoClass();
+        pojo1.setAnInt(3);
+        pojo1.setaString("a string");
+
+        newNode.getVerifiedOperations().setSerializedPojoProperty(session, "pojoProperty", PojoClass.class, pojo1);
+
+
+        STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
+                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+
+
+        assertThat(newNode.getProperty(session, "pojoProperty").getInternalMethods().<PojoClass>getTransientValue(),
+                is(pojo1));
+
+        PojoClass loaded1 = loadedNode.<PojoClass>getPropertyValue(session, "pojoProperty");
+
+        PojoClass loaded2 = loadedNode.getProperty(session, "pojoProperty").<PojoClass>getValueAs(session, PojoClass.class);
+
+        assertThat(loaded1, is(pojo1));
+        assertThat(loaded2, is(pojo1));
+
     }
 
     @Test
@@ -376,7 +408,27 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldWorkWithSerializedListPropertiesOnAutoFlush() throws Exception {
 
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry newNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+
+        List<String> aList = asList("1", "2", "3");
+        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", String.class, aList);
+
+
+        STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
+                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+
+
+        assertThat((Object) newNode.getProperty(session, "listProperty").getInternalMethods().<List>getTransientValue(),
+                is((Object) aList));
+
+        List<String> loaded1 = loadedNode.<List>getPropertyValue(session, "listProperty");
+
+        List<String> loaded2 = loadedNode.getProperty(session, "listProperty").<List>getValueAs(session, List.class);
+
+        assertThat((Object) loaded1, is((Object) aList));
+        assertThat((Object) loaded2, is((Object) aList));
     }
 
     @Test
@@ -388,7 +440,27 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldWorkWithSerializedSetPropertiesOnAutoFlush() throws Exception {
 
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry newNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+
+        Set<String> aSet = ImmutableSet.of("1", "2", "3");
+        newNode.getVerifiedOperations().setSerializedSetProperty(session, "setProperty", String.class, aSet);
+
+
+        STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
+                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+
+
+        assertThat((Object) newNode.getProperty(session, "setProperty").getInternalMethods().<Set>getTransientValue(),
+                is((Object) aSet));
+
+        Set<String> loaded1 = loadedNode.<Set>getPropertyValue(session, "setProperty");
+
+        Set<String> loaded2 = loadedNode.getProperty(session, "setProperty").<Set>getValueAs(session, Set.class);
+
+        assertThat((Object) loaded1, is((Object) aSet));
+        assertThat((Object) loaded2, is((Object) aSet));
     }
 
     @Test
@@ -400,7 +472,28 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldWorkWithSerializedMapPropertiesOnAutoFlush() throws Exception {
 
-        throw new UnsupportedOperationException();
+
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry newNode = session.createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+
+        Map<String,Integer> aMap = ImmutableMap.<String,Integer>builder().put("1",1).put("2",2).build();
+        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class,Integer.class, aMap);
+
+
+        STNodeEntry loadedNode = session.createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
+                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+
+
+        assertThat((Object) newNode.getProperty(session, "mapProperty").getInternalMethods().<Map>getTransientValue(),
+                is((Object) aMap));
+
+        Map<String,Integer> loaded1 = loadedNode.<Map>getPropertyValue(session, "mapProperty");
+
+        Map<String,Integer> loaded2 = loadedNode.getProperty(session, "mapProperty").<Map>getValueAs(session, Map.class);
+
+        assertThat((Object) loaded1, is((Object) aMap));
+        assertThat((Object) loaded2, is((Object) aMap));
     }
 
     @Test

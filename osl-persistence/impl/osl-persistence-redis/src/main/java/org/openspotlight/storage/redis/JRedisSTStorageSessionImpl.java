@@ -63,14 +63,12 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STProperty;
 import org.openspotlight.storage.domain.node.STPropertyImpl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Class.forName;
 import static java.text.MessageFormat.format;
@@ -156,7 +154,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     private List<String> listBytesToListString(List<byte[]> ids) {
-        List<String> idsAsString = Lists.newLinkedList();
+        List<String> idsAsString = newLinkedList();
         if (ids != null) {
             for (byte[] b : ids) {
                 String s = toStr(b);
@@ -251,47 +249,35 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected InputStream internalPropertyGetInputStreamProperty(STProperty stProperty)throws Exception{
+    protected InputStream internalPropertyGetInputStreamProperty(STProperty stProperty) throws Exception {
         String uniqueKey = supportMethods.getUniqueKeyAsStringHash(stProperty.getParent().getUniqueKey());
 
         byte[] fromStorage = jRedis.get(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, stProperty.getPropertyName()));
-        
+
         return new ByteArrayInputStream(fromStorage);
     }
 
     @Override
-    protected <T> T internalPropertyGetSerializedPojoPropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected <T> T internalPropertyGetSerializedPojoPropertyAs(STProperty stProperty, Class<T> type) throws Exception {
+        InputStream inputStream = internalPropertyGetInputStreamProperty(stProperty);
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        return (T) objectInputStream.readObject();
+
     }
 
     @Override
-    protected <T> T internalPropertyGetSerializedMapPropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected <T> T internalPropertyGetSerializedMapPropertyAs(STProperty stProperty, Class<T> type) throws Exception {
+        return internalPropertyGetSerializedPojoPropertyAs(stProperty, type);
     }
 
     @Override
-    protected <T> T internalPropertyGetSerializedSetPropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected <T> T internalPropertyGetSerializedSetPropertyAs(STProperty stProperty, Class<T> type) throws Exception {
+        return internalPropertyGetSerializedPojoPropertyAs(stProperty, type);
     }
 
     @Override
-    protected <T> T internalPropertyGetSerializedListPropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected <T> T internalPropertyGetMapPropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected <T> T internalPropertyGetSetPropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected <T> T internalPropertyGetListPropertyAs(STProperty stProperty, Class<T> type) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected <T> T internalPropertyGetSerializedListPropertyAs(STProperty stProperty, Class<T> type) throws Exception {
+        return internalPropertyGetSerializedPojoPropertyAs(stProperty, type);
     }
 
     @Override
@@ -348,56 +334,65 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected void internalFlushInputStreamProperty(STProperty dirtyProperty) throws Exception{
+    protected void internalFlushInputStreamProperty(STProperty dirtyProperty) throws Exception {
         String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
 
         InputStream valueAsStream = dirtyProperty.getInternalMethods().<InputStream>getTransientValue();
-        if(valueAsStream.markSupported()){
+        if (valueAsStream.markSupported()) {
             valueAsStream.reset();
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        IOUtils.copy(valueAsStream,outputStream);
+        IOUtils.copy(valueAsStream, outputStream);
 
         jRedis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), dirtyProperty.getPropertyName());
 
         jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
-        jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), outputStream.toByteArray() );
+        jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), outputStream.toByteArray());
         jRedis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.INPUT_STREAM, String.class));
     }
 
     @Override
-    protected void internalFlushSerializedPojoProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    protected void internalFlushSerializedPojoProperty(STProperty dirtyProperty) throws Exception {
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+        flushStream(dirtyProperty, uniqueKey);
+        jRedis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SERIALIZED_POJO, String.class));
+    }
+
+    private void flushStream(STProperty dirtyProperty, String uniqueKey) throws IOException, RedisException {
+        Serializable value = dirtyProperty.getInternalMethods().<Serializable>getTransientValue();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(value);
+        objectOutputStream.flush();
+        jRedis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), dirtyProperty.getPropertyName());
+
+        jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
+        jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), byteArrayOutputStream.toByteArray());
     }
 
     @Override
-    protected void internalFlushSerializedMapProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    protected void internalFlushSerializedMapProperty(STProperty dirtyProperty) throws Exception {
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+        flushStream(dirtyProperty, uniqueKey);
+        jRedis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SERIALIZED_SET, String.class));
+        jRedis.set(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getFirstParameterizedType().getName());
+        jRedis.set(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getSecondParameterizedType().getName());
     }
 
     @Override
-    protected void internalFlushSerializedSetProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    protected void internalFlushSerializedSetProperty(STProperty dirtyProperty) throws Exception {
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+        flushStream(dirtyProperty, uniqueKey);
+        jRedis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SERIALIZED_SET, String.class));
+        jRedis.set(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getFirstParameterizedType().getName());
     }
 
     @Override
-    protected void internalFlushSerializedListProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void internalFlushMapProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void internalFlushSetProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void internalFlushListProperty(STProperty dirtyProperty) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    protected void internalFlushSerializedListProperty(STProperty dirtyProperty) throws Exception {
+        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+        flushStream(dirtyProperty, uniqueKey);
+        jRedis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SERIALIZED_LIST, String.class));
+        jRedis.set(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getFirstParameterizedType().getName());
     }
 
     @Override
@@ -411,7 +406,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
                 convert(dirtyProperty.getValue(this), String.class)).replaceAll(" ", ""), uniqueKey);
 
         jRedis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
-        jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), transientValueAsString );
+        jRedis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), transientValueAsString);
         jRedis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SIMPLE, String.class));
 
     }

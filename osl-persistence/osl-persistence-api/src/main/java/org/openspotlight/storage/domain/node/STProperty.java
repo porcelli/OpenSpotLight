@@ -51,9 +51,6 @@ public interface STProperty {
     enum STPropertyDescription {
         KEY(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
         SIMPLE(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
-        LIST(STSerializedType.NOT_SERIALIZED, STLoadWeight.DIFFICULT),
-        SET(STSerializedType.NOT_SERIALIZED, STLoadWeight.DIFFICULT),
-        MAP(STSerializedType.NOT_SERIALIZED, STLoadWeight.DIFFICULT),
         SERIALIZED_LIST(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
         SERIALIZED_SET(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
         SERIALIZED_MAP(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
