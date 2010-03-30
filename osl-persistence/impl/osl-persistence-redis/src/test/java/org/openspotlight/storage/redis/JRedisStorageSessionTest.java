@@ -195,6 +195,15 @@ public class JRedisStorageSessionTest {
         assertThat(foundNewNode3, is(newNode3));
         assertThat(foundNewNode2, is(newNode2));
         assertThat(foundNewNode1, is(newNode1));
+        assertThat(foundNewNode1.<String>getPropertyValue(session1, "name"), is("name"));
+        assertThat(foundNewNode2.<String>getPropertyValue(session1, "name"), is("name"));
+        assertThat(foundNewNode3.<String>getPropertyValue(session1, "name"), is("name"));
+        assertThat(foundNewNode1.<Integer>getPropertyValue(session1, "sequence"), is(1));
+        assertThat(foundNewNode2.<Integer>getPropertyValue(session1, "sequence"), is(1));
+        assertThat(foundNewNode3.<Integer>getPropertyValue(session1, "sequence"), is(3));
+        assertThat(foundNewNode1.getNodeEntryName(), is("sameName"));
+        assertThat(foundNewNode2.getNodeEntryName(), is("sameName"));
+        assertThat(foundNewNode3.getNodeEntryName(), is("sameName"));
 
 
     }
