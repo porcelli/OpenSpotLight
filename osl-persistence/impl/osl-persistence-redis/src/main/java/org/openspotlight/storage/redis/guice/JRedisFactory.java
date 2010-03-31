@@ -12,7 +12,7 @@ import org.openspotlight.storage.STPartition;
  */
 public interface JRedisFactory {
 
-    JRedis create(STPartition partition);
+    JRedis getFrom(STPartition partition);
 
 
 }

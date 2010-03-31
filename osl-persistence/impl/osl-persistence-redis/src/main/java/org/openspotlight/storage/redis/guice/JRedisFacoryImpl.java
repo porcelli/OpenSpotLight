@@ -29,17 +29,16 @@ public class JRedisFacoryImpl implements JRedisFactory {
     }
 
 
-    public synchronized JRedis create(STPartition partition) {
+    public JRedis getFrom(STPartition partition) {
         JRedisServerDetail serverDetail = mappedServerConfig.get(partition);
         Map<STPartition, JRedis> cache = threadLocalCache.get();
-        JRedis jRedis = cache != null ? cache.get(partition) : null;
+        if (cache == null) {
+            cache = new HashMap();
+            threadLocalCache.set(cache);
+        }
+        JRedis jRedis = cache.get(partition);
         if (jRedis == null) {
-            if (cache == null) {
-                cache = new HashMap();
-                threadLocalCache.set(cache);
-
-            }
-            jRedis = new JRedisClient(serverDetail.getServerName(), serverDetail.getServerPort());
+            jRedis = new JRedisClient(serverDetail.getServerName(), serverDetail.getServerPort(), serverDetail.getPassword(), serverDetail.getDb());
             cache.put(partition, jRedis);
         }
         return jRedis;

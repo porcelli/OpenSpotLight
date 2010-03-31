@@ -60,6 +60,8 @@ import org.junit.Test;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisFacoryImpl;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
@@ -89,16 +91,27 @@ import static org.junit.Assert.assertThat;
 public class JRedisStorageSessionTest {
 
     private enum JRedisServerConfigExample implements JRedisServerDetail {
-        DEFAULT("localhost", 6379),
-        FIRST("localhost", 6380),
-        SECOND("localhost", 6381);
+        DEFAULT("localhost", 6379, 1),
+        FIRST("localhost", 6380, 2),
+        SECOND("localhost", 6381, 3);
 
-        private JRedisServerConfigExample(String serverName, int serverPort) {
+        private JRedisServerConfigExample(String serverName, int serverPort, int db) {
             this.serverName = serverName;
             this.serverPort = serverPort;
+            this.db = db;
         }
 
         private final String serverName;
+
+        private final int db;
+
+        public int getDb() {
+            return db;
+        }
+
+        public String getPassword(){
+            return null;
+        }
 
         private final int serverPort;
 
@@ -135,14 +148,14 @@ public class JRedisStorageSessionTest {
                 .put(ExamplePartition.SECOND, JRedisServerConfigExample.SECOND).build();
     }
 
-    final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExamplePartition.DEFAULT, mappedServerConfig));
+    final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig));
 
     private JRedis jRedis;
 
 
     @Before
     public void cleanPreviousData() throws Exception {
-        jRedis = injector.getInstance(JRedis.class);
+        jRedis = injector.getInstance(JRedisFactory.class).getFrom(ExamplePartition.DEFAULT);
         jRedis.flushall();
 
     }

@@ -13,5 +13,8 @@ public interface JRedisServerDetail {
 
     int getServerPort();
 
+    int getDb();
+
+    String getPassword();
 
 }
