@@ -97,8 +97,6 @@ public interface STStorageSession {
 
         <T extends Serializable> STCriteriaBuilder equals(Class<T> type, T value);
 
-        <T extends Serializable> STCriteriaBuilder notEquals(Class<T> type, T value);
-
         STCriteriaBuilder and();
 
         STCriteria buildCriteria();
@@ -116,20 +114,16 @@ public interface STStorageSession {
 
         String getPropertyName();
 
-        boolean isNot();
     }
 
 
     interface STUniqueKeyCriteriaItem extends STCriteriaItem {
         STUniqueKey getValue();
 
-        boolean isNot();
     }
 
     interface STLocalKeyCriteriaItem extends STCriteriaItem {
         STLocalKey getValue();
-
-        boolean isNot();
     }
 
     interface STCriteriaItem {

@@ -60,7 +60,6 @@ import org.junit.Test;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
-import org.openspotlight.storage.redis.guice.JRedisFacoryImpl;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
@@ -109,7 +108,7 @@ public class JRedisStorageSessionTest {
             return db;
         }
 
-        public String getPassword(){
+        public String getPassword() {
             return null;
         }
 
@@ -200,17 +199,40 @@ public class JRedisStorageSessionTest {
 
 
     @Test
+    public void shouldFindByUniqueKey() throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldFindByLocalKey() throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Test
+    public void shouldFindByLocalKeyAndProperties() throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenFindingWithUniqueAndOtherAttributes() throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Test
     public void shouldInsertNewNodeEntryAndFindUniqueWithAutoFlush() {
-        STStorageSession session1 = injector.getInstance(STStorageSession.class);
-        STNodeEntry foundNewNode1 = session1.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session1);
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
+                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
 
-        STNodeEntry newNode1 = session1.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
-        foundNewNode1 = session1.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence")
+        foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence")
                 .equals(Integer.class, 1).withProperty("name").equals(String.class, "name")
-                .buildCriteria().andFindUnique(session1);
+                .buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(notNullValue()));
         assertThat(foundNewNode1, is(newNode1));
     }
@@ -334,17 +356,40 @@ public class JRedisStorageSessionTest {
         throw new UnsupportedOperationException();
     }
 
-    @Test
-    public void shouldSaveSubPartitionsOnExplicitFlush() {
 
-        throw new UnsupportedOperationException();
-    }
-
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void shouldWorkWithSimplePropertiesOnExplicitFlush() throws Exception {
 
         throw new UnsupportedOperationException();
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotChangePropertyTypeOnList() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotChangePropertyTypeOnMap() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotChangePropertyTypeOnStream() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotChangePropertyTypeOnSimple() throws Exception {
+
+        throw new UnsupportedOperationException();
+    }
+
 
     @Test
     public void shouldWorkWithSimplePropertiesOnAutoFlush() throws Exception {
@@ -639,11 +684,6 @@ public class JRedisStorageSessionTest {
         assertThat((Object) loaded2, is((Object) aMap));
     }
 
-    @Test
-    public void shouldWorkWithWeakReferences() throws Exception {
-
-        throw new UnsupportedOperationException();
-    }
 
     @Test
     public void shouldFindMultipleResults() throws Exception {

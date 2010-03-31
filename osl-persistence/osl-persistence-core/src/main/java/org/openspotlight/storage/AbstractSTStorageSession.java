@@ -219,24 +219,18 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     private static class STUniqueKeyCriteriaItemImpl implements STUniqueKeyCriteriaItem {
-        private STUniqueKeyCriteriaItemImpl(STUniqueKey value, boolean not, String nodeEntryName) {
+        private STUniqueKeyCriteriaItemImpl(STUniqueKey value, String nodeEntryName) {
             this.value = value;
-            this.not = not;
             this.nodeEntryName = nodeEntryName;
         }
 
         private final STUniqueKey value;
 
-        private final boolean not;
 
         private final String nodeEntryName;
 
         public STUniqueKey getValue() {
             return value;
-        }
-
-        public boolean isNot() {
-            return not;
         }
 
         public String getNodeEntryName() {
@@ -250,7 +244,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
             STUniqueKeyCriteriaItemImpl that = (STUniqueKeyCriteriaItemImpl) o;
 
-            if (not != that.not) return false;
             if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
                 return false;
             if (value != null ? !value.equals(that.value) : that.value != null) return false;
@@ -261,7 +254,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         @Override
         public int hashCode() {
             int result = value != null ? value.hashCode() : 0;
-            result = 31 * result + (not ? 1 : 0);
             result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
@@ -270,15 +262,13 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     private static class STLocalKeyCriteriaItemImpl implements STLocalKeyCriteriaItem {
-        private STLocalKeyCriteriaItemImpl(STLocalKey value, boolean not, String nodeEntryName) {
+        private STLocalKeyCriteriaItemImpl(STLocalKey value, String nodeEntryName) {
             this.value = value;
-            this.not = not;
             this.nodeEntryName = nodeEntryName;
         }
 
         private final STLocalKey value;
 
-        private final boolean not;
 
         private final String nodeEntryName;
 
@@ -286,9 +276,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return value;
         }
 
-        public boolean isNot() {
-            return not;
-        }
 
         public String getNodeEntryName() {
             return nodeEntryName;
@@ -302,7 +289,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
             STLocalKeyCriteriaItemImpl that = (STLocalKeyCriteriaItemImpl) o;
 
-            if (not != that.not) return false;
             if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
                 return false;
             if (value != null ? !value.equals(that.value) : that.value != null) return false;
@@ -313,7 +299,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         @Override
         public int hashCode() {
             int result = value != null ? value.hashCode() : 0;
-            result = 31 * result + (not ? 1 : 0);
             result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
@@ -321,11 +306,10 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     private static class STPropertyCriteriaItemImpl<T extends Serializable> implements STPropertyCriteriaItem<T> {
-        private STPropertyCriteriaItemImpl(T value, Class<T> type, String propertyName, boolean not, String nodeEntryName) {
+        private STPropertyCriteriaItemImpl(T value, Class<T> type, String propertyName, String nodeEntryName) {
             this.value = value;
             this.type = type;
             this.propertyName = propertyName;
-            this.not = not;
             this.nodeEntryName = nodeEntryName;
         }
 
@@ -334,8 +318,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         private final Class<T> type;
 
         private final String propertyName;
-
-        private final boolean not;
 
         private final String nodeEntryName;
 
@@ -351,9 +333,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return propertyName;
         }
 
-        public boolean isNot() {
-            return not;
-        }
 
         public String getNodeEntryName() {
             return nodeEntryName;
@@ -366,7 +345,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
             STPropertyCriteriaItemImpl that = (STPropertyCriteriaItemImpl) o;
 
-            if (not != that.not) return false;
             if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
                 return false;
             if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null)
@@ -382,7 +360,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             int result = value != null ? value.hashCode() : 0;
             result = 31 * result + (type != null ? type.hashCode() : 0);
             result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
-            result = 31 * result + (not ? 1 : 0);
             result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
@@ -455,8 +432,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private String transientPropertyName;
 
-        private Boolean transientNot;
-
         private STUniqueKey transientUniqueKey;
 
         private STLocalKey transientLocalKey;
@@ -511,21 +486,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             breakIfNotNull(transientPropertyValue);
             transientPropertyType = type;
             transientPropertyValue = value;
-            transientNot = false;
-            and();
-            return this;
-        }
-
-        public <T extends Serializable> STCriteriaBuilder notEquals(Class<T> type, T value) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            breakIfNotNull(transientPropertyType);
-            breakIfNotNull(transientPropertyValue);
-            transientPropertyType = type;
-            transientPropertyValue = value;
-            transientNot = true;
             and();
             return this;
         }
@@ -534,23 +494,21 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             STCriteriaItem item = null;
             breakIfNull(transientNodeEntryName);
             if (transientUniqueKey != null) {
-                item = new STUniqueKeyCriteriaItemImpl(transientUniqueKey, false, transientNodeEntryName);
+                item = new STUniqueKeyCriteriaItemImpl(transientUniqueKey, transientNodeEntryName);
 
             } else if (transientLocalKey != null) {
 
-                item = new STLocalKeyCriteriaItemImpl(transientLocalKey, false, transientNodeEntryName);
+                item = new STLocalKeyCriteriaItemImpl(transientLocalKey, transientNodeEntryName);
 
             } else if (transientPropertyName != null) {
 
                 breakIfNull(transientPropertyValue);
                 breakIfNull(transientPropertyType);
-                breakIfNull(transientNot);
 
-                item = new STPropertyCriteriaItemImpl(transientPropertyValue, transientPropertyType, transientPropertyName, transientNot, transientNodeEntryName);
+                item = new STPropertyCriteriaItemImpl(transientPropertyValue, transientPropertyType, transientPropertyName, transientNodeEntryName);
 
             }
             transientPropertyName = null;
-            transientNot = null;
             transientUniqueKey = null;
             transientLocalKey = null;
             transientPropertyType = null;

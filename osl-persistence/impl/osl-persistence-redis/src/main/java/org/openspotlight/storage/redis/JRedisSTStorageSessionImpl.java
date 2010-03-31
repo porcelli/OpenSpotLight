@@ -51,7 +51,6 @@ package org.openspotlight.storage.redis;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jredis.JRedis;
@@ -109,23 +108,43 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     @Override
     protected Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception {
-        List<String> inter = Lists.newLinkedList();
+        List<String> propertiesIntersection = newLinkedList();
+        List<String> uniqueIds = newLinkedList();
         for (STCriteriaItem c : criteria.getCriteriaItems()) {
             if (c instanceof STPropertyCriteriaItem) {
                 STPropertyCriteriaItem p = (STPropertyCriteriaItem) c;
-                inter.add(format(SET_WITH_PROPERTY_NODE_IDS, p.getPropertyName(), p.getType().getName(), convert(p.getValue(), String.class)).replaceAll(" ", ""));
+                propertiesIntersection.add(format(SET_WITH_PROPERTY_NODE_IDS, p.getPropertyName(),
+                        p.getType().getName(), convert(p.getValue(), String.class)).replaceAll(" ", ""));
+            } else if (c instanceof STUniqueKeyCriteriaItem) {
+                STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;
+                uniqueIds.add(supportMethods.getUniqueKeyAsStringHash(uniqueCriteria.getValue()));
+            } else if (c instanceof STLocalKeyCriteriaItem) {
+                STLocalKeyCriteriaItem uniqueCriteria = (STLocalKeyCriteriaItem) c;
+                String localHash = supportMethods.getLocalKeyAsStringHash(uniqueCriteria.getValue());
+                propertiesIntersection.add(format(SET_WITH_ALL_LOCAL_KEYS, localHash));
+            } else {
+                throw new IllegalArgumentException("invalid criteria");
             }
         }
+        if (!uniqueIds.isEmpty() && !propertiesIntersection.isEmpty())
+            throw new IllegalArgumentException("criteria with unique ids can't be used with other criteria types");
+
         JRedis jredis = factory.getFrom(partition);
         List<String> ids;
-        if (inter.size() > 1) {
-            ids = listBytesToListString(jredis.sinter(inter.get(0), inter.subList(1, inter.size()).toArray(new String[0])));
-        } else if (inter.size() == 1) {
-            ids = listBytesToListString(jredis.sinter(inter.get(0)));
-
+        if (uniqueIds.isEmpty()) {
+            if (propertiesIntersection.size() > 1) {
+                ids = listBytesToListString(jredis.sinter(propertiesIntersection.get(0),
+                        propertiesIntersection.subList(1, propertiesIntersection.size()).toArray(new String[0])));
+            } else if (propertiesIntersection.size() == 1) {
+                ids = listBytesToListString(jredis.sinter(propertiesIntersection.get(0)));
+            } else {
+                ids = Collections.emptyList();
+            }
         } else {
-            ids = Collections.emptyList();
+            ids = uniqueIds;
         }
+
+
         Set<STNodeEntry> nodeEntries = newHashSet();
         for (String id : ids) {
             String parentKey = id;
