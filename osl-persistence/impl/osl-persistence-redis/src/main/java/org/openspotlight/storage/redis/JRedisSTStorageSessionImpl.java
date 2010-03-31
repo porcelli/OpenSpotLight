@@ -50,7 +50,6 @@
 package org.openspotlight.storage.redis;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
 import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jredis.JRedis;
@@ -157,14 +156,13 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
         Set<STNodeEntry> nodeEntries = newHashSet();
         for (String id : ids) {
-            String parentKey = id;
-            STNodeEntry nodeEntry = loadNodeOrReturnNull(parentKey, criteria.getPartition());
+            STNodeEntry nodeEntry = loadNodeOrReturnNull(id, criteria.getPartition());
             if (nodeEntry != null) {
                 nodeEntries.add(nodeEntry);
             }
         }
 
-        return ImmutableSortedSet.copyOf(nodeEntries);
+        return ImmutableSet.copyOf(nodeEntries);
     }
 
     private STNodeEntry loadNodeOrReturnNull(String parentKey, STPartition partition) throws Exception {
@@ -370,8 +368,18 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception{
+
+        JRedis jRedis = factory.getFrom(partition);
+        List<String> ids = listBytesToListString(jRedis.smembers(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME,nodeEntryName)));
+        ImmutableSet.Builder<STNodeEntry> builder = ImmutableSet.<STNodeEntry>builder();
+        for(String id: ids){
+            STNodeEntry loadedNode = loadNodeOrReturnNull(id, partition);
+            if(loadedNode!=null){
+                builder.add(loadedNode);
+            }
+        }
+        return builder.build();
     }
 
     private STProperty loadProperty(STPartition partition, STNodeEntry stNodeEntry, String parentKey, String propertyName) throws RedisException, ClassNotFoundException, SLException {

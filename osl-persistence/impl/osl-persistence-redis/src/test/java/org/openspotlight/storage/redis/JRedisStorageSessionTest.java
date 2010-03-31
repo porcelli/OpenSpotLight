@@ -234,12 +234,61 @@ public class JRedisStorageSessionTest {
 
     @Test
     public void shouldFindByLocalKeyAndProperties() throws Exception {
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").withParent(root2).andCreate();
+        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
+        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
+        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value1");
+        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value2");
+        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter").equals(String.class, "value").buildCriteria().andFind(session);
+        assertThat(theSameNodes.size(), is(2));
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+        Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter1").equals(String.class, "value1").buildCriteria().andFind(session);
+        assertThat(onlyOneNode.size(), is(1));
+        assertThat(onlyOneNode.contains(aNode1), is(true));
+        assertThat(onlyOneNode.contains(aNode2), is(false));
+        assertThat(onlyOneNode.contains(root1), is(false));
+        assertThat(onlyOneNode.contains(root2), is(false));
     }
 
     @Test
     public void shouldFindNamedNodes() throws Exception {
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").withParent(root2).andCreate();
+
+        Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).findNamed("root1");
+        assertThat(onlyOneNode.size(), is(1));
+        assertThat(onlyOneNode.contains(aNode1), is(false));
+        assertThat(onlyOneNode.contains(aNode2), is(false));
+        assertThat(onlyOneNode.contains(root1), is(true));
+        assertThat(onlyOneNode.contains(root2), is(false));
+        Set<STNodeEntry> twoNodes = session.withPartition(ExamplePartition.DEFAULT).findNamed("node");
+        assertThat(twoNodes.size(), is(2));
+        assertThat(twoNodes.contains(aNode1), is(true));
+        assertThat(twoNodes.contains(aNode2), is(true));
+        assertThat(twoNodes.contains(root1), is(false));
+        assertThat(twoNodes.contains(root2), is(false));
+
+
     }
 
 
@@ -726,17 +775,17 @@ public class JRedisStorageSessionTest {
 
     @Test
     public void shouldFindMultipleResults() throws Exception {
-
+        throw new UnsupportedOperationException();
     }
 
     @Test
     public void shouldRemoveNodes() throws Exception {
-
+        throw new UnsupportedOperationException();
     }
 
     @Test
     public void shouldUpdatePropertyAndFindWithUpdatedValue() throws Exception {
-
+        throw new UnsupportedOperationException();
     }
 
 }

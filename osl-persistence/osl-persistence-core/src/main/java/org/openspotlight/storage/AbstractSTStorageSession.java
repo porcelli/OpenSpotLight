@@ -990,6 +990,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     protected abstract Set<STProperty> internalNodeEntryLoadProperties(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
     
-    protected abstract Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName);
+    protected abstract Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception;
 
 }
