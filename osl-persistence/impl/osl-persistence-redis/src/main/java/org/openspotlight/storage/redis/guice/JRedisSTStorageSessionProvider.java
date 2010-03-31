@@ -78,6 +78,6 @@ public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorag
 
     @Override
     protected STStorageSession createInstance() {
-        return new JRedisSTStorageSessionImpl(jRedisProvider.get(), flushMode, factory);
+        return new JRedisSTStorageSessionImpl(flushMode, factory);
     }
 }
