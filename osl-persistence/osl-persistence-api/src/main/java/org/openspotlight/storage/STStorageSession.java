@@ -73,6 +73,8 @@ public interface STStorageSession {
 
         Set<STNodeEntry> findByCriteria(STCriteria criteria);
 
+        Set<STNodeEntry> findNamed(String nodeEntryName);
+
         STNodeEntry findUniqueByCriteria(STCriteria criteria);
 
         public STCriteriaBuilder createCriteria();

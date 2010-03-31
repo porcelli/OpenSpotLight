@@ -91,7 +91,17 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         public Set<STNodeEntry> findByCriteria(STCriteria criteria) {
             try {
+                if(!criteria.getPartition().equals(partition)) throw new IllegalArgumentException();
                 return internalFindByCriteria(criteria.getPartition(), criteria);
+            } catch (Exception e) {
+                handleException(e);
+                return null;
+            }
+        }
+
+        public Set<STNodeEntry> findNamed(String nodeEntryName) {
+            try {
+                return internalFindNamed(partition, nodeEntryName);
             } catch (Exception e) {
                 handleException(e);
                 return null;
@@ -136,6 +146,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             internalMethods = new STStorageSessionInternalMethodsImpl(partition);
         }
     }
+
 
     protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethodsImpl();
 
@@ -537,6 +548,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             breakIfNotNull(transientLocalKey);
 
             transientLocalKey = localKey;
+            transientNodeEntryName = localKey.getNodeEntryName();
             and();
             return this;
         }
@@ -551,6 +563,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             breakIfNotNull(transientUniqueKey);
 
             transientUniqueKey = uniqueKey;
+            transientNodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
             and();
             return this;
         }
@@ -976,5 +989,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     protected abstract <T> T internalPropertyGetSimplePropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception;
 
     protected abstract Set<STProperty> internalNodeEntryLoadProperties(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
+    
+    protected abstract Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName);
 
 }

@@ -3,6 +3,8 @@ package org.openspotlight.storage.redis.guice;
 import org.jredis.JRedis;
 import org.openspotlight.storage.STPartition;
 
+import java.util.Set;
+
 /**
  * Created by IntelliJ IDEA.
  * User: feuteston
@@ -13,6 +15,8 @@ import org.openspotlight.storage.STPartition;
 public interface JRedisFactory {
 
     JRedis getFrom(STPartition partition);
+
+    Set<JRedis> getAllActive();
 
 
 }

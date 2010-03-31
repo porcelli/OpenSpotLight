@@ -1,5 +1,6 @@
 package org.openspotlight.storage.redis.guice;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.jredis.JRedis;
@@ -8,6 +9,9 @@ import org.openspotlight.storage.STPartition;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import static java.util.Collections.emptySet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,5 +46,16 @@ public class JRedisFacoryImpl implements JRedisFactory {
             cache.put(partition, jRedis);
         }
         return jRedis;
+    }
+
+    public Set<JRedis> getAllActive() {
+        Set<JRedis> result;
+        Map<STPartition, JRedis> cache = threadLocalCache.get();
+        if(cache!=null){
+            result = ImmutableSet.copyOf(cache.values());
+        }else{
+            result = emptySet();
+        }
+        return result;
     }
 }

@@ -59,6 +59,7 @@ import java.util.Set;
  */
 public class STLocalKeyImpl implements STLocalKey {
     public STLocalKeyImpl(Set<STKeyEntry<?>> entries, String nodeEntryName) {
+        if(nodeEntryName==null) throw new IllegalArgumentException();
         this.entries = ImmutableSortedSet.copyOf(entries);
         this.nodeEntryName = nodeEntryName;
     }

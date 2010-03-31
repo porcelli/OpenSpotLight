@@ -54,7 +54,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.commons.io.IOUtils;
-import org.jredis.JRedis;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.storage.STPartition;
@@ -91,8 +90,8 @@ public class JRedisStorageSessionTest {
 
     private enum JRedisServerConfigExample implements JRedisServerDetail {
         DEFAULT("localhost", 6379, 1),
-        FIRST("localhost", 6380, 2),
-        SECOND("localhost", 6381, 3);
+        FIRST("localhost", 6379, 2),
+        SECOND("localhost", 6379, 3);
 
         private JRedisServerConfigExample(String serverName, int serverPort, int db) {
             this.serverName = serverName;
@@ -149,13 +148,10 @@ public class JRedisStorageSessionTest {
 
     final Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig));
 
-    private JRedis jRedis;
-
-
     @Before
     public void cleanPreviousData() throws Exception {
-        jRedis = injector.getInstance(JRedisFactory.class).getFrom(ExamplePartition.DEFAULT);
-        jRedis.flushall();
+        JRedisFactory factory = injector.getInstance(JRedisFactory.class);
+        factory.getFrom(ExamplePartition.DEFAULT).flushall();
 
     }
 
@@ -200,17 +196,49 @@ public class JRedisStorageSessionTest {
 
     @Test
     public void shouldFindByUniqueKey() throws Exception {
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry theSameNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withUniqueKey(aNode.getUniqueKey()).buildCriteria().andFindUnique(session);
+        assertThat(aNode, is(theSameNode));
+        assertThat(theSameNode.getProperty(session, "name").getValueAs(session, String.class), is("name"));
+        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withUniqueKey(session.withPartition(ExamplePartition.DEFAULT).createKey("invalid").andCreate()).buildCriteria().andFindUnique(session);
+        assertThat(nullNode, is(nullValue()));
+
+
     }
 
     @Test
     public void shouldFindByLocalKey() throws Exception {
-        throw new UnsupportedOperationException();
+        STStorageSession session = injector.getInstance(STStorageSession.class);
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").withParent(root2).andCreate();
+
+        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).buildCriteria().andFind(session);
+        assertThat(theSameNodes.size(), is(2));
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
     }
 
 
     @Test
     public void shouldFindByLocalKeyAndProperties() throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void shouldFindNamedNodes() throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -352,8 +380,19 @@ public class JRedisStorageSessionTest {
 
     @Test
     public void shouldWorkWithPartitions() {
+        STStorageSession session = injector.getInstance(STStorageSession.class);
 
-        throw new UnsupportedOperationException();
+        STNodeEntry root = session.withPartition(ExamplePartition.DEFAULT).createWithName("root")
+                .withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.FIRST).createWithName("root")
+                .withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry root3 = session.withPartition(ExamplePartition.SECOND).createWithName("root")
+                .withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+
+
     }
 
 
@@ -687,6 +726,16 @@ public class JRedisStorageSessionTest {
 
     @Test
     public void shouldFindMultipleResults() throws Exception {
+
+    }
+
+    @Test
+    public void shouldRemoveNodes() throws Exception {
+
+    }
+
+    @Test
+    public void shouldUpdatePropertyAndFindWithUpdatedValue() throws Exception {
 
     }
 
