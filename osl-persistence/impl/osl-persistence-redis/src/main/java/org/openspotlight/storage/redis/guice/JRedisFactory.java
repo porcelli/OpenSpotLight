@@ -1,7 +1,7 @@
 package org.openspotlight.storage.redis.guice;
 
 import org.jredis.JRedis;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.STPartition;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,7 +12,7 @@ import org.openspotlight.storage.STStorageSession;
  */
 public interface JRedisFactory {
 
-    JRedis create(STStorageSession.STPartition partition);
+    JRedis create(STPartition partition);
 
 
 }

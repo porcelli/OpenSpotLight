@@ -65,6 +65,14 @@ public interface STProperty {
             this.loadWeight = loadWeight;
         }
 
+        public STSerializedType getSerialized() {
+            return serialized;
+        }
+
+        public STLoadWeight getLoadWeight() {
+            return loadWeight;
+        }
+
         public enum STSerializedType {
             SERIALIZED, NOT_SERIALIZED
         }
@@ -73,13 +81,7 @@ public interface STProperty {
             EASY, DIFFICULT
         }
 
-        public STSerializedType getSerialized() {
-            return serialized;
-        }
 
-        public STLoadWeight getLoadWeight() {
-            return loadWeight;
-        }
     }
 
 

@@ -58,8 +58,7 @@ import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.storage.AbstractSTStorageSession;
-import org.openspotlight.storage.DefaultPartition;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
@@ -104,8 +103,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     private final JRedisFactory factory;
 
     @Inject
-    public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode, @DefaultPartition STPartition partition, JRedisFactory factory) {
-        super(flushMode, partition);
+    public JRedisSTStorageSessionImpl(JRedis jredis, STFlushMode flushMode, JRedisFactory factory) {
+        super(flushMode);
         this.jRedis = jredis;
         this.factory = factory;
     }
@@ -131,19 +130,19 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         Set<STNodeEntry> nodeEntries = newHashSet();
         for (String id : ids) {
             String parentKey = id;
-            STNodeEntry nodeEntry = loadNode(parentKey);
+            STNodeEntry nodeEntry = loadNode(parentKey, criteria.getPartition());
             nodeEntries.add(nodeEntry);
         }
 
         return ImmutableSortedSet.copyOf(nodeEntries);
     }
 
-    private STNodeEntry loadNode(String parentKey) throws Exception {
+    private STNodeEntry loadNode(String parentKey, STPartition partition) throws Exception {
         STUniqueKeyBuilder keyBuilder = null;
         do {
             List<String> keyPropertyNames = listBytesToListString(jRedis.smembers(format(SET_WITH_NODE_KEYS_NAMES, parentKey)));
             String nodeEntryName = toStr(jRedis.get(format(KEY_WITH_NODE_ENTRY_NAME, parentKey)));
-            keyBuilder = keyBuilder == null ? createKey(nodeEntryName) : keyBuilder.withParent(nodeEntryName);
+            keyBuilder = keyBuilder == null ? withPartition(partition).createKey(nodeEntryName) : keyBuilder.withParent(nodeEntryName);
 
             for (String keyName : keyPropertyNames) {
                 String typeName = toStr(jRedis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, keyName)));
@@ -172,11 +171,6 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected STStorageSession createNewInstance(STFlushMode flushMode, STPartition partition) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     protected void flushNewItem(STNodeEntry entry) throws Exception {
 
         String uniqueKey = supportMethods.getUniqueKeyAsStringHash(entry.getUniqueKey());
@@ -187,7 +181,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             String parentAsString = supportMethods.getUniqueKeyAsStringHash(parentKey);
             jRedis.set(format(KEY_WITH_PARENT_UNIQUE_ID, uniqueKey), parentAsString);
             jRedis.sadd(format(SET_WITH_NODE_CHILDREN_KEYS, parentAsString), uniqueKey);
-            jRedis.sadd(format(SET_WITH_NODE_CHILDREN_NAMED_KEYS, parentAsString,entry.getNodeEntryName()), uniqueKey);
+            jRedis.sadd(format(SET_WITH_NODE_CHILDREN_NAMED_KEYS, parentAsString, entry.getNodeEntryName()), uniqueKey);
         }
         String localKey = supportMethods.getLocalKeyAsStringHash(entry.getLocalKey());
         jRedis.sadd(format(SET_WITH_ALL_LOCAL_KEYS, localKey), uniqueKey);
@@ -223,13 +217,13 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected Set<STNodeEntry> internalNodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name) throws Exception{
+    protected Set<STNodeEntry> internalNodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name) throws Exception {
         String parentKey = supportMethods.getUniqueKeyAsStringHash(stNodeEntry.getUniqueKey());
-        String keyName = name==null?format(SET_WITH_NODE_CHILDREN_KEYS, parentKey):format(SET_WITH_NODE_CHILDREN_NAMED_KEYS, parentKey,name);
+        String keyName = name == null ? format(SET_WITH_NODE_CHILDREN_KEYS, parentKey) : format(SET_WITH_NODE_CHILDREN_NAMED_KEYS, parentKey, name);
         List<String> childrenKeys = listBytesToListString(jRedis.smembers(keyName));
         ImmutableSet.Builder<STNodeEntry> builder = ImmutableSet.builder();
-        for(String id: childrenKeys){
-             builder.add(loadNode(id));
+        for (String id : childrenKeys) {
+            builder.add(loadNode(id, stNodeEntry.getUniqueKey().getPartition()));
         }
         return builder.build();
     }
@@ -255,14 +249,14 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected Set<STNodeEntry> internalNodeEntryGetChildren(STNodeEntry stNodeEntry) throws Exception{
-        return internalNodeEntryGetNamedChildren(stNodeEntry,null);
+    protected Set<STNodeEntry> internalNodeEntryGetChildren(STNodeEntry stNodeEntry) throws Exception {
+        return internalNodeEntryGetNamedChildren(stNodeEntry, null);
     }
 
     @Override
-    protected STNodeEntry internalNodeEntryGetParent(STNodeEntry stNodeEntry) throws Exception{
+    protected STNodeEntry internalNodeEntryGetParent(STNodeEntry stNodeEntry) throws Exception {
         STUniqueKey parentKey = stNodeEntry.getUniqueKey().getParentKey();
-        if(parentKey==null) return null;
+        if (parentKey == null) return null;
         return createEntryWithKey(parentKey);
     }
 

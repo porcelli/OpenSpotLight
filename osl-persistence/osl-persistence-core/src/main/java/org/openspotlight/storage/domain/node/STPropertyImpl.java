@@ -1,5 +1,6 @@
 package org.openspotlight.storage.domain.node;
 
+import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 
 import java.io.InputStream;
@@ -28,45 +29,27 @@ public class STPropertyImpl implements STProperty {
         serialized = description.getSerialized().equals(STPropertyDescription.STSerializedType.SERIALIZED);
         difficultToLoad = description.getLoadWeight().equals(STPropertyDescription.STLoadWeight.DIFFICULT);
         this.description = description;
+
+        this.partition = parent.getUniqueKey().getPartition();
     }
 
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType, Class<?> firstParameterizedType) {
-        if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
-        if (description == null) throw new IllegalArgumentException();
-
-        this.parent = parent;
-        this.propertyName = propertyName;
-        this.propertyType = propertyType;
-        this.firstParameterizedType = firstParameterizedType;
-        this.key = STPropertyDescription.KEY.equals(description);
-        this.secondParameterizedType = null;
-        hasParameterizedTypes = true;
-        serialized = description.getSerialized().equals(STPropertyDescription.STSerializedType.SERIALIZED);
-        difficultToLoad = description.getLoadWeight().equals(STPropertyDescription.STLoadWeight.DIFFICULT);
-        this.description = description;
+        this(parent, propertyName, description, propertyType, firstParameterizedType, null);
     }
 
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType) {
-        if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
-        if (description == null) throw new IllegalArgumentException();
+        this(parent, propertyName, description, propertyType, null, null);
 
-        this.parent = parent;
-        this.propertyName = propertyName;
-        this.propertyType = propertyType;
-        this.key = STPropertyDescription.KEY.equals(description);
-        this.firstParameterizedType = null;
-        this.secondParameterizedType = null;
-        this.hasParameterizedTypes = false;
-        serialized = description.getSerialized().equals(STPropertyDescription.STSerializedType.SERIALIZED);
-        difficultToLoad = description.getLoadWeight().equals(STPropertyDescription.STLoadWeight.DIFFICULT);
-        this.description = description;
+
     }
 
     private final STPropertyInternalMethods propertyInternalMethods = new STPropertyInternalMethodsImpl();
 
     private final STNodeEntry parent;
+
+    private final STPartition partition;
 
     private final String propertyName;
 
@@ -93,7 +76,7 @@ public class STPropertyImpl implements STProperty {
     public <T> void setValue(STStorageSession session, T value) {
         if (key) throw new IllegalStateException("key properties are immutable");
         this.value = value;
-        session.getInternalMethods().propertySetProperty(this, value);
+        session.withPartition(partition).getInternalMethods().propertySetProperty(this, value);
     }
 
     public <R> R getValueAs(STStorageSession session, Class<R> type) {
@@ -103,13 +86,13 @@ public class STPropertyImpl implements STProperty {
         if (getInternalMethods().isDifficultToLoad()) {
             result = (R) weakReference != null ? (R) weakReference.get() : null;
             if (result == null) {
-                result = (R) session.getInternalMethods().propertyGetPropertyAs(this, type);
+                result = (R) session.withPartition(partition).getInternalMethods().propertyGetPropertyAs(this, type);
                 if (result != null) {
                     weakReference = new WeakReference<R>((R) result);
                 }
             }
         } else {
-            value = session.getInternalMethods().propertyGetPropertyAs(this, type);
+            value = session.withPartition(partition).getInternalMethods().propertyGetPropertyAs(this, type);
             result = (R) value;
         }
         resetIfStream(result);
@@ -138,13 +121,13 @@ public class STPropertyImpl implements STProperty {
         if (getInternalMethods().isDifficultToLoad()) {
             result = (R) weakReference != null ? (R) weakReference.get() : null;
             if (result == null) {
-                result = (R) session.getInternalMethods().propertyGetValue(this);
+                result = (R) session.withPartition(partition).getInternalMethods().propertyGetValue(this);
                 if (result != null) {
                     weakReference = new WeakReference<R>((R) result);
                 }
             }
         } else {
-            if (value == null) value = (R) session.getInternalMethods().propertyGetValue(this);
+            if (value == null) value = (R) session.withPartition(partition).getInternalMethods().propertyGetValue(this);
             result = (R) value;
         }
         resetIfStream(result);

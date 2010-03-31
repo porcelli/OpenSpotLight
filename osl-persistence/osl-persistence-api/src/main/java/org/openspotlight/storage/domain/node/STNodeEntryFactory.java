@@ -49,6 +49,7 @@
 
 package org.openspotlight.storage.domain.node;
 
+import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 

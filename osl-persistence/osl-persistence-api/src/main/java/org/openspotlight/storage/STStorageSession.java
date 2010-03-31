@@ -63,22 +63,34 @@ import java.util.Set;
  * This class is an abstraction of a current state of storage session. The implementation classes must not store
  * any kind of connection state. This implementation must not be shared between threads.
  */
-public interface STStorageSession extends STNodeEntryFactory {
+public interface STStorageSession {
+
+    STPartitionMethods withPartition(STPartition partition);
+
+    interface STPartitionMethods extends STNodeEntryFactory {
+
+        STUniqueKeyBuilder createKey(String nodeEntryName);
+
+        Set<STNodeEntry> findByCriteria(STCriteria criteria);
+
+        STNodeEntry findUniqueByCriteria(STCriteria criteria);
+
+        public STCriteriaBuilder createCriteria();
+
+        STNodeEntryBuilder createWithName(String name);
+
+        STStorageSessionInternalMethods getInternalMethods();
+
+    }
+
 
     STStorageSessionSupportMethods getSupportMethods();
-    
-    Set<STNodeEntry> findByCriteria(STCriteria criteria);
 
-    STNodeEntry findUniqueByCriteria(STCriteria criteria);
 
     void removeNode(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 
+    interface STCriteriaBuilder {
 
-    public interface STPartition {
-        String getPartitionName();
-    }
-
-    public interface STCriteriaBuilder {
         STCriteriaBuilder withProperty(String propertyName);
 
         STCriteriaBuilder withNodeEntry(String nodeName);
@@ -96,70 +108,62 @@ public interface STStorageSession extends STNodeEntryFactory {
         STCriteriaBuilder withUniqueKey(STUniqueKey uniqueKey);
     }
 
-    public interface STPropertyCriteriaItem<T extends Serializable> extends STCriteriaItem {
-        public T getValue();
+    interface STPropertyCriteriaItem<T extends Serializable> extends STCriteriaItem {
+        
+        T getValue();
 
-        public Class<T> getType();
+        Class<T> getType();
 
-        public String getPropertyName();
+        String getPropertyName();
 
-        public boolean isNot();
+        boolean isNot();
     }
 
 
-    public interface STUniqueKeyCriteriaItem extends STCriteriaItem {
-        public STUniqueKey getValue();
+    interface STUniqueKeyCriteriaItem extends STCriteriaItem {
+        STUniqueKey getValue();
 
-        public boolean isNot();
+        boolean isNot();
     }
 
-    public interface STLocalKeyCriteriaItem extends STCriteriaItem {
-        public STLocalKey getValue();
+    interface STLocalKeyCriteriaItem extends STCriteriaItem {
+        STLocalKey getValue();
 
-        public boolean isNot();
+        boolean isNot();
     }
 
-    public interface STCriteriaItem {
+    interface STCriteriaItem {
 
-        public String getNodeEntryName();
-
-
-    }
-
-
-    public interface STCriteria {
-
-
-        public String getNodeName();
-
-        public Set<STCriteriaItem> getCriteriaItems();
-
-        public Set<STNodeEntry> andFind(STStorageSession session);
-
-        public STNodeEntry andFindUnique(STStorageSession session);
+        String getNodeEntryName();
 
 
     }
 
-    public static enum STFlushMode {
+
+    interface STCriteria {
+
+        STPartition getPartition();
+
+        String getNodeName();
+
+        Set<STCriteriaItem> getCriteriaItems();
+
+        Set<STNodeEntry> andFind(STStorageSession session);
+
+        STNodeEntry andFindUnique(STStorageSession session);
+
+
+    }
+
+    static enum STFlushMode {
         AUTO, EXPLICIT
     }
 
-    public STFlushMode getFlushMode();
-
-    public STPartition getCurrentPartition();
-
-    public STStorageSession withPartition(STPartition partition);
-
-    public STCriteriaBuilder createCriteria();
-
-    STNodeEntryBuilder createWithName(String name);
-
-    STStorageSessionInternalMethods getInternalMethods();
+    STFlushMode getFlushMode();
 
     interface STStorageSessionInternalMethods {
 
-        public STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name);
+        STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name);
 
         <T> T propertyGetPropertyAs(org.openspotlight.storage.domain.node.STProperty stProperty, Class<T> type);
 
@@ -186,9 +190,7 @@ public interface STStorageSession extends STNodeEntryFactory {
 
     }
 
-    STUniqueKeyBuilder createKey(String nodeEntryName);
-
-    public interface STStorageSessionSupportMethods {
+    interface STStorageSessionSupportMethods {
         String getLocalKeyAsStringHash(STLocalKey localKey);
 
         String getUniqueKeyAsStringHash(STUniqueKey uniqueKey);

@@ -49,6 +49,7 @@
 
 package org.openspotlight.storage.domain.key;
 
+import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.domain.STAData;
 
 import java.io.Serializable;
@@ -64,6 +65,8 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public interface STUniqueKey extends STAData , Comparable<STUniqueKey>{
+
+    STPartition getPartition();
 
     STLocalKey getLocalKey();
 

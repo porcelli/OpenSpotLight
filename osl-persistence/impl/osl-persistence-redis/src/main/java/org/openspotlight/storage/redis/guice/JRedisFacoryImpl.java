@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.jredis.JRedis;
 import org.jredis.ri.alphazero.JRedisClient;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.STPartition;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,19 +19,19 @@ import java.util.Map;
 @Singleton
 public class JRedisFacoryImpl implements JRedisFactory {
 
-    private final Map<STStorageSession.STPartition, JRedisServerDetail> mappedServerConfig;
+    private final Map<STPartition, JRedisServerDetail> mappedServerConfig;
 
-    private ThreadLocal<Map<STStorageSession.STPartition, JRedis>> threadLocalCache = new ThreadLocal<Map<STStorageSession.STPartition, JRedis>>();
+    private ThreadLocal<Map<STPartition, JRedis>> threadLocalCache = new ThreadLocal<Map<STPartition, JRedis>>();
 
     @Inject
-    JRedisFacoryImpl(Map<STStorageSession.STPartition, JRedisServerDetail> mappedServerConfig) {
+    JRedisFacoryImpl(Map<STPartition, JRedisServerDetail> mappedServerConfig) {
         this.mappedServerConfig = mappedServerConfig;
     }
 
 
-    public synchronized JRedis create(STStorageSession.STPartition partition) {
+    public synchronized JRedis create(STPartition partition) {
         JRedisServerDetail serverDetail = mappedServerConfig.get(partition);
-        Map<STStorageSession.STPartition, JRedis> cache = threadLocalCache.get();
+        Map<STPartition, JRedis> cache = threadLocalCache.get();
         JRedis jRedis = cache != null ? cache.get(partition) : null;
         if (jRedis == null) {
             if (cache == null) {

@@ -51,6 +51,7 @@ package org.openspotlight.storage.domain.node;
 
 import com.google.inject.internal.ImmutableSet;
 import org.apache.commons.io.IOUtils;
+import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
@@ -83,6 +84,7 @@ public class STNodeEntryImpl implements STNodeEntry {
                 this.propertiesByName.put(property.getPropertyName(), property);
             }
         }
+        partition = uniqueKey.getPartition();
         verifiedOperations = new STPropertyOperationImpl(true, this);
         unverifiedOperations = new STPropertyOperationImpl(false, this);
         namedChildrenWeakReference = new WeakHashMap<Set<STNodeEntry>, String>();
@@ -92,6 +94,8 @@ public class STNodeEntryImpl implements STNodeEntry {
     public STNodeEntryImpl(STUniqueKey uniqueKey) {
         this(uniqueKey, null);
     }
+
+    private final STPartition partition;
 
     private WeakReference<STNodeEntry> parentWeakReference = null;
 
@@ -161,13 +165,13 @@ public class STNodeEntryImpl implements STNodeEntry {
     }
 
     public Set<STNodeEntry> getChildrenForcingReload(STStorageSession session) {
-        Set<STNodeEntry> children = session.getInternalMethods().nodeEntryGetChildren(this);
+        Set<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetChildren(this);
         childrenWeakReference = new WeakReference<Set<STNodeEntry>>(children);
         return children;
     }
 
     public Set<STNodeEntry> getChildrenNamedForcingReload(STStorageSession session, String name) {
-        Set<STNodeEntry> children = session.getInternalMethods().nodeEntryGetNamedChildren(this, name);
+        Set<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetNamedChildren(this, name);
         namedChildrenWeakReference.put(children, name);
         return children;
     }
@@ -175,7 +179,7 @@ public class STNodeEntryImpl implements STNodeEntry {
     public STNodeEntry getParent(STStorageSession session) {
         STNodeEntry parent = parentWeakReference != null ? parentWeakReference.get() : null;
         if (parent == null) {
-            parent = session.getInternalMethods().nodeEntryGetParent(this);
+            parent = session.withPartition(partition).getInternalMethods().nodeEntryGetParent(this);
             parentWeakReference = new WeakReference<STNodeEntry>(parent);
         }
         return parent;
@@ -197,7 +201,7 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     private void loadPropertiesOnce(STStorageSession session) {
         if (propertiesByName.isEmpty()) {
-            Set<STProperty> result = session.getInternalMethods().nodeEntryLoadProperties(this);
+            Set<STProperty> result = session.withPartition(partition).getInternalMethods().nodeEntryLoadProperties(this);
             for (STProperty property : result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
@@ -205,7 +209,7 @@ public class STNodeEntryImpl implements STNodeEntry {
     }
 
     public STNodeEntryBuilder createWithName(final STStorageSession session, final String name) {
-        return session.getInternalMethods().nodeEntryCreateWithName(this, name);
+        return session.withPartition(partition).getInternalMethods().nodeEntryCreateWithName(this, name);
 
     }
 
