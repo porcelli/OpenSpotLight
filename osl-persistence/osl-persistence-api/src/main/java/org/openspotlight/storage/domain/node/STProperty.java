@@ -51,18 +51,26 @@ public interface STProperty {
     enum STPropertyDescription {
         KEY(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
         SIMPLE(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
-        SERIALIZED_LIST(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
-        SERIALIZED_SET(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
-        SERIALIZED_MAP(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
+        SERIALIZED_LIST(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 1),
+        SERIALIZED_SET(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 1),
+        SERIALIZED_MAP(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 2),
         SERIALIZED_POJO(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
         INPUT_STREAM(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT);
 
         private final STSerializedType serialized;
         private final STLoadWeight loadWeight;
+        private final int parameterizedLevel;
 
         STPropertyDescription(STSerializedType serialized, STLoadWeight loadWeight) {
             this.serialized = serialized;
             this.loadWeight = loadWeight;
+            this.parameterizedLevel = 0;
+        }
+
+        STPropertyDescription(STSerializedType serialized, STLoadWeight loadWeight, int parameterizedLevel) {
+            this.serialized = serialized;
+            this.loadWeight = loadWeight;
+            this.parameterizedLevel = parameterizedLevel;
         }
 
         public STSerializedType getSerialized() {
@@ -81,6 +89,13 @@ public interface STProperty {
             EASY, DIFFICULT
         }
 
+        public boolean hasFirstParameterizedLevel() {
+            return parameterizedLevel > 0;
+        }
+
+        public boolean hasSecondParameterizedLevel() {
+            return parameterizedLevel > 1;
+        }
 
     }
 

@@ -19,6 +19,11 @@ public class STPropertyImpl implements STProperty {
                           Class<?> secondParameterizedType) {
         if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
         if (description == null) throw new IllegalArgumentException();
+        if (firstParameterizedType != null && !description.hasFirstParameterizedLevel())
+            throw new IllegalArgumentException();
+        if (secondParameterizedType != null && !description.hasSecondParameterizedLevel())
+            throw new IllegalArgumentException();
+
         this.parent = parent;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
