@@ -116,6 +116,13 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     }
 
+    private static String getPropertyOldKey (String propertyName, String nodeId) throws Exception {
+        String proposedKey = format(KEY_WITH_PROPERTY_NODE_ID, propertyName, "*", "*", nodeId);
+        return proposedKey;
+
+
+    }
+
 
     private static List<String> keysFromProperty(JRedis jRedis, String nodeEntryName, String propertyName, Class<?> type, Object value) throws Exception {
         String proposedKey = getPropertyKey(propertyName, type, value, "*");
@@ -504,17 +511,25 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     @Override
     protected void internalFlushSimpleProperty(STPartition partition, STProperty dirtyProperty) throws Exception {
+
+
         String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+
+        JRedis jredis = factory.getFrom(partition);
+
+
+        List<String> keysToBeRemoved = jredis.keys(getPropertyOldKey(dirtyProperty.getPropertyName(), uniqueKey));
+        for(String key: keysToBeRemoved) jredis.del(key);
 
         String transientValueAsString = convert(dirtyProperty.getInternalMethods().<Object>getTransientValue(), String.class);
 
-        JRedis jredis = factory.getFrom(partition);
         jredis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), dirtyProperty.getPropertyName());
         jredis.set(getPropertyKey(dirtyProperty.getPropertyName(), dirtyProperty.getInternalMethods().getPropertyType(), transientValueAsString, uniqueKey), uniqueKey);
 
         jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
         jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), transientValueAsString);
         jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SIMPLE, String.class));
+
 
     }
 }

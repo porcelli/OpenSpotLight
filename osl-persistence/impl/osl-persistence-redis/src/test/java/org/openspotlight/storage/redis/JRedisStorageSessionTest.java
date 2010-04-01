@@ -629,7 +629,7 @@ public class JRedisStorageSessionTest {
 
         STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
-        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", Integer.class,correctList);
+        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", Integer.class, correctList);
         newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", String.class, wrongList);
     }
 
@@ -642,8 +642,8 @@ public class JRedisStorageSessionTest {
 
         STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
-        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, Integer.class,correctMap);
-        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, String.class,wrongMap);
+        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, Integer.class, correctMap);
+        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, String.class, wrongMap);
 
     }
 
@@ -653,7 +653,7 @@ public class JRedisStorageSessionTest {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
-        newNode.getVerifiedOperations().setInputStreamProperty(session,"streamProperty",new ByteArrayInputStream("test".getBytes()));
+        newNode.getVerifiedOperations().setInputStreamProperty(session, "streamProperty", new ByteArrayInputStream("test".getBytes()));
         newNode.getVerifiedOperations().setSimpleProperty(session, "streamProperty", String.class, "invalidValue");
     }
 
@@ -1211,7 +1211,38 @@ public class JRedisStorageSessionTest {
 
     @Test
     public void shouldUpdatePropertyAndFindWithUpdatedValue() throws Exception {
-        throw new UnsupportedOperationException();
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        newNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "firstValue");
+        Set<STNodeEntry> found = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withNodeEntry("newNode1").withProperty("parameter").equals(String.class, "firstValue")
+                .buildCriteria().andFind(session);
+        assertThat(found.size(), is(1));
+        assertThat(found.contains(newNode1), is(true));
+        newNode1.getProperty(session, "parameter").setValue(session, "secondValue");
+
+        Set<STNodeEntry> notFound = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withNodeEntry("newNode1").withProperty("parameter").equals(String.class, "firstValue")
+                .buildCriteria().andFind(session);
+        assertThat(notFound.size(), is(0));
+
+        Set<STNodeEntry> foundAgain = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withNodeEntry("newNode1").withProperty("parameter").equals(String.class, "secondValue")
+                .buildCriteria().andFind(session);
+        assertThat(foundAgain.size(), is(1));
+        assertThat(foundAgain.contains(newNode1), is(true));
+
+
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldNotSetKeyProperty() throws Exception {
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", Integer.class, 3);
+
     }
 
 }
