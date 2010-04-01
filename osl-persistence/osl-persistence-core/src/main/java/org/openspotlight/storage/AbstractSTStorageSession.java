@@ -92,6 +92,18 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public Set<STNodeEntry> findByCriteria(STCriteria criteria) {
             try {
                 if(!criteria.getPartition().equals(partition)) throw new IllegalArgumentException();
+                boolean hasGlobal = false;
+                boolean hasOther = false;
+                for(STCriteriaItem item: criteria.getCriteriaItems()){
+                    if(item instanceof STPropertyCriteriaItem){
+                        hasOther = true;
+                    }else if(item instanceof STLocalKeyCriteriaItem){
+                        hasOther = true;
+                    }else if(item instanceof STUniqueKeyCriteriaItem){
+                        hasGlobal = true;
+                    }
+                    if(hasOther && hasGlobal) throw new IllegalArgumentException();
+                }
                 return internalFindByCriteria(criteria.getPartition(), criteria);
             } catch (Exception e) {
                 handleException(e);
@@ -110,7 +122,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         public STNodeEntry findUniqueByCriteria(STCriteria criteria) {
             try {
-                Set<STNodeEntry> result = internalFindByCriteria(criteria.getPartition(), criteria);
+                Set<STNodeEntry> result = findByCriteria(criteria);
                 if (result == null) return null;
                 if (result.size() == 0) return null;
                 if (result.size() == 1) return result.iterator().next();
@@ -589,6 +601,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     protected void handleException(Exception e) {
+        if(e instanceof RuntimeException) throw (RuntimeException)e;
         throw new RuntimeException(e);
     }
 

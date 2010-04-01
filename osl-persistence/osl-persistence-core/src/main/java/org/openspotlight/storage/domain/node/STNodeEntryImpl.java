@@ -75,7 +75,7 @@ public class STNodeEntryImpl implements STNodeEntry {
     public STNodeEntryImpl(STUniqueKey uniqueKey, Set<STProperty> properties) {
 
         this.nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
-        if(nodeEntryName==null) throw new IllegalStateException();
+        if (nodeEntryName == null) throw new IllegalStateException();
         this.localKey = uniqueKey.getLocalKey();
         this.uniqueKey = uniqueKey;
         propertiesByName = newHashMap();
@@ -129,7 +129,12 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     public STProperty getProperty(STStorageSession session, String name) {
         loadPropertiesOnce(session);
-        return propertiesByName.get(name);
+        STProperty result = propertiesByName.get(name);
+        if(result==null){
+            reloadProperties(session);
+            result = propertiesByName.get(name);
+        }
+        return result;
     }
 
     public <T> T getPropertyValue(STStorageSession session, String name) {
@@ -159,7 +164,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         }
 
         if (thisChildren == null) {
-            thisChildren = getChildrenNamedForcingReload(session,name);
+            thisChildren = getChildrenNamedForcingReload(session, name);
         }
         return thisChildren;
     }
@@ -190,21 +195,25 @@ public class STNodeEntryImpl implements STNodeEntry {
     }
 
     public Set<String> getPropertyNames(STStorageSession session) {
-        loadPropertiesOnce(session);
+        reloadProperties(session);
         return ImmutableSet.copyOf(propertiesByName.keySet());
     }
 
     public Set<STProperty> getProperties(STStorageSession session) {
-        loadPropertiesOnce(session);
+        reloadProperties(session);
         return ImmutableSet.copyOf(propertiesByName.values());
+    }
+
+    private void reloadProperties(STStorageSession session) {
+        Set<STProperty> result = session.withPartition(partition).getInternalMethods().nodeEntryLoadProperties(this);
+        for (STProperty property : result) {
+            propertiesByName.put(property.getPropertyName(), property);
+        }
     }
 
     private void loadPropertiesOnce(STStorageSession session) {
         if (propertiesByName.isEmpty()) {
-            Set<STProperty> result = session.withPartition(partition).getInternalMethods().nodeEntryLoadProperties(this);
-            for (STProperty property : result) {
-                propertiesByName.put(property.getPropertyName(), property);
-            }
+            reloadProperties(session);
         }
     }
 
