@@ -73,6 +73,12 @@ import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
 public abstract class AbstractSTStorageSession implements STStorageSession {
+    
+    public void discardTransient() {
+        this.newNodes.clear();
+        this.removedNodes.clear();
+        this.dirtyProperties.clear();
+    }
 
     private final Map<STPartition, STPartitionMethods> partitionMethods = newHashMap();
 
@@ -91,18 +97,18 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         public Set<STNodeEntry> findByCriteria(STCriteria criteria) {
             try {
-                if(!criteria.getPartition().equals(partition)) throw new IllegalArgumentException();
+                if (!criteria.getPartition().equals(partition)) throw new IllegalArgumentException();
                 boolean hasGlobal = false;
                 boolean hasOther = false;
-                for(STCriteriaItem item: criteria.getCriteriaItems()){
-                    if(item instanceof STPropertyCriteriaItem){
+                for (STCriteriaItem item : criteria.getCriteriaItems()) {
+                    if (item instanceof STPropertyCriteriaItem) {
                         hasOther = true;
-                    }else if(item instanceof STLocalKeyCriteriaItem){
+                    } else if (item instanceof STLocalKeyCriteriaItem) {
                         hasOther = true;
-                    }else if(item instanceof STUniqueKeyCriteriaItem){
+                    } else if (item instanceof STUniqueKeyCriteriaItem) {
                         hasGlobal = true;
                     }
-                    if(hasOther && hasGlobal) throw new IllegalArgumentException();
+                    if (hasOther && hasGlobal) throw new IllegalArgumentException();
                 }
                 return internalFindByCriteria(criteria.getPartition(), criteria);
             } catch (Exception e) {
@@ -145,11 +151,9 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return internalMethods;
         }
 
-
         public STUniqueKeyBuilder createKey(String nodeEntryName) {
             return new STUniqueKeyBuilderImpl(nodeEntryName, partition);
         }
-
 
         private final STPartition partition;
 
@@ -601,7 +605,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     protected void handleException(Exception e) {
-        if(e instanceof RuntimeException) throw (RuntimeException)e;
+        if (e instanceof RuntimeException) throw (RuntimeException) e;
         throw new RuntimeException(e);
     }
 
@@ -843,9 +847,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
 
-        this.newNodes.clear();
-        this.removedNodes.clear();
-        this.dirtyProperties.clear();
+        discardTransient();
 
     }
 
@@ -1002,7 +1004,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     protected abstract <T> T internalPropertyGetSimplePropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception;
 
     protected abstract Set<STProperty> internalNodeEntryLoadProperties(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
-    
+
     protected abstract Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception;
 
 }

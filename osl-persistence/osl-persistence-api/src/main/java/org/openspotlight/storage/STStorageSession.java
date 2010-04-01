@@ -200,6 +200,7 @@ public interface STStorageSession {
         String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey);
     }
 
+    void discardTransient();
 
     void flushTransient();
 }

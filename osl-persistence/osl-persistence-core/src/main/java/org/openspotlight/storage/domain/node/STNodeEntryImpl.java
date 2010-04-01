@@ -68,6 +68,7 @@ import java.util.WeakHashMap;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.Equals.eachEquality;
 
 
 public class STNodeEntryImpl implements STNodeEntry {
@@ -130,7 +131,7 @@ public class STNodeEntryImpl implements STNodeEntry {
     public STProperty getProperty(STStorageSession session, String name) {
         loadPropertiesOnce(session);
         STProperty result = propertiesByName.get(name);
-        if(result==null){
+        if (result == null) {
             reloadProperties(session);
             result = propertiesByName.get(name);
         }
@@ -269,7 +270,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         public <T extends Serializable, V extends T> STProperty setSimpleProperty(STStorageSession session, String name, Class<T> propertyType, V value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SIMPLE);
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SIMPLE,propertyType,null,null);
             } else {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SIMPLE, propertyType);
                 parent.propertiesByName.put(name, currentProperty);
@@ -282,7 +283,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         public <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_LIST);
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_LIST,List.class,parameterizedType,null);
             } else {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_LIST, List.class, parameterizedType);
             }
@@ -294,7 +295,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         public <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<V> parameterizedType, Set<V> value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_SET);
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_SET,Set.class,parameterizedType,null);
             } else {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_SET, Set.class, parameterizedType);
             }
@@ -306,7 +307,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         public <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<K> keyType, Class<V> valueType, Map<K, V> value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_MAP);
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_MAP,Map.class,keyType,valueType);
             } else {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_MAP, Map.class, keyType, valueType);
             }
@@ -318,7 +319,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         public <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<S> propertyType, S value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_POJO);
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_POJO,propertyType,null,null);
             } else {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_POJO, propertyType);
             }
@@ -330,7 +331,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         public STProperty setInputStreamProperty(STStorageSession session, String name, InputStream value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.INPUT_STREAM);
+                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.INPUT_STREAM, InputStream.class,null,null);
             } else {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.INPUT_STREAM, InputStream.class);
             }
@@ -354,12 +355,30 @@ public class STNodeEntryImpl implements STNodeEntry {
             return currentProperty;
         }
 
-        private void validatePropertyDescription(STProperty currentProperty, STProperty.STPropertyDescription toValidate) {
+        private void validatePropertyDescription(STProperty currentProperty, STProperty.STPropertyDescription newDescription, Class<?> type, Class<?> firstParameterizedType, Class<?> secondParameterizedType ) {
             if (verifyBefore) {
-                if (!currentProperty.getInternalMethods().getDescription().equals(toValidate)) {
+                if (!currentProperty.getInternalMethods().getDescription().equals(newDescription)) {
                     throw new IllegalArgumentException(
-                            format("wrong type of property: should be {0} instead of {1}",
-                                    currentProperty.getInternalMethods().getDescription(), toValidate));
+                            format("wrong description of property {2}: should be {0} instead of {1}",
+                                    currentProperty.getInternalMethods().getDescription(), newDescription,currentProperty.getPropertyName()));
+                }
+                if (!currentProperty.getInternalMethods().getPropertyType().equals(type)) {
+                    throw new IllegalArgumentException(
+                            format("wrong type of property {2}: should be {0} instead of {1}",
+                                    currentProperty.getInternalMethods().getPropertyType(),type));
+
+                }
+                if (!eachEquality(currentProperty.getInternalMethods().getFirstParameterizedType(), firstParameterizedType)) {
+                    throw new IllegalArgumentException(
+                            format("wrong first parameterized type of property {2}: should be {0} instead of {1}",
+                                    currentProperty.getInternalMethods().getFirstParameterizedType(), firstParameterizedType, currentProperty.getPropertyName()));
+
+                }
+                if (!eachEquality(currentProperty.getInternalMethods().getSecondParameterizedType(), secondParameterizedType)) {
+                    throw new IllegalArgumentException(
+                            format("wrong second parameterized type of property {2}: should be {0} instead of {1}",
+                                    currentProperty.getInternalMethods().getSecondParameterizedType(), secondParameterizedType, currentProperty.getPropertyName()));
+
                 }
             }
         }

@@ -75,6 +75,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -619,35 +621,54 @@ public class JRedisStorageSessionTest {
 
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldNotChangePropertyTypeOnList() throws Exception {
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        List<Integer> correctList = newArrayList();
+        List<String> wrongList = newArrayList();
 
-        throw new UnsupportedOperationException();
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", Integer.class,correctList);
+        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", String.class, wrongList);
     }
 
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldNotChangePropertyTypeOnMap() throws Exception {
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        Map<String, Integer> correctMap = newHashMap();
+        Map<String, String> wrongMap = newHashMap();
 
-        throw new UnsupportedOperationException();
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, Integer.class,correctMap);
+        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, String.class,wrongMap);
+
     }
 
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldNotChangePropertyTypeOnStream() throws Exception {
-
-        throw new UnsupportedOperationException();
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        newNode.getVerifiedOperations().setInputStreamProperty(session,"streamProperty",new ByteArrayInputStream("test".getBytes()));
+        newNode.getVerifiedOperations().setSimpleProperty(session, "streamProperty", String.class, "invalidValue");
     }
 
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldNotChangePropertyTypeOnSimple() throws Exception {
-
-        throw new UnsupportedOperationException();
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        newNode.getVerifiedOperations().setSimpleProperty(session, "classProperty", Class.class, String.class);
+        newNode.getVerifiedOperations().setSimpleProperty(session, "classProperty", String.class, "invalidValue");
     }
 
     public enum ExampleEnum {
-        FIRST, SECOND
+        FIRST
     }
 
     @Test
@@ -1099,17 +1120,92 @@ public class JRedisStorageSessionTest {
 
     @Test
     public void shouldRemoveNodesOnAutoFlush() throws Exception {
-        throw new UnsupportedOperationException();
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 2)
+                .withKey("name", String.class, "name").andCreate();
+
+        Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+
+        assertThat(result.size(), is(2));
+        assertThat(result.contains(newNode1), is(true));
+        assertThat(result.contains(newNode2), is(true));
+
+        newNode1.removeNode(session);
+        Set<STNodeEntry> newResult = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        assertThat(newResult.size(), is(1));
+        assertThat(newResult.contains(newNode1), is(false));
+        assertThat(newResult.contains(newNode2), is(true));
+
+
     }
 
     @Test
     public void shouldRemoveNodesOnExplicitFlush() throws Exception {
-        throw new UnsupportedOperationException();
+        STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 2)
+                .withKey("name", String.class, "name").andCreate();
+        session.flushTransient();
+        Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+
+        assertThat(result.size(), is(2));
+        assertThat(result.contains(newNode1), is(true));
+        assertThat(result.contains(newNode2), is(true));
+
+        newNode1.removeNode(session);
+        Set<STNodeEntry> resultNotChanged = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+
+        assertThat(resultNotChanged.size(), is(2));
+        assertThat(resultNotChanged.contains(newNode1), is(true));
+        assertThat(resultNotChanged.contains(newNode2), is(true));
+
+        session.flushTransient();
+
+        Set<STNodeEntry> newResult = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        assertThat(newResult.size(), is(1));
+        assertThat(newResult.contains(newNode1), is(false));
+        assertThat(newResult.contains(newNode2), is(true));
     }
 
     @Test
     public void shouldDiscardTransientNodesOnExplicitFlush() throws Exception {
-        throw new UnsupportedOperationException();
+        STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 2)
+                .withKey("name", String.class, "name").andCreate();
+        session.flushTransient();
+        Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+
+        assertThat(result.size(), is(2));
+        assertThat(result.contains(newNode1), is(true));
+        assertThat(result.contains(newNode2), is(true));
+
+        newNode1.removeNode(session);
+        Set<STNodeEntry> resultNotChanged = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+
+        assertThat(resultNotChanged.size(), is(2));
+        assertThat(resultNotChanged.contains(newNode1), is(true));
+        assertThat(resultNotChanged.contains(newNode2), is(true));
+
+        session.discardTransient();
+
+        Set<STNodeEntry> resultStillNotChanged = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+
+        assertThat(resultStillNotChanged.size(), is(2));
+        assertThat(resultStillNotChanged.contains(newNode1), is(true));
+        assertThat(resultStillNotChanged.contains(newNode2), is(true));
+
+        session.flushTransient();
+        Set<STNodeEntry> resultNotChangedAgain = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+
+        assertThat(resultNotChangedAgain.size(), is(2));
+        assertThat(resultNotChangedAgain.contains(newNode1), is(true));
+        assertThat(resultNotChangedAgain.contains(newNode2), is(true));
+
     }
 
 
