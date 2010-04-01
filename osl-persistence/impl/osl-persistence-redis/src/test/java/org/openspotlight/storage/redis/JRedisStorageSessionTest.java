@@ -77,6 +77,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -1242,6 +1243,54 @@ public class JRedisStorageSessionTest {
         STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
         newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", Integer.class, 3);
+
+    }
+
+    @Test
+    public void shouldChangePropertyTypesOnUnverifiedOperations() throws Exception {
+
+        PojoClass pojo = new PojoClass();
+        List<String> stringList = newArrayList();
+        List<Integer> integerList = newArrayList();
+        Map<String, String> stringMap = newHashMap();
+        Map<Integer, Integer> integerMap = newHashMap();
+        Set<String> stringSet = newHashSet();
+        Set<Integer> integerSet = newHashSet();
+        String streamData = "exampleData";
+        InputStream stream = new ByteArrayInputStream(streamData.getBytes());
+
+
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("key", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", Integer.class, 3);
+        assertThat(newNode1.<Integer>getPropertyValue(session, "sequence"), is(3));
+        newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", String.class, "4");
+        assertThat(newNode1.<String>getPropertyValue(session, "sequence"), is("4"));
+        newNode1.getUnverifiedOperations().setSerializedPojoProperty(session, "sequence", PojoClass.class, pojo);
+        assertThat(newNode1.<PojoClass>getPropertyValue(session, "sequence"), is(pojo));
+        newNode1.getUnverifiedOperations().setSerializedPojoProperty(session, "sequence", String.class, "I am serializable! That's ok!");
+        assertThat(newNode1.<String>getPropertyValue(session, "sequence"), is("I am serializable! That's ok!"));
+        newNode1.getUnverifiedOperations().setSerializedListProperty(session, "sequence", String.class, stringList);
+        assertThat(newNode1.<List>getPropertyValue(session, "sequence"), is((Object) stringList));
+        newNode1.getUnverifiedOperations().setSerializedListProperty(session, "sequence", Integer.class, integerList);
+        assertThat(newNode1.<List>getPropertyValue(session, "sequence"), is((Object) integerList));
+        newNode1.getUnverifiedOperations().setSerializedSetProperty(session, "sequence", String.class, stringSet);
+        assertThat(newNode1.<Set>getPropertyValue(session, "sequence"), is((Object) stringSet));
+        newNode1.getUnverifiedOperations().setSerializedSetProperty(session, "sequence", Integer.class, integerSet);
+        assertThat(newNode1.<Set>getPropertyValue(session, "sequence"), is((Object) integerSet));
+        newNode1.getUnverifiedOperations().setSerializedMapProperty(session, "sequence", String.class, String.class, stringMap);
+        assertThat(newNode1.<Map>getPropertyValue(session, "sequence"), is((Object) stringMap));
+        newNode1.getUnverifiedOperations().setSerializedMapProperty(session, "sequence", Integer.class, Integer.class, integerMap);
+        assertThat(newNode1.<Map>getPropertyValue(session, "sequence"), is((Object) integerMap));
+        newNode1.getUnverifiedOperations().setInputStreamProperty(session, "sequence", stream);
+        InputStream loaded2 = newNode1.getProperty(session, "sequence").<InputStream>getValueAs(session, InputStream.class);
+        ByteArrayOutputStream temporary = new ByteArrayOutputStream();
+        IOUtils.copy(loaded2, temporary);
+        String contentAsString = new String(temporary.toByteArray());
+        assertThat(contentAsString, is(streamData));
+        newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", Integer.class, 3);
+        assertThat(newNode1.<Integer>getPropertyValue(session, "sequence"), is(3));
 
     }
 

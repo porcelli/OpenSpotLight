@@ -66,7 +66,6 @@ import org.openspotlight.storage.redis.guice.JRedisFactory;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -108,7 +107,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         this.factory = factory;
     }
 
-    private static String getPropertyKey (String propertyName, Class<?> type, Object value, String nodeId) throws Exception {
+    private static String getPropertyKey(String propertyName, Class<?> type, Object value, String nodeId) throws Exception {
         String valueAsString = convert(value, String.class).replaceAll(" ", "");
         String proposedKey = format(KEY_WITH_PROPERTY_NODE_ID, propertyName, type.getName(), valueAsString, nodeId);
         return proposedKey;
@@ -116,7 +115,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     }
 
-    private static String getPropertyOldKey (String propertyName, String nodeId) throws Exception {
+    private static String getPropertyOldKey(String propertyName, String nodeId) throws Exception {
         String proposedKey = format(KEY_WITH_PROPERTY_NODE_ID, propertyName, "*", "*", nodeId);
         return proposedKey;
 
@@ -128,9 +127,9 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         String proposedKey = getPropertyKey(propertyName, type, value, "*");
         List<String> propertyKeys = jRedis.keys(proposedKey);
         List<String> keys = new ArrayList<String>(propertyKeys.size());
-        for(String key: propertyKeys){
+        for (String key : propertyKeys) {
             String foundKey = toStr(jRedis.get(key));
-            if(jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME,nodeEntryName),foundKey)){
+            if (jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, nodeEntryName), foundKey)) {
                 keys.add(foundKey);
             }
         }
@@ -147,10 +146,10 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         for (STCriteriaItem c : criteria.getCriteriaItems()) {
             if (c instanceof STPropertyCriteriaItem) {
                 STPropertyCriteriaItem p = (STPropertyCriteriaItem) c;
-                if(first){
+                if (first) {
                     propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), p.getType(), p.getValue()));
                     first = false;
-                }else{
+                } else {
                     propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), p.getType(), p.getValue()));
                 }
             } else if (c instanceof STUniqueKeyCriteriaItem) {
@@ -256,7 +255,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         for (STKeyEntry<?> k : entry.getLocalKey().getEntries()) {
             jredis.sadd(format(SET_WITH_NODE_KEYS_NAMES, uniqueKey), k.getPropertyName());
             jredis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), k.getPropertyName());
-            jredis.set(getPropertyKey( k.getPropertyName(), k.getType(), k.getValue(), uniqueKey), uniqueKey);
+            jredis.set(getPropertyKey(k.getPropertyName(), k.getType(), k.getValue(), uniqueKey), uniqueKey);
             jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()), k.getType().getName());
             jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), convert(k.getValue(), String.class));
             jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, k.getPropertyName()), convert(STProperty.STPropertyDescription.KEY, String.class));
@@ -456,6 +455,9 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
         jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), outputStream.toByteArray());
         jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.INPUT_STREAM, String.class));
+        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
+        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
+
     }
 
     @Override
@@ -465,6 +467,9 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         JRedis jredis = factory.getFrom(partition);
 
         jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SERIALIZED_POJO, String.class));
+        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
+        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
+
     }
 
     private void flushStream(STPartition partition, STProperty dirtyProperty, String uniqueKey) throws IOException, RedisException {
@@ -498,6 +503,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         JRedis jredis = factory.getFrom(partition);
         jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SERIALIZED_SET, String.class));
         jredis.set(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getFirstParameterizedType().getName());
+        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
+
     }
 
     @Override
@@ -507,6 +514,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         JRedis jredis = factory.getFrom(partition);
         jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SERIALIZED_LIST, String.class));
         jredis.set(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getFirstParameterizedType().getName());
+        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
+
     }
 
     @Override
@@ -519,7 +528,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
 
         List<String> keysToBeRemoved = jredis.keys(getPropertyOldKey(dirtyProperty.getPropertyName(), uniqueKey));
-        for(String key: keysToBeRemoved) jredis.del(key);
+        for (String key : keysToBeRemoved) jredis.del(key);
 
         String transientValueAsString = convert(dirtyProperty.getInternalMethods().<Object>getTransientValue(), String.class);
 
@@ -529,6 +538,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
         jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), transientValueAsString);
         jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SIMPLE, String.class));
+        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
+        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
 
 
     }
