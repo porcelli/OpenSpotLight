@@ -1,0 +1,14 @@
+@charset "UTF-8";
+
+body, div, h1, h2, h3, h4, h5, h6, p, ul, ol, li, dl, dt, dd, img, form, fieldset, blockquote, a {
+    margin: 0px; padding: 0px; border: 0px;
+}
+ul, ol, li{
+	list-style:none;
+}
+table {
+	border-collapse: collapse;	border-spacing: 0;
+}
+textarea, input, select {font: inherit;	font-size: 1em;	white-space: normal;
+}
+

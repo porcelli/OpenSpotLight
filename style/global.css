@@ -1,0 +1,89 @@
+@charset "UTF-8";
+
+body{ background:#fff; font-family:Arial, Helvetica, sans-serif; font-size: 14px}
+
+a{ color:#FFF; text-decoration:none}
+
+a:hover{text-decoration:underline}
+
+h1{padding: 8px 0; font-size:2em;}
+
+.xh1{padding: 0px 0 7px}
+
+h2{padding: 5px 0; font-size: 2em; color:#666; font-weight:bolder}
+
+input{ border: 2px solid #770100;}
+
+input:focus { border: 2px solid #FF9900; color:#666666;}
+
+/* Wrapper content */
+
+#wrapper{ background:url(img_red/background_vertical_line.jpg) repeat-x 50% 0}
+
+#wrapper_intern{ background:url(img_red/background_panel.jpg) no-repeat 50% 0}
+
+#logo{background:url(img_red/logo.png) no-repeat 0 50%; height: 100px; width: 800px; margin: 0px auto 0px; padding:0}
+
+.orelha{background:url(img_red/orelha.jpg) no-repeat 0; position:absolute; top:0; right:0; width:119px; height:100px}
+
+#menu{background:url(img_red/menu_fundo.jpg) repeat-x 0 0; color:#560101; height:38px; font-size: 20px;}
+
+#menu div{width: 800px; margin:0px auto 0; padding-top: 2px; text-align:right;}
+
+#menu a{ color:#560101;}
+
+#menu a:hover{text-decoration:underline}
+
+#menu a.selected{text-decoration:underline}
+
+#banner_white{background:#FFF; height: 265px; color:#333; margin-top:10px;}
+#banner_white1{background:#FFF; color:#333; margin-top:10px;}
+
+#item{width: 800px; margin: 10px auto; text-align:center;}
+
+#item .sub_item{width: 30%; padding:8px}
+
+#content_wrapper{background:#DE0202; width: }
+
+.padding_out{ padding: 8px 0;}
+
+#content_wrapper #content{width: 800px; margin: 10px auto 0; color:#FFF}
+
+.link_zip_tar{margin: 10px 0 0 3px; border:0; }
+
+.black_screen{background:#000; color:#FFF; height:102px; text-align:center; line-height: 102px; font-size: 1.6em  }
+
+#bottom{background:url(img_red/sombra.jpg) repeat-x 0 0; }
+
+#bottom_content{ width:800px; margin: 0 auto}
+
+#bottom_support{padding: 20px 0}
+
+#bottom_support li{ width:25%; float:left; text-align:center;}
+
+#bottom_support li p{ padding: 10px 0}
+
+#portfolio {
+	margin: 0 0 10px 0;
+}
+	#portfolio ul {
+		list-style: none;
+	}
+		#portfolio ul li {
+			float: left; padding: 8px; margin: 0 2px 6px;
+			color:#000;
+			background: url(img_red/img-bg.png);
+			border-radius: 10px;
+			-moz-border-radius: 10px;
+			-webkit-border-radius: 10px;
+		}
+.border_white{
+	border: 1px solid #FFF;
+	padding: 5px;
+	}
+.align_left{ text-align:left}
+.white{ background:#FFF}
+.white a{ color:#999; }
+.white a:hover{ color:#000; }
+
+.list_style li{list-style:circle; margin-left: 15px; line-height:1.6em;}

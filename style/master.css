@@ -1,0 +1,25 @@
+@charset "UTF-8";
+
+/*connections to command the sequence of the CSS*/
+
+@import url("reset.css");
+@import url("global.css");
+
+
+/*Class for test and fast application*/
+
+.width100 { width: 100%; }
+.width75 { width: 75%; }
+.width60 { width: 60%; }
+.width50 { width: 50%; }
+.width30 { width: 30%; }
+.width25 { width: 25%; }
+.floatLeft { float: left; }
+.floatRight { float: right; }
+.clearLeft{ clear:left; }
+.clearRight{ clear:right;}
+.clearBoth{ clear:both; }
+.alignLeft { text-align: left; }
+.alignRight { text-align: right; }
+.clear { zoom: 1; }
+.red{ background-color:#DE0202}

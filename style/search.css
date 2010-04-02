@@ -1,0 +1,33 @@
+@charset "UTF-8";
+
+/*Search CSS*/
+.search_page input{font-size:16px; width: 180px; padding:3px;}
+
+.search_page input[type='submit']{  background:url(img_red/button_background.jpg) repeat-x left; width:77px }
+
+.search_page #shade { background:url(img_red/menu_shade_vertical_line.jpg) repeat-x top; height:14px;}
+
+.search_page #shade_center { background: transparent url(img_red/menu_shade_panel.jpg) no-repeat top; height:14px;}
+
+.search_page #logo{margin: 50px auto 40px;}
+
+.search_page #box_white{ background:url(img_red/search_background.jpg) repeat-x left; height: 110px; width: 400px; margin: 0 auto; }
+
+.search_page .left_decoration{ background:url(img_red/search_left.jpg) no-repeat left; height: 110px; }
+
+.search_page .right_border{ background:url(img_red/search_right.jpg) no-repeat right; height: 110px; font-size:12px; color:#666666; }
+
+	.search_page .right_border a{font-size:12px; color:#666666;}
+
+	.search_page .right_border a:hover{text-decoration:underline;}
+
+.search_page #search_options{ margin-top: 3px}
+
+	.search_page #search_options li{display:inline;}
+	
+		.search_page #search_options li a{background:#A70101; color:#fff; padding: 3px 8px 6px; text-decoration:none; border-radius: 0 0 5px 5px; -moz-border-radius: 0 0 5px 5px; -webkit-border-radius: 0 0 5px 5px;}
+		
+		.search_page #search_options li a:hover, .search_page #search_options li a.activated{background:#770100;}
+		
+
+.search_page #link_list{ position:absolute; bottom:0; border-top:1px solid #fff; color:#FFF;}
