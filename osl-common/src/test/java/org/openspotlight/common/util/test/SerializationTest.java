@@ -49,20 +49,15 @@
 
 package org.openspotlight.common.util.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Serialization.readFromBase64;
-import static org.openspotlight.common.util.Serialization.readFromBytes;
-import static org.openspotlight.common.util.Serialization.readFromInputStream;
-import static org.openspotlight.common.util.Serialization.serializeToBase64;
-import static org.openspotlight.common.util.Serialization.serializeToBytes;
-import static org.openspotlight.common.util.Serialization.serializeToOutputStream;
+import org.junit.Test;
+import org.openspotlight.common.util.Serialization;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Test;
-import org.openspotlight.common.util.Serialization;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Serialization.*;
 
 /**
  * Test class for {@link Serialization}

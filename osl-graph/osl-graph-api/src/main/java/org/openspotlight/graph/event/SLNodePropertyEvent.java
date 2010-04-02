@@ -46,19 +46,120 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
+
+import org.openspotlight.graph.SLNodeProperty;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.event.SLGraphSessionEvent;
+import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.persistence.SLPersistentProperty;
 
 import java.io.Serializable;
 
-import org.openspotlight.graph.persistence.SLPersistentProperty;
+/**
+ * The Class SLNodePropertyEvent.
+ * 
+ * @author Vitor Hugo Chagas
+ */
+public abstract class SLNodePropertyEvent extends SLGraphSessionEvent {
 
-public final class SLNodePropertySetEvent extends SLNodePropertyEvent {
+	/** The property. */
+	private final SLNodeProperty<? extends Serializable> property;
 
-	public SLNodePropertySetEvent(
+	/** The p property. */
+	private final SLPersistentProperty<? extends Serializable> pProperty;
+
+	/** The p node. */
+	private SLPersistentNode pNode;
+
+	private VisibilityLevel visibility;
+
+	/** The property name. */
+	private final String propertyName;
+
+	/** The string. */
+	private boolean string;
+
+	/**
+	 * Instantiates a new sL node property event.
+	 * 
+	 * @param type
+	 *            the type
+	 * @param property
+	 *            the property
+	 * @param pProperty
+	 *            the property
+	 */
+	public SLNodePropertyEvent(
 			final SLNodeProperty<? extends Serializable> property,
 			final SLPersistentProperty<? extends Serializable> pProperty,
 			final String propertyName) {
-		super(property, pProperty, propertyName);
+		super(property.getNode().getSession());
+		this.property = property;
+		this.pProperty = pProperty;
+		this.propertyName = propertyName;
+	}
+
+	/**
+	 * Gets the persistent property.
+	 * 
+	 * @return the persistent property
+	 */
+	public SLPersistentProperty<? extends Serializable> getPersistentProperty() {
+		return pProperty;
+	}
+
+	public SLPersistentNode getPNode() {
+		synchronized (lock) {
+			return pNode;
+		}
+	}
+
+	/**
+	 * Gets the property.
+	 * 
+	 * @return the property
+	 */
+	public SLNodeProperty<? extends Serializable> getProperty() {
+		synchronized (lock) {
+			return property;
+		}
+	}
+
+	public String getPropertyName() {
+		synchronized (lock) {
+			return propertyName;
+		}
+	}
+
+	public VisibilityLevel getVisibility() {
+		synchronized (lock) {
+			return visibility;
+		}
+	}
+
+	public boolean isString() {
+		synchronized (lock) {
+			return string;
+		}
+	}
+
+	public void setPNode(final SLPersistentNode node) {
+		synchronized (lock) {
+			pNode = node;
+		}
+	}
+
+	public void setString(final boolean string) {
+		synchronized (lock) {
+			this.string = string;
+		}
+	}
+
+	public void setVisibility(final VisibilityLevel visibility) {
+		synchronized (lock) {
+			this.visibility = visibility;
+		}
 	}
 
 }

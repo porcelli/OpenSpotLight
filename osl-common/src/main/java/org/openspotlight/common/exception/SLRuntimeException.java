@@ -44,11 +44,10 @@
  * programa; se não, escreva para:
  * Free Software Foundation, Inc.
  * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+* Boston, MA  02110-1301  USA
  */
 package org.openspotlight.common.exception;
 
-//LATER_TASK replace with Vitor's implementation
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  *

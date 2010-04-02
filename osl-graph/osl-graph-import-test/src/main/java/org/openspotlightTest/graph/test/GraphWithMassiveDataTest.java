@@ -49,8 +49,16 @@
 // annoying package name just to exclude this class for the profiler filter...
 package org.openspotlightTest.graph.test;
 
-import static java.text.MessageFormat.format;
-import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
+import org.junit.Test;
+import org.openspotlight.common.SharedConstants;
+import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.*;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -60,21 +68,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
 
-import org.junit.Test;
-import org.openspotlight.common.SharedConstants;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphFactoryImpl;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
 
 /**
  * This test just import example data into the GraphSession.

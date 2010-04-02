@@ -48,15 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
@@ -65,10 +56,18 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
-import org.openspotlight.bundle.language.java.resolver.SLBundleException;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("unused")
 public class TestIntegratedMethodResolution extends

@@ -48,17 +48,6 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
@@ -70,32 +59,28 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
-import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.openspotlight.graph.test.domain.ClassImplementsInterface;
-import org.openspotlight.graph.test.domain.JavaClass;
-import org.openspotlight.graph.test.domain.JavaClassHierarchy;
-import org.openspotlight.graph.test.domain.JavaInterface;
-import org.openspotlight.graph.test.domain.JavaInterfaceHierarchy;
-import org.openspotlight.graph.test.domain.JavaPackage;
-import org.openspotlight.graph.test.domain.JavaType;
-import org.openspotlight.graph.test.domain.JavaTypeMethod;
-import org.openspotlight.graph.test.domain.PackageContainsType;
-import org.openspotlight.graph.test.domain.TypeContainsMethod;
+import org.openspotlight.graph.test.domain.*;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
 
 public class AbstractGeneralQueryTest {
 
@@ -169,7 +154,7 @@ public class AbstractGeneralQueryTest {
          * Gets the parent name.
          * 
          * @return the parent name
-         * @throws SLGraphSessionException the SL graph session exception
+         * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
          */
         public String getParentName() throws SLGraphSessionException {
             if (parentName == null) {
@@ -340,7 +325,7 @@ public class AbstractGeneralQueryTest {
                                                             final Class<?> iFace,
                                                             final JavaInterface javaInterface )
         throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
-        SLInvalidCredentialException {
+            SLInvalidCredentialException {
         final Method[] methods = iFace.getDeclaredMethods();
         for (final Method method : methods) {
             final JavaTypeMethod javaTypeMethod = javaInterface.addNode(
@@ -359,7 +344,7 @@ public class AbstractGeneralQueryTest {
      * @param root the root
      * @param iFace the i face
      * @param javaInterface the java interface
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     private static void addJavaInterfaceHirarchyLinks( final SLNode root,
                                                        final Class<?> iFace,
@@ -484,6 +469,9 @@ public class AbstractGeneralQueryTest {
                 addJavaClassContainsJavaClassMethod(clazz, javaClass);
                 count++;
             }
+
+            final JavaInnerInterface javaInnerInterface = utilJavaPackage.addNode(
+                                                                                  JavaInnerInterface.class, java.util.Map.Entry.class.getName());
 
             session.save();
             session.close();

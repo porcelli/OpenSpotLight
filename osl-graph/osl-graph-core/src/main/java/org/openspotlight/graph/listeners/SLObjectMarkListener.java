@@ -48,25 +48,17 @@
  */
 package org.openspotlight.graph.listeners;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLGraphSessionSaveEvent;
-import org.openspotlight.graph.SLInvalidCredentialException;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkAddedEvent;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeAddedEvent;
+import org.openspotlight.graph.*;
+import org.openspotlight.graph.event.SLAbstractGraphSessionEventListener;
+import org.openspotlight.graph.event.SLGraphSessionSaveEvent;
+import org.openspotlight.graph.event.SLLinkAddedEvent;
+import org.openspotlight.graph.event.SLNodeAddedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -77,7 +69,6 @@ import org.slf4j.LoggerFactory;
  * the SLObjectMark event occurs, that object's appropriate
  * method is invoked.
  * 
- * @see SLObjectMarkEvent
  * @author Vitor Hugo Chagas
  */
 public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
@@ -99,20 +90,11 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 		nodesForDeletion = Collections.synchronizedSet(new HashSet<SLNode>());
 	}
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#beforeSave
-	 * (org.openspotlight.graph.SLGraphSessionEvent)
-	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void beforeSave(final SLGraphSessionSaveEvent event)
-			throws SLGraphSessionException, SLInvalidCredentialException {
+	public void beforeSave(final SLGraphSessionSaveEvent event) {
 		synchronized (lock) {
 
 			// delete links ...
@@ -131,20 +113,11 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 		}
 	}
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
-	 * (org.openspotlight.graph.SLLinkEvent)
-	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void linkAdded(final SLLinkAddedEvent event)
-			throws SLGraphSessionException {
+	public void linkAdded(final SLLinkAddedEvent event) {
 		synchronized (lock) {
 			// unmark link and its sides ...
 			final SLLink link = event.getLink();
@@ -184,20 +157,11 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 		}
 	}
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
-	 * (org.openspotlight.graph.SLNodeEvent)
-	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodeAdded(final SLNodeAddedEvent event)
-			throws SLGraphSessionException {
+	public void nodeAdded(final SLNodeAddedEvent event) {
 		synchronized (lock) {
 
 			final SLGraphSession session = event.getSession();
@@ -229,12 +193,5 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 			// unmark the added node (if it's present in the set) ...
 			nodesForDeletion.remove(node);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void sessionCleaned() {
-		// 
 	}
 }

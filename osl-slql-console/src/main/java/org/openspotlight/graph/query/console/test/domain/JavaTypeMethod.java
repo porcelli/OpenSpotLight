@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.query.console.test.domain;
 
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLProperty;
 
@@ -64,7 +63,7 @@ public interface JavaTypeMethod extends SLNode {
 	 * 
 	 * @return the caption
 	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
 	 */
 	@SLProperty
 	public String getCaption();
@@ -74,8 +73,8 @@ public interface JavaTypeMethod extends SLNode {
 	 * 
 	 * @param caption the new caption
 	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
 	 */
-	public void setCaption(String caption) throws SLGraphSessionException;
+	public void setCaption(String caption);
 
 }

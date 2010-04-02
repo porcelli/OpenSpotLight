@@ -1,13 +1,5 @@
 package org.openspotlight.federation.loader;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
@@ -19,6 +11,14 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class ArtifactLoaderManagerTest {
 

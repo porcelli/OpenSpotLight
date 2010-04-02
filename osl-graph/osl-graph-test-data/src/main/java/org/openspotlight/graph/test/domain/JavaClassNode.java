@@ -48,15 +48,11 @@
  */
 package org.openspotlight.graph.test.domain;
 
-import java.util.Date;
-
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
-import org.openspotlight.graph.annotation.SLRenderHint;
-import org.openspotlight.graph.annotation.SLRenderHints;
-import org.openspotlight.graph.annotation.SLVisibility;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.annotation.*;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+
+import java.util.Date;
 
 //@SLTransient
 //@CollatorLevel(IDENTICAL)
@@ -100,7 +96,7 @@ public interface JavaClassNode extends JavaElementNode {
      * Sets the class name.
      * 
      * @param className the new class name
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public void setClassName( String className ) throws SLGraphSessionException;
 

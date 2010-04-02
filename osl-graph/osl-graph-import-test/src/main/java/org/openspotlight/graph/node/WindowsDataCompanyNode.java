@@ -48,7 +48,7 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.graph.node;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
@@ -111,7 +111,7 @@ public interface WindowsDataCompanyNode extends SLNode {
      * 
      * @return the floatProperty
      * 
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     @SLProperty
     public float getFloatProperty() throws SLGraphSessionException;
@@ -121,7 +121,7 @@ public interface WindowsDataCompanyNode extends SLNode {
      * 
      * @param floatProperty the new floatProperty
      * 
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public void setFloatProperty(float floatProperty) throws SLGraphSessionException;
     
@@ -133,7 +133,7 @@ public interface WindowsDataCompanyNode extends SLNode {
      * 
      * @return the booleanProperty
      * 
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     @SLProperty
     public boolean getBooleanProperty() throws SLGraphSessionException;
@@ -143,7 +143,7 @@ public interface WindowsDataCompanyNode extends SLNode {
      * 
      * @param booleanProperty the new booleanProperty
      * 
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public void setBooleanProperty(boolean booleanProperty) throws SLGraphSessionException;
     

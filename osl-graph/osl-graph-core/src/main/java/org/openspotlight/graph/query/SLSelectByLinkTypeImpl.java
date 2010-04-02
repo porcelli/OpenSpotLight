@@ -48,19 +48,16 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.graph.query.SLSideType.ANY_SIDE;
-import static org.openspotlight.graph.query.SLSideType.A_SIDE;
-import static org.openspotlight.graph.query.SLSideType.BOTH_SIDES;
-import static org.openspotlight.graph.query.SLSideType.B_SIDE;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
+import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectByLinkInfo;
+import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectTypeInfo;
+import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectByLinkInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectTypeInfo;
+import static org.openspotlight.graph.query.SLSideType.*;
 
 /**
  * The Class SLSelectByLinkTypeImpl.

@@ -48,21 +48,11 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
-import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
-
-import java.text.Collator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLCollatorSupport;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
@@ -75,6 +65,16 @@ import org.openspotlight.graph.query.info.SLWhereStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
+
+import java.text.Collator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 /**
  * The Class SLSelectByNodeTypeCommand.

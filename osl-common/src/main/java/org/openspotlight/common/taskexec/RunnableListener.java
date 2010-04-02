@@ -1,8 +1,8 @@
 package org.openspotlight.common.taskexec;
 
-import java.util.Map;
-
 import org.openspotlight.common.task.exception.RunnableWithException;
+
+import java.util.Map;
 
 public interface RunnableListener {
 

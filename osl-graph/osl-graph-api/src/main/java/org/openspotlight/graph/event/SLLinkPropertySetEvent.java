@@ -46,37 +46,19 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-import java.security.GeneralSecurityException;
+import org.openspotlight.graph.SLLinkProperty;
+import org.openspotlight.graph.persistence.SLPersistentProperty;
 
-/**
- * The Class SLInvalidCredentialException.
- * 
- * @author porcelli
- */
-public class SLInvalidCredentialException extends GeneralSecurityException {
+import java.io.Serializable;
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -1891819028100700399L;
+public final class SLLinkPropertySetEvent extends SLLinkPropertyEvent {
 
-    /**
-     * Instantiates a new sL invalid credential exception.
-     * 
-     * @param message the message
-     */
-    public SLInvalidCredentialException(
-                                         String message ) {
-        super(message);
-    }
+	public SLLinkPropertySetEvent(
+			final SLLinkProperty<? extends Serializable> property,
+			final SLPersistentProperty<? extends Serializable> pProperty) {
+		super(property, pProperty);
+	}
 
-    /**
-     * Instantiates a new sL invalid credential exception.
-     * 
-     * @param cause the cause
-     */
-    public SLInvalidCredentialException(
-                                         Throwable cause ) {
-        super(cause);
-    }
 }

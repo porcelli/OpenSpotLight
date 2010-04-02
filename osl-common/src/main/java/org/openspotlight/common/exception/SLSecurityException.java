@@ -44,28 +44,53 @@
  * programa; se não, escreva para:
  * Free Software Foundation, Inc.
  * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+* Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.common.exception;
 
-	
 /**
- * The Class SLLinkPropertyNotFoundException.
- * 
- * @author Vitor Hugo Chagas
+ * Abstract class to represent security related exceptions.
+ *
+ * @author porcelli
  */
-public class SLLinkPropertyNotFoundException extends SLGraphSessionException {
-	
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+public class SLSecurityException extends RuntimeException {
 
-	/**
-	 * Instantiates a new sL link property not found exception.
-	 * 
-	 * @param name the name
-	 * @param cause the cause
+    /**
+	 *
 	 */
-	public SLLinkPropertyNotFoundException(String name, Throwable cause) {
-		super("Link property " + name + " does not exit.", cause);
-	}
+    private static final long serialVersionUID = 1L;
+
+    /**
+     *
+     */
+    public SLSecurityException() {
+        super();
+
+    }
+
+    /**
+     * @param message
+     */
+    public SLSecurityException(final String message) {
+        super(message);
+
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public SLSecurityException(final String message, final Throwable cause) {
+        super(message, cause);
+
+    }
+
+    /**
+     * @param cause
+     */
+    public SLSecurityException(final Throwable cause) {
+        super(cause);
+
+    }
+
 }

@@ -48,16 +48,12 @@
  */
 package org.openspotlight.graph.util;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkInvocationHandler;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeInvocationHandler;
+import org.openspotlight.graph.*;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 
 /**
  * The Class ProxyUtil.

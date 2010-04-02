@@ -48,9 +48,9 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.io.Serializable;
-
 import org.openspotlight.common.concurrent.LockContainer;
+
+import java.io.Serializable;
 
 /**
  * The Interface SLPersistentProperty.

@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.graph.SLNode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class SLQueryResultImpl.

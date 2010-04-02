@@ -48,7 +48,11 @@
  */
 package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.reflection.MethodIdentificationSupport.getMethodUniqueName;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport.UseEnhanced;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,12 +60,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
-import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
-import org.openspotlight.common.util.reflection.MethodIdentificationSupport.UseEnhanced;
+import static org.openspotlight.common.util.reflection.MethodIdentificationSupport.getMethodUniqueName;
 
 /**
  * This factory is used to create lazy behavior on method invocations. For the first method invocation with some of the

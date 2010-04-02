@@ -5,7 +5,6 @@ package org.openspotlight.bundle.language.java.parser.executor;
 
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
@@ -32,7 +31,7 @@ class ByPropertyFinder {
 
 	@SuppressWarnings("unchecked") <T extends SLNode> T findByProperty(final Class<T> type,
 			final String propertyName, final String propertyValue)
-			throws SLGraphSessionException, SLQueryException,
+			throws SLQueryException,
 			SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
 		final SLQueryApi query1 = session.createQueryApi();
 		query1.select().type(type.getName()).subTypes().selectEnd().where()

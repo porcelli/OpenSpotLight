@@ -48,6 +48,20 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.artifact.db.*;
+import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
+import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.Constraints;
+import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+
+import java.sql.Connection;
+import java.util.Set;
+
 import static java.sql.DriverManager.getConnection;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -55,26 +69,6 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
-
-import java.sql.Connection;
-import java.util.Set;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
-import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
-import org.openspotlight.federation.domain.artifact.db.RoutineType;
-import org.openspotlight.federation.domain.artifact.db.TableArtifact;
-import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
-import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManager;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
-import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.Constraints;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 
 @SuppressWarnings("all")
 public class DatabaseCustomTest {

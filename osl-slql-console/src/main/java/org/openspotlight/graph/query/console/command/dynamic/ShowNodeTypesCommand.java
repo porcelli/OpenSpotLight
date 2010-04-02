@@ -48,17 +48,16 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
-import java.io.PrintWriter;
-import java.util.Collection;
-
 import jline.ConsoleReader;
-
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLMetaNodeType;
 import org.openspotlight.graph.SLRecursiveMode;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
+
+import java.io.PrintWriter;
+import java.util.Collection;
 
 public class ShowNodeTypesCommand implements DynamicCommand {
 

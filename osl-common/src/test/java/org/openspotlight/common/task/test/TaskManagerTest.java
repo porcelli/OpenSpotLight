@@ -1,10 +1,5 @@
 package org.openspotlight.common.task.test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Assert;
@@ -14,6 +9,11 @@ import org.openspotlight.common.taskexec.TaskExec;
 import org.openspotlight.common.taskexec.TaskExecGroup;
 import org.openspotlight.common.taskexec.TaskExecManager;
 import org.openspotlight.common.taskexec.TaskExecPool;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TaskManagerTest {
 

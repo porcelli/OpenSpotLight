@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo.SLTypeStatementInfo;

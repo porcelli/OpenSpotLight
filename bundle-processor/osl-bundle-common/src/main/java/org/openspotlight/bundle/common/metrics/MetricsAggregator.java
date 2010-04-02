@@ -48,16 +48,15 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
+import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
+import org.openspotlight.graph.SLNode;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
-
-import org.openspotlight.graph.SLGraphException;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
-import org.openspotlight.graph.SLNode;
+import java.util.TreeMap;
 
 public class MetricsAggregator {
 
@@ -381,7 +380,7 @@ public class MetricsAggregator {
 	}
 
 	public void addPrivateVariable(final SLNode node) throws SLGraphException,
-			SLInvalidCredentialException {
+            SLInvalidCredentialException {
 		refreshNodeInformation(node);
 		generalAcumulate(privateVariable, node);
 	}
@@ -713,8 +712,7 @@ public class MetricsAggregator {
 		return methodsAreBlocks;
 	}
 
-	private void refreshNodeInformation(final SLNode node)
-			throws SLGraphSessionException {
+	private void refreshNodeInformation(final SLNode node) {
 		currentNodes.put(node.getID(), node);
 	}
 

@@ -48,20 +48,13 @@
  */
 package org.openspotlight.bundle.language.java.asm;
 
+import junit.framework.Assert;
+import org.junit.Test;
+import org.openspotlight.bundle.language.java.asm.model.*;
+import org.openspotlight.bundle.language.java.asm.model.PrimitiveTypeReference.JavaPrimitiveTypes;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import junit.framework.Assert;
-
-import org.junit.Test;
-import org.openspotlight.bundle.language.java.asm.model.ArrayTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.ParameterizedTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.PrimitiveTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.QualifiedTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.SimpleTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.TypeReference;
-import org.openspotlight.bundle.language.java.asm.model.WildcardTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.PrimitiveTypeReference.JavaPrimitiveTypes;
 
 public class TestModelGeneratedProperties {
 

@@ -48,13 +48,12 @@
  */
 package org.openspotlight.federation.finder;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.jcr.Session;
-
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
+
+import javax.jcr.Session;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The Class ArtifactFinderSupport.

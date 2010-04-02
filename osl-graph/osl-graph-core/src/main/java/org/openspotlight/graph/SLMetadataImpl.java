@@ -48,21 +48,21 @@
  */
 package org.openspotlight.graph;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The Class SLMetadataImpl.

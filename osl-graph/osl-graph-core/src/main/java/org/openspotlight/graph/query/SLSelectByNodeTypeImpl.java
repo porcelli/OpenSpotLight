@@ -48,15 +48,15 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.query.info.SLAllTypesInfo;
 import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class SLSelectStatementImpl.

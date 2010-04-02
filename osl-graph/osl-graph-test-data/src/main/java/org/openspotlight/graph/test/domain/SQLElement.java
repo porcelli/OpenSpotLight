@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.test.domain;
 
-import java.text.Collator;
-
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLCollator;
 import org.openspotlight.graph.annotation.SLProperty;
+
+import java.text.Collator;
 
 /**
  * The Interface SQLElement.
@@ -68,7 +68,7 @@ public interface SQLElement extends SLNode {
 	 * 
 	 * @return the selecao
 	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
 	 */
 	@SLProperty
 	@SLCollator(strength=Collator.PRIMARY)

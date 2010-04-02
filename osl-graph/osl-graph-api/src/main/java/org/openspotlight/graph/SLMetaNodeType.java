@@ -48,14 +48,15 @@
  */
 package org.openspotlight.graph;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.openspotlight.graph.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.SLMetadata.LogicOperator;
 import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The Interface SLMetaNodeType.
@@ -128,7 +129,7 @@ public interface SLMetaNodeType extends SLMetaElement {
      * 
      * @param name the name
      * @return the meta render hint
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public SLMetaRenderHint getMetaRenderHint( String name ) throws SLGraphSessionException;
 
@@ -152,7 +153,7 @@ public interface SLMetaNodeType extends SLMetaElement {
      * Gets the visibility.
      * 
      * @return the visibility
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public VisibilityLevel getVisibility() throws SLGraphSessionException;
 

@@ -46,12 +46,12 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.test.domain;
 
-public final class SLGraphSessionSaveEvent extends SLGraphSessionEvent {
-
-	public SLGraphSessionSaveEvent(final SLGraphSession session) {
-		super(session);
-	}
-
+/**
+ * The Interface JavaClass.
+ * 
+ * @author Vitor Hugo Chagas
+ */
+public interface JavaInnerInterface extends JavaInterface {
 }

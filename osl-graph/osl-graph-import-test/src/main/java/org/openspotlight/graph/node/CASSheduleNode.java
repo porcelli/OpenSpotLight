@@ -48,7 +48,7 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.graph.node;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
@@ -76,7 +76,7 @@ public interface CASSheduleNode extends SLNode {
      * 
      * @param caption the new caption
      * 
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public void setCaption(String caption) throws SLGraphSessionException;
     
@@ -89,7 +89,7 @@ public interface CASSheduleNode extends SLNode {
      * 
      * @return the intProperty
      * 
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     @SLProperty
     public int getIntProperty() throws SLGraphSessionException;
@@ -99,7 +99,7 @@ public interface CASSheduleNode extends SLNode {
      * 
      * @param intProperty the new intProperty
      * 
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public void setIntProperty(int intProperty) throws SLGraphSessionException;
     

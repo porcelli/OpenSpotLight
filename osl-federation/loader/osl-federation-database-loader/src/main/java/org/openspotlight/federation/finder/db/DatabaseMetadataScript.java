@@ -49,15 +49,15 @@
 
 package org.openspotlight.federation.finder.db;
 
-import static java.util.Collections.unmodifiableMap;
+import org.antlr.stringtemplate.StringTemplate;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.EnumMap;
 import java.util.Map;
 
-import org.antlr.stringtemplate.StringTemplate;
-import org.openspotlight.federation.domain.artifact.db.DatabaseType;
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * Pojo class to store the script to get database metadata for a database type.

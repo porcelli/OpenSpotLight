@@ -48,25 +48,22 @@
  */
 package org.openspotlight.graph;
 
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
-
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLGraphFactoryImpl.SLGraphClosingListener;
-import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.exception.SLGraphRuntimeException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.graph.persistence.SLPersistentTree;
-import org.openspotlight.graph.persistence.SLPersistentTreeException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.security.authz.Action;
-import org.openspotlight.security.authz.EnforcementContext;
-import org.openspotlight.security.authz.EnforcementException;
-import org.openspotlight.security.authz.EnforcementResponse;
-import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.authz.*;
 import org.openspotlight.security.authz.graph.GraphElement;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.SystemUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityManager;
+
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 
 /**
  * The Class SLGraphImpl.
@@ -105,7 +102,7 @@ public class SLGraphImpl implements SLGraph {
 	 *            the user
 	 * @param identityManager
 	 *            the identity manager
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public SLGraphImpl(final SLPersistentTree tree,
@@ -128,52 +125,6 @@ public class SLGraphImpl implements SLGraph {
 		this.identityManager = identityManager;
 		this.policyEnforcement = policyEnforcement;
 		this.user = user;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void gc(final AuthenticatedUser user)
-			throws SLPersistentTreeException, SLInvalidCredentialException {
-		this.gc(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void gc(final AuthenticatedUser user, final String repositoryName)
-			throws SLPersistentTreeException, SLInvalidCredentialException {
-		if (graphState != GraphState.SHUTDOWN) {
-
-			Assertions.checkNotNull("repositoryName", repositoryName);
-			Assertions.checkNotNull("user", user);
-
-			if (!identityManager.isValid(user)) {
-				throw new SLInvalidCredentialException("Invalid user.");
-			}
-
-			if (!hasPrivileges(user, repositoryName, Action.MANAGE)) {
-				throw new SLInvalidCredentialException(
-						"User does not have privilegies to manage repository.");
-			}
-
-			final SLPersistentTreeSession treeSession = tree
-					.openSession(repositoryName);
-			if (SLCommonSupport.containsQueryCache(treeSession)) {
-				final SLPersistentNode pNode = SLCommonSupport
-						.getQueryCacheNode(treeSession);
-				pNode.remove();
-			}
-			treeSession.save();
-			treeSession.close();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public GraphState getGraphState() {
-		return graphState;
 	}
 
 	/**
@@ -221,11 +172,10 @@ public class SLGraphImpl implements SLGraph {
 	 * {@inheritDoc}
 	 */
 	public SLGraphSession openSession(final AuthenticatedUser user,
-			final String repositoryName) throws SLGraphException,
-			SLInvalidCredentialException {
+			final String repositoryName) throws SLGraphException {
 		if (graphState == GraphState.SHUTDOWN) {
 			throw new SLGraphException(
-					"Could not open SL graph session. Graph is already shutdown.");
+					"Could not open graph session. Graph is shutdown.");
 		}
 
 		Assertions.checkNotNull("repositoryName", repositoryName);
@@ -248,7 +198,7 @@ public class SLGraphImpl implements SLGraph {
 			return factory.createGraphSession(treeSession, policyEnforcement,
 					user);
 		} catch (final Exception e) {
-			throw new SLGraphException("Could not open SL graph session.", e);
+			throw new SLGraphRuntimeException("Could not open graph session.", e);
 		}
 	}
 

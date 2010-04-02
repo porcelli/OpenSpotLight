@@ -48,44 +48,24 @@
  */
 package org.openspotlight.graph.listeners;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLGraphSessionSaveEvent;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkAddedEvent;
-import org.openspotlight.graph.SLLinkProperty;
-import org.openspotlight.graph.SLLinkPropertySetEvent;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeAddedEvent;
-import org.openspotlight.graph.SLNodePropertySetEvent;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
 import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
-import org.openspotlight.graph.persistence.SLPersistentQuery;
-import org.openspotlight.graph.persistence.SLPersistentQueryResult;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.event.*;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.persistence.*;
+
+import java.io.Serializable;
+import java.util.*;
 
 class LinkKey implements Serializable {
 
@@ -191,7 +171,6 @@ class LinkPropertyKey implements Serializable {
  * the SLMetadata event occurs, that object's appropriate
  * method is invoked.
  * 
- * @see SLMetadataEvent
  * @author Vitor Hugo Chagas
  */
 public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
@@ -339,8 +318,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * {@inheritDoc}
      */
     @Override
-    public void beforeSave( final SLGraphSessionSaveEvent event )
-        throws SLGraphSessionException {
+    public void beforeSave( final SLGraphSessionSaveEvent event ) {
         synchronized (lock) {
             sessionCleaned();
         }
@@ -352,10 +330,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @param sourceClass the source class
      * @param targetClass the target class
      * @return the a class
-     * @throws SLException the SL exception
      */
     private Class<?> getAClass( final Class<?> sourceClass,
-                                final Class<?> targetClass ) throws SLException {
+                                final Class<?> targetClass ) {
         return sourceClass.getName().compareTo(targetClass.getName()) < 0 ? sourceClass
             : targetClass;
     }
@@ -366,10 +343,9 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @param sourceClass the source class
      * @param targetClass the target class
      * @return the b class
-     * @throws SLException the SL exception
      */
     private Class<?> getBClass( final Class<?> sourceClass,
-                                final Class<?> targetClass ) throws SLException {
+                                final Class<?> targetClass ) {
         return sourceClass.getName().compareTo(targetClass.getName()) < 0 ? targetClass
             : sourceClass;
     }
@@ -381,12 +357,10 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @param targetClass the target class
      * @param bidirecional the bidirecional
      * @return the meta link direction
-     * @throws SLException the SL exception
      */
     private int getMetaLinkDirection( final Class<?> sourceClass,
                                       final Class<?> targetClass,
-                                      final boolean bidirecional )
-        throws SLException {
+                                      final boolean bidirecional ) {
         if (bidirecional) {
             return SLConsts.DIRECTION_BOTH;
         } else {
@@ -443,12 +417,10 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
      * @param sourceClass the source class
      * @param targetClass the target class
      * @return the type pair key
-     * @throws SLException the SL exception
      */
     private String getTypePairKey( final Class<?> linkType,
                                    final Class<?> sourceClass,
-                                   final Class<?> targetClass )
-        throws SLException {
+                                   final Class<?> targetClass ) {
         final Class<?> aClass = getAClass(sourceClass, targetClass);
         final Class<?> bClass = getBClass(sourceClass, targetClass);
         final StringBuilder pairKey = new StringBuilder();
@@ -523,20 +495,12 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
-     * (org.openspotlight.graph.SLLinkEvent)
-     */
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
     @Override
-    public void linkAdded( final SLLinkAddedEvent event )
-        throws SLGraphSessionException {
+    public void linkAdded( final SLLinkAddedEvent event ) {
         synchronized (lock) {
             try {
                 final SLLink link = event.getLink();
@@ -593,20 +557,12 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkPropertySet
-     * (org.openspotlight.graph.SLLinkPropertyEvent)
-     */
     /**
      * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
     @Override
-    public void linkPropertySet( final SLLinkPropertySetEvent event )
-        throws SLGraphSessionException {
+    public void linkPropertySet( final SLLinkPropertySetEvent event ) {
         synchronized (lock) {
 
             try {
@@ -689,20 +645,12 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodeAdded
-     * (org.openspotlight.graph.SLNodeEvent)
-     */
     /**
      * {@inheritDoc}
      */
     @Override
     @SuppressWarnings( "unchecked" )
-    public void nodeAdded( final SLNodeAddedEvent event )
-        throws SLGraphSessionException {
+    public void nodeAdded( final SLNodeAddedEvent event ) {
         synchronized (lock) {
 
             try {
@@ -747,19 +695,11 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertySet
-     * (org.openspotlight.graph.SLNodePropertyEvent)
-     */
     /**
      * {@inheritDoc}
      */
     @Override
-    public void nodePropertySet( final SLNodePropertySetEvent event )
-        throws SLGraphSessionException {
+    public void nodePropertySet( final SLNodePropertySetEvent event ) {
         synchronized (lock) {
             try {
                 final SLPersistentProperty<? extends Serializable> pProperty = event
@@ -796,6 +736,7 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void sessionCleaned() {
         synchronized (lock) {
             typePairNodeCache.clear();

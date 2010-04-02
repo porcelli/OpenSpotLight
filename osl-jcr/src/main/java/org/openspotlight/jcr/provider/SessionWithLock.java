@@ -48,9 +48,9 @@
  */
 package org.openspotlight.jcr.provider;
 
-import javax.jcr.Session;
-
 import org.openspotlight.common.concurrent.LockContainer;
+
+import javax.jcr.Session;
 
 public interface SessionWithLock extends Session, LockContainer {
 

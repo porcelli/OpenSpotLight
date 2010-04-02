@@ -54,7 +54,7 @@ package org.openspotlight.graph;
  * @author Vitor Hugo Chagas
  */
 public interface SLEncoder {
-	
+
 	/**
 	 * Encode.
 	 * 

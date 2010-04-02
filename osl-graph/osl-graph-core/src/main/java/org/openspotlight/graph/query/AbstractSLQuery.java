@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.query.SLQuery.SortMode;
+
+import java.util.Collection;
 
 /**
  * The Class AbstractSLQuery. Basic implemenation for SLQueries (api or text).

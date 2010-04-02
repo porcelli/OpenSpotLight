@@ -48,36 +48,28 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
-import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
-
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLCollatorSupport;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
 import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
-import org.openspotlight.graph.query.info.SLSelectByLinkInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
-import org.openspotlight.graph.query.info.SLSelectTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereStatementInfo;
+import org.openspotlight.graph.query.info.*;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
+
+import java.text.Collator;
+import java.util.*;
+
+import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 public class SLSelectByLinkTypeCommand extends SLSelectAbstractCommand {
 

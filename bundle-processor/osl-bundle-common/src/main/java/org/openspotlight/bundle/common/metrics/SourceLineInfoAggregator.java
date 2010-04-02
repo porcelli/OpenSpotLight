@@ -48,19 +48,15 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.antlr.runtime.Token;
 import org.antlr.runtime.TokenStream;
 import org.openspotlight.bundle.common.parser.SLArtifactStream;
 import org.openspotlight.bundle.common.parser.SLCommonToken;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SourceLineInfoAggregator {
 

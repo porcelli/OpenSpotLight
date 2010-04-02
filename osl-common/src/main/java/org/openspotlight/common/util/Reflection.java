@@ -49,11 +49,7 @@
 
 package org.openspotlight.common.util;
 
-import static java.util.EnumSet.of;
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Equals.eachEquality;
+import org.openspotlight.common.Pair;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -63,7 +59,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.openspotlight.common.Pair;
+import static java.util.EnumSet.of;
+import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Equals.eachEquality;
 
 /**
  * This class has a set of static methods to use for reflection purposes.

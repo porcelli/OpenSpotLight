@@ -48,14 +48,12 @@
  */
 package org.openspotlight.bundle.language.java.asm;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import org.objectweb.asm.ClassReader;
+import org.openspotlight.bundle.language.java.asm.model.TypeDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,11 +61,6 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-
-import org.objectweb.asm.ClassReader;
-import org.openspotlight.bundle.language.java.asm.model.TypeDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class extracts from compiled artifacts all java types definitions.

@@ -48,43 +48,22 @@
  */
 package org.openspotlight.bundle.db.processor;
 
-import static org.openspotlight.graph.util.GraphManipulationSupport.links;
-
-import java.util.Arrays;
-
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.db.DBConstants;
-import org.openspotlight.bundle.db.metamodel.link.CatalogTableView;
-import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
-import org.openspotlight.bundle.db.metamodel.link.ConstraintDatabaseColumn;
-import org.openspotlight.bundle.db.metamodel.link.DatabaseSchema;
-import org.openspotlight.bundle.db.metamodel.link.ForeignKey;
-import org.openspotlight.bundle.db.metamodel.link.GroupDatabase;
-import org.openspotlight.bundle.db.metamodel.link.SchemaCatalog;
-import org.openspotlight.bundle.db.metamodel.link.SchemaTableView;
-import org.openspotlight.bundle.db.metamodel.link.TableViewColumns;
-import org.openspotlight.bundle.db.metamodel.node.Catalog;
-import org.openspotlight.bundle.db.metamodel.node.Column;
-import org.openspotlight.bundle.db.metamodel.node.DataType;
-import org.openspotlight.bundle.db.metamodel.node.Database;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
-import org.openspotlight.bundle.db.metamodel.node.Schema;
-import org.openspotlight.bundle.db.metamodel.node.Server;
-import org.openspotlight.bundle.db.metamodel.node.TableView;
+import org.openspotlight.bundle.db.metamodel.link.*;
+import org.openspotlight.bundle.db.metamodel.node.*;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLContextAlreadyExistsException;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
+import org.openspotlight.graph.*;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
+
+import java.util.Arrays;
+
+import static org.openspotlight.graph.util.GraphManipulationSupport.links;
 
 public class DbProcessorHelper implements DBConstants {
 	public static class ConstraintVo {
@@ -140,7 +119,7 @@ public class DbProcessorHelper implements DBConstants {
 			final ExecutionContext context, final SLNode databaseContextNode,
 			final TableView table, final TableView abstractTable,
 			final org.openspotlight.federation.domain.artifact.db.Column c)
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			throws SLNodeTypeNotInExistentHierarchy,
 			SLInvalidCredentialException {
 		final Column column = table.addNode(wrappedType.getColumnType(), c
 				.getName(), links(AbstractTypeBind.class, ColumnDataType.class,
@@ -164,7 +143,7 @@ public class DbProcessorHelper implements DBConstants {
 			final TableArtifact artifact, final ExecutionContext context,
 			final SLNode databaseContextNode, final Database database,
 			final TableView table, final TableView abstractTable)
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			throws SLNodeTypeNotInExistentHierarchy,
 			SLInvalidCredentialException {
 		for (final org.openspotlight.federation.domain.artifact.db.Column c : artifact
 				.getColumns()) {
@@ -180,8 +159,8 @@ public class DbProcessorHelper implements DBConstants {
 			final String serverName, final String databaseName,
 			final String schemaName, final String catalogName,
 			final String tableName, final String columnName)
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
-			SLInvalidCredentialException {
+			throws SLNodeTypeNotInExistentHierarchy,
+            SLInvalidCredentialException {
 
 		final SLContext databaseContext = context.getGraphSession()
 				.createContext(DB_ABSTRACT_CONTEXT);
@@ -226,7 +205,7 @@ public class DbProcessorHelper implements DBConstants {
 			final ExecutionContext context,
 			final CurrentProcessorContext currentContext,
 			final ForeignKeyConstraintArtifact artifact)
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			throws SLNodeTypeNotInExistentHierarchy,
 			SLInvalidCredentialException {
 
 		final ConstraintVo fromParent = createConstraintParentNodes(
@@ -262,7 +241,7 @@ public class DbProcessorHelper implements DBConstants {
 			final ExecutionContext context,
 			final CurrentProcessorContext currentContext,
 			final PrimaryKeyConstraintArtifact artifact)
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			throws SLNodeTypeNotInExistentHierarchy,
 			SLInvalidCredentialException {
 
 		final ConstraintVo parent = createConstraintParentNodes(wrappedType,
@@ -283,7 +262,7 @@ public class DbProcessorHelper implements DBConstants {
 			final TableArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context)
-			throws SLContextAlreadyExistsException, SLGraphSessionException,
+			throws
 			SLInvalidCredentialException, SLNodeTypeNotInExistentHierarchy {
 		final ParentVo parent = createTableParentNodes(wrappedType, artifact,
 				currentContext, context);
@@ -312,8 +291,8 @@ public class DbProcessorHelper implements DBConstants {
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context, final String serverName,
 			final String databaseName, final String schemaName,
-			final String catalogName) throws SLContextAlreadyExistsException,
-			SLGraphSessionException, SLInvalidCredentialException,
+			final String catalogName) throws
+			SLInvalidCredentialException,
 			SLNodeTypeNotInExistentHierarchy {
 		final SLContext databaseContext = context.getGraphSession()
 				.createContext(DB_ABSTRACT_CONTEXT);
@@ -351,7 +330,7 @@ public class DbProcessorHelper implements DBConstants {
 			final DbWrappedType wrappedType, final TableArtifact artifact,
 			final CurrentProcessorContext currentContext,
 			final ExecutionContext context)
-			throws SLContextAlreadyExistsException, SLGraphSessionException,
+			throws
 			SLInvalidCredentialException, SLNodeTypeNotInExistentHierarchy {
 		return createTableParentNodes(wrappedType, currentContext, context,
 				artifact.getServerName(), artifact.getDatabaseName(), artifact

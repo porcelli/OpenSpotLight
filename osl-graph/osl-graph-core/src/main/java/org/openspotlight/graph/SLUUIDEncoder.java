@@ -57,9 +57,9 @@ import java.util.UUID;
  */
 public class SLUUIDEncoder implements SLEncoder {
 	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLEncoder#encode(java.lang.String)
-	 */
+    /**
+     * {@inheritDoc}
+     */
 	public String encode(String value) {
 		UUID uuid = UUID.nameUUIDFromBytes(value.getBytes());
 		return uuid.toString().replace('-', '.');

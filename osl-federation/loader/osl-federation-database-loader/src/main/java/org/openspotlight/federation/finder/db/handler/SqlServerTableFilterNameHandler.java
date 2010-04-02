@@ -49,10 +49,10 @@
 
 package org.openspotlight.federation.finder.db.handler;
 
-import java.sql.ResultSet;
-
-import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
+import org.openspotlight.federation.finder.db.ScriptType;
+
+import java.sql.ResultSet;
 
 /**
  * The Class SqlServerTableFilterNameHandler is used to filter Table names.

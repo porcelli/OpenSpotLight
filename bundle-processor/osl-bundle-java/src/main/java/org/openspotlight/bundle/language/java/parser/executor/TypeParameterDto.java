@@ -1,8 +1,8 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import java.util.List;
-
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
+
+import java.util.List;
 
 public class TypeParameterDto {
 	private final String name;

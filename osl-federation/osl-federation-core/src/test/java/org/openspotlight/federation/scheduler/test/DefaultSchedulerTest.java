@@ -48,12 +48,6 @@
  */
 package org.openspotlight.federation.scheduler.test;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Assert;
 import org.junit.Before;
@@ -70,6 +64,12 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DefaultSchedulerTest {
 

@@ -49,13 +49,11 @@
 
 package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
-
 import java.util.Collection;
 import java.util.Iterator;
+
+import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Helper class with convenient String methods.

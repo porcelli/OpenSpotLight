@@ -48,11 +48,6 @@
  */
 package org.openspotlight.web;
 
-import java.util.Set;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
@@ -71,6 +66,10 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.remote.server.DefaultUserAuthenticator;
 import org.openspotlight.web.command.InitialImportWebCommand;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import java.util.Set;
 
 /**
  * The listener interface for receiving oslContext events. The class that is

@@ -11,7 +11,6 @@ import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
@@ -24,7 +23,7 @@ public class InheritedNodeTest {
 	@SuppressWarnings("unchecked")
 	private <T extends SLNode> T findByProperty(final SLGraphSession session,
 			final Class<T> type, final String propertyName,
-			final String propertyValue) throws SLGraphSessionException,
+			final String propertyValue) throws
 			SLQueryException, SLInvalidQuerySyntaxException,
 			SLInvalidQueryElementException {
 		final SLQueryApi query1 = session.createQueryApi();

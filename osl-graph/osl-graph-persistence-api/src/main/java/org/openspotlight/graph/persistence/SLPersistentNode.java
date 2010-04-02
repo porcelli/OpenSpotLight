@@ -48,11 +48,11 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.io.Serializable;
-
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
+
+import java.io.Serializable;
 
 /**
  * The Interface SLPersistentNode.

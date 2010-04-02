@@ -49,13 +49,11 @@
 package org.openspotlight.graph.listeners;
 
 import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkAddedEvent;
-import org.openspotlight.graph.SLLinkEvent;
+import org.openspotlight.graph.*;
+import org.openspotlight.graph.event.SLAbstractGraphSessionEventListener;
+import org.openspotlight.graph.event.SLLinkAddedEvent;
+import org.openspotlight.graph.event.SLLinkRemovedEvent;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
@@ -69,7 +67,6 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  * the SLLinkCount event occurs, that object's appropriate
  * method is invoked.
  * 
- * @see SLLinkCountEvent
  */
 public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
 
@@ -143,19 +140,11 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkAdded
-	 * (org.openspotlight.graph.SLLinkEvent)
-	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void linkAdded(final SLLinkAddedEvent event)
-			throws SLGraphSessionException {
+	public void linkAdded(final SLLinkAddedEvent event) {
 		synchronized (lock) {
 			try {
 				final SLLink link = event.getLink();
@@ -188,18 +177,11 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#linkRemoved
-	 * (org.openspotlight.graph.SLLinkEvent)
-	 */
 	/**
 	 * {@inheritDoc}
 	 */
-	public void linkRemoved(final SLLinkEvent event)
-			throws SLGraphSessionException {
+    @Override
+	public void linkRemoved(final SLLinkRemovedEvent event) {
 		synchronized (lock) {
 			try {
 				final SLLink link = event.getLink();

@@ -48,11 +48,12 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-
 import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+
+import java.io.Serializable;
 
 /**
  * The Class SLMetaRenderHintImpl.

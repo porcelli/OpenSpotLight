@@ -48,17 +48,17 @@
  */
 package org.openspotlight.graph.query.info;
 
-import static org.openspotlight.common.util.StringBuilderUtil.append;
-import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
+import org.apache.commons.lang.StringUtils;
+import org.openspotlight.graph.query.SLConditionalOperatorType;
+import org.openspotlight.graph.query.SLRelationalOperatorType;
+import org.openspotlight.graph.query.SLSideType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.openspotlight.graph.query.SLConditionalOperatorType;
-import org.openspotlight.graph.query.SLRelationalOperatorType;
-import org.openspotlight.graph.query.SLSideType;
+import static org.openspotlight.common.util.StringBuilderUtil.append;
+import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
 
 public class SLWhereLinkTypeInfo {
 

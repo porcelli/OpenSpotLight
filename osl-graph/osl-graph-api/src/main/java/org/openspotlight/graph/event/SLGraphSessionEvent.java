@@ -46,19 +46,46 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-import java.io.Serializable;
+import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.graph.SLGraphSession;
 
-import org.openspotlight.graph.persistence.SLPersistentProperty;
+/**
+ * The Class SLGraphSessionEvent.
+ * 
+ * @author Vitor Hugo Chagas
+ */
+public abstract class SLGraphSessionEvent implements LockContainer {
 
-public final class SLNodePropertyRemovedEvent extends SLNodePropertyEvent {
+	protected final Lock lock;
 
-	public SLNodePropertyRemovedEvent(
-			final SLNodeProperty<? extends Serializable> property,
-			final SLPersistentProperty<? extends Serializable> pProperty,
-			final String propertyName) {
-		super(property, pProperty, propertyName);
+	/** The session. */
+	protected final SLGraphSession session;
+
+	/**
+	 * Instantiates a new sL graph session event.
+	 * 
+	 * @param session
+	 *            the session
+	 */
+	public SLGraphSessionEvent(final SLGraphSession session) {
+		this.session = session;
+		lock = session.getLockObject();
+	}
+
+	public Lock getLockObject() {
+		return lock;
+	}
+
+	/**
+	 * Gets the session.
+	 * 
+	 * @return the session
+	 */
+	public SLGraphSession getSession() {
+		return session;
 	}
 
 }

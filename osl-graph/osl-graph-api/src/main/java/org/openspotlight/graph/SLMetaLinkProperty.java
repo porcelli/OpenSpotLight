@@ -48,9 +48,10 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+
+import java.io.Serializable;
 
 // TODO: Auto-generated Javadoc
 /**

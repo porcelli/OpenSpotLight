@@ -51,16 +51,16 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 // TODO: Auto-generated Javadoc
 /**

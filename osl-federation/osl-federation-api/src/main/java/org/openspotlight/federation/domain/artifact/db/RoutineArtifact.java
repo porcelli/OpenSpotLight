@@ -48,14 +48,14 @@
  */
 package org.openspotlight.federation.domain.artifact.db;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Name("database")
 public class RoutineArtifact extends DatabaseCustomArtifact implements

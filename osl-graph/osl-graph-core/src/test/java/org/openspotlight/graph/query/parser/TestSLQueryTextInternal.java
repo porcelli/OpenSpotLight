@@ -48,28 +48,21 @@
  */
 package org.openspotlight.graph.query.parser;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isOneOf;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.query.AbstractGeneralQueryTest;
-import org.openspotlight.graph.query.AssertResult;
-import org.openspotlight.graph.query.SLInvalidQueryElementException;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQLVariable;
-import org.openspotlight.graph.query.SLQueryResult;
-import org.openspotlight.graph.query.SLQueryText;
-import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.query.*;
 import org.openspotlight.graph.query.SLQuery.SortMode;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isOneOf;
 
 /**
  * The Class SLQLQueryTest.

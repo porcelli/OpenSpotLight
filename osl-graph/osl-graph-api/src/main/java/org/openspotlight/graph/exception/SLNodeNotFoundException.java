@@ -46,47 +46,26 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockContainer;
+package org.openspotlight.graph.exception;
 
 /**
- * The Class SLGraphSessionEvent.
+ * The Class SLNodeNotFoundException.
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class SLGraphSessionEvent implements LockContainer {
+public class SLNodeNotFoundException extends SLGraphSessionException {
 
-	protected final Lock lock;
-
-	/** The session. */
-	protected final SLGraphSession session;
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Instantiates a new sL graph session event.
+	 * Instantiates a new sL node not found exception.
 	 * 
-	 * @param type
-	 *            the type
-	 * @param session
-	 *            the session
+	 * @param nodeID the node id
+	 * @param cause the cause
 	 */
-	public SLGraphSessionEvent(final SLGraphSession session) {
-		this.session = session;
-		lock = session.getLockObject();
-	}
-
-	public Lock getLockObject() {
-		return lock;
-	}
-
-	/**
-	 * Gets the session.
-	 * 
-	 * @return the session
-	 */
-	public SLGraphSession getSession() {
-		return session;
+	public SLNodeNotFoundException(String nodeID, Throwable cause) {
+		super("Node of " + nodeID + " not found.", cause);
 	}
 
 }

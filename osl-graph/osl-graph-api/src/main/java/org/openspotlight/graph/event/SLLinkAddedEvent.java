@@ -46,67 +46,21 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-/**
- * The Class SLInvalidLinkPropertyTypeException.
- * 
- * @author Vitor Hugo Chagas
- */
-public class SLInvalidLinkPropertyTypeException extends SLGraphSessionException {
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLPersistenceMode;
+import org.openspotlight.graph.persistence.SLPersistentNode;
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Instantiates a new sL invalid link property type exception.
-	 * 
-	 * @param name the name
-	 * @param invalidType the invalid type
-	 * @param allowedTypes the allowed types
-	 */
-	public SLInvalidLinkPropertyTypeException(String name, Class<?> invalidType, Class<?>... allowedTypes) {
-		super(getMessage(name, invalidType, allowedTypes));
+public final class SLLinkAddedEvent extends SLLinkEvent {
+
+	public SLLinkAddedEvent(final SLLink link) {
+		super(link);
 	}
 
-	/**
-	 * Instantiates a new sL invalid link property type exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLInvalidLinkPropertyTypeException(String message) {
-		super(message);
-	}
-
-	/**
-	 * Instantiates a new sL invalid link property type exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLInvalidLinkPropertyTypeException(Throwable cause) {
-		super(cause);
-	}
-
-	/**
-	 * Gets the message.
-	 * 
-	 * @param name the name
-	 * @param invalidType the invalid type
-	 * @param allowedTypes the allowed types
-	 * 
-	 * @return the message
-	 */
-	private static String getMessage(String name, Class<?> invalidType, Class<?>... allowedTypes) {
-		StringBuilder message = new StringBuilder();
-		message.append("Value of property ")
-			.append(name).append(" cannot be retrieved as ")
-			.append(invalidType.getName()).append(". ");
-		for (int i = 0; i < allowedTypes.length; i++) {
-			if (i > 0) message.append(", ");
-			message.append(allowedTypes[i].getName());
-		}
-		message.append(" or super type can be used instead.");
-		return message.toString();
+	public SLLinkAddedEvent(final SLLink link, final SLPersistentNode linkNode,
+			final SLPersistenceMode persistenceMode) {
+		super(link, linkNode, persistenceMode);
 	}
 
 }

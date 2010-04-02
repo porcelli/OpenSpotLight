@@ -48,13 +48,12 @@
  */
 package org.openspotlight.graph;
 
+import com.ibm.icu.text.Normalizer;
+import org.openspotlight.graph.annotation.SLCollator;
+
 import java.lang.reflect.Method;
 import java.text.Collator;
 import java.util.Locale;
-
-import org.openspotlight.graph.annotation.SLCollator;
-
-import com.ibm.icu.text.Normalizer;
 
 
 /**

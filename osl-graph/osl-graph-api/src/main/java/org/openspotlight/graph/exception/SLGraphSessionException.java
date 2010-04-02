@@ -46,18 +46,44 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.exception;
 
-import java.io.Serializable;
+/**
+ * The Class SLGraphSessionException.
+ * 
+ * @author Vitor Hugo Chagas
+ */
+public class SLGraphSessionException extends SLGraphRuntimeException {
 
-import org.openspotlight.graph.persistence.SLPersistentProperty;
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = 1L;
 
-public final class SLLinkPropertySetEvent extends SLLinkPropertyEvent {
-
-	public SLLinkPropertySetEvent(
-			final SLLinkProperty<? extends Serializable> property,
-			final SLPersistentProperty<? extends Serializable> pProperty) {
-		super(property, pProperty);
+	/**
+	 * Instantiates a new sL graph session exception.
+	 * 
+	 * @param message the message
+	 * @param cause the cause
+	 */
+	public SLGraphSessionException(String message, Throwable cause) {
+		super(message, cause);
+	}
+	
+	/**
+	 * Instantiates a new sL graph session exception.
+	 * 
+	 * @param message the message
+	 */
+	public SLGraphSessionException(String message) {
+		super(message);
+	}
+	
+	/**
+	 * Instantiates a new sL graph session exception.
+	 * 
+	 * @param cause the cause
+	 */
+	public SLGraphSessionException(Throwable cause) {
+		super(cause);
 	}
 
 }

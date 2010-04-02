@@ -46,45 +46,23 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
-
-import org.openspotlight.common.exception.AbstractFactoryException;
+package org.openspotlight.graph.exception;
 
 /**
- * The Class SLGraphFactoryException.
+ * The Class SLInvalidMetaLinkSideTypeException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLGraphFactoryException extends AbstractFactoryException {
+public class SLInvalidMetaLinkSideTypeException extends SLGraphSessionException {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Instantiates a new sL graph factory exception.
-	 * 
-	 * @param message the message
-	 * @param cause the cause
+	 * Instantiates a new sL invalid meta link side type exception.
 	 */
-	public SLGraphFactoryException(String message, Throwable cause) {
-		super(message, cause);
+	public SLInvalidMetaLinkSideTypeException() {
+		super("Node type is not part of the meta link.");
 	}
 
-	/**
-	 * Instantiates a new sL graph factory exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLGraphFactoryException(String message) {
-		super(message);
-	}
-
-	/**
-	 * Instantiates a new sL graph factory exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLGraphFactoryException(Throwable cause) {
-		super(cause);
-	}
 }

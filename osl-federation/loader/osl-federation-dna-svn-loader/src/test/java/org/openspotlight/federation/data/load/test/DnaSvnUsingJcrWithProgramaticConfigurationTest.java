@@ -49,13 +49,6 @@
 
 package org.openspotlight.federation.data.load.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.jcr.NodeIterator;
-import javax.jcr.Session;
-
 import org.jboss.dna.connector.svn.SVNRepositorySource;
 import org.jboss.dna.jcr.JcrConfiguration;
 import org.jboss.dna.jcr.JcrEngine;
@@ -65,6 +58,13 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DefaultSecurityContext;
+
+import javax.jcr.NodeIterator;
+import javax.jcr.Session;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test class to validate a programatic example for DNA Svn System Connector

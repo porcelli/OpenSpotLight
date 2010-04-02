@@ -46,19 +46,15 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.event.SLGraphSessionEvent;
 
-public final class SLLinkAddedEvent extends SLLinkEvent {
+public final class SLGraphSessionSaveEvent extends SLGraphSessionEvent {
 
-	public SLLinkAddedEvent(final SLLink link) {
-		super(link);
-	}
-
-	public SLLinkAddedEvent(final SLLink link, final SLPersistentNode linkNode,
-			final SLPersistenceMode persistenceMode) {
-		super(link, linkNode, persistenceMode);
+	public SLGraphSessionSaveEvent(final SLGraphSession session) {
+		super(session);
 	}
 
 }

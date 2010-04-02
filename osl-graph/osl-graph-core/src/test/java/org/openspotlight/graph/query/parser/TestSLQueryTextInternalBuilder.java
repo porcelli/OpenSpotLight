@@ -48,16 +48,16 @@
  */
 package org.openspotlight.graph.query.parser;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.query.SLQueryTextInternal;
+
+import java.io.IOException;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class TestSLQueryTextInternalBuilder {
 

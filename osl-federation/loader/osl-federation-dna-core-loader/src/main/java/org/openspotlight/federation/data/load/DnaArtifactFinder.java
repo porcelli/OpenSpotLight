@@ -49,9 +49,20 @@
 
 package org.openspotlight.federation.data.load;
 
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.jcr.util.JcrNodeVisitor.withVisitor;
+import org.jboss.dna.jcr.JcrConfiguration;
+import org.jboss.dna.jcr.JcrEngine;
+import org.jboss.dna.jcr.SecurityContextCredentials;
+import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
+import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.federation.domain.artifact.*;
+import org.openspotlight.federation.finder.AbstractOriginArtifactLoader;
+import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.HashSet;
@@ -59,24 +70,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-
-import org.jboss.dna.jcr.JcrConfiguration;
-import org.jboss.dna.jcr.JcrEngine;
-import org.jboss.dna.jcr.SecurityContextCredentials;
-import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
-import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.AbstractOriginArtifactLoader;
-import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.jcr.util.JcrNodeVisitor.withVisitor;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System

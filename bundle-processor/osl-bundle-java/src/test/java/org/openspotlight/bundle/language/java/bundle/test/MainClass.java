@@ -1,8 +1,5 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
 import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
@@ -10,6 +7,9 @@ import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.UserAuthenticator;
+
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public class MainClass {
 

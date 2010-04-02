@@ -48,12 +48,12 @@
  */
 package org.openspotlight.common.util.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Test;
 import org.openspotlight.common.util.TimeOutFactory;
 import org.openspotlight.common.util.TimeOutFactory.TaskFinalizer;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class TimeOutTest {
 

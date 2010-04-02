@@ -48,71 +48,29 @@
  */
 package org.openspotlight.graph.server.test;
 
-import static org.openspotlight.graph.SLLink.DIRECTION_ANY;
-import static org.openspotlight.graph.SLLink.DIRECTION_BI;
-import static org.openspotlight.graph.SLLink.DIRECTION_UNI;
-import static org.openspotlight.graph.SLLink.DIRECTION_UNI_REVERSAL;
-import static org.openspotlight.graph.SLPersistenceMode.NORMAL;
-import static org.openspotlight.graph.SLPersistenceMode.TRANSIENT;
-import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
-import org.openspotlight.graph.SLInvalidNodePropertyTypeException;
-import org.openspotlight.graph.SLLineReference;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkProperty;
-import org.openspotlight.graph.SLMetaLink;
-import org.openspotlight.graph.SLMetaLinkProperty;
-import org.openspotlight.graph.SLMetaLinkType;
-import org.openspotlight.graph.SLMetaNodeProperty;
-import org.openspotlight.graph.SLMetaNodeType;
-import org.openspotlight.graph.SLMetaRenderHint;
-import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeProperty;
+import org.junit.*;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
+import org.openspotlight.graph.exception.SLInvalidNodePropertyTypeException;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
-import org.openspotlight.graph.test.domain.CobolElementNode;
-import org.openspotlight.graph.test.domain.JavaClassJavaMethodMultipleLink;
-import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLink;
-import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLinkACTB;
-import org.openspotlight.graph.test.domain.JavaClassNode;
-import org.openspotlight.graph.test.domain.JavaElementNode;
-import org.openspotlight.graph.test.domain.JavaInnerClassNode;
-import org.openspotlight.graph.test.domain.JavaLink;
-import org.openspotlight.graph.test.domain.JavaMethodNode;
-import org.openspotlight.graph.test.domain.JavaPackageJavaClass;
-import org.openspotlight.graph.test.domain.JavaPackagePublicElement;
-import org.openspotlight.graph.test.domain.NamePredicate;
-import org.openspotlight.graph.test.domain.TransientLink;
-import org.openspotlight.graph.test.domain.TransientNode;
+import org.openspotlight.graph.test.domain.*;
 import org.openspotlight.graph.test.domain.node.JavaPackageNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.UserAuthenticator;
+
+import java.io.Serializable;
+import java.util.*;
+
+import static org.openspotlight.graph.SLLink.*;
+import static org.openspotlight.graph.SLPersistenceMode.NORMAL;
+import static org.openspotlight.graph.SLPersistenceMode.TRANSIENT;
+import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
 
 /**
  * The Class SLGraphTest.
@@ -133,20 +91,6 @@ public class SLRemoteGraphTest {
 
 	private static RemoteGraphSessionServer server;
 
-	/**
-	 * Finish.
-	 */
-	@AfterClass
-	public static void finish() {
-
-	}
-
-	/**
-	 * Inits the.
-	 * 
-	 * @throws AbstractFactoryException
-	 *             the abstract factory exception
-	 */
 	@BeforeClass
 	public static void init() throws Exception {
 		JcrConnectionProvider.createFromData(
@@ -480,7 +424,7 @@ public class SLRemoteGraphTest {
 	/**
 	 * Before test.
 	 * 
-	 * @throws SLGraphException
+	 * @throws org.openspotlight.graph.exception.SLGraphException
 	 *             the SL graph exception
 	 */
 	@Before
@@ -647,24 +591,16 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "addAddMultipleLinkExistentBothCase" )
 	public void testAddAndGetNodeWithStrangeCharsOnName() {
-		try {
-			final SLNode root1 = session.createContext("1L").getRootNode();
-			final JavaClassNode javaClassNode1 = root1.addNode(
-					JavaClassNode.class,
-					"/home/feuteston/accept-strange-chars.sh");
-			Assert.assertNotNull(javaClassNode1);
-			final JavaClassNode javaClassNode2 = root1.getNode(
-					JavaClassNode.class,
-					"/home/feuteston/accept-strange-chars.sh");
-			Assert.assertNotNull(javaClassNode2);
-			Assert.assertEquals(javaClassNode1, javaClassNode2);
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        final JavaClassNode javaClassNode1 = root1.addNode(
+                JavaClassNode.class,
+                "/home/feuteston/accept-strange-chars.sh");
+        Assert.assertNotNull(javaClassNode1);
+        final JavaClassNode javaClassNode2 = root1.getNode(
+                JavaClassNode.class,
+                "/home/feuteston/accept-strange-chars.sh");
+        Assert.assertNotNull(javaClassNode2);
+        Assert.assertEquals(javaClassNode1, javaClassNode2);
 	}
 
 	/**
@@ -1908,35 +1844,24 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testGetMetaNodes" )
 	public void testGetMetaRenderHint() {
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        root1.addNode(JavaClassNode.class, "javaClassNode1");
+        session.save();
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaNodeType metaNode = metadata
+                .findMetaNodeType(JavaClassNode.class);
 
-		try {
+        final SLMetaRenderHint formatRenderHint = metaNode
+                .getMetaRenderHint("format");
+        Assert.assertNotNull(formatRenderHint);
+        Assert.assertEquals(formatRenderHint.getName(), "format");
+        Assert.assertEquals(formatRenderHint.getValue(), "cube");
 
-			final SLNode root1 = session.createContext("1L").getRootNode();
-			root1.addNode(JavaClassNode.class, "javaClassNode1");
-			session.save();
-			final SLMetadata metadata = session.getMetadata();
-			final SLMetaNodeType metaNode = metadata
-					.findMetaNodeType(JavaClassNode.class);
-
-			final SLMetaRenderHint formatRenderHint = metaNode
-					.getMetaRenderHint("format");
-			Assert.assertNotNull(formatRenderHint);
-			Assert.assertEquals(formatRenderHint.getName(), "format");
-			Assert.assertEquals(formatRenderHint.getValue(), "cube");
-
-			final SLMetaRenderHint foregroundRenderHint = metaNode
-					.getMetaRenderHint("foreground");
-			Assert.assertNotNull(foregroundRenderHint);
-			Assert.assertEquals(foregroundRenderHint.getName(), "foreground");
-			Assert.assertEquals(foregroundRenderHint.getValue(), "gold");
-
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        final SLMetaRenderHint foregroundRenderHint = metaNode
+                .getMetaRenderHint("foreground");
+        Assert.assertNotNull(foregroundRenderHint);
+        Assert.assertEquals(foregroundRenderHint.getName(), "foreground");
+        Assert.assertEquals(foregroundRenderHint.getValue(), "gold");
 	}
 
 	/**
@@ -1945,33 +1870,24 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testGetMetaRenderHint" )
 	public void testGetMetaRenderHints() {
-
-		try {
-			final SLNode root1 = session.createContext("1L").getRootNode();
-			root1.addNode(JavaClassNode.class, "javaClassNode1");
-			session.save();
-			final SLMetadata metadata = session.getMetadata();
-			final SLMetaNodeType metaNode = metadata
-					.findMetaNodeType(JavaClassNode.class);
-			final Collection<SLMetaRenderHint> renderHints = metaNode
-					.getMetaRenderHints();
-			Assert.assertEquals(renderHints.size(), 2);
-			for (final SLMetaRenderHint renderHint : renderHints) {
-				if (renderHint.getName().equals("format")) {
-					Assert.assertEquals(renderHint.getValue(), "cube");
-				} else if (renderHint.getName().equals("foreground")) {
-					Assert.assertEquals(renderHint.getValue(), "gold");
-				} else {
-					Assert.fail();
-				}
-			}
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        root1.addNode(JavaClassNode.class, "javaClassNode1");
+        session.save();
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaNodeType metaNode = metadata
+                .findMetaNodeType(JavaClassNode.class);
+        final Collection<SLMetaRenderHint> renderHints = metaNode
+                .getMetaRenderHints();
+        Assert.assertEquals(renderHints.size(), 2);
+        for (final SLMetaRenderHint renderHint : renderHints) {
+            if (renderHint.getName().equals("format")) {
+                Assert.assertEquals(renderHint.getValue(), "cube");
+            } else if (renderHint.getName().equals("foreground")) {
+                Assert.assertEquals(renderHint.getValue(), "gold");
+            } else {
+                Assert.fail();
+            }
+        }
 	}
 
 	/**
@@ -2730,50 +2646,40 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testLinksRemovalByNodeDeletion" )
 	public void testLinkTypesForLinkDeletionMarkAndUnmarkCase() {
+        SLNode root1 = session.createContext("1L").getRootNode();
+        JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+                "javaClassNode1");
+        JavaMethodNode javaMethodNode1 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode1");
+        final JavaMethodNode javaMethodNode2 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode2");
 
-		try {
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode1, false);
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode2, false);
 
-			SLNode root1 = session.createContext("1L").getRootNode();
-			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
-					"javaClassNode1");
-			JavaMethodNode javaMethodNode1 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode1");
-			final JavaMethodNode javaMethodNode2 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode2");
+        final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = new ArrayList<Class<? extends SLLink>>();
+        linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
+        root1.addNode(JavaMethodNode.class, "javaMethodNode2",
+                linkTypesForLinkDeletion, null);
 
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode1, false);
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode2, false);
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode2, false);
 
-			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = new ArrayList<Class<? extends SLLink>>();
-			linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
-			root1.addNode(JavaMethodNode.class, "javaMethodNode2",
-					linkTypesForLinkDeletion, null);
+        session.save();
+        session = client.createRemoteGraphSession(user, pass,
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode2, false);
+        root1 = session.getContext("1L").getRootNode();
+        javaClassNode1 = root1.getNode(JavaClassNode.class,
+                "javaClassNode1");
+        javaMethodNode1 = root1.getNode(JavaMethodNode.class,
+                "javaMethodNode1");
 
-			session.save();
-			session = client.createRemoteGraphSession(user, pass,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
-
-			root1 = session.getContext("1L").getRootNode();
-			javaClassNode1 = root1.getNode(JavaClassNode.class,
-					"javaClassNode1");
-			javaMethodNode1 = root1.getNode(JavaMethodNode.class,
-					"javaMethodNode1");
-
-			final Collection<? extends SLLink> links = session.getLinks(
-					JavaClassJavaMethodSimpleLink.class, null, null);
-			Assert.assertEquals(links.size(), 2);
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        final Collection<? extends SLLink> links = session.getLinks(
+                JavaClassJavaMethodSimpleLink.class, null, null);
+        Assert.assertEquals(links.size(), 2);
 	}
 
 	/**
@@ -2782,50 +2688,40 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testLinkTypesForLinkDeletionMarkAndUnmarkCase" )
 	public void testLinkTypesForLinkDeletionMarkCase() {
+        SLNode root1 = session.createContext("1L").getRootNode();
+        JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+                "javaClassNode1");
+        JavaMethodNode javaMethodNode1 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode1");
+        final JavaMethodNode javaMethodNode2 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode2");
 
-		try {
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode1, false);
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode2, false);
 
-			SLNode root1 = session.createContext("1L").getRootNode();
-			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
-					"javaClassNode1");
-			JavaMethodNode javaMethodNode1 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode1");
-			final JavaMethodNode javaMethodNode2 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode2");
+        final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = new ArrayList<Class<? extends SLLink>>();
+        linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
+        root1.addNode(JavaMethodNode.class, "javaMethodNode2",
+                linkTypesForLinkDeletion, null);
 
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode1, false);
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode2, false);
+        session.save();
+        session = client.createRemoteGraphSession(user, pass,
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
-			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = new ArrayList<Class<? extends SLLink>>();
-			linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
-			root1.addNode(JavaMethodNode.class, "javaMethodNode2",
-					linkTypesForLinkDeletion, null);
+        root1 = session.getContext("1L").getRootNode();
+        javaClassNode1 = root1.getNode(JavaClassNode.class,
+                "javaClassNode1");
+        javaMethodNode1 = root1.getNode(JavaMethodNode.class,
+                "javaMethodNode1");
+        final Collection<? extends SLLink> links = session.getLinks(
+                JavaClassJavaMethodSimpleLink.class, null, null);
+        Assert.assertEquals(links.size(), 1);
 
-			session.save();
-			session = client.createRemoteGraphSession(user, pass,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
-
-			root1 = session.getContext("1L").getRootNode();
-			javaClassNode1 = root1.getNode(JavaClassNode.class,
-					"javaClassNode1");
-			javaMethodNode1 = root1.getNode(JavaMethodNode.class,
-					"javaMethodNode1");
-			final Collection<? extends SLLink> links = session.getLinks(
-					JavaClassJavaMethodSimpleLink.class, null, null);
-			Assert.assertEquals(links.size(), 1);
-
-			final SLLink link = links.iterator().next();
-			Assert.assertEquals(link.getSource(), javaClassNode1);
-			Assert.assertEquals(link.getTarget(), javaMethodNode1);
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        final SLLink link = links.iterator().next();
+        Assert.assertEquals(link.getSource(), javaClassNode1);
+        Assert.assertEquals(link.getTarget(), javaMethodNode1);
 	}
 
 	/**
@@ -2834,50 +2730,39 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testLinkTypesForLinkDeletionMarkCase" )
 	public void testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase() {
+        SLNode root1 = session.createContext("1L").getRootNode();
+        JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+                "javaClassNode1");
+        JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(
+                JavaMethodNode.class, "javaMethodNode1");
+        final JavaMethodNode javaMethodNode2 = javaClassNode1.addNode(
+                JavaMethodNode.class, "javaMethodNode2");
 
-		try {
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode1, false);
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode2, false);
 
-			SLNode root1 = session.createContext("1L").getRootNode();
-			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
-					"javaClassNode1");
-			JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(
-					JavaMethodNode.class, "javaMethodNode1");
-			final JavaMethodNode javaMethodNode2 = javaClassNode1.addNode(
-					JavaMethodNode.class, "javaMethodNode2");
+        final Collection<Class<? extends SLLink>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends SLLink>>();
+        linkTypesForLinkedNodesDeletion
+                .add(JavaClassJavaMethodSimpleLink.class);
+        root1.addNode(JavaClassNode.class, "javaClassNode1", null,
+                linkTypesForLinkedNodesDeletion);
 
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode1, false);
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode2, false);
+        javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class,
+                "javaMethodNode1");
 
-			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends SLLink>>();
-			linkTypesForLinkedNodesDeletion
-					.add(JavaClassJavaMethodSimpleLink.class);
-			root1.addNode(JavaClassNode.class, "javaClassNode1", null,
-					linkTypesForLinkedNodesDeletion);
-
-			javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class,
-					"javaMethodNode1");
-
-			session.save();
-			session = client.createRemoteGraphSession(user, pass,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
-			session.save();
-			root1 = session.getContext("1L").getRootNode();
-			javaClassNode1 = root1.getNode(JavaClassNode.class,
-					"javaClassNode1");
-			final Collection<SLNode> nodes = javaClassNode1.getNodes();
-			Assert.assertEquals(nodes.size(), 1);
-			Assert.assertEquals(nodes.iterator().next().getName(),
-					"javaMethodNode1");
-
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        session.save();
+        session = client.createRemoteGraphSession(user, pass,
+                SLConsts.DEFAULT_REPOSITORY_NAME);
+        session.save();
+        root1 = session.getContext("1L").getRootNode();
+        javaClassNode1 = root1.getNode(JavaClassNode.class,
+                "javaClassNode1");
+        final Collection<SLNode> nodes = javaClassNode1.getNodes();
+        Assert.assertEquals(nodes.size(), 1);
+        Assert.assertEquals(nodes.iterator().next().getName(),
+                "javaMethodNode1");
 	}
 
 	/**
@@ -2887,44 +2772,34 @@ public class SLRemoteGraphTest {
 	// ( dependsOnMethods =
 	// "testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase" )
 	public void testLinkTypesForLinkedNodeDeletionMarkCase() {
+        SLNode root1 = session.createContext("1L").getRootNode();
+        JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+                "javaClassNode1");
+        final JavaMethodNode javaMethodNode1 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode1");
+        final JavaMethodNode javaMethodNode2 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode2");
 
-		try {
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode1, false);
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode2, false);
 
-			SLNode root1 = session.createContext("1L").getRootNode();
-			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
-					"javaClassNode1");
-			final JavaMethodNode javaMethodNode1 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode1");
-			final JavaMethodNode javaMethodNode2 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode2");
+        final Collection<Class<? extends SLLink>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends SLLink>>();
+        linkTypesForLinkedNodesDeletion
+                .add(JavaClassJavaMethodSimpleLink.class);
+        root1.addNode(JavaClassNode.class, "javaClassNode1", null,
+                linkTypesForLinkedNodesDeletion);
 
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode1, false);
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode2, false);
+        session.save();
+        session = client.createRemoteGraphSession(user, pass,
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
-			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends SLLink>>();
-			linkTypesForLinkedNodesDeletion
-					.add(JavaClassJavaMethodSimpleLink.class);
-			root1.addNode(JavaClassNode.class, "javaClassNode1", null,
-					linkTypesForLinkedNodesDeletion);
-
-			session.save();
-			session = client.createRemoteGraphSession(user, pass,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
-
-			root1 = session.getContext("1L").getRootNode();
-			javaClassNode1 = root1.getNode(JavaClassNode.class,
-					"javaClassNode1");
-			final Collection<SLNode> nodes = javaClassNode1.getNodes();
-			Assert.assertTrue(nodes.isEmpty());
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        root1 = session.getContext("1L").getRootNode();
+        javaClassNode1 = root1.getNode(JavaClassNode.class,
+                "javaClassNode1");
+        final Collection<SLNode> nodes = javaClassNode1.getNodes();
+        Assert.assertTrue(nodes.isEmpty());
 	}
 
 	/**
@@ -2994,29 +2869,21 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testLongProperty" )
 	public void testMetaLinkGetDescription() {
-		try {
-			final SLNode root1 = session.createContext("1L").getRootNode();
-			final JavaClassNode javaClassNode = root1.addNode(
-					JavaClassNode.class, "javaClassNode");
-			final JavaMethodNode javaMethodNode = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode");
-			session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode,
-					javaMethodNode, false);
-			session.save();
-			final SLMetadata metadata = session.getMetadata();
-			final SLMetaLink metaLink = metadata.getMetaLinkType(
-					JavaClassJavaMethodSimpleLink.class).getMetalinks()
-					.iterator().next();
-			final String description = metaLink.getDescription();
-			Assert.assertNotNull(description);
-			Assert.assertEquals(description, "Java Class to Java Method Link");
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        final JavaClassNode javaClassNode = root1.addNode(
+                JavaClassNode.class, "javaClassNode");
+        final JavaMethodNode javaMethodNode = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode");
+        session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode,
+                javaMethodNode, false);
+        session.save();
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaLink metaLink = metadata.getMetaLinkType(
+                JavaClassJavaMethodSimpleLink.class).getMetalinks()
+                .iterator().next();
+        final String description = metaLink.getDescription();
+        Assert.assertNotNull(description);
+        Assert.assertEquals(description, "Java Class to Java Method Link");
 	}
 
 	/**
@@ -3025,23 +2892,15 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testMetaLinkGetDescription" )
 	public void testMetaNodeGetDescription() {
-		try {
-			final SLNode root1 = session.createContext("1L").getRootNode();
-			root1.addNode(JavaClassNode.class, "javaClassNode1");
-			session.save();
-			final SLMetadata metadata = session.getMetadata();
-			final SLMetaNodeType metaNode = metadata
-					.findMetaNodeType(JavaClassNode.class);
-			final String description = metaNode.getDescription();
-			Assert.assertNotNull(description);
-			Assert.assertEquals(description, "Java Class");
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        root1.addNode(JavaClassNode.class, "javaClassNode1");
+        session.save();
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaNodeType metaNode = metadata
+                .findMetaNodeType(JavaClassNode.class);
+        final String description = metaNode.getDescription();
+        Assert.assertNotNull(description);
+        Assert.assertEquals(description, "Java Class");
 	}
 
 	/**
@@ -3212,43 +3071,32 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testStringProperty" )
 	public void testTransientLinksWithAnnotations() {
+        SLNode root1 = session.createContext("1L").getRootNode();
+        JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+                "javaClassNode1");
+        JavaMethodNode javaMethodNode1 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode1");
+        final JavaMethodNode javaMethodNode2 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode2");
 
-		try {
+        session.addLink(TransientLink.class, javaClassNode1,
+                javaMethodNode1, false);
+        session.addLink(TransientLink.class, javaClassNode1,
+                javaMethodNode2, false);
 
-			SLNode root1 = session.createContext("1L").getRootNode();
-			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
-					"javaClassNode1");
-			JavaMethodNode javaMethodNode1 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode1");
-			final JavaMethodNode javaMethodNode2 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode2");
+        session.save();
+        session = client.createRemoteGraphSession(user, pass,
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
-			session.addLink(TransientLink.class, javaClassNode1,
-					javaMethodNode1, false);
-			session.addLink(TransientLink.class, javaClassNode1,
-					javaMethodNode2, false);
-
-			session.save();
-			session = client.createRemoteGraphSession(user, pass,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
-
-			root1 = session.getContext("1L").getRootNode();
-			javaClassNode1 = root1.getNode(JavaClassNode.class,
-					"javaClassNode1");
-			javaMethodNode1 = root1.getNode(JavaMethodNode.class,
-					"javaMethodNode1");
-			final Collection<? extends SLLink> links = session
-					.getUnidirectionalLinks(TransientLink.class,
-							javaClassNode1, javaMethodNode1);
-			Assert.assertEquals(links.size(), 0);
-
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        root1 = session.getContext("1L").getRootNode();
+        javaClassNode1 = root1.getNode(JavaClassNode.class,
+                "javaClassNode1");
+        javaMethodNode1 = root1.getNode(JavaMethodNode.class,
+                "javaMethodNode1");
+        final Collection<? extends SLLink> links = session
+                .getUnidirectionalLinks(TransientLink.class,
+                        javaClassNode1, javaMethodNode1);
+        Assert.assertEquals(links.size(), 0);
 	}
 
 	/**
@@ -3257,49 +3105,39 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testTransientLinksWithAnnotations" )
 	public void testTransientLinksWithoutAnnotations() {
+        SLNode root1 = session.createContext("1L").getRootNode();
+        JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+                "javaClassNode1");
+        JavaMethodNode javaMethodNode1 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode1");
+        JavaMethodNode javaMethodNode2 = root1.addNode(
+                JavaMethodNode.class, "javaMethodNode2");
 
-		try {
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode1, false, TRANSIENT);
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode2, false, TRANSIENT);
 
-			SLNode root1 = session.createContext("1L").getRootNode();
-			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
-					"javaClassNode1");
-			JavaMethodNode javaMethodNode1 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode1");
-			JavaMethodNode javaMethodNode2 = root1.addNode(
-					JavaMethodNode.class, "javaMethodNode2");
+        // make previous transient link persistent now ...
+        session.addLink(JavaClassJavaMethodSimpleLink.class,
+                javaClassNode1, javaMethodNode2, false, NORMAL);
 
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode1, false, TRANSIENT);
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode2, false, TRANSIENT);
+        session.save();
+        session = client.createRemoteGraphSession(user, pass,
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
-			// make previous transient link persistent now ...
-			session.addLink(JavaClassJavaMethodSimpleLink.class,
-					javaClassNode1, javaMethodNode2, false, NORMAL);
-
-			session.save();
-			session = client.createRemoteGraphSession(user, pass,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
-
-			root1 = session.getContext("1L").getRootNode();
-			javaClassNode1 = root1.getNode(JavaClassNode.class,
-					"javaClassNode1");
-			javaMethodNode1 = root1.getNode(JavaMethodNode.class,
-					"javaMethodNode1");
-			javaMethodNode2 = root1.getNode(JavaMethodNode.class,
-					"javaMethodNode2");
-			final Collection<? extends SLLink> links = session.getLinks(
-					JavaClassJavaMethodSimpleLink.class, javaClassNode1, null);
-			Assert.assertEquals(links.size(), 1);
-			final SLLink link = links.iterator().next();
-			Assert.assertEquals(link.getTarget(), javaMethodNode2);
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        root1 = session.getContext("1L").getRootNode();
+        javaClassNode1 = root1.getNode(JavaClassNode.class,
+                "javaClassNode1");
+        javaMethodNode1 = root1.getNode(JavaMethodNode.class,
+                "javaMethodNode1");
+        javaMethodNode2 = root1.getNode(JavaMethodNode.class,
+                "javaMethodNode2");
+        final Collection<? extends SLLink> links = session.getLinks(
+                JavaClassJavaMethodSimpleLink.class, javaClassNode1, null);
+        Assert.assertEquals(links.size(), 1);
+        final SLLink link = links.iterator().next();
+        Assert.assertEquals(link.getTarget(), javaMethodNode2);
 	}
 
 	/**
@@ -3308,42 +3146,31 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testTransientLinksWithoutAnnotations" )
 	public void testTransientNodesWithAnnotation() {
+        SLNode root1 = session.createContext("1L").getRootNode();
+        JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+                "javaClassNode1");
+        JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(
+                JavaMethodNode.class, "javaMethodNode1");
 
-		try {
+        javaClassNode1.addNode(TransientNode.class, "transNode1");
+        javaMethodNode1.addNode(TransientNode.class, "transNode2");
 
-			SLNode root1 = session.createContext("1L").getRootNode();
-			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
-					"javaClassNode1");
-			JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(
-					JavaMethodNode.class, "javaMethodNode1");
+        session.save();
+        session = client.createRemoteGraphSession(user, pass,
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
-			javaClassNode1.addNode(TransientNode.class, "transNode1");
-			javaMethodNode1.addNode(TransientNode.class, "transNode2");
+        root1 = session.getContext("1L").getRootNode();
+        javaClassNode1 = root1.getNode(JavaClassNode.class,
+                "javaClassNode1");
+        Assert.assertNotNull(javaClassNode1);
+        javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class,
+                "javaMethodNode1");
+        Assert.assertNotNull(javaMethodNode1);
 
-			session.save();
-			session = client.createRemoteGraphSession(user, pass,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
-
-			root1 = session.getContext("1L").getRootNode();
-			javaClassNode1 = root1.getNode(JavaClassNode.class,
-					"javaClassNode1");
-			Assert.assertNotNull(javaClassNode1);
-			javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class,
-					"javaMethodNode1");
-			Assert.assertNotNull(javaMethodNode1);
-
-			Assert.assertNull(javaClassNode1.getNode(TransientNode.class,
-					"transNode1"));
-			Assert.assertNull(javaMethodNode1.getNode(TransientNode.class,
-					"transNode2"));
-
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        Assert.assertNull(javaClassNode1.getNode(TransientNode.class,
+                "transNode1"));
+        Assert.assertNull(javaMethodNode1.getNode(TransientNode.class,
+                "transNode2"));
 	}
 
 	/**
@@ -3352,45 +3179,35 @@ public class SLRemoteGraphTest {
 	@Test
 	// ( dependsOnMethods = "testTransientNodesWithAnnotation" )
 	public void testTransientNodesWithoutAnnotation() {
+        SLNode root1 = session.createContext("1L").getRootNode();
+        JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
+                "javaClassNode1", NORMAL);
+        JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(
+                JavaMethodNode.class, "javaMethodNode1", NORMAL);
 
-		try {
+        javaClassNode1
+                .addNode(JavaClassNode.class, "transNode1", TRANSIENT);
+        javaMethodNode1.addNode(JavaMethodNode.class, "transNode2",
+                TRANSIENT);
 
-			SLNode root1 = session.createContext("1L").getRootNode();
-			JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class,
-					"javaClassNode1", NORMAL);
-			JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(
-					JavaMethodNode.class, "javaMethodNode1", NORMAL);
+        // add transNode1 as NORMAL (not PERSISTENT anymore) ...
+        javaClassNode1.addNode(JavaClassNode.class, "transNode1", NORMAL);
 
-			javaClassNode1
-					.addNode(JavaClassNode.class, "transNode1", TRANSIENT);
-			javaMethodNode1.addNode(JavaMethodNode.class, "transNode2",
-					TRANSIENT);
+        session.save();
+        session = client.createRemoteGraphSession(user, pass,
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
-			// add transNode1 as NORMAL (not PERSISTENT anymore) ...
-			javaClassNode1.addNode(JavaClassNode.class, "transNode1", NORMAL);
-
-			session.save();
-			session = client.createRemoteGraphSession(user, pass,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
-
-			root1 = session.getContext("1L").getRootNode();
-			javaClassNode1 = root1.getNode(JavaClassNode.class,
-					"javaClassNode1");
-			Assert.assertNotNull(javaClassNode1);
-			javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class,
-					"javaMethodNode1");
-			Assert.assertNotNull(javaMethodNode1);
-			Assert.assertNotNull(javaClassNode1.getNode(JavaClassNode.class,
-					"transNode1"));
-			Assert.assertNull(javaMethodNode1.getNode(TransientNode.class,
-					"transNode2"));
-		} catch (final SLException e) {
-			LOGGER.error(e.getMessage(), e);
-			Assert.fail();
-		} catch (final SLInvalidCredentialException e) {
-			LOGGER.error(e);
-			Assert.fail();
-		}
+        root1 = session.getContext("1L").getRootNode();
+        javaClassNode1 = root1.getNode(JavaClassNode.class,
+                "javaClassNode1");
+        Assert.assertNotNull(javaClassNode1);
+        javaMethodNode1 = javaClassNode1.getNode(JavaMethodNode.class,
+                "javaMethodNode1");
+        Assert.assertNotNull(javaMethodNode1);
+        Assert.assertNotNull(javaClassNode1.getNode(JavaClassNode.class,
+                "transNode1"));
+        Assert.assertNull(javaMethodNode1.getNode(TransientNode.class,
+                "transNode2"));
 	}
 
 	/**

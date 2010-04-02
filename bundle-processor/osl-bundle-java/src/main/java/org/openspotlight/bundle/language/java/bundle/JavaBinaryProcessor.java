@@ -1,34 +1,11 @@
 package org.openspotlight.bundle.language.java.bundle;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.jcr.Session;
-
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.asm.CompiledTypesExtractor;
-import org.openspotlight.bundle.language.java.asm.model.ArrayTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.FieldDeclaration;
-import org.openspotlight.bundle.language.java.asm.model.MethodDeclaration;
-import org.openspotlight.bundle.language.java.asm.model.MethodParameterDefinition;
-import org.openspotlight.bundle.language.java.asm.model.PrimitiveTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.SimpleTypeReference;
-import org.openspotlight.bundle.language.java.asm.model.TypeDefinition;
-import org.openspotlight.bundle.language.java.asm.model.TypeReference;
+import org.openspotlight.bundle.language.java.asm.model.*;
 import org.openspotlight.bundle.language.java.asm.model.TypeDefinition.JavaTypes;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.InvocationCacheFactory;
@@ -43,6 +20,15 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.Session;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class JavaBinaryProcessor implements
 BundleProcessorArtifactPhase<StreamArtifact> {

@@ -48,6 +48,8 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.graph.exception.SLGraphSessionException;
+
 /**
  * The Interface SLMetaRenderHint.
  * 

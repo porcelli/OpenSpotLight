@@ -48,9 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -61,35 +58,23 @@ import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.ImplicitExtends;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
-import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
-import org.openspotlight.bundle.language.java.resolver.JavaTypeResolver;
-import org.openspotlight.bundle.language.java.resolver.MethodResolver;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
-import org.openspotlight.graph.SLInvalidNodeTypeException;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
+import org.openspotlight.graph.exception.SLInvalidNodeTypeException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractMethodResolutionTest {
 
@@ -109,7 +94,7 @@ public abstract class AbstractMethodResolutionTest {
 	 */
 	@BeforeClass
 	public static void init() throws AbstractFactoryException,
-			SLInvalidCredentialException, IdentityException {
+            SLInvalidCredentialException, IdentityException {
 		final SecurityFactory securityFactory = AbstractFactory
 				.getDefaultInstance(SecurityFactory.class);
 		final User simpleUser = securityFactory.createUser("testUser");
@@ -134,11 +119,9 @@ public abstract class AbstractMethodResolutionTest {
 	/**
 	 * After test.
 	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
 	 */
 	@After
-	public void afterTest() throws SLGraphSessionException {
+	public void afterTest()  {
 		graphSession.clear();
 	}
 
@@ -260,8 +243,7 @@ public abstract class AbstractMethodResolutionTest {
 	}
 
 	protected JavaType getAbstractType(final String packageName,
-			final String className) throws SLInvalidNodeTypeException,
-			SLGraphSessionException {
+			final String className) throws SLInvalidNodeTypeException {
 		final JavaPackage abstractPackage = abstractContex.getRootNode()
 				.getNode(JavaPackage.class, packageName);
 		if (abstractPackage != null) {

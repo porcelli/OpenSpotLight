@@ -49,6 +49,10 @@
 
 package org.openspotlight.common.util;
 
+import org.apache.commons.beanutils.Converter;
+import org.apache.commons.beanutils.converters.*;
+import org.openspotlight.common.exception.SLException;
+
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -57,19 +61,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.converters.BigDecimalConverter;
-import org.apache.commons.beanutils.converters.BigIntegerConverter;
-import org.apache.commons.beanutils.converters.BooleanConverter;
-import org.apache.commons.beanutils.converters.ByteConverter;
-import org.apache.commons.beanutils.converters.CharacterConverter;
-import org.apache.commons.beanutils.converters.DoubleConverter;
-import org.apache.commons.beanutils.converters.FloatConverter;
-import org.apache.commons.beanutils.converters.IntegerConverter;
-import org.apache.commons.beanutils.converters.LongConverter;
-import org.apache.commons.beanutils.converters.ShortConverter;
-import org.openspotlight.common.exception.SLException;
 
 /**
  * Utility conversion class based on PrimitiveOrWrapperConverter from Dozer project http://dozer.sourceforge.net/

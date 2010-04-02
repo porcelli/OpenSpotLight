@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.query.SLQuery.SortMode;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
-
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLQuery.SortMode;
 
 /**
  * The Interface SLQueryTextInternal. This class is an internal class.

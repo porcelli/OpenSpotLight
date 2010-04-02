@@ -48,11 +48,6 @@
  */
 package org.openspotlight.security.domain;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.jboss.identity.idm.api.Credential;
 import org.jboss.identity.idm.api.CredentialType;
 import org.jboss.identity.idm.impl.api.BinaryCredential;
@@ -64,6 +59,11 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SLPasswordEntry implements SimpleNodeType, Serializable {
 

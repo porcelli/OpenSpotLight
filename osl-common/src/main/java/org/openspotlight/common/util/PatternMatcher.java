@@ -49,20 +49,20 @@
 
 package org.openspotlight.common.util;
 
-import static java.util.Collections.unmodifiableSet;
-import static org.apache.tools.ant.types.selectors.SelectorUtils.match;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
+import org.apache.tools.ant.types.selectors.SelectorUtils;
+import org.openspotlight.common.MutableType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.tools.ant.types.selectors.SelectorUtils;
-import org.openspotlight.common.MutableType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Collections.unmodifiableSet;
+import static org.apache.tools.ant.types.selectors.SelectorUtils.match;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 // TODO: Auto-generated Javadoc
 /**

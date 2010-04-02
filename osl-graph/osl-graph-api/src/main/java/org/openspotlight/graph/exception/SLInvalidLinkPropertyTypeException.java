@@ -46,106 +46,67 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
-
-import java.util.Collection;
-
-import org.openspotlight.graph.persistence.SLPersistentNode;
+package org.openspotlight.graph.exception;
 
 /**
- * The Class SLNodeEvent.
+ * The Class SLInvalidLinkPropertyTypeException.
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class SLNodeEvent extends SLGraphSessionEvent {
+public class SLInvalidLinkPropertyTypeException extends SLGraphSessionException {
 
-	/** The node. */
-	private final SLNode node;
-
-	/** The p node. */
-	private final SLPersistentNode pNode;
-
-	/** The persistent mode. */
-	private final SLPersistenceMode persistentMode;
-
-	/** The link types for link deletion. */
-	private final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion;
-
-	/** The link types for linked node deletion. */
-	private final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion;
-
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = 1L;
+	
 	/**
-	 * Instantiates a new sL node event.
+	 * Instantiates a new sL invalid link property type exception.
 	 * 
-	 * @param type
-	 *            the type
-	 * @param node
-	 *            the node
-	 * @param pNode
-	 *            the node
-	 * @param persistentMode
-	 *            the persistent mode
-	 * @param linkTypesForLinkDeletion
-	 *            the link types for link deletion
-	 * @param linkTypesForLinkedNodeDeletion
-	 *            the link types for linked node deletion
+	 * @param name the name
+	 * @param invalidType the invalid type
+	 * @param allowedTypes the allowed types
 	 */
-	public SLNodeEvent(
-			final SLNode node,
-			final SLPersistentNode pNode,
-			final SLPersistenceMode persistentMode,
-			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
-		super(node.getSession());
-		this.node = node;
-		this.pNode = pNode;
-		this.persistentMode = persistentMode;
-		this.linkTypesForLinkDeletion = linkTypesForLinkDeletion;
-		this.linkTypesForLinkedNodeDeletion = linkTypesForLinkedNodeDeletion;
+	public SLInvalidLinkPropertyTypeException(String name, Class<?> invalidType, Class<?>... allowedTypes) {
+		super(getMessage(name, invalidType, allowedTypes));
 	}
 
 	/**
-	 * Gets the link types for link deletion.
+	 * Instantiates a new sL invalid link property type exception.
 	 * 
-	 * @return the link types for link deletion
+	 * @param message the message
 	 */
-	public Collection<Class<? extends SLLink>> getLinkTypesForLinkDeletion() {
-		return linkTypesForLinkDeletion;
+	public SLInvalidLinkPropertyTypeException(String message) {
+		super(message);
 	}
 
 	/**
-	 * Gets the link types for linked nodes deletion.
+	 * Instantiates a new sL invalid link property type exception.
 	 * 
-	 * @return the link types for linked nodes deletion
+	 * @param cause the cause
 	 */
-	public Collection<Class<? extends SLLink>> getLinkTypesForLinkedNodesDeletion() {
-		return linkTypesForLinkedNodeDeletion;
+	public SLInvalidLinkPropertyTypeException(Throwable cause) {
+		super(cause);
 	}
 
 	/**
-	 * Gets the node.
+	 * Gets the message.
 	 * 
-	 * @return the node
+	 * @param name the name
+	 * @param invalidType the invalid type
+	 * @param allowedTypes the allowed types
+	 * 
+	 * @return the message
 	 */
-	public SLNode getNode() {
-		return node;
+	private static String getMessage(String name, Class<?> invalidType, Class<?>... allowedTypes) {
+		StringBuilder message = new StringBuilder();
+		message.append("Value of property ")
+			.append(name).append(" cannot be retrieved as ")
+			.append(invalidType.getName()).append(". ");
+		for (int i = 0; i < allowedTypes.length; i++) {
+			if (i > 0) message.append(", ");
+			message.append(allowedTypes[i].getName());
+		}
+		message.append(" or super type can be used instead.");
+		return message.toString();
 	}
 
-	/**
-	 * Gets the persistence mode.
-	 * 
-	 * @return the persistence mode
-	 */
-	public SLPersistenceMode getPersistenceMode() {
-		return persistentMode;
-	}
-
-	/**
-	 * Gets the persistent node.
-	 * 
-	 * @return the persistent node
-	 */
-	public SLPersistentNode getPersistentNode() {
-		return pNode;
-	}
 }

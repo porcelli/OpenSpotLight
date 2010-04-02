@@ -48,11 +48,6 @@
  */
 package org.openspotlight.federation.log;
 
-import java.util.Date;
-import java.util.UUID;
-
-import javax.jcr.Session;
-
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.exception.SLRuntimeException;
@@ -64,6 +59,10 @@ import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.security.idm.AuthenticatedUser;
+
+import javax.jcr.Session;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * The JcrDetailedLogger is an implementation of {@link DetailedLogger} based on

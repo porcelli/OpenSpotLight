@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.client;
 
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.remote.client.CantConnectException;
 import org.openspotlight.remote.client.RemoteObjectFactory;
 import org.openspotlight.remote.server.AccessDeniedException;
 import org.openspotlight.remote.server.InvalidReferenceTypeException;
+
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 /**
  * A factory for creating RemoteGraphSession objects.

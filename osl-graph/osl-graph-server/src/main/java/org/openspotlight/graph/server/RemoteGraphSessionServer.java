@@ -48,26 +48,26 @@
  */
 package org.openspotlight.graph.server;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLInvalidCredentialException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.RemoteObjectServer;
+import org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory;
 import org.openspotlight.remote.server.RemoteObjectServerImpl;
 import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 /**
  * The Class RemoteGraphSessionServer.
@@ -96,8 +96,6 @@ public class RemoteGraphSessionServer {
 				graph = graphFactory.createGraph(descriptor);
 			} catch (final AbstractFactoryException e) {
 				throw logAndReturnNew(e, ConfigurationException.class);
-			} catch (final SLInvalidCredentialException e) {
-				throw logAndReturnNew(e, SLInvalidCredentialException.class);
 			}
 		}
 

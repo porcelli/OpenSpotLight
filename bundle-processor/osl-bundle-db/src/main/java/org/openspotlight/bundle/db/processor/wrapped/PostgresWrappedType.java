@@ -48,28 +48,8 @@
  */
 package org.openspotlight.bundle.db.processor.wrapped;
 
-import org.openspotlight.bundle.db.metamodel.node.Catalog;
-import org.openspotlight.bundle.db.metamodel.node.Column;
-import org.openspotlight.bundle.db.metamodel.node.DataType;
-import org.openspotlight.bundle.db.metamodel.node.Database;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
-import org.openspotlight.bundle.db.metamodel.node.Schema;
-import org.openspotlight.bundle.db.metamodel.node.Server;
-import org.openspotlight.bundle.db.metamodel.node.TableView;
-import org.openspotlight.bundle.db.metamodel.node.TableViewTable;
-import org.openspotlight.bundle.db.metamodel.node.TableViewView;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresCatalog;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresColumn;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresDataType;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresDatabase;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresDatabaseConstraintForeignKey;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresDatabaseConstraintPrimaryKey;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresSchema;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresServer;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresTableView;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresTableViewTable;
-import org.openspotlight.bundle.db.metamodel.node.impl.PostgresTableViewView;
+import org.openspotlight.bundle.db.metamodel.node.*;
+import org.openspotlight.bundle.db.metamodel.node.impl.*;
 import org.openspotlight.bundle.db.processor.DbWrappedType;
 
 public enum PostgresWrappedType implements DbWrappedType {

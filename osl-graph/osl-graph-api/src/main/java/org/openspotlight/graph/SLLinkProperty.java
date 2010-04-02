@@ -48,6 +48,9 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException;
+
 import java.io.Serializable;
 
 /**
@@ -78,8 +81,8 @@ public interface SLLinkProperty<V extends Serializable> {
 	 * 
 	 * @return the value
 	 * 
-	 * @throws SLInvalidLinkPropertyTypeException the SL invalid link property type exception
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @throws org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException the SL invalid link property type exception
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
 	 */
 	public V getValue() throws SLInvalidLinkPropertyTypeException, SLGraphSessionException;
 
@@ -97,14 +100,14 @@ public interface SLLinkProperty<V extends Serializable> {
 	 * 
 	 * @param value the new value
 	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
 	 */
 	public void setValue(V value) throws SLGraphSessionException;
 	
 	/**
 	 * Removes the.
 	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
 	 */
 	public void remove() throws SLGraphSessionException;
 }

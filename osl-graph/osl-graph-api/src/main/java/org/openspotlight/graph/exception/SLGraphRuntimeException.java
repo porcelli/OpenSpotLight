@@ -46,26 +46,45 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.exception;
 
+import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
- * The Class SLInvalidNodeTypeException.
- * 
+ * The Class SLGraphException.
+ *
  * @author Vitor Hugo Chagas
  */
-public class SLInvalidNodeTypeException extends SLGraphSessionException {
+public class SLGraphRuntimeException extends SLRuntimeException {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
-	 * Instantiates a new sL invalid node type exception.
-	 * 
-	 * @param invalidClass the invalid class
-	 * @param nodeClass the node class
+	 * Instantiates a new sL graph exception.
+	 *
+	 * @param message the message
+	 * @param cause the cause
 	 */
-	public SLInvalidNodeTypeException(Class<?> invalidClass, Class<?> nodeClass) {
-		super("Node cannot be retrieved as " + invalidClass.getName() + ". " + nodeClass.getName() + " or super class should be used instead.");
+	public SLGraphRuntimeException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	/**
+	 * Instantiates a new sL graph exception.
+	 *
+	 * @param message the message
+	 */
+	public SLGraphRuntimeException(String message) {
+		super(message);
+	}
+
+	/**
+	 * Instantiates a new sL graph exception.
+	 *
+	 * @param cause the cause
+	 */
+	public SLGraphRuntimeException(Throwable cause) {
+		super(cause);
 	}
 }

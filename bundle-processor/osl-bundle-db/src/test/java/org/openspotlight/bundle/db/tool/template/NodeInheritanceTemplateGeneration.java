@@ -48,27 +48,16 @@
  */
 package org.openspotlight.bundle.db.tool.template;
 
-import java.io.File;
-import java.io.FileWriter;
-
+import dynamo.string.StringTool;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.junit.Test;
-import org.openspotlight.bundle.db.metamodel.node.Catalog;
-import org.openspotlight.bundle.db.metamodel.node.Column;
-import org.openspotlight.bundle.db.metamodel.node.DataType;
-import org.openspotlight.bundle.db.metamodel.node.Database;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
-import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
-import org.openspotlight.bundle.db.metamodel.node.Schema;
-import org.openspotlight.bundle.db.metamodel.node.Server;
-import org.openspotlight.bundle.db.metamodel.node.TableView;
-import org.openspotlight.bundle.db.metamodel.node.TableViewTable;
-import org.openspotlight.bundle.db.metamodel.node.TableViewView;
+import org.openspotlight.bundle.db.metamodel.node.*;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
-import dynamo.string.StringTool;
+import java.io.File;
+import java.io.FileWriter;
 
 public class NodeInheritanceTemplateGeneration {
 

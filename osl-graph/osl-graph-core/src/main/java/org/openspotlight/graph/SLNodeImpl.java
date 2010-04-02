@@ -49,16 +49,6 @@
 
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
@@ -68,6 +58,11 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.event.SLGraphSessionEventPoster;
+import org.openspotlight.graph.event.SLNodeAddedEvent;
+import org.openspotlight.graph.event.SLNodePropertyEvent;
+import org.openspotlight.graph.event.SLNodePropertySetEvent;
+import org.openspotlight.graph.exception.*;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
@@ -81,13 +76,19 @@ import org.openspotlight.security.authz.graph.GraphElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.text.Collator;
+import java.util.*;
+
 /**
  * The Class SLNodeImpl.
  * 
  * @author Vitor Hugo Chagas
  */
 public class SLNodeImpl implements SLNode, SLPNodeGetter {
-    private SLMetaNodeType                  metaType   = null;
+    private SLMetaNodeType                  metaType = null;
 
     private final Lock                      lock;
 
@@ -108,7 +109,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * 
      * @see org.openspotlight.graph.SLNode#remove()
      */
-    private final Logger                    logger     = LoggerFactory.getLogger(getClass());
+    private final Logger                    logger   = LoggerFactory.getLogger(getClass());
 
     /**
      * Instantiates a new sL node impl.
@@ -502,7 +503,13 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     @SuppressWarnings( "unchecked" )
     public <T extends SLNode> T doCast( final Class<T> clazz )
         throws SLGraphSessionException {
-        return (T)this;
+
+        final Class<? extends SLNode> nodeType = getNodeType(pNode);
+        if (nodeType.equals(clazz) || clazz.isAssignableFrom(nodeType)){
+            return (T) createNodeProxy(nodeType, pNode);
+        } else {
+            throw new ClassCastException();
+        }
     }
 
     // @Override
@@ -1033,7 +1040,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                                                    final Class<V> clazz,
                                                                    final String name )
         throws SLNodePropertyNotFoundException,
-        SLInvalidNodePropertyTypeException, SLGraphSessionException {
+            SLInvalidNodePropertyTypeException, SLGraphSessionException {
         synchronized (lock) {
             return this.getProperty(clazz, name, null);
         }

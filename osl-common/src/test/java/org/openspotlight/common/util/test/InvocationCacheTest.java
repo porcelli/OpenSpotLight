@@ -48,13 +48,13 @@
  */
 package org.openspotlight.common.util.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.util.InvocationCacheFactory;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 
 @SuppressWarnings( "boxing" )

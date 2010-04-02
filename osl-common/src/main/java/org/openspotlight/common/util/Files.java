@@ -49,26 +49,18 @@
 
 package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.exception.SLRuntimeException;
+import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 
 /**
  * Helper class to deal with multiple files.

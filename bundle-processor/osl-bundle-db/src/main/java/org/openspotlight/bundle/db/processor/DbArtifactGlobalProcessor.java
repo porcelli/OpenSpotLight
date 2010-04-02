@@ -48,10 +48,6 @@
  */
 package org.openspotlight.bundle.db.processor;
 
-import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createTableParentNodes;
-
-import java.util.Set;
-
 import org.openspotlight.bundle.db.processor.DbProcessorHelper.ParentVo;
 import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
 import org.openspotlight.common.util.SLCollections;
@@ -61,12 +57,12 @@ import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
-import org.openspotlight.federation.processing.ArtifactChanges;
-import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
-import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
-import org.openspotlight.federation.processing.CurrentProcessorContext;
-import org.openspotlight.federation.processing.SaveBehavior;
+import org.openspotlight.federation.processing.*;
 import org.openspotlight.graph.SLNode;
+
+import java.util.Set;
+
+import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createTableParentNodes;
 
 public class DbArtifactGlobalProcessor implements
 		BundleProcessorGlobalPhase<DatabaseCustomArtifact> {

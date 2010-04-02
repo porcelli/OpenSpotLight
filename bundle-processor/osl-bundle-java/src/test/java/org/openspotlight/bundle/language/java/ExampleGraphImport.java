@@ -49,20 +49,10 @@
 package org.openspotlight.bundle.language.java;
 
 import org.junit.Test;
-import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphFactoryImpl;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.*;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;

@@ -48,16 +48,17 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-import java.text.Collator;
-import java.util.Collection;
-
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.*;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.remote.annotation.DisposeMethod;
+
+import java.io.Serializable;
+import java.text.Collator;
+import java.util.Collection;
 
 /**
  * The Interface SLNode.
@@ -85,9 +86,9 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 * @param artifactVersion
 	 *            the artifact version
 	 * @return the sL line reference
-	 * @throws SLGraphSessionException
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public SLLineReference addLineReference(int startLine, int endLine,
@@ -107,7 +108,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name)
@@ -130,7 +131,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name,
@@ -153,7 +154,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name,
@@ -178,7 +179,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name,
@@ -186,7 +187,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 			Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
 			Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion)
 			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
-			SLInvalidCredentialException;
+            SLInvalidCredentialException;
 
 	/**
 	 * Adds the node.
@@ -204,7 +205,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name,
@@ -232,7 +233,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name,
@@ -256,7 +257,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name,
@@ -282,7 +283,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <T extends SLNode> T addNode(Class<T> clazz, String name,
@@ -302,7 +303,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public SLNode addNode(String name) throws SLNodeTypeNotInExistentHierarchy,
@@ -320,7 +321,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 *             the SL node type not in existent hierarchy
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public SLNode addNode(String name, SLEncoder encoder)
@@ -333,7 +334,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 * @param clazz
 	 *            the clazz
 	 * @return the t
-	 * @throws SLGraphSessionException
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
 	 *             the SL graph session exception
 	 */
 	public <T extends SLNode> T doCast(Class<T> clazz)
@@ -389,7 +390,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
     /**
      * Gets the line references for a specific artifactId.
      * 
-     * @param the artifact id
+     * @param artifactId the artifact id
      * @return the line references
      * @throws SLGraphSessionException
      *             the SL graph session exception
@@ -511,7 +512,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	public <V extends Serializable> SLNodeProperty<V> getProperty(
 			Class<V> clazz, String name)
 			throws SLNodePropertyNotFoundException,
-			SLInvalidNodePropertyTypeException, SLGraphSessionException;
+            SLInvalidNodePropertyTypeException, SLGraphSessionException;
 
 	/**
 	 * Gets the property.
@@ -568,7 +569,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
     /**
      * Gets line references in tree format for a specific artifact.
      * 
-     * @param the artifact id
+     * @param artifactId the artifact id
      * @return the tree line references
      * @throws SLGraphSessionException
      *             the SL graph session exception
@@ -590,7 +591,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 * 
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	@DisposeMethod
@@ -609,7 +610,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 	 * @return the sL node property< v>
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
+	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credentials exception
 	 */
 	public <V extends Serializable> SLNodeProperty<V> setProperty(

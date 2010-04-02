@@ -48,20 +48,18 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isOneOf;
-import static org.hamcrest.Matchers.not;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.test.domain.JavaInterface;
 import org.openspotlight.graph.test.domain.JavaPackage;
 import org.openspotlight.graph.test.domain.JavaType;
 import org.openspotlight.graph.test.domain.PackageContainsType;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
 
@@ -149,7 +147,7 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
 
 	@Test
 	public void testVerifyWhereInStack2() throws SLQueryException,
-			SLGraphSessionException, SLInvalidQuerySyntaxException {
+            SLGraphSessionException, SLInvalidQuerySyntaxException {
 
 		final SLQueryApi query2Input = session.createQueryApi();
 

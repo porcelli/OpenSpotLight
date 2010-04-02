@@ -46,25 +46,25 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-/**
- * The Class SLLinkAlreadyExistsException.
- * 
- * @author Vitor Hugo Chagas
- */
-public class SLLinkAlreadyExistsException extends SLGraphSessionException {
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLPersistenceMode;
+import org.openspotlight.graph.persistence.SLPersistentNode;
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+import java.util.Collection;
 
-	/**
-	 * Instantiates a new sL link already exists exception.
-	 * 
-	 * @param aName the a name
-	 * @param bName the b name
-	 */
-	public SLLinkAlreadyExistsException(String aName, String bName) {
-		super("Node " + aName + " is already linked to " + bName);
+public final class SLNodeAddedEvent extends SLNodeEvent {
+
+	public SLNodeAddedEvent(
+			final SLNode node,
+			final SLPersistentNode pNode,
+			final SLPersistenceMode persistentMode,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
+		super(node, pNode, persistentMode, linkTypesForLinkDeletion,
+				linkTypesForLinkedNodeDeletion);
 	}
+
 }

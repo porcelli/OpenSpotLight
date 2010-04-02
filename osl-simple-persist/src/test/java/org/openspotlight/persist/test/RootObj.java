@@ -48,11 +48,11 @@
  */
 package org.openspotlight.persist.test;
 
-import java.io.Serializable;
-
 import org.openspotlight.persist.annotation.PersistPropertyAsStream;
 import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+
+import java.io.Serializable;
 
 public class RootObj implements SimpleNodeType, Serializable {
 

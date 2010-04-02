@@ -48,15 +48,16 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.event.SLGraphSessionEventPoster;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.AuthenticatedUser;
+
+import java.io.Serializable;
 
 /**
  * A factory for creating SLGraph objects.
@@ -68,11 +69,9 @@ public abstract class SLGraphFactory extends AbstractFactory {
      * 
      * @param descriptor the descriptor
      * @return the SL graph
-     * @throws SLGraphFactoryException the SL graph factory exception
-     * @throws SLInvalidCredentialsException the SL invalid credentials exception
+     * @throws org.openspotlight.common.exception.ConfigurationException configuration exception
      */
-    public abstract SLGraph createGraph( final JcrConnectionDescriptor descriptor )
-        throws SLGraphFactoryException, SLInvalidCredentialException;
+    public abstract SLGraph createGraph( final JcrConnectionDescriptor descriptor );
 
     /**
      * Creates the graph session.
@@ -81,28 +80,10 @@ public abstract class SLGraphFactory extends AbstractFactory {
      * @param user the user
      * @param policyEnforcement the policy enforcement
      * @return the SL graph session
-     * @throws SLGraphFactoryException the SL graph factory exception
-     * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     abstract SLGraphSession createGraphSession( SLPersistentTreeSession treeSession,
                                                 PolicyEnforcement policyEnforcement,
-                                                AuthenticatedUser user )
-        throws SLGraphFactoryException, SLInvalidCredentialException;
-
-    /**
-     * Creates a new SLGraph object.
-     * 
-     * @param clazz the clazz
-     * @param context the context
-     * @param parent the parent
-     * @param persistentNode the persistent node
-     * @return the T
-     * @throws SLGraphFactoryException the SL graph factory exception
-     */
-    abstract <T extends SLNode> T createNode( Class<T> clazz,
-                                              SLContext context,
-                                              SLNode parent,
-                                              SLPersistentNode persistentNode ) throws SLGraphFactoryException;
+                                                AuthenticatedUser user );
 
     /**
      * Creates a new SLGraph object.
@@ -112,25 +93,11 @@ public abstract class SLGraphFactory extends AbstractFactory {
      * @param persistentNode the persistent node
      * @param eventPoster the event poster
      * @return the SL node
-     * @throws SLGraphFactoryException the SL graph factory exception
      */
     abstract SLNode createNode( SLContext context,
                                 SLNode parent,
                                 SLPersistentNode persistentNode,
-                                SLGraphSessionEventPoster eventPoster ) throws SLGraphFactoryException;
-
-    /**
-     * Creates a new SLGraph object.
-     * 
-     * @param context the context
-     * @param persistentNode the persistent node
-     * @param eventPoster the event poster
-     * @return the SL node
-     * @throws SLGraphFactoryException the SL graph factory exception
-     */
-    abstract SLNode createNode( SLContext context,
-                                SLPersistentNode persistentNode,
-                                SLGraphSessionEventPoster eventPoster ) throws SLGraphFactoryException;
+                                SLGraphSessionEventPoster eventPoster );
 
     /**
      * Creates a new SLGraph object.
@@ -139,19 +106,9 @@ public abstract class SLGraphFactory extends AbstractFactory {
      * @param persistentProperty the persistent property
      * @param eventPoster the event poster
      * @return the SL node property< v>
-     * @throws SLGraphFactoryException the SL graph factory exception
      */
     abstract <V extends Serializable> SLNodeProperty<V> createProperty( SLNode node,
                                                                         SLPersistentProperty<V> persistentProperty,
-                                                                        SLGraphSessionEventPoster eventPoster )
-        throws SLGraphFactoryException;
-
-    /**
-     * Gets the context impl class.
-     * 
-     * @return the context impl class
-     * @throws SLGraphFactoryException the SL graph factory exception
-     */
-    abstract Class<? extends SLContext> getContextImplClass() throws SLGraphFactoryException;
+                                                                        SLGraphSessionEventPoster eventPoster );
 
 }

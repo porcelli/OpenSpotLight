@@ -48,13 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
@@ -62,13 +55,11 @@ import org.openspotlight.graph.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.SLMetadata.LogicOperator;
 import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
-import org.openspotlight.graph.persistence.SLPersistentPropertyNotFoundException;
-import org.openspotlight.graph.persistence.SLPersistentQuery;
-import org.openspotlight.graph.persistence.SLPersistentQueryResult;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.persistence.*;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * The Class SLMetaNodeTypeImpl.

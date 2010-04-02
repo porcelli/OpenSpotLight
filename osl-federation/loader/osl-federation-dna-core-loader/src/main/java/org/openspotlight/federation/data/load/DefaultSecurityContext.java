@@ -49,11 +49,11 @@
 
 package org.openspotlight.federation.data.load;
 
-import static org.openspotlight.common.util.SLCollections.setOf;
+import org.jboss.dna.graph.SecurityContext;
 
 import java.util.Set;
 
-import org.jboss.dna.graph.SecurityContext;
+import static org.openspotlight.common.util.SLCollections.setOf;
 
 /**
  * Default DNA security context for internal use on OSL.

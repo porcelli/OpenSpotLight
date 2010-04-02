@@ -48,11 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-import java.text.Collator;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
@@ -61,11 +56,18 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.event.*;
+import org.openspotlight.graph.exception.*;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
+
+import java.io.Serializable;
+import java.text.Collator;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The Class SLLinkImpl.
@@ -403,7 +405,7 @@ public class SLLinkImpl implements SLLink {
                                                                    final Class<V> clazz,
                                                                    final String name )
         throws SLLinkPropertyNotFoundException,
-        SLInvalidLinkPropertyTypeException, SLGraphSessionException {
+            SLInvalidLinkPropertyTypeException, SLGraphSessionException {
         synchronized (lock) {
             return this.getProperty(clazz, name, null);
         }

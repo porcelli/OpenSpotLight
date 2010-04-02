@@ -48,14 +48,15 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.persistence.SLPersistentProperty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
 
 /**
  * The Class SLMetaLinkTypeImpl.

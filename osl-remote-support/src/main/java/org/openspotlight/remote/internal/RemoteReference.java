@@ -48,16 +48,16 @@
  */
 package org.openspotlight.remote.internal;
 
+import org.openspotlight.common.util.Arrays;
+
+import java.io.Serializable;
+
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.HashCodes.hashOf;
-
-import java.io.Serializable;
-
-import org.openspotlight.common.util.Arrays;
 
 /**
  * The Class RemoteReference will be used to locate the remote reference on

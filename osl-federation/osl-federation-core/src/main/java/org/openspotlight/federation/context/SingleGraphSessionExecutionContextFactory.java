@@ -48,9 +48,6 @@
  */
 package org.openspotlight.federation.context;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -63,6 +60,9 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SingleGraphSessionExecutionContextFactory implements
 		ExecutionContextFactory, DisposingListener<DefaultExecutionContext> {

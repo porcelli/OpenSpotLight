@@ -48,13 +48,13 @@
  */
 package org.openspotlight.federation.finder.db;
 
-import static java.lang.Class.forName;
-import static java.sql.DriverManager.getConnection;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
+import org.openspotlight.federation.domain.DbArtifactSource;
 
 import java.sql.Connection;
 
-import org.openspotlight.federation.domain.DbArtifactSource;
+import static java.lang.Class.forName;
+import static java.sql.DriverManager.getConnection;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 /**
  * Helper methods to manipulate database resources.

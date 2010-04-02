@@ -1,11 +1,11 @@
 package org.openspotlight.federation.finder;
 
-import java.util.Set;
-
 import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.support.SimplePersistSupport.InternalMethods;
+
+import java.util.Set;
 
 /**
  * This class persists the artifacts loaded from {@link OriginArtifactLoader}

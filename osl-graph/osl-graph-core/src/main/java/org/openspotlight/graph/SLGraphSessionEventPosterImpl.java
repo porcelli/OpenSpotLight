@@ -48,13 +48,14 @@
  */
 package org.openspotlight.graph;
 
-import java.util.Collection;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 /**
  * The Class SLGraphSessionEventPosterImpl.
@@ -62,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author Vitor Hugo Chagas
  */
 public class SLGraphSessionEventPosterImpl implements
-		SLGraphSessionEventPoster, LockContainer {
+        SLGraphSessionEventPoster, LockContainer {
 
 	private final Lock lock;
 
@@ -85,20 +86,14 @@ public class SLGraphSessionEventPosterImpl implements
 	}
 
 	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-	 * .graph.SLGraphSessionEvent)
-	 */
-
 	public Lock getLockObject() {
 		return lock;
 	}
 
-	public void post(final SLGraphSessionEvent event)
-			throws SLGraphSessionException, SLInvalidCredentialException {
+    /**
+     * {@inheritDoc}
+     */
+	public void post(final SLGraphSessionEvent event) {
 		synchronized (lock) {
 			for (final SLGraphSessionEventListener listener : listeners) {
 				if (event instanceof SLGraphSessionSaveEvent) {

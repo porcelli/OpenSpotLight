@@ -1,8 +1,5 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
@@ -15,11 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
-import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
+import org.openspotlight.bundle.language.java.bundle.*;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
@@ -27,14 +20,10 @@ import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
+import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
@@ -46,6 +35,9 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public class JavaBodyElementsPhaseTest {
 

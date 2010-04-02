@@ -48,13 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import org.hamcrest.core.Is;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -62,11 +55,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MultithreadGraphSessionTest {
 	private static enum State {
@@ -121,7 +122,7 @@ public class MultithreadGraphSessionTest {
 	 */
 	@BeforeClass
 	public static void init() throws AbstractFactoryException,
-			SLInvalidCredentialException, IdentityException {
+            SLInvalidCredentialException, IdentityException {
 		final SLGraphFactory factory = AbstractFactory
 				.getDefaultInstance(SLGraphFactory.class);
 		MultithreadGraphSessionTest.graph = factory

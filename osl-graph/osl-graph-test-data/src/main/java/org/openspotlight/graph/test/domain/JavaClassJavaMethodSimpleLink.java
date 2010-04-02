@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.test.domain;
 
-import java.text.Collator;
-import java.util.Date;
-
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLCollator;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
+
+import java.text.Collator;
+import java.util.Date;
 
 /**
  * The Interface JavaClassJavaMethodSimpleLink.
@@ -119,7 +119,7 @@ public interface JavaClassJavaMethodSimpleLink extends SLLink {
 	 * 
 	 * @param selecao the new selecao
 	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
 	 */
 	public void setSelecao(String selecao) throws SLGraphSessionException;
 

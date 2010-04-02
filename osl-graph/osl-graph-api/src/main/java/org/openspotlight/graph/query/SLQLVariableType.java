@@ -4,5 +4,5 @@ public enum SLQLVariableType {
     BOOLEAN,
     FLOAT,
     INTEGER,
-    STRING;
+    STRING
 }

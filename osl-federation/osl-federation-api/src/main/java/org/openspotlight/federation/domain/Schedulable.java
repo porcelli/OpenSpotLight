@@ -48,12 +48,12 @@
  */
 package org.openspotlight.federation.domain;
 
-import java.util.List;
-
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+
+import java.util.List;
 
 /**
  * The Interface Schedulable.

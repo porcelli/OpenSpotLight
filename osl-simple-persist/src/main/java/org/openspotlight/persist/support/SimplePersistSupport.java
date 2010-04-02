@@ -48,48 +48,6 @@
  */
 package org.openspotlight.persist.support;
 
-import java.beans.PropertyDescriptor;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.UUID;
-import java.util.Map.Entry;
-
-import javax.jcr.ItemExistsException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.ValueFormatException;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.query.InvalidQueryException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionException;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.LazyType;
@@ -97,27 +55,29 @@ import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
-import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Conversion;
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.Reflection;
-import org.openspotlight.common.util.Sha1;
-import org.openspotlight.common.util.Strings;
+import org.openspotlight.common.util.*;
 import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.jcr.util.JCRUtil;
-import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.Name;
-import org.openspotlight.persist.annotation.ParentProperty;
-import org.openspotlight.persist.annotation.PersistPropertyAsStream;
-import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
-import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.annotation.TransientProperty;
+import org.openspotlight.persist.annotation.*;
 import org.openspotlight.persist.internal.LazyProperty;
 import org.openspotlight.persist.internal.StreamPropertyWithParent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.*;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.InvalidQueryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
+import java.beans.PropertyDescriptor;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * The Class SimplePersistSupport.

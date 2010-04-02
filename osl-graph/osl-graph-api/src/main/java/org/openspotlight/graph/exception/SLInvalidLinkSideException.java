@@ -46,34 +46,23 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.exception;
+
 
 /**
- * The Class SLNodePropertyNotFoundException.
+ * The Class SLInvalidLinkSideException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLNodePropertyNotFoundException extends SLGraphSessionException {
+public class SLInvalidLinkSideException extends SLGraphSessionException {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Instantiates a new sL node property not found exception.
-	 * 
-	 * @param name the name
+	 * Instantiates a new sL invalid link side exception.
 	 */
-	public SLNodePropertyNotFoundException(String name) {
-		super("Property " + name + " does not exit.");
-	}
-
-	/**
-	 * Instantiates a new sL node property not found exception.
-	 * 
-	 * @param name the name
-	 * @param cause the cause
-	 */
-	public SLNodePropertyNotFoundException(String name, Throwable cause) {
-		super("Property " + name + " does not exit.", cause);
+	public SLInvalidLinkSideException() {
+		super("Node is not part of the link.");
 	}
 }

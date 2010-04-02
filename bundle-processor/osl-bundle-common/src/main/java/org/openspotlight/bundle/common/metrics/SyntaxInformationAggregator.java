@@ -48,10 +48,10 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
-import javax.jcr.Session;
-
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
+
+import javax.jcr.Session;
 
 public class SyntaxInformationAggregator {
 	private final ArtifactWithSyntaxInformation artifact;

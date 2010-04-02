@@ -50,9 +50,9 @@ package org.openspotlight.graph;
 
 public class SLFakeEncoder implements SLEncoder {
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLEncoder#encode(java.lang.String)
-	 */
+    /**
+     * {@inheritDoc}
+     */
 	public String encode(String value) {
 		return value;
 	}

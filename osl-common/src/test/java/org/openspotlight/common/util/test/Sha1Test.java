@@ -49,15 +49,15 @@
 
 package org.openspotlight.common.util.test;
 
+import org.junit.Test;
+import org.openspotlight.common.util.Sha1;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
-
-import org.junit.Test;
-import org.openspotlight.common.util.Sha1;
 
 /**
  * Test class for {@link Sha1}

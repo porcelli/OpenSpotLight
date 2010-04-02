@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
+
+import java.util.Collection;
 
 /**
  * The Class QueryUtil.

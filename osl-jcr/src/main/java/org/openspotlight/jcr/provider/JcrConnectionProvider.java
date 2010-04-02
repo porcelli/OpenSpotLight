@@ -48,16 +48,6 @@
  */
 package org.openspotlight.jcr.provider;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.jackrabbit.core.util.RepositoryLock;
@@ -67,6 +57,15 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Files;
+
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The Class JcrConnectionProvider is used to provide access to {@link Session

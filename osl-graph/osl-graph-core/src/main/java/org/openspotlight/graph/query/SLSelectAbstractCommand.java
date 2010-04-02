@@ -48,12 +48,8 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.query.info.*;
 
 /**
  * The Class SLSelectAbstractCommand.

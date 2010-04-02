@@ -48,9 +48,11 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-
 import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidNodePropertyTypeException;
+
+import java.io.Serializable;
 
 /**
  * The Interface SLNodeProperty.

@@ -46,45 +46,29 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.graph.event.SLGraphSessionEvent;
 
 /**
- * The Class SLGraphException.
+ * The Interface SLGraphSessionEventPoster.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLGraphException extends SLException {
+public interface SLGraphSessionEventPoster extends LockContainer {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
 	/**
-	 * Instantiates a new sL graph exception.
+	 * Post.
 	 * 
-	 * @param message the message
-	 * @param cause the cause
+	 * @param event
+	 *            the event
 	 */
-	public SLGraphException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
+	public void post(SLGraphSessionEvent event);
+
 	/**
-	 * Instantiates a new sL graph exception.
-	 * 
-	 * @param message the message
+	 * This method should notify its listeners about a
+	 * {@link org.openspotlight.graph.SLGraphSession#clear()} operation.
 	 */
-	public SLGraphException(String message) {
-		super(message);
-	}
-	
-	/**
-	 * Instantiates a new sL graph exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLGraphException(Throwable cause) {
-		super(cause);
-	}
+	public void sessionCleaned();
 }

@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.query.parser;
 
+import org.openspotlight.graph.query.SLQLVariable;
+import org.openspotlight.graph.query.SLQLVariableType;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.openspotlight.graph.query.SLQLVariable;
-import org.openspotlight.graph.query.SLQLVariableType;
 
 /**
  * The Class SLQLVariableBoolean. This class is a boolean typed SLQLVariable.

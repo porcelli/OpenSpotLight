@@ -48,20 +48,6 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
@@ -70,6 +56,11 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.util.JCRUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * The Class SLPersistentNodeImpl.

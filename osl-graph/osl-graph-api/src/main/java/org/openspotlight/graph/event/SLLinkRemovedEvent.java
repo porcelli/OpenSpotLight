@@ -46,44 +46,22 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-/**
- * The Class SLGraphSessionException.
- * 
- * @author Vitor Hugo Chagas
- */
-public class SLGraphSessionException extends SLGraphException {
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLPersistenceMode;
+import org.openspotlight.graph.persistence.SLPersistentNode;
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+public final class SLLinkRemovedEvent extends SLLinkEvent {
 
-	/**
-	 * Instantiates a new sL graph session exception.
-	 * 
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public SLGraphSessionException(String message, Throwable cause) {
-		super(message, cause);
+	public SLLinkRemovedEvent(final SLLink link) {
+		super(link);
 	}
-	
-	/**
-	 * Instantiates a new sL graph session exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLGraphSessionException(String message) {
-		super(message);
-	}
-	
-	/**
-	 * Instantiates a new sL graph session exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLGraphSessionException(Throwable cause) {
-		super(cause);
+
+	public SLLinkRemovedEvent(final SLLink link,
+			final SLPersistentNode linkNode,
+			final SLPersistenceMode persistenceMode) {
+		super(link, linkNode, persistenceMode);
 	}
 
 }

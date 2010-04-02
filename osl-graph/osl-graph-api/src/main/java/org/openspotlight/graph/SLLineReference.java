@@ -51,14 +51,12 @@ package org.openspotlight.graph;
 import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 
 /**
  * The Interface SLLineReference.
  * 
  * @author Vitor Hugo Chagas
- */
-/**
- * @author vitorchagas
  */
 @SLVisibility( VisibilityLevel.INTERNAL )
 public interface SLLineReference extends SLNode {

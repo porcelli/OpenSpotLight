@@ -48,14 +48,14 @@
  */
 package org.openspotlight.security.domain;
 
-import java.io.Serializable;
-
 import org.jboss.identity.idm.spi.model.IdentityObject;
 import org.jboss.identity.idm.spi.model.IdentityObjectRelationship;
 import org.jboss.identity.idm.spi.model.IdentityObjectRelationshipType;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
+
+import java.io.Serializable;
 
 public class SLIdentityObjectRelationship implements SimpleNodeType,
 		Serializable, IdentityObjectRelationship {

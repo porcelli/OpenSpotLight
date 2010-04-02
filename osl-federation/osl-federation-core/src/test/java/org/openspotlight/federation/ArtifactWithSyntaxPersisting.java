@@ -1,9 +1,5 @@
 package org.openspotlight.federation;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
 import org.junit.Test;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
@@ -13,6 +9,10 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.support.SimplePersistSupport;
+
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 public class ArtifactWithSyntaxPersisting {
 	public static void main(final String... args) throws Exception {

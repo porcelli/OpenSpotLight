@@ -48,11 +48,11 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.query.info.SLOrderByStatementInfo;
 import org.openspotlight.graph.query.info.SLOrderByTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
 import org.openspotlight.graph.query.info.SLOrderByTypeInfo.OrderType;
+import org.openspotlight.graph.query.info.SLSelectStatementInfo;
 
 /**
  * The Class SLOrderByStatementImpl.

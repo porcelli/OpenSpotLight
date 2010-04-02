@@ -49,6 +49,7 @@
 package org.openspotlight.graph;
 
 import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 
 /**
  * The Interface SLMetaElement.

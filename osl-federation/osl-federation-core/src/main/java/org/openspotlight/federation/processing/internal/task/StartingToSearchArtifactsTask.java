@@ -48,22 +48,12 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
-import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.taskexec.TaskExec;
 import org.openspotlight.common.taskexec.TaskExecGroup;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
@@ -71,11 +61,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
-import org.openspotlight.federation.processing.ArtifactChanges;
-import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
-import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
-import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
-import org.openspotlight.federation.processing.SaveBehavior;
+import org.openspotlight.federation.processing.*;
 import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
 import org.openspotlight.federation.processing.internal.domain.ArtifactChangesImpl;
 import org.openspotlight.federation.processing.internal.domain.ArtifactsToBeProcessedImpl;
@@ -84,6 +70,10 @@ import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+
+import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 
 public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 

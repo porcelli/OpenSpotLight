@@ -48,24 +48,15 @@
  */
 package org.openspotlight.graph.query.parser;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLInvalidQueryElementException;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQLVariable;
-import org.openspotlight.graph.query.SLQueryException;
-import org.openspotlight.graph.query.SLQueryResult;
-import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.openspotlight.graph.query.*;
 import org.openspotlight.graph.query.SLQuery.SortMode;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * The Class AbstractSLQueryTextInternal. This class is the base for dynamic bytecode generation.

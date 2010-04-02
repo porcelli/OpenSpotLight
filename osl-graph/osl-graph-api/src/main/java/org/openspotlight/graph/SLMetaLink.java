@@ -48,11 +48,13 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidMetaLinkSideTypeException;
+import org.openspotlight.graph.persistence.SLPersistentNode;
+
 import java.util.Collection;
 import java.util.List;
-
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.persistence.SLPersistentNode;
 
 /**
  * The Interface SLMetaLink.

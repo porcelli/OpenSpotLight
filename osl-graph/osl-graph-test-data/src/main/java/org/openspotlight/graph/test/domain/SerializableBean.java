@@ -1,8 +1,8 @@
 package org.openspotlight.graph.test.domain;
 
-import java.io.Serializable;
-
 import org.openspotlight.common.util.Equals;
+
+import java.io.Serializable;
 
 public class SerializableBean implements Serializable {
 

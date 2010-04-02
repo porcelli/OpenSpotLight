@@ -1,32 +1,25 @@
 package org.openspotlight.bundle.language.java.template;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
+import dynamo.string.StringTool;
+import freemarker.ext.dom.NodeModel;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
 import org.openspotlight.bundle.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.bundle.language.java.asm.model.TypeDefinition;
 import org.openspotlight.bundle.language.java.asm.model.TypeDefinitionSet;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.xml.sax.InputSource;
-
 import template.ClassOnTemplatePath;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
-
-import dynamo.string.StringTool;
-import freemarker.ext.dom.NodeModel;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
+import java.io.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This helper class creates bean shell script under a string to be used to

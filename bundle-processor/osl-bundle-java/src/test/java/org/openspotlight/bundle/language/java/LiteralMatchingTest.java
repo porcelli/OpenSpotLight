@@ -1,10 +1,10 @@
 package org.openspotlight.bundle.language.java;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.resolver.JavaLiteralType;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class LiteralMatchingTest {
 

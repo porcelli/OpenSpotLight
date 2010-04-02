@@ -48,38 +48,30 @@
  */
 package org.openspotlight.federation.log;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.jcr.Session;
-
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
-import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.common.util.*;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
-import org.openspotlight.log.DetailedLoggerFactory;
-import org.openspotlight.log.LogableObject;
 import org.openspotlight.log.DetailedLogger.ErrorCode;
 import org.openspotlight.log.DetailedLogger.LogEventType;
+import org.openspotlight.log.DetailedLoggerFactory;
+import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+
+import javax.jcr.Session;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The Factory used to create {@link DetailedLogger}.

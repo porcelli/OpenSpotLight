@@ -46,20 +46,20 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.SLNodeProperty;
+import org.openspotlight.graph.persistence.SLPersistentProperty;
 
-public final class SLLinkRemovedEvent extends SLLinkEvent {
+import java.io.Serializable;
 
-	public SLLinkRemovedEvent(final SLLink link) {
-		super(link);
-	}
+public final class SLNodePropertyRemovedEvent extends SLNodePropertyEvent {
 
-	public SLLinkRemovedEvent(final SLLink link,
-			final SLPersistentNode linkNode,
-			final SLPersistenceMode persistenceMode) {
-		super(link, linkNode, persistenceMode);
+	public SLNodePropertyRemovedEvent(
+			final SLNodeProperty<? extends Serializable> property,
+			final SLPersistentProperty<? extends Serializable> pProperty,
+			final String propertyName) {
+		super(property, pProperty, propertyName);
 	}
 
 }

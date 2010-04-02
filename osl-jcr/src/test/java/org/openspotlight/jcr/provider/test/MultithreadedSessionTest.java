@@ -48,21 +48,20 @@
  */
 package org.openspotlight.jcr.provider.test;
 
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
+
+import javax.jcr.Node;
+import javax.jcr.Session;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 @Ignore //Just waiting a response from jackrabbit user group
 public class MultithreadedSessionTest {

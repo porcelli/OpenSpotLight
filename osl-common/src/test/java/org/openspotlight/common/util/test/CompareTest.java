@@ -49,6 +49,8 @@
 
 package org.openspotlight.common.util.test;
 
+import org.junit.Test;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -56,8 +58,6 @@ import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Compare.compareAll;
 import static org.openspotlight.common.util.Compare.npeSafeCompare;
-
-import org.junit.Test;
 
 /**
  * Test class for {@link Compare}

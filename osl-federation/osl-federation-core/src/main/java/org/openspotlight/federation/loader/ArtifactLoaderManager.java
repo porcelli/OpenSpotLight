@@ -1,6 +1,22 @@
 package org.openspotlight.federation.loader;
 
-import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
+import org.openspotlight.common.Pair;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.PatternMatcher.FilterResult;
+import org.openspotlight.common.util.Strings;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.PathElement;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
+import org.openspotlight.federation.finder.PersistentArtifactManager;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
+import org.openspotlight.task.ExecutorInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -9,23 +25,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import org.openspotlight.common.Pair;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.Strings;
-import org.openspotlight.common.util.PatternMatcher.FilterResult;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.PathElement;
-import org.openspotlight.federation.finder.OriginArtifactLoader;
-import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
-import org.openspotlight.federation.finder.PersistentArtifactManager;
-import org.openspotlight.task.ExecutorInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 
 /**
  * Class responsible to load artifacts. It has a public method

@@ -46,11 +46,15 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLPersistenceMode;
+import org.openspotlight.graph.event.SLGraphSessionEvent;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 
 /**
@@ -90,7 +94,7 @@ public abstract class SLLinkEvent extends SLGraphSessionEvent {
 	/**
 	 * Instantiates a new sL link event.
 	 * 
-	 * @throws SLGraphSessionException
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
 	 */
 	public SLLinkEvent(final SLLink link) {
 		super(link.getSession());

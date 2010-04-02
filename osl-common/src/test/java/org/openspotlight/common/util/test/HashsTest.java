@@ -49,13 +49,13 @@
 
 package org.openspotlight.common.util.test;
 
+import org.junit.Test;
+import org.openspotlight.common.util.HashCodes;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.HashCodes.hashOf;
-
-import org.junit.Test;
-import org.openspotlight.common.util.HashCodes;
 
 /**
  * Test class for {@link HashCodes}

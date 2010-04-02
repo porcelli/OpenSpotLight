@@ -46,33 +46,26 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.exception;
 
-import org.openspotlight.common.concurrent.LockContainer;
-
+	
 /**
- * The Interface SLGraphSessionEventPoster.
+ * The Class SLLinkPropertyNotFoundException.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLGraphSessionEventPoster extends LockContainer {
+public class SLLinkPropertyNotFoundException extends SLGraphSessionException {
+	
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Post.
+	 * Instantiates a new sL link property not found exception.
 	 * 
-	 * @param event
-	 *            the event
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialsException
-	 *             the SL invalid credentials exception
+	 * @param name the name
+	 * @param cause the cause
 	 */
-	public void post(SLGraphSessionEvent event) throws SLGraphSessionException,
-			SLInvalidCredentialException;
-
-	/**
-	 * This method should notify its listeners about a
-	 * {@link SLGraphSession#clear()} operation.
-	 */
-	public void sessionCleaned();
+	public SLLinkPropertyNotFoundException(String name, Throwable cause) {
+		super("Link property " + name + " does not exit.", cause);
+	}
 }

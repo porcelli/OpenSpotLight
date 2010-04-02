@@ -49,20 +49,19 @@
 
 package org.openspotlight.federation.data.load.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.Set;
-
-import org.apache.tools.ant.taskdefs.GUnzip;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
+
+import java.util.Set;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test for class {@link DNASvnArtifactFinder}

@@ -48,62 +48,33 @@
  */
 package org.openspotlight.graph;
 
-import static org.openspotlight.graph.SLLink.DIRECTION_ANY;
-import static org.openspotlight.graph.SLLink.DIRECTION_BI;
-import static org.openspotlight.graph.SLLink.DIRECTION_UNI;
-import static org.openspotlight.graph.SLLink.DIRECTION_UNI_REVERSAL;
-import static org.openspotlight.graph.SLPersistenceMode.NORMAL;
-import static org.openspotlight.graph.SLPersistenceMode.TRANSIENT;
-import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLTreeLineReference.SLArtifactLineReference;
 import org.openspotlight.graph.SLTreeLineReference.SLStatementLineReference;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.test.domain.CobolElementNode;
-import org.openspotlight.graph.test.domain.JavaClassJavaMethodMultipleLink;
-import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLink;
-import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLinkACTB;
-import org.openspotlight.graph.test.domain.JavaClassJavaMethodSimpleLinkPrivate;
-import org.openspotlight.graph.test.domain.JavaClassNode;
-import org.openspotlight.graph.test.domain.JavaClassNodeInternal;
-import org.openspotlight.graph.test.domain.JavaClassNodePublic;
-import org.openspotlight.graph.test.domain.JavaElementNode;
-import org.openspotlight.graph.test.domain.JavaInnerClassNode;
-import org.openspotlight.graph.test.domain.JavaLink;
-import org.openspotlight.graph.test.domain.JavaMethodNode;
-import org.openspotlight.graph.test.domain.JavaPackageJavaClass;
-import org.openspotlight.graph.test.domain.JavaPackageNode;
-import org.openspotlight.graph.test.domain.JavaPackageNodePrivate;
-import org.openspotlight.graph.test.domain.JavaPackagePublicElement;
-import org.openspotlight.graph.test.domain.NamePredicate;
-import org.openspotlight.graph.test.domain.SerializableBean;
-import org.openspotlight.graph.test.domain.TransientLink;
-import org.openspotlight.graph.test.domain.TransientNode;
+import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
+import org.openspotlight.graph.exception.SLInvalidNodePropertyTypeException;
+import org.openspotlight.graph.test.domain.*;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+
+import java.io.Serializable;
+import java.util.*;
+
+import static org.openspotlight.graph.SLLink.*;
+import static org.openspotlight.graph.SLPersistenceMode.NORMAL;
+import static org.openspotlight.graph.SLPersistenceMode.TRANSIENT;
+import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
 
 /**
  * The Class SLGraphTest.
@@ -431,7 +402,7 @@ public class SLGraphTest {
     /**
      * Before test.
      * 
-     * @throws SLGraphException the SL graph exception
+     * @throws org.openspotlight.graph.exception.SLGraphException the SL graph exception
      */
     @Before
     public void beforeTest() throws SLGraphException, SLInvalidCredentialException {
@@ -546,20 +517,12 @@ public class SLGraphTest {
     @Test
     // ( dependsOnMethods = "addAddMultipleLinkExistentBothCase" )
     public void testAddAndGetNodeWithStrangeCharsOnName() {
-        try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
-            final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
-            Assert.assertNotNull(javaClassNode1);
-            final JavaClassNode javaClassNode2 = root1.getNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
-            Assert.assertNotNull(javaClassNode2);
-            Assert.assertEquals(javaClassNode1, javaClassNode2);
-        } catch (final SLException e) {
-            LOGGER.error(e.getMessage(), e);
-            Assert.fail();
-        } catch (final SLInvalidCredentialException e) {
-            LOGGER.error(e);
-            Assert.fail();
-        }
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
+        Assert.assertNotNull(javaClassNode1);
+        final JavaClassNode javaClassNode2 = root1.getNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
+        Assert.assertNotNull(javaClassNode2);
+        Assert.assertEquals(javaClassNode1, javaClassNode2);
     }
 
     /**
@@ -1107,7 +1070,9 @@ public class SLGraphTest {
             final SLNode root = session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root.addNode(JavaClassNode.class, "javaClassNode");
             final JavaMethodNode method = javaClassNode1.addNode(JavaMethodNode.class, "method");
-            method.getParent().doCast(JavaClassNode.class);
+            JavaClassNode nodeResult = method.getParent().doCast(JavaClassNode.class);
+            JavaElementNode higherNodeResult = method.getParent().doCast(JavaElementNode.class);
+            Assert.assertEquals(nodeResult.getID(), higherNodeResult.getID());
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e);
             Assert.fail();
@@ -1510,9 +1475,7 @@ public class SLGraphTest {
      * Test get meta link properties.
      */
     @Test
-    // ( dependsOnMethods = "testGetLinks" )
     public void testGetMetaLinkProperties() {
-
         try {
 
             final SLNode root1 = session.createContext("1L").getRootNode();
@@ -1670,17 +1633,13 @@ public class SLGraphTest {
      * Test get meta node properties.
      */
     @Test
-    // ( dependsOnMethods = "testGetMetaNode" )
     public void testGetMetaNodeProperties() {
-
         try {
-
             final SLNode root1 = session.createContext("1L").getRootNode();
             final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
             javaClassNode1.setClassName("HelloWorld");
             javaClassNode1.setModifier(JavaClassNode.MODIFIER_PUBLIC);
             javaClassNode1.setCreationTime(new Date());
-            session.save();
 
             final SLMetadata metadata = session.getMetadata();
             final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
@@ -1698,6 +1657,11 @@ public class SLGraphTest {
                 } else {
                     Assert.fail();
                 }
+            }
+
+            for (SLNodeProperty<Serializable> activeProperty : javaClassNode1.getProperties()) {
+                SLMetaNodeProperty metaProperty = session.getMetadata().findMetaNodeType(JavaClassNode.class).getMetaProperty(activeProperty.getName());
+                Assert.assertNotNull("Property " + activeProperty.getName() + " not found on metadata registry.", metaProperty);
             }
         } catch (final SLGraphSessionException e) {
             LOGGER.error(e.getMessage(), e);
@@ -1825,33 +1789,22 @@ public class SLGraphTest {
     @Test
     // ( dependsOnMethods = "testGetMetaNodes" )
     public void testGetMetaRenderHint() {
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        root1.addNode(JavaClassNode.class, "javaClassNode1");
+        session.save();
 
-        try {
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
 
-            final SLNode root1 = session.createContext("1L").getRootNode();
-            root1.addNode(JavaClassNode.class, "javaClassNode1");
-            session.save();
+        final SLMetaRenderHint formatRenderHint = metaNode.getMetaRenderHint("format");
+        Assert.assertNotNull(formatRenderHint);
+        Assert.assertEquals(formatRenderHint.getName(), "format");
+        Assert.assertEquals(formatRenderHint.getValue(), "cube");
 
-            final SLMetadata metadata = session.getMetadata();
-            final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
-
-            final SLMetaRenderHint formatRenderHint = metaNode.getMetaRenderHint("format");
-            Assert.assertNotNull(formatRenderHint);
-            Assert.assertEquals(formatRenderHint.getName(), "format");
-            Assert.assertEquals(formatRenderHint.getValue(), "cube");
-
-            final SLMetaRenderHint foregroundRenderHint = metaNode.getMetaRenderHint("foreground");
-            Assert.assertNotNull(foregroundRenderHint);
-            Assert.assertEquals(foregroundRenderHint.getName(), "foreground");
-            Assert.assertEquals(foregroundRenderHint.getValue(), "gold");
-
-        } catch (final SLException e) {
-            LOGGER.error(e.getMessage(), e);
-            Assert.fail();
-        } catch (final SLInvalidCredentialException e) {
-            LOGGER.error(e);
-            Assert.fail();
-        }
+        final SLMetaRenderHint foregroundRenderHint = metaNode.getMetaRenderHint("foreground");
+        Assert.assertNotNull(foregroundRenderHint);
+        Assert.assertEquals(foregroundRenderHint.getName(), "foreground");
+        Assert.assertEquals(foregroundRenderHint.getValue(), "gold");
     }
 
     /**
@@ -1860,31 +1813,22 @@ public class SLGraphTest {
     @Test
     // ( dependsOnMethods = "testGetMetaRenderHint" )
     public void testGetMetaRenderHints() {
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        root1.addNode(JavaClassNode.class, "javaClassNode1");
+        session.save();
 
-        try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
-            root1.addNode(JavaClassNode.class, "javaClassNode1");
-            session.save();
-
-            final SLMetadata metadata = session.getMetadata();
-            final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
-            final Collection<SLMetaRenderHint> renderHints = metaNode.getMetaRenderHints();
-            Assert.assertEquals(renderHints.size(), 2);
-            for (final SLMetaRenderHint renderHint : renderHints) {
-                if (renderHint.getName().equals("format")) {
-                    Assert.assertEquals(renderHint.getValue(), "cube");
-                } else if (renderHint.getName().equals("foreground")) {
-                    Assert.assertEquals(renderHint.getValue(), "gold");
-                } else {
-                    Assert.fail();
-                }
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
+        final Collection<SLMetaRenderHint> renderHints = metaNode.getMetaRenderHints();
+        Assert.assertEquals(renderHints.size(), 2);
+        for (final SLMetaRenderHint renderHint : renderHints) {
+            if (renderHint.getName().equals("format")) {
+                Assert.assertEquals(renderHint.getValue(), "cube");
+            } else if (renderHint.getName().equals("foreground")) {
+                Assert.assertEquals(renderHint.getValue(), "gold");
+            } else {
+                Assert.fail();
             }
-        } catch (final SLException e) {
-            LOGGER.error(e.getMessage(), e);
-            Assert.fail();
-        } catch (final SLInvalidCredentialException e) {
-            LOGGER.error(e);
-            Assert.fail();
         }
     }
 
@@ -2341,7 +2285,7 @@ public class SLGraphTest {
      */
     @Test
     // ( dependsOnMethods = "testIntegerProperty" )
-    public void testLineReference() throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
+    public void testLineReference() throws SLGraphSessionException, SLInvalidCredentialException {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
@@ -2379,7 +2323,7 @@ public class SLGraphTest {
     @Test
     // ( dependsOnMethods = "testLineReference" )
     public void testLineReferenceWithArtifactId()
-        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
+        throws SLGraphSessionException, SLInvalidCredentialException {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final String artifactId = "targetId";
@@ -2755,53 +2699,35 @@ public class SLGraphTest {
     @Test
     // ( dependsOnMethods = "testLongProperty" )
     public void testMetaLinkGetDescription() {
-        try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
-            final JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
-            final JavaMethodNode javaMethodNode = root1.addNode(JavaMethodNode.class, "javaMethodNode");
-            session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode, javaMethodNode, false);
-            session.save();
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        final JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
+        final JavaMethodNode javaMethodNode = root1.addNode(JavaMethodNode.class, "javaMethodNode");
+        session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode, javaMethodNode, false);
+        session.save();
 
-            final SLMetadata metadata = session.getMetadata();
-            final SLMetaLink metaLink = metadata.getMetaLinkType(JavaClassJavaMethodSimpleLink.class).getMetalinks().iterator().next();
-            final String description = metaLink.getDescription();
-            Assert.assertNotNull(description);
-            Assert.assertEquals(description, "Java Class to Java Method Link");
-            Assert.assertEquals(metaLink.getVisibility(), VisibilityLevel.PUBLIC);
-
-        } catch (final SLException e) {
-            LOGGER.error(e.getMessage(), e);
-            Assert.fail();
-        } catch (final SLInvalidCredentialException e) {
-            LOGGER.error(e);
-            Assert.fail();
-        }
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaLink metaLink = metadata.getMetaLinkType(JavaClassJavaMethodSimpleLink.class).getMetalinks().iterator().next();
+        final String description = metaLink.getDescription();
+        Assert.assertNotNull(description);
+        Assert.assertEquals(description, "Java Class to Java Method Link");
+        Assert.assertEquals(metaLink.getVisibility(), VisibilityLevel.PUBLIC);
     }
 
     @Test
     // ( dependsOnMethods = "testLongProperty" )
     public void testMetaLinkGetVisibility() {
-        try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
-            final JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
-            final JavaMethodNode javaMethodNode = root1.addNode(JavaMethodNode.class, "javaMethodNode");
-            final JavaClassJavaMethodSimpleLinkPrivate link = session.addLink(JavaClassJavaMethodSimpleLinkPrivate.class,
-                                                                              javaClassNode, javaMethodNode, false);
-            session.save();
-            Assert.assertNotNull(link.getMetaLink());
-            Assert.assertEquals(link.getMetaLink().getVisibility(), VisibilityLevel.PRIVATE);
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        final JavaClassNode javaClassNode = root1.addNode(JavaClassNode.class, "javaClassNode");
+        final JavaMethodNode javaMethodNode = root1.addNode(JavaMethodNode.class, "javaMethodNode");
+        final JavaClassJavaMethodSimpleLinkPrivate link = session.addLink(JavaClassJavaMethodSimpleLinkPrivate.class,
+                                                                          javaClassNode, javaMethodNode, false);
+        session.save();
+        Assert.assertNotNull(link.getMetaLink());
+        Assert.assertEquals(link.getMetaLink().getVisibility(), VisibilityLevel.PRIVATE);
 
-            final SLMetadata metadata = session.getMetadata();
-            final SLMetaLink metaLink = metadata.getMetaLinkType(JavaClassJavaMethodSimpleLinkPrivate.class).getMetalinks().iterator().next();
-            Assert.assertEquals(metaLink.getVisibility(), VisibilityLevel.PRIVATE);
-
-        } catch (final SLException e) {
-            LOGGER.error(e.getMessage(), e);
-            Assert.fail();
-        } catch (final SLInvalidCredentialException e) {
-            LOGGER.error(e);
-            Assert.fail();
-        }
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaLink metaLink = metadata.getMetaLinkType(JavaClassJavaMethodSimpleLinkPrivate.class).getMetalinks().iterator().next();
+        Assert.assertEquals(metaLink.getVisibility(), VisibilityLevel.PRIVATE);
     }
 
     /**
@@ -2810,23 +2736,15 @@ public class SLGraphTest {
     @Test
     // ( dependsOnMethods = "testMetaLinkGetDescription" )
     public void testMetaNodeGetDescription() {
-        try {
-            final SLNode root1 = session.createContext("1L").getRootNode();
-            root1.addNode(JavaClassNode.class, "javaClassNode1");
-            session.save();
+        final SLNode root1 = session.createContext("1L").getRootNode();
+        root1.addNode(JavaClassNode.class, "javaClassNode1");
+        session.save();
 
-            final SLMetadata metadata = session.getMetadata();
-            final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
-            final String description = metaNode.getDescription();
-            Assert.assertNotNull(description);
-            Assert.assertEquals(description, "Java Class");
-        } catch (final SLException e) {
-            LOGGER.error(e.getMessage(), e);
-            Assert.fail();
-        } catch (final SLInvalidCredentialException e) {
-            LOGGER.error(e);
-            Assert.fail();
-        }
+        final SLMetadata metadata = session.getMetadata();
+        final SLMetaNodeType metaNode = metadata.findMetaNodeType(JavaClassNode.class);
+        final String description = metaNode.getDescription();
+        Assert.assertNotNull(description);
+        Assert.assertEquals(description, "Java Class");
     }
 
     /**
@@ -3134,7 +3052,7 @@ public class SLGraphTest {
     @Test
     // ( dependsOnMethods = "testLineReference" )
     public void testTreeLineReference()
-        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
+        throws SLGraphSessionException, SLInvalidCredentialException {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
@@ -3176,7 +3094,7 @@ public class SLGraphTest {
     @Test
     // ( dependsOnMethods = "testTreeLineReference" )
     public void testTreeLineReferenceWithArtifactId()
-        throws SLContextAlreadyExistsException, SLGraphSessionException, SLInvalidCredentialException {
+        throws SLGraphSessionException, SLInvalidCredentialException {
         final SLNode root1 = session.createContext("1L").getRootNode();
 
         final String artifactId = "targetId";

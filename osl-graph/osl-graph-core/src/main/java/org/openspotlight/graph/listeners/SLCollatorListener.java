@@ -48,21 +48,19 @@
  */
 package org.openspotlight.graph.listeners;
 
-import java.io.Serializable;
-import java.text.Collator;
-
 import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.graph.SLAbstractGraphSessionEventListener;
-import org.openspotlight.graph.SLCollatorSupport;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLNodePropertyRemovedEvent;
-import org.openspotlight.graph.SLNodePropertySetEvent;
+import org.openspotlight.graph.*;
+import org.openspotlight.graph.event.SLAbstractGraphSessionEventListener;
+import org.openspotlight.graph.event.SLNodePropertyRemovedEvent;
+import org.openspotlight.graph.event.SLNodePropertySetEvent;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
-// TODO: Auto-generated Javadoc
+import java.io.Serializable;
+import java.text.Collator;
+
 /**
  * The listener interface for receiving SLCollator events. The class that is
  * interested in processing a SLCollator event implements this interface, and
@@ -71,7 +69,6 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  * the SLCollator event occurs, that object's appropriate
  * method is invoked.
  * 
- * @see SLCollatorEvent
  */
 public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
 
@@ -79,18 +76,11 @@ public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
 		super(parent);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.openspotlight.graph.SLAbstractGraphSessionEventListener#
-	 * nodePropertyRemoved(org.openspotlight.graph.SLNodePropertyEvent)
-	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodePropertyRemoved(final SLNodePropertyRemovedEvent event)
-			throws SLGraphSessionException {
+	public void nodePropertyRemoved(final SLNodePropertyRemovedEvent event) {
 		synchronized (lock) {
 			try {
 				if (event.isString()) {
@@ -133,19 +123,11 @@ public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLAbstractGraphSessionEventListener#nodePropertySet
-	 * (org.openspotlight.graph.SLNodePropertyEvent)
-	 */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void nodePropertySet(final SLNodePropertySetEvent event)
-			throws SLGraphSessionException {
+	public void nodePropertySet(final SLNodePropertySetEvent event) {
 		synchronized (lock) {
 			try {
 				final SLPersistentProperty<? extends Serializable> pProperty = event

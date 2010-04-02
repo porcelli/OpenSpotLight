@@ -48,7 +48,7 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.graph.test.domain.node;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;

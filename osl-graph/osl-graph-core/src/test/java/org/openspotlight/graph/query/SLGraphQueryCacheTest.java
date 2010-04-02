@@ -48,47 +48,36 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeException;
 import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.openspotlight.graph.test.domain.JavaInterface;
-import org.openspotlight.graph.test.domain.JavaType;
-import org.openspotlight.graph.test.domain.JavaTypeMethod;
-import org.openspotlight.graph.test.domain.MethodContainsParam;
-import org.openspotlight.graph.test.domain.MethodParam;
-import org.openspotlight.graph.test.domain.TypeContainsMethod;
+import org.openspotlight.graph.test.domain.*;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class SLGraphQueryCacheTest {
 
@@ -244,7 +233,7 @@ public class SLGraphQueryCacheTest {
 	@Test
 	public void selectTypes() throws SLGraphSessionException,
 			SLInvalidQuerySyntaxException, SLPersistentTreeException,
-			SLInvalidCredentialException {
+            SLInvalidCredentialException {
 		String queryId = null;
 		session.save();
 		assertThat(SLCommonSupport.containsQueryCache(treeSession), is(false));

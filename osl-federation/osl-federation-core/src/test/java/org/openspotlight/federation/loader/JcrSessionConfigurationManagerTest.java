@@ -48,22 +48,17 @@
  */
 package org.openspotlight.federation.loader;
 
-import java.util.Set;
-
-import javax.jcr.Session;
-
 import org.hamcrest.core.Is;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+
+import javax.jcr.Session;
+import java.util.Set;
 
 /**
  * The Class JcrSessionConfigurationManagerTest.

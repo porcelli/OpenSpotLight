@@ -1,6 +1,7 @@
 # .gitignore for OpenSpotLight
 jrat.output
 jrat.xml
+
 # IDE support files
 .classpath
 .project
@@ -8,6 +9,7 @@ jrat.xml
 .settings
 .wtpmodules
 .pmd
+atlassian-ide-plugin.xml
 
 #ANTLR temp files
 *.tokens

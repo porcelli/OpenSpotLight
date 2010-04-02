@@ -57,7 +57,7 @@ package org.openspotlight.graph;
  * the SLGraphSession event occurs, that object's appropriate
  * method is invoked.
  * 
- * @see SLGraphSessionEvent
+ * @see org.openspotlight.graph.event.SLGraphSessionEvent
  * @author Vitor Hugo Chagas
  */
 public interface SLGraphSessionListener {

@@ -48,13 +48,17 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-import java.text.Collator;
-
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException;
+import org.openspotlight.graph.exception.SLInvalidLinkSideException;
+import org.openspotlight.graph.exception.SLLinkPropertyNotFoundException;
 import org.openspotlight.remote.annotation.DisposeMethod;
+
+import java.io.Serializable;
+import java.text.Collator;
 
 /**
  * The Interface SLLink.
@@ -106,7 +110,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * Gets the meta link.
 	 * 
 	 * @return the meta link
-	 * @throws SLGraphSessionException
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
 	 *             the SL graph session exception
 	 */
 	public SLMetaLink getMetaLink() throws SLGraphSessionException;
@@ -143,11 +147,11 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @param name
 	 *            the name
 	 * @return the property
-	 * @throws SLLinkPropertyNotFoundException
+	 * @throws org.openspotlight.graph.exception.SLLinkPropertyNotFoundException
 	 *             the SL link property not found exception
-	 * @throws SLInvalidLinkPropertyTypeException
+	 * @throws org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException
 	 *             the SL invalid link property type exception
-	 * @throws SLGraphSessionException
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
 	 *             the SL graph session exception
 	 */
 	public <V extends Serializable> SLLinkProperty<V> getProperty(
@@ -165,7 +169,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @param collator
 	 *            the collator
 	 * @return the property
-	 * @throws SLLinkPropertyNotFoundException
+	 * @throws org.openspotlight.graph.exception.SLLinkPropertyNotFoundException
 	 *             the SL link property not found exception
 	 * @throws SLInvalidLinkPropertyTypeException
 	 *             the SL invalid link property type exception
@@ -175,7 +179,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	public <V extends Serializable> SLLinkProperty<V> getProperty(
 			Class<V> clazz, String name, Collator collator)
 			throws SLLinkPropertyNotFoundException,
-			SLInvalidLinkPropertyTypeException, SLGraphSessionException;
+            SLInvalidLinkPropertyTypeException, SLGraphSessionException;
 
 	/**
 	 * Gets the property value as string.
@@ -183,9 +187,9 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
 	 * @param name
 	 *            the name
 	 * @return the property value as string
-	 * @throws SLLinkPropertyNotFoundException
+	 * @throws org.openspotlight.graph.exception.SLLinkPropertyNotFoundException
 	 *             the SL link property not found exception
-	 * @throws SLGraphSessionException
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
 	 *             the SL graph session exception
 	 */
 	public String getPropertyValueAsString(String name)

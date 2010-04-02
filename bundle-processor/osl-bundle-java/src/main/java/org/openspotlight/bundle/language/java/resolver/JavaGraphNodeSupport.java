@@ -48,43 +48,24 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.objectweb.asm.Opcodes;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.link.AutoboxedBy;
-import org.openspotlight.bundle.language.java.metamodel.link.Autoboxes;
-import org.openspotlight.bundle.language.java.metamodel.link.DataType;
-import org.openspotlight.bundle.language.java.metamodel.link.Extends;
-import org.openspotlight.bundle.language.java.metamodel.link.Implements;
-import org.openspotlight.bundle.language.java.metamodel.link.ImplicitPrimitiveCast;
-import org.openspotlight.bundle.language.java.metamodel.link.InterfaceExtends;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
-import org.openspotlight.bundle.language.java.metamodel.link.PackageType;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 /**
  * This class should be used to insert all java relationships on the OSL Graph
@@ -159,8 +140,7 @@ public class JavaGraphNodeSupport {
 	 */
 	public JavaGraphNodeSupport(final SLGraphSession session,
 			final SLNode currentContextRootNode,
-			final SLNode abstractContextRootNode)
-			throws SLGraphSessionException {
+			final SLNode abstractContextRootNode) {
 		checkNotNull("session", session);
 		checkNotNull("currentContextRootNode", currentContextRootNode);
 		checkNotNull("abstractContextRootNode", abstractContextRootNode);

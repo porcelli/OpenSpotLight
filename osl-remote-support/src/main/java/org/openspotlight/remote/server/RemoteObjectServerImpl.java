@@ -48,49 +48,39 @@
  */
 package org.openspotlight.remote.server;
 
-import static java.text.MessageFormat.format;
-import static org.openspotlight.common.util.Arrays.andOf;
-import static org.openspotlight.common.util.Arrays.of;
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Equals.eachEquality;
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.HashCodes.hashOf;
 import gnu.cajo.invoke.Remote;
 import gnu.cajo.utils.ItemServer;
+import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.Reflection;
+import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
+import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
+import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.remote.annotation.DisposeMethod;
+import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
+import org.openspotlight.remote.internal.RemoteObjectInvocation;
+import org.openspotlight.remote.internal.RemoteReference;
+import org.openspotlight.remote.internal.RemoteReference.ObjectMethods;
+import org.openspotlight.remote.internal.UserToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.common.util.Reflection;
-import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
-import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
-import org.openspotlight.remote.annotation.DisposeMethod;
-import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
-import org.openspotlight.remote.internal.RemoteObjectInvocation;
-import org.openspotlight.remote.internal.RemoteReference;
-import org.openspotlight.remote.internal.UserToken;
-import org.openspotlight.remote.internal.RemoteReference.ObjectMethods;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
+import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.*;
+import static org.openspotlight.common.util.HashCodes.hashOf;
 
 /**
  * The Class RemoteObjectServer will handle and take care of all object

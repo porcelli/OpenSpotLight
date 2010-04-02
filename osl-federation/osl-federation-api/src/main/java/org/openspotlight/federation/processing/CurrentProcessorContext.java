@@ -48,16 +48,16 @@
  */
 package org.openspotlight.federation.processing;
 
-import java.util.Map;
-
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
+
+import java.util.Map;
 
 /**
  * The Interface CurrentProcessorContext.
@@ -82,14 +82,14 @@ public interface CurrentProcessorContext {
 	 * @return the current node group
 	 * @throws SLInvalidCredentialException
 	 *             the SL invalid credential exception
-	 * @throws SLGraphSessionException
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
 	 *             the SL graph session exception
 	 * @throws SLNodeTypeNotInExistentHierarchy
 	 *             the SL node type not in existent hierarchy
 	 */
 	public SLNode getCurrentNodeGroup()
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
-			SLInvalidCredentialException;
+			throws SLNodeTypeNotInExistentHierarchy,
+            SLInvalidCredentialException;
 
 	/**
 	 * Gets the current repository.
@@ -112,7 +112,7 @@ public interface CurrentProcessorContext {
 	 *             the SL node type not in existent hierarchy
 	 */
 	public SLNode getNodeForGroup(Group group)
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
+			throws SLNodeTypeNotInExistentHierarchy,
 			SLInvalidCredentialException;
 
 	public SLNode getNodeForUniqueBundleConfig();

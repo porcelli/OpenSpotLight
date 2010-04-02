@@ -1,10 +1,6 @@
 package org.openspotlight.bundle.language.java.template.test;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.StringReader;
-import java.util.List;
-
+import bsh.Interpreter;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
@@ -22,7 +18,10 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 
-import bsh.Interpreter;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.StringReader;
+import java.util.List;
 
 public class BeanShellTemplateSupportTest {
 

@@ -49,27 +49,14 @@
 
 package org.openspotlight.common.util;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Collections.unmodifiableSet;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
+import org.openspotlight.common.concurrent.*;
 
 import java.awt.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.*;
 import java.util.Queue;
-import java.util.Set;
 
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
-import org.openspotlight.common.concurrent.NeedsSyncronizationList;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
-import org.openspotlight.common.concurrent.UnsafeDummyLockContainer;
+import static java.util.Collections.*;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Helper class to deal with collections

@@ -48,9 +48,6 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import org.openspotlight.common.collection.AddOnlyConcurrentMap;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Equals;
@@ -60,6 +57,9 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
+
+import java.io.Serializable;
+import java.util.Date;
 
 // TODO: Auto-generated Javadoc
 /**

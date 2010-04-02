@@ -51,20 +51,14 @@
  */
 package org.openspotlight.graph;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.test.domain.JavaClass;
@@ -75,6 +69,14 @@ import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
@@ -87,7 +89,7 @@ public class DuplicateTest {
 
 	@Before
 	public void setup() throws AbstractFactoryException, SLGraphException,
-			SLInvalidCredentialException, IdentityException {
+            SLInvalidCredentialException, IdentityException {
 
 		final SecurityFactory securityFactory = AbstractFactory
 				.getDefaultInstance(SecurityFactory.class);

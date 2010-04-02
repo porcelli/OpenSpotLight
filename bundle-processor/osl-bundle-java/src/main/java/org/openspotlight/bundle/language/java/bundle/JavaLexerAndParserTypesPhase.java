@@ -1,7 +1,5 @@
 package org.openspotlight.bundle.language.java.bundle;
 
-import javax.jcr.Session;
-
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
@@ -21,6 +19,8 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.Session;
 
 public class JavaLexerAndParserTypesPhase implements
 		BundleProcessorArtifactPhase<StringArtifact> {

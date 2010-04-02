@@ -48,12 +48,6 @@
  */
 package org.openspotlight.federation.util;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.jcr.Session;
-
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLRuntimeException;
@@ -63,6 +57,11 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
+
+import javax.jcr.Session;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GroupSupport {
 

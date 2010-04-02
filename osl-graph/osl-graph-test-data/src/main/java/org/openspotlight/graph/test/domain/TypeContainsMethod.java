@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.test.domain;
 
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLProperty;
 

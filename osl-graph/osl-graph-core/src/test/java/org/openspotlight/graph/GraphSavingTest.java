@@ -51,13 +51,10 @@ package org.openspotlight.graph;
 import org.apache.log4j.Logger;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
@@ -94,7 +91,7 @@ public class GraphSavingTest {
 	 */
 	@BeforeClass
 	public static void init() throws AbstractFactoryException,
-			SLInvalidCredentialException, IdentityException {
+            SLInvalidCredentialException, IdentityException {
 		final SLGraphFactory factory = AbstractFactory
 				.getDefaultInstance(SLGraphFactory.class);
 		GraphSavingTest.graph = factory

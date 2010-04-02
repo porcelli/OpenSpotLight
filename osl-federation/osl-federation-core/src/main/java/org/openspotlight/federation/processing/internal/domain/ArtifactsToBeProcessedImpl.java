@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.processing.internal.domain;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * The Class ArtifactsToBeProcessedImpl.

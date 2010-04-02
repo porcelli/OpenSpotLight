@@ -1,22 +1,5 @@
 package org.openspotlight.persist.internal;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.io.StreamCorruptedException;
-import java.lang.ref.WeakReference;
-import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.Session;
-
-import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -24,6 +7,16 @@ import org.openspotlight.common.util.Sha1;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.Session;
+import java.io.*;
+import java.lang.ref.WeakReference;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class should wrap any {@link SimpleNodeType} lazy property. This class

@@ -48,7 +48,7 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.graph.node;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
@@ -99,7 +99,7 @@ public interface ControllerNode extends SLNode {
      * 
      * @param intProperty the new intProperty
      * 
-     * @throws SLGraphSessionException the SL graph session exception
+     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public void setIntProperty(int intProperty) throws SLGraphSessionException;
     

@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
+import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo.SLSelectTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo.SLSelectTypeInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Class SLSelectByLinkCountImpl.

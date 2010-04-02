@@ -1,40 +1,10 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
-import org.openspotlight.bundle.language.java.metamodel.link.DataComparison;
-import org.openspotlight.bundle.language.java.metamodel.link.DataParameter;
-import org.openspotlight.bundle.language.java.metamodel.link.DataPropagation;
-import org.openspotlight.bundle.language.java.metamodel.link.DataType;
-import org.openspotlight.bundle.language.java.metamodel.link.Extends;
-import org.openspotlight.bundle.language.java.metamodel.link.Implements;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
-import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
 import org.openspotlight.bundle.language.java.parser.SingleVarDto;
 import org.openspotlight.bundle.language.java.resolver.JavaTypeResolver;
@@ -46,11 +16,12 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class JavaBodyElementsExecutor {
 
@@ -530,7 +501,7 @@ public class JavaBodyElementsExecutor {
 	}
 
 	private ExpressionDto createMemberDto(final SLNode currentMember,
-			final ExpressionDto e54) throws SLGraphSessionException {
+			final ExpressionDto e54) {
 		Assertions.checkNotNull("currentMember", currentMember);
 		if (currentMember instanceof JavaType) {
 			return new ExpressionDto((JavaType) currentMember, currentMember,
@@ -671,8 +642,7 @@ public class JavaBodyElementsExecutor {
 		return null;
 	}
 
-	private JavaType getJavaTypeFromField(final SLNode node)
-	throws SLGraphSessionException {
+	private JavaType getJavaTypeFromField(final SLNode node) {
 		JavaType resultType;
 		final NeedsSyncronizationCollection<DataType> link = support.session
 		.getLinks(DataType.class, node, null);

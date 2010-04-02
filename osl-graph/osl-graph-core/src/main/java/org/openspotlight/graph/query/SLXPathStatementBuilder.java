@@ -48,15 +48,15 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.common.util.StringBuilderUtil.append;
-import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
+import org.apache.commons.lang.StringUtils;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
+import static org.openspotlight.common.util.StringBuilderUtil.append;
+import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
 
 /**
  * The Class SLXPathStatementBuilder.

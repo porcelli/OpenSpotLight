@@ -48,14 +48,6 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
-
-import java.sql.Connection;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.domain.DbArtifactSource;
@@ -70,6 +62,14 @@ import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+
+import java.sql.Connection;
+import java.util.Set;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 
 /**
  * During a column changing, its table needs to be marked as changed also. This

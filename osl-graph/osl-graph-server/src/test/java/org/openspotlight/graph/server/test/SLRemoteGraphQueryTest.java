@@ -48,13 +48,6 @@
  */
 package org.openspotlight.graph.server.test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isOneOf;
-
-import java.text.Collator;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
@@ -64,20 +57,20 @@ import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
 import org.openspotlight.graph.query.AbstractGeneralQueryTest;
 import org.openspotlight.graph.query.AssertResult;
+import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
-import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
-import org.openspotlight.graph.test.domain.JavaClass;
-import org.openspotlight.graph.test.domain.JavaInterface;
-import org.openspotlight.graph.test.domain.JavaInterfaceHierarchy;
-import org.openspotlight.graph.test.domain.JavaPackage;
-import org.openspotlight.graph.test.domain.JavaType;
-import org.openspotlight.graph.test.domain.JavaTypeMethod;
-import org.openspotlight.graph.test.domain.PackageContainsType;
-import org.openspotlight.graph.test.domain.TypeContainsMethod;
+import org.openspotlight.graph.test.domain.*;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.remote.server.UserAuthenticator;
+
+import java.text.Collator;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isOneOf;
 
 /**
  * The Class SLGraphQueryTest.

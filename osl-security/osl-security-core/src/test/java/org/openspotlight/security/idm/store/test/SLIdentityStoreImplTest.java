@@ -48,12 +48,6 @@
  */
 package org.openspotlight.security.idm.store.test;
 
-import java.text.MessageFormat;
-
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Session;
-
 import org.jboss.identity.idm.impl.configuration.IdentityConfigurationImpl;
 import org.jboss.identity.idm.impl.configuration.IdentityStoreConfigurationContextImpl;
 import org.jboss.identity.idm.impl.configuration.jaxb2.JAXB2IdentityConfiguration;
@@ -74,6 +68,11 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.idm.store.SLIdentityStoreImpl;
 import org.openspotlight.security.idm.store.SLIdentityStoreSessionImpl;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Session;
+import java.text.MessageFormat;
 
 public class SLIdentityStoreImplTest {
 

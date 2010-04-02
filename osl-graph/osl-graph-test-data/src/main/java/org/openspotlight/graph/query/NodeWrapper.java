@@ -50,7 +50,7 @@ package org.openspotlight.graph.query;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 
 /**

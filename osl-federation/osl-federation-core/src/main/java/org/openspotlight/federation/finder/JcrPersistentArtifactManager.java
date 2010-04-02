@@ -1,18 +1,5 @@
 package org.openspotlight.federation.finder;
 
-import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.ValueFormatException;
-import javax.jcr.query.InvalidQueryException;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryResult;
-
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.federation.domain.Repository;
@@ -20,6 +7,14 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.support.SimplePersistSupport;
+
+import javax.jcr.*;
+import javax.jcr.query.InvalidQueryException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
+import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 public class JcrPersistentArtifactManager extends
 		AbstractPersistentArtifactManager {

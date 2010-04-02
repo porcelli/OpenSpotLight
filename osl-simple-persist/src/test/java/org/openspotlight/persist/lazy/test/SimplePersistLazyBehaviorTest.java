@@ -1,12 +1,5 @@
 package org.openspotlight.persist.lazy.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.jcr.Node;
-
 import org.junit.Test;
 import org.openspotlight.common.LazyType;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -14,6 +7,13 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.internal.LazyProperty;
 import org.openspotlight.persist.support.SimplePersistSupport;
+
+import javax.jcr.Node;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
 
 public class SimplePersistLazyBehaviorTest {
 

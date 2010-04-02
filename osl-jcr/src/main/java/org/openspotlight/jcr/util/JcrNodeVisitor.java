@@ -97,19 +97,13 @@ package org.openspotlight.jcr.util;
  */
 
 
+import javax.jcr.*;
+import java.util.LinkedList;
 
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-
-import java.util.LinkedList;
-
-import javax.jcr.ItemVisitor;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Property;
-import javax.jcr.RepositoryException;
 
 /**
  * A class for helping visiting {@link Node Jcr Nodes}. It is

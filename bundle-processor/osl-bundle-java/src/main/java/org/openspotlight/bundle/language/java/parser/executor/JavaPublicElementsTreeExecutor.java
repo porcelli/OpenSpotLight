@@ -1,45 +1,11 @@
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.link.AnottatedBy;
-import org.openspotlight.bundle.language.java.metamodel.link.ArrayOfType;
-import org.openspotlight.bundle.language.java.metamodel.link.DataType;
-import org.openspotlight.bundle.language.java.metamodel.link.Extends;
-import org.openspotlight.bundle.language.java.metamodel.link.Implements;
-import org.openspotlight.bundle.language.java.metamodel.link.InnerClass;
-import org.openspotlight.bundle.language.java.metamodel.link.InterfaceExtends;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
-import org.openspotlight.bundle.language.java.metamodel.link.PackageType;
-import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.link.References;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeArgument;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeParameter;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedExtended;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedSuper;
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
@@ -50,6 +16,10 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class JavaPublicElementsTreeExecutor {
 

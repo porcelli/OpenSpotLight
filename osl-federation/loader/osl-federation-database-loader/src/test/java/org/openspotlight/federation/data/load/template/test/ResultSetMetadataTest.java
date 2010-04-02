@@ -48,10 +48,10 @@
  */
 package org.openspotlight.federation.data.load.template.test;
 
-import static java.lang.Class.forName;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Files.delete;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.federation.data.load.db.test.H2Support;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -60,10 +60,10 @@ import java.sql.ResultSetMetaData;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openspotlight.federation.data.load.db.test.H2Support;
+import static java.lang.Class.forName;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Files.delete;
 
 @SuppressWarnings("all")
 public class ResultSetMetadataTest {

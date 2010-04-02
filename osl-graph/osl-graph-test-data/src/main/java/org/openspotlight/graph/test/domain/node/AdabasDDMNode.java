@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 
@@ -65,7 +65,7 @@ public interface AdabasDDMNode extends SLNode {
 	 * 
 	 * @return the caption
 	 * 
-	 * @throws SLGraphSessionException
+	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
 	 *             the SL graph session exception
 	 */
 

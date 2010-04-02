@@ -48,9 +48,6 @@
  */
 package org.openspotlight.federation.scheduler;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
@@ -63,6 +60,9 @@ import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class GroupSchedulable implements
 SchedulableCommandWithContextFactory<Group> {

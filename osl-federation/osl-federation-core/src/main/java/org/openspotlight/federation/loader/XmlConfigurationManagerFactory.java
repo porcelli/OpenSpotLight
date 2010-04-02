@@ -48,6 +48,13 @@
  */
 package org.openspotlight.federation.loader;
 
+import com.thoughtworks.xstream.XStream;
+import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.loader.xml.XmlConfiguration;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -55,14 +62,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.loader.xml.XmlConfiguration;
-
-import com.thoughtworks.xstream.XStream;
 
 /**
  * A factory for creating XmlConfigurationManager objects.

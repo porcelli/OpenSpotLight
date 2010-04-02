@@ -48,11 +48,12 @@
  */
 package org.openspotlight.graph;
 
-import java.util.List;
-
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+
+import java.util.List;
 
 /**
  * The Interface SLMetadata.

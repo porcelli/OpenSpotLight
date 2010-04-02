@@ -48,24 +48,6 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
-import static java.text.MessageFormat.format;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Connection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -82,6 +64,19 @@ import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.sql.Connection;
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.text.MessageFormat.format;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
 
 /**
  * This test is intended to be used to test scripts to retrieve stream artifacts

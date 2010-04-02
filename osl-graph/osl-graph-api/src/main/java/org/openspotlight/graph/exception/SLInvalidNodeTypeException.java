@@ -46,22 +46,26 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.exception;
 
-import java.util.Collection;
 
-import org.openspotlight.graph.persistence.SLPersistentNode;
+/**
+ * The Class SLInvalidNodeTypeException.
+ * 
+ * @author Vitor Hugo Chagas
+ */
+public class SLInvalidNodeTypeException extends SLGraphSessionException {
 
-public final class SLNodeAddedEvent extends SLNodeEvent {
-
-	public SLNodeAddedEvent(
-			final SLNode node,
-			final SLPersistentNode pNode,
-			final SLPersistenceMode persistentMode,
-			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
-		super(node, pNode, persistentMode, linkTypesForLinkDeletion,
-				linkTypesForLinkedNodeDeletion);
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * Instantiates a new sL invalid node type exception.
+	 * 
+	 * @param invalidClass the invalid class
+	 * @param nodeClass the node class
+	 */
+	public SLInvalidNodeTypeException(Class<?> invalidClass, Class<?> nodeClass) {
+		super("Node cannot be retrieved as " + invalidClass.getName() + ". " + nodeClass.getName() + " or super class should be used instead.");
 	}
-
 }

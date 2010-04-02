@@ -48,23 +48,16 @@
  */
 package org.openspotlight.jcr.util;
 
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.StringTokenizer;
-
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.ValueFactory;
-
 import org.openspotlight.common.exception.JCRUtilException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SerializationUtil;
 import org.openspotlight.jcr.provider.SessionWithLock;
+
+import javax.jcr.*;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.StringTokenizer;
 
 /**
  * The Class JCRUtil.

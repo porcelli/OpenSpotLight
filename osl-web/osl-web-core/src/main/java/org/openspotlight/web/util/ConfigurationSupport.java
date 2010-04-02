@@ -48,10 +48,6 @@
  */
 package org.openspotlight.web.util;
 
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.federation.domain.GlobalSettings;
@@ -59,6 +55,10 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 import org.openspotlight.web.WebGlobalSettingsSupport;
+
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.Set;
 
 /**
  * The Class ConfigurationSupport contains methods to be used on

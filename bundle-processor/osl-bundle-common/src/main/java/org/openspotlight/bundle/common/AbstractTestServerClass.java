@@ -1,14 +1,5 @@
 package org.openspotlight.bundle.common;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
-import javax.jcr.Node;
-import javax.jcr.Repository;
-
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
 import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
@@ -20,6 +11,14 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.remote.server.UserAuthenticator;
+
+import javax.jcr.Node;
+import javax.jcr.Repository;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public abstract class AbstractTestServerClass {
 

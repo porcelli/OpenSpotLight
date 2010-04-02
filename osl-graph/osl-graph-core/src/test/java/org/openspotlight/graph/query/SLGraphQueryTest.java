@@ -48,42 +48,25 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isOneOf;
-import static org.hamcrest.Matchers.not;
-
-import java.lang.reflect.Method;
-import java.text.Collator;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.*;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.openspotlight.graph.test.domain.JavaClass;
-import org.openspotlight.graph.test.domain.JavaInterface;
-import org.openspotlight.graph.test.domain.JavaInterfaceHierarchy;
-import org.openspotlight.graph.test.domain.JavaPackage;
-import org.openspotlight.graph.test.domain.JavaType;
-import org.openspotlight.graph.test.domain.JavaTypeMethod;
-import org.openspotlight.graph.test.domain.PackageContainsType;
-import org.openspotlight.graph.test.domain.TypeContainsMethod;
+import org.openspotlight.graph.test.domain.*;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.User;
+
+import java.lang.reflect.Method;
+import java.text.Collator;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 /**
  * The Class SLGraphQueryTest.
@@ -215,7 +198,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").startsWith().value("java.util").and()
                  .openBracket().each().property("caption").contains().value(
                                                                             "Stack").or().openBracket().each().property(
@@ -415,11 +398,11 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").equalsTo().value("java.util.Date")
                  .typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
             final SLQueryResult result = query.execute(sortMode, printInfo);
@@ -2728,7 +2711,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                          "caption").equalsTo().value("java.util.Collection")
                  .typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
             final SLQueryResult result = query.execute(sortMode, printInfo);
@@ -2821,7 +2804,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                                                                          "caption").equalsTo().value("java.util.Collection")
                  .typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
             final SLQueryResult result = query.execute(sortMode, printInfo);
@@ -2915,7 +2898,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
             final SLQueryResult result = query.execute(sortMode, printInfo);
@@ -3092,7 +3075,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd()
                  .limit(10);
 
@@ -3168,7 +3151,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd()
                  .limit(20);
 
@@ -3285,7 +3268,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
             final SLQueryResult result = query.execute(sortMode, printInfo, 10,
@@ -3358,7 +3341,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
             final SLQueryResult result = query.execute(sortMode, printInfo, 20,
@@ -3471,7 +3454,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
             final SLQueryResult result = query.execute(sortMode, printInfo, 20,
@@ -3573,7 +3556,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd()
                  .limit(10, 11);
 
@@ -3651,7 +3634,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd()
                  .limit(20, 21);
 
@@ -3753,7 +3736,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             .where().type(JavaClass.class.getName()).each().property("caption")
                  .equalsTo().value("java.util.Date").typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd();
 
             final SLQueryResult result = query.execute(sortMode, printInfo, 10,
@@ -3826,14 +3809,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").equalsTo().value("java.util.Date")
                  .typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd()
 
-            .where().linkType(TypeContainsMethod.class.getName())
+                 .where().linkType(TypeContainsMethod.class.getName())
                  .each().property("tag").greaterThan().value(30).and()
                  .each().property("tag").lesserThan().value(70)
                  .linkTypeEnd().whereEnd();
@@ -3865,14 +3848,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").equalsTo().value("java.util.Date")
                  .typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd()
 
-            .where().linkType(TypeContainsMethod.class.getName())
+                 .where().linkType(TypeContainsMethod.class.getName())
                  .each().property("tag").greaterThan().value(50)
                  .linkTypeEnd().whereEnd();
 
@@ -3903,14 +3886,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").equalsTo().value("java.util.Date")
                  .typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd()
 
-            .where().linkType(TypeContainsMethod.class.getName())
+                 .where().linkType(TypeContainsMethod.class.getName())
                  .each().property("tag").lesserOrEqualThan().value(30).or()
                  .each().property("tag").greaterOrEqualThan().value(70)
                  .linkTypeEnd().whereEnd();
@@ -3942,14 +3925,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").equalsTo().value("java.util.Date")
                  .typeEnd().whereEnd()
 
-            .select().type(JavaTypeMethod.class.getName()).comma()
+                 .select().type(JavaTypeMethod.class.getName()).comma()
                  .byLink(TypeContainsMethod.class.getName()).b().selectEnd()
 
-            .where().linkType(TypeContainsMethod.class.getName())
+                 .where().linkType(TypeContainsMethod.class.getName())
                  .each().property("tag").lesserOrEqualThan().value(50)
                  .linkTypeEnd().whereEnd();
 
@@ -3981,7 +3964,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaInterface.class.getName()).each()
+                 .where().type(JavaInterface.class.getName()).each()
                  .property("caption").contains().value("Set").typeEnd()
                  .type(JavaClass.class.getName()).each().property("caption")
                  .contains().value("Map").typeEnd().whereEnd();
@@ -4048,13 +4031,13 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").startsWith().value("java.util")
                  .typeEnd().whereEnd()
 
-            .select().type(JavaInterface.class.getName()).selectEnd()
+                 .select().type(JavaInterface.class.getName()).selectEnd()
 
-            .where().type(JavaInterface.class.getName()).each()
+                 .where().type(JavaInterface.class.getName()).each()
                  .property("caption").contains().value("Set").typeEnd()
                  .whereEnd();
 
@@ -4095,15 +4078,15 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").startsWith().value("java.util")
                  .typeEnd().whereEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).selectEnd()
+                 .select().type(JavaInterface.class.getName()).selectEnd()
 
-            .where().type(JavaInterface.class.getName()).each()
+                 .where().type(JavaInterface.class.getName()).each()
                  .property("caption").contains().value("Set").typeEnd()
                  .whereEnd();
 
@@ -4568,15 +4551,15 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                  .property("caption").equalsTo()
                  .value("java.util.SortedSet").typeEnd().whereEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).comma()
+                 .select().type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .executeXTimes(3);
+                 .executeXTimes(3);
 
             final SLQueryResult result = query.execute(sortMode, printInfo);
             final List<SLNode> nodes = result.getNodes();
@@ -4607,6 +4590,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             printResult(nodes);
         } catch (final SLException e) {
+            e.printStackTrace();
             LOGGER.error(e.getMessage(), e);
             org.junit.Assert.fail();
         }
@@ -4628,9 +4612,9 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                  .property("caption").equalsTo()
                  .value("java.util.SortedSet").typeEnd().whereEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).comma()
+                 .select().type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd().executeXTimes(3);
 
@@ -4684,9 +4668,9 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                  .property("caption").equalsTo()
                  .value("java.util.SortedSet").typeEnd().whereEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).comma()
+                 .select().type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd();
 
@@ -4732,15 +4716,15 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                  .property("caption").equalsTo()
                  .value("java.util.SortedSet").typeEnd().whereEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).comma()
+                 .select().type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).comma()
+                 .select().type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd();
 
@@ -4790,21 +4774,21 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                  .property("caption").equalsTo()
                  .value("java.util.SortedSet").typeEnd().whereEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).comma()
+                 .select().type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).comma()
+                 .select().type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd()
 
-            .keepResult()
+                 .keepResult()
 
-            .select().type(JavaInterface.class.getName()).comma()
+                 .select().type(JavaInterface.class.getName()).comma()
                  .byLink(JavaInterfaceHierarchy.class.getName()).b()
                  .selectEnd();
 
@@ -4855,7 +4839,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").startsWith().value("java.util")
                  .typeEnd().whereEnd();
 
@@ -6000,7 +5984,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").startsWith().value("java.util").and()
                  .openBracket().each().property("caption").contains().value(
                                                                             "Set").or().each().property("caption").contains()
@@ -6134,7 +6118,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             query.select().type(JavaType.class.getName()).subTypes()
                  .selectEnd()
 
-            .where().type(JavaType.class.getName()).subTypes().each()
+                 .where().type(JavaType.class.getName()).subTypes().each()
                  .property("caption").contains().value("Set").or().each()
                  .property("caption").contains().value("List").typeEnd()
                  .whereEnd();
@@ -6259,11 +6243,36 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
      */
     @Test
     public void testSearchAllNative() {
+        final Collection<SLNode> nodes = session.searchNodes("Set");
+
+        assertThat(nodes.size(), is(99));
+        printResult(nodes);
+    }
+
+    @Test
+    public void testTwoLevelsOfNodeType() {
         try {
 
-            final Collection<SLNode> nodes = session.searchNodes("Set");
+            final SLQueryApi query = session.createQueryApi();
 
-            assertThat(nodes.size(), is(99));
+            query.select().type(JavaInterface.class.getName()).subTypes()
+                 .selectEnd();
+
+            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+            printInfo = true;
+            printResult(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(new NodeWrapper(
+                                               org.openspotlight.graph.test.domain.JavaInnerInterface.class
+                                                                                                           .getName(), "java.util",
+                                                                                                           java.util.Map.Entry.class.getName()), isOneOf(wrappers));
+                    assertThat(wrappers.length, is(20));
+                }
+            }.execute();
             printResult(nodes);
 
         } catch (final SLException e) {
@@ -6271,4 +6280,37 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             org.junit.Assert.fail();
         }
     }
+
+    @Test
+    public void testThreeLevelsOfNodeType() {
+        try {
+
+            final SLQueryApi query = session.createQueryApi();
+
+            query.select().type(JavaType.class.getName()).subTypes()
+                 .selectEnd();
+
+            final SLQueryResult result = query.execute(sortMode, printInfo);
+            final List<SLNode> nodes = result.getNodes();
+            final NodeWrapper[] wrappers = wrapNodes(nodes);
+            printInfo = true;
+            printResult(nodes);
+
+            new AssertResult() {
+                public void execute() {
+                    assertThat(new NodeWrapper(
+                                               org.openspotlight.graph.test.domain.JavaInnerInterface.class
+                                                                                                           .getName(), "java.util",
+                                                                                                           java.util.Map.Entry.class.getName()), isOneOf(wrappers));
+                    assertThat(wrappers.length, is(65));
+                }
+            }.execute();
+            printResult(nodes);
+
+        } catch (final SLException e) {
+            LOGGER.error(e.getMessage(), e);
+            org.junit.Assert.fail();
+        }
+    }
+
 }

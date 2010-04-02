@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLNodeNotFoundException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLNodeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The Interface SLQueryCache.

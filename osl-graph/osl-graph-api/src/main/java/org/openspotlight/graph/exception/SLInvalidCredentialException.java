@@ -46,24 +46,37 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.exception;
+
+import org.openspotlight.common.exception.SLSecurityException;
 
 /**
- * The Class SLContextAlreadyExistsException.
+ * The Class SLInvalidCredentialException.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
  */
-public class SLContextAlreadyExistsException extends SLGraphSessionException {
+public class SLInvalidCredentialException extends SLSecurityException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = -1891819028100700399L;
 
-	/**
-	 * Instantiates a new sL context already exists exception.
-	 * 
-	 * @param id the id
-	 */
-	public SLContextAlreadyExistsException(String id) {
-		super("Context " + id + " already exists.");
-	}
+    /**
+     * Instantiates a new sL invalid credential exception.
+     * 
+     * @param message the message
+     */
+    public SLInvalidCredentialException(
+                                         String message ) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new sL invalid credential exception.
+     * 
+     * @param cause the cause
+     */
+    public SLInvalidCredentialException(
+                                         Throwable cause ) {
+        super(cause);
+    }
 }

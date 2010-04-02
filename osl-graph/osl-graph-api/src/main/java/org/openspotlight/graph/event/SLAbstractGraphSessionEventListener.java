@@ -46,7 +46,7 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
@@ -63,7 +63,7 @@ import org.openspotlight.common.concurrent.LockContainer;
  * @see SLAbstractGraphSessionEventListener
  */
 public abstract class SLAbstractGraphSessionEventListener implements
-		SLGraphSessionEventListener {
+        SLGraphSessionEventListener {
 
 	protected Lock lock;
 
@@ -71,88 +71,55 @@ public abstract class SLAbstractGraphSessionEventListener implements
 		lock = parent.getLockObject();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.openspotlight.graph.SLGraphSessionEventListener#beforeSave(org.
-	 * openspotlight.graph.SLGraphSessionEvent)
-	 */
-	public void beforeSave(final SLGraphSessionSaveEvent event)
-			throws SLGraphSessionException, SLInvalidCredentialException {
+    /**
+     * {@inheritDoc}
+     */
+	public void beforeSave(final SLGraphSessionSaveEvent event) {
 	}
 
 	public Lock getLockObject() {
 		return lock;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.openspotlight.graph.SLGraphSessionEventListener#linkAdded(org.
-	 * openspotlight.graph.SLLinkEvent)
-	 */
-	public void linkAdded(final SLLinkAddedEvent event)
-			throws SLGraphSessionException {
+    /**
+     * {@inheritDoc}
+     */
+	public void linkAdded(final SLLinkAddedEvent event) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphSessionEventListener#linkPropertySet(org
-	 * .openspotlight.graph.SLLinkPropertyEvent)
-	 */
-	public void linkPropertySet(final SLLinkPropertySetEvent event)
-			throws SLGraphSessionException {
+    /**
+     * {@inheritDoc}
+     */
+	public void linkPropertySet(final SLLinkPropertySetEvent event) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.openspotlight.graph.SLGraphSessionEventListener#linkRemoved(org.
-	 * openspotlight.graph.SLLinkEvent)
-	 */
-	public void linkRemoved(final SLLinkRemovedEvent event)
-			throws SLGraphSessionException {
+    /**
+     * {@inheritDoc}
+     */
+	public void linkRemoved(final SLLinkRemovedEvent event) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.openspotlight.graph.SLGraphSessionEventListener#nodeAdded(org.
-	 * openspotlight.graph.SLNodeEvent)
-	 */
-	public void nodeAdded(final SLNodeAddedEvent event)
-			throws SLGraphSessionException {
+    /**
+     * {@inheritDoc}
+     */
+	public void nodeAdded(final SLNodeAddedEvent event) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphSessionEventListener#nodePropertyRemoved
-	 * (org.openspotlight.graph.SLNodePropertyEvent)
-	 */
-	public void nodePropertyRemoved(final SLNodePropertyRemovedEvent event)
-			throws SLGraphSessionException {
+    /**
+     * {@inheritDoc}
+     */
+	public void nodePropertyRemoved(final SLNodePropertyRemovedEvent event) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphSessionEventListener#nodePropertySet(org
-	 * .openspotlight.graph.SLNodePropertyEvent)
-	 */
-	public void nodePropertySet(final SLNodePropertySetEvent event)
-			throws SLGraphSessionException {
+    /**
+     * {@inheritDoc}
+     */
+	public void nodePropertySet(final SLNodePropertySetEvent event){
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLGraphSessionEventListener#sessionCleaned()
-	 */
+    /**
+     * {@inheritDoc}
+     */
 	public void sessionCleaned() {
 	}
 }

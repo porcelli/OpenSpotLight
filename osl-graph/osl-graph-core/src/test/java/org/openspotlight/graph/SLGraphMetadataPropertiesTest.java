@@ -55,12 +55,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.graph.query.SLGraphQueryTest;
-import org.openspotlight.graph.test.domain.JavaClassHierarchy;
-import org.openspotlight.graph.test.domain.JavaClassHierarchyWithoutProperties;
-import org.openspotlight.graph.test.domain.JavaClassNode;
-import org.openspotlight.graph.test.domain.JavaClassNodeWithoutProperties;
-import org.openspotlight.graph.test.domain.JavaElementNode;
+import org.openspotlight.graph.test.domain.*;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
@@ -125,7 +123,7 @@ public class SLGraphMetadataPropertiesTest {
 
 	@Test
 	public void testLinkPropertyVisibility() throws SLGraphSessionException,
-			SLInvalidCredentialException {
+            SLInvalidCredentialException {
 		final SLNode rootNode = session.createContext("Test1").getRootNode();
 		final SLNode testNode1 = rootNode.addNode(JavaClassNode.class,
 				"testNode");
@@ -170,17 +168,14 @@ public class SLGraphMetadataPropertiesTest {
 	/**
 	 * Test node property visibility.
 	 * 
-	 * @throws SLContextAlreadyExistsException
-	 *             the SL context already exists exception
 	 * @throws SLGraphSessionException
 	 *             the SL graph session exception
-	 * @throws SLInvalidCredentialException
+	 * @throws org.openspotlight.graph.exception.SLInvalidCredentialException
 	 *             the SL invalid credential exception
 	 */
 	@Test
 	public void testNodePropertyVisibility()
-			throws SLContextAlreadyExistsException, SLGraphSessionException,
-			SLInvalidCredentialException {
+			throws SLGraphSessionException, SLInvalidCredentialException {
 		final SLNode rootNode = session.createContext("Test1").getRootNode();
 		final SLNode testNode = rootNode.addNode(
 				JavaClassNodeWithoutProperties.class, "testNode");

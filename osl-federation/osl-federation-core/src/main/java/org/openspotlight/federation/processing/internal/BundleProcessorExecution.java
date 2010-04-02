@@ -48,11 +48,6 @@
  */
 package org.openspotlight.federation.processing.internal;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.taskexec.TaskExecGroup;
 import org.openspotlight.common.taskexec.TaskExecManager;
@@ -60,11 +55,7 @@ import org.openspotlight.common.taskexec.TaskExecPool;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.GroupListener;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.GroupListener.ListenerAction;
 import org.openspotlight.federation.domain.Repository.GroupVisitor;
 import org.openspotlight.federation.processing.BundleExecutionException;
@@ -82,6 +73,11 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BundleProcessorExecution {
 

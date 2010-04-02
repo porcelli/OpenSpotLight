@@ -49,12 +49,12 @@
 
 package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import org.openspotlight.common.exception.SLException;
 
 import java.io.InputStream;
 
-import org.openspotlight.common.exception.SLException;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 /**
  * Class for resource loading.

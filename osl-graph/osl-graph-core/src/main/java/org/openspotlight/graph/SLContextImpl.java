@@ -50,6 +50,8 @@ package org.openspotlight.graph;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.graph.event.SLGraphSessionEventPoster;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.util.ProxyUtil;
 
@@ -90,12 +92,37 @@ public class SLContextImpl implements SLContext {
 		lock = session.getLockObject();
 	}
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+    /**
+     * {@inheritDoc}
+     */
+	public String getID() {
+		return rootNode.getName();
+	}
+
+	public Lock getLockObject() {
+		return lock;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public SLNode getRootNode() {
+		synchronized (lock) {
+			return ProxyUtil.createNodeProxy(SLNode.class, rootNode);
+		}
+
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	public SLGraphSession getSession() {
+		return session;
+	}
+
+    /**
+     * {@inheritDoc}
+     */
 	@Override
 	public boolean equals(final Object obj) {
 		synchronized (lock) {
@@ -111,42 +138,5 @@ public class SLContextImpl implements SLContext {
 						e);
 			}
 		}
-	}
-
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLContext#getID()
-	 */
-	public String getID() throws SLGraphSessionException {
-		return rootNode.getName();
-	}
-
-	public Lock getLockObject() {
-		return lock;
-	}
-
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLContext#getRootNode()
-	 */
-	public SLNode getRootNode() throws SLGraphSessionException {
-		synchronized (lock) {
-			return ProxyUtil.createNodeProxy(SLNode.class, rootNode);
-		}
-
-	}
-
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLContext#getSession()
-	 */
-	public SLGraphSession getSession() {
-		return session;
 	}
 }

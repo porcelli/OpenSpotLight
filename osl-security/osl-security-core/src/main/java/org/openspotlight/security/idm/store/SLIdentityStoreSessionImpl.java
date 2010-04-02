@@ -48,11 +48,6 @@
  */
 package org.openspotlight.security.idm.store;
 
-import java.text.MessageFormat;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-
 import org.jboss.identity.idm.common.exception.IdentityException;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.openspotlight.common.SharedConstants;
@@ -60,6 +55,10 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistSupport;
+
+import javax.jcr.Node;
+import javax.jcr.Session;
+import java.text.MessageFormat;
 
 public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 	public static final String SECURITY_NODE = SharedConstants.DEFAULT_JCR_ROOT_NAME

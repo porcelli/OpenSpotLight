@@ -48,14 +48,6 @@
  */
 package org.openspotlight.federation.loader;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-
 import org.openspotlight.common.LazyType;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.ConfigurationException;
@@ -65,6 +57,13 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.persist.support.SimplePersistSupport;
+
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A factory for creating JcrSessionConfigurationManager objects.

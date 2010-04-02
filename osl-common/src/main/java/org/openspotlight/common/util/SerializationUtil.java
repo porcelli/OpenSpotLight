@@ -48,19 +48,11 @@
  */
 package org.openspotlight.common.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InvalidClassException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
-import java.io.OutputStream;
+import org.openspotlight.common.exception.SerializationUtilException;
+
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
-
-import org.openspotlight.common.exception.SerializationUtilException;
 
 /**
  * The Class SerializationUtil.

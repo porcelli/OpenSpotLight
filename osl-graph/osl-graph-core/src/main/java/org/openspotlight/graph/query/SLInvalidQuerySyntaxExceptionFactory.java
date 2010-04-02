@@ -48,19 +48,11 @@
  */
 package org.openspotlight.graph.query;
 
+import org.antlr.runtime.*;
+import org.openspotlight.graph.query.parser.SLQLLexer;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.antlr.runtime.EarlyExitException;
-import org.antlr.runtime.FailedPredicateException;
-import org.antlr.runtime.MismatchedNotSetException;
-import org.antlr.runtime.MismatchedSetException;
-import org.antlr.runtime.MismatchedTokenException;
-import org.antlr.runtime.MismatchedTreeNodeException;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
-import org.openspotlight.graph.query.parser.SLQLLexer;
 
 /**
  * Helper class that generates SLQueryLanguageParserException with user friendly error messages.

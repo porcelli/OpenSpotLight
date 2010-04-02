@@ -49,12 +49,7 @@
 package org.openspotlight.common.concurrent;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class has a lot of static factory methods to create {@link Collection

@@ -46,118 +46,110 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
 
-import java.io.Serializable;
-
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLPersistenceMode;
+import org.openspotlight.graph.event.SLGraphSessionEvent;
 import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
+
+import java.util.Collection;
 
 /**
- * The Class SLNodePropertyEvent.
+ * The Class SLNodeEvent.
  * 
  * @author Vitor Hugo Chagas
  */
-public abstract class SLNodePropertyEvent extends SLGraphSessionEvent {
+public abstract class SLNodeEvent extends SLGraphSessionEvent {
 
-	/** The property. */
-	private final SLNodeProperty<? extends Serializable> property;
-
-	/** The p property. */
-	private final SLPersistentProperty<? extends Serializable> pProperty;
+	/** The node. */
+	private final SLNode node;
 
 	/** The p node. */
-	private SLPersistentNode pNode;
+	private final SLPersistentNode pNode;
 
-	private VisibilityLevel visibility;
+	/** The persistent mode. */
+	private final SLPersistenceMode persistentMode;
 
-	/** The property name. */
-	private final String propertyName;
+	/** The link types for link deletion. */
+	private final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion;
 
-	/** The string. */
-	private boolean string;
+	/** The link types for linked node deletion. */
+	private final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion;
 
 	/**
-	 * Instantiates a new sL node property event.
+	 * Instantiates a new sL node event.
 	 * 
 	 * @param type
 	 *            the type
-	 * @param property
-	 *            the property
-	 * @param pProperty
-	 *            the property
+	 * @param node
+	 *            the node
+	 * @param pNode
+	 *            the node
+	 * @param persistentMode
+	 *            the persistent mode
+	 * @param linkTypesForLinkDeletion
+	 *            the link types for link deletion
+	 * @param linkTypesForLinkedNodeDeletion
+	 *            the link types for linked node deletion
 	 */
-	public SLNodePropertyEvent(
-			final SLNodeProperty<? extends Serializable> property,
-			final SLPersistentProperty<? extends Serializable> pProperty,
-			final String propertyName) {
-		super(property.getNode().getSession());
-		this.property = property;
-		this.pProperty = pProperty;
-		this.propertyName = propertyName;
+	public SLNodeEvent(
+			final SLNode node,
+			final SLPersistentNode pNode,
+			final SLPersistenceMode persistentMode,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
+		super(node.getSession());
+		this.node = node;
+		this.pNode = pNode;
+		this.persistentMode = persistentMode;
+		this.linkTypesForLinkDeletion = linkTypesForLinkDeletion;
+		this.linkTypesForLinkedNodeDeletion = linkTypesForLinkedNodeDeletion;
 	}
 
 	/**
-	 * Gets the persistent property.
+	 * Gets the link types for link deletion.
 	 * 
-	 * @return the persistent property
+	 * @return the link types for link deletion
 	 */
-	public SLPersistentProperty<? extends Serializable> getPersistentProperty() {
-		return pProperty;
-	}
-
-	public SLPersistentNode getPNode() {
-		synchronized (lock) {
-			return pNode;
-		}
+	public Collection<Class<? extends SLLink>> getLinkTypesForLinkDeletion() {
+		return linkTypesForLinkDeletion;
 	}
 
 	/**
-	 * Gets the property.
+	 * Gets the link types for linked nodes deletion.
 	 * 
-	 * @return the property
+	 * @return the link types for linked nodes deletion
 	 */
-	public SLNodeProperty<? extends Serializable> getProperty() {
-		synchronized (lock) {
-			return property;
-		}
+	public Collection<Class<? extends SLLink>> getLinkTypesForLinkedNodesDeletion() {
+		return linkTypesForLinkedNodeDeletion;
 	}
 
-	public String getPropertyName() {
-		synchronized (lock) {
-			return propertyName;
-		}
+	/**
+	 * Gets the node.
+	 * 
+	 * @return the node
+	 */
+	public SLNode getNode() {
+		return node;
 	}
 
-	public VisibilityLevel getVisibility() {
-		synchronized (lock) {
-			return visibility;
-		}
+	/**
+	 * Gets the persistence mode.
+	 * 
+	 * @return the persistence mode
+	 */
+	public SLPersistenceMode getPersistenceMode() {
+		return persistentMode;
 	}
 
-	public boolean isString() {
-		synchronized (lock) {
-			return string;
-		}
+	/**
+	 * Gets the persistent node.
+	 * 
+	 * @return the persistent node
+	 */
+	public SLPersistentNode getPersistentNode() {
+		return pNode;
 	}
-
-	public void setPNode(final SLPersistentNode node) {
-		synchronized (lock) {
-			pNode = node;
-		}
-	}
-
-	public void setString(final boolean string) {
-		synchronized (lock) {
-			this.string = string;
-		}
-	}
-
-	public void setVisibility(final VisibilityLevel visibility) {
-		synchronized (lock) {
-			this.visibility = visibility;
-		}
-	}
-
 }

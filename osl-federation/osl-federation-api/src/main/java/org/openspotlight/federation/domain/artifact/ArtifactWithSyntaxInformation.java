@@ -48,13 +48,12 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.jcr.Session;
-
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.internal.LazyProperty;
+
+import javax.jcr.Session;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 

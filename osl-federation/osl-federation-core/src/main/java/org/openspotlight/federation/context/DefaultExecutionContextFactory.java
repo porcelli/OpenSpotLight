@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.context;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultExecutionContextFactory implements ExecutionContextFactory,
 		DisposingListener<DefaultExecutionContext> {

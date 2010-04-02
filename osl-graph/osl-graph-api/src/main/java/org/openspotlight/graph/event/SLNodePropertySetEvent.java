@@ -46,86 +46,20 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.event;
+
+import org.openspotlight.graph.SLNodeProperty;
+import org.openspotlight.graph.persistence.SLPersistentProperty;
 
 import java.io.Serializable;
 
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
+public final class SLNodePropertySetEvent extends SLNodePropertyEvent {
 
-/**
- * The Class SLLinkPropertyEvent.
- * 
- * @author Vitor Hugo Chagas
- */
-public abstract class SLLinkPropertyEvent extends SLGraphSessionEvent {
-
-	/** The property. */
-	private final SLLinkProperty<? extends Serializable> property;
-
-	/** The p property. */
-	private final SLPersistentProperty<? extends Serializable> pProperty;
-
-	/** The visibility. */
-	private VisibilityLevel visibility;
-
-	/**
-	 * Instantiates a new sL link property event.
-	 * 
-	 * @param type
-	 *            the type
-	 * @param property
-	 *            the property
-	 * @param pProperty
-	 *            the property
-	 */
-	public SLLinkPropertyEvent(
-			final SLLinkProperty<? extends Serializable> property,
-			final SLPersistentProperty<? extends Serializable> pProperty) {
-		super(property.getLink().getSession());
-		this.property = property;
-		this.pProperty = pProperty;
-	}
-
-	/**
-	 * Gets the persistent property.
-	 * 
-	 * @return the persistent property
-	 */
-	public SLPersistentProperty<? extends Serializable> getPersistentProperty() {
-		return pProperty;
-	}
-
-	/**
-	 * Gets the property.
-	 * 
-	 * @return the property
-	 */
-	public SLLinkProperty<? extends Serializable> getProperty() {
-		return property;
-	}
-
-	/**
-	 * Gets the visibility.
-	 * 
-	 * @return the visibility
-	 */
-	public VisibilityLevel getVisibility() {
-		synchronized (lock) {
-			return visibility;
-		}
-	}
-
-	/**
-	 * Sets the visibility.
-	 * 
-	 * @param visibility
-	 *            the new visibility
-	 */
-	public void setVisibility(final VisibilityLevel visibility) {
-		synchronized (lock) {
-			this.visibility = visibility;
-		}
+	public SLNodePropertySetEvent(
+			final SLNodeProperty<? extends Serializable> property,
+			final SLPersistentProperty<? extends Serializable> pProperty,
+			final String propertyName) {
+		super(property, pProperty, propertyName);
 	}
 
 }

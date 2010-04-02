@@ -49,18 +49,15 @@
 
 package org.openspotlight.common.util.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Dates.dateFromString;
-import static org.openspotlight.common.util.Dates.dateTimeFromString;
-import static org.openspotlight.common.util.Dates.stringFromDate;
-import static org.openspotlight.common.util.Dates.stringFromDateTime;
+import org.junit.Test;
+import org.openspotlight.common.util.Dates;
 
 import java.util.Date;
 
-import org.junit.Test;
-import org.openspotlight.common.util.Dates;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Dates.*;
 
 /**
  * Test class for {@link Dates}

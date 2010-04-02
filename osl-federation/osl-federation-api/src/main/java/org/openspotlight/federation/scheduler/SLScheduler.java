@@ -48,13 +48,13 @@
  */
 package org.openspotlight.federation.scheduler;
 
-import java.util.Set;
-
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Schedulable;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+
+import java.util.Set;
 
 public interface SLScheduler {
 
