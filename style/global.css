@@ -57,9 +57,9 @@ input:focus { border: 2px solid #FF9900; color:#666666;}
 
 #bottom_content{ width:800px; margin: 0 auto}
 
-#bottom_support{padding: 20px 0}
+#bottom_support{padding: 0 auto; margin-top:20px}
 
-#bottom_support li{ width:25%; float:left; text-align:center;}
+#bottom_support li{ width:33%; float:left; text-align:center;}
 
 #bottom_support li p{ padding: 10px 0}
 
