@@ -1,0 +1,12 @@
+00-RELEASENOTES
+*.o
+*.rdb
+*.log
+redis-cli
+redis-server
+redis-benchmark
+doc-tools
+mkrelease.sh
+release
+myredis.conf
+misc/*

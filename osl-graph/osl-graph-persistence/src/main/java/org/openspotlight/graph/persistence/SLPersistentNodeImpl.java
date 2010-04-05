@@ -51,7 +51,10 @@ package org.openspotlight.graph.persistence;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+<<<<<<< HEAD
 import java.util.concurrent.atomic.AtomicInteger;
+=======
+>>>>>>> storage-api
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;

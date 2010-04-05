@@ -59,7 +59,7 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.jasypt.util.digest.Digester;
-import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
  * Class with sha1 signature method.
@@ -78,15 +78,15 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a byte array representing the signature
-	 * @throws SLException
+	 * @throws SLRuntimeException
 	 */
 	public static byte[] getSha1Signature(final byte[] content)
-			throws SLException {
+			throws SLRuntimeException {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			return DIGESTER.digest(content);
 		} catch (final Exception e) {
-			throw logAndReturnNew(e, SLException.class);
+			throw logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
 
@@ -95,10 +95,10 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a byte array representing the signature
-	 * @throws SLException
+	 * @throws SLRuntimeException
 	 */
 	public static byte[] getSha1Signature(final InputStream content)
-			throws SLException {
+			throws SLRuntimeException {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			if (content.markSupported())
@@ -109,7 +109,7 @@ public class Sha1 {
 				content.reset();
 			return DIGESTER.digest(output.toByteArray());
 		} catch (final Exception e) {
-			throw logAndReturnNew(e, SLException.class);
+			throw logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
 
@@ -118,10 +118,10 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a byte array representing the signature
-	 * @throws SLException
+	 * @throws SLRuntimeException
 	 */
 	public static byte[] getSha1Signature(final String content)
-			throws SLException {
+			throws SLRuntimeException {
 		return getSha1Signature(content.getBytes());
 	}
 
@@ -130,17 +130,17 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a base64 string representing the signature
-	 * @throws SLException
+	 * @throws SLRuntimeException
 	 */
 	public static String getSha1SignatureEncodedAsBase64(final byte[] content)
-			throws SLException {
+			throws SLRuntimeException {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			final byte[] sha1 = getSha1Signature(content);
 			final String result = new String(encodeBase64(sha1));
 			return result;
 		} catch (final Exception e) {
-			throw logAndReturnNew(e, SLException.class);
+			throw logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
 
@@ -149,17 +149,17 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a base64 string representing the signature
-	 * @throws SLException
+	 * @throws SLRuntimeException
 	 */
 	public static String getSha1SignatureEncodedAsBase64(final InputStream content)
-			throws SLException {
+			throws SLRuntimeException {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			final byte[] sha1 = getSha1Signature(content);
 			final String result = new String(encodeBase64(sha1));
 			return result;
 		} catch (final Exception e) {
-			throw logAndReturnNew(e, SLException.class);
+			throw logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
 
@@ -169,10 +169,10 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return sha-1 base64 string
-	 * @throws SLException
+	 * @throws SLRuntimeException
 	 */
 	public static String getSha1SignatureEncodedAsBase64(final String content)
-			throws SLException {
+			throws SLRuntimeException {
 		return getSha1SignatureEncodedAsBase64(content.getBytes());
 	}
 
@@ -181,16 +181,16 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a base64 string representing the signature
-	 * @throws SLException
+	 * @throws SLRuntimeException
 	 */
 	public static String getSha1SignatureEncodedAsHexa(final byte[] content)
-			throws SLException {
+			throws SLRuntimeException {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			final byte[] sha1 = getSha1Signature(content);
 			return toHexa(sha1);
 		} catch (final Exception e) {
-			throw logAndReturnNew(e, SLException.class);
+			throw logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
 
@@ -200,10 +200,10 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a base64 string representing the signature
-	 * @throws SLException
+	 * @throws SLRuntimeException
 	 */
 	public static String getSha1SignatureEncodedAsHexa(final String content)
-			throws SLException {
+			throws SLRuntimeException {
 		return getSha1SignatureEncodedAsHexa(content.getBytes());
 	}
 
