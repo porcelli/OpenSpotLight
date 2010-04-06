@@ -111,13 +111,13 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
         <T extends Serializable, V extends T> STProperty setSimpleProperty(STStorageSession session, String name, Class<T> propertyType, V value);
 
-        <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value);
+        <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<? super V> parameterizedType, List<V> value);
 
-        <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<V> parameterizedType, Set<V> value);
+        <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<? super V> parameterizedType, Set<V> value);
 
-        <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<K> keyType, Class<V> valueType, Map<K, V> value);
+        <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<? super K> keyType, Class<? super V> valueType, Map<K, V> value);
 
-        <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<S> propertyType, S value);
+        <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<? super S> propertyType, S value);
 
         STProperty setInputStreamProperty(STStorageSession session, String name, InputStream value);
 

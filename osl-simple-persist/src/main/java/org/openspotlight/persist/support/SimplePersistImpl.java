@@ -4,10 +4,8 @@ import org.openspotlight.common.util.Reflection;
 import org.openspotlight.persist.annotation.*;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
-import org.openspotlight.storage.domain.node.STProperty;
 
 import java.beans.PropertyDescriptor;
 import java.io.InputStream;
@@ -59,29 +57,88 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         List<PropertyDescriptor> streamPropertiesDescriptor = newLinkedList();
         fillDescriptors(bean.getClass(), simplePropertiesDescriptor, keyPropertiesDescriptor, parentPropertiesDescriptor, childrenPropertiesDescriptor, streamPropertiesDescriptor);
         STNodeEntry newNodeEntry = createNewNode(partition, parentNodeN, session, bean, keyPropertiesDescriptor);
-        for(PropertyDescriptor property: simplePropertiesDescriptor){
-                    newNodeEntry.getVerifiedOperations().setSimpleProperty(session,property.getName(),
-                            (Class<? extends Serializable>)property.getPropertyType(),(Serializable)property.getReadMethod().invoke(bean));
+        fillSimpleProperties(session, bean, simplePropertiesDescriptor, newNodeEntry);
+        fillStreamProperties(session, bean, streamPropertiesDescriptor, newNodeEntry);
+        fillChildrenProperties(partition, session, bean, childrenPropertiesDescriptor, newNodeEntry);
+        return newNodeEntry;
+    }
+
+    private <T> void fillChildrenProperties(STPartition partition, STStorageSession session, T bean, List<PropertyDescriptor> childrenPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
+        List<SimpleNodeType> nodesToConvert = newLinkedList();
+        for (PropertyDescriptor property : childrenPropertiesDescriptor) {
+            Class<?> propertyType = property.getPropertyType();
+            Object value = property.getReadMethod().invoke(bean);
+            if (SimpleNodeType.class.isAssignableFrom(propertyType)) {
+                nodesToConvert.add((SimpleNodeType) value);
+            } else if (Collection.class.isAssignableFrom(propertyType)) {
+                Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodInformation = unwrapCollectionFromMethodReturn(property.getReadMethod());
+                if (List.class.isAssignableFrom(methodInformation.getCollectionType())) {
+                    for (SimpleNodeType t : (List<SimpleNodeType>) value) nodesToConvert.add(t);
+                } else if (Set.class.isAssignableFrom(methodInformation.getCollectionType())) {
+                    for (SimpleNodeType t : (Set<SimpleNodeType>) value) nodesToConvert.add(t);
+                } else {
+                    throw new IllegalStateException("invalid collection type");
                 }
-        for(PropertyDescriptor property: streamPropertiesDescriptor){
 
-            newNodeEntry.getVerifiedOperations().setSimpleProperty(session,property.getName(),
-                            (Class<? extends Serializable>)property.getPropertyType(),(Serializable)property.getReadMethod().invoke(bean));
+            } else {
+                throw new IllegalStateException("invalid type");
+            }
         }
+        for (SimpleNodeType t : nodesToConvert) internalConvertBeanToNode(partition, newNodeEntry, session, t);
+    }
 
-        return null;  //To change body of created methods use File | Settings | File Templates.
+    private <T> void fillStreamProperties(STStorageSession session, T bean, List<PropertyDescriptor> streamPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
+        for (PropertyDescriptor property : streamPropertiesDescriptor) {
+            Class<?> propertyType = property.getPropertyType();
+            Object value = property.getReadMethod().invoke(bean);
+            if (InputStream.class.isAssignableFrom(propertyType)) {
+                newNodeEntry.getVerifiedOperations().setInputStreamProperty(session, property.getName(), (InputStream) value);
+            } else if (Collection.class.isAssignableFrom(propertyType)) {
+                Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodInformation = unwrapCollectionFromMethodReturn(property.getReadMethod());
+                if (List.class.isAssignableFrom(methodInformation.getCollectionType())) {
+                    newNodeEntry.getVerifiedOperations().setSerializedListProperty(session, property.getName(),
+                            (Class<? extends Serializable>) methodInformation.getItemType(), (List<? extends Serializable>) value);
+                } else if (Set.class.isAssignableFrom(methodInformation.getCollectionType())) {
+                    newNodeEntry.getVerifiedOperations().setSerializedSetProperty(session, property.getName(),
+                            (Class<? extends Serializable>) methodInformation.getItemType(), (Set<? extends Serializable>) value);
+                } else {
+                    throw new IllegalStateException("invalid collection type");
+                }
+
+            } else if (Map.class.isAssignableFrom(propertyType)) {
+                Reflection.UnwrappedMapTypeFromMethodReturn<Object, Object> methodInformation = unwrapMapFromMethodReturn(property.getReadMethod());
+                newNodeEntry.getVerifiedOperations().setSerializedMapProperty(session, property.getName(),
+                        (Class<? extends Serializable>) methodInformation.getItemType().getK1(),
+                        (Class<? extends Serializable>) methodInformation.getItemType().getK2(),
+                        (Map<? extends Serializable, ? extends Serializable>) value);
+
+            } else if (Serializable.class.isAssignableFrom(propertyType)) {
+                newNodeEntry.getVerifiedOperations().setSimpleProperty(session, property.getName(),
+                        (Class<? extends Serializable>) property.getPropertyType(), (Serializable) value);
+            } else {
+                throw new IllegalStateException("invalid type");
+            }
+
+        }
+    }
+
+    private <T> void fillSimpleProperties(STStorageSession session, T bean, List<PropertyDescriptor> simplePropertiesDescriptor, STNodeEntry newNodeEntry) throws IllegalAccessException, InvocationTargetException {
+        for (PropertyDescriptor property : simplePropertiesDescriptor) {
+            newNodeEntry.getVerifiedOperations().setSimpleProperty(session, property.getName(),
+                    (Class<? extends Serializable>) property.getPropertyType(), (Serializable) property.getReadMethod().invoke(bean));
+        }
     }
 
     private <T> STNodeEntry createNewNode(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, T bean, List<PropertyDescriptor> keyPropertiesDescriptor) throws IllegalAccessException, InvocationTargetException {
         String name = internalGetNodeName(bean);
         STNodeEntryFactory.STNodeEntryBuilder builder = session.withPartition(partition).createWithName(name);
 
-        if(parentNodeN!=null){
+        if (parentNodeN != null) {
             builder.withParent(parentNodeN);
         }
         for (PropertyDescriptor descriptor : keyPropertiesDescriptor) {
-            builder.withKey(descriptor.getName(),(Class<? extends Serializable>)descriptor.getPropertyType(),
-                    (Serializable)descriptor.getReadMethod().invoke(bean));
+            builder.withKey(descriptor.getName(), (Class<? extends Serializable>) descriptor.getPropertyType(),
+                    (Serializable) descriptor.getReadMethod().invoke(bean));
         }
         STNodeEntry newNodeEntry = builder.andCreate();
         return newNodeEntry;
