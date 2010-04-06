@@ -12,6 +12,8 @@ h1{padding: 8px 0; font-size:2em;}
 
 h2{padding: 5px 0; font-size: 2em; color:#666; font-weight:bolder}
 
+h3{padding: 7px 0 7px}
+
 input{ border: 2px solid #770100;}
 
 input:focus { border: 2px solid #FF9900; color:#666666;}
@@ -59,7 +61,7 @@ input:focus { border: 2px solid #FF9900; color:#666666;}
 
 #bottom_support{padding: 0 auto; margin-top:20px}
 
-#bottom_support li{ width:33%; float:left; text-align:center;}
+#bottom_support li{ width:25%; float:left; text-align:center;}
 
 #bottom_support li p{ padding: 10px 0}
 
