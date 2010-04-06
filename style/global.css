@@ -12,6 +12,10 @@ h1{padding: 8px 0; font-size:2em;}
 
 h2{padding: 5px 0; font-size: 2em; color:#666; font-weight:bolder}
 
+h2 span {
+  color:#DE0202; font-weight:bolder;
+}
+
 h3{padding: 7px 0 7px}
 
 input{ border: 2px solid #770100;}
