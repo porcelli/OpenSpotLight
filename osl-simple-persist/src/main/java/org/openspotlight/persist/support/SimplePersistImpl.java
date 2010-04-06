@@ -1,9 +1,11 @@
 package org.openspotlight.persist.support;
 
 import org.openspotlight.common.util.Reflection;
+import org.openspotlight.common.util.Wrapper;
 import org.openspotlight.persist.annotation.*;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 
@@ -22,6 +24,7 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
 import static org.openspotlight.common.util.Reflection.unwrapCollectionFromMethodReturn;
 import static org.openspotlight.common.util.Reflection.unwrapMapFromMethodReturn;
+import static org.openspotlight.common.util.Wrapper.createMutable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,11 +55,11 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     private <T> STNodeEntry internalConvertBeanToNode(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, T bean) throws Exception {
         List<PropertyDescriptor> simplePropertiesDescriptor = newLinkedList();
         List<PropertyDescriptor> keyPropertiesDescriptor = newLinkedList();
-        List<PropertyDescriptor> parentPropertiesDescriptor = newLinkedList();
+        Wrapper<PropertyDescriptor> parentPropertiesDescriptor = createMutable();
         List<PropertyDescriptor> childrenPropertiesDescriptor = newLinkedList();
         List<PropertyDescriptor> streamPropertiesDescriptor = newLinkedList();
-        fillDescriptors(bean.getClass(), simplePropertiesDescriptor, keyPropertiesDescriptor, parentPropertiesDescriptor, childrenPropertiesDescriptor, streamPropertiesDescriptor);
-        STNodeEntry newNodeEntry = createNewNode(partition, parentNodeN, session, bean, keyPropertiesDescriptor);
+        fillDescriptors(bean, bean.getClass(), simplePropertiesDescriptor, keyPropertiesDescriptor, parentPropertiesDescriptor, childrenPropertiesDescriptor, streamPropertiesDescriptor);
+        STNodeEntry newNodeEntry = createNewNode(partition, parentNodeN, session, bean, keyPropertiesDescriptor, parentPropertiesDescriptor);
         fillSimpleProperties(session, bean, simplePropertiesDescriptor, newNodeEntry);
         fillStreamProperties(session, bean, streamPropertiesDescriptor, newNodeEntry);
         fillChildrenProperties(partition, session, bean, childrenPropertiesDescriptor, newNodeEntry);
@@ -129,27 +132,61 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         }
     }
 
-    private <T> STNodeEntry createNewNode(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, T bean, List<PropertyDescriptor> keyPropertiesDescriptor) throws IllegalAccessException, InvocationTargetException {
+    private <T> STNodeEntry createNewNode(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, T bean, List<PropertyDescriptor> keyPropertiesDescriptor, Wrapper<PropertyDescriptor> parentPropertiesDescriptor) throws Exception{
         String name = internalGetNodeName(bean);
         STNodeEntryFactory.STNodeEntryBuilder builder = session.withPartition(partition).createWithName(name);
 
         if (parentNodeN != null) {
             builder.withParent(parentNodeN);
+        } else {
+            STUniqueKey parentKey = buildParentKey(partition,session,bean,parentPropertiesDescriptor);
+            if (parentKey != null) builder.withParentKey(parentKey);
         }
         for (PropertyDescriptor descriptor : keyPropertiesDescriptor) {
             builder.withKey(descriptor.getName(), (Class<? extends Serializable>) descriptor.getPropertyType(),
                     (Serializable) descriptor.getReadMethod().invoke(bean));
         }
-        STNodeEntry newNodeEntry = builder.andCreate();
-        return newNodeEntry;
+        return builder.andCreate();
     }
 
-    private <T> void fillDescriptors(Class<T> beanType, List<PropertyDescriptor> simplePropertiesDescriptor, List<PropertyDescriptor> keyPropertiesDescriptor, List<PropertyDescriptor> parentPropertiesDescriptor, List<PropertyDescriptor> childrenPropertiesDescriptor, List<PropertyDescriptor> streamPropertiesDescriptor) throws Exception {
+    private <T> STUniqueKey buildParentKey(STPartition partition, STStorageSession session, T bean, Wrapper<PropertyDescriptor> parentPropertiesDescriptor) throws Exception {
+        if (parentPropertiesDescriptor.getWrapped() == null) return null;
+        Object parent = parentPropertiesDescriptor.getWrapped().getReadMethod().invoke(bean);
+        STStorageSession.STUniqueKeyBuilder builder = session.withPartition(partition).createKey(internalGetNodeName(parent));
+        while (parent != null) {
+            boolean parentChanged = false;
+            for (PropertyDescriptor descriptor : getPropertyDescriptors(parent)) {
+                Method readMethod = descriptor.getReadMethod();
+                if (readMethod.isAnnotationPresent(KeyProperty.class)) {
+
+                } else if (readMethod.isAnnotationPresent(ParentProperty.class)) {
+                    Object newParent = readMethod.invoke(parent);
+                    if (newParent != null) {
+                        if (parentChanged) throw new IllegalStateException("it is allowed only one parent property");
+                        parent = newParent;
+                        parentChanged = true;
+                    }
+                }
+            }
+            if (!parentChanged) break;
+            if (parent != null) {
+                builder.withParent(internalGetNodeName(parent));
+            }
+        }
+        return builder.andCreate();
+    }
+
+    private <T> void fillDescriptors(T bean, Class<? extends Object> beanType, List<PropertyDescriptor> simplePropertiesDescriptor, List<PropertyDescriptor> keyPropertiesDescriptor,
+                                     Wrapper<PropertyDescriptor> parentPropertiesDescriptor, List<PropertyDescriptor> childrenPropertiesDescriptor,
+                                     List<PropertyDescriptor> streamPropertiesDescriptor) throws Exception {
         for (PropertyDescriptor descriptor : getPropertyDescriptors(beanType)) {
             Method readMethod = descriptor.getReadMethod();
+            if (readMethod.isAnnotationPresent(TransientProperty.class)) continue;
             Class<?> returnType = readMethod.getReturnType();
             if (readMethod.isAnnotationPresent(ParentProperty.class)) {
-                parentPropertiesDescriptor.add(descriptor);
+                if (parentPropertiesDescriptor.getWrapped() != null)
+                    throw new IllegalStateException("only one parent property is allowed");
+                if (readMethod.invoke(bean) != null) parentPropertiesDescriptor.setWrapped(descriptor);
             } else if (readMethod.isAnnotationPresent(KeyProperty.class)) {
                 keyPropertiesDescriptor.add(descriptor);
             } else if (readMethod.isAnnotationPresent(PersistPropertyAsStream.class)) {
