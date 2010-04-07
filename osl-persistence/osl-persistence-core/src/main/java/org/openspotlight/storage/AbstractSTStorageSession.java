@@ -792,8 +792,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private Set<STKeyEntry<?>> keys = new HashSet<STKeyEntry<?>>();
 
-        public <T extends Serializable> STNodeEntryFactory.STNodeEntryBuilder withKey(String name, Class<T> type, T value) {
-            this.keys.add(STKeyEntryImpl.create(type, value, name));
+        public <T extends Serializable> STNodeEntryFactory.STNodeEntryBuilder withKey(String name, Class<T> type, Serializable value) {
+            this.keys.add(STKeyEntryImpl.create(type, (T)value, name));
             return this;
         }
 

@@ -23,7 +23,6 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Sha1;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
  * This class should wrap any {@link SimpleNodeType} lazy property. This class
@@ -43,8 +42,7 @@ import org.openspotlight.persist.support.SimplePersistSupport;
  * {@link LazyProperty.Factory} class.
  * 
  * The class {@link LazyProperty.Metadata} should not be used outside
- * {@link SimplePersistSupport}.
- * 
+ *
  * @author feu
  * 
  * @param <T>
@@ -66,7 +64,6 @@ public final class LazyProperty<T> implements Serializable {
 		 * mandatory.
 		 * 
 		 * @param <T>
-		 * @param propertyType
 		 * @param parent
 		 * @return
 		 */
@@ -81,7 +78,7 @@ public final class LazyProperty<T> implements Serializable {
 	}
 
 	/**
-	 * Internal metadata. Should be used only on {@link SimplePersistSupport}.
+	 * Internal metadata. Should be used only on {@link org.openspotlight.persist.support.SimplePersistCapable}.
 	 * This class expose internal information about cached and transient values.
 	 * 
 	 * @author feu
@@ -117,7 +114,7 @@ public final class LazyProperty<T> implements Serializable {
 		}
 
 		/**
-		 * This method should not be used outside {@link SimplePersistSupport}.
+		 * This method should not be used outside {@link org.openspotlight.persist.support.SimplePersistCapable}.
 		 * @param sha1
 		 */
 		public void internalSetSha1(String sha1) {
@@ -143,62 +140,63 @@ public final class LazyProperty<T> implements Serializable {
 		 */
 		@SuppressWarnings("unchecked")
 		public T getCached(final Session session) {
-			try {
-				lock.lock();
-				final T cachedValue = cached == null ? null : cached.get();
-				if (cachedValue == null) {
-					if (session == null && parentUuid == null) {
-						return null;
-					}
-					if (session == null) {
-						throw Exceptions
-								.logAndReturn(new IllegalStateException(
-										"trying to retrieve a value with a null session"));
-					}
-					Assertions.checkNotEmpty("parentUuid", parentUuid);
-					Assertions.checkNotEmpty("propertyName", propertyName);
-					try {
-						final Node node = session.getNodeByUUID(parentUuid);
-						final String jcrPropertyName = MessageFormat.format(
-								SimplePersistSupport.LAZY_PROPERTY_VALUE,
-								propertyName);
-						try {
-							final Property property = node
-									.getProperty(jcrPropertyName);
-							final InputStream is = property.getStream();
-
-							if (is.markSupported()) {
-								is.reset();
-							}
-							try {
-								final ObjectInputStream ois = new ObjectInputStream(
-										is);
-								final Serializable serializable = (Serializable) ois
-										.readObject();
-								SimplePersistSupport.InternalMethods
-										.setParentPropertyOnSerializable(
-												serializable, parent);
-								setCached((T) serializable);
-								return (T) serializable;
-							} catch (StreamCorruptedException ex) {
-								if (is.markSupported()) {
-									is.reset();
-								}
-								return (T) is;
-							}
-						} catch (final PathNotFoundException ex) {
-							return null;
-						}
-
-					} catch (final Exception e) {
-						throw Exceptions.logAndReturnNew(e,
-								SLRuntimeException.class);
-					}
-				}
-				return cachedValue;
-			} finally {
-				lock.unlock();
-			}
+			return null;
+//            try {
+//				lock.lock();
+//				final T cachedValue = cached == null ? null : cached.get();
+//				if (cachedValue == null) {
+//					if (session == null && parentUuid == null) {
+//						return null;
+//					}
+//					if (session == null) {
+//						throw Exceptions
+//								.logAndReturn(new IllegalStateException(
+//										"trying to retrieve a value with a null session"));
+//					}
+//					Assertions.checkNotEmpty("parentUuid", parentUuid);
+//					Assertions.checkNotEmpty("propertyName", propertyName);
+//					try {
+//						final Node node = session.getNodeByUUID(parentUuid);
+//						final String jcrPropertyName = " ";//MessageFormat.format(
+//								SimplePersistSupport.LAZY_PROPERTY_VALUE,
+//								propertyName);
+//						try {
+//							final Property property = node
+//									.getProperty(jcrPropertyName);
+//							final InputStream is = property.getStream();
+//
+//							if (is.markSupported()) {
+//								is.reset();
+//							}
+//							try {
+//								final ObjectInputStream ois = new ObjectInputStream(
+//										is);
+//								final Serializable serializable = (Serializable) ois
+//										.readObject();
+//								SimplePersistSupport.InternalMethods
+//										.setParentPropertyOnSerializable(
+//												serializable, parent);
+//								setCached((T) serializable);
+//								return (T) serializable;
+//							} catch (StreamCorruptedException ex) {
+//								if (is.markSupported()) {
+//									is.reset();
+//								}
+//								return (T) is;
+//							}
+//						} catch (final PathNotFoundException ex) {
+//							return null;
+//						}
+//
+//					} catch (final Exception e) {
+//						throw Exceptions.logAndReturnNew(e,
+//								SLRuntimeException.class);
+//					}
+//				}
+//				return cachedValue;
+//			} finally {
+//				lock.unlock();
+//			}
 		}
 
 		/**
@@ -219,24 +217,10 @@ public final class LazyProperty<T> implements Serializable {
 			return parent;
 		}
 
-		/**
-		 * Return the parent uuid if this object was created by a
-		 * {@link SimplePersistSupport} loading operation. It will be null
-		 * otherwise.
-		 * 
-		 * @return
-		 */
 		public String getParentUuid() {
 			return parentUuid;
 		}
 
-		/**
-		 * Return the property name if this object was created by a
-		 * {@link SimplePersistSupport} loading operation. It will be null
-		 * otherwise.
-		 * 
-		 * @return
-		 */
 		public String getPropertyName() {
 			return propertyName;
 		}

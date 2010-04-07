@@ -20,20 +20,18 @@ public interface SimplePersistCapable<N, S> {
     public <T> N convertBeanToNode(STPartition partition, final N parentNodeN,
                                    final S session, final T bean)throws Exception;
 
+    public <T> Iterable<N> convertBeansToNodes(STPartition partition,
+            final S session,
+            final Iterable<T> beans)throws  Exception;
+
+    public <T> N convertBeanToNode(STPartition partition, 
+                                   final S session, final T bean)throws Exception;
+
     public <T> Iterable<T> convertNodesToBeans(final S session,
                                                final Iterable<N> nodes) throws Exception;
 
     public <T> T convertNodeToBean(final S session,
                                    final N nodes)
             throws Exception;
-
-    public <T> Set<T> findNodesByProperties(STPartition partition,
-                                             final S session, N parentNodeN, final Class<T> nodeType,
-                                             final String[] propertyNames, final Object[] propertyValues)throws Exception;
-
-    
-    public <T> T findNodeByProperty(STPartition partition,
-                                             final S session, N parentNodeN, final Class<T> nodeType,
-                                             final String[] propertyNames, final Object[] propertyValues)throws Exception;
 
 }

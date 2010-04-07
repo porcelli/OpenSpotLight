@@ -267,7 +267,7 @@ public class STNodeEntryImpl implements STNodeEntry {
             this.parent = parent;
         }
 
-        public <T extends Serializable, V extends T> STProperty setSimpleProperty(STStorageSession session, String name, Class<T> propertyType, V value) {
+        public <T extends Serializable> STProperty setSimpleProperty(STStorageSession session, String name, Class<? super T> propertyType, T value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
                 validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SIMPLE,propertyType,null,null);
@@ -280,7 +280,7 @@ public class STNodeEntryImpl implements STNodeEntry {
             return currentProperty;
         }
 
-        public <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<V> parameterizedType, List<V> value) {
+        public <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<? super V> parameterizedType, List<V> value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
                 validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_LIST,List.class,parameterizedType,null);
@@ -292,7 +292,7 @@ public class STNodeEntryImpl implements STNodeEntry {
             return currentProperty;
         }
 
-        public <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<V> parameterizedType, Set<V> value) {
+        public <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<? super V> parameterizedType, Set<V> value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
                 validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_SET,Set.class,parameterizedType,null);
@@ -304,7 +304,7 @@ public class STNodeEntryImpl implements STNodeEntry {
             return currentProperty;
         }
 
-        public <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<K> keyType, Class<V> valueType, Map<K, V> value) {
+        public <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<? super K> keyType, Class<? super V> valueType, Map<K, V> value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
                 validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_MAP,Map.class,keyType,valueType);
@@ -316,7 +316,7 @@ public class STNodeEntryImpl implements STNodeEntry {
             return currentProperty;
         }
 
-        public <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<S> propertyType, S value) {
+        public <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<? super S> propertyType, S value) {
             STProperty currentProperty = parent.getProperty(session, name);
             if (currentProperty != null) {
                 validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_POJO,propertyType,null,null);

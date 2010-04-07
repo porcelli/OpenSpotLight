@@ -68,19 +68,16 @@ import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMetho
 import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.support.SimplePersistSupport;
 
 /**
  * Class with static method to accept visitor of beans of type
  * {@link SimpleNodeType}. This
- * {@link #acceptVisitorOn(Class, SimpleNodeType, SimpleNodeTypeVisitor)} method
  * will ignore any property annotated with {@link ParentProperty} annotation.
  * This method isn't recursive. So it is stack overflow safe.
  * 
  * It will visit {@link SimpleNodeType types } inside collections, map values
  * and as a simple property. It won't visit any array, since arrays are not
- * supported by {@link SimplePersistSupport}.
- * 
+ *
  * @author feu
  * 
  */

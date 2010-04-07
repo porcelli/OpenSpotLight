@@ -73,7 +73,7 @@ public class SimplePersistVisitorSupportTest {
 			return names;
 		}
 
-		public <X extends NodeObject> void visitBean(final X bean) {
+		public void visitBean(final NodeObject bean) {
 			bean.getName().toString();
 			names.add(bean.getName());
 		}
@@ -348,7 +348,7 @@ public class SimplePersistVisitorSupportTest {
 		SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject2.class, root,
 				new SimpleNodeTypeVisitor<SimpleObject2>() {
 
-					public <X extends SimpleObject2> void visitBean(final X bean) {
+					public void visitBean(final SimpleObject2 bean) {
 						count.incrementAndGet();
 
 					}
@@ -421,7 +421,7 @@ public class SimplePersistVisitorSupportTest {
 		SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject3.class, root,
 				new SimpleNodeTypeVisitor<SimpleObject3>() {
 
-					public <X extends SimpleObject3> void visitBean(final X bean) {
+					public void visitBean(final SimpleObject3 bean) {
 						count.incrementAndGet();
 
 					}
@@ -436,7 +436,7 @@ public class SimplePersistVisitorSupportTest {
 		SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject4.class, root,
 				new SimpleNodeTypeVisitor<SimpleObject4>() {
 
-					public <X extends SimpleObject4> void visitBean(final X bean) {
+					public  void visitBean(final SimpleObject4 bean) {
 						count.incrementAndGet();
 
 					}

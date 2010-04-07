@@ -109,7 +109,7 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
     interface STPropertyOperation {
 
-        <T extends Serializable, V extends T> STProperty setSimpleProperty(STStorageSession session, String name, Class<T> propertyType, V value);
+        <T extends Serializable> STProperty setSimpleProperty(STStorageSession session, String name, Class<? super T> propertyType, T value);
 
         <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<? super V> parameterizedType, List<V> value);
 

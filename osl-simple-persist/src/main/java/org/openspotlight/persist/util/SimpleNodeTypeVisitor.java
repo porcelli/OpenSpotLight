@@ -50,7 +50,6 @@ package org.openspotlight.persist.util;
 
 /**
  * Visitor type to be used on
- * {@link SimpleNodeTypeVisitorSupport#acceptVisitorOn(Class, org.openspotlight.persist.annotation.SimpleNodeType, SimpleNodeTypeVisitor)}
  * static method.
  * 
  * @author feu
@@ -64,9 +63,8 @@ public interface SimpleNodeTypeVisitor<T> {
 	 * since it is done by reflection inside
 	 * {@link SimpleNodeTypeVisitorSupport}.
 	 * 
-	 * @param <X>
 	 * @param bean
 	 */
-	public <X extends T> void visitBean(X bean);
+	public void visitBean(T bean);
 
 }
