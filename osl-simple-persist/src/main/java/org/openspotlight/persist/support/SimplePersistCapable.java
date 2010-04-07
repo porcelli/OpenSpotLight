@@ -27,8 +27,13 @@ public interface SimplePersistCapable<N, S> {
                                    final N nodes)
             throws Exception;
 
-    public <T> Set<T> findNsByProperties(STPartition partition,
-                                         final S session, N parentNodeN, final Class<T> nodeType,
-                                         final String[] propertyNames, final Object[] propertyValues)throws Exception;
+    public <T> Set<T> findNodesByProperties(STPartition partition,
+                                             final S session, N parentNodeN, final Class<T> nodeType,
+                                             final String[] propertyNames, final Object[] propertyValues)throws Exception;
+
+    
+    public <T> T findNodeByProperty(STPartition partition,
+                                             final S session, N parentNodeN, final Class<T> nodeType,
+                                             final String[] propertyNames, final Object[] propertyValues)throws Exception;
 
 }

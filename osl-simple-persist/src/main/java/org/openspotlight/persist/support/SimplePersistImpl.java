@@ -1,5 +1,8 @@
 package org.openspotlight.persist.support;
 
+import com.google.common.collect.Lists;
+import com.google.inject.Singleton;
+import org.openspotlight.common.Pair;
 import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Wrapper;
 import org.openspotlight.persist.annotation.*;
@@ -21,7 +24,10 @@ import java.util.Set;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.lang.Class.forName;
 import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
+import static org.openspotlight.common.Pair.create;
 import static org.openspotlight.common.util.Reflection.unwrapCollectionFromMethodReturn;
 import static org.openspotlight.common.util.Reflection.unwrapMapFromMethodReturn;
 import static org.openspotlight.common.util.Wrapper.createMutable;
@@ -33,52 +39,60 @@ import static org.openspotlight.common.util.Wrapper.createMutable;
  * Time: 13:19:32
  * To change this template use File | Settings | File Templates.
  */
+@Singleton
 public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STStorageSession> {
+
     public <T> Iterable<STNodeEntry> convertBeansToNodes(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, Iterable<T> beans) throws Exception {
         List<STNodeEntry> itemsConverted = newArrayList();
         for (T bean : beans) itemsConverted.add(convertBeanToNode(partition, parentNodeN, session, bean));
         return itemsConverted;
     }
 
-    public <T> STNodeEntry convertBeanToNode(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, T bean) throws Exception {
+    public <T> STNodeEntry convertBeanToNode(STPartition partition, STNodeEntry parentNodeN,
+                                             STStorageSession session, T bean) throws Exception {
         return internalConvertBeanToNode(partition, parentNodeN, session, bean);
     }
 
-    private <T> String internalGetNodeName(T bean) {
-        Class<?> type = bean.getClass();
-        if (type.isAnnotationPresent(Name.class)) {
-            return type.getAnnotation(Name.class).value();
-        }
-        return type.getName();
+    private <T> STNodeEntry internalConvertBeanToNode(STPartition partition, STNodeEntry parentNodeN,
+                                                      STStorageSession session, T bean) throws Exception {
+        return internalConvertBeanToNode(partition, parentNodeN, session, bean, null);
     }
 
-    private <T> STNodeEntry internalConvertBeanToNode(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, T bean) throws Exception {
+
+    private <T> STNodeEntry internalConvertBeanToNode(STPartition partition, STNodeEntry parentNodeN,
+                                                      STStorageSession session, T bean, String propertyName) throws Exception {
         List<PropertyDescriptor> simplePropertiesDescriptor = newLinkedList();
         List<PropertyDescriptor> keyPropertiesDescriptor = newLinkedList();
         Wrapper<PropertyDescriptor> parentPropertiesDescriptor = createMutable();
         List<PropertyDescriptor> childrenPropertiesDescriptor = newLinkedList();
         List<PropertyDescriptor> streamPropertiesDescriptor = newLinkedList();
-        fillDescriptors(bean, bean.getClass(), simplePropertiesDescriptor, keyPropertiesDescriptor, parentPropertiesDescriptor, childrenPropertiesDescriptor, streamPropertiesDescriptor);
-        STNodeEntry newNodeEntry = createNewNode(partition, parentNodeN, session, bean, keyPropertiesDescriptor, parentPropertiesDescriptor);
+        fillDescriptors(bean, bean.getClass(), simplePropertiesDescriptor, keyPropertiesDescriptor,
+                parentPropertiesDescriptor, childrenPropertiesDescriptor, streamPropertiesDescriptor);
+        STNodeEntry newNodeEntry = createNewNode(partition, parentNodeN, session, bean, keyPropertiesDescriptor,
+                parentPropertiesDescriptor, propertyName);
         fillSimpleProperties(session, bean, simplePropertiesDescriptor, newNodeEntry);
         fillStreamProperties(session, bean, streamPropertiesDescriptor, newNodeEntry);
         fillChildrenProperties(partition, session, bean, childrenPropertiesDescriptor, newNodeEntry);
         return newNodeEntry;
     }
 
-    private <T> void fillChildrenProperties(STPartition partition, STStorageSession session, T bean, List<PropertyDescriptor> childrenPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
-        List<SimpleNodeType> nodesToConvert = newLinkedList();
+    private <T> void fillChildrenProperties(STPartition partition, STStorageSession session, T bean,
+                                            List<PropertyDescriptor> childrenPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
+        List<Pair<SimpleNodeType, String>> nodesToConvert = newLinkedList();
         for (PropertyDescriptor property : childrenPropertiesDescriptor) {
             Class<?> propertyType = property.getPropertyType();
             Object value = property.getReadMethod().invoke(bean);
             if (SimpleNodeType.class.isAssignableFrom(propertyType)) {
-                nodesToConvert.add((SimpleNodeType) value);
+                nodesToConvert.add(create((SimpleNodeType) value, property.getName()));
             } else if (Collection.class.isAssignableFrom(propertyType)) {
-                Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodInformation = unwrapCollectionFromMethodReturn(property.getReadMethod());
+                Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodInformation =
+                        unwrapCollectionFromMethodReturn(property.getReadMethod());
                 if (List.class.isAssignableFrom(methodInformation.getCollectionType())) {
-                    for (SimpleNodeType t : (List<SimpleNodeType>) value) nodesToConvert.add(t);
+                    for (SimpleNodeType t : (List<SimpleNodeType>) value)
+                        nodesToConvert.add(create(t, property.getName()));
                 } else if (Set.class.isAssignableFrom(methodInformation.getCollectionType())) {
-                    for (SimpleNodeType t : (Set<SimpleNodeType>) value) nodesToConvert.add(t);
+                    for (SimpleNodeType t : (Set<SimpleNodeType>) value)
+                        nodesToConvert.add(create(t, property.getName()));
                 } else {
                     throw new IllegalStateException("invalid collection type");
                 }
@@ -87,7 +101,8 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 throw new IllegalStateException("invalid type");
             }
         }
-        for (SimpleNodeType t : nodesToConvert) internalConvertBeanToNode(partition, newNodeEntry, session, t);
+        for (Pair<SimpleNodeType, String> p : nodesToConvert)
+            internalConvertBeanToNode(partition, newNodeEntry, session, p.getK1(), p.getK2());
     }
 
     private <T> void fillStreamProperties(STStorageSession session, T bean, List<PropertyDescriptor> streamPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
@@ -132,14 +147,14 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         }
     }
 
-    private <T> STNodeEntry createNewNode(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, T bean, List<PropertyDescriptor> keyPropertiesDescriptor, Wrapper<PropertyDescriptor> parentPropertiesDescriptor) throws Exception{
-        String name = internalGetNodeName(bean);
+    private <T> STNodeEntry createNewNode(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, T bean, List<PropertyDescriptor> keyPropertiesDescriptor, Wrapper<PropertyDescriptor> parentPropertiesDescriptor, String propertyName) throws Exception {
+        String name = internalGetNodeName(bean, propertyName);
         STNodeEntryFactory.STNodeEntryBuilder builder = session.withPartition(partition).createWithName(name);
 
         if (parentNodeN != null) {
             builder.withParent(parentNodeN);
         } else {
-            STUniqueKey parentKey = buildParentKey(partition,session,bean,parentPropertiesDescriptor);
+            STUniqueKey parentKey = buildParentKey(partition, session, bean, parentPropertiesDescriptor, parentPropertiesDescriptor.getWrapped().getName());
             if (parentKey != null) builder.withParentKey(parentKey);
         }
         for (PropertyDescriptor descriptor : keyPropertiesDescriptor) {
@@ -149,10 +164,13 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return builder.andCreate();
     }
 
-    private <T> STUniqueKey buildParentKey(STPartition partition, STStorageSession session, T bean, Wrapper<PropertyDescriptor> parentPropertiesDescriptor) throws Exception {
+    private <T> STUniqueKey buildParentKey(STPartition partition, STStorageSession session, T bean,
+                                           Wrapper<PropertyDescriptor> parentPropertiesDescriptor,
+                                           String firstParentPropertyName) throws Exception {
         if (parentPropertiesDescriptor.getWrapped() == null) return null;
         Object parent = parentPropertiesDescriptor.getWrapped().getReadMethod().invoke(bean);
-        STStorageSession.STUniqueKeyBuilder builder = session.withPartition(partition).createKey(internalGetNodeName(parent));
+        String parentPropertyName = firstParentPropertyName;
+        STStorageSession.STUniqueKeyBuilder builder = session.withPartition(partition).createKey(internalGetNodeName(parent, parentPropertyName));
         while (parent != null) {
             boolean parentChanged = false;
             for (PropertyDescriptor descriptor : getPropertyDescriptors(parent)) {
@@ -165,28 +183,45 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                         if (parentChanged) throw new IllegalStateException("it is allowed only one parent property");
                         parent = newParent;
                         parentChanged = true;
+                        parentPropertyName = descriptor.getName();
                     }
                 }
             }
             if (!parentChanged) break;
             if (parent != null) {
-                builder.withParent(internalGetNodeName(parent));
+                builder.withParent(internalGetNodeName(parent, parentPropertyName));
             }
         }
         return builder.andCreate();
     }
 
-    private <T> void fillDescriptors(T bean, Class<? extends Object> beanType, List<PropertyDescriptor> simplePropertiesDescriptor, List<PropertyDescriptor> keyPropertiesDescriptor,
-                                     Wrapper<PropertyDescriptor> parentPropertiesDescriptor, List<PropertyDescriptor> childrenPropertiesDescriptor,
+
+    private <T> void fillDescriptors(T bean, Class<? extends Object> beanType,
+                                     List<PropertyDescriptor> simplePropertiesDescriptor,
+                                     List<PropertyDescriptor> keyPropertiesDescriptor,
+                                     Wrapper<PropertyDescriptor> parentPropertyDescriptor,
+                                     List<PropertyDescriptor> childrenPropertiesDescriptor,
                                      List<PropertyDescriptor> streamPropertiesDescriptor) throws Exception {
+
+        fillDescriptors(bean, beanType, simplePropertiesDescriptor, keyPropertiesDescriptor, parentPropertyDescriptor,
+                childrenPropertiesDescriptor, streamPropertiesDescriptor, Lists.<PropertyDescriptor>newLinkedList());
+    }
+
+    private <T> void fillDescriptors(T bean, Class<? extends Object> beanType, List<PropertyDescriptor> simplePropertiesDescriptor,
+                                     List<PropertyDescriptor> keyPropertiesDescriptor,
+                                     Wrapper<PropertyDescriptor> parentPropertyDescriptor,
+                                     List<PropertyDescriptor> childrenPropertiesDescriptor,
+                                     List<PropertyDescriptor> streamPropertiesDescriptor,
+                                     List<PropertyDescriptor> parentPropertiesDescriptors) throws Exception {
         for (PropertyDescriptor descriptor : getPropertyDescriptors(beanType)) {
             Method readMethod = descriptor.getReadMethod();
             if (readMethod.isAnnotationPresent(TransientProperty.class)) continue;
             Class<?> returnType = readMethod.getReturnType();
             if (readMethod.isAnnotationPresent(ParentProperty.class)) {
-                if (parentPropertiesDescriptor.getWrapped() != null)
+                if (parentPropertyDescriptor.getWrapped() != null)
                     throw new IllegalStateException("only one parent property is allowed");
-                if (readMethod.invoke(bean) != null) parentPropertiesDescriptor.setWrapped(descriptor);
+                if (bean != null && readMethod.invoke(bean) != null) parentPropertyDescriptor.setWrapped(descriptor);
+                parentPropertiesDescriptors.add(descriptor);
             } else if (readMethod.isAnnotationPresent(KeyProperty.class)) {
                 keyPropertiesDescriptor.add(descriptor);
             } else if (readMethod.isAnnotationPresent(PersistPropertyAsStream.class)) {
@@ -221,12 +256,129 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return itemsConverted;
     }
 
-    public <T> T convertNodeToBean(STStorageSession session, STNodeEntry nodes) throws Exception {
+    private static final String SEPARATOR = "--";
+
+    private String internalNodeGetPropertyName(STNodeEntry node) {
+        String nodeName = node.getNodeEntryName();
+        if (nodeName.contains(SEPARATOR)) return nodeName.substring(nodeName.indexOf(SEPARATOR) + SEPARATOR.length());
         return null;
     }
 
-    public <T> Set<T> findNsByProperties(STPartition partition, STStorageSession session, STNodeEntry parentNodeN, Class<T> nodeType,
-                                         String[] propertyNames, Object[] propertyValues) {
+    private String internalGetNodeType(STNodeEntry node) {
+        String nodeName = node.getNodeEntryName();
+        if (nodeName.contains(SEPARATOR)) return nodeName.substring(0, nodeName.indexOf(SEPARATOR));
+        return nodeName;
+    }
+
+    private <T> String internalGetNodeName(T bean, String propertyName) {
+        return this.<T>internalGetNodeName((Class<T>) bean.getClass(), propertyName);
+    }
+
+    private <T> String internalGetNodeName(Class<T> beanType, String propertyName) {
+        return beanType.getName() + propertyName != null ? SEPARATOR + propertyName : "";
+    }
+
+    public <T> T convertNodeToBean(STStorageSession session, STNodeEntry node) throws Exception {
+        T bean = internalConvertNodeToBean(session, node,null);
+        return bean;
+    }
+
+    private <T> T internalConvertNodeToBean(STStorageSession session, STNodeEntry node, Object beanParent) throws Exception {
+        Class<T> beanType = (Class<T>) forName(internalGetNodeType(node));
+        T bean = beanType.newInstance();
+
+        List<PropertyDescriptor> parentPropertiesDescriptor = newLinkedList();
+        List<PropertyDescriptor> simplePropertiesDescriptor = newLinkedList();
+        List<PropertyDescriptor> keyPropertiesDescriptor = newLinkedList();
+        List<PropertyDescriptor> streamPropertiesDescriptor = newLinkedList();
+        List<PropertyDescriptor> childrenPropertiesDescriptor = newLinkedList();
+        fillDescriptors(null, beanType, simplePropertiesDescriptor, keyPropertiesDescriptor,
+                null, childrenPropertiesDescriptor, streamPropertiesDescriptor);
+        fillParents(session, node, bean, parentPropertiesDescriptor,beanParent);
+        fillSimpleProperties(session, node, bean, keyPropertiesDescriptor);
+        fillSimpleProperties(session, node, bean, simplePropertiesDescriptor);
+        fillStreamProperties(session, node, bean, streamPropertiesDescriptor);
+        fillChildren(session, node, bean, childrenPropertiesDescriptor);
+        return bean;
+    }
+
+    private <T> void fillChildren(STStorageSession session, STNodeEntry node, T bean, List<PropertyDescriptor> childrenPropertiesDescriptor) throws Exception {
+        for (PropertyDescriptor descriptor : childrenPropertiesDescriptor) {
+            Class<?> propertyType = descriptor.getPropertyType();
+            Class<?> nodeType = null;
+            boolean isMultiple = Collection.class.isAssignableFrom(propertyType);
+            Method readMethod = descriptor.getReadMethod();
+            if (isMultiple) {
+                Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodDescription =
+                        unwrapCollectionFromMethodReturn(readMethod);
+                if (List.class.isAssignableFrom(propertyType)) {
+                    descriptor.getWriteMethod().invoke(bean, newLinkedList());
+                } else if (Set.class.isAssignableFrom(propertyType)) {
+                    descriptor.getWriteMethod().invoke(bean, newHashSet());
+                } else throw new IllegalStateException("wrong child type");
+                nodeType = methodDescription.getItemType();
+            } else if (SimpleNodeType.class.isAssignableFrom(propertyType)) {
+                nodeType = propertyType;
+            } else throw new IllegalStateException("wrong child type");
+
+            if (!SimpleNodeType.class.isAssignableFrom(nodeType)) throw new IllegalStateException("wrong child type");
+            String childrenName = internalGetNodeName(propertyType, descriptor.getName());
+            Set<STNodeEntry> children = node.getChildrenNamed(session, childrenName);
+            List<Object> childrenAsBeans = newLinkedList();
+            if((!isMultiple) && children.size()>0) throw new IllegalStateException("more than one child on a unique property");
+            for(STNodeEntry child: children) childrenAsBeans.add(internalConvertNodeToBean(session,child,bean));
+            if(isMultiple){
+                Collection c = (Collection) readMethod.invoke(bean);
+                for(Object o: childrenAsBeans){
+                    c.add(o);
+                }
+            }else if(children.size()>0)descriptor.getWriteMethod().invoke(bean,children.iterator().next());
+        }
+    }
+
+    private <T> void fillStreamProperties(STStorageSession session, STNodeEntry node, T bean,
+                                          List<PropertyDescriptor> streamPropertiesDescriptor) throws IllegalAccessException, InvocationTargetException {
+        for (PropertyDescriptor descriptor : streamPropertiesDescriptor) {
+            Class<?> propertyType = descriptor.getPropertyType();
+            if (InputStream.class.isAssignableFrom(propertyType)) {
+                InputStream value = node.getPropertyValue(session, descriptor.getName());
+                descriptor.getWriteMethod().invoke(bean, value);
+            } else if (Serializable.class.isAssignableFrom(propertyType)) {
+                Serializable value = node.getPropertyValue(session, descriptor.getName());
+                descriptor.getWriteMethod().invoke(bean, value);
+            } else {
+                throw new IllegalStateException("wrong type");
+            }
+        }
+    }
+
+    private <T> void fillSimpleProperties(STStorageSession session, STNodeEntry node, T bean,
+                                          List<PropertyDescriptor> simplePropertiesDescriptor) throws IllegalAccessException, InvocationTargetException {
+        for (PropertyDescriptor descriptor : simplePropertiesDescriptor) {
+            descriptor.getWriteMethod().invoke(bean, node.<Object>getPropertyValue(session, descriptor.getName()));
+        }
+    }
+
+    private <T> void fillParents(STStorageSession session, STNodeEntry node, T bean,
+                                 List<PropertyDescriptor> parentPropertiesDescriptor, Object beanParent) throws Exception {
+        STNodeEntry parent = node.getParent(session);
+        String propertyName = internalNodeGetPropertyName(node);
+        for (PropertyDescriptor descriptor : parentPropertiesDescriptor) {
+            if (propertyName.equals(descriptor.getName())) {
+                Object parentAsBean = beanParent == null ? convertNodeToBean(session, parent) : beanParent;
+                descriptor.getWriteMethod().invoke(bean, parentAsBean);
+                break;
+            }
+        }
+    }
+    
+    public <T> Set<T> findNodesByProperties(STPartition partition, STStorageSession session, STNodeEntry parentNodeN, Class<T> nodeType, String[] propertyNames, Object[] propertyValues) throws Exception {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public <T> T findNodeByProperty(STPartition partition, STStorageSession session, STNodeEntry parentNodeN, Class<T> nodeType, String[] propertyNames, Object[] propertyValues) throws Exception {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
 }
