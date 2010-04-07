@@ -75,6 +75,7 @@ import static java.lang.Class.forName;
 import static java.text.MessageFormat.format;
 import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
 import static org.openspotlight.common.util.Conversion.convert;
+import static org.openspotlight.common.util.Reflection.findClass;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
@@ -108,7 +109,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     private static String getPropertyKey(String propertyName, Class<?> type, Object value, String nodeId) throws Exception {
-        String valueAsString = convert(value, String.class).replaceAll(" ", "");
+        String valueAsString = convert(value, String.class);
+        if (valueAsString != null) valueAsString = valueAsString.replaceAll(" ", "");
         String proposedKey = format(KEY_WITH_PROPERTY_NODE_ID, propertyName, type.getName(), valueAsString, nodeId);
         return proposedKey;
 
@@ -414,7 +416,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         String typeName = toStr(jredis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, propertyName)));
         String descriptionAsString = toStr(jredis.get(format(KEY_WITH_PROPERTY_DESCRIPTION, parentKey, propertyName)));
         STProperty.STPropertyDescription description = STProperty.STPropertyDescription.valueOf(descriptionAsString);
-        Class<? extends Serializable> type = (Class<? extends Serializable>) forName(typeName);
+        Class<?> type = findClass(typeName);
 
         Class<?> parameterized1 = null;
         Class<?> parameterized2 = null;
@@ -432,7 +434,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         STProperty property = new STPropertyImpl(stNodeEntry, propertyName, description, type, parameterized1, parameterized2);
         if (description.getLoadWeight().equals(STProperty.STPropertyDescription.STLoadWeight.EASY)) {
             String typeValueAsString = toStr(jredis.get(format(KEY_WITH_PROPERTY_VALUE, parentKey, propertyName)));
-            Serializable value = convert(typeValueAsString, type);
+            Serializable value = (Serializable) convert(typeValueAsString, type);
             property.getInternalMethods().setValueOnLoad(value);
         }
         return property;
@@ -536,7 +538,11 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         jredis.set(getPropertyKey(dirtyProperty.getPropertyName(), dirtyProperty.getInternalMethods().getPropertyType(), transientValueAsString, uniqueKey), uniqueKey);
 
         jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
-        jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), transientValueAsString);
+        if (transientValueAsString != null) {
+            jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), transientValueAsString);
+        } else {
+            jredis.del(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()));
+        }
         jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SIMPLE, String.class));
         jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
         jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));

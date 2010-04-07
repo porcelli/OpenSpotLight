@@ -49,6 +49,7 @@
 
 package org.openspotlight.common.util;
 
+import static java.lang.Class.forName;
 import static java.util.EnumSet.of;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
@@ -63,6 +64,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableMap;
 import org.openspotlight.common.Pair;
 
 /**
@@ -333,6 +335,21 @@ public class Reflection {
                                                                                                                                       valueType));
 
         return result;
+    }
+
+    private static final Map<String, Class<?>> primitiveTypes = ImmutableMap.<String,Class<?>>builder()
+            .put("byte",byte.class)
+            .put("short",short.class)
+            .put("int",int.class)
+            .put("long",long.class)
+            .put("float",float.class)
+            .put("double",double.class)
+            .put("boolean",boolean.class)
+            .build();
+
+    public static <T> Class<T> findClass(String name) throws ClassNotFoundException {
+        if(primitiveTypes.containsKey(name)) return (Class<T>) primitiveTypes.get(name);
+        return (Class<T>) forName(name);
     }
 
 }

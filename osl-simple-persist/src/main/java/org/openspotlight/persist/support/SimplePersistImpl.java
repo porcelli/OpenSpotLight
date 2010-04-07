@@ -164,7 +164,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
         if (parentNodeN != null) {
             builder.withParent(parentNodeN);
-        } else {
+        } else if (parentPropertiesDescriptor.getWrapped()!=null){
             STUniqueKey parentKey = buildParentKey(partition, session, bean, parentPropertiesDescriptor, parentPropertiesDescriptor.getWrapped().getName());
             if (parentKey != null) builder.withParentKey(parentKey);
         }
