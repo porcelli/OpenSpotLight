@@ -14,6 +14,15 @@ import java.lang.ref.WeakReference;
  * To change this template use File | Settings | File Templates.
  */
 public class STPropertyImpl implements STProperty {
+
+    @Override
+    public String toString() {
+        return "STPropertyImpl{" +
+                "propertyName='" + propertyName + '\'' +
+                ", description=" + description +
+                '}';
+    }
+
     public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
                           Class<?> propertyType, Class<?> firstParameterizedType,
                           Class<?> secondParameterizedType) {

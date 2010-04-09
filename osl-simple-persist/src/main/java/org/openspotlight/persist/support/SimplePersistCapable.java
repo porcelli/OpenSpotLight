@@ -35,16 +35,16 @@ public interface SimplePersistCapable<N, S> {
                                    final N nodes)
             throws Exception;
 
-    public <T> Set<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                       String[] propertyNames, Object[] propertyValues);
+    public <T> Iterable<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
+                                       String[] propertyNames, Object[] propertyValues)throws Exception;
 
-    public <T> Set<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                       String[] propertyNames, Class[] propertyTypes, Object[] propertyValues);
-
-    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                        String[] propertyNames, Object[] propertyValues);
+    public <T> Iterable<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
+                                       String[] propertyNames, Class[] propertyTypes, Object[] propertyValues)throws Exception;
 
     public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                        String[] propertyNames, Class[] propertyTypes, Object[] propertyValues);
+                                        String[] propertyNames, Object[] propertyValues)throws Exception;
+
+    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
+                                        String[] propertyNames, Class[] propertyTypes, Object[] propertyValues)throws Exception;
 
 }

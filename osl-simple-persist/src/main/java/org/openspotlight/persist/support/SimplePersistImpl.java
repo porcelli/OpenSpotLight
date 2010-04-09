@@ -19,10 +19,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newLinkedList;
@@ -88,7 +85,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         fillSimpleProperties(session, bean, simplePropertiesDescriptor, newNodeEntry);
         fillStreamProperties(session, bean, streamPropertiesDescriptor, newNodeEntry);
         fillChildrenProperties(partition, session, bean, childrenPropertiesDescriptor, newNodeEntry);
-        newNodeEntry.getVerifiedOperations().setSimpleProperty(session,NODE_ENTRY_NAME,String.class,newNodeEntry.getNodeEntryName());//to be used on find operations
+        newNodeEntry.getVerifiedOperations().setSimpleProperty(session, NODE_ENTRY_NAME, String.class, newNodeEntry.getNodeEntryName());//to be used on find operations
         return newNodeEntry;
     }
 
@@ -148,8 +145,17 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                         beforeSerializeMap((Map<? extends Serializable, ? extends Serializable>) value, readMethod));
 
             } else if (Serializable.class.isAssignableFrom(propertyType)) {
-                newNodeEntry.getVerifiedOperations().setSimpleProperty(session, property.getName(),
-                        (Class<? super Serializable>) property.getPropertyType(), beforeSerializeSerializable((Serializable) value));
+                if (propertyType.equals(String.class) || Number.class.isAssignableFrom(propertyType)
+                        || propertyType.isPrimitive() || Boolean.class.equals(propertyType)
+                        || Character.class.equals(propertyType) || Date.class.equals(propertyType)) {
+                    newNodeEntry.getVerifiedOperations().setSimpleProperty(session, property.getName(),
+                            (Class<? super Serializable>) property.getPropertyType(), beforeSerializeSerializable((Serializable) value));
+                } else {
+                    newNodeEntry.getVerifiedOperations().setSerializedPojoProperty(session, property.getName(),
+                            (Class<? super Serializable>) property.getPropertyType(), beforeSerializeSerializable((Serializable) value));
+                }
+
+
             } else {
                 throw new IllegalStateException("invalid type");
             }
@@ -476,8 +482,8 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return value;
     }
 
-    public <T> Set<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                       String[] propertyNames, Object[] propertyValues) {
+    public <T> Iterable<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
+                                            String[] propertyNames, Object[] propertyValues) throws Exception {
         checkNotNull("partition", partition);
         checkNotNull("session", session);
         checkNotNull("beanType", beanType);
@@ -491,19 +497,38 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return findByProperties(partition, session, beanType, propertyNames, types, propertyValues);
     }
 
-    public <T> Set<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType, String[] propertyNames, Class[] propertyTypes, Object[] propertyValues) {
+    public <T> Iterable<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
+                                            String[] propertyNames, Class[] propertyTypes, Object[] propertyValues) throws Exception {
+        checkNotNull("partition", partition);
+        checkNotNull("session", session);
+        checkNotNull("beanType", beanType);
+        checkNotNull("propertyNames", propertyNames);
+        checkNotNull("propertyTypes", propertyNames);
+        checkNotNull("propertyValues", propertyValues);
+        checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
+        checkCondition("namesAndTypes:sameSize", propertyNames.length == propertyTypes.length);
+
+        STStorageSession.STCriteriaBuilder builder = session.withPartition(partition).createCriteria()
+                .withProperty(NODE_ENTRY_NAME).startsWithString(beanType.toString());
+        for (int i = 0, size = propertyNames.length; i < size; i++) {
+            checkCondition("correctType:" + propertyNames[i], propertyValues[i] == null || propertyTypes[i].isInstance(propertyValues[i]));
+            builder.withProperty(propertyNames[i]).equals(propertyTypes[i], (Serializable) propertyValues[i]);
+        }
+        Set<STNodeEntry> result = builder.buildCriteria().andFind(session);
+        return this.<T>convertNodesToBeans(session, result);
+
     }
 
-    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType, String[] propertyNames, Object[] propertyValues) {
-        Set<T> result = findByProperties(partition, session, beanType, propertyNames, propertyValues);
-        checkCondition("validUniqueResultSize", result.size() <= 1);
-        return result.size() == 0 ? null : result.iterator().next();
+    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType, String[] propertyNames, Object[] propertyValues) throws Exception {
+        Iterable<T> result = findByProperties(partition, session, beanType, propertyNames, propertyValues);
+        Iterator<T> it = result.iterator();
+        return it.hasNext() ? it.next() : null;
     }
 
-    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType, String[] propertyNames, Class[] propertyTypes, Object[] propertyValues) {
-        Set<T> result = findByProperties(partition, session, beanType, propertyNames, propertyTypes, propertyValues);
-        checkCondition("validUniqueResultSize", result.size() <= 1);
-        return result.size() == 0 ? null : result.iterator().next();
+    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType, String[] propertyNames, Class[] propertyTypes, Object[] propertyValues) throws Exception {
+        Iterable<T> result = findByProperties(partition, session, beanType, propertyNames, propertyTypes, propertyValues);
+        Iterator<T> it = result.iterator();
+        return it.hasNext() ? it.next() : null;
     }
 
 
