@@ -47,6 +47,8 @@ import static org.openspotlight.common.util.Wrapper.createMutable;
 @Singleton
 public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STStorageSession> {
 
+    private static final String NODE_ENTRY_NAME = "internal-node-entry-name";
+
     public <T> Iterable<STNodeEntry> convertBeansToNodes(STPartition partition, STNodeEntry parentNodeN, STStorageSession session, Iterable<T> beans) throws Exception {
         List<STNodeEntry> itemsConverted = newArrayList();
         for (T bean : beans) itemsConverted.add(convertBeanToNode(partition, parentNodeN, session, bean));
@@ -86,6 +88,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         fillSimpleProperties(session, bean, simplePropertiesDescriptor, newNodeEntry);
         fillStreamProperties(session, bean, streamPropertiesDescriptor, newNodeEntry);
         fillChildrenProperties(partition, session, bean, childrenPropertiesDescriptor, newNodeEntry);
+        newNodeEntry.getVerifiedOperations().setSimpleProperty(session,NODE_ENTRY_NAME,String.class,newNodeEntry.getNodeEntryName());//to be used on find operations
         return newNodeEntry;
     }
 

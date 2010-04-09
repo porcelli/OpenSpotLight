@@ -718,11 +718,13 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         public STCriteriaBuilder and() {
             STCriteriaItem item = null;
-            breakIfNull(transientNodeEntryName);
             if (transientUniqueKey != null) {
+                breakIfNull(transientNodeEntryName);
+
                 item = new STUniqueKeyCriteriaItemImpl(transientUniqueKey, transientNodeEntryName);
 
             } else if (transientLocalKey != null) {
+                breakIfNull(transientNodeEntryName);
 
                 item = new STLocalKeyCriteriaItemImpl(transientLocalKey, transientNodeEntryName);
 
@@ -754,12 +756,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
         public STCriteria buildCriteria() {
-            breakIfNull(transientNodeEntryName);
             if (this.items.size() == 0) breakHere();
 
             STCriteriaImpl result = new STCriteriaImpl(transientNodeEntryName, this.items, partition);
             and();
-
+             
             return result;
         }
 

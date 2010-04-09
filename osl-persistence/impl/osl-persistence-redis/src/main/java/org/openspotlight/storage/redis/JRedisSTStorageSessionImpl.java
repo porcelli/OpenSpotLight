@@ -123,13 +123,13 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     private final FindPropertyByTwoParameters propertyStartingWith = new FindPropertyByTwoParameters() {
         public String find(String name, String value) throws Exception {
-            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(),  value+"*", "*");
+            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(), value + "*", "*");
         }
     };
 
     private final FindPropertyByTwoParameters propertyEndsWith = new FindPropertyByTwoParameters() {
         public String find(String name, String value) throws Exception {
-            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(), "*" + value , "*");
+            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(), "*" + value, "*");
         }
     };
 
@@ -147,10 +147,21 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         String proposedKey = function.find(name, value);
         List<String> propertyKeys = jRedis.keys(proposedKey);
         List<String> keys = new ArrayList<String>(propertyKeys.size());
+        loopingIntoProperties:
         for (String key : propertyKeys) {
             String foundKey = toStr(jRedis.get(key));
-            if (jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, nodeEntryName), foundKey)) {
-                keys.add(foundKey);
+            if (nodeEntryName != null) {
+                if (jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, nodeEntryName), foundKey)) {
+                    keys.add(foundKey);
+                }
+            } else {
+                List<String> foundKeys = jRedis.keys(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, "*"));
+                for (String s : foundKeys) {
+                    if (jRedis.sismember(s, foundKey)) {
+                        keys.add(foundKey);
+                        continue loopingIntoProperties;
+                    }
+                }
             }
         }
         return keys;
@@ -161,11 +172,22 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         String proposedKey = getPropertyKey(propertyName, type, value, "*");
         List<String> propertyKeys = jRedis.keys(proposedKey);
         List<String> keys = new ArrayList<String>(propertyKeys.size());
-        for (String key : propertyKeys) {
+        loopingIntoProperties: for (String key : propertyKeys) {
             String foundKey = toStr(jRedis.get(key));
-            if (jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, nodeEntryName), foundKey)) {
-                keys.add(foundKey);
+            if (nodeEntryName != null) {
+                if (jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, nodeEntryName), foundKey)) {
+                    keys.add(foundKey);
+                }
+            } else {
+                List<String> foundKeys = jRedis.keys(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, "*"));
+                for (String s : foundKeys) {
+                    if (jRedis.sismember(s, foundKey)) {
+                        keys.add(foundKey);
+                        continue loopingIntoProperties;
+                    }
+                }
             }
+
         }
         return keys;
     }
