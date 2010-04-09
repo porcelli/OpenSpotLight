@@ -73,7 +73,7 @@ import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
 public abstract class AbstractSTStorageSession implements STStorageSession {
-    
+
     public void discardTransient() {
         this.newNodes.clear();
         this.removedNodes.clear();
@@ -394,6 +394,162 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     }
 
+
+    private static class STPropertyEndsWithStringImpl implements STPropertyEndsWithString {
+
+        private STPropertyEndsWithStringImpl(String nodeEntryName, String propertyName, String value) {
+            this.nodeEntryName = nodeEntryName;
+            this.propertyName = propertyName;
+            this.value = value;
+        }
+
+        private final String nodeEntryName;
+
+        private final String propertyName;
+
+        private final String value;
+
+        public String getNodeEntryName() {
+            return nodeEntryName;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            STPropertyEndsWithStringImpl that = (STPropertyEndsWithStringImpl) o;
+
+            if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
+                return false;
+            if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null)
+                return false;
+            if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
+            result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
+            result = 31 * result + (value != null ? value.hashCode() : 0);
+            return result;
+        }
+    }
+
+    private static class STPropertyStartsWithStringImpl implements STPropertyStartsWithString {
+
+        private STPropertyStartsWithStringImpl(String nodeEntryName, String propertyName, String value) {
+            this.nodeEntryName = nodeEntryName;
+            this.propertyName = propertyName;
+            this.value = value;
+        }
+
+        private final String nodeEntryName;
+
+        private final String propertyName;
+
+        private final String value;
+
+        public String getNodeEntryName() {
+            return nodeEntryName;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public String getValue() {
+            return value;
+
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            STPropertyStartsWithStringImpl that = (STPropertyStartsWithStringImpl) o;
+
+            if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
+                return false;
+            if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null)
+                return false;
+            if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
+            result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
+            result = 31 * result + (value != null ? value.hashCode() : 0);
+            return result;
+        }
+    }
+
+
+    private static class STPropertyContainsStringImpl implements STPropertyContainsString {
+
+        private STPropertyContainsStringImpl(String nodeEntryName, String propertyName, String value) {
+            this.nodeEntryName = nodeEntryName;
+            this.propertyName = propertyName;
+            this.value = value;
+        }
+
+        private final String nodeEntryName;
+
+        private final String propertyName;
+
+        private final String value;
+
+        public String getNodeEntryName() {
+            return nodeEntryName;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            STPropertyContainsStringImpl that = (STPropertyContainsStringImpl) o;
+
+            if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
+                return false;
+            if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null)
+                return false;
+            if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
+            result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
+            result = 31 * result + (value != null ? value.hashCode() : 0);
+            return result;
+        }
+    }
+
     private static class STCriteriaImpl implements STCriteria {
         private STCriteriaImpl(String nodeName, Set<STCriteriaItem> criteriaItems, STPartition partition) {
             this.nodeName = nodeName;
@@ -467,6 +623,10 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private Serializable transientPropertyValue;
 
+        private String startsWith;
+        private String endsWith;
+        private String contains;
+
         Set<STCriteriaItem> items;
 
         public STCriteriaBuilderImpl(STPartition partition) {
@@ -517,6 +677,45 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return this;
         }
 
+        public STCriteriaBuilder containsString(String value) {
+            breakIfNotNull(transientUniqueKey);
+            breakIfNotNull(transientLocalKey);
+
+            breakIfNull(transientPropertyName);
+            breakIfNotNull(transientPropertyType);
+            transientPropertyType = String.class;
+            contains = value;
+            and();
+            return this;
+
+        }
+
+        public STCriteriaBuilder startsWithString(String value) {
+
+            breakIfNotNull(transientUniqueKey);
+            breakIfNotNull(transientLocalKey);
+
+            breakIfNull(transientPropertyName);
+            breakIfNotNull(transientPropertyType);
+            transientPropertyType = String.class;
+            startsWith = value;
+            and();
+            return this;
+
+        }
+
+        public STCriteriaBuilder endsWithString(String value) {
+            breakIfNotNull(transientUniqueKey);
+            breakIfNotNull(transientLocalKey);
+
+            breakIfNull(transientPropertyName);
+            breakIfNotNull(transientPropertyType);
+            transientPropertyType = String.class;
+            endsWith = value;
+            and();
+            return this;
+        }
+
         public STCriteriaBuilder and() {
             STCriteriaItem item = null;
             breakIfNull(transientNodeEntryName);
@@ -529,11 +728,20 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
             } else if (transientPropertyName != null) {
 
-                breakIfNull(transientPropertyValue);
                 breakIfNull(transientPropertyType);
 
-                item = new STPropertyCriteriaItemImpl(transientPropertyValue, transientPropertyType, transientPropertyName, transientNodeEntryName);
-
+                if (transientPropertyValue != null) {
+                    item = new STPropertyCriteriaItemImpl(transientPropertyValue, transientPropertyType,
+                            transientPropertyName, transientNodeEntryName);
+                } else if (startsWith != null) {
+                    item = new STPropertyStartsWithStringImpl(transientNodeEntryName, transientPropertyName, startsWith);
+                } else if (endsWith != null) {
+                    item = new STPropertyEndsWithStringImpl(transientNodeEntryName, transientPropertyName, endsWith);
+                } else if (contains != null) {
+                    item = new STPropertyContainsStringImpl(transientNodeEntryName, transientPropertyName, contains);
+                } else {
+                    throw new IllegalStateException();
+                }
             }
             transientPropertyName = null;
             transientUniqueKey = null;
@@ -793,7 +1001,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         private Set<STKeyEntry<?>> keys = new HashSet<STKeyEntry<?>>();
 
         public <T extends Serializable> STNodeEntryFactory.STNodeEntryBuilder withKey(String name, Class<T> type, Serializable value) {
-            this.keys.add(STKeyEntryImpl.create(type, (T)value, name));
+            this.keys.add(STKeyEntryImpl.create(type, (T) value, name));
             return this;
         }
 

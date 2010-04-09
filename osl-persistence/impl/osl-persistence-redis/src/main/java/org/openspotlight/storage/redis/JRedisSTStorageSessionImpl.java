@@ -117,11 +117,43 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     }
 
+    private static interface FindPropertyByTwoParameters {
+        String find(String name, String value) throws Exception;
+    }
+
+    private final FindPropertyByTwoParameters propertyStartingWith = new FindPropertyByTwoParameters() {
+        public String find(String name, String value) throws Exception {
+            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(),  value+"*", "*");
+        }
+    };
+
+    private final FindPropertyByTwoParameters propertyEndsWith = new FindPropertyByTwoParameters() {
+        public String find(String name, String value) throws Exception {
+            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(), "*" + value , "*");
+        }
+    };
+
+    private final FindPropertyByTwoParameters propertyContains = new FindPropertyByTwoParameters() {
+        public String find(String name, String value) throws Exception {
+            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(), "*" + value + "*", "*");
+        }
+    };
+
     private static String getPropertyOldKey(String propertyName, String nodeId) throws Exception {
-        String proposedKey = format(KEY_WITH_PROPERTY_NODE_ID, propertyName, "*", "*", nodeId);
-        return proposedKey;
+        return format(KEY_WITH_PROPERTY_NODE_ID, propertyName, "*", "*", nodeId);
+    }
 
-
+    private static List<String> keysFrom(JRedis jRedis, String nodeEntryName, FindPropertyByTwoParameters function, String name, String value) throws Exception {
+        String proposedKey = function.find(name, value);
+        List<String> propertyKeys = jRedis.keys(proposedKey);
+        List<String> keys = new ArrayList<String>(propertyKeys.size());
+        for (String key : propertyKeys) {
+            String foundKey = toStr(jRedis.get(key));
+            if (jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, nodeEntryName), foundKey)) {
+                keys.add(foundKey);
+            }
+        }
+        return keys;
     }
 
 
@@ -153,6 +185,30 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
                     first = false;
                 } else {
                     propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), p.getType(), p.getValue()));
+                }
+            } else if (c instanceof STPropertyContainsString) {
+                STPropertyContainsString p = (STPropertyContainsString) c;
+                if (first) {
+                    propertiesIntersection.addAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyContains, p.getPropertyName(), p.getValue()));
+                    first = false;
+                } else {
+                    propertiesIntersection.retainAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyContains, p.getPropertyName(), p.getValue()));
+                }
+            } else if (c instanceof STPropertyStartsWithString) {
+                STPropertyStartsWithString p = (STPropertyStartsWithString) c;
+                if (first) {
+                    propertiesIntersection.addAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyStartingWith, p.getPropertyName(), p.getValue()));
+                    first = false;
+                } else {
+                    propertiesIntersection.retainAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyStartingWith, p.getPropertyName(), p.getValue()));
+                }
+            } else if (c instanceof STPropertyEndsWithString) {
+                STPropertyEndsWithString p = (STPropertyEndsWithString) c;
+                if (first) {
+                    propertiesIntersection.addAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyEndsWith, p.getPropertyName(), p.getValue()));
+                    first = false;
+                } else {
+                    propertiesIntersection.retainAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyEndsWith, p.getPropertyName(), p.getValue()));
                 }
             } else if (c instanceof STUniqueKeyCriteriaItem) {
                 STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;

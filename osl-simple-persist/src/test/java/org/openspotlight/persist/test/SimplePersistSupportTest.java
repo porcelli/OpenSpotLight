@@ -845,23 +845,23 @@ public class SimplePersistSupportTest {
 //				new String[] { "invalidProperty" }, new Object[] { null });
 //	}
 //
-//	@Test
-//	public void shouldPersistAndReadStreamProperty() throws Exception {
-//		final ObjectWithInputStream pojo = new ObjectWithInputStream();
-//		final String contentAsString = "content";
-//		final InputStream content = new ByteArrayInputStream(contentAsString
-//				.getBytes());
-//		pojo.setStream(content);
-//		final STNodeEntry jcrSTNodeEntry = simplePersist.convertBeanToNode("a/b/c",
-//				session, pojo);
-//		final ObjectWithInputStream convertedPojo = SimplePersistSupport
-//				.convertNodeToBean(session, jcrNode, LazyType.EAGER);
-//		final byte[] contentAsBytes = new byte[convertedPojo.getStream()
-//				.available()];
-//		convertedPojo.getStream().read(contentAsBytes);
-//		final String newContentAsString = new String(contentAsBytes);
-//		assertThat(contentAsString, Is.is(newContentAsString));
-//	}
+	@Test
+	public void shouldPersistAndReadStreamProperty() throws Exception {
+		final ObjectWithInputStream pojo = new ObjectWithInputStream();
+		final String contentAsString = "content";
+		final InputStream content = new ByteArrayInputStream(contentAsString
+				.getBytes());
+		pojo.setStream(content);
+		final STNodeEntry jcrSTNodeEntry = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT,
+				session, pojo);
+		final ObjectWithInputStream convertedPojo = simplePersist
+				.convertNodeToBean(session, jcrSTNodeEntry);
+		final byte[] contentAsBytes = new byte[convertedPojo.getStream()
+				.available()];
+		convertedPojo.getStream().read(contentAsBytes);
+		final String newContentAsString = new String(contentAsBytes);
+		assertThat(contentAsString, Is.is(newContentAsString));
+	}
 
 	@Test
 	public void shouldPersistPropertyAsStream() throws Exception {

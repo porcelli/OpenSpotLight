@@ -238,6 +238,112 @@ public class JRedisStorageSessionTest {
 
 
     @Test
+    public void shouldFindByProperties() throws Exception {
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name").withParent(root2).andCreate();
+        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
+        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
+        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value1");
+        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value2");
+        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                .withProperty("parameter").equals(String.class, "value").buildCriteria().andFind(session);
+        assertThat(theSameNodes.size(), is(2));
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+        Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                .withProperty("parameter1").equals(String.class, "value1").buildCriteria().andFind(session);
+        assertThat(onlyOneNode.size(), is(1));
+        assertThat(onlyOneNode.contains(aNode1), is(true));
+        assertThat(onlyOneNode.contains(aNode2), is(false));
+        assertThat(onlyOneNode.contains(root1), is(false));
+        assertThat(onlyOneNode.contains(root2), is(false));
+    }
+
+
+
+    @Test
+    public void shouldFindByPropertiesContainingString() throws Exception {
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name2").withParent(root2).andCreate();
+        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
+        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "aeiou");
+        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "foo");
+        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "bar");
+        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                .withProperty("parameter").containsString("io").buildCriteria().andFind(session);
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+        assertThat(theSameNodes.size(), is(2));
+    }
+
+    @Test
+    public void shouldFindByPropertiesStartingWithString() throws Exception {
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name2").withParent(root2).andCreate();
+        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
+        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "iou");
+        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "fooiou");
+        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "baior");
+        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session);
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+        assertThat(theSameNodes.size(), is(2));
+    }
+
+    @Test
+    public void shouldFindByPropertiesEndingWithString() throws Exception {
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
+                .withKey("name", String.class, "name2").withParent(root2).andCreate();
+        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
+        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "uio");
+        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "fooiou");
+        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "baior");
+        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session);
+        assertThat(theSameNodes.contains(aNode1), is(true));
+        assertThat(theSameNodes.contains(aNode2), is(true));
+        assertThat(theSameNodes.contains(root1), is(false));
+        assertThat(theSameNodes.contains(root2), is(false));
+        assertThat(theSameNodes.size(), is(2));
+    }
+
+
+    @Test
     public void shouldFindByLocalKeyAndProperties() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)

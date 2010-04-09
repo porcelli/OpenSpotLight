@@ -99,6 +99,12 @@ public interface STStorageSession {
 
         <T extends Serializable> STCriteriaBuilder equals(Class<T> type, T value);
 
+        STCriteriaBuilder containsString(String value);
+
+        STCriteriaBuilder startsWithString(String value);
+
+        STCriteriaBuilder endsWithString(String value);
+
         STCriteriaBuilder and();
 
         STCriteria buildCriteria();
@@ -109,13 +115,28 @@ public interface STStorageSession {
     }
 
     interface STPropertyCriteriaItem<T extends Serializable> extends STCriteriaItem {
-        
+
         T getValue();
 
         Class<T> getType();
 
         String getPropertyName();
 
+    }
+
+    interface STPropertyContainsString extends STCriteriaItem {
+        String getValue();
+        String getPropertyName();
+    }
+
+    interface STPropertyStartsWithString extends STCriteriaItem {
+        String getValue();
+        String getPropertyName();
+    }
+
+    interface STPropertyEndsWithString extends STCriteriaItem {
+        String getValue();
+        String getPropertyName();
     }
 
 
