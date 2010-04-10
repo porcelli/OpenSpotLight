@@ -383,4 +383,13 @@ public class STNodeEntryImpl implements STNodeEntry {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return "STNodeEntryImpl{" +
+                "partition=" + partition +
+                ", nodeEntryName='" + nodeEntryName + '\'' +
+                '}';
+    }
+
 }

@@ -87,7 +87,7 @@ public class SimplePersistSupportTest {
     private STStorageSession session;
 
     private enum JRedisServerConfigExample implements JRedisServerDetail {
-        DEFAULT("localhost", 6379, 1);
+        DEFAULT("localhost", 6379,0);
 
         private JRedisServerConfigExample(String serverName, int serverPort, int db) {
             this.serverName = serverName;
@@ -152,45 +152,43 @@ public class SimplePersistSupportTest {
         session = autoFlushInjector.getInstance(STStorageSession.class);
 	}
 
-//	@Test
-//	public void shouldAddAndRemoveNodeOnAnotherNode() throws Exception {
-//		final RootObj root = new RootObj();
-//		final LevelOneObj levelOne = new LevelOneObj();
-//		levelOne.setRootObj(root);
-//		final LevelTwoObj levelTwo = new LevelTwoObj();
-//		levelTwo.setLevelOneObj(levelOne);
-//		final PropertyObj propertyObj = new PropertyObj();
-//		propertyObj.setName("name");
-//		propertyObj.setValue(3);
-//		levelTwo.setPropertyObj(propertyObj);
-//		STNodeEntry asJcr = simplePersist.convertBeanToNode("a/b/c", session,
-//				levelTwo);
-//		LevelTwoObj anotherLevelTwo = simplePersist.convertNodeToBean(
-//				session, asJcr);
-//		assertThat(anotherLevelTwo.getPropertyObj().getName(), Is
-//				.is(propertyObj.getName()));
-//		assertThat(anotherLevelTwo.getPropertyObj().getValue(), Is
-//				.is(propertyObj.getValue()));
-//
-//		propertyObj.setName("anotherName");
-//		propertyObj.setValue(4);
-//		asJcr = simplePersist.convertBeanToNode("a/b/c", session,
-//				levelTwo);
-//		anotherLevelTwo = simplePersist.convertNodeToBean(session, asJcr,
-//				LazyType.LAZY);
-//		assertThat(anotherLevelTwo.getPropertyObj().getName(), Is
-//				.is(propertyObj.getName()));
-//		assertThat(anotherLevelTwo.getPropertyObj().getValue(), Is
-//				.is(propertyObj.getValue()));
-//		levelTwo.setPropertyObj(null);
-//		asJcr = simplePersist.convertBeanToNode("a/b/c", session,
-//				levelTwo);
-//		anotherLevelTwo = simplePersist.convertNodeToBean(session, asJcr,
-//				LazyType.LAZY);
-//		assertThat(anotherLevelTwo.getPropertyObj(), Is.is(IsNull
-//				.nullValue()));
-//
-//	}
+	@Test
+	public void shouldAddAndRemoveNodeOnAnotherNode() throws Exception {
+		final RootObj root = new RootObj();
+		final LevelOneObj levelOne = new LevelOneObj();
+		levelOne.setRootObj(root);
+		final LevelTwoObj levelTwo = new LevelTwoObj();
+		levelTwo.setLevelOneObj(levelOne);
+		final PropertyObj propertyObj = new PropertyObj();
+		propertyObj.setName("name");
+		propertyObj.setValue(3);
+		levelTwo.setPropertyObj(propertyObj);
+		STNodeEntry asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+				levelTwo);
+		LevelTwoObj anotherLevelTwo = simplePersist.convertNodeToBean(
+				session, asJcr);
+		assertThat(anotherLevelTwo.getPropertyObj().getName(), Is
+				.is(propertyObj.getName()));
+		assertThat(anotherLevelTwo.getPropertyObj().getValue(), Is
+				.is(propertyObj.getValue()));
+
+		propertyObj.setName("anotherName");
+		propertyObj.setValue(4);
+		asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+				levelTwo);
+		anotherLevelTwo = simplePersist.convertNodeToBean(session, asJcr);
+		assertThat(anotherLevelTwo.getPropertyObj().getName(), Is
+				.is(propertyObj.getName()));
+		assertThat(anotherLevelTwo.getPropertyObj().getValue(), Is
+				.is(propertyObj.getValue()));
+		levelTwo.setPropertyObj(null);
+		asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+				levelTwo);
+		anotherLevelTwo = simplePersist.convertNodeToBean(session, asJcr);
+		assertThat(anotherLevelTwo.getPropertyObj(), Is.is(IsNull
+				.nullValue()));
+
+	}
 //
 //	@Test
 //	public void shouldAddAndRemoveNodeOnCollection() throws Exception {
@@ -786,28 +784,28 @@ public class SimplePersistSupportTest {
 //		assertThat(result.size(), Is.is(1));
 //	}
 //
-	@Test
-	public void shouldFindPropertyItems() throws Exception {
-
-		final LevelTwoObj levelTwo = new LevelTwoObj();
-		final PropertyObj propertyObj = new PropertyObj();
-		propertyObj.setName("obj 1");
-		propertyObj.setValue(5);
-		levelTwo.setPropertyObj(propertyObj);
-		simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, levelTwo);
-
-		final Iterable<PropertyObj> result = simplePersist
-				.findByProperties(ExamplePartition.DEFAULT, session, PropertyObj.class,
-						 new String[] { "name" },
-						new Object[] { "obj 1" });
-        Iterator<PropertyObj> it = result.iterator();
-		final PropertyObj item = it.next();
-		assertThat(item.getName(), Is.is("obj 1"));
-		assertThat(item.getValue(), Is.is(5));
-		assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
-        assertThat(it.hasNext(), Is.is(false));
-
-    }
+//	@Test
+//	public void shouldFindPropertyItems() throws Exception {
+//
+//		final LevelTwoObj levelTwo = new LevelTwoObj();
+//		final PropertyObj propertyObj = new PropertyObj();
+//		propertyObj.setName("obj 1");
+//		propertyObj.setValue(5);
+//		levelTwo.setPropertyObj(propertyObj);
+//		simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, levelTwo);
+//
+//		final Iterable<PropertyObj> result = simplePersist
+//				.findByProperties(ExamplePartition.DEFAULT, session, PropertyObj.class,
+//						 new String[] { "name" },
+//						new Object[] { "obj 1" });
+//        Iterator<PropertyObj> it = result.iterator();
+//		final PropertyObj item = it.next();
+//		assertThat(item.getName(), Is.is("obj 1"));
+//		assertThat(item.getValue(), Is.is(5));
+//		assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
+//        assertThat(it.hasNext(), Is.is(false));
+//
+//    }
 //
 //	@Test
 //	public void shouldMaintainOrder() throws Exception {
