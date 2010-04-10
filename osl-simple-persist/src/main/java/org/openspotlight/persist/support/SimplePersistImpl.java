@@ -30,8 +30,7 @@ import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
 import static org.openspotlight.common.Pair.create;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Reflection.unwrapCollectionFromMethodReturn;
-import static org.openspotlight.common.util.Reflection.unwrapMapFromMethodReturn;
+import static org.openspotlight.common.util.Reflection.*;
 import static org.openspotlight.common.util.Wrapper.createMutable;
 
 /**
@@ -180,7 +179,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         if (parentNodeN != null) {
             builder.withParent(parentNodeN);
         } else if (parentPropertiesDescriptor.getWrapped() != null) {
-            STUniqueKey parentKey = buildParentKey(partition, session, bean, parentPropertiesDescriptor, parentPropertiesDescriptor.getWrapped().getName());
+            STUniqueKey parentKey = buildParentKey(partition, session, bean, parentPropertiesDescriptor);
             builder.withParentKey(parentKey);
         }
         for (PropertyDescriptor descriptor : keyPropertiesDescriptor) {
@@ -189,40 +188,42 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         }
         if (propertyName != null) builder.withKey(NODE_PROPERTY_NAME, String.class, propertyName);
         STNodeEntry newNode = builder.andCreate();
-        newNode.getVerifiedOperations().setSimpleProperty(session,NODE_ENTRY_TYPE,String.class,name);
+        newNode.getVerifiedOperations().setSimpleProperty(session, NODE_ENTRY_TYPE, String.class, name);
         return newNode;
     }
 
     private <T> STUniqueKey buildParentKey(STPartition partition, STStorageSession session, T bean,
-                                           Wrapper<PropertyDescriptor> parentPropertiesDescriptor,
-                                           String firstParentPropertyName) throws Exception {
-        if (parentPropertiesDescriptor.getWrapped() == null) return null;
-        Object parent = parentPropertiesDescriptor.getWrapped().getReadMethod().invoke(bean);
-        String parentPropertyName = firstParentPropertyName;
+                                           Wrapper<PropertyDescriptor> paramParentPropertyDescriptor) throws Exception {
+        if (paramParentPropertyDescriptor.getWrapped() == null) return null;
+        Object parent = paramParentPropertyDescriptor.getWrapped().getReadMethod().invoke(bean);
+        Wrapper<PropertyDescriptor> parentPropertyDescriptor = createMutable();
         STStorageSession.STUniqueKeyBuilder builder = session.withPartition(partition).createKey(internalGetNodeName(parent));
-        if (parentPropertyName != null) builder.withEntry(NODE_PROPERTY_NAME, String.class, parentPropertyName);
-        while (parent != null) {
-            boolean parentChanged = false;
-            for (PropertyDescriptor descriptor : getPropertyDescriptors(parent)) {
-                Method readMethod = descriptor.getReadMethod();
-                if (readMethod.isAnnotationPresent(KeyProperty.class)) {
+        parentPropertyDescriptor.setWrapped(paramParentPropertyDescriptor.getWrapped());
 
-                } else if (readMethod.isAnnotationPresent(ParentProperty.class)) {
-                    Object newParent = readMethod.invoke(parent);
-                    if (newParent != null) {
-                        if (parentChanged) throw new IllegalStateException("it is allowed only one parent property");
-                        parent = newParent;
-                        parentChanged = true;
-                        parentPropertyName = descriptor.getName();
-                    }
-                }
+        boolean first = true;
+        while (parent != null) {
+
+            List<PropertyDescriptor> keyPropertiesDescriptor = newLinkedList();
+            throw new Exception("problem here");
+            parentPropertyDescriptor.setWrapped(null);
+            fillDescriptors(parent, parent.getClass(), Lists.<PropertyDescriptor>newLinkedList(), keyPropertiesDescriptor,
+                    parentPropertyDescriptor, Lists.<PropertyDescriptor>newLinkedList(), Lists.<PropertyDescriptor>newLinkedList());
+            if (first) first = false;
+            else builder = builder.withParent(internalGetNodeName(parent));
+            PropertyDescriptor wrapped = parentPropertyDescriptor.getWrapped();
+            if(wrapped!=null) builder.withEntry(NODE_PROPERTY_NAME, String.class, wrapped.getName());
+            for (PropertyDescriptor keyDescriptor : keyPropertiesDescriptor) {
+                Object value = keyDescriptor.getReadMethod().invoke(parent);
+                builder.withEntry(keyDescriptor.getName(), (Class<? extends Serializable>) findClass(keyDescriptor.getPropertyType().getName()),
+                        (Serializable) value);
             }
-            if (!parentChanged) break;
-            if (parent != null) {
-                builder.withParent(internalGetNodeName(parent));
-                if (parentPropertyName != null) builder.withEntry(NODE_PROPERTY_NAME, String.class, parentPropertyName);
-            }
+            if (wrapped != null)
+                parent = wrapped.getReadMethod().invoke(parent);
+            else
+                parent = null;
         }
+
+
         return builder.andCreate();
     }
 
@@ -402,7 +403,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     private <T> void fillParents(STStorageSession session, STNodeEntry node, T bean,
                                  List<PropertyDescriptor> parentPropertiesDescriptor, Object beanParent) throws Exception {
         STNodeEntry parent = node.getParent(session);
-        String propertyName = node.getPropertyValue(session,NODE_PROPERTY_NAME);
+        String propertyName = node.getPropertyValue(session, NODE_PROPERTY_NAME);
         if (propertyName != null) {
             for (PropertyDescriptor descriptor : parentPropertiesDescriptor) {
                 if (propertyName.equals(descriptor.getName())) {
@@ -522,7 +523,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         checkCondition("namesAndTypes:sameSize", propertyNames.length == propertyTypes.length);
 
         STStorageSession.STCriteriaBuilder builder = session.withPartition(partition).createCriteria()
-                .withProperty(NODE_ENTRY_TYPE).equals(String.class,beanType.getName());
+                .withProperty(NODE_ENTRY_TYPE).equals(String.class, beanType.getName());
         for (int i = 0, size = propertyNames.length; i < size; i++) {
             checkCondition("correctType:" + propertyNames[i], propertyValues[i] == null || propertyTypes[i].isPrimitive() ||
                     propertyTypes[i].isInstance(propertyValues[i]));

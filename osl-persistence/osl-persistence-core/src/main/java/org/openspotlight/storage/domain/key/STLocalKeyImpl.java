@@ -54,12 +54,19 @@ import com.google.common.collect.ImmutableSortedSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import static com.google.common.collect.Sets.newHashSet;
+
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:46:52 AM
  */
 public class STLocalKeyImpl implements STLocalKey {
     public STLocalKeyImpl(Set<STKeyEntry<?>> entries, String nodeEntryName) {
         if(nodeEntryName==null) throw new IllegalArgumentException();
+        Set<String> names= newHashSet();
+        for(STKeyEntry entry: entries){
+            if(names.contains(entry.getPropertyName())) throw new IllegalStateException("duplicated entry name");
+            names.add(entry.getPropertyName());
+        }
         this.entries = ImmutableSortedSet.copyOf(entries);
         this.nodeEntryName = nodeEntryName;
     }

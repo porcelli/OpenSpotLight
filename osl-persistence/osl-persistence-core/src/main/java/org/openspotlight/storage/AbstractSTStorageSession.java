@@ -65,6 +65,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
@@ -1005,10 +1006,13 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private STUniqueKey parentKey = null;
 
-        private Set<STKeyEntry<?>> keys = new HashSet<STKeyEntry<?>>();
+        private Set<STKeyEntry<?>> keys = newHashSet();
+        private Set<String> keyNames = newHashSet();
 
         public <T extends Serializable> STNodeEntryFactory.STNodeEntryBuilder withKey(String name, Class<T> type, Serializable value) {
+            if(keyNames.contains(name)) throw new IllegalStateException("key name already inserted");
             this.keys.add(STKeyEntryImpl.create(type, (T) value, name));
+            this.keyNames.add(name);
             return this;
         }
 
