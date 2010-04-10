@@ -285,8 +285,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             for (String keyName : keyPropertyNames) {
                 String typeName = toStr(jredis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, keyName)));
                 String typeValueAsString = toStr(jredis.get(format(KEY_WITH_PROPERTY_VALUE, parentKey, keyName)));
-                Class<? extends Serializable> type = (Class<? extends Serializable>) forName(typeName);
-                Serializable value = convert(typeValueAsString, type);
+                Class<? extends Serializable> type = (Class<? extends Serializable>)findClass(typeName);
+                Serializable value = (Serializable)convert(typeValueAsString, type);
                 keyBuilder.withEntry(keyName, type, value);
             }
             parentKey = toStr(jredis.get(format(KEY_WITH_PARENT_UNIQUE_ID, parentKey)));
@@ -337,7 +337,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             jredis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), k.getPropertyName());
             jredis.set(getPropertyKey(k.getPropertyName(), k.getType(), k.getValue(), uniqueKey), uniqueKey);
             jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()), k.getType().getName());
-            jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), convert(k.getValue(), String.class));
+            String valueAsString = convert(k.getValue(), String.class);
+            if(valueAsString!=null) jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), valueAsString);
             jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, k.getPropertyName()), convert(STProperty.STPropertyDescription.KEY, String.class));
         }
 
@@ -546,7 +547,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         flushStream(partition, dirtyProperty, uniqueKey);
         JRedis jredis = factory.getFrom(partition);
 
-        jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SERIALIZED_POJO, String.class));
+        jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()),
+                convert(STProperty.STPropertyDescription.SERIALIZED_POJO, String.class));
         jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
         jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
 

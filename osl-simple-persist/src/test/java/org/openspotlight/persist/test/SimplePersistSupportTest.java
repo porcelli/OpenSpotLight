@@ -786,33 +786,32 @@ public class SimplePersistSupportTest {
 //		assertThat(result.size(), Is.is(1));
 //	}
 //
-//	@Test
-//	public void shouldFindPropertyItems() throws Exception {
-//
-//		final LevelTwoObj levelTwo = new LevelTwoObj();
-//		final PropertyObj propertyObj = new PropertyObj();
-//		propertyObj.setName("obj 1");
-//		propertyObj.setValue(5);
-//		levelTwo.setPropertyObj(propertyObj);
-//		simplePersist.convertBeanToNode("d/b/c", session, levelTwo);
-//
-//		session.save();
-//
-//		final Set<PropertyObj> result = SimplePersistSupport
-//				.findNodesByProperties("d/b/c", session, PropertyObj.class,
-//						 new String[] { "name" },
-//						new Object[] { "obj 1" });
-//		assertThat(result.size(), Is.is(1));
-//		final PropertyObj item = result.iterator().next();
-//		assertThat(item.getName(), Is.is("obj 1"));
-//		assertThat(item.getValue(), Is.is(5));
-//		assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
-//	}
+	@Test
+	public void shouldFindPropertyItems() throws Exception {
+
+		final LevelTwoObj levelTwo = new LevelTwoObj();
+		final PropertyObj propertyObj = new PropertyObj();
+		propertyObj.setName("obj 1");
+		propertyObj.setValue(5);
+		levelTwo.setPropertyObj(propertyObj);
+		simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, levelTwo);
+
+		final Iterable<PropertyObj> result = simplePersist
+				.findByProperties(ExamplePartition.DEFAULT, session, PropertyObj.class,
+						 new String[] { "name" },
+						new Object[] { "obj 1" });
+        Iterator<PropertyObj> it = result.iterator();
+		final PropertyObj item = it.next();
+		assertThat(item.getName(), Is.is("obj 1"));
+		assertThat(item.getValue(), Is.is(5));
+		assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
+        assertThat(it.hasNext(), Is.is(false));
+
+    }
 //
 //	@Test
 //	public void shouldMaintainOrder() throws Exception {
 //		final int count = 20;
-//		final String rootPath = "z/x/y";
 //
 //		final ArrayList<SimpleObject> objs = new ArrayList<SimpleObject>();
 //
@@ -822,12 +821,10 @@ public class SimplePersistSupportTest {
 //			objs.add(root);
 //		}
 //
-//		simplePersist.convertBeansToNodes(rootPath, session, objs);
+//		simplePersist.convertBeansToNodes(ExamplePartition.DEFAULT, session, objs);
 //
-//		session.save();
-//
-//		final Set<SimpleObject> nodes = simplePersist
-//				.findNodesByProperties(rootPath, session, SimpleObject.class,
+//		final Iterable<SimpleObject> nodes = simplePersist
+//				.findByProperties(ExamplePartition.DEFAULT, session, SimpleObject.class,
 //						 new String[] {}, new Object[] {});
 //
 //		int i = 0;
@@ -837,7 +834,7 @@ public class SimplePersistSupportTest {
 //		}
 //
 //	}
-//
+
 //	@Test(expected = SLRuntimeException.class)
 //	public void shouldNotFindWithWrongPropertyName() throws Exception {
 //		simplePersist.findNodesByProperties("a/b/c", session,

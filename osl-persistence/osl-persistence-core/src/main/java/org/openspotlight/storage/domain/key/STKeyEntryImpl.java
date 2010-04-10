@@ -51,6 +51,8 @@ package org.openspotlight.storage.domain.key;
 
 import java.io.Serializable;
 
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Compare.npeSafeCompare;
 
 /**
@@ -64,6 +66,8 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
 
 
     private STKeyEntryImpl(Class<T> type, T value, String propertyName) {
+        checkNotNull("type", type);
+        checkNotEmpty("propertyName", propertyName);
         this.type = type;
         this.value = value;
         this.propertyName = propertyName;

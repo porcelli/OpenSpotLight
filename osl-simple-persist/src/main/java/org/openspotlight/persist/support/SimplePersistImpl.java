@@ -255,18 +255,18 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 streamPropertiesDescriptor.add(descriptor);
             } else if (returnType.isAssignableFrom(InputStream.class)) {
                 streamPropertiesDescriptor.add(descriptor);
-            } else if (returnType.isAssignableFrom(SimpleNodeType.class)) {
+            } else if (SimpleNodeType.class.isAssignableFrom(returnType)) {
                 childrenPropertiesDescriptor.add(descriptor);
-            } else if (returnType.isAssignableFrom(Collection.class)) {
+            } else if (Collection.class.isAssignableFrom(returnType)) {
                 Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodInformation = unwrapCollectionFromMethodReturn(readMethod);
-                if (methodInformation.getItemType().isAssignableFrom(SimpleNodeType.class)) {
+                if (SimpleNodeType.class.isAssignableFrom(methodInformation.getItemType())) {
                     childrenPropertiesDescriptor.add(descriptor);
                 } else {
                     simplePropertiesDescriptor.add(descriptor);
                 }
-            } else if (returnType.isAssignableFrom(Map.class)) {
+            } else if (Map.class.isAssignableFrom(returnType)) {
                 Reflection.UnwrappedMapTypeFromMethodReturn<Object, Object> methodInformation = unwrapMapFromMethodReturn(readMethod);
-                if (methodInformation.getItemType().getK2().isAssignableFrom(SimpleNodeType.class)) {
+                if (SimpleNodeType.class.isAssignableFrom(methodInformation.getItemType().getK2())) {
                     childrenPropertiesDescriptor.add(descriptor);
                 } else {
                     simplePropertiesDescriptor.add(descriptor);
@@ -384,7 +384,9 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     private <T> void fillSimpleProperties(STStorageSession session, STNodeEntry node, T bean,
                                           List<PropertyDescriptor> simplePropertiesDescriptor) throws IllegalAccessException, InvocationTargetException {
         for (PropertyDescriptor descriptor : simplePropertiesDescriptor) {
-            descriptor.getWriteMethod().invoke(bean, node.<Object>getPropertyValue(session, descriptor.getName()));
+            Object value = node.<Object>getPropertyValue(session, descriptor.getName());
+            if (value == null && descriptor.getPropertyType().isPrimitive()) continue;
+            descriptor.getWriteMethod().invoke(bean, value);
         }
     }
 
@@ -509,9 +511,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         checkCondition("namesAndTypes:sameSize", propertyNames.length == propertyTypes.length);
 
         STStorageSession.STCriteriaBuilder builder = session.withPartition(partition).createCriteria()
-                .withProperty(NODE_ENTRY_NAME).startsWithString(beanType.toString());
+                .withProperty(NODE_ENTRY_NAME).startsWithString(beanType.getName());
         for (int i = 0, size = propertyNames.length; i < size; i++) {
-            checkCondition("correctType:" + propertyNames[i], propertyValues[i] == null || propertyTypes[i].isInstance(propertyValues[i]));
+            checkCondition("correctType:" + propertyNames[i], propertyValues[i] == null || propertyTypes[i].isPrimitive() ||
+                    propertyTypes[i].isInstance(propertyValues[i]));
             builder.withProperty(propertyNames[i]).equals(propertyTypes[i], (Serializable) propertyValues[i]);
         }
         Set<STNodeEntry> result = builder.buildCriteria().andFind(session);

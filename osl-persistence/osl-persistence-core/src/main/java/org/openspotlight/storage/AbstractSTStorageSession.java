@@ -105,6 +105,12 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                         hasOther = true;
                     } else if (item instanceof STLocalKeyCriteriaItem) {
                         hasOther = true;
+                    } else if (item instanceof STPropertyContainsString) {
+                        hasOther = true;
+                    } else if (item instanceof STPropertyStartsWithString) {
+                        hasOther = true;
+                    } else if (item instanceof STPropertyEndsWithString) {
+                        hasOther = true;
                     } else if (item instanceof STUniqueKeyCriteriaItem) {
                         hasGlobal = true;
                     }
@@ -760,7 +766,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
             STCriteriaImpl result = new STCriteriaImpl(transientNodeEntryName, this.items, partition);
             and();
-             
+
             return result;
         }
 
