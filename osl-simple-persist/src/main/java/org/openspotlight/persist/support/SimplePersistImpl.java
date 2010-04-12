@@ -517,8 +517,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                         throw new IllegalStateException("only one parent property is allowed");
                     if (value != null) descriptors.parentPropertyDescriptor.setWrapped(descriptor);
                     descriptors.parentPropertiesDescriptor.add(descriptor);
-                }
-                if (readMethod.isAnnotationPresent(KeyProperty.class)) {
+                }else if (readMethod.isAnnotationPresent(KeyProperty.class)) {
                     descriptors.keyPropertiesDescriptor.add(descriptor);
                 } else if (readMethod.isAnnotationPresent(PersistPropertyAsStream.class)) {
                     descriptors.streamPropertiesDescriptor.add(descriptor);
