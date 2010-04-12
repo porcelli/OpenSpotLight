@@ -1105,8 +1105,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     private static class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
 
-        private Set<STKeyEntry<?>> localEntries = new HashSet<STKeyEntry<?>>();
-
+        private Set<STKeyEntry<?>> localEntries = newHashSet();
+        private Set<String> namesInsideEntries = newHashSet();
         private final String name;
 
         private final STPartition partition;

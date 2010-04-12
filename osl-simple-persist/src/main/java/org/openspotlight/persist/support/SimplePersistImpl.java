@@ -197,33 +197,31 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         if (paramParentPropertyDescriptor.getWrapped() == null) return null;
         Object parent = paramParentPropertyDescriptor.getWrapped().getReadMethod().invoke(bean);
         Wrapper<PropertyDescriptor> parentPropertyDescriptor = createMutable();
-        STStorageSession.STUniqueKeyBuilder builder = session.withPartition(partition).createKey(internalGetNodeName(parent));
         parentPropertyDescriptor.setWrapped(paramParentPropertyDescriptor.getWrapped());
 
+        STStorageSession.STUniqueKeyBuilder builder = session.withPartition(partition)
+                .createKey(internalGetNodeName(parent));
         boolean first = true;
-        while (parent != null) {
-
+        do {
+            PropertyDescriptor wrapped = parentPropertyDescriptor.getWrapped();
             List<PropertyDescriptor> keyPropertiesDescriptor = newLinkedList();
-            throw new Exception("problem here");
+            if (first) first = false;
+            else builder = builder.withParent(internalGetNodeName(parent));
+            builder.withEntry(NODE_PROPERTY_NAME, String.class, wrapped.getName());
             parentPropertyDescriptor.setWrapped(null);
             fillDescriptors(parent, parent.getClass(), Lists.<PropertyDescriptor>newLinkedList(), keyPropertiesDescriptor,
                     parentPropertyDescriptor, Lists.<PropertyDescriptor>newLinkedList(), Lists.<PropertyDescriptor>newLinkedList());
-            if (first) first = false;
-            else builder = builder.withParent(internalGetNodeName(parent));
-            PropertyDescriptor wrapped = parentPropertyDescriptor.getWrapped();
-            if(wrapped!=null) builder.withEntry(NODE_PROPERTY_NAME, String.class, wrapped.getName());
             for (PropertyDescriptor keyDescriptor : keyPropertiesDescriptor) {
                 Object value = keyDescriptor.getReadMethod().invoke(parent);
                 builder.withEntry(keyDescriptor.getName(), (Class<? extends Serializable>) findClass(keyDescriptor.getPropertyType().getName()),
                         (Serializable) value);
             }
+            wrapped = parentPropertyDescriptor.getWrapped();
             if (wrapped != null)
                 parent = wrapped.getReadMethod().invoke(parent);
             else
                 parent = null;
-        }
-
-
+        } while (parent != null);
         return builder.andCreate();
     }
 
@@ -251,9 +249,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             if (readMethod.isAnnotationPresent(TransientProperty.class)) continue;
             Class<?> returnType = readMethod.getReturnType();
             if (readMethod.isAnnotationPresent(ParentProperty.class)) {
-                if (parentPropertyDescriptor != null && parentPropertyDescriptor != null && parentPropertyDescriptor.getWrapped() != null)
+                Object value = bean!=null?readMethod.invoke(bean):null;
+                if (value != null && parentPropertyDescriptor != null && parentPropertyDescriptor.getWrapped() != null)
                     throw new IllegalStateException("only one parent property is allowed");
-                if (bean != null && readMethod.invoke(bean) != null) parentPropertyDescriptor.setWrapped(descriptor);
+                if (value != null) parentPropertyDescriptor.setWrapped(descriptor);
                 parentPropertiesDescriptors.add(descriptor);
             } else if (readMethod.isAnnotationPresent(KeyProperty.class)) {
                 keyPropertiesDescriptor.add(descriptor);

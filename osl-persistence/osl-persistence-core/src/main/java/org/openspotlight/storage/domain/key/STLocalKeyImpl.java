@@ -64,7 +64,9 @@ public class STLocalKeyImpl implements STLocalKey {
         if(nodeEntryName==null) throw new IllegalArgumentException();
         Set<String> names= newHashSet();
         for(STKeyEntry entry: entries){
-            if(names.contains(entry.getPropertyName())) throw new IllegalStateException("duplicated entry name");
+            if(names.contains(entry.getPropertyName())) {
+                throw new IllegalStateException("duplicated entry name");
+            }
             names.add(entry.getPropertyName());
         }
         this.entries = ImmutableSortedSet.copyOf(entries);
