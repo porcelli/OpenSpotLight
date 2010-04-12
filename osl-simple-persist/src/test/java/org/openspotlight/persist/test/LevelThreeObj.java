@@ -74,7 +74,6 @@ public class LevelThreeObj implements SimpleNodeType {
 
 	private List<ListItemObj> objList = new ArrayList<ListItemObj>();
 
-	private Map<Integer, MapValueObj> objMap = new HashMap<Integer, MapValueObj>();
 
 	public boolean equals(final Object o) {
 		if (o == this) {
@@ -110,10 +109,6 @@ public class LevelThreeObj implements SimpleNodeType {
 		return objList;
 	}
 
-	public Map<Integer, MapValueObj> getObjMap() {
-		return objMap;
-	}
-
 	public String getProperty() {
 		return property;
 	}
@@ -141,10 +136,6 @@ public class LevelThreeObj implements SimpleNodeType {
 
 	public void setObjList(final List<ListItemObj> objList) {
 		this.objList = objList;
-	}
-
-	public void setObjMap(final Map<Integer, MapValueObj> objMap) {
-		this.objMap = objMap;
 	}
 
 	public void setProperty(final String property) {

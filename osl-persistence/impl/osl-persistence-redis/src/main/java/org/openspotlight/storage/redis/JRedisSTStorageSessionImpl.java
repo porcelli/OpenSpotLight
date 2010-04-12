@@ -489,7 +489,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         return builder.build();
     }
 
-    private STProperty loadProperty(STPartition partition, STNodeEntry stNodeEntry, String parentKey, String propertyName) throws RedisException, ClassNotFoundException, SLException {
+    private STProperty loadProperty(STPartition partition, STNodeEntry stNodeEntry, String parentKey, String propertyName) throws Exception{
         JRedis jredis = factory.getFrom(partition);
 
         String typeName = toStr(jredis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, propertyName)));

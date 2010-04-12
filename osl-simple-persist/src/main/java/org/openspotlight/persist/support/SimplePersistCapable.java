@@ -15,13 +15,6 @@ import java.util.Set;
 public interface SimplePersistCapable<N, S> {
 
     public <T> Iterable<N> convertBeansToNodes(STPartition partition,
-                                               final N parentNodeN, final S session,
-                                               final Iterable<T> beans) throws Exception;
-
-    public <T> N convertBeanToNode(STPartition partition, final N parentNodeN,
-                                   final S session, final T bean) throws Exception;
-
-    public <T> Iterable<N> convertBeansToNodes(STPartition partition,
                                                final S session,
                                                final Iterable<T> beans) throws Exception;
 
