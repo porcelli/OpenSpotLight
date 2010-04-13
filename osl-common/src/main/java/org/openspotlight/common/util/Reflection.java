@@ -51,6 +51,7 @@ package org.openspotlight.common.util;
 
 import com.google.common.collect.ImmutableMap;
 import org.openspotlight.common.Pair;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -64,6 +65,7 @@ import static java.lang.Class.forName;
 import static java.util.EnumSet.of;
 import static org.openspotlight.common.util.Assertions.*;
 import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 /**
  * This class has a set of static methods to use for reflection purposes.
@@ -359,9 +361,13 @@ public class Reflection {
             .put("boolean", Boolean.class)
             .build();
 
-    public static Class<?> findClass(String name) throws ClassNotFoundException {
-        if (primitiveTypes.containsKey(name)) return primitiveTypes.get(name);
-        return forName(name);
+    public static Class<?> findClass(String name){
+        try {
+            if (primitiveTypes.containsKey(name)) return primitiveTypes.get(name);
+            return forName(name);
+        } catch (Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+        }
     }
 
 }
