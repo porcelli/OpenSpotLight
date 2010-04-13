@@ -28,7 +28,6 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Class.forName;
 import static java.util.Collections.reverse;
 import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
-import static org.openspotlight.common.Pair.create;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Reflection.unwrapCollectionFromMethodReturn;
@@ -94,26 +93,29 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
 
-
     private <T> void fillChildrenProperties(ConversionToNodeContext context, T bean,
                                             List<PropertyDescriptor> childrenPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
 
-        Map<String,BeanToNodeChildData> nodesToConvert = newHashMap();
+        Map<String, BeanToNodeChildData> nodesToConvert = newHashMap();
         for (PropertyDescriptor property : childrenPropertiesDescriptor) {
-            String propertyName  = property.getName();
+            String propertyName = property.getName();
             BeanToNodeChildData data = nodesToConvert.get(propertyName);
             Class<?> propertyType = property.getPropertyType();
-            if(data==null){
-                data = new BeanToNodeChildData(propertyName,Collection.class.isAssignableFrom(propertyType));
-                nodesToConvert.put(propertyName,data);
-            }
 
             Object value = property.getReadMethod().invoke(bean);
             if (SimpleNodeType.class.isAssignableFrom(propertyType)) {
+                if (data == null) {
+                    data = new BeanToNodeChildData(propertyName, Collection.class.isAssignableFrom(propertyType), propertyType);
+                    nodesToConvert.put(propertyName, data);
+                }
                 data.childrenToSave.add((SimpleNodeType) value);
             } else if (Collection.class.isAssignableFrom(propertyType)) {
                 Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodInformation =
                         unwrapCollectionFromMethodReturn(property.getReadMethod());
+                if (data == null) {
+                    data = new BeanToNodeChildData(propertyName, Collection.class.isAssignableFrom(propertyType), methodInformation.getItemType());
+                    nodesToConvert.put(propertyName, data);
+                }
                 if (List.class.isAssignableFrom(methodInformation.getCollectionType())) {
                     for (SimpleNodeType t : (List<SimpleNodeType>) value)
                         data.childrenToSave.add(t);
@@ -128,14 +130,15 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 throw new IllegalStateException("invalid type:" + property.getPropertyType());
             }
         }
-        for (BeanToNodeChildData data : nodesToConvert.values()){
-            if(!data.multiple && data.childrenToSave.size()>1) throw new IllegalStateException("single property with more than one child");
-            for(SimpleNodeType beanBeenSaved: data.childrenToSave){
-               internalConvertBeanToNode(context, data.propertyName, beanBeenSaved, newNodeEntry); 
+        for (BeanToNodeChildData data : nodesToConvert.values()) {
+            if (!data.multiple && data.childrenToSave.size() > 1)
+                throw new IllegalStateException("single property with more than one child");
+            for (SimpleNodeType beanBeenSaved : data.childrenToSave) {
+                internalConvertBeanToNode(context, data.propertyName, beanBeenSaved, newNodeEntry);
             }
-            Set<STNodeEntry> unusedChildren = new HashSet(newNodeEntry.getChildrenNamed(context.session, data.propertyName));
+            Set<STNodeEntry> unusedChildren = new HashSet(newNodeEntry.getChildrenNamed(context.session, internalGetNodeName(data.nodeType)));
             unusedChildren.removeAll(data.childrenToSave);
-            for(STNodeEntry unusedChild: unusedChildren){
+            for (STNodeEntry unusedChild : unusedChildren) {
                 context.session.removeNode(unusedChild);
             }
         }
@@ -540,7 +543,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                         throw new IllegalStateException("only one parent property is allowed");
                     if (value != null) descriptors.parentPropertyDescriptor.setWrapped(descriptor);
                     descriptors.parentPropertiesDescriptor.add(descriptor);
-                }else if (readMethod.isAnnotationPresent(KeyProperty.class)) {
+                } else if (readMethod.isAnnotationPresent(KeyProperty.class)) {
                     descriptors.keyPropertiesDescriptor.add(descriptor);
                 } else if (readMethod.isAnnotationPresent(PersistPropertyAsStream.class)) {
                     descriptors.streamPropertiesDescriptor.add(descriptor);
@@ -623,11 +626,14 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     private static class BeanToNodeChildData {
 
-        private BeanToNodeChildData(String propertyName, boolean multiple) {
+        private BeanToNodeChildData(String propertyName, boolean multiple, Class<?> nodeType) {
             this.propertyName = propertyName;
+            this.nodeType = nodeType;
             this.childrenToSave = newHashSet();
             this.multiple = multiple;
         }
+
+        final Class<?> nodeType;
 
         final String propertyName;
 
