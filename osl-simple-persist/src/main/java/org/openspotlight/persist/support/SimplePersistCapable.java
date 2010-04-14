@@ -31,13 +31,9 @@ public interface SimplePersistCapable<N, S> {
     public <T> Iterable<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
                                        String[] propertyNames, Object[] propertyValues)throws Exception;
 
-    public <T> Iterable<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                       String[] propertyNames, Class[] propertyTypes, Object[] propertyValues)throws Exception;
 
     public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
                                         String[] propertyNames, Object[] propertyValues)throws Exception;
 
-    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                        String[] propertyNames, Class[] propertyTypes, Object[] propertyValues)throws Exception;
-
+    
 }

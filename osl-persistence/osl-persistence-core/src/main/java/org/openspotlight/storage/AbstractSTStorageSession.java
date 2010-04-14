@@ -671,7 +671,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return this;
         }
 
-        public <T extends Serializable> STCriteriaBuilder equals(Class<T> type, T value) {
+        public <T extends Serializable> STCriteriaBuilder equals(Class<T> type, Serializable value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
 

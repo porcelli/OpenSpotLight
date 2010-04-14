@@ -3,8 +3,10 @@ package org.openspotlight.persist.support;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.openspotlight.common.Pair;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Wrapper;
 import org.openspotlight.persist.annotation.*;
@@ -466,30 +468,16 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         checkNotNull("propertyNames", propertyNames);
         checkNotNull("propertyValues", propertyValues);
         checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
-        Class<?>[] types = new Class[propertyNames.length];
-        for (int i = 0, size = types.length; i < size; i++) {
-            types[i] = propertyValues[i].getClass();
-        }
-        return findByProperties(partition, session, beanType, propertyNames, types, propertyValues);
-    }
-
-    public <T> Iterable<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                            String[] propertyNames, Class[] propertyTypes, Object[] propertyValues) throws Exception {
-        checkNotNull("partition", partition);
-        checkNotNull("session", session);
-        checkNotNull("beanType", beanType);
-        checkNotNull("propertyNames", propertyNames);
-        checkNotNull("propertyTypes", propertyNames);
-        checkNotNull("propertyValues", propertyValues);
-        checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
-        checkCondition("namesAndTypes:sameSize", propertyNames.length == propertyTypes.length);
 
         STStorageSession.STCriteriaBuilder builder = session.withPartition(partition).createCriteria()
                 .withProperty(NODE_ENTRY_TYPE).equals(String.class, beanType.getName());
+        Object dummyInstance = beanType.newInstance();
         for (int i = 0, size = propertyNames.length; i < size; i++) {
-            checkCondition("correctType:" + propertyNames[i], propertyValues[i] == null || propertyTypes[i].isPrimitive() ||
-                    propertyTypes[i].isInstance(propertyValues[i]));
-            builder.withProperty(propertyNames[i]).equals(propertyTypes[i], (Serializable) propertyValues[i]);
+
+            PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(dummyInstance, propertyNames[i]);
+            if(descriptor==null) throw new SLRuntimeException("invalid property:" + propertyNames[i]);
+            builder.withProperty(propertyNames[i]).equals((Class<? extends Serializable>)
+                    descriptor.getPropertyType(), (Serializable) propertyValues[i]);
         }
         Set<STNodeEntry> foundItems = builder.buildCriteria().andFind(session);
         List<T> result = this.<T>internalConvertNodesToBeans(session, foundItems);
@@ -497,17 +485,11 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             sort((List<Comparable<? super Comparable<?>>>)result);
         }
         return result;
-
     }
+
 
     public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType, String[] propertyNames, Object[] propertyValues) throws Exception {
         Iterable<T> result = findByProperties(partition, session, beanType, propertyNames, propertyValues);
-        Iterator<T> it = result.iterator();
-        return it.hasNext() ? it.next() : null;
-    }
-
-    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType, String[] propertyNames, Class[] propertyTypes, Object[] propertyValues) throws Exception {
-        Iterable<T> result = findByProperties(partition, session, beanType, propertyNames, propertyTypes, propertyValues);
         Iterator<T> it = result.iterator();
         return it.hasNext() ? it.next() : null;
     }

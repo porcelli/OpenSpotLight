@@ -97,7 +97,7 @@ public interface STStorageSession {
 
         STCriteriaBuilder withNodeEntry(String nodeName);
 
-        <T extends Serializable> STCriteriaBuilder equals(Class<T> type, T value);
+        <T extends Serializable> STCriteriaBuilder equals(Class<T> type, Serializable value);
 
         STCriteriaBuilder containsString(String value);
 
