@@ -27,6 +27,7 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Class.forName;
 import static java.util.Collections.reverse;
+import static java.util.Collections.sort;
 import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
@@ -312,6 +313,9 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 Collection c = (Collection) readMethod.invoke(bean);
                 for (Object o : childrenAsBeans) {
                     c.add(o);
+                }
+                if(Comparable.class.isAssignableFrom(nodeType) && c instanceof List){
+                    sort((List)c);
                 }
             } else if (childrenAsBeans.size() > 0) {
                 Object value = childrenAsBeans.iterator().next();
