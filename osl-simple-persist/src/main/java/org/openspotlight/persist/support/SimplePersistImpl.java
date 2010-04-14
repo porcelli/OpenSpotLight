@@ -222,6 +222,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     public <T> Iterable<T> convertNodesToBeans(STStorageSession session, Iterable<STNodeEntry> nodes) throws Exception {
+        return internalConvertNodesToBeans(session, nodes);
+    }
+
+    private <T> List<T> internalConvertNodesToBeans(STStorageSession session, Iterable<STNodeEntry> nodes) throws Exception {
         List<T> itemsConverted = newArrayList();
         for (STNodeEntry node : nodes) itemsConverted.add(this.<T>convertNodeToBean(session, node));
         return itemsConverted;
@@ -487,8 +491,12 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                     propertyTypes[i].isInstance(propertyValues[i]));
             builder.withProperty(propertyNames[i]).equals(propertyTypes[i], (Serializable) propertyValues[i]);
         }
-        Set<STNodeEntry> result = builder.buildCriteria().andFind(session);
-        return this.<T>convertNodesToBeans(session, result);
+        Set<STNodeEntry> foundItems = builder.buildCriteria().andFind(session);
+        List<T> result = this.<T>internalConvertNodesToBeans(session, foundItems);
+        if(Comparable.class.isAssignableFrom(beanType)){
+            sort((List<Comparable<? super Comparable<?>>>)result);
+        }
+        return result;
 
     }
 
