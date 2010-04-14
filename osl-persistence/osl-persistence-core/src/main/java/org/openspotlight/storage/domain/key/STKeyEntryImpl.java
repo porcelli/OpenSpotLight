@@ -54,6 +54,7 @@ import java.io.Serializable;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Compare.npeSafeCompare;
+import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:42:37 AM
@@ -68,7 +69,7 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
     private STKeyEntryImpl(Class<T> type, T value, String propertyName) {
         checkNotNull("type", type);
         checkNotEmpty("propertyName", propertyName);
-        this.type = type;
+        this.type = (Class<T>)findClassWithoutPrimitives(type);
         this.value = value;
         this.propertyName = propertyName;
     }

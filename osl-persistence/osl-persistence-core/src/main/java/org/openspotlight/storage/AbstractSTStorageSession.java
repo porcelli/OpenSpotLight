@@ -59,7 +59,6 @@ import org.openspotlight.storage.domain.node.STProperty;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -67,7 +66,7 @@ import java.util.WeakHashMap;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.collect.Sets.newLinkedHashSet;
-import static org.openspotlight.common.util.Reflection.findClass;
+import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 
@@ -235,7 +234,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             sb.append(localKey.getNodeEntryName());
             for (STKeyEntry entry : localKey.getEntries()) {
                 sb.append(":").append(entry.getPropertyName()).append(":")
-                        .append(findClass(entry.getType().getName()).getName()).append(":").append(entry.getValue());
+                        .append(entry.getType().getName()).append(":").append(entry.getValue());
             }
             return sb.toString();
         }

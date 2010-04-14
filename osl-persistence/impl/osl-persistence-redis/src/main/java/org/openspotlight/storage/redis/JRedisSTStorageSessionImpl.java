@@ -54,7 +54,6 @@ import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
-import org.openspotlight.common.exception.SLException;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.domain.key.STKeyEntry;
@@ -75,7 +74,7 @@ import static java.lang.Class.forName;
 import static java.text.MessageFormat.format;
 import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
 import static org.openspotlight.common.util.Conversion.convert;
-import static org.openspotlight.common.util.Reflection.findClass;
+import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
@@ -285,7 +284,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             for (String keyName : keyPropertyNames) {
                 String typeName = toStr(jredis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, keyName)));
                 String typeValueAsString = toStr(jredis.get(format(KEY_WITH_PROPERTY_VALUE, parentKey, keyName)));
-                Class<? extends Serializable> type = (Class<? extends Serializable>)findClass(typeName);
+                Class<? extends Serializable> type = (Class<? extends Serializable>) findClassWithoutPrimitives(typeName);
                 Serializable value = (Serializable)convert(typeValueAsString, type);
                 keyBuilder.withEntry(keyName, type, value);
             }
@@ -495,7 +494,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         String typeName = toStr(jredis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, propertyName)));
         String descriptionAsString = toStr(jredis.get(format(KEY_WITH_PROPERTY_DESCRIPTION, parentKey, propertyName)));
         STProperty.STPropertyDescription description = STProperty.STPropertyDescription.valueOf(descriptionAsString);
-        Class<?> type = findClass(typeName);
+        Class<?> type = findClassWithoutPrimitives(typeName);
 
         Class<?> parameterized1 = null;
         Class<?> parameterized2 = null;

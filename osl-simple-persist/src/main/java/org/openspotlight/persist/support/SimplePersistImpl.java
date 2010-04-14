@@ -69,12 +69,17 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     private <T> STNodeEntry internalConvertBeanToNode(ConversionToNodeContext context, String propertyName,
                                                       SimpleNodeType bean, STNodeEntry parentNode) throws Exception {
-        if (bean == null) {
+        boolean firstInvocation = bean == null;
+        if (firstInvocation) {
             STNodeEntry currentParentNode = null;
             Descriptors currentBeanDescriptors = Descriptors.fillDescriptors(context.bean);
             List<Pair<String, SimpleNodeType>> rootObjects = currentBeanDescriptors.getRootObjects();
             for (Pair<String, SimpleNodeType> pair : rootObjects) {
                 currentParentNode = internalConvertBeanToNode(context, pair.getK1(), pair.getK2(), currentParentNode);
+            }
+            context.allNodes.removeAll(context.nodesConverted.values());
+            for(STNodeEntry unusedNode: context.allNodes){
+                context.session.removeNode(unusedNode);
             }
             return context.nodeReference.getWrapped();
         } else {
@@ -137,11 +142,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             for (SimpleNodeType beanBeenSaved : data.childrenToSave) {
                 internalConvertBeanToNode(context, data.propertyName, beanBeenSaved, newNodeEntry);
             }
-            Set<STNodeEntry> unusedChildren = new HashSet(newNodeEntry.getChildrenNamed(context.session, internalGetNodeName(data.nodeType)));
-            unusedChildren.removeAll(data.childrenToSave);
-            for (STNodeEntry unusedChild : unusedChildren) {
-                context.session.removeNode(unusedChild);
-            }
+            context.allNodes.addAll(newNodeEntry.getChildrenNamed(context.session, internalGetNodeName(data.nodeType)));
         }
 
     }
@@ -262,11 +263,11 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         } else {
             Object cached = context.beansConverted.get(nodeEntry);
             if (cached == null) {
-                Class<?> beanType = forName(internalGetNodeType(context.node));
+                Class<?> beanType = forName(nodeEntry.getNodeEntryName());
                 cached = beanType.newInstance();
-
+                context.beansConverted.put(nodeEntry, cached);
                 Descriptors descriptors = Descriptors.fillDescriptors(beanType);
-                fillParents(context.session, nodeEntry, cached, descriptors.parentPropertiesDescriptor, beanParent);
+                fillParent(descriptors.parentPropertiesDescriptor, cached, beanParent);
                 fillSimpleProperties(context.session, nodeEntry, cached, descriptors.keyPropertiesDescriptor);
                 fillSimpleProperties(context.session, nodeEntry, cached, descriptors.simplePropertiesDescriptor);
                 fillStreamProperties(context.session, nodeEntry, cached, descriptors.streamPropertiesDescriptor);
@@ -356,19 +357,13 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         }
     }
 
-    private <T> void fillParents(STStorageSession session, STNodeEntry node, T bean,
-                                 List<PropertyDescriptor> parentPropertiesDescriptor, Object beanParent) throws Exception {
-
-        STNodeEntry parent = node.getParent(session);
-        if (parent != null) {
-            String propertyName = parent.getPropertyValue(session, NODE_PROPERTY_NAME);
-            if (propertyName != null) {
-                for (PropertyDescriptor descriptor : parentPropertiesDescriptor) {
-                    if (propertyName.equals(descriptor.getName())) {
-                        Object parentAsBean = beanParent == null ? convertNodeToBean(session, parent) : beanParent;
-                        descriptor.getWriteMethod().invoke(bean, parentAsBean);
-                        break;
-                    }
+    private void fillParent(List<PropertyDescriptor> parentPropertyDescriptors, Object bean, Object beanParent) throws Exception {
+        if (beanParent != null) {
+            Class<?> parentType = beanParent.getClass();
+            for (PropertyDescriptor descriptor : parentPropertyDescriptors) {
+                if (descriptor.getPropertyType().isAssignableFrom(parentType)) {
+                    descriptor.getWriteMethod().invoke(bean, beanParent);
+                    break;
                 }
             }
         }
@@ -639,12 +634,13 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             this.session = session;
             this.bean = bean;
         }
-
+        final Set<STNodeEntry> allNodes = newHashSet();
         final STPartition partition;
         final STStorageSession session;
         final Wrapper<STNodeEntry> nodeReference = Wrapper.createMutable();
         final SimpleNodeType bean;
         final Map<Object, STNodeEntry> nodesConverted = newHashMap();
+
     }
 
     private static class ConversionToBeanContext {
@@ -674,7 +670,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
         final String propertyName;
 
-        final Set<SimpleNodeType> childrenToSave;
+        final Collection<SimpleNodeType> childrenToSave;
 
         final boolean multiple;
 

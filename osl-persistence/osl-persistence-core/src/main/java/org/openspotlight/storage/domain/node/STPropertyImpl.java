@@ -6,6 +6,8 @@ import org.openspotlight.storage.STStorageSession;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
+import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
+
 /**
  * Created by IntelliJ IDEA.
  * User: feuteston
@@ -35,7 +37,7 @@ public class STPropertyImpl implements STProperty {
 
         this.parent = parent;
         this.propertyName = propertyName;
-        this.propertyType = propertyType;
+        this.propertyType = findClassWithoutPrimitives(propertyType);
         this.firstParameterizedType = firstParameterizedType;
         this.secondParameterizedType = secondParameterizedType;
         this.key = STPropertyDescription.KEY.equals(description);

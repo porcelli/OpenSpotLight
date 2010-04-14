@@ -361,13 +361,18 @@ public class Reflection {
             .put("boolean", Boolean.class)
             .build();
 
-    public static Class<?> findClass(String name){
+    public static Class<?> findClassWithoutPrimitives(String name) {
         try {
             if (primitiveTypes.containsKey(name)) return primitiveTypes.get(name);
             return forName(name);
         } catch (Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
         }
+    }
+
+    public static Class<?> findClassWithoutPrimitives(Class<?> possiblePrimitive) {
+        if (possiblePrimitive.isPrimitive()) return primitiveTypes.get(possiblePrimitive.getName());
+        return possiblePrimitive;
     }
 
 }
