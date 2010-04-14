@@ -521,7 +521,6 @@ public class SimplePersistSupportTest {
         final ListItemObj item = result.iterator().next();
         assertThat(item.getName(), Is.is("obj 1"));
         assertThat(item.getValue(), Is.is(5));
-        assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
 
     }
 
@@ -604,7 +603,6 @@ public class SimplePersistSupportTest {
                 .is(IsNull.nullValue()));
         assertThat(result3.iterator().next().getLevelOneObj(), Is
                 .is(IsNull.nullValue()));
-        assertThat(result1Item.getUuid(), Is.is(IsNull.notNullValue()));
 
     }
 
@@ -689,7 +687,6 @@ public class SimplePersistSupportTest {
                 .is(IsNull.nullValue()));
         assertThat(result3.iterator().next().getLevelOneObj(), Is
                 .is(IsNull.nullValue()));
-        assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
 
     }
 
@@ -755,7 +752,6 @@ public class SimplePersistSupportTest {
         final PropertyObj item = it.next();
         assertThat(item.getName(), Is.is("obj 1"));
         assertThat(item.getValue(), Is.is(5));
-        assertThat(item.getUuid(), Is.is(IsNull.notNullValue()));
         assertThat(it.hasNext(), Is.is(false));
 
     }

@@ -33,6 +33,7 @@ import static java.util.Collections.sort;
 import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
 import static org.openspotlight.common.util.Reflection.unwrapCollectionFromMethodReturn;
 import static org.openspotlight.common.util.Reflection.unwrapMapFromMethodReturn;
 
@@ -279,7 +280,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 fillSimpleProperties(context.session, nodeEntry, cached, descriptors.simplePropertiesDescriptor);
                 fillStreamProperties(context.session, nodeEntry, cached, descriptors.streamPropertiesDescriptor);
                 fillChildren(context, nodeEntry, cached, descriptors.childrenPropertiesDescriptor);
-                if (nodeEntry == context.node) context.beanReference.setWrapped((SimpleNodeType) cached);
+                if (nodeEntry.equals(context.node)) context.beanReference.setWrapped((SimpleNodeType) cached);
             }
             return cached;
         }
@@ -477,7 +478,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(dummyInstance, propertyNames[i]);
             if(descriptor==null) throw new SLRuntimeException("invalid property:" + propertyNames[i]);
             builder.withProperty(propertyNames[i]).equals((Class<? extends Serializable>)
-                    descriptor.getPropertyType(), (Serializable) propertyValues[i]);
+                    findClassWithoutPrimitives(descriptor.getPropertyType()), (Serializable) propertyValues[i]);
         }
         Set<STNodeEntry> foundItems = builder.buildCriteria().andFind(session);
         List<T> result = this.<T>internalConvertNodesToBeans(session, foundItems);
