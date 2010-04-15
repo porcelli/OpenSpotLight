@@ -56,25 +56,25 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
 
 public class EndingToProcessArtifactsTask extends RunnableWithBundleContext {
-	private final ArtifactChanges<Artifact> changes;
-	private final CurrentProcessorContext currentContext;
-	private final ExecutionContext context;
+    private final ArtifactChanges<Artifact>                      changes;
+    private final CurrentProcessorContext                        currentContext;
+    private final ExecutionContext                               context;
 
-	private final BundleProcessorGlobalPhase<? extends Artifact> processor;
+    private final BundleProcessorGlobalPhase<? extends Artifact> processor;
 
-	public EndingToProcessArtifactsTask(
-			final ArtifactChanges<Artifact> changes,
-			final BundleProcessorGlobalPhase<? extends Artifact> processor,
-			final String repositoryName, final ExecutionContext context,
-			final CurrentProcessorContext currentContext) {
-		super(repositoryName);
-		this.changes = changes;
-		this.processor = processor;
-		this.context = context;
-		this.currentContext = currentContext;
-	}
+    public EndingToProcessArtifactsTask(
+                                         final ArtifactChanges<Artifact> changes,
+                                         final BundleProcessorGlobalPhase<? extends Artifact> processor,
+                                         final String repositoryName, final ExecutionContext context,
+                                         final CurrentProcessorContext currentContext ) {
+        super(repositoryName);
+        this.changes = changes;
+        this.processor = processor;
+        this.context = context;
+        this.currentContext = currentContext;
+    }
 
-	public void doIt() throws Exception {
-		processor.didFinishProcessing(changes, context, currentContext);
-	}
+    public void doIt() throws Exception {
+        processor.didFinishProcessing(changes, context, currentContext);
+    }
 }

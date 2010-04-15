@@ -48,23 +48,21 @@
  */
 package org.openspotlight.graph.query.parser;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.query.SLQueryTextInternal;
-
-import java.io.IOException;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.query.SLQueryTextInternal;
 
 public class TestSLQueryTextInternalBuilder {
 
     private final SLQueryTextInternalBuilder queryBuilder = new SLQueryTextInternalBuilder();
 
     @Test
-    public void testCheckQueryExists() throws SLException, IOException {
+    public void testCheckQueryExists() throws SLInvalidQuerySyntaxException {
         final String select = "select *;";
         final SLQueryTextInternal result = this.queryBuilder.build(select);
 
@@ -75,7 +73,7 @@ public class TestSLQueryTextInternalBuilder {
     }
 
     @Test
-    public void testSelectStar() throws SLException, IOException {
+    public void testSelectStar() throws SLInvalidQuerySyntaxException {
         final String select = "select *;";
         final SLQueryTextInternal result = this.queryBuilder.build(select);
 

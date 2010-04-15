@@ -48,11 +48,12 @@
  */
 package org.openspotlight.graph.query.console.command;
 
-import jline.ConsoleReader;
-import org.junit.Before;
-
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import jline.ConsoleReader;
+
+import org.junit.Before;
 
 public abstract class AbstractCommandTest {
 

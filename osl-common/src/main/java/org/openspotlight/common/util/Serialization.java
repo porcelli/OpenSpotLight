@@ -49,39 +49,46 @@
 
 package org.openspotlight.common.util;
 
-import org.openspotlight.common.exception.SLException;
-
-import java.io.*;
-
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.*;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
+import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+
+import org.openspotlight.common.exception.SLException;
 
 /**
  * Set of static methods for serialization purposes
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
 public class Serialization {
 
     /**
      * Reads an object from a base64 string.
-     *
+     * 
      * @param <E>
      * @param string
      * @return the serialized object
      * @throws SLException
      */
-    @SuppressWarnings("unchecked")
-    public static <E extends Serializable> E readFromBase64(final String string)
+    @SuppressWarnings( "unchecked" )
+    public static <E extends Serializable> E readFromBase64( final String string )
             throws SLException {
         checkNotNull("string", string); //$NON-NLS-1$
         try {
             final byte[] base64encoded = string.getBytes();
             final byte[] base64decoded = decodeBase64(base64encoded);
-            final E result = (E) readFromBytes(base64decoded);
+            final E result = (E)readFromBytes(base64decoded);
             return result;
         } catch (final Exception e) {
             throw logAndReturnNew(e, SLException.class);
@@ -90,19 +97,19 @@ public class Serialization {
 
     /**
      * Reads an object from serialized data.
-     *
+     * 
      * @param <E>
      * @param bytes
      * @return the serialized object
      * @throws SLException
      */
-    @SuppressWarnings("unchecked")
-    public static <E extends Serializable> E readFromBytes(final byte[] bytes)
+    @SuppressWarnings( "unchecked" )
+    public static <E extends Serializable> E readFromBytes( final byte[] bytes )
             throws SLException {
         checkNotNull("bytes", bytes);//$NON-NLS-1$
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            final E result = (E) readFromInputStream(bais);
+            final E result = (E)readFromInputStream(bais);
             return result;
         } catch (final Exception e) {
             throw logAndReturnNew(e, SLException.class);
@@ -111,19 +118,19 @@ public class Serialization {
 
     /**
      * Reads an object from an output stream.
-     *
+     * 
      * @param <E>
      * @param inputStream
      * @return the serialized object
      * @throws SLException
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public static <E extends Serializable> E readFromInputStream(
-            final InputStream inputStream) throws SLException {
+                                                                  final InputStream inputStream ) throws SLException {
         checkNotNull("inputStream", inputStream);//$NON-NLS-1$
         try {
             final ObjectInputStream ois = new ObjectInputStream(inputStream);
-            final E result = (E) ois.readObject();
+            final E result = (E)ois.readObject();
             ois.close();
             return result;
         } catch (final Exception e) {
@@ -133,14 +140,14 @@ public class Serialization {
 
     /**
      * Serialize the object passed as parameter to a base64 string.
-     *
+     * 
      * @param <E>
      * @param object
      * @return a base64 string
      * @throws SLException
      */
     public static <E extends Serializable> String serializeToBase64(
-            final E object) throws SLException {
+                                                                     final E object ) throws SLException {
         checkNotNull("object", object);//$NON-NLS-1$
         try {
             final byte[] resultAsByte = serializeToBytes(object);
@@ -154,14 +161,14 @@ public class Serialization {
 
     /**
      * Returns a byte array with the object serialized.
-     *
+     * 
      * @param <E>
      * @param object
      * @return a byte array
      * @throws SLException
      */
     public static <E extends Serializable> byte[] serializeToBytes(
-            final E object) throws SLException {
+                                                                    final E object ) throws SLException {
         checkNotNull("object", object);//$NON-NLS-1$
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -175,14 +182,15 @@ public class Serialization {
 
     /**
      * Serialize the object on a output stream passed as parameter.
-     *
+     * 
      * @param <E>
      * @param object
      * @param outputStream
      * @throws SLException
      */
     public static <E extends Serializable> void serializeToOutputStream(
-            final E object, final OutputStream outputStream) throws SLException {
+                                                                         final E object,
+                                                                         final OutputStream outputStream ) throws SLException {
         checkNotNull("object", object);//$NON-NLS-1$
         checkNotNull("outputStream", outputStream);//$NON-NLS-1$
         try {
@@ -200,7 +208,7 @@ public class Serialization {
      */
     private Serialization() {
         logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

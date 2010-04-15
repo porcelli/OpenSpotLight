@@ -67,49 +67,49 @@ import org.openspotlight.log.DetailedLogger.LogEventType;
 
 public class DefaultExecutionContextFactoryTest {
 
-	private ExecutionContext context;
+    private ExecutionContext              context;
 
-	private final ExecutionContextFactory factory = DefaultExecutionContextFactory
-			.createFactory();
+    private final ExecutionContextFactory factory = DefaultExecutionContextFactory
+                                                                                  .createFactory();
 
-	@After
-	public void closeResources() throws Exception {
-		factory.closeResources();
-	}
+    @After
+    public void closeResources() throws Exception {
+        factory.closeResources();
+    }
 
-	@Before
-	public void setupContext() throws Exception {
-		Repository repo = new Repository();
-		repo.setName("test");
-		repo.setActive(true);
+    @Before
+    public void setupContext() throws Exception {
+        Repository repo = new Repository();
+        repo.setName("test");
+        repo.setActive(true);
 
-		context = factory.createExecutionContext("testUser", "testPassword",
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR, repo);
-	}
+        context = factory.createExecutionContext("testUser", "testPassword",
+                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR, repo);
+    }
 
-	@Test
-	public void shouldUseAllResourcesInsideContext() throws Exception {
-		final PersistentArtifactManager manager = context
-				.getPersistentArtifactManager();
-		Assert.assertThat(manager, Is.is(IsNull.notNullValue()));
-		final ConfigurationManager configurationManager = context
-				.getDefaultConfigurationManager();
-		Assert.assertThat(configurationManager, Is.is(IsNull.notNullValue()));
-		final JcrConnectionProvider connectionProvider = context
-				.getDefaultConnectionProvider();
-		Assert.assertThat(connectionProvider, Is.is(IsNull.notNullValue()));
-		final SLGraphSession graphSession = context.getGraphSession();
-		Assert.assertThat(graphSession, Is.is(IsNull.notNullValue()));
-		final DetailedLogger logger = context.getLogger();
-		Assert.assertThat(logger, Is.is(IsNull.notNullValue()));
-		manager.findByPath(StringArtifact.class, "/tmp");
+    @Test
+    public void shouldUseAllResourcesInsideContext() throws Exception {
+        final PersistentArtifactManager manager = context
+                                                         .getPersistentArtifactManager();
+        Assert.assertThat(manager, Is.is(IsNull.notNullValue()));
+        final ConfigurationManager configurationManager = context
+                                                                 .getDefaultConfigurationManager();
+        Assert.assertThat(configurationManager, Is.is(IsNull.notNullValue()));
+        final JcrConnectionProvider connectionProvider = context
+                                                                .getDefaultConnectionProvider();
+        Assert.assertThat(connectionProvider, Is.is(IsNull.notNullValue()));
+        final SLGraphSession graphSession = context.getGraphSession();
+        Assert.assertThat(graphSession, Is.is(IsNull.notNullValue()));
+        final DetailedLogger logger = context.getLogger();
+        Assert.assertThat(logger, Is.is(IsNull.notNullValue()));
+        manager.findByPath(StringArtifact.class, "/tmp");
 
-		configurationManager.saveGlobalSettings(new GlobalSettings());
+        configurationManager.saveGlobalSettings(new GlobalSettings());
 
-		graphSession.createContext("new context");
+        graphSession.createContext("new context");
 
-		logger.log(context.getUser(), LogEventType.DEBUG, "test");
+        logger.log(context.getUser(), LogEventType.DEBUG, "test");
 
-	}
+    }
 
 }

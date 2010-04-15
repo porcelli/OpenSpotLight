@@ -48,7 +48,25 @@
  */
 package org.openspotlight.remote.client;
 
+import static java.text.MessageFormat.format;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import gnu.cajo.utils.extra.TransparentItemProxy;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.net.InetAddress;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.reflection.MethodIdentificationSupport;
 import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
@@ -60,21 +78,11 @@ import org.openspotlight.remote.internal.UserToken;
 import org.openspotlight.remote.server.AccessDeniedException;
 import org.openspotlight.remote.server.InvalidReferenceTypeException;
 import org.openspotlight.remote.server.RemoteObjectServer;
-import org.openspotlight.remote.server.RemoteObjectServer.*;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.InetAddress;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static java.text.MessageFormat.format;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import org.openspotlight.remote.server.RemoteObjectServer.AbstractInvocationResponse;
+import org.openspotlight.remote.server.RemoteObjectServer.CollectionOfRemoteInvocationResponse;
+import org.openspotlight.remote.server.RemoteObjectServer.LocalCopyInvocationResponse;
+import org.openspotlight.remote.server.RemoteObjectServer.MapOfRemoteInvocationResponse;
+import org.openspotlight.remote.server.RemoteObjectServer.RemoteReferenceInvocationResponse;
 
 /**
  * A factory for creating RemoteObject objects.
@@ -198,8 +206,8 @@ public class RemoteObjectFactory {
                                     if (invocationHandlerForTest instanceof RemoteReferenceHandler<?>) {
                                         //here, it *needs* to wrap only the references before sending it to the server
                                         final Collection<Object> newCollection = SLCollections.createNewCollection(
-                                                                                                                 collection.getClass(),
-                                                                                                                 collection.size());
+                                                                                                                   collection.getClass(),
+                                                                                                                   collection.size());
                                         for (final Object item : collection) {
                                             if (item != null) {
                                                 final InvocationHandler invocationHandler = Proxy.getInvocationHandler(item);
@@ -283,9 +291,9 @@ public class RemoteObjectFactory {
 
                     final CollectionOfRemoteInvocationResponse resultCollection = (CollectionOfRemoteInvocationResponse)result;
                     final Collection<Object> remoteResultCollection = (Collection<Object>)SLCollections.createNewCollection(
-                                                                                                                          resultCollection.getResultType(),
+                                                                                                                            resultCollection.getResultType(),
 
-                                                                                                                          resultCollection.getResult().size());
+                                                                                                                            resultCollection.getResult().size());
 
                     final Collection<RemoteReference<Object>> colection = resultCollection.getResult();
                     for (final RemoteReference<Object> remoteRef : colection) {

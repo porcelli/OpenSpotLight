@@ -59,11 +59,10 @@ import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
 
 /**
- * The Interface SLGraphSession.
- *
- * All methods in this interface throw a {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level.
- * Any security violation throws {@link org.openspotlight.graph.exception.SLInvalidCredentialException}.
- *
+ * The Interface SLGraphSession. All methods in this interface throw a
+ * {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level. Any security
+ * violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
+ * 
  * @author Vitor Hugo Chagas
  */
 public interface SLGraphSession extends LockContainer {
@@ -466,7 +465,6 @@ public interface SLGraphSession extends LockContainer {
 
     /**
      * Save.
-     * 
      */
     public void save();
 
@@ -480,7 +478,6 @@ public interface SLGraphSession extends LockContainer {
 
     /**
      * Clean cache.
-     * 
      */
     public void cleanCache();
 }

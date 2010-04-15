@@ -48,45 +48,47 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphRuntimeException;
 
 /**
  * The Class SLQueryException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLQueryException extends SLGraphSessionException {
-	
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+public class SLQueryException extends SLGraphRuntimeException {
 
-	/**
-	 * Instantiates a new sL query exception.
-	 * 
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public SLQueryException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	/**
-	 * Instantiates a new sL query exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLQueryException(String message) {
-		super(message);
-	}
-	
-	/**
-	 * Instantiates a new sL query exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLQueryException(Throwable cause) {
-		super(cause);
-	}
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * Instantiates a new sL query exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public SLQueryException(
+                             String message, Throwable cause ) {
+        super(message, cause);
+    }
+
+    /**
+     * Instantiates a new sL query exception.
+     * 
+     * @param message the message
+     */
+    public SLQueryException(
+                             String message ) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new sL query exception.
+     * 
+     * @param cause the cause
+     */
+    public SLQueryException(
+                             Throwable cause ) {
+        super(cause);
+    }
 
 }

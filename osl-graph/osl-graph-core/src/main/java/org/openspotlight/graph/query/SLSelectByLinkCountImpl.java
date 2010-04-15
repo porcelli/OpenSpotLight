@@ -48,14 +48,13 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo.SLSelectTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
+import org.openspotlight.graph.query.info.SLSelectInfo;
+import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo;
+import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo.SLSelectTypeInfo;
 
 /**
  * The Class SLSelectByLinkCountImpl.
@@ -64,177 +63,176 @@ import java.util.List;
  */
 public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInfoGetter {
 
-	/** The select info. */
-	private SLSelectByLinkCountInfo selectInfo;
-	
-	/** The types. */
-	private List<Type> types;
-	
-	/** The select end. */
-	private End selectEnd;
-	
-	/**
-	 * Instantiates a new sL select by link count impl.
-	 * 
-	 * @param selectFacade the select facade
-	 */
-	public SLSelectByLinkCountImpl(SLSelectFacade selectFacade) {
-		this.selectInfo = new SLSelectByLinkCountInfo();
-		this.types = new ArrayList<Type>();
-		this.selectEnd = new EndImpl(selectFacade, selectInfo);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLSelectStatement#type(java.lang.String)
-	 */
-	public Type type(String typeName) {
-		SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
-		Type type = new TypeImpl(this, typeInfo);
-		types.add(type);
-		return type;
-	}
+    /** The select info. */
+    private SLSelectByLinkCountInfo selectInfo;
 
+    /** The types. */
+    private List<Type>              types;
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLSelectStatement#end()
-	 */
-	public End end() {
-		verifyIfLastItemTerminatedWithComma();
-		return selectEnd;
-	}
+    /** The select end. */
+    private End                     selectEnd;
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLSelectStatementInfoGetter#getSelectInfo()
-	 */
-	public SLSelectInfo getSelectInfo() {
-		return selectInfo;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return selectInfo.toString();
-	}
-	
-	/**
-	 * Verify if last item terminated with comma.
-	 */
-	private void verifyIfLastItemTerminatedWithComma() {
-		int commaCount = 0;
-		for (SLSelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
-			commaCount += typeInfo.isComma() ? 1 : 0;
-		}
-	}
-	
-	/**
-	 * The Class TypeImpl.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static class TypeImpl implements Type {
-		
-		/** The select by link count. */
-		private SLSelectByLinkCount selectByLinkCount;
-		
-		/** The type info. */
-		private SLSelectTypeInfo typeInfo;
+    /**
+     * Instantiates a new sL select by link count impl.
+     * 
+     * @param selectFacade the select facade
+     */
+    public SLSelectByLinkCountImpl(
+                                    SLSelectFacade selectFacade ) {
+        this.selectInfo = new SLSelectByLinkCountInfo();
+        this.types = new ArrayList<Type>();
+        this.selectEnd = new EndImpl(selectFacade, selectInfo);
+    }
 
-		/**
-		 * Instantiates a new type impl.
-		 * 
-		 * @param selectByNodeType the select by node type
-		 * @param typeInfo the type info
-		 */
-		TypeImpl(SLSelectByLinkCount selectByNodeType, SLSelectTypeInfo typeInfo) {
-			this.selectByLinkCount = selectByNodeType;
-			this.typeInfo = typeInfo;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    public Type type( String typeName ) {
+        SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
+        Type type = new TypeImpl(this, typeInfo);
+        types.add(type);
+        return type;
+    }
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.Type#comma()
-		 */
-		public SLSelectByLinkCount comma() {
-			typeInfo.setComma(true);
-			return selectByLinkCount;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    public End end() {
+        verifyIfLastItemTerminatedWithComma();
+        return selectEnd;
+    }
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.Type#selectEnd()
-		 */
-		public End selectEnd() {
-			return selectByLinkCount.end();
-		}
+    /**
+     * {@inheritDoc}
+     */
+    public SLSelectInfo getSelectInfo() {
+        return selectInfo;
+    }
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.Type#subTypes()
-		 */
-		public Type subTypes() {
-			typeInfo.setSubTypes(true);
-			return this;
-		}
-		
-	}
-	
-	/**
-	 * The Class EndImpl.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static class EndImpl implements End {
-		
-		/** The select facade. */
-		private SLSelectFacade selectFacade;
+    @Override
+    public String toString() {
+        return selectInfo.toString();
+    }
 
-		/** The select info. */
-		private SLSelectByLinkCountInfo selectInfo;
-		
-		/** The where. */
-		private SLWhereByLinkCount where;
-		
-		/** The order by. */
-		private SLOrderByStatement orderBy;
+    /**
+     * Verify if last item terminated with comma.
+     */
+    private void verifyIfLastItemTerminatedWithComma() {
+        int commaCount = 0;
+        for (SLSelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
+            commaCount += typeInfo.isComma() ? 1 : 0;
+        }
+    }
 
-		/**
-		 * Instantiates a new end impl.
-		 * 
-		 * @param selectFacade the select facade
-		 * @param selectInfo the select info
-		 */
-		EndImpl(SLSelectFacade selectFacade, SLSelectByLinkCountInfo selectInfo) {
-			this.selectFacade = selectFacade;
-			this.selectInfo = selectInfo;
-			//this.orderBy = new SLOrderByStatementImpl();
-		}
+    /**
+     * The Class TypeImpl.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class TypeImpl implements Type {
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#where()
-		 */
-		public SLWhereByLinkCount where() {
-			if (this.where == null) {
-				SLWhereByLinkCountInfo whereStatementInfo = new SLWhereByLinkCountInfo(selectInfo);
-				selectInfo.setWhereStatementInfo(whereStatementInfo);
-				this.where = new SLWhereByLinkCountImpl(selectFacade, orderBy, whereStatementInfo);
-			}
-			return where;
-		}
+        /** The select by link count. */
+        private SLSelectByLinkCount selectByLinkCount;
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#orderBy()
-		 */
-		public SLOrderByStatement orderBy() {
-			return orderBy;
-		}
+        /** The type info. */
+        private SLSelectTypeInfo    typeInfo;
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#keepResult()
-		 */
-		public End keepResult() {
-			selectInfo.setKeepResult(true);
-			return this;
-		}
-		
+        /**
+         * Instantiates a new type impl.
+         * 
+         * @param selectByNodeType the select by node type
+         * @param typeInfo the type info
+         */
+        TypeImpl(
+                  SLSelectByLinkCount selectByNodeType, SLSelectTypeInfo typeInfo ) {
+            this.selectByLinkCount = selectByNodeType;
+            this.typeInfo = typeInfo;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public SLSelectByLinkCount comma() {
+            typeInfo.setComma(true);
+            return selectByLinkCount;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public End selectEnd() {
+            return selectByLinkCount.end();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public Type subTypes() {
+            typeInfo.setSubTypes(true);
+            return this;
+        }
+
+    }
+
+    /**
+     * The Class EndImpl.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class EndImpl implements End {
+
+        /** The select facade. */
+        private SLSelectFacade          selectFacade;
+
+        /** The select info. */
+        private SLSelectByLinkCountInfo selectInfo;
+
+        /** The where. */
+        private SLWhereByLinkCount      where;
+
+        /** The order by. */
+        private SLOrderByStatement      orderBy;
+
+        /**
+         * Instantiates a new end impl.
+         * 
+         * @param selectFacade the select facade
+         * @param selectInfo the select info
+         */
+        EndImpl(
+                 SLSelectFacade selectFacade, SLSelectByLinkCountInfo selectInfo ) {
+            this.selectFacade = selectFacade;
+            this.selectInfo = selectInfo;
+            //this.orderBy = new SLOrderByStatementImpl();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public SLWhereByLinkCount where() {
+            if (this.where == null) {
+                SLWhereByLinkCountInfo whereStatementInfo = new SLWhereByLinkCountInfo(selectInfo);
+                selectInfo.setWhereStatementInfo(whereStatementInfo);
+                this.where = new SLWhereByLinkCountImpl(selectFacade, orderBy, whereStatementInfo);
+            }
+            return where;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public SLOrderByStatement orderBy() {
+            return orderBy;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public End keepResult() {
+            selectInfo.setKeepResult(true);
+            return this;
+        }
+
         /**
          * {@inheritDoc}
          */
@@ -253,60 +251,59 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
             return this;
         }
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
-		 */
-		/**
-		 * Execute x times.
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes() {
-			selectInfo.setXTimes(0);
-			return this;
-		}
+        /* (non-Javadoc)
+         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
+         */
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes() {
+            selectInfo.setXTimes(0);
+            return this;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes(int)
-		 */
-		/**
-		 * Execute x times.
-		 * 
-		 * @param x the x
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes(int x) {
-			selectInfo.setXTimes(x);
-			return this;
-		}
+        /* (non-Javadoc)
+         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes(int)
+         */
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes( int x ) {
+            selectInfo.setXTimes(x);
+            return this;
+        }
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkType()
-		 */
-		public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException {
-			return selectFacade.selectByLinkType();
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public SLSelectByLinkType selectByLinkType() {
+            return selectFacade.selectByLinkType();
+        }
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByNodeType()
-		 */
-		public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
-			return selectFacade.selectByNodeType();
-		}
-		
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkCount()
-		 */
-		public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
-			return selectFacade.selectByLinkCount();
-		}
+        /**
+         * {@inheritDoc}
+         */
+        public SLSelectByNodeType selectByNodeType() {
+            return selectFacade.selectByNodeType();
+        }
 
-		/* (non-Javadoc)
-		 * @see org.openspotlight.graph.query.SLSelectFacade#select()
-		 */
-		public SLSelectStatement select() throws SLGraphSessionException {
-			return selectFacade.select();
-		}
-	}
+        /**
+         * {@inheritDoc}
+         */
+        public SLSelectByLinkCount selectByLinkCount() {
+            return selectFacade.selectByLinkCount();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public SLSelectStatement select() {
+            return selectFacade.select();
+        }
+    }
 }

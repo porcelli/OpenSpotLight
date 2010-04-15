@@ -61,66 +61,64 @@ import javax.jcr.query.QueryResult;
  * @author Vitor Hugo Chagas
  */
 public class SLPersistentQueryImpl implements SLPersistentQuery {
-	
-	/** The tree session. */
-	private SLPersistentTreeSession treeSession;
-	
-	/** The session. */
-	private Session session;
-	
-	/** The statement. */
-	private String statement;
-	
-	/** The type. */
-	private int type;
-	
-	/**
-	 * Instantiates a new sL persistent query impl.
-	 * 
-	 * @param treeSession the tree session
-	 * @param session the session
-	 * @param statement the statement
-	 * @param type the type
-	 */
-	public SLPersistentQueryImpl(SLPersistentTreeSession treeSession, Session session, String statement, int type) {
-		this.treeSession = treeSession;
-		this.session = session;
-		this.statement = statement;
-		this.type = type;
-	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentQuery#getStatement()
-	 */
-	public String getStatement() {
-		return statement;
-	}
+    /** The tree session. */
+    private SLPersistentTreeSession treeSession;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentQuery#getType()
-	 */
-	public int getType() {
-		return type;
-	}
-	
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentQuery#execute()
-	 */
-	public SLPersistentQueryResult execute() throws SLPersistentTreeSessionException {
-		try {
-			Workspace workspace = session.getWorkspace();
-			QueryManager queryManager = workspace.getQueryManager();
-			Query query = queryManager.createQuery(statement , Query.XPATH);
-			QueryResult result = query.execute();
-			return new SLPersistentQueryResultImpl(treeSession, result);
-		}
-		catch (RepositoryException e) {
-			throw new SLPersistentTreeSessionException("Error on attempt to execute query.", e);
-		}
-	}
+    /** The session. */
+    private Session                 session;
+
+    /** The statement. */
+    private String                  statement;
+
+    /** The type. */
+    private int                     type;
+
+    /**
+     * Instantiates a new sL persistent query impl.
+     * 
+     * @param treeSession the tree session
+     * @param session the session
+     * @param statement the statement
+     * @param type the type
+     */
+    public SLPersistentQueryImpl(
+                                  SLPersistentTreeSession treeSession, Session session, String statement, int type ) {
+        this.treeSession = treeSession;
+        this.session = session;
+        this.statement = statement;
+        this.type = type;
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentQuery#getStatement()
+     */
+    public String getStatement() {
+        return statement;
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentQuery#getType()
+     */
+    public int getType() {
+        return type;
+    }
+
+    //@Override
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.persistence.SLPersistentQuery#execute()
+     */
+    public SLPersistentQueryResult execute() throws SLPersistentTreeSessionException {
+        try {
+            Workspace workspace = session.getWorkspace();
+            QueryManager queryManager = workspace.getQueryManager();
+            Query query = queryManager.createQuery(statement, Query.XPATH);
+            QueryResult result = query.execute();
+            return new SLPersistentQueryResultImpl(treeSession, result);
+        } catch (RepositoryException e) {
+            throw new SLPersistentTreeSessionException("Error on attempt to execute query.", e);
+        }
+    }
 }
-
-

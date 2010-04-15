@@ -1,4 +1,4 @@
-define target = org.openspotlight.graph.test.domain.JavaType.*
+define target = org.openspotlight.graph.test.domain.node.JavaType.*
 
 select * by link
-	org.openspotlight.graph.test.domain.TypeContainsMethod (b);
+	org.openspotlight.graph.test.domain.link.TypeContainsMethod (b);

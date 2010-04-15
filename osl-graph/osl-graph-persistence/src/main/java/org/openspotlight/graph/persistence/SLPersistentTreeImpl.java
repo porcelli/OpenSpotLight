@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.persistence;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The Class SLPersistentTreeImpl.
@@ -62,48 +62,47 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class SLPersistentTreeImpl implements SLPersistentTree {
 
-	final JcrConnectionDescriptor descriptor;
-	private final List<SLPersistentTreeSession> sessions;
+    final JcrConnectionDescriptor               descriptor;
+    private final List<SLPersistentTreeSession> sessions;
 
-	/**
-	 * Instantiates a new sL persistent tree impl.
-	 * 
-	 * @param repository
-	 *            the repository
-	 * @param credentials
-	 *            the credentials
-	 */
-	public SLPersistentTreeImpl(final JcrConnectionDescriptor descriptor) {
-		this.descriptor = descriptor;
-		this.sessions = new CopyOnWriteArrayList<SLPersistentTreeSession>();
-	}
+    /**
+     * Instantiates a new sL persistent tree impl.
+     * 
+     * @param repository the repository
+     * @param credentials the credentials
+     */
+    public SLPersistentTreeImpl(
+                                 final JcrConnectionDescriptor descriptor ) {
+        this.descriptor = descriptor;
+        this.sessions = new CopyOnWriteArrayList<SLPersistentTreeSession>();
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.persistence.SLPersistentTree#openSession()
-	 */
-	public SLPersistentTreeSession openSession(final String repositoryName)
-			throws SLPersistentTreeException {
-		final JcrConnectionProvider provider = JcrConnectionProvider
-				.createFromData(this.descriptor);
-		final SessionWithLock session = provider.openSession();
-		final SLPersistentTreeSession newSession = new SLPersistentTreeSessionImpl(
-				session, repositoryName);
-		this.sessions.add(newSession);
-		return newSession;
-	}
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.persistence.SLPersistentTree#openSession()
+     */
+    public SLPersistentTreeSession openSession( final String repositoryName )
+            throws SLPersistentTreeException {
+        final JcrConnectionProvider provider = JcrConnectionProvider
+                                                                    .createFromData(this.descriptor);
+        final SessionWithLock session = provider.openSession();
+        final SLPersistentTreeSession newSession = new SLPersistentTreeSessionImpl(
+                                                                                   session, repositoryName);
+        this.sessions.add(newSession);
+        return newSession;
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.persistence.SLPersistentTree#shutdown()
-	 */
-	public void shutdown() {
-		for (final SLPersistentTreeSession activeSession : this.sessions) {
-			activeSession.close();
-		}
-	}
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.persistence.SLPersistentTree#shutdown()
+     */
+    public void shutdown() {
+        for (final SLPersistentTreeSession activeSession : this.sessions) {
+            activeSession.close();
+        }
+    }
 }

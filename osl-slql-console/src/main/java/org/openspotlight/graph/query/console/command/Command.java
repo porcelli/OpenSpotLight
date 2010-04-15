@@ -48,10 +48,11 @@
  */
 package org.openspotlight.graph.query.console.command;
 
-import jline.ConsoleReader;
-import org.openspotlight.graph.query.console.ConsoleState;
-
 import java.io.PrintWriter;
+
+import jline.ConsoleReader;
+
+import org.openspotlight.graph.query.console.ConsoleState;
 
 /**
  * The Interface Command.

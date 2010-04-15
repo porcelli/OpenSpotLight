@@ -48,38 +48,38 @@
  */
 package org.openspotlight.security.domain;
 
+import java.io.Serializable;
+
 import org.jboss.identity.idm.spi.model.IdentityObjectRelationshipType;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-import java.io.Serializable;
-
 public class SLIdentityObjectRelationshipType implements
-		IdentityObjectRelationshipType, SimpleNodeType, Serializable {
+        IdentityObjectRelationshipType, SimpleNodeType, Serializable {
 
-    private static final long serialVersionUID = 8035155847614722394L;
+    private static final long            serialVersionUID = 8035155847614722394L;
 
-    private String name;
+    private String                       name;
 
-	private SLIdentityObjectRelationship parent;
+    private SLIdentityObjectRelationship parent;
 
-	@KeyProperty
-	public String getName() {
-		return this.name;
-	}
+    @KeyProperty
+    public String getName() {
+        return this.name;
+    }
 
-	@ParentProperty
-	public SLIdentityObjectRelationship getParent() {
-		return this.parent;
-	}
+    @ParentProperty
+    public SLIdentityObjectRelationship getParent() {
+        return this.parent;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	public void setParent(final SLIdentityObjectRelationship parent) {
-		this.parent = parent;
-	}
+    public void setParent( final SLIdentityObjectRelationship parent ) {
+        this.parent = parent;
+    }
 
 }

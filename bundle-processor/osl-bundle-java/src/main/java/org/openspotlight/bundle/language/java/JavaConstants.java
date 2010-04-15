@@ -55,12 +55,12 @@ package org.openspotlight.bundle.language.java;
  */
 public interface JavaConstants {
 
-	/** the abstract context. */
-	String ABSTRACT_CONTEXT = "java-abstract-context";
-	String DEFAULT_PACKAGE = "java-default-package";
-	String JAR_CLASSPATH = "jar-classpath";
-	String CLASSPATH_SEPARATOR_REGEXP = "[;]";
-	String CONTEXT_CLASSPATH_ENTRY = "context-classpath";
-	String USING_CONTEXTS = "using-contexts";
+    /** the abstract context. */
+    String ABSTRACT_CONTEXT           = "java-abstract-context";
+    String DEFAULT_PACKAGE            = "java-default-package";
+    String JAR_CLASSPATH              = "jar-classpath";
+    String CLASSPATH_SEPARATOR_REGEXP = "[;]";
+    String CONTEXT_CLASSPATH_ENTRY    = "context-classpath";
+    String USING_CONTEXTS             = "using-contexts";
 
 }

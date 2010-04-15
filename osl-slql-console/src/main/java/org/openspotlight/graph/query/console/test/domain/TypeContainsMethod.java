@@ -62,7 +62,6 @@ public interface TypeContainsMethod extends SLLink {
      * Gets the tag.
      * 
      * @return the tag
-     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     @SLProperty
     public Integer getTag();
@@ -71,7 +70,6 @@ public interface TypeContainsMethod extends SLLink {
      * Sets the tag.
      * 
      * @param tag the new tag
-     * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
      */
     public void setTag( Integer tag );
 

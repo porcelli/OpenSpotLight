@@ -54,33 +54,34 @@ package org.openspotlight.graph.persistence;
  * @author Vitor Hugo Chagas
  */
 public class SLPersistentPropertyEvent extends SLPersistentEvent {
-	
-	/** The Constant TYPE_PROPERTY_SET. */
-	public static final int TYPE_PROPERTY_SET = 1;
-	
-	/** The Constant TYPE_PROPERTY_REMOVED. */
-	public static final int TYPE_PROPERTY_REMOVED = 2;
-	
-	/** The property. */
-	private SLPersistentProperty<?> property;
 
-	/**
-	 * Instantiates a new sL persistent property event.
-	 * 
-	 * @param type the type
-	 * @param property the property
-	 */
-	public SLPersistentPropertyEvent(int type, SLPersistentProperty<?> property) {
-		super(type);
-		this.property = property;
-	}
+    /** The Constant TYPE_PROPERTY_SET. */
+    public static final int         TYPE_PROPERTY_SET     = 1;
 
-	/**
-	 * Gets the property.
-	 * 
-	 * @return the property
-	 */
-	public SLPersistentProperty<?> getProperty() {
-		return property;
-	}
+    /** The Constant TYPE_PROPERTY_REMOVED. */
+    public static final int         TYPE_PROPERTY_REMOVED = 2;
+
+    /** The property. */
+    private SLPersistentProperty<?> property;
+
+    /**
+     * Instantiates a new sL persistent property event.
+     * 
+     * @param type the type
+     * @param property the property
+     */
+    public SLPersistentPropertyEvent(
+                                      int type, SLPersistentProperty<?> property ) {
+        super(type);
+        this.property = property;
+    }
+
+    /**
+     * Gets the property.
+     * 
+     * @return the property
+     */
+    public SLPersistentProperty<?> getProperty() {
+        return property;
+    }
 }

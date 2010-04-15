@@ -48,7 +48,12 @@
  */
 package org.openspotlight.web.command;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import net.sf.json.JSONObject;
+
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.Group;
@@ -62,44 +67,36 @@ import org.openspotlight.web.MessageWebException;
 import org.openspotlight.web.WebException;
 import org.openspotlight.web.json.Message;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * The Class ImediateBundleProcessingWebCommand.
  */
 public class ImediateBundleProcessingWebCommand implements WebCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.web.command.WebCommand#execute(org.openspotlight.web
-	 * .command.WebCommand.WebCommandContext, java.util.Map)
-	 */
-	public String execute(final ExecutionContext context,
-			final Map<String, String> parameters) throws WebException {
-		try {
-			final Set<Repository> allRepositories = context
-					.getDefaultConfigurationManager().getAllRepositories();
-			final RepositorySet repositorySet = new RepositorySet();
-			repositorySet.setRepositories(allRepositories);
-			final SLScheduler scheduler = DefaultScheduler.INSTANCE;
-			final Set<Group> groups = new HashSet<Group>();
-			SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
-					repositorySet, new AggregateVisitor<Group>(groups));
-			scheduler.fireSchedulable(context.getUserName(), context
-					.getPassword(), groups.toArray(new Group[0]));
-			final Message message = new Message();
-			message.setMessage("execution fired");
-			return JSONObject.fromObject(message).toString();
-		} catch (final Exception e) {
-			Exceptions.catchAndLog(e);
-			throw new MessageWebException(
-					"There's something wrong during the firing action: "
-							+ e.getMessage());
-		}
+    /**
+     * {@inheritDoc}
+     */
+    public String execute( final ExecutionContext context,
+                           final Map<String, String> parameters ) throws WebException {
+        try {
+            final Set<Repository> allRepositories = context
+                                                           .getDefaultConfigurationManager().getAllRepositories();
+            final RepositorySet repositorySet = new RepositorySet();
+            repositorySet.setRepositories(allRepositories);
+            final SLScheduler scheduler = DefaultScheduler.INSTANCE;
+            final Set<Group> groups = new HashSet<Group>();
+            SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
+                                                         repositorySet, new AggregateVisitor<Group>(groups));
+            scheduler.fireSchedulable(context.getUserName(), context
+                                                                    .getPassword(), groups.toArray(new Group[0]));
+            final Message message = new Message();
+            message.setMessage("execution fired");
+            return JSONObject.fromObject(message).toString();
+        } catch (final Exception e) {
+            Exceptions.catchAndLog(e);
+            throw new MessageWebException(
+                                          "There's something wrong during the firing action: "
+                                          + e.getMessage());
+        }
 
-	}
+    }
 }

@@ -48,11 +48,9 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.exception.SLInvalidNodePropertyTypeException;
-
 import java.io.Serializable;
+
+import org.openspotlight.common.concurrent.LockContainer;
 
 /**
  * The Interface SLNodeProperty.
@@ -61,62 +59,43 @@ import java.io.Serializable;
  */
 public interface SLNodeProperty<V extends Serializable> extends LockContainer {
 
-	public boolean equals(Object o);
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName();
 
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public String getName() throws SLGraphSessionException;
+    /**
+     * Gets the node.
+     * 
+     * @return the node
+     */
+    public SLNode getNode();
 
-	/**
-	 * Gets the node.
-	 * 
-	 * @return the node
-	 */
-	public SLNode getNode();
+    /**
+     * Gets the value.
+     * 
+     * @return the value
+     */
+    public V getValue();
 
-	/**
-	 * Gets the value.
-	 * 
-	 * @return the value
-	 * @throws SLInvalidNodePropertyTypeException
-	 *             the SL invalid node property type exception
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public V getValue() throws SLInvalidNodePropertyTypeException,
-			SLGraphSessionException;
+    /**
+     * Gets the value as string.
+     * 
+     * @return the value as string
+     */
+    public String getValueAsString();
 
-	/**
-	 * Gets the value as string.
-	 * 
-	 * @return the value as string
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public String getValueAsString() throws SLGraphSessionException;
+    /**
+     * Removes the.
+     */
+    public void remove();
 
-	public int hashCode();
-
-	/**
-	 * Removes the.
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public void remove() throws SLGraphSessionException;
-
-	/**
-	 * Sets the value.
-	 * 
-	 * @param value
-	 *            the new value
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public void setValue(V value) throws SLGraphSessionException;
+    /**
+     * Sets the value.
+     * 
+     * @param value the new value
+     */
+    public void setValue( V value );
 }

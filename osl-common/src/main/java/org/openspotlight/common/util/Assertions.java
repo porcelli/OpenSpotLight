@@ -48,22 +48,22 @@
  */
 package org.openspotlight.common.util;
 
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-
 /**
  * Helper class for parameters validation, such as not null arguments. This class uses {@link Messages} for i18n.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Assertions {
 
     /**
      * Assert that this parameter is marked as valid by the condition passed as parameter.
-     *
+     * 
      * @param name of parameter
      * @param condition itself
      */
@@ -78,7 +78,7 @@ public class Assertions {
 
     /**
      * Assert that this parameter is not null, as also each item of the array is not null.
-     *
+     * 
      * @param <T>
      * @param name of parameter
      * @param parameters itself
@@ -103,7 +103,7 @@ public class Assertions {
 
     /**
      * Assert that this parameter is not empty. It will test for null and also the size of this array.
-     *
+     * 
      * @param name of parameter
      * @param parameter itself
      */
@@ -118,7 +118,7 @@ public class Assertions {
 
     /**
      * Assert that this parameter is not empty. It will test for null and also the size of this array.
-     *
+     * 
      * @param name of parameter
      * @param parameter itself
      */
@@ -133,7 +133,7 @@ public class Assertions {
 
     /**
      * Assert that this parameter is not empty. It trims the parameter to see if have any valid data on that.
-     *
+     * 
      * @param name of parameter
      * @param parameter itself
      */
@@ -148,7 +148,7 @@ public class Assertions {
 
     /**
      * Assert that this parameter is not empty. It will test for null and also the size of this array.
-     *
+     * 
      * @param <T> type of the array
      * @param name of parameter
      * @param parameter itself
@@ -164,7 +164,7 @@ public class Assertions {
 
     /**
      * Assert that this parameter is not null.
-     *
+     * 
      * @param name of parameter
      * @param parameter itself
      */
@@ -179,7 +179,7 @@ public class Assertions {
 
     /**
      * Assert that this parameter is null.
-     *
+     * 
      * @param name of parameter
      * @param parameter itself
      */

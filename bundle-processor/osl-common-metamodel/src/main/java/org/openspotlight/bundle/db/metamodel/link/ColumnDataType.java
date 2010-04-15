@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,10 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Column DataType.
+ * The Interface for a link between Column DataType. Column A2B DataType
  * 
- *
- * Column A2B DataType
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Column DataType")
+@SLDescription( "Column DataType" )
 public interface ColumnDataType extends SLLink {
 }
-
-
-        

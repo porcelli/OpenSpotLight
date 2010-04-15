@@ -48,6 +48,16 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -58,16 +68,6 @@ import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.GraphConnection;
 import org.openspotlight.graph.query.console.command.AbstractCommandTest;
 import org.openspotlight.graph.query.console.command.ExampleRemoteServerWithData;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
 
 public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     @BeforeClass

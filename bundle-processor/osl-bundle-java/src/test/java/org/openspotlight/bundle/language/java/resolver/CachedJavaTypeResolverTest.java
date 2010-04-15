@@ -51,6 +51,12 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.JavaConstants;
@@ -65,12 +71,6 @@ import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.User;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 // TODO: Auto-generated Javadoc
 /**

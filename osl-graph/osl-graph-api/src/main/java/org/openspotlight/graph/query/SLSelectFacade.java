@@ -48,48 +48,38 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.exception.SLGraphSessionException;
-
 /**
  * The Interface SLSelectFacade.
  * 
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectFacade {
-	
-	/**
-	 * Select.
-	 * 
-	 * @return the sL select statement
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLSelectStatement select() throws SLGraphSessionException;
 
-	/**
-	 * Select by node type.
-	 * 
-	 * @return the sL select by node type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException;
-	
-	/**
-	 * Select by link type.
-	 * 
-	 * @return the sL select by link type
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException;
-	
-	/**
-	 * Select by link count.
-	 * 
-	 * @return the sL select by link count
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException;
+    /**
+     * Select.
+     * 
+     * @return the sL select statement
+     */
+    public SLSelectStatement select();
+
+    /**
+     * Select by node type.
+     * 
+     * @return the sL select by node type
+     */
+    public SLSelectByNodeType selectByNodeType();
+
+    /**
+     * Select by link type.
+     * 
+     * @return the sL select by link type
+     */
+    public SLSelectByLinkType selectByLinkType();
+
+    /**
+     * Select by link count.
+     * 
+     * @return the sL select by link count
+     */
+    public SLSelectByLinkCount selectByLinkCount();
 }

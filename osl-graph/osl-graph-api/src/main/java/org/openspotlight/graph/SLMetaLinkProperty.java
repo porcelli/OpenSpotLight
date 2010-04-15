@@ -48,10 +48,9 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-
 import java.io.Serializable;
+
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -65,31 +64,27 @@ public interface SLMetaLinkProperty extends SLMetaElement {
      * Gets the meta link.
      * 
      * @return the meta link
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaLink getMetaLink() throws SLGraphSessionException;
+    public SLMetaLink getMetaLink();
 
     /**
      * Gets the name.
      * 
      * @return the name
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public String getName() throws SLGraphSessionException;
+    public String getName();
 
     /**
      * Gets the type.
      * 
      * @return the type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Class<? extends Serializable> getType() throws SLGraphSessionException;
+    public Class<? extends Serializable> getType();
 
     /**
      * Gets the visibility.
      * 
      * @return the visibility
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public VisibilityLevel getVisibility() throws SLGraphSessionException;
+    public VisibilityLevel getVisibility();
 }

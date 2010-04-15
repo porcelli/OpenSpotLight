@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph;
 
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-
-import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 
 /**
  * The Class SLLinkInvocationHandler.
@@ -63,80 +63,81 @@ import java.lang.reflect.Method;
  * @author Vitor Hugo Chagas
  */
 public class SLLinkInvocationHandler implements InvocationHandler,
-		LockContainer {
+        LockContainer {
 
-	private final Lock lock;
+    private final Lock   lock;
 
-	/** The link. */
-	private final SLLink link;
+    /** The link. */
+    private final SLLink link;
 
-	/**
-	 * Instantiates a new sL link invocation handler.
-	 * 
-	 * @param link
-	 *            the link
-	 */
-	public SLLinkInvocationHandler(final SLLink link) {
-		this.link = link;
-		lock = link.getLockObject();
-	}
+    /**
+     * Instantiates a new sL link invocation handler.
+     * 
+     * @param link the link
+     */
+    public SLLinkInvocationHandler(
+                                    final SLLink link ) {
+        this.link = link;
+        lock = link.getLockObject();
+    }
 
-	/**
-	 * Gets the link.
-	 * 
-	 * @return the link
-	 */
-	public SLLink getLink() {
-		return link;
-	}
+    /**
+     * Gets the link.
+     * 
+     * @return the link
+     */
+    public SLLink getLink() {
+        return link;
+    }
 
-	public Lock getLockObject() {
-		return lock;
-	}
+    public Lock getLockObject() {
+        return lock;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
-	 * java.lang.reflect.Method, java.lang.Object[])
-	 */
-	@SuppressWarnings("unchecked")
-	public Object invoke(final Object proxy, final Method method,
-			final Object[] args) throws Throwable {
-		synchronized (lock) {
-			Object result = null;
-			if (!method.getDeclaringClass().equals(SLLink.class)
-					&& SLLink.class
-							.isAssignableFrom(method.getDeclaringClass())) {
-				if (SLInvocationHandlerSupport.isGetter(proxy, method)) {
-					final String propName = SLInvocationHandlerSupport
-							.getPropertyName(method);
-					final Class<? extends Serializable> typeClass = (Class<? extends Serializable>) method
-							.getReturnType();
-					result = link.getProperty(typeClass, propName).getValue();
-				} else if (SLInvocationHandlerSupport.isSetter(proxy, method)) {
-					VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
-					final Method getterMethod = method.getDeclaringClass()
-							.getMethod("get" + method.getName().substring(3));
-					if (getterMethod != null) {
-						final SLVisibility visibilityAnnotation = getterMethod
-								.getAnnotation(SLVisibility.class);
-						if (visibilityAnnotation != null) {
-							visibilityLevel = visibilityAnnotation.value();
-						}
-					}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
+     * java.lang.reflect.Method, java.lang.Object[])
+     */
+    @SuppressWarnings( "unchecked" )
+    public Object invoke( final Object proxy,
+                          final Method method,
+                          final Object[] args ) throws Throwable {
+        synchronized (lock) {
+            Object result = null;
+            if (!method.getDeclaringClass().equals(SLLink.class)
+                    && SLLink.class
+                                   .isAssignableFrom(method.getDeclaringClass())) {
+                if (SLInvocationHandlerSupport.isGetter(proxy, method)) {
+                    final String propName = SLInvocationHandlerSupport
+                                                                      .getPropertyName(method);
+                    final Class<? extends Serializable> typeClass = (Class<? extends Serializable>)method
+                                                                                                         .getReturnType();
+                    result = link.getProperty(typeClass, propName).getValue();
+                } else if (SLInvocationHandlerSupport.isSetter(proxy, method)) {
+                    VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
+                    final Method getterMethod = method.getDeclaringClass()
+                                                      .getMethod("get" + method.getName().substring(3));
+                    if (getterMethod != null) {
+                        final SLVisibility visibilityAnnotation = getterMethod
+                                                                              .getAnnotation(SLVisibility.class);
+                        if (visibilityAnnotation != null) {
+                            visibilityLevel = visibilityAnnotation.value();
+                        }
+                    }
 
-					final String propName = SLInvocationHandlerSupport
-							.getPropertyName(method);
-					link.setProperty(Serializable.class, visibilityLevel,
-							propName, (Serializable) args[0]);
-				}
-			} else {
-				result = SLInvocationHandlerSupport.invokeMethod(link, method,
-						args);
-			}
-			return result;
+                    final String propName = SLInvocationHandlerSupport
+                                                                      .getPropertyName(method);
+                    link.setProperty(Serializable.class, visibilityLevel,
+                                     propName, (Serializable)args[0]);
+                }
+            } else {
+                result = SLInvocationHandlerSupport.invokeMethod(link, method,
+                                                                 args);
+            }
+            return result;
 
-		}
-	}
+        }
+    }
 }

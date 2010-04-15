@@ -48,11 +48,11 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import org.antlr.runtime.ANTLRStringStream;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+
+import org.antlr.runtime.ANTLRStringStream;
 
 public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
     SLArtifactStream {
@@ -66,7 +66,7 @@ public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
                                       final String version ) throws IOException {
         this.name = fedaratedArtifactPath;
         this.data = artifactContent.toCharArray();
-        this.version= version;
+        this.version = version;
         n = artifactContent.length();
         int count = 0;
         final BufferedReader reader = new BufferedReader(new StringReader(

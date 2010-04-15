@@ -48,17 +48,17 @@
  */
 package org.openspotlight.graph.event;
 
+import java.io.Serializable;
+
 import org.openspotlight.graph.SLLinkProperty;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 
-import java.io.Serializable;
-
 public final class SLLinkPropertySetEvent extends SLLinkPropertyEvent {
 
-	public SLLinkPropertySetEvent(
-			final SLLinkProperty<? extends Serializable> property,
-			final SLPersistentProperty<? extends Serializable> pProperty) {
-		super(property, pProperty);
-	}
+    public SLLinkPropertySetEvent(
+                                   final SLLinkProperty<? extends Serializable> property,
+                                   final SLPersistentProperty<? extends Serializable> pProperty ) {
+        super(property, pProperty);
+    }
 
 }

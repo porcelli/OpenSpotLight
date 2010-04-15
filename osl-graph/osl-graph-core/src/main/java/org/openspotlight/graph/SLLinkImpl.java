@@ -48,6 +48,11 @@
  */
 package org.openspotlight.graph;
 
+import java.io.Serializable;
+import java.text.Collator;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
@@ -56,18 +61,19 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.event.*;
-import org.openspotlight.graph.exception.*;
+import org.openspotlight.graph.event.SLGraphSessionEventPoster;
+import org.openspotlight.graph.event.SLLinkEvent;
+import org.openspotlight.graph.event.SLLinkPropertyEvent;
+import org.openspotlight.graph.event.SLLinkPropertySetEvent;
+import org.openspotlight.graph.event.SLLinkRemovedEvent;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLPropertyNotFoundException;
+import org.openspotlight.graph.exception.SLPropertyTypeInvalidException;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
-
-import java.io.Serializable;
-import java.text.Collator;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The Class SLLinkImpl.
@@ -310,7 +316,7 @@ public class SLLinkImpl implements SLLink {
     /**
      * {@inheritDoc}
      */
-    public SLMetaLink getMetaLink() throws SLGraphSessionException {
+    public SLMetaLink getMetaLink() {
         synchronized (lock) {
             try {
                 if (metaLink == null) {
@@ -331,8 +337,7 @@ public class SLLinkImpl implements SLLink {
     /**
      * {@inheritDoc}
      */
-    public SLNode getOtherSide( final SLNode side )
-        throws SLInvalidLinkSideException, SLGraphSessionException {
+    public SLNode getOtherSide( final SLNode side ) {
         synchronized (lock) {
             SLNode otherSide = null;
             try {
@@ -350,9 +355,6 @@ public class SLLinkImpl implements SLLink {
             } catch (final SLException e) {
                 throw new SLGraphSessionException(
                                                   "Error on attempt to retrieve link other side.", e);
-            }
-            if (otherSide == null) {
-                throw new SLInvalidLinkSideException();
             }
             return otherSide;
         }
@@ -374,8 +376,7 @@ public class SLLinkImpl implements SLLink {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationSet<SLLinkProperty<Serializable>> getProperties()
-        throws SLGraphSessionException {
+    public NeedsSyncronizationSet<SLLinkProperty<Serializable>> getProperties() {
         synchronized (lock) {
             try {
                 final NeedsSyncronizationSet<SLLinkProperty<Serializable>> properties = LockedCollections
@@ -404,8 +405,8 @@ public class SLLinkImpl implements SLLink {
     public <V extends Serializable> SLLinkProperty<V> getProperty(
                                                                    final Class<V> clazz,
                                                                    final String name )
-        throws SLLinkPropertyNotFoundException,
-            SLInvalidLinkPropertyTypeException, SLGraphSessionException {
+        throws SLPropertyNotFoundException,
+            SLPropertyTypeInvalidException {
         synchronized (lock) {
             return this.getProperty(clazz, name, null);
         }
@@ -418,8 +419,8 @@ public class SLLinkImpl implements SLLink {
                                                                    final Class<V> clazz,
                                                                    final String name,
                                                                    final Collator collator )
-        throws SLLinkPropertyNotFoundException,
-        SLInvalidLinkPropertyTypeException, SLGraphSessionException {
+        throws SLPropertyNotFoundException,
+            SLPropertyTypeInvalidException {
         synchronized (lock) {
 
             SLLinkProperty<V> property = null;
@@ -460,14 +461,14 @@ public class SLLinkImpl implements SLLink {
                     property = new SLLinkPropertyImpl<V>(linkProxy, pProperty);
                 }
             } catch (final SLInvalidPersistentPropertyTypeException e) {
-                throw new SLInvalidNodePropertyTypeException(e);
+                throw new SLPropertyTypeInvalidException(e);
             } catch (final Exception e) {
                 throw new SLGraphSessionException(
                                                   "Error on attempt to retrieve link property.", e);
             }
 
             if (property == null) {
-                throw new SLNodePropertyNotFoundException(name);
+                throw new SLPropertyNotFoundException(name);
             }
             return property;
         }
@@ -477,7 +478,7 @@ public class SLLinkImpl implements SLLink {
      * {@inheritDoc}
      */
     public String getPropertyValueAsString( final String name )
-        throws SLLinkPropertyNotFoundException, SLGraphSessionException {
+        throws SLPropertyNotFoundException {
         synchronized (lock) {
             return this.getProperty(Serializable.class, name).getValue()
                        .toString();
@@ -599,7 +600,7 @@ public class SLLinkImpl implements SLLink {
     /**
      * {@inheritDoc}
      */
-    public void remove() throws SLGraphSessionException {
+    public void remove() {
         synchronized (lock) {
             try {
                 final SLLinkEvent event = new SLLinkRemovedEvent(this);
@@ -619,8 +620,7 @@ public class SLLinkImpl implements SLLink {
     public <V extends Serializable> SLLinkProperty<V> setProperty(
                                                                    final Class<V> clazz,
                                                                    final String name,
-                                                                   final V value )
-        throws SLGraphSessionException {
+                                                                   final V value ) {
         synchronized (lock) {
             return this.setProperty(clazz, VisibilityLevel.PUBLIC, name, value);
         }
@@ -633,7 +633,7 @@ public class SLLinkImpl implements SLLink {
                                                                    final Class<V> clazz,
                                                                    final VisibilityLevel visibility,
                                                                    final String name,
-                                                                   final V value ) throws SLGraphSessionException {
+                                                                   final V value ) {
         synchronized (lock) {
             try {
                 final String propName = SLCommonSupport

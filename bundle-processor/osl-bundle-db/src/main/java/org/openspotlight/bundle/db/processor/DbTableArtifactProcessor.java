@@ -48,6 +48,9 @@
  */
 package org.openspotlight.bundle.db.processor;
 
+import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createColumns;
+import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createTableData;
+
 import org.openspotlight.bundle.db.processor.DbProcessorHelper.TableVo;
 import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -56,39 +59,36 @@ import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 
-import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createColumns;
-import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createTableData;
-
 public class DbTableArtifactProcessor implements
-		BundleProcessorArtifactPhase<TableArtifact> {
+        BundleProcessorArtifactPhase<TableArtifact> {
 
-	public void beforeProcessArtifact(final TableArtifact artifact,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) {
+    public void beforeProcessArtifact( final TableArtifact artifact,
+                                       final CurrentProcessorContext currentContext,
+                                       final ExecutionContext context ) {
 
-	}
+    }
 
-	public void didFinishToProcessArtifact(final TableArtifact artifact,
-			final LastProcessStatus status,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) {
+    public void didFinishToProcessArtifact( final TableArtifact artifact,
+                                            final LastProcessStatus status,
+                                            final CurrentProcessorContext currentContext,
+                                            final ExecutionContext context ) {
 
-	}
+    }
 
-	public Class<TableArtifact> getArtifactType() {
-		return TableArtifact.class;
-	}
+    public Class<TableArtifact> getArtifactType() {
+        return TableArtifact.class;
+    }
 
-	public LastProcessStatus processArtifact(final TableArtifact artifact,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) throws Exception {
-		final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-				.createByType(artifact.getDatabaseType());
-		final TableVo data = createTableData(wrappedType, artifact,
-				currentContext, context);
-		createColumns(wrappedType, artifact, context, data.databaseContextNode,
-				data.database, data.table, data.abstractTable);
-		return LastProcessStatus.PROCESSED;
-	}
+    public LastProcessStatus processArtifact( final TableArtifact artifact,
+                                              final CurrentProcessorContext currentContext,
+                                              final ExecutionContext context ) throws Exception {
+        final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
+                                                                     .createByType(artifact.getDatabaseType());
+        final TableVo data = createTableData(wrappedType, artifact,
+                                             currentContext, context);
+        createColumns(wrappedType, artifact, context, data.databaseContextNode,
+                      data.database, data.table, data.abstractTable);
+        return LastProcessStatus.PROCESSED;
+    }
 
 }

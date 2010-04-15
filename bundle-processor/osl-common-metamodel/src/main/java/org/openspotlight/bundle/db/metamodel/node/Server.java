@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -54,14 +53,10 @@ import org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node Server Meta Model.
- *
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Server")
+@SLDescription( "Server" )
 public interface Server extends SLNode {
 
-    
 }
-
-        

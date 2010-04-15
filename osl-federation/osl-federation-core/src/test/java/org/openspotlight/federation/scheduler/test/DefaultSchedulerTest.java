@@ -48,6 +48,12 @@
  */
 package org.openspotlight.federation.scheduler.test;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,125 +71,121 @@ import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class DefaultSchedulerTest {
 
-	public static class SampleArtifactSourceSchedulableCommand implements
-			SchedulableCommand<ArtifactSource> {
+    public static class SampleArtifactSourceSchedulableCommand implements
+            SchedulableCommand<ArtifactSource> {
 
-		public void execute(final GlobalSettings settigns,
-				final ExecutionContext ctx, final ArtifactSource schedulable) {
-			ctx.getUser();
-		}
+        public void execute( final GlobalSettings settigns,
+                             final ExecutionContext ctx,
+                             final ArtifactSource schedulable ) {
+            ctx.getUser();
+        }
 
-		public String getRepositoryNameBeforeExecution(
-				final ArtifactSource schedulable) {
-			return schedulable.getRepository().getName();
-		}
+        public String getRepositoryNameBeforeExecution(
+                                                        final ArtifactSource schedulable ) {
+            return schedulable.getRepository().getName();
+        }
 
-	}
+    }
 
-	public static class SampleGroupSchedulableCommand implements
-			SchedulableCommand<Group> {
+    public static class SampleGroupSchedulableCommand implements
+            SchedulableCommand<Group> {
 
-		private static AtomicBoolean wasExecuted = new AtomicBoolean();
+        private static AtomicBoolean wasExecuted = new AtomicBoolean();
 
-		private static AtomicInteger counter = new AtomicInteger();
+        private static AtomicInteger counter     = new AtomicInteger();
 
-		public void execute(final GlobalSettings settigns,
-				final ExecutionContext ctx, final Group schedulable) {
-			ctx.getUser();
-			System.out.println(schedulable.getName());
-			wasExecuted.set(true);
-			counter.incrementAndGet();
-		}
+        public void execute( final GlobalSettings settigns,
+                             final ExecutionContext ctx,
+                             final Group schedulable ) {
+            ctx.getUser();
+            System.out.println(schedulable.getName());
+            wasExecuted.set(true);
+            counter.incrementAndGet();
+        }
 
-		public String getRepositoryNameBeforeExecution(final Group schedulable) {
-			return schedulable.getRepository().getName();
-		}
+        public String getRepositoryNameBeforeExecution( final Group schedulable ) {
+            return schedulable.getRepository().getName();
+        }
 
-	}
+    }
 
-	private static SLScheduler scheduler = DefaultScheduler.INSTANCE;
+    private static SLScheduler     scheduler    = DefaultScheduler.INSTANCE;
 
-	private static Set<Repository> repositories = new HashSet<Repository>();
+    private static Set<Repository> repositories = new HashSet<Repository>();
 
-	private static GlobalSettings settings = new GlobalSettings();
+    private static GlobalSettings  settings     = new GlobalSettings();
 
-	@BeforeClass
-	public static void setupScheduler() {
-		final ArtifactSource source = new ArtifactSource();
-		final String initialRawPath = Files
-				.getNormalizedFileName(new File(".."));
-		final String initial = initialRawPath.substring(0, initialRawPath
-				.lastIndexOf('/'));
-		source.setActive(true);
-		source.setInitialLookup(initial);
-		source.setName("sourceName");
+    @BeforeClass
+    public static void setupScheduler() {
+        final ArtifactSource source = new ArtifactSource();
+        final String initialRawPath = Files
+                                           .getNormalizedFileName(new File(".."));
+        final String initial = initialRawPath.substring(0, initialRawPath
+                                                                         .lastIndexOf('/'));
+        source.setActive(true);
+        source.setInitialLookup(initial);
+        source.setName("sourceName");
 
-		settings = new GlobalSettings();
-		settings.getSchedulableCommandMap().clear();
-		settings.getSchedulableCommandMap().put(ArtifactSource.class,
-				SampleArtifactSourceSchedulableCommand.class);
-		settings.getSchedulableCommandMap().put(Group.class,
-				SampleGroupSchedulableCommand.class);
-		final Repository repository = new Repository();
-		repositories.add(repository);
-		repository.setActive(true);
-		repository.setName("repository");
-		source.setRepository(repository);
+        settings = new GlobalSettings();
+        settings.getSchedulableCommandMap().clear();
+        settings.getSchedulableCommandMap().put(ArtifactSource.class,
+                                                SampleArtifactSourceSchedulableCommand.class);
+        settings.getSchedulableCommandMap().put(Group.class,
+                                                SampleGroupSchedulableCommand.class);
+        final Repository repository = new Repository();
+        repositories.add(repository);
+        repository.setActive(true);
+        repository.setName("repository");
+        source.setRepository(repository);
 
-		final Group group = new Group();
-		group.setActive(true);
-		group.setName("new group");
-		group.setRepository(repository);
-		group.setType("types");
-		repository.getGroups().add(group);
-		scheduler.initializeSettings(DefaultExecutionContextFactory
-				.createFactory(), "user", "password",
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		scheduler.refreshJobs(settings, repositories);
-		scheduler.startScheduler();
-	}
+        final Group group = new Group();
+        group.setActive(true);
+        group.setName("new group");
+        group.setRepository(repository);
+        group.setType("types");
+        repository.getGroups().add(group);
+        scheduler.initializeSettings(DefaultExecutionContextFactory
+                                                                   .createFactory(), "user", "password",
+                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        scheduler.refreshJobs(settings, repositories);
+        scheduler.startScheduler();
+    }
 
-	@Before
-	public void resetStatus() {
-		SampleGroupSchedulableCommand.wasExecuted.set(false);
-		SampleGroupSchedulableCommand.counter.set(0);
-	}
+    @Before
+    public void resetStatus() {
+        SampleGroupSchedulableCommand.wasExecuted.set(false);
+        SampleGroupSchedulableCommand.counter.set(0);
+    }
 
-	@Test
-	public void shouldStartCronJobs() throws Exception {
-		final Group group = repositories.iterator().next().getGroups()
-				.iterator().next();
-		try {
-			group.getCronInformation().add("0/1 * * * * ?");
-			scheduler.refreshJobs(settings, repositories);
-			Thread.sleep(10000);
-			Assert.assertThat((double) SampleGroupSchedulableCommand.counter
-					.get(), IsCloseTo.closeTo(10d, 1d));
+    @Test
+    public void shouldStartCronJobs() throws Exception {
+        final Group group = repositories.iterator().next().getGroups()
+                                        .iterator().next();
+        try {
+            group.getCronInformation().add("0/1 * * * * ?");
+            scheduler.refreshJobs(settings, repositories);
+            Thread.sleep(10000);
+            Assert.assertThat((double)SampleGroupSchedulableCommand.counter
+                                                                           .get(), IsCloseTo.closeTo(10d, 1d));
 
-		} finally {
-			group.getCronInformation().clear();
-			scheduler.refreshJobs(settings, repositories);
-		}
-	}
+        } finally {
+            group.getCronInformation().clear();
+            scheduler.refreshJobs(settings, repositories);
+        }
+    }
 
-	@Test
-	public void shouldStartImediateJob() throws Exception {
-		scheduler.fireSchedulable("username", "password", repositories
-				.iterator().next().getGroups().iterator().next());
-		for (int i = 0; i < 20; i++) {
-			if (SampleGroupSchedulableCommand.wasExecuted.get()) {
-				return;
-			}
-			Thread.sleep(1000);
-		}
-		Assert.fail("Didn't execute in 20 seconds!");
-	}
+    @Test
+    public void shouldStartImediateJob() throws Exception {
+        scheduler.fireSchedulable("username", "password", repositories
+                                                                      .iterator().next().getGroups().iterator().next());
+        for (int i = 0; i < 20; i++) {
+            if (SampleGroupSchedulableCommand.wasExecuted.get()) {
+                return;
+            }
+            Thread.sleep(1000);
+        }
+        Assert.fail("Didn't execute in 20 seconds!");
+    }
 }

@@ -48,13 +48,26 @@
  */
 package org.openspotlight.bundle.language.java.asm;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.antlr.runtime.ANTLRStringStream;
-import org.openspotlight.bundle.language.java.asm.model.*;
+import org.openspotlight.bundle.language.java.asm.model.ArrayTypeReference;
+import org.openspotlight.bundle.language.java.asm.model.MethodDeclaration;
+import org.openspotlight.bundle.language.java.asm.model.MethodParameterDefinition;
+import org.openspotlight.bundle.language.java.asm.model.ParameterizedTypeReference;
+import org.openspotlight.bundle.language.java.asm.model.PrimitiveTypeReference;
+import org.openspotlight.bundle.language.java.asm.model.QualifiedTypeReference;
+import org.openspotlight.bundle.language.java.asm.model.SimpleTypeReference;
+import org.openspotlight.bundle.language.java.asm.model.TypeParameter;
+import org.openspotlight.bundle.language.java.asm.model.TypeReference;
+import org.openspotlight.bundle.language.java.asm.model.WildcardTypeReference;
 import org.openspotlight.bundle.language.java.asm.model.PrimitiveTypeReference.JavaPrimitiveTypes;
 import org.openspotlight.common.Pair;
-
-import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Class that parsers Java ASM structure and creates a model. <br/>

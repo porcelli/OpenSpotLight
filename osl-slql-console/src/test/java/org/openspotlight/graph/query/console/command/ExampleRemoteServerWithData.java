@@ -48,21 +48,7 @@
  */
 package org.openspotlight.graph.query.console.command;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.common.util.Files;
-import org.openspotlight.graph.*;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.exception.SLInvalidCredentialException;
-import org.openspotlight.graph.query.console.GraphConnection;
-import org.openspotlight.graph.query.console.test.domain.*;
-import org.openspotlight.graph.server.RemoteGraphSessionServer;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
-import org.openspotlight.security.idm.auth.IdentityException;
+import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +56,33 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.common.util.Files;
+import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphFactory;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.query.console.GraphConnection;
+import org.openspotlight.graph.query.console.test.domain.ClassImplementsInterface;
+import org.openspotlight.graph.query.console.test.domain.JavaClass;
+import org.openspotlight.graph.query.console.test.domain.JavaClassHierarchy;
+import org.openspotlight.graph.query.console.test.domain.JavaInterface;
+import org.openspotlight.graph.query.console.test.domain.JavaInterfaceHierarchy;
+import org.openspotlight.graph.query.console.test.domain.JavaPackage;
+import org.openspotlight.graph.query.console.test.domain.JavaTypeMethod;
+import org.openspotlight.graph.query.console.test.domain.PackageContainsType;
+import org.openspotlight.graph.query.console.test.domain.TypeContainsMethod;
+import org.openspotlight.graph.server.RemoteGraphSessionServer;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
 
 public class ExampleRemoteServerWithData {
 
@@ -82,13 +94,11 @@ public class ExampleRemoteServerWithData {
          * @param clazz the clazz
          * @param javaClass the java class
          * @param session the session
-         * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
          */
         private void addClassImplementsInterfaceLinks( final SLGraphSession session,
                                                        final SLNode root,
                                                        final Class<?> clazz,
-                                                       final JavaClass javaClass )
-            throws SLInvalidCredentialException {
+                                                       final JavaClass javaClass ) {
             final Class<?>[] iFaces = clazz.getInterfaces();
             for (final Class<?> iFace : iFaces) {
                 final Package iFacePack = iFace.getPackage();
@@ -106,13 +116,10 @@ public class ExampleRemoteServerWithData {
          * @param clazz the clazz
          * @param javaClass the java class
          * @param session the session
-         * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
-         * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
          */
         private void addJavaClassContainsJavaClassMethod( final SLGraphSession session,
                                                           final Class<?> clazz,
-                                                          final JavaClass javaClass )
-            throws SLNodeTypeNotInExistentHierarchy, SLInvalidCredentialException {
+                                                          final JavaClass javaClass ) {
             final Method[] methods = clazz.getDeclaredMethods();
             for (final Method method : methods) {
                 final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
@@ -128,13 +135,11 @@ public class ExampleRemoteServerWithData {
          * @param clazz the clazz
          * @param javaClass the java class
          * @param session the session
-         * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
          */
         private void addJavaClassHirarchyLinks( final SLGraphSession session,
                                                 final SLNode root,
                                                 final Class<?> clazz,
-                                                final JavaClass javaClass )
-            throws SLInvalidCredentialException {
+                                                final JavaClass javaClass ) {
             final Class<?> superClass = clazz.getSuperclass();
             if (superClass != null) {
                 final Package classPack = clazz.getPackage();
@@ -153,13 +158,10 @@ public class ExampleRemoteServerWithData {
          * @param iFace the i face
          * @param javaInterface the java interface
          * @param session the session
-         * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
-         * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
          */
         private void addJavaInterfaceContainsJavaMethod( final SLGraphSession session,
                                                          final Class<?> iFace,
-                                                         final JavaInterface javaInterface )
-            throws SLNodeTypeNotInExistentHierarchy, SLInvalidCredentialException {
+                                                         final JavaInterface javaInterface ) {
             final Method[] methods = iFace.getDeclaredMethods();
             for (final Method method : methods) {
                 final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
@@ -175,13 +177,11 @@ public class ExampleRemoteServerWithData {
          * @param iFace the i face
          * @param javaInterface the java interface
          * @param session the session
-         * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
          */
         private void addJavaInterfaceHirarchyLinks( final SLGraphSession session,
                                                     final SLNode root,
                                                     final Class<?> iFace,
-                                                    final JavaInterface javaInterface )
-            throws SLInvalidCredentialException {
+                                                    final JavaInterface javaInterface ) {
             final Class<?>[] superIFaces = iFace.getInterfaces();
             for (final Class<?> superIFace : superIFaces) {
                 final Package iFacePack = iFace.getPackage();
@@ -228,7 +228,7 @@ public class ExampleRemoteServerWithData {
          * @throws ClassNotFoundException the class not found exception
          */
         public void populateGraph()
-            throws SLException, IOException, ClassNotFoundException, SLInvalidCredentialException, IdentityException {
+            throws SLException, IOException, ClassNotFoundException, IdentityException {
             final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
             AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");

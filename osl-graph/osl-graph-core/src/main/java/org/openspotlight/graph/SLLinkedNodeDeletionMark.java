@@ -55,17 +55,17 @@ package org.openspotlight.graph;
  */
 public interface SLLinkedNodeDeletionMark {
 
-	/**
-	 * Gets the link type.
-	 * 
-	 * @return the link type
-	 */
-	public Class<? extends SLLink> getLinkType();
+    /**
+     * Gets the link type.
+     * 
+     * @return the link type
+     */
+    public Class<? extends SLLink> getLinkType();
 
-	/**
-	 * Gets the node.
-	 * 
-	 * @return the node
-	 */
-	public SLNode getNode();
+    /**
+     * Gets the node.
+     * 
+     * @return the node
+     */
+    public SLNode getNode();
 }

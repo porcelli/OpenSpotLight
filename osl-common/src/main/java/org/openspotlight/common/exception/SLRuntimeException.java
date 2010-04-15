@@ -44,13 +44,12 @@
  * programa; se não, escreva para:
  * Free Software Foundation, Inc.
  * 51 Franklin Street, Fifth Floor
-* Boston, MA  02110-1301  USA
+ * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.common.exception;
 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
 public class SLRuntimeException extends RuntimeException {
 
@@ -70,7 +69,8 @@ public class SLRuntimeException extends RuntimeException {
     /**
      * @param message
      */
-    public SLRuntimeException(final String message) {
+    public SLRuntimeException(
+                               final String message ) {
         super(message);
 
     }
@@ -79,7 +79,8 @@ public class SLRuntimeException extends RuntimeException {
      * @param message
      * @param cause
      */
-    public SLRuntimeException(final String message, final Throwable cause) {
+    public SLRuntimeException(
+                               final String message, final Throwable cause ) {
         super(message, cause);
 
     }
@@ -87,7 +88,8 @@ public class SLRuntimeException extends RuntimeException {
     /**
      * @param cause
      */
-    public SLRuntimeException(final Throwable cause) {
+    public SLRuntimeException(
+                               final Throwable cause ) {
         super(cause);
 
     }

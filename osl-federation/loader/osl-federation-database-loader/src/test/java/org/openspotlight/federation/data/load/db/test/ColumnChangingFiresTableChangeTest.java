@@ -48,6 +48,14 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
+
+import java.sql.Connection;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.federation.domain.DbArtifactSource;
@@ -63,89 +71,78 @@ import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-import java.sql.Connection;
-import java.util.Set;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
-
 /**
- * During a column changing, its table needs to be marked as changed also. This
- * test is to assert this behavior.
+ * During a column changing, its table needs to be marked as changed also. This test is to assert this behavior.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class ColumnChangingFiresTableChangeTest {
 
-	@Before
-	public void cleanDatabaseFiles() throws Exception {
-		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-				.closeRepositoryAndCleanResources();
-		delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
-	}
+    @Before
+    public void cleanDatabaseFiles() throws Exception {
+        JcrConnectionProvider.createFromData(
+                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+                             .closeRepositoryAndCleanResources();
+        delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
+    }
 
-	@Test
-	public void columnChangeShouldFireTableChange() throws Exception {
+    @Test
+    public void columnChangeShouldFireTableChange() throws Exception {
 
-		final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
-		final DbArtifactSource dbBundle = (DbArtifactSource) repository
-				.getArtifactSources().iterator().next(); //$NON-NLS-1$
-		Connection conn = DatabaseSupport.createConnection(dbBundle);
+        final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
+        final DbArtifactSource dbBundle = (DbArtifactSource)repository
+                                                                      .getArtifactSources().iterator().next(); //$NON-NLS-1$
+        Connection conn = DatabaseSupport.createConnection(dbBundle);
 
-		conn
-				.prepareStatement(
-						"create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
-				.execute();
-		conn.close();
-		final GlobalSettings configuration = new GlobalSettings();
-		configuration.setDefaultSleepingIntervalInMilliseconds(500);
-		GlobalSettings globalSettings = new GlobalSettings();
-		globalSettings.getLoaderRegistry().add(
-				DatabaseCustomArtifactFinder.class);
-		PersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR, dbBundle.getRepository());
+        conn
+                .prepareStatement("create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+                .execute();
+        conn.close();
+        final GlobalSettings configuration = new GlobalSettings();
+        configuration.setDefaultSleepingIntervalInMilliseconds(500);
+        GlobalSettings globalSettings = new GlobalSettings();
+        globalSettings.getLoaderRegistry().add(
+                                               DatabaseCustomArtifactFinder.class);
+        PersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+                                                                                              DefaultJcrDescriptor.TEMP_DESCRIPTOR, dbBundle.getRepository());
 
-		ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings,
-				dbBundle, provider);
+        ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings,
+                                                        dbBundle, provider);
 
-		Set<DatabaseCustomArtifact> firstLoadedItems = provider.get()
-				.listByPath(DatabaseCustomArtifact.class, null);
-		conn = DatabaseSupport.createConnection(dbBundle);
+        Set<DatabaseCustomArtifact> firstLoadedItems = provider.get()
+                                                               .listByPath(DatabaseCustomArtifact.class, null);
+        conn = DatabaseSupport.createConnection(dbBundle);
 
-		conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
-				.execute();
+        conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
+        .execute();
 
-		conn.prepareStatement(
-				"create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
-				.execute();
-		conn.close();
+        conn.prepareStatement("create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
+        .execute();
+        conn.close();
 
-		Set<DatabaseCustomArtifact> lastLoadedItems = provider.get()
-				.listByPath(DatabaseCustomArtifact.class, null);
-		conn = DatabaseSupport.createConnection(dbBundle);
+        Set<DatabaseCustomArtifact> lastLoadedItems = provider.get()
+                                                              .listByPath(DatabaseCustomArtifact.class, null);
+        conn = DatabaseSupport.createConnection(dbBundle);
 
-		boolean found = false;
-		all: for (final Artifact first : firstLoadedItems) {
-			if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
-				assertThat(first.equals(first), is(true));
-				assertThat(first.contentEquals(first), is(true));
-				for (final Artifact last : lastLoadedItems) {
-					if (last.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
-						System.out.println("first:" + first.toString());
-						System.out.println("last:" + last.toString());
-						assertThat(last.equals(first), is(true));
-						assertThat(last.contentEquals(first), is(false));
-						found = true;
-						break all;
-					}
-				}
-			}
-		}
-		assertThat(found, is(true));
-	}
+        boolean found = false;
+        all: for (final Artifact first : firstLoadedItems) {
+            if (first.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
+                assertThat(first.equals(first), is(true));
+                assertThat(first.contentEquals(first), is(true));
+                for (final Artifact last : lastLoadedItems) {
+                    if (last.getArtifactName().equals("EXAMPLE_TABLE_XXX")) {
+                        System.out.println("first:" + first.toString());
+                        System.out.println("last:" + last.toString());
+                        assertThat(last.equals(first), is(true));
+                        assertThat(last.contentEquals(first), is(false));
+                        found = true;
+                        break all;
+                    }
+                }
+            }
+        }
+        assertThat(found, is(true));
+    }
 
 }

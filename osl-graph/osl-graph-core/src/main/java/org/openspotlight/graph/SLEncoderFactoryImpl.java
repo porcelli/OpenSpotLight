@@ -48,20 +48,19 @@
  */
 package org.openspotlight.graph;
 
-
 public class SLEncoderFactoryImpl implements SLEncoderFactory {
 
     /**
      * {@inheritDoc}
      */
-	public SLEncoder getFakeEncoder() {
-		return new SLFakeEncoder();
-	}
+    public SLEncoder getFakeEncoder() {
+        return new SLFakeEncoder();
+    }
 
     /**
      * {@inheritDoc}
      */
-	public SLEncoder getUUIDEncoder() {
-		return new SLUUIDEncoder();
-	}
+    public SLEncoder getUUIDEncoder() {
+        return new SLUUIDEncoder();
+    }
 }

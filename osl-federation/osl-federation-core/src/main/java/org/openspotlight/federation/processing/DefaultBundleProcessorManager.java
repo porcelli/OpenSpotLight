@@ -58,50 +58,50 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 // TODO: Auto-generated Javadoc
 /**
- * The {@link DefaultBundleProcessorManager} is the class reposable to get an
- * {@link GlobalSettings} and to process all {@link Artifact artifacts} on this
- * {@link GlobalSettings}. The {@link DefaultBundleProcessorManager} should get
- * the {@link ArtifactSource bundle's} {@link BundleProcessorType types} and
- * find all the {@link BundleProcessor processors} for each
- * {@link BundleProcessorType type} . After all {@link BundleProcessor
- * processors} was found, the {@link DefaultBundleProcessorManager} should
- * distribute the processing job in some threads obeying the
- * {@link GlobalSettings#getNumberOfParallelThreads() number of threads}
- * configured for this {@link Repository}.
+ * The {@link DefaultBundleProcessorManager} is the class reposable to get an {@link GlobalSettings} and to process all
+ * {@link Artifact artifacts} on this {@link GlobalSettings}. The {@link DefaultBundleProcessorManager} should get the
+ * {@link ArtifactSource bundle's} {@link BundleProcessorType types} and find all the {@link BundleProcessor processors} for each
+ * {@link BundleProcessorType type} . After all {@link BundleProcessor processors} was found, the
+ * {@link DefaultBundleProcessorManager} should distribute the processing job in some threads obeying the
+ * {@link GlobalSettings#getNumberOfParallelThreads() number of threads} configured for this {@link Repository}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public enum DefaultBundleProcessorManager implements BundleProcessorManager {
 
-	INSTANCE;
+    INSTANCE;
 
-	public GlobalExecutionStatus executeBundles(final String username,
-			final String password, final JcrConnectionDescriptor descriptor,
-			final ExecutionContextFactory contextFactory,
-			final GlobalSettings settings, final Group... groups)
-			throws Exception {
-		final GlobalExecutionStatus result = new BundleProcessorExecution(
-				username, password, descriptor, contextFactory, settings,
-				groups).execute();
-		return result;
-	}
+    public GlobalExecutionStatus executeBundles( final String username,
+                                                 final String password,
+                                                 final JcrConnectionDescriptor descriptor,
+                                                 final ExecutionContextFactory contextFactory,
+                                                 final GlobalSettings settings,
+                                                 final Group... groups )
+            throws Exception {
+        final GlobalExecutionStatus result = new BundleProcessorExecution(
+                                                                          username, password, descriptor, contextFactory, settings,
+                                                                          groups).execute();
+        return result;
+    }
 
-	public void executeBundlesInBackground(final String username,
-			final String password, final JcrConnectionDescriptor descriptor,
-			final ExecutionContextFactory contextFactory,
-			final GlobalSettings settings, final Group... groups) {
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					new BundleProcessorExecution(username, password,
-							descriptor, contextFactory, settings, groups)
-							.execute();
+    public void executeBundlesInBackground( final String username,
+                                            final String password,
+                                            final JcrConnectionDescriptor descriptor,
+                                            final ExecutionContextFactory contextFactory,
+                                            final GlobalSettings settings,
+                                            final Group... groups ) {
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    new BundleProcessorExecution(username, password,
+                                                 descriptor, contextFactory, settings, groups)
+                                                                                              .execute();
 
-				} catch (final Exception e) {
-					Exceptions.catchAndLog(e);
-				}
+                } catch (final Exception e) {
+                    Exceptions.catchAndLog(e);
+                }
 
-			}
-		}).start();
-	}
+            }
+        }).start();
+    }
 }

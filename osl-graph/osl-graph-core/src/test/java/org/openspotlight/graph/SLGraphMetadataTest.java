@@ -48,6 +48,10 @@
  */
 package org.openspotlight.graph;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -58,23 +62,23 @@ import org.openspotlight.graph.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.SLMetadata.LogicOperator;
 import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.exception.SLInvalidCredentialException;
+import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
 import org.openspotlight.graph.query.SLGraphQueryTest;
-import org.openspotlight.graph.test.domain.*;
+import org.openspotlight.graph.test.domain.node.JavaClassNode;
+import org.openspotlight.graph.test.domain.node.JavaClassNodeWithoutDescription;
+import org.openspotlight.graph.test.domain.node.JavaClassNodeWithoutProperties;
+import org.openspotlight.graph.test.domain.node.JavaClassNodeWithoutPropertiesAndDescription;
+import org.openspotlight.graph.test.domain.node.JavaElementNode;
+import org.openspotlight.graph.test.domain.node.SubJavaClassNodeWithoutDescription;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 /**
  * The Class SLGraphMetadataPropertiesTest.
- *
+ * 
  * @author porcelli
  */
 public class SLGraphMetadataTest {
@@ -82,12 +86,12 @@ public class SLGraphMetadataTest {
     /**
      * The Constant LOGGER.
      */
-    static final Logger LOGGER = Logger.getLogger(SLGraphQueryTest.class);
+    static final Logger           LOGGER = Logger.getLogger(SLGraphQueryTest.class);
 
     /**
      * The graph.
      */
-    private static SLGraph graph;
+    private static SLGraph        graph;
 
     /**
      * The session.
@@ -111,19 +115,19 @@ public class SLGraphMetadataTest {
         try {
 
             JcrConnectionProvider.createFromData(
-                    DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                    .closeRepositoryAndCleanResources();
+                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+                                 .closeRepositoryAndCleanResources();
 
             final SecurityFactory securityFactory = AbstractFactory
-                    .getDefaultInstance(SecurityFactory.class);
+                                                                   .getDefaultInstance(SecurityFactory.class);
 
             final User simpleUser = securityFactory.createUser("testUser");
             AuthenticatedUser user = securityFactory.createIdentityManager(
-                    DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                    simpleUser, "password");
+                                                                           DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+                                                                                                                              simpleUser, "password");
 
             final SLGraphFactory factory = AbstractFactory
-                    .getDefaultInstance(SLGraphFactory.class);
+                                                          .getDefaultInstance(SLGraphFactory.class);
             graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         } catch (final Exception e) {
@@ -133,30 +137,27 @@ public class SLGraphMetadataTest {
 
     @Test
     public void testMetadataTypeByParent()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+            throws SLMetaNodeTypeNotFoundException {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
         session.save();
         final SLMetaNodeType foundType = session.getMetadata()
-                .findMetaNodeType(JavaClassNode.class);
+                                                .getMetaNodeType(JavaClassNode.class);
 
         Assert.assertNotNull(foundType);
         Assert.assertEquals(foundType.getTypeName(), JavaClassNode.class
-                .getName());
+                                                                        .getName());
         Assert.assertEquals(foundType.getParent().getTypeName(),
-                JavaElementNode.class.getName());
+                            JavaElementNode.class.getName());
         Assert.assertEquals(foundType.getParent().getParent(), null);
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingAnd()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingAnd() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
@@ -164,66 +165,60 @@ public class SLGraphMetadataTest {
         values2Find.add(JavaElementNode.class.getName());
 
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC,
-                        MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
-                        BooleanOperator.AND, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
+                                                                                 BooleanOperator.AND, values2Find);
 
         Assert.assertEquals(0, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOr()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOr() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutPropertiesAndDescription.class
-                .getName());
+                                                                          .getName());
         values2Find.add(JavaElementNode.class.getName());
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC,
-                        MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
-                        BooleanOperator.OR, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
+                                                                                 BooleanOperator.OR, values2Find);
 
         Assert.assertEquals(2, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityNull()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityNull() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutPropertiesAndDescription.class
-                .getName());
+                                                                          .getName());
         values2Find.add(JavaElementNode.class.getName());
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE, null,
-                        MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
-                        BooleanOperator.OR, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE, null,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
+                                                                                 BooleanOperator.OR, values2Find);
 
         Assert.assertEquals(2, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityNullNotRecursive()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityNullNotRecursive() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
@@ -231,40 +226,36 @@ public class SLGraphMetadataTest {
         values2Find.add(JavaElementNode.class.getName());
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.NOT_RECURSIVE, null,
-                        MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
-                        BooleanOperator.OR, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.NOT_RECURSIVE, null,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
+                                                                                 BooleanOperator.OR, values2Find);
 
         Assert.assertEquals(1, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityPrivate()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityPrivate() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutPropertiesAndDescription.class
-                .getName());
+                                                                          .getName());
         values2Find.add(JavaElementNode.class.getName());
 
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PRIVATE,
-                        MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
-                        BooleanOperator.OR, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PRIVATE,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
+                                                                                 BooleanOperator.OR, values2Find);
 
         Assert.assertEquals(0, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByNameUsingAnd()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByNameUsingAnd() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
@@ -274,17 +265,15 @@ public class SLGraphMetadataTest {
         values2Find.add(JavaElementNode.class.getName());
 
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
-                        LogicOperator.EQUALS, BooleanOperator.AND, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
+                                                                                 LogicOperator.EQUALS, BooleanOperator.AND, values2Find);
 
         Assert.assertEquals(0, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByNameUsingOr()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByNameUsingOr() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
@@ -294,17 +283,15 @@ public class SLGraphMetadataTest {
         values2Find.add(JavaElementNode.class.getName());
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
-                        LogicOperator.EQUALS, BooleanOperator.OR, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
+                                                                                 LogicOperator.EQUALS, BooleanOperator.OR, values2Find);
 
         Assert.assertEquals(2, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityNull()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityNull() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
@@ -314,17 +301,15 @@ public class SLGraphMetadataTest {
         values2Find.add(JavaElementNode.class.getName());
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE, null,
-                        MetaNodeTypeProperty.NAME, LogicOperator.EQUALS,
-                        BooleanOperator.OR, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE, null,
+                                                                                 MetaNodeTypeProperty.NAME, LogicOperator.EQUALS,
+                                                                                 BooleanOperator.OR, values2Find);
 
         Assert.assertEquals(2, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityNullNotRecursive()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityNullNotRecursive() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
@@ -334,17 +319,15 @@ public class SLGraphMetadataTest {
         values2Find.add(JavaElementNode.class.getName());
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.NOT_RECURSIVE, null,
-                        MetaNodeTypeProperty.NAME, LogicOperator.EQUALS,
-                        BooleanOperator.OR, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.NOT_RECURSIVE, null,
+                                                                                 MetaNodeTypeProperty.NAME, LogicOperator.EQUALS,
+                                                                                 BooleanOperator.OR, values2Find);
 
         Assert.assertEquals(1, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityPrivate()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityPrivate() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
@@ -354,85 +337,77 @@ public class SLGraphMetadataTest {
         values2Find.add(JavaElementNode.class.getName());
 
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PRIVATE, MetaNodeTypeProperty.NAME,
-                        LogicOperator.EQUALS, BooleanOperator.OR, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PRIVATE, MetaNodeTypeProperty.NAME,
+                                                                                 LogicOperator.EQUALS, BooleanOperator.OR, values2Find);
 
         Assert.assertEquals(0, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataEqualsOneElementByDescription()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsOneElementByDescription() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutDescription.class.getName());
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC,
-                        MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
-                        BooleanOperator.AND, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION, LogicOperator.EQUALS,
+                                                                                 BooleanOperator.AND, values2Find);
 
         Assert.assertEquals(1, foundTypes.size());
         Assert.assertEquals(JavaClassNodeWithoutDescription.class.getName(),
-                foundTypes.iterator().next().getTypeName());
+                            foundTypes.iterator().next().getTypeName());
 
     }
 
     @Test
-    public void testSearchMetadataEqualsOneElementByName()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataEqualsOneElementByName() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
-        values2Find.add("org.openspotlight.graph.test.domain.JavaClassNode");
+        values2Find.add("org.openspotlight.graph.test.domain.node.JavaClassNode");
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
-                        LogicOperator.EQUALS, BooleanOperator.AND, values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
+                                                                                 LogicOperator.EQUALS, BooleanOperator.AND, values2Find);
 
         Assert.assertEquals(1, foundTypes.size());
         Assert.assertEquals(
-                "org.openspotlight.graph.test.domain.JavaClassNode", foundTypes
-                        .iterator().next().getTypeName());
+                            "org.openspotlight.graph.test.domain.node.JavaClassNode", foundTypes
+                                                                                                .iterator().next().getTypeName());
 
     }
 
     @Test
-    public void testSearchMetadataLikeBeginsWithOneElementByDescription()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataLikeBeginsWithOneElementByDescription() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("JavaClass");
 
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC,
-                        MetaNodeTypeProperty.DESCRIPTION,
-                        LogicOperator.LIKE_BEGINS_WITH, BooleanOperator.AND,
-                        values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION,
+                                                                                 LogicOperator.LIKE_BEGINS_WITH, BooleanOperator.AND,
+                                                                                 values2Find);
         Assert.assertEquals(0, foundTypes.size());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSearchMetadataLikeBeginsWithOneElementByName()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    @Test( expected = IllegalArgumentException.class )
+    public void testSearchMetadataLikeBeginsWithOneElementByName() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
@@ -441,57 +416,51 @@ public class SLGraphMetadataTest {
         values2Find.add("JavaClass");
 
         session.getMetadata().searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
-                LogicOperator.LIKE_BEGINS_WITH, BooleanOperator.AND,
-                values2Find);
+                                                 VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
+                                                 LogicOperator.LIKE_BEGINS_WITH, BooleanOperator.AND,
+                                                 values2Find);
     }
 
     @Test
-    public void testSearchMetadataLikeContainsWithOneElementByDescription()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataLikeContainsWithOneElementByDescription() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("JavaClass");
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC,
-                        MetaNodeTypeProperty.DESCRIPTION,
-                        LogicOperator.LIKE_CONTAINS, BooleanOperator.AND,
-                        values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION,
+                                                                                 LogicOperator.LIKE_CONTAINS, BooleanOperator.AND,
+                                                                                 values2Find);
         Assert.assertEquals(2, foundTypes.size());
     }
 
     @Test
-    public void testSearchMetadataLikeEndsWithOneElementByDescription()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchMetadataLikeEndsWithOneElementByDescription() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("WithoutDescription");
         session.save();
         final Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC,
-                        MetaNodeTypeProperty.DESCRIPTION,
-                        LogicOperator.LIKE_ENDS_WITH, BooleanOperator.AND,
-                        values2Find);
+                                                             .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                                 VisibilityLevel.PUBLIC,
+                                                                                 MetaNodeTypeProperty.DESCRIPTION,
+                                                                                 LogicOperator.LIKE_ENDS_WITH, BooleanOperator.AND,
+                                                                                 values2Find);
         Assert.assertEquals(1, foundTypes.size());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSearchMetadataLikeEndsWithOneElementByName()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    @Test( expected = IllegalArgumentException.class )
+    public void testSearchMetadataLikeEndsWithOneElementByName() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
@@ -500,14 +469,12 @@ public class SLGraphMetadataTest {
         values2Find.add("JavaClass");
 
         session.getMetadata().searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
-                LogicOperator.LIKE_ENDS_WITH, BooleanOperator.AND, values2Find);
+                                                 VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
+                                                 LogicOperator.LIKE_ENDS_WITH, BooleanOperator.AND, values2Find);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSearchMetadataLikeOneElementByName()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    @Test( expected = IllegalArgumentException.class )
+    public void testSearchMetadataLikeOneElementByName() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
         rootNode.addNode(JavaClassNode.class, "testNode2");
@@ -516,50 +483,47 @@ public class SLGraphMetadataTest {
         values2Find.add("JavaClass");
 
         session.getMetadata().searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
-                LogicOperator.LIKE_CONTAINS, BooleanOperator.AND, values2Find);
+                                                 VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
+                                                 LogicOperator.LIKE_CONTAINS, BooleanOperator.AND, values2Find);
     }
 
     @Test
-    public void testSearchSubMetadata() throws
-            SLGraphSessionException, SLInvalidCredentialException {
+    public void testSearchSubMetadata() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaElementNode.class.getName());
 
         Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
-                        LogicOperator.EQUALS, BooleanOperator.AND, values2Find);
+                                                       .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                           VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
+                                                                           LogicOperator.EQUALS, BooleanOperator.AND, values2Find);
         Assert.assertEquals(1, foundTypes.size());
 
         final SLMetaNodeType rootType = foundTypes.iterator().next();
 
         Assert.assertNotNull(rootType
-                .getSubMetaNodeType(JavaClassNodeWithoutDescription.class
-                .getName()));
+                                     .getSubMetaNodeType(JavaClassNodeWithoutDescription.class
+                                                                                              .getName()));
 
         values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutDescription.class.getName());
 
         foundTypes = rootType.searchSubMetaNodeTypes(
-                SLRecursiveMode.NOT_RECURSIVE, VisibilityLevel.PUBLIC,
-                MetaNodeTypeProperty.NAME, LogicOperator.EQUALS,
-                BooleanOperator.AND, values2Find);
+                                                     SLRecursiveMode.NOT_RECURSIVE, VisibilityLevel.PUBLIC,
+                                                     MetaNodeTypeProperty.NAME, LogicOperator.EQUALS,
+                                                     BooleanOperator.AND, values2Find);
         Assert.assertEquals(1, foundTypes.size());
     }
 
     @Test
-    public void testSearchSubMetadata2()
-            throws SLGraphSessionException,
-            SLInvalidCredentialException {
+    public void testSearchSubMetadata2() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
         rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class,
-                "testNode");
+                         "testNode");
         rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
         rootNode.addNode(SubJavaClassNodeWithoutDescription.class, "testNode3");
 
@@ -567,27 +531,27 @@ public class SLGraphMetadataTest {
         values2Find.add(JavaElementNode.class.getName());
 
         Collection<SLMetaNodeType> foundTypes = session.getMetadata()
-                .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
-                        VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
-                        LogicOperator.EQUALS, BooleanOperator.AND, values2Find);
+                                                       .searchMetaNodeType(SLRecursiveMode.RECURSIVE,
+                                                                           VisibilityLevel.PUBLIC, MetaNodeTypeProperty.NAME,
+                                                                           LogicOperator.EQUALS, BooleanOperator.AND, values2Find);
         Assert.assertEquals(1, foundTypes.size());
 
         final SLMetaNodeType rootType = foundTypes.iterator().next();
 
         Assert.assertNotNull(rootType
-                .getSubMetaNodeType(JavaClassNodeWithoutDescription.class
-                .getName()));
+                                     .getSubMetaNodeType(JavaClassNodeWithoutDescription.class
+                                                                                              .getName()));
         Assert.assertEquals(1, rootType.getSubMetaNodeType(
-                JavaClassNodeWithoutDescription.class.getName())
-                .getSubMetaNodeTypes().size());
+                                                           JavaClassNodeWithoutDescription.class.getName())
+                                       .getSubMetaNodeTypes().size());
 
         values2Find = new ArrayList<String>();
         values2Find.add("JavaClass");
         session.save();
 
         foundTypes = rootType.searchSubMetaNodeTypes(SLRecursiveMode.RECURSIVE,
-                VisibilityLevel.PUBLIC, MetaNodeTypeProperty.DESCRIPTION,
-                LogicOperator.LIKE_CONTAINS, BooleanOperator.AND, values2Find);
+                                                     VisibilityLevel.PUBLIC, MetaNodeTypeProperty.DESCRIPTION,
+                                                     LogicOperator.LIKE_CONTAINS, BooleanOperator.AND, values2Find);
         Assert.assertEquals(2, foundTypes.size());
     }
 

@@ -49,19 +49,15 @@
 package org.openspotlight.federation.domain.artifact.db;
 
 /**
- * All the database valid types should have an entry on file
- * <b>/osl-federation
- * /src/main/resources/configuration/dbMetadataScripts.xml</b> and also on
- * this enum.
+ * All the database valid types should have an entry on file <b>/osl-federation
+ * /src/main/resources/configuration/dbMetadataScripts.xml</b> and also on this enum.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public enum DatabaseType {
 
     /**
-     * The first type supported, just to be possible to do tests on a pure
-     * java way.
+     * The first type supported, just to be possible to do tests on a pure java way.
      */
     H2,
     /**
@@ -88,24 +84,23 @@ public enum DatabaseType {
      * DB2
      */
     DB2;
-    
+
     private final DatabaseType parent;
-    
-    private DatabaseType(){
-    	this.parent=null;
+
+    private DatabaseType() {
+        this.parent = null;
     }
-    
-    private DatabaseType(DatabaseType parent){
-    	this.parent = parent;
+
+    private DatabaseType(
+                          DatabaseType parent ) {
+        this.parent = parent;
     }
-    
+
     /**
-     * 
      * @return the parent type
      */
-    public DatabaseType getParent(){
-    	return this.parent;
+    public DatabaseType getParent() {
+        return this.parent;
     }
-    
-    
+
 }

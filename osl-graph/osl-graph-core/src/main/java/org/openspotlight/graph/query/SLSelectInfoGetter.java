@@ -56,12 +56,12 @@ import org.openspotlight.graph.query.info.SLSelectInfo;
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectInfoGetter {
-	
-	/**
-	 * Gets the select info.
-	 * 
-	 * @return the select info
-	 */
-	public SLSelectInfo getSelectInfo();
+
+    /**
+     * Gets the select info.
+     * 
+     * @return the select info
+     */
+    public SLSelectInfo getSelectInfo();
 
 }

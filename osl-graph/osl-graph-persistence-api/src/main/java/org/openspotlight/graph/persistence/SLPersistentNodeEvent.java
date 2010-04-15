@@ -48,40 +48,40 @@
  */
 package org.openspotlight.graph.persistence;
 
-
 /**
  * The Class SLPersistentNodeEvent.
  * 
  * @author Vitor Hugo Chagas
  */
 public class SLPersistentNodeEvent extends SLPersistentEvent {
-	
-	/** The Constant TYPE_NODE_ADDED. */
-	public static final int TYPE_NODE_ADDED = 1;
-	
-	/** The Constant TYPE_NODE_REMOVED. */
-	public static final int TYPE_NODE_REMOVED = 2;
 
-	/** The node. */
-	private SLPersistentNode node;
+    /** The Constant TYPE_NODE_ADDED. */
+    public static final int  TYPE_NODE_ADDED   = 1;
 
-	/**
-	 * Instantiates a new sL persistent node event.
-	 * 
-	 * @param type the type
-	 * @param node the node
-	 */
-	public SLPersistentNodeEvent(int type, SLPersistentNode node) {
-		super(type);
-		this.node = node;
-	}
+    /** The Constant TYPE_NODE_REMOVED. */
+    public static final int  TYPE_NODE_REMOVED = 2;
 
-	/**
-	 * Gets the node.
-	 * 
-	 * @return the node
-	 */
-	public SLPersistentNode getNode() {
-		return node;
-	}
+    /** The node. */
+    private SLPersistentNode node;
+
+    /**
+     * Instantiates a new sL persistent node event.
+     * 
+     * @param type the type
+     * @param node the node
+     */
+    public SLPersistentNodeEvent(
+                                  int type, SLPersistentNode node ) {
+        super(type);
+        this.node = node;
+    }
+
+    /**
+     * Gets the node.
+     * 
+     * @return the node
+     */
+    public SLPersistentNode getNode() {
+        return node;
+    }
 }

@@ -52,14 +52,14 @@ import java.util.List;
 
 /**
  * The Class StringBuilderUtil.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public class StringBuilderUtil {
 
     /**
      * Append values if value is not null.
-     *
+     * 
      * @param buffer the buffer
      * @param value the value
      * @param values the values
@@ -80,7 +80,7 @@ public class StringBuilderUtil {
 
     /**
      * Append value if not null.
-     *
+     * 
      * @param buffer the buffer
      * @param value the value
      * @return the string builder
@@ -95,7 +95,7 @@ public class StringBuilderUtil {
 
     /**
      * Append values.
-     *
+     * 
      * @param buffer the buffer
      * @param values the values
      * @return the string builder
@@ -110,7 +110,7 @@ public class StringBuilderUtil {
 
     /**
      * Append values.
-     *
+     * 
      * @param buffer the buffer
      * @param values the values
      * @return the string builder
@@ -125,7 +125,7 @@ public class StringBuilderUtil {
 
     /**
      * Append values and add a carriage return.
-     *
+     * 
      * @param buffer the buffer
      * @param values the values
      * @return the string builder

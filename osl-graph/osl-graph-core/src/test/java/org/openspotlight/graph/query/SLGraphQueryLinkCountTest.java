@@ -48,26 +48,34 @@
  */
 package org.openspotlight.graph.query;
 
-import org.apache.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.*;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.test.domain.*;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphFactory;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.test.domain.link.MethodContainsParam;
+import org.openspotlight.graph.test.domain.link.TypeContainsMethod;
+import org.openspotlight.graph.test.domain.node.JavaInterface;
+import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
+import org.openspotlight.graph.test.domain.node.MethodParam;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
 
 /**
  * The Class SLGraphQueryLinkCountTest.
@@ -179,11 +187,10 @@ public class SLGraphQueryLinkCountTest {
      * 
      * @param type the type
      * @return the string
-     * @throws SLGraphSessionException the SL graph session exception
      * @throws SLInvalidQuerySyntaxException
      */
     private String findIFaceID( final Class<?> type )
-        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+            throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
         final SLQueryApi query = session.createQueryApi();
         query.select().allTypes().onWhere().selectEnd().where().type(
                                                                      JavaInterface.class.getName()).each().property("caption")

@@ -52,46 +52,47 @@ import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.federation.context.ExecutionContext;
 
 public abstract class RunnableWithBundleContext implements
-		RunnableWithException {
-	private final String repositoryName;
+        RunnableWithException {
+    private final String     repositoryName;
 
-	private boolean error;
+    private boolean          error;
 
-	private ExecutionContext bundleContext;
+    private ExecutionContext bundleContext;
 
-	public RunnableWithBundleContext(final String repositoryName) {
-		this.repositoryName = repositoryName;
-	}
+    public RunnableWithBundleContext(
+                                      final String repositoryName ) {
+        this.repositoryName = repositoryName;
+    }
 
-	protected abstract void doIt() throws Exception;
+    protected abstract void doIt() throws Exception;
 
-	public ExecutionContext getBundleContext() {
-		return bundleContext;
-	}
+    public ExecutionContext getBundleContext() {
+        return bundleContext;
+    }
 
-	public String getRepositoryName() {
-		return repositoryName;
-	}
+    public String getRepositoryName() {
+        return repositoryName;
+    }
 
-	public boolean isError() {
-		return error;
-	}
+    public boolean isError() {
+        return error;
+    }
 
-	public final void run() throws Exception {
-		try {
-			doIt();
-		} catch (final Exception e) {
-			setError(true);
-			throw e;
-		}
-	}
+    public final void run() throws Exception {
+        try {
+            doIt();
+        } catch (final Exception e) {
+            setError(true);
+            throw e;
+        }
+    }
 
-	public void setBundleContext(final ExecutionContext bundleContext) {
-		this.bundleContext = bundleContext;
-	}
+    public void setBundleContext( final ExecutionContext bundleContext ) {
+        this.bundleContext = bundleContext;
+    }
 
-	public void setError(final boolean error) {
-		this.error = error;
-	}
+    public void setError( final boolean error ) {
+        this.error = error;
+    }
 
 }

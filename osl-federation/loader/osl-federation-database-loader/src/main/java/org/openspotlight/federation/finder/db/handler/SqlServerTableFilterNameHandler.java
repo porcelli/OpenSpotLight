@@ -49,31 +49,30 @@
 
 package org.openspotlight.federation.finder.db.handler;
 
-import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
-import org.openspotlight.federation.finder.db.ScriptType;
-
 import java.sql.ResultSet;
+
+import org.openspotlight.federation.finder.db.ScriptType;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
 
 /**
  * The Class SqlServerTableFilterNameHandler is used to filter Table names.
  */
 public class SqlServerTableFilterNameHandler implements DatabaseArtifactNameHandler {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean shouldIncludeName(String artifactName, ScriptType type,
-			ResultSet resultSet) throws Exception {
-		if("TABLE".equals(resultSet.getString("TABLE_TYPE"))){
-			return true;
-		}
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public boolean shouldIncludeName( String artifactName,
+                                      ScriptType type,
+                                      ResultSet resultSet ) throws Exception {
+        if ("TABLE".equals(resultSet.getString("TABLE_TYPE"))) {
+            return true;
+        }
+        return false;
+    }
 
-	public String fixName(String oldName) {
-		return oldName;
-	}
-
-	
+    public String fixName( String oldName ) {
+        return oldName;
+    }
 
 }

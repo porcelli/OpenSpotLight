@@ -56,68 +56,68 @@ import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelTwoObj implements SimpleNodeType {
-	private String uuid;
+    private String      uuid;
 
-	private String key;
+    private String      key;
 
-	private String property;
-	private LevelOneObj parentObj;
+    private String      property;
+    private LevelOneObj parentObj;
 
-	private PropertyObj propertyObj;
+    private PropertyObj propertyObj;
 
-	public boolean equals(final Object o) {
-		if (o == this) {
-			return true;
-		}
-		if (!(o instanceof LevelTwoObj)) {
-			return false;
-		}
-		final LevelTwoObj that = (LevelTwoObj) o;
-		return Equals.eachEquality(Arrays.of(parentObj, key), Arrays.andOf(
-				that.parentObj, that.key));
-	}
+    public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof LevelTwoObj)) {
+            return false;
+        }
+        final LevelTwoObj that = (LevelTwoObj)o;
+        return Equals.eachEquality(Arrays.of(parentObj, key), Arrays.andOf(
+                                                                           that.parentObj, that.key));
+    }
 
-	@KeyProperty
-	public String getKey() {
-		return key;
-	}
+    @KeyProperty
+    public String getKey() {
+        return key;
+    }
 
-	@ParentProperty
-	public LevelOneObj getLevelOneObj() {
-		return parentObj;
-	}
+    @ParentProperty
+    public LevelOneObj getLevelOneObj() {
+        return parentObj;
+    }
 
-	public String getProperty() {
-		return property;
-	}
+    public String getProperty() {
+        return property;
+    }
 
-	public PropertyObj getPropertyObj() {
-		return propertyObj;
-	}
+    public PropertyObj getPropertyObj() {
+        return propertyObj;
+    }
 
-	@SetUniqueIdOnThisProperty
-	public String getUuid() {
-		return uuid;
-	}
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
+    }
 
-	public void setKey(final String key) {
-		this.key = key;
-	}
+    public void setKey( final String key ) {
+        this.key = key;
+    }
 
-	public void setLevelOneObj(final LevelOneObj parentObj) {
-		this.parentObj = parentObj;
-	}
+    public void setLevelOneObj( final LevelOneObj parentObj ) {
+        this.parentObj = parentObj;
+    }
 
-	public void setProperty(final String property) {
-		this.property = property;
-	}
+    public void setProperty( final String property ) {
+        this.property = property;
+    }
 
-	public void setPropertyObj(final PropertyObj propertyObj) {
-		this.propertyObj = propertyObj;
-	}
+    public void setPropertyObj( final PropertyObj propertyObj ) {
+        this.propertyObj = propertyObj;
+    }
 
-	public void setUuid(final String uuid) {
-		this.uuid = uuid;
-	}
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
+    }
 
 }

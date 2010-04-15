@@ -49,24 +49,27 @@
 
 package org.openspotlight.common.util.test;
 
-import org.junit.Test;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkEachParameterNotNull;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Assertions.checkNullMandatory;
+
+import org.junit.Test;
 
 /**
  * Test class for {@link Assertions}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class AssertionsTest {
 
     @Test
     public void shouldDoNotThrowExceptionWhenGettingNotEmptyArray() {
-        checkNotEmpty("notEmpty", new Object[] { 1, 2, 3 });
+        checkNotEmpty("notEmpty", new Object[] {1, 2, 3});
     }
 
     @Test
@@ -101,56 +104,56 @@ public class AssertionsTest {
             checkNotNull("notNullable", null); //$NON-NLS-1$
         } catch (final IllegalArgumentException e) {
             assertThat(e.getMessage(),
-                    is("Parameter named notNullable should be not null!")); //$NON-NLS-1$
+                       is("Parameter named notNullable should be not null!")); //$NON-NLS-1$
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionOnCheckEmptyWhenGettingNullParameter() {
-        checkNotEmpty("notEmpty", (String) null); //$NON-NLS-1$
+        checkNotEmpty("notEmpty", (String)null); //$NON-NLS-1$
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenGettinAllNullParameter() {
-        checkEachParameterNotNull("notNullable", (Object) null); //$NON-NLS-1$
+        checkEachParameterNotNull("notNullable", (Object)null); //$NON-NLS-1$
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenGettingEmptyArray() {
         checkNotEmpty("empty", new Object[] {});
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenGettingEmptyParameter() {
         checkNotEmpty("notEmpty", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test( expected = IllegalStateException.class )
     public void shouldThrowExceptionWhenGettingInvalidConditionParameter() {
         checkCondition("valid", false); //$NON-NLS-1$
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenGettingNonNullParameter() {
         checkNullMandatory("nullable", "non null"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenGettingNullArray() {
-        checkNotEmpty("empty", (Object[]) null);
+        checkNotEmpty("empty", (Object[])null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenGettingNullParameter() {
         checkNotNull("notNullable", null); //$NON-NLS-1$
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenGettingSpacedParameter() {
         checkNotEmpty("notEmpty", "    "); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionWhenGettinOneNullParameter() {
         checkEachParameterNotNull("notNullable", "nonNull", null); //$NON-NLS-1$ //$NON-NLS-2$
     }

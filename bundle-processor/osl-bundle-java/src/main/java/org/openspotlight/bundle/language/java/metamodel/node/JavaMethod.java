@@ -54,187 +54,176 @@ import org.openspotlight.graph.annotation.SLProperty;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Interface for node Java Method Meta Model. {@link JavaType} should be
- * used as parent.
+ * The Interface for node Java Method Meta Model. {@link JavaType} should be used as parent.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Java Method")
+@SLDescription( "Java Method" )
 public interface JavaMethod extends SLNode {
 
-	/**
-	 * Gets the abstract
-	 * 
-	 * @return the abstract
-	 */
-	@SLProperty
-	public Boolean getAbstract();
+    /**
+     * Gets the abstract
+     * 
+     * @return the abstract
+     */
+    @SLProperty
+    public Boolean getAbstract();
 
-	@SLProperty
-	public String getCompleteQualifiedName();
+    @SLProperty
+    public String getCompleteQualifiedName();
 
-	/**
-	 * Gets the final.
-	 * 
-	 * @return the final
-	 */
-	@SLProperty
-	public Boolean getFinal();
+    /**
+     * Gets the final.
+     * 
+     * @return the final
+     */
+    @SLProperty
+    public Boolean getFinal();
 
-	/**
-	 * Gets the Native
-	 * 
-	 * @return the Native
-	 */
-	@SLProperty
-	public Boolean getNative();
+    /**
+     * Gets the Native
+     * 
+     * @return the Native
+     */
+    @SLProperty
+    public Boolean getNative();
 
-	@SLProperty
-	public Integer getNumberOfParameters();
+    @SLProperty
+    public Integer getNumberOfParameters();
 
-	/**
-	 * Gets the private.
-	 * 
-	 * @return the private
-	 */
-	@SLProperty
-	public Boolean getPrivate();
+    /**
+     * Gets the private.
+     * 
+     * @return the private
+     */
+    @SLProperty
+    public Boolean getPrivate();
 
-	/**
-	 * Gets the protected.
-	 * 
-	 * @return the protected
-	 */
-	@SLProperty
-	public Boolean getProtected();
+    /**
+     * Gets the protected.
+     * 
+     * @return the protected
+     */
+    @SLProperty
+    public Boolean getProtected();
 
-	/**
-	 * Gets the public.
-	 * 
-	 * @return the public
-	 */
-	@SLProperty
-	public Boolean getPublic();
+    /**
+     * Gets the public.
+     * 
+     * @return the public
+     */
+    @SLProperty
+    public Boolean getPublic();
 
-	@SLProperty
-	public String getQualifiedName();
+    @SLProperty
+    public String getQualifiedName();
 
-	/**
-	 * Gets the simple name.
-	 * 
-	 * @return the simple name
-	 */
-	@SLProperty
-	public String getSimpleName();
+    /**
+     * Gets the simple name.
+     * 
+     * @return the simple name
+     */
+    @SLProperty
+    public String getSimpleName();
 
-	/**
-	 * Gets the static.
-	 * 
-	 * @return the static
-	 */
-	@SLProperty
-	public Boolean getStatic();
+    /**
+     * Gets the static.
+     * 
+     * @return the static
+     */
+    @SLProperty
+    public Boolean getStatic();
 
-	/**
-	 * Gets the synchronized.
-	 * 
-	 * @return the synchronized
-	 */
-	@SLProperty
-	public Boolean getSynchronized();
+    /**
+     * Gets the synchronized.
+     * 
+     * @return the synchronized
+     */
+    @SLProperty
+    public Boolean getSynchronized();
 
-	/**
-	 * Gets the version.
-	 * 
-	 * @return the version
-	 */
-	@SLProperty
-	public String getVersion();
+    /**
+     * Gets the version.
+     * 
+     * @return the version
+     */
+    @SLProperty
+    public String getVersion();
 
-	/**
-	 * Sets the abstract.
-	 * 
-	 * @param newAbstract
-	 *            the new abstract
-	 */
-	public void setAbstract(Boolean newAbstract);
+    /**
+     * Sets the abstract.
+     * 
+     * @param newAbstract the new abstract
+     */
+    public void setAbstract( Boolean newAbstract );
 
-	public void setCompleteQualifiedName(String newCompleteQualifiedName);
+    public void setCompleteQualifiedName( String newCompleteQualifiedName );
 
-	/**
-	 * Sets the final.
-	 * 
-	 * @param newFinal
-	 *            the new final
-	 */
-	public void setFinal(Boolean newFinal);
+    /**
+     * Sets the final.
+     * 
+     * @param newFinal the new final
+     */
+    public void setFinal( Boolean newFinal );
 
-	/**
-	 * Sets the Native.
-	 * 
-	 * @param newNative
-	 *            the new Native
-	 */
-	public void setNative(Boolean newNative);
+    /**
+     * Sets the Native.
+     * 
+     * @param newNative the new Native
+     */
+    public void setNative( Boolean newNative );
 
-	public void setNumberOfParameters(Integer newNumberOfParameters);
+    public void setNumberOfParameters( Integer newNumberOfParameters );
 
-	/**
-	 * Sets the private.
-	 * 
-	 * @param newPrivate
-	 *            the new private
-	 */
-	public void setPrivate(Boolean newPrivate);
+    /**
+     * Sets the private.
+     * 
+     * @param newPrivate the new private
+     */
+    public void setPrivate( Boolean newPrivate );
 
-	/**
-	 * Sets the protected.
-	 * 
-	 * @param newProtected
-	 *            the new protected
-	 */
-	public void setProtected(Boolean newProtected);
+    /**
+     * Sets the protected.
+     * 
+     * @param newProtected the new protected
+     */
+    public void setProtected( Boolean newProtected );
 
-	/**
-	 * Sets the public.
-	 * 
-	 * @param newPublic
-	 *            the new public
-	 */
-	public void setPublic(Boolean newPublic);
+    /**
+     * Sets the public.
+     * 
+     * @param newPublic the new public
+     */
+    public void setPublic( Boolean newPublic );
 
-	public void setQualifiedName(String newQualifiedName);
+    public void setQualifiedName( String newQualifiedName );
 
-	/**
-	 * Sets the simple name.
-	 * 
-	 * @param newSimpleName
-	 *            the new simple name
-	 */
-	public void setSimpleName(String newSimpleName);
+    /**
+     * Sets the simple name.
+     * 
+     * @param newSimpleName the new simple name
+     */
+    public void setSimpleName( String newSimpleName );
 
-	/**
-	 * Sets the static.
-	 * 
-	 * @param newStatic
-	 *            the new static
-	 */
-	public void setStatic(Boolean newStatic);
+    /**
+     * Sets the static.
+     * 
+     * @param newStatic the new static
+     */
+    public void setStatic( Boolean newStatic );
 
-	/**
-	 * Sets the synchronized.
-	 * 
-	 * @param newSynchronized
-	 *            the new synchronized
-	 */
-	public void setSynchronized(Boolean newSynchronized);
+    /**
+     * Sets the synchronized.
+     * 
+     * @param newSynchronized the new synchronized
+     */
+    public void setSynchronized( Boolean newSynchronized );
 
-	/**
-	 * Sets the version.
-	 * 
-	 * @param newVersion
-	 *            the new version
-	 */
-	public void setVersion(String newVersion);
+    /**
+     * Sets the version.
+     * 
+     * @param newVersion the new version
+     */
+    public void setVersion( String newVersion );
 
 }

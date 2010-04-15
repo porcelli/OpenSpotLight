@@ -47,10 +47,11 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.bundle.db.metamodel.node.impl;
+
 import org.openspotlight.bundle.db.metamodel.node.DataType;
 import org.openspotlight.graph.annotation.SLDescription;
 
-@SLDescription("Oracle9 DataType")
-public interface Oracle9DataType extends DataType{
+@SLDescription( "Oracle9 DataType" )
+public interface Oracle9DataType extends DataType {
 
 }

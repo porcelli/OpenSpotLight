@@ -48,13 +48,13 @@
  */
 package org.openspotlight.remote.internal;
 
-import java.io.Serializable;
-
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.HashCodes.hashOf;
+
+import java.io.Serializable;
 
 /**
  * The Class UserToken is necessary for doing remote invocations. This class should not be used directly, since it is stored

@@ -55,12 +55,11 @@ package org.openspotlight.graph;
  */
 public interface SLEncoder {
 
-	/**
-	 * Encode.
-	 * 
-	 * @param value the value
-	 * 
-	 * @return the string
-	 */
-	public String encode(String value);
+    /**
+     * Encode.
+     * 
+     * @param value the value
+     * @return the string
+     */
+    public String encode( String value );
 }

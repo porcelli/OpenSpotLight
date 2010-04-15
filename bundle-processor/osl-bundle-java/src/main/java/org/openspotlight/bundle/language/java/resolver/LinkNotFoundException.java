@@ -61,52 +61,51 @@ import org.openspotlight.common.exception.SLException;
  */
 public class LinkNotFoundException extends SLException {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 4742722513379759831L;
+    private static final long serialVersionUID = 4742722513379759831L;
 
-	/**
-	 * Instantiates a new link not found exception.
-	 */
-	public LinkNotFoundException() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * Instantiates a new link not found exception.
+     */
+    public LinkNotFoundException() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * Instantiates a new link not found exception.
-	 * 
-	 * @param message
-	 *            the message
-	 */
-	public LinkNotFoundException(final String message) {
-		super(message);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * Instantiates a new link not found exception.
+     * 
+     * @param message the message
+     */
+    public LinkNotFoundException(
+                                  final String message ) {
+        super(message);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * Instantiates a new link not found exception.
-	 * 
-	 * @param message
-	 *            the message
-	 * @param cause
-	 *            the cause
-	 */
-	public LinkNotFoundException(final String message, final Throwable cause) {
-		super(message, cause);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * Instantiates a new link not found exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public LinkNotFoundException(
+                                  final String message, final Throwable cause ) {
+        super(message, cause);
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * Instantiates a new link not found exception.
-	 * 
-	 * @param cause
-	 *            the cause
-	 */
-	public LinkNotFoundException(final Throwable cause) {
-		super(cause);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * Instantiates a new link not found exception.
+     * 
+     * @param cause the cause
+     */
+    public LinkNotFoundException(
+                                  final Throwable cause ) {
+        super(cause);
+        // TODO Auto-generated constructor stub
+    }
 
 }

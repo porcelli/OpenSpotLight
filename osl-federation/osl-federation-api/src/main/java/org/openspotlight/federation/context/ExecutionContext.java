@@ -58,23 +58,23 @@ import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 public interface ExecutionContext extends Disposable {
-	public boolean artifactFinderSupportsThisType(Class<? extends Artifact> type);
+    public boolean artifactFinderSupportsThisType( Class<? extends Artifact> type );
 
-	public PersistentArtifactManager getPersistentArtifactManager();
+    public PersistentArtifactManager getPersistentArtifactManager();
 
-	public ConfigurationManager getDefaultConfigurationManager();
+    public ConfigurationManager getDefaultConfigurationManager();
 
-	public JcrConnectionProvider getDefaultConnectionProvider();
+    public JcrConnectionProvider getDefaultConnectionProvider();
 
-	public SLGraphSession getGraphSession();
+    public SLGraphSession getGraphSession();
 
-	public DetailedLogger getLogger();
+    public DetailedLogger getLogger();
 
-	public String getPassword();
+    public String getPassword();
 
-	public String getRepository();
+    public String getRepository();
 
-	public AuthenticatedUser getUser();
+    public AuthenticatedUser getUser();
 
-	public String getUserName();
+    public String getUserName();
 }

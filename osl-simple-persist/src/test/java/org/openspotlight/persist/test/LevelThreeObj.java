@@ -48,6 +48,11 @@
  */
 package org.openspotlight.persist.test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
@@ -55,104 +60,99 @@ import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class LevelThreeObj implements SimpleNodeType {
-	private String uuid;
+    private String                    uuid;
 
-	private String key;
+    private String                    key;
 
-	private String property;
-	private LevelTwoObj parentObj;
+    private String                    property;
+    private LevelTwoObj               parentObj;
 
-	private Map<Double, Integer> numberMap = new HashMap<Double, Integer>();
+    private Map<Double, Integer>      numberMap   = new HashMap<Double, Integer>();
 
-	private List<Boolean> booleanList = new ArrayList<Boolean>();
+    private List<Boolean>             booleanList = new ArrayList<Boolean>();
 
-	private List<ListItemObj> objList = new ArrayList<ListItemObj>();
+    private List<ListItemObj>         objList     = new ArrayList<ListItemObj>();
 
-	private Map<Integer, MapValueObj> objMap = new HashMap<Integer, MapValueObj>();
+    private Map<Integer, MapValueObj> objMap      = new HashMap<Integer, MapValueObj>();
 
-	public boolean equals(final Object o) {
-		if (o == this) {
-			return true;
-		}
-		if (!(o instanceof LevelThreeObj)) {
-			return false;
-		}
-		final LevelThreeObj that = (LevelThreeObj) o;
-		return Equals.eachEquality(Arrays.of(parentObj, key), Arrays.andOf(
-				that.parentObj, that.key));
-	}
+    public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof LevelThreeObj)) {
+            return false;
+        }
+        final LevelThreeObj that = (LevelThreeObj)o;
+        return Equals.eachEquality(Arrays.of(parentObj, key), Arrays.andOf(
+                                                                           that.parentObj, that.key));
+    }
 
-	public List<Boolean> getBooleanList() {
-		return booleanList;
-	}
+    public List<Boolean> getBooleanList() {
+        return booleanList;
+    }
 
-	@KeyProperty
-	public String getKey() {
-		return key;
-	}
+    @KeyProperty
+    public String getKey() {
+        return key;
+    }
 
-	@ParentProperty
-	public LevelTwoObj getLevelTwoObj() {
-		return parentObj;
-	}
+    @ParentProperty
+    public LevelTwoObj getLevelTwoObj() {
+        return parentObj;
+    }
 
-	public Map<Double, Integer> getNumberMap() {
-		return numberMap;
-	}
+    public Map<Double, Integer> getNumberMap() {
+        return numberMap;
+    }
 
-	public List<ListItemObj> getObjList() {
-		return objList;
-	}
+    public List<ListItemObj> getObjList() {
+        return objList;
+    }
 
-	public Map<Integer, MapValueObj> getObjMap() {
-		return objMap;
-	}
+    public Map<Integer, MapValueObj> getObjMap() {
+        return objMap;
+    }
 
-	public String getProperty() {
-		return property;
-	}
+    public String getProperty() {
+        return property;
+    }
 
-	@SetUniqueIdOnThisProperty
-	public String getUuid() {
-		return uuid;
-	}
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
+    }
 
-	public void setBooleanList(final List<Boolean> booleanList) {
-		this.booleanList = booleanList;
-	}
+    public void setBooleanList( final List<Boolean> booleanList ) {
+        this.booleanList = booleanList;
+    }
 
-	public void setKey(final String key) {
-		this.key = key;
-	}
+    public void setKey( final String key ) {
+        this.key = key;
+    }
 
-	public void setLevelTwoObj(final LevelTwoObj parentObj) {
-		this.parentObj = parentObj;
-	}
+    public void setLevelTwoObj( final LevelTwoObj parentObj ) {
+        this.parentObj = parentObj;
+    }
 
-	public void setNumberMap(final Map<Double, Integer> numberMap) {
-		this.numberMap = numberMap;
-	}
+    public void setNumberMap( final Map<Double, Integer> numberMap ) {
+        this.numberMap = numberMap;
+    }
 
-	public void setObjList(final List<ListItemObj> objList) {
-		this.objList = objList;
-	}
+    public void setObjList( final List<ListItemObj> objList ) {
+        this.objList = objList;
+    }
 
-	public void setObjMap(final Map<Integer, MapValueObj> objMap) {
-		this.objMap = objMap;
-	}
+    public void setObjMap( final Map<Integer, MapValueObj> objMap ) {
+        this.objMap = objMap;
+    }
 
-	public void setProperty(final String property) {
-		this.property = property;
-	}
+    public void setProperty( final String property ) {
+        this.property = property;
+    }
 
-	public void setUuid(final String uuid) {
-		this.uuid = uuid;
-	}
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
+    }
 
 }

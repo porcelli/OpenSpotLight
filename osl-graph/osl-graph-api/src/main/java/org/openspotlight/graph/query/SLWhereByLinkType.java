@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.query;
 
-
 /**
  * The Interface SLWhereByLinkType.
  * 
@@ -56,43 +55,42 @@ package org.openspotlight.graph.query;
  */
 public interface SLWhereByLinkType {
 
-	/**
-	 * Link type.
-	 * 
-	 * @param typeName the type name
-	 * 
-	 * @return the link type
-	 */
-	public LinkType linkType(String typeName);
-	
-	/**
-	 * Where end.
-	 * 
-	 * @return the end
-	 */
-	public End whereEnd();
-	
-	/**
-	 * The Interface End.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface End {
-		
-		/**
-		 * Order by.
-		 * 
-		 * @return the sL order by statement
-		 */
-		public SLOrderByStatement orderBy();
-		
-		/**
-		 * Keep result.
-		 * 
-		 * @return the end
-		 */
-		public End keepResult();
-		
+    /**
+     * Link type.
+     * 
+     * @param typeName the type name
+     * @return the link type
+     */
+    public LinkType linkType( String typeName );
+
+    /**
+     * Where end.
+     * 
+     * @return the end
+     */
+    public End whereEnd();
+
+    /**
+     * The Interface End.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface End {
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public SLOrderByStatement orderBy();
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
         /**
          * Limit.
          * 
@@ -111,316 +109,308 @@ public interface SLWhereByLinkType {
         public End limit( Integer size,
                           Integer offset );
 
-		/**
-		 * Execute x times.
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes();
-		
-		/**
-		 * Execute x times.
-		 * 
-		 * @param x the x
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes(int x);
-	}
-	
-	/**
-	 * The Interface LinkType.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface LinkType {
-		
-		/**
-		 * Each.
-		 * 
-		 * @return the each
-		 */
-		public Each each();
-		
-		/**
-		 * The Interface Each.
-		 * 
-		 * @author Vitor Hugo Chagas
-		 */
-		public static interface Each {
-			
-			/**
-			 * Property.
-			 * 
-			 * @param name the name
-			 * 
-			 * @return the property
-			 */
-			public Property property(String name);
-			
-			/**
-			 * The Interface Property.
-			 * 
-			 * @author Vitor Hugo Chagas
-			 */
-			public static interface Property {
-				
-				/**
-				 * Not.
-				 * 
-				 * @return the property
-				 */
-				public Property not();
-				
-				/**
-				 * Lesser than.
-				 * 
-				 * @return the operator
-				 */
-				public Operator lesserThan();
-				
-				/**
-				 * Greater than.
-				 * 
-				 * @return the operator
-				 */
-				public Operator greaterThan();
-				
-				/**
-				 * Equals to.
-				 * 
-				 * @return the operator
-				 */
-				public Operator equalsTo();
-				
-				/**
-				 * Lesser or equal than.
-				 * 
-				 * @return the operator
-				 */
-				public Operator lesserOrEqualThan();
-				
-				/**
-				 * Greater or equal than.
-				 * 
-				 * @return the operator
-				 */
-				public Operator greaterOrEqualThan();
-				
-				/**
-				 * Contains.
-				 * 
-				 * @return the operator
-				 */
-				public Operator contains();
-				
-				/**
-				 * Starts with.
-				 * 
-				 * @return the operator
-				 */
-				public Operator startsWith();
-				
-				/**
-				 * Ends with.
-				 * 
-				 * @return the operator
-				 */
-				public Operator endsWith();
-				
-				/**
-				 * The Interface Operator.
-				 * 
-				 * @author Vitor Hugo Chagas
-				 */
-				public static interface Operator {
-					
-					/**
-					 * Value.
-					 * 
-					 * @param value the value
-					 * 
-					 * @return the value
-					 */
-					public Value value(String value);
-					
-					/**
-					 * Value.
-					 * 
-					 * @param value the value
-					 * 
-					 * @return the value
-					 */
-					public Value value(Integer value);
-					
-					/**
-					 * Value.
-					 * 
-					 * @param value the value
-					 * 
-					 * @return the value
-					 */
-					public Value value(Long value);
-					
-					/**
-					 * Value.
-					 * 
-					 * @param value the value
-					 * 
-					 * @return the value
-					 */
-					public Value value(Float value);
-					
-					/**
-					 * Value.
-					 * 
-					 * @param value the value
-					 * 
-					 * @return the value
-					 */
-					public Value value(Double value);
-					
-					/**
-					 * Value.
-					 * 
-					 * @param value the value
-					 * 
-					 * @return the value
-					 */
-					public Value value(Boolean value);
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes();
 
-					/**
-					 * The Interface Value.
-					 * 
-					 * @author Vitor Hugo Chagas
-					 */
-					public static interface Value {
-						
-						/**
-						 * Link type end.
-						 * 
-						 * @return the sL where by link type
-						 */
-						public SLWhereByLinkType linkTypeEnd();
-						
-						/**
-						 * Or.
-						 * 
-						 * @return the relational operator
-						 */
-						public RelationalOperator or();
-						
-						/**
-						 * And.
-						 * 
-						 * @return the relational operator
-						 */
-						public RelationalOperator and();
-						
-						/**
-						 * Close bracket.
-						 * 
-						 * @return the close bracket
-						 */
-						public CloseBracket closeBracket();
-						
-						/**
-						 * The Interface RelationalOperator.
-						 * 
-						 * @author Vitor Hugo Chagas
-						 */
-						public static interface RelationalOperator {
-							
-							/**
-							 * Comma.
-							 * 
-							 * @return the sL where by link type
-							 */
-							public SLWhereByLinkType comma();
-							
-							/**
-							 * Each.
-							 * 
-							 * @return the each
-							 */
-							public Each each();
-							
-							/**
-							 * Open bracket.
-							 * 
-							 * @return the open bracket
-							 */
-							public OpenBracket openBracket();
-							
-							/**
-							 * The Interface OpenBracket.
-							 * 
-							 * @author Vitor Hugo Chagas
-							 */
-							public static interface OpenBracket {
-								
-								/**
-								 * Each.
-								 * 
-								 * @return the each
-								 */
-								public Each each();
-							}
-						}
-						
-						/**
-						 * The Interface OpenBracket.
-						 * 
-						 * @author Vitor Hugo Chagas
-						 */
-						public static interface OpenBracket {
-							
-							/**
-							 * Each.
-							 * 
-							 * @return the each
-							 */
-							public Each each();
-							
-							/**
-							 * Close bracket.
-							 * 
-							 * @return the close bracket
-							 */
-							public CloseBracket closeBracket();
-						}
-						
-						/**
-						 * The Interface CloseBracket.
-						 * 
-						 * @author Vitor Hugo Chagas
-						 */
-						public static interface CloseBracket {
-							
-							/**
-							 * Or.
-							 * 
-							 * @return the relational operator
-							 */
-							public RelationalOperator or();
-							
-							/**
-							 * And.
-							 * 
-							 * @return the relational operator
-							 */
-							public RelationalOperator and();
-							
-							/**
-							 * Type end.
-							 * 
-							 * @return the sL where by link type
-							 */
-							public SLWhereByLinkType typeEnd();
-						}
-					}
-				}
-			}
-		}
-	}
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes( int x );
+    }
+
+    /**
+     * The Interface LinkType.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface LinkType {
+
+        /**
+         * Each.
+         * 
+         * @return the each
+         */
+        public Each each();
+
+        /**
+         * The Interface Each.
+         * 
+         * @author Vitor Hugo Chagas
+         */
+        public static interface Each {
+
+            /**
+             * Property.
+             * 
+             * @param name the name
+             * @return the property
+             */
+            public Property property( String name );
+
+            /**
+             * The Interface Property.
+             * 
+             * @author Vitor Hugo Chagas
+             */
+            public static interface Property {
+
+                /**
+                 * Not.
+                 * 
+                 * @return the property
+                 */
+                public Property not();
+
+                /**
+                 * Lesser than.
+                 * 
+                 * @return the operator
+                 */
+                public Operator lesserThan();
+
+                /**
+                 * Greater than.
+                 * 
+                 * @return the operator
+                 */
+                public Operator greaterThan();
+
+                /**
+                 * Equals to.
+                 * 
+                 * @return the operator
+                 */
+                public Operator equalsTo();
+
+                /**
+                 * Lesser or equal than.
+                 * 
+                 * @return the operator
+                 */
+                public Operator lesserOrEqualThan();
+
+                /**
+                 * Greater or equal than.
+                 * 
+                 * @return the operator
+                 */
+                public Operator greaterOrEqualThan();
+
+                /**
+                 * Contains.
+                 * 
+                 * @return the operator
+                 */
+                public Operator contains();
+
+                /**
+                 * Starts with.
+                 * 
+                 * @return the operator
+                 */
+                public Operator startsWith();
+
+                /**
+                 * Ends with.
+                 * 
+                 * @return the operator
+                 */
+                public Operator endsWith();
+
+                /**
+                 * The Interface Operator.
+                 * 
+                 * @author Vitor Hugo Chagas
+                 */
+                public static interface Operator {
+
+                    /**
+                     * Value.
+                     * 
+                     * @param value the value
+                     * @return the value
+                     */
+                    public Value value( String value );
+
+                    /**
+                     * Value.
+                     * 
+                     * @param value the value
+                     * @return the value
+                     */
+                    public Value value( Integer value );
+
+                    /**
+                     * Value.
+                     * 
+                     * @param value the value
+                     * @return the value
+                     */
+                    public Value value( Long value );
+
+                    /**
+                     * Value.
+                     * 
+                     * @param value the value
+                     * @return the value
+                     */
+                    public Value value( Float value );
+
+                    /**
+                     * Value.
+                     * 
+                     * @param value the value
+                     * @return the value
+                     */
+                    public Value value( Double value );
+
+                    /**
+                     * Value.
+                     * 
+                     * @param value the value
+                     * @return the value
+                     */
+                    public Value value( Boolean value );
+
+                    /**
+                     * The Interface Value.
+                     * 
+                     * @author Vitor Hugo Chagas
+                     */
+                    public static interface Value {
+
+                        /**
+                         * Link type end.
+                         * 
+                         * @return the sL where by link type
+                         */
+                        public SLWhereByLinkType linkTypeEnd();
+
+                        /**
+                         * Or.
+                         * 
+                         * @return the relational operator
+                         */
+                        public RelationalOperator or();
+
+                        /**
+                         * And.
+                         * 
+                         * @return the relational operator
+                         */
+                        public RelationalOperator and();
+
+                        /**
+                         * Close bracket.
+                         * 
+                         * @return the close bracket
+                         */
+                        public CloseBracket closeBracket();
+
+                        /**
+                         * The Interface RelationalOperator.
+                         * 
+                         * @author Vitor Hugo Chagas
+                         */
+                        public static interface RelationalOperator {
+
+                            /**
+                             * Comma.
+                             * 
+                             * @return the sL where by link type
+                             */
+                            public SLWhereByLinkType comma();
+
+                            /**
+                             * Each.
+                             * 
+                             * @return the each
+                             */
+                            public Each each();
+
+                            /**
+                             * Open bracket.
+                             * 
+                             * @return the open bracket
+                             */
+                            public OpenBracket openBracket();
+
+                            /**
+                             * The Interface OpenBracket.
+                             * 
+                             * @author Vitor Hugo Chagas
+                             */
+                            public static interface OpenBracket {
+
+                                /**
+                                 * Each.
+                                 * 
+                                 * @return the each
+                                 */
+                                public Each each();
+                            }
+                        }
+
+                        /**
+                         * The Interface OpenBracket.
+                         * 
+                         * @author Vitor Hugo Chagas
+                         */
+                        public static interface OpenBracket {
+
+                            /**
+                             * Each.
+                             * 
+                             * @return the each
+                             */
+                            public Each each();
+
+                            /**
+                             * Close bracket.
+                             * 
+                             * @return the close bracket
+                             */
+                            public CloseBracket closeBracket();
+                        }
+
+                        /**
+                         * The Interface CloseBracket.
+                         * 
+                         * @author Vitor Hugo Chagas
+                         */
+                        public static interface CloseBracket {
+
+                            /**
+                             * Or.
+                             * 
+                             * @return the relational operator
+                             */
+                            public RelationalOperator or();
+
+                            /**
+                             * And.
+                             * 
+                             * @return the relational operator
+                             */
+                            public RelationalOperator and();
+
+                            /**
+                             * Type end.
+                             * 
+                             * @return the sL where by link type
+                             */
+                            public SLWhereByLinkType typeEnd();
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

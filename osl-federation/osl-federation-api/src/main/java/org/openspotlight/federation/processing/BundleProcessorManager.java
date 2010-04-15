@@ -55,19 +55,24 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public interface BundleProcessorManager {
 
-	public static enum GlobalExecutionStatus {
-		SUCCESS, ERROR
-	}
+    public static enum GlobalExecutionStatus {
+        SUCCESS,
+        ERROR
+    }
 
-	public GlobalExecutionStatus executeBundles(final String username,
-			final String password, final JcrConnectionDescriptor descriptor,
-			ExecutionContextFactory contextFactory,
-			final GlobalSettings settings, final Group... groups)
-			throws Exception;
+    public GlobalExecutionStatus executeBundles( final String username,
+                                                 final String password,
+                                                 final JcrConnectionDescriptor descriptor,
+                                                 ExecutionContextFactory contextFactory,
+                                                 final GlobalSettings settings,
+                                                 final Group... groups )
+            throws Exception;
 
-	public void executeBundlesInBackground(final String username,
-			final String password, final JcrConnectionDescriptor descriptor,
-			ExecutionContextFactory contextFactory,
-			final GlobalSettings settings, final Group... groups);
+    public void executeBundlesInBackground( final String username,
+                                            final String password,
+                                            final JcrConnectionDescriptor descriptor,
+                                            ExecutionContextFactory contextFactory,
+                                            final GlobalSettings settings,
+                                            final Group... groups );
 
 }

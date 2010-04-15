@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,17 +52,11 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for node TableView Meta Model.
- *
- * {@link Catalog} should be used as parent.
- * {@link Schema} should be used as parent.
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * The Interface for node TableView Meta Model. {@link Catalog} should be used as parent. {@link Schema} should be used as parent.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("TableView")
+@SLDescription( "TableView" )
 public interface TableView extends SLNode {
 
-    
 }
-
-        

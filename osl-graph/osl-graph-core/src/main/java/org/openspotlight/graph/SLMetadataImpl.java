@@ -48,6 +48,10 @@
  */
 package org.openspotlight.graph;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
@@ -59,10 +63,6 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * The Class SLMetadataImpl.
@@ -87,27 +87,20 @@ public class SLMetadataImpl implements SLMetadata {
         lock = treeSession.getLockObject();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetadata#findMetaNodeType(java.lang.Class)
+    /**
+     * {@inheritDoc}
      */
-    public SLMetaNodeType findMetaNodeType(
-                                            final Class<? extends SLNode> nodeClass )
-        throws SLGraphSessionException {
+    public SLMetaNodeType getMetaNodeType(
+                                            final Class<? extends SLNode> nodeClass ) {
         synchronized (lock) {
-            return this.findMetaNodeType(nodeClass.getName());
+            return this.getMetaNodeType(nodeClass.getName());
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLMetadata#findMetaNodeType(java.lang.String)
+    /**
+     * {@inheritDoc}
      */
-    public SLMetaNodeType findMetaNodeType( final String typeName )
-        throws SLGraphSessionException {
+    public SLMetaNodeType getMetaNodeType( final String typeName ) {
         synchronized (lock) {
             try {
                 final StringBuilder statement = new StringBuilder(treeSession
@@ -132,15 +125,10 @@ public class SLMetadataImpl implements SLMetadata {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLMetadata#findMetaNodeTypeByDescription(java
-     * .lang.String)
+    /**
+     * {@inheritDoc}
      */
-    public SLMetaNodeType findMetaNodeTypeByDescription( final String description )
-        throws SLGraphSessionException {
+    public SLMetaNodeType getMetaNodeTypeByDescription( final String description ) {
         synchronized (lock) {
             try {
                 final StringBuilder statement = new StringBuilder(treeSession
@@ -170,26 +158,19 @@ public class SLMetadataImpl implements SLMetadata {
         return lock;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetadata#getMetaLinkType(java.lang.Class)
+    /**
+     * {@inheritDoc}
      */
-    public SLMetaLinkType getMetaLinkType( final Class<? extends SLLink> linkType )
-        throws SLGraphSessionException {
+    public SLMetaLinkType getMetaLinkType( final Class<? extends SLLink> linkType ) {
         synchronized (lock) {
             return this.getMetaLinkType(linkType.getName());
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetadata#getMetaLinkType(java.lang.String)
+    /**
+     * {@inheritDoc}
      */
-    public SLMetaLinkType getMetaLinkType( final String name )
-        throws SLGraphSessionException {
+    public SLMetaLinkType getMetaLinkType( final String name ) {
         synchronized (lock) {
             try {
                 final StringBuilder statement = new StringBuilder();
@@ -212,15 +193,10 @@ public class SLMetadataImpl implements SLMetadata {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLMetadata#getMetaLinkTypeByDescription(java.
-     * lang.String)
+    /**
+     * {@inheritDoc}
      */
-    public SLMetaLinkType getMetaLinkTypeByDescription( final String description )
-        throws SLGraphSessionException {
+    public SLMetaLinkType getMetaLinkTypeByDescription( final String description ) {
         synchronized (lock) {
             try {
                 final StringBuilder statement = new StringBuilder();
@@ -245,14 +221,10 @@ public class SLMetadataImpl implements SLMetadata {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetadata#getMetaLinkTypes()
+    /**
+     * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes()
-        throws SLGraphSessionException {
+    public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes() {
         synchronized (lock) {
             try {
                 final NeedsSyncronizationCollection<SLMetaLinkType> metaLinkTypes = LockedCollections
@@ -279,13 +251,10 @@ public class SLMetadataImpl implements SLMetadata {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetadata#getMetaNodesTypes()
+    /**
+     * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes()
-        throws SLGraphSessionException {
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes() {
         synchronized (lock) {
             return this.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE);
         }
@@ -295,8 +264,7 @@ public class SLMetadataImpl implements SLMetadata {
      * {@inheritDoc}
      */
     public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
-                                                                            final SLRecursiveMode recursiveMode )
-        throws SLGraphSessionException {
+                                                                            final SLRecursiveMode recursiveMode ) {
         synchronized (lock) {
             return getMetaNodesTypes(recursiveMode, null);
         }
@@ -307,8 +275,7 @@ public class SLMetadataImpl implements SLMetadata {
      */
     public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
                                                                             final SLRecursiveMode recursiveMode,
-                                                                            final VisibilityLevel visibility )
-        throws SLGraphSessionException {
+                                                                            final VisibilityLevel visibility ) {
         synchronized (lock) {
             try {
                 final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
@@ -356,8 +323,7 @@ public class SLMetadataImpl implements SLMetadata {
                                                                              final MetaNodeTypeProperty property2Find,
                                                                              final LogicOperator logicOp,
                                                                              final BooleanOperator booleanOp,
-                                                                             final List<String> values )
-        throws SLGraphSessionException {
+                                                                             final List<String> values ) {
         synchronized (lock) {
             try {
                 final String statement = SLMetadataXPathSupporter

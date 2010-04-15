@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -52,16 +51,11 @@ package org.openspotlight.bundle.db.metamodel.node;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for node Database Constraint Foreign Key Meta Model.
- *
- * {@link Column} should be used as parent.
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * The Interface for node Database Constraint Foreign Key Meta Model. {@link Column} should be used as parent.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Database Constraint Foreign Key")
+@SLDescription( "Database Constraint Foreign Key" )
 public interface DatabaseConstraintForeignKey extends DatabaseConstraint {
 
-    
 }
-
-        

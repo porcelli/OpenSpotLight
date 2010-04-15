@@ -48,15 +48,15 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
+import java.io.PrintWriter;
+import java.util.Collection;
+
 import jline.ConsoleReader;
+
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLMetaLinkType;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
-
-import java.io.PrintWriter;
-import java.util.Collection;
 
 public class ShowLinkTypesCommand implements DynamicCommand {
 
@@ -77,24 +77,19 @@ public class ShowLinkTypesCommand implements DynamicCommand {
         if (!accept(state)) {
             return;
         }
-        try {
-            out.println("link types:");
-            if (state.getSession() == null) {
+        out.println("link types:");
+        if (state.getSession() == null) {
+            out.println("\t(none)");
+        } else {
+            Collection<SLMetaLinkType> nodeTypes = state.getSession().getMetadata().getMetaLinkTypes();
+            if (nodeTypes.size() == 0) {
                 out.println("\t(none)");
             } else {
-                Collection<SLMetaLinkType> nodeTypes = state.getSession().getMetadata().getMetaLinkTypes();
-                if (nodeTypes.size() == 0) {
-                    out.println("\t(none)");
-                } else {
-                    for (SLMetaLinkType linkType : nodeTypes) {
-                        out.print("\t- ");
-                        out.println(linkType.getType().getName());
-                    }
+                for (SLMetaLinkType linkType : nodeTypes) {
+                    out.print("\t- ");
+                    out.println(linkType.getType().getName());
                 }
             }
-        } catch (SLGraphSessionException e) {
-            out.print("ERROR: ");
-            out.println(e.getMessage());
         }
         out.flush();
         state.setInput(null);

@@ -56,12 +56,12 @@ import java.util.UUID;
  * @author Vitor Hugo Chagas
  */
 public class SLUUIDEncoder implements SLEncoder {
-	
+
     /**
      * {@inheritDoc}
      */
-	public String encode(String value) {
-		UUID uuid = UUID.nameUUIDFromBytes(value.getBytes());
-		return uuid.toString().replace('-', '.');
-	}
+    public String encode( String value ) {
+        UUID uuid = UUID.nameUUIDFromBytes(value.getBytes());
+        return uuid.toString().replace('-', '.');
+    }
 }

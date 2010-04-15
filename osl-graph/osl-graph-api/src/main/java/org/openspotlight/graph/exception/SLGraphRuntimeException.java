@@ -52,39 +52,42 @@ import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
  * The Class SLGraphException.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public class SLGraphRuntimeException extends SLRuntimeException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL graph exception.
-	 *
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public SLGraphRuntimeException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Instantiates a new sL graph exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public SLGraphRuntimeException(
+                                    String message, Throwable cause ) {
+        super(message, cause);
+    }
 
-	/**
-	 * Instantiates a new sL graph exception.
-	 *
-	 * @param message the message
-	 */
-	public SLGraphRuntimeException(String message) {
-		super(message);
-	}
+    /**
+     * Instantiates a new sL graph exception.
+     * 
+     * @param message the message
+     */
+    public SLGraphRuntimeException(
+                                    String message ) {
+        super(message);
+    }
 
-	/**
-	 * Instantiates a new sL graph exception.
-	 *
-	 * @param cause the cause
-	 */
-	public SLGraphRuntimeException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Instantiates a new sL graph exception.
+     * 
+     * @param cause the cause
+     */
+    public SLGraphRuntimeException(
+                                    Throwable cause ) {
+        super(cause);
+    }
 }

@@ -48,8 +48,11 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.query.info.*;
+import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
+import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
+import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SLSelectInfo;
+import org.openspotlight.graph.query.info.SLSelectStatementInfo;
 
 /**
  * The Class SLSelectAbstractCommand.
@@ -57,46 +60,41 @@ import org.openspotlight.graph.query.info.*;
  * @author Vitor Hugo Chagas
  */
 public abstract class SLSelectAbstractCommand {
-	
-	/**
-	 * Execute.
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public abstract void execute() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the execute command.
-	 * 
-	 * @param select the select
-	 * @param selectInfo the select info
-	 * @param commandDO the command do
-	 * 
-	 * @return the execute command
-	 */
-	public static SLSelectAbstractCommand getCommand(SLSelect select, SLSelectInfo selectInfo, SLSelectCommandDO commandDO) {
-		SLSelectAbstractCommand command = null;
-		if (select instanceof SLSelectByNodeType) {
-			SLSelectByNodeTypeInfo selectByNodeTypeInfo = SLSelectByNodeTypeInfo.class.cast(selectInfo);
-			command = new SLSelectByNodeTypeExecuteCommand(selectByNodeTypeInfo, commandDO); 
-		}
-		else if (select instanceof SLSelectByLinkType) {
-			SLSelectByLinkTypeInfo selectByLinkTypeInfo = SLSelectByLinkTypeInfo.class.cast(selectInfo);
-			command = new SLSelectByLinkTypeExecuteCommand(selectByLinkTypeInfo, commandDO);
-		}
-		else if (select instanceof SLSelectByLinkCount) {
-			SLSelectByLinkCountInfo selectByLinkCountInfo = SLSelectByLinkCountInfo.class.cast(selectInfo);
-			command = new SLSelectByLinkCountExecuteCommand(selectByLinkCountInfo, commandDO);
-		}
-		else if (select instanceof SLSelectStatement) {
-			SLSelectStatementInfo selectStatementInfo = SLSelectStatementInfo.class.cast(selectInfo);
-			if (selectStatementInfo.getByLinkInfoList().isEmpty()) {
-				command = new SLSelectByNodeTypeCommand(selectStatementInfo, commandDO);
-			}
-			else {
-				command = new SLSelectByLinkTypeCommand(selectStatementInfo, commandDO);
-			}
-		}
-		return command;
-	}
+
+    /**
+     * Execute.
+     */
+    public abstract void execute();
+
+    /**
+     * Gets the execute command.
+     * 
+     * @param select the select
+     * @param selectInfo the select info
+     * @param commandDO the command do
+     * @return the execute command
+     */
+    public static SLSelectAbstractCommand getCommand( SLSelect select,
+                                                      SLSelectInfo selectInfo,
+                                                      SLSelectCommandDO commandDO ) {
+        SLSelectAbstractCommand command = null;
+        if (select instanceof SLSelectByNodeType) {
+            SLSelectByNodeTypeInfo selectByNodeTypeInfo = SLSelectByNodeTypeInfo.class.cast(selectInfo);
+            command = new SLSelectByNodeTypeExecuteCommand(selectByNodeTypeInfo, commandDO);
+        } else if (select instanceof SLSelectByLinkType) {
+            SLSelectByLinkTypeInfo selectByLinkTypeInfo = SLSelectByLinkTypeInfo.class.cast(selectInfo);
+            command = new SLSelectByLinkTypeExecuteCommand(selectByLinkTypeInfo, commandDO);
+        } else if (select instanceof SLSelectByLinkCount) {
+            SLSelectByLinkCountInfo selectByLinkCountInfo = SLSelectByLinkCountInfo.class.cast(selectInfo);
+            command = new SLSelectByLinkCountExecuteCommand(selectByLinkCountInfo, commandDO);
+        } else if (select instanceof SLSelectStatement) {
+            SLSelectStatementInfo selectStatementInfo = SLSelectStatementInfo.class.cast(selectInfo);
+            if (selectStatementInfo.getByLinkInfoList().isEmpty()) {
+                command = new SLSelectByNodeTypeCommand(selectStatementInfo, commandDO);
+            } else {
+                command = new SLSelectByLinkTypeCommand(selectStatementInfo, commandDO);
+            }
+        }
+        return command;
+    }
 }

@@ -57,34 +57,37 @@ import org.openspotlight.common.exception.SLException;
  */
 public class SLGraphException extends SLException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Instantiates a new sL graph exception.
-	 * 
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public SLGraphException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	/**
-	 * Instantiates a new sL graph exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLGraphException(String message) {
-		super(message);
-	}
-	
-	/**
-	 * Instantiates a new sL graph exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLGraphException(Throwable cause) {
-		super(cause);
-	}
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Instantiates a new sL graph exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public SLGraphException(
+                             String message, Throwable cause ) {
+        super(message, cause);
+    }
+
+    /**
+     * Instantiates a new sL graph exception.
+     * 
+     * @param message the message
+     */
+    public SLGraphException(
+                             String message ) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new sL graph exception.
+     * 
+     * @param cause the cause
+     */
+    public SLGraphException(
+                             Throwable cause ) {
+        super(cause);
+    }
 }

@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.query.console;
 
+import java.io.IOException;
+
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionDataImpl;
-
-import java.io.IOException;
 
 /**
  * The Class GraphConnection. This implementation should be changes as soon we get remote access to graph done.

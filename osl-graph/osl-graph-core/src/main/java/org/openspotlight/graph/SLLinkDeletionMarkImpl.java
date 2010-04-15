@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph;
 
-
 /**
  * The Class SLLinkDeletionMarkImpl.
  * 
@@ -56,68 +55,67 @@ package org.openspotlight.graph;
  */
 public class SLLinkDeletionMarkImpl implements SLLinkDeletionMark {
 
-	/** The link type. */
-	private final Class<? extends SLLink> linkType;
+    /** The link type. */
+    private final Class<? extends SLLink> linkType;
 
-	/** The node. */
-	private final SLNode node;
+    /** The node. */
+    private final SLNode                  node;
 
-	/**
-	 * Instantiates a new sL link deletion mark impl.
-	 * 
-	 * @param linkType
-	 *            the link type
-	 * @param node
-	 *            the node
-	 */
-	SLLinkDeletionMarkImpl(final Class<? extends SLLink> linkType,
-			final SLNode node) {
-		this.linkType = linkType;
-		this.node = node;
-	}
+    /**
+     * Instantiates a new sL link deletion mark impl.
+     * 
+     * @param linkType the link type
+     * @param node the node
+     */
+    SLLinkDeletionMarkImpl(
+                            final Class<? extends SLLink> linkType,
+                            final SLNode node ) {
+        this.linkType = linkType;
+        this.node = node;
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(final Object obj) {
-		if (!(obj instanceof SLLinkDeletionMark)) {
-			return false;
-		}
-		final SLLinkDeletionMark order = (SLLinkDeletionMark) obj;
-		return linkType.getName().concat(node.getID()).equals(
-				order.getLinkType().getName().concat(order.getNode().getID()));
-	}
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals( final Object obj ) {
+        if (!(obj instanceof SLLinkDeletionMark)) {
+            return false;
+        }
+        final SLLinkDeletionMark order = (SLLinkDeletionMark)obj;
+        return linkType.getName().concat(node.getID()).equals(
+                                                              order.getLinkType().getName().concat(order.getNode().getID()));
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLLinkDeletionMark#getLinkType()
-	 */
-	public Class<? extends SLLink> getLinkType() {
-		return linkType;
-	}
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.SLLinkDeletionMark#getLinkType()
+     */
+    public Class<? extends SLLink> getLinkType() {
+        return linkType;
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLLinkDeletionMark#getNode()
-	 */
-	public SLNode getNode() {
-		return node;
-	}
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.SLLinkDeletionMark#getNode()
+     */
+    public SLNode getNode() {
+        return node;
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		return linkType.getName().concat(node.getID()).hashCode();
-	}
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        return linkType.getName().concat(node.getID()).hashCode();
+    }
 }

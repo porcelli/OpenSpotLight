@@ -57,29 +57,25 @@ import org.openspotlight.common.concurrent.LockContainer;
  */
 public interface SLContext extends LockContainer {
 
-	/**
-	 * Gets the iD.
-	 * 
-	 * @return the iD
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public String getID();
+    /**
+     * Gets the iD.
+     * 
+     * @return the iD
+     */
+    public String getID();
 
-	/**
-	 * Gets the root node.
-	 * 
-	 * @return the root node
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLNode getRootNode();
+    /**
+     * Gets the root node.
+     * 
+     * @return the root node
+     */
+    public SLNode getRootNode();
 
-	/**
-	 * Gets the session.
-	 * 
-	 * @return the session
-	 */
-	public SLGraphSession getSession();
+    /**
+     * Gets the session.
+     * 
+     * @return the session
+     */
+    public SLGraphSession getSession();
 
 }

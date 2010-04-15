@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.processing.internal.domain;
 
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.processing.ArtifactProcessingResults;
-
 import java.util.Collections;
 import java.util.Set;
+
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.processing.ArtifactProcessingResults;
 
 /**
  * The Class ArtifactProcessingResultsImpl.

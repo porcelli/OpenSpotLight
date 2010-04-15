@@ -58,188 +58,177 @@ import org.openspotlight.graph.annotation.SLProperty;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Java Type")
+@SLDescription( "Java Type" )
 public interface JavaType extends SLNode {
 
-	/**
-	 * Gets the final.
-	 * 
-	 * @return the final
-	 */
-	@SLProperty
-	public Boolean getAbstract();
+    /**
+     * Gets the final.
+     * 
+     * @return the final
+     */
+    @SLProperty
+    public Boolean getAbstract();
 
-	/**
-	 * Gets the anonymous.
-	 * 
-	 * @return the anonymous
-	 */
-	@SLProperty
-	public Boolean getAnonymous();
+    /**
+     * Gets the anonymous.
+     * 
+     * @return the anonymous
+     */
+    @SLProperty
+    public Boolean getAnonymous();
 
-	@SLProperty
-	public Boolean getArray();
+    @SLProperty
+    public Boolean getArray();
 
-	/**
-	 * Gets the complete name.
-	 * 
-	 * @return the complete name
-	 */
-	@SLProperty
-	public String getQualifiedName();
+    /**
+     * Gets the complete name.
+     * 
+     * @return the complete name
+     */
+    @SLProperty
+    public String getQualifiedName();
 
-	/**
-	 * Gets the final.
-	 * 
-	 * @return the final
-	 */
-	@SLProperty
-	public Boolean getFinal();
+    /**
+     * Gets the final.
+     * 
+     * @return the final
+     */
+    @SLProperty
+    public Boolean getFinal();
 
-	/**
-	 * Gets the inner.
-	 * 
-	 * @return the inner
-	 */
-	@SLProperty
-	public Boolean getInner();
+    /**
+     * Gets the inner.
+     * 
+     * @return the inner
+     */
+    @SLProperty
+    public Boolean getInner();
 
-	/**
-	 * Gets the private.
-	 * 
-	 * @return the private
-	 */
-	@SLProperty
-	public Boolean getPrivate();
+    /**
+     * Gets the private.
+     * 
+     * @return the private
+     */
+    @SLProperty
+    public Boolean getPrivate();
 
-	/**
-	 * Gets the protected.
-	 * 
-	 * @return the protected
-	 */
-	@SLProperty
-	public Boolean getProtected();
+    /**
+     * Gets the protected.
+     * 
+     * @return the protected
+     */
+    @SLProperty
+    public Boolean getProtected();
 
-	/**
-	 * Gets the public.
-	 * 
-	 * @return the public
-	 */
-	@SLProperty
-	public Boolean getPublic();
+    /**
+     * Gets the public.
+     * 
+     * @return the public
+     */
+    @SLProperty
+    public Boolean getPublic();
 
-	/**
-	 * Gets the simple name.
-	 * 
-	 * @return the simple name
-	 */
-	@SLProperty
-	public String getSimpleName();
+    /**
+     * Gets the simple name.
+     * 
+     * @return the simple name
+     */
+    @SLProperty
+    public String getSimpleName();
 
-	/**
-	 * Gets the static.
-	 * 
-	 * @return the static
-	 */
-	@SLProperty
-	public Boolean getStatic();
+    /**
+     * Gets the static.
+     * 
+     * @return the static
+     */
+    @SLProperty
+    public Boolean getStatic();
 
-	/**
-	 * Gets the version.
-	 * 
-	 * @return the version
-	 */
-	@SLProperty
-	public String getVersion();
+    /**
+     * Gets the version.
+     * 
+     * @return the version
+     */
+    @SLProperty
+    public String getVersion();
 
-	/**
-	 * Sets the Abstract.
-	 * 
-	 * @param newAbstract
-	 *            the new Abstract
-	 */
-	public void setAbstract(Boolean newAbstract);
+    /**
+     * Sets the Abstract.
+     * 
+     * @param newAbstract the new Abstract
+     */
+    public void setAbstract( Boolean newAbstract );
 
-	/**
-	 * Sets the anonymous.
-	 * 
-	 * @param newAnonymous
-	 *            the new anonymous
-	 */
-	public void setAnonymous(Boolean newAnonymous);
+    /**
+     * Sets the anonymous.
+     * 
+     * @param newAnonymous the new anonymous
+     */
+    public void setAnonymous( Boolean newAnonymous );
 
-	public void setArray(Boolean newArray);
+    public void setArray( Boolean newArray );
 
-	/**
-	 * Sets the complete name.
-	 * 
-	 * @param newQualifiedName
-	 *            the new complete name
-	 */
-	public void setQualifiedName(String newQualifiedName);
+    /**
+     * Sets the complete name.
+     * 
+     * @param newQualifiedName the new complete name
+     */
+    public void setQualifiedName( String newQualifiedName );
 
-	/**
-	 * Sets the final.
-	 * 
-	 * @param newFinal
-	 *            the new final
-	 */
-	public void setFinal(Boolean newFinal);
+    /**
+     * Sets the final.
+     * 
+     * @param newFinal the new final
+     */
+    public void setFinal( Boolean newFinal );
 
-	/**
-	 * Sets the inner.
-	 * 
-	 * @param newInner
-	 *            the new inner
-	 */
-	public void setInner(Boolean newInner);
+    /**
+     * Sets the inner.
+     * 
+     * @param newInner the new inner
+     */
+    public void setInner( Boolean newInner );
 
-	/**
-	 * Sets the private.
-	 * 
-	 * @param newPrivate
-	 *            the new private
-	 */
-	public void setPrivate(Boolean newPrivate);
+    /**
+     * Sets the private.
+     * 
+     * @param newPrivate the new private
+     */
+    public void setPrivate( Boolean newPrivate );
 
-	/**
-	 * Sets the protected.
-	 * 
-	 * @param newProtected
-	 *            the new protected
-	 */
-	public void setProtected(Boolean newProtected);
+    /**
+     * Sets the protected.
+     * 
+     * @param newProtected the new protected
+     */
+    public void setProtected( Boolean newProtected );
 
-	/**
-	 * Sets the public.
-	 * 
-	 * @param newPublic
-	 *            the new public
-	 */
-	public void setPublic(Boolean newPublic);
+    /**
+     * Sets the public.
+     * 
+     * @param newPublic the new public
+     */
+    public void setPublic( Boolean newPublic );
 
-	/**
-	 * Sets the simple name.
-	 * 
-	 * @param newSimpleName
-	 *            the new simple name
-	 */
-	public void setSimpleName(String newSimpleName);
+    /**
+     * Sets the simple name.
+     * 
+     * @param newSimpleName the new simple name
+     */
+    public void setSimpleName( String newSimpleName );
 
-	/**
-	 * Sets the static.
-	 * 
-	 * @param newStatic
-	 *            the new static
-	 */
-	public void setStatic(Boolean newStatic);
+    /**
+     * Sets the static.
+     * 
+     * @param newStatic the new static
+     */
+    public void setStatic( Boolean newStatic );
 
-	/**
-	 * Sets the version.
-	 * 
-	 * @param newVersion
-	 *            the new version
-	 */
-	public void setVersion(String newVersion);
+    /**
+     * Sets the version.
+     * 
+     * @param newVersion the new version
+     */
+    public void setVersion( String newVersion );
 
 }

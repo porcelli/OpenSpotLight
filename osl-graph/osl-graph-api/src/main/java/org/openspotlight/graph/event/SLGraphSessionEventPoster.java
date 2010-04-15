@@ -49,7 +49,6 @@
 package org.openspotlight.graph.event;
 
 import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.graph.event.SLGraphSessionEvent;
 
 /**
  * The Interface SLGraphSessionEventPoster.
@@ -58,17 +57,15 @@ import org.openspotlight.graph.event.SLGraphSessionEvent;
  */
 public interface SLGraphSessionEventPoster extends LockContainer {
 
-	/**
-	 * Post.
-	 * 
-	 * @param event
-	 *            the event
-	 */
-	public void post(SLGraphSessionEvent event);
+    /**
+     * Post.
+     * 
+     * @param event the event
+     */
+    public void post( SLGraphSessionEvent event );
 
-	/**
-	 * This method should notify its listeners about a
-	 * {@link org.openspotlight.graph.SLGraphSession#clear()} operation.
-	 */
-	public void sessionCleaned();
+    /**
+     * This method should notify its listeners about a {@link org.openspotlight.graph.SLGraphSession#clear()} operation.
+     */
+    public void sessionCleaned();
 }

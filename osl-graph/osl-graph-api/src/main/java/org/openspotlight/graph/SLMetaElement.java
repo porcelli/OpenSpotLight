@@ -49,7 +49,6 @@
 package org.openspotlight.graph;
 
 import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.graph.exception.SLGraphSessionException;
 
 /**
  * The Interface SLMetaElement.
@@ -62,8 +61,7 @@ public interface SLMetaElement extends LockContainer {
      * Gets the metadata.
      * 
      * @return the metadata
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetadata getMetadata() throws SLGraphSessionException;
+    public SLMetadata getMetadata();
 
 }

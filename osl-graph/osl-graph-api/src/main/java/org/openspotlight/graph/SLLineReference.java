@@ -51,7 +51,6 @@ package org.openspotlight.graph;
 import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.exception.SLGraphSessionException;
 
 /**
  * The Interface SLLineReference.
@@ -65,118 +64,104 @@ public interface SLLineReference extends SLNode {
      * Gets the start line.
      * 
      * @return the start line
-     * @throws SLGraphSessionException the SL graph session exception
      */
     @SLProperty
-    public Integer getStartLine() throws SLGraphSessionException;
+    public Integer getStartLine();
 
     /**
      * Sets the start line.
      * 
      * @param startLine the new start line
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void setStartLine( Integer startLine ) throws SLGraphSessionException;
+    public void setStartLine( Integer startLine );
 
     /**
      * Gets the end line.
      * 
      * @return the end line
-     * @throws SLGraphSessionException the SL graph session exception
      */
     @SLProperty
-    public Integer getEndLine() throws SLGraphSessionException;
+    public Integer getEndLine();
 
     /**
      * Sets the end line.
      * 
      * @param endLine the new end line
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void setEndLine( Integer endLine ) throws SLGraphSessionException;
+    public void setEndLine( Integer endLine );
 
     /**
      * Gets the start column.
      * 
      * @return the start column
-     * @throws SLGraphSessionException the SL graph session exception
      */
     @SLProperty
-    public Integer getStartColumn() throws SLGraphSessionException;
+    public Integer getStartColumn();
 
     /**
      * Sets the start column.
      * 
      * @param startColumn the new start column
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void setStartColumn( Integer startColumn ) throws SLGraphSessionException;
+    public void setStartColumn( Integer startColumn );
 
     /**
      * Gets the end column.
      * 
      * @return the end column
-     * @throws SLGraphSessionException the SL graph session exception
      */
     @SLProperty
-    public Integer getEndColumn() throws SLGraphSessionException;
+    public Integer getEndColumn();
 
     /**
      * Sets the end column.
      * 
      * @param endColumn the new end column
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void setEndColumn( Integer endColumn ) throws SLGraphSessionException;
+    public void setEndColumn( Integer endColumn );
 
     /**
      * Gets the statement.
      * 
      * @return the statement
-     * @throws SLGraphSessionException the SL graph session exception
      */
     @SLProperty
-    public String getStatement() throws SLGraphSessionException;
+    public String getStatement();
 
     /**
      * Sets the statement.
      * 
      * @param statement the new statement
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void setStatement( String statement ) throws SLGraphSessionException;
+    public void setStatement( String statement );
 
     /**
      * Gets the artifact id.
      * 
      * @return the artifact id
-     * @throws SLGraphSessionException the SL graph session exception
      */
     @SLProperty
-    public String getArtifactId() throws SLGraphSessionException;
+    public String getArtifactId();
 
     /**
      * Sets the artifact id.
      * 
      * @param artifactId the new artifact id
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void setArtifactId( String artifactId ) throws SLGraphSessionException;
+    public void setArtifactId( String artifactId );
 
     /**
      * Gets the artifact version.
      * 
      * @return the artifact version
-     * @throws SLGraphSessionException the SL graph session exception
      */
     @SLProperty
-    public String getArtifactVersion() throws SLGraphSessionException;
+    public String getArtifactVersion();
 
     /**
      * Sets the artifact version.
      * 
      * @param artifactVersion the new artifact version
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void setArtifactVersion( String artifactVersion ) throws SLGraphSessionException;
+    public void setArtifactVersion( String artifactVersion );
 }

@@ -48,6 +48,16 @@
  */
 package org.openspotlight.remote.server.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -59,16 +69,6 @@ import org.openspotlight.remote.server.RemoteObjectServerImpl;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.remote.server.test.ExampleInterface.NonSerializableInterface;
 
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
 /**
  * The Class RemoteObjectFactoryTest.
  */
@@ -79,8 +79,8 @@ public class RemoteObjectFactoryTest {
      */
     static class AllowUserValidAutenticator implements UserAuthenticator {
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.remote.server.UserAuthenticator#canConnect(java.lang.String, java.lang.String, java.lang.String)
+        /**
+         * {@inheritDoc}
          */
         public boolean canConnect( final String userName,
                                    final String password,

@@ -48,12 +48,13 @@
  */
 package org.openspotlight.bundle.language.java.asm;
 
+import java.util.List;
+
 import junit.framework.Assert;
+
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.bundle.language.java.asm.model.TypeReference;
-
-import java.util.List;
 
 public class TestASMParser {
 

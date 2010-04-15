@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -52,16 +51,11 @@ package org.openspotlight.bundle.db.metamodel.node;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for node Column Simple Column Meta Model.
- *
- * {@link TableView} should be used as parent.
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * The Interface for node Column Simple Column Meta Model. {@link TableView} should be used as parent.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Column Simple Column")
+@SLDescription( "Column Simple Column" )
 public interface ColumnSimpleColumn extends Column {
 
-    
 }
-
-        

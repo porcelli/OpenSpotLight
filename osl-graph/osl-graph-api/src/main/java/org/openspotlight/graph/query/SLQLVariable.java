@@ -48,10 +48,10 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.common.util.Exceptions;
-
 import java.io.Serializable;
 import java.util.Collection;
+
+import org.openspotlight.common.util.Exceptions;
 
 /**
  * The Class SLQLVariable. This class represents a variable defined in slql external dsl.
@@ -108,7 +108,7 @@ public abstract class SLQLVariable implements Serializable {
      */
     @Override
     public boolean equals( final Object obj ) {
-        if (obj == this){
+        if (obj == this) {
             return true;
         }
         if (obj instanceof SLQLVariable) {
@@ -193,7 +193,7 @@ public abstract class SLQLVariable implements Serializable {
             Exceptions.logAndThrow(new IllegalArgumentException("Variable value invalid data type."));
         }
     }
-    
+
     /**
      * Returns the variable type.
      * 

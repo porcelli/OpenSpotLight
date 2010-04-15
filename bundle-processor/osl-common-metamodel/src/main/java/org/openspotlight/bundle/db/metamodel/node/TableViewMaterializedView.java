@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -52,17 +51,12 @@ package org.openspotlight.bundle.db.metamodel.node;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for node TableView Materialized View Meta Model.
- *
- * {@link Catalog} should be used as parent.
- * {@link Schema} should be used as parent.
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * The Interface for node TableView Materialized View Meta Model. {@link Catalog} should be used as parent. {@link Schema} should
+ * be used as parent.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("TableView Materialized View")
+@SLDescription( "TableView Materialized View" )
 public interface TableViewMaterializedView extends TableView {
 
-    
 }
-
-        

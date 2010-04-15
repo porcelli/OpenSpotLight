@@ -48,6 +48,10 @@
  */
 package org.openspotlight.federation.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
@@ -57,151 +61,147 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * The Class ArtifactMapping.
  */
 @Name( "artifact_source_mapping" )
 public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
 
-	private static final long serialVersionUID = -242895748094958633L;
+    private static final long        serialVersionUID = -242895748094958633L;
 
-	/** The to. */
-	private String            to;
+    /** The to. */
+    private String                   to;
 
-	/** The relative. */
-	private String            from;
+    /** The relative. */
+    private String                   from;
 
-	/** The source. */
-	private transient ArtifactSource source;
+    /** The source. */
+    private transient ArtifactSource source;
 
-	/** The excludeds. */
-	private Set<String>       excludeds        = new HashSet<String>();
+    /** The excludeds. */
+    private Set<String>              excludeds        = new HashSet<String>();
 
-	/** The includeds. */
-	private Set<String>       includeds        = new HashSet<String>();
+    /** The includeds. */
+    private Set<String>              includeds        = new HashSet<String>();
 
-	/** The hash code. */
-	private volatile transient int      hashCode;
+    /** The hash code. */
+    private volatile transient int   hashCode;
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals( final Object o ) {
-		if (!(o instanceof ArtifactSourceMapping)) {
-			return false;
-		}
-		final ArtifactSourceMapping that = (ArtifactSourceMapping)o;
-		final boolean result = Equals.eachEquality(Arrays.of(to, source, from), Arrays.andOf(that.to, that.source,
-				that.from));
-		return result;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals( final Object o ) {
+        if (!(o instanceof ArtifactSourceMapping)) {
+            return false;
+        }
+        final ArtifactSourceMapping that = (ArtifactSourceMapping)o;
+        final boolean result = Equals.eachEquality(Arrays.of(to, source, from), Arrays.andOf(that.to, that.source,
+                                                                                             that.from));
+        return result;
+    }
 
-	/**
-	 * Gets the excludeds.
-	 * 
-	 * @return the excludeds
-	 */
-	public Set<String> getExcludeds() {
-		return excludeds;
-	}
+    /**
+     * Gets the excludeds.
+     * 
+     * @return the excludeds
+     */
+    public Set<String> getExcludeds() {
+        return excludeds;
+    }
 
-	/**
-	 * Gets the relative.
-	 * 
-	 * @return the relative
-	 */
-	@KeyProperty
-	public String getFrom() {
-		return from;
-	}
+    /**
+     * Gets the relative.
+     * 
+     * @return the relative
+     */
+    @KeyProperty
+    public String getFrom() {
+        return from;
+    }
 
-	/**
-	 * Gets the includeds.
-	 * 
-	 * @return the includeds
-	 */
-	public Set<String> getIncludeds() {
-		return includeds;
-	}
+    /**
+     * Gets the includeds.
+     * 
+     * @return the includeds
+     */
+    public Set<String> getIncludeds() {
+        return includeds;
+    }
 
-	/**
-	 * Gets the source.
-	 * 
-	 * @return the source
-	 */
-	@ParentProperty
-	public ArtifactSource getSource() {
-		return source;
-	}
+    /**
+     * Gets the source.
+     * 
+     * @return the source
+     */
+    @ParentProperty
+    public ArtifactSource getSource() {
+        return source;
+    }
 
-	/**
-	 * Gets the to.
-	 * 
-	 * @return the to
-	 */
-	public String getTo() {
-		return to;
-	}
+    /**
+     * Gets the to.
+     * 
+     * @return the to
+     */
+    public String getTo() {
+        return to;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		int result = hashCode;
-		if (result == 0) {
-			result = HashCodes.hashOf(to, source, from);
-			hashCode = result;
-		}
-		return result;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        int result = hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(to, source, from);
+            hashCode = result;
+        }
+        return result;
+    }
 
-	/**
-	 * Sets the excludeds.
-	 * 
-	 * @param excludeds the new excludeds
-	 */
-	public void setExcludeds( final Set<String> excludeds ) {
-		this.excludeds = excludeds;
-	}
+    /**
+     * Sets the excludeds.
+     * 
+     * @param excludeds the new excludeds
+     */
+    public void setExcludeds( final Set<String> excludeds ) {
+        this.excludeds = excludeds;
+    }
 
-	/**
-	 * Sets the relative.
-	 * 
-	 * @param from the new relative
-	 */
-	public void setFrom( final String from ) {
-		this.from = from;
-	}
+    /**
+     * Sets the relative.
+     * 
+     * @param from the new relative
+     */
+    public void setFrom( final String from ) {
+        this.from = from;
+    }
 
-	/**
-	 * Sets the includeds.
-	 * 
-	 * @param includeds the new includeds
-	 */
-	public void setIncludeds( final Set<String> includeds ) {
-		this.includeds = includeds;
-	}
+    /**
+     * Sets the includeds.
+     * 
+     * @param includeds the new includeds
+     */
+    public void setIncludeds( final Set<String> includeds ) {
+        this.includeds = includeds;
+    }
 
-	/**
-	 * Sets the source.
-	 * 
-	 * @param source the new source
-	 */
-	public void setSource( final ArtifactSource source ) {
-		this.source = source;
-	}
+    /**
+     * Sets the source.
+     * 
+     * @param source the new source
+     */
+    public void setSource( final ArtifactSource source ) {
+        this.source = source;
+    }
 
-	/**
-	 * Sets the to.
-	 * 
-	 * @param to the new to
-	 */
-	public void setTo( final String to ) {
-		this.to = to;
-	}
+    /**
+     * Sets the to.
+     * 
+     * @param to the new to
+     */
+    public void setTo( final String to ) {
+        this.to = to;
+    }
 
 }

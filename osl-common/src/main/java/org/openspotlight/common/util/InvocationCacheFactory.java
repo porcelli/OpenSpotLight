@@ -48,11 +48,7 @@
  */
 package org.openspotlight.common.util;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
-import org.openspotlight.common.util.reflection.MethodIdentificationSupport.UseEnhanced;
+import static org.openspotlight.common.util.reflection.MethodIdentificationSupport.getMethodUniqueName;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -60,7 +56,12 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.openspotlight.common.util.reflection.MethodIdentificationSupport.getMethodUniqueName;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport.MethodWithParametersKey;
+import org.openspotlight.common.util.reflection.MethodIdentificationSupport.UseEnhanced;
 
 /**
  * This factory is used to create lazy behavior on method invocations. For the first method invocation with some of the
@@ -68,14 +69,14 @@ import static org.openspotlight.common.util.reflection.MethodIdentificationSuppo
  * result is returned from the cache. It is possible to instantiate the new cached instance if there's a default constructor. Also
  * it's possible to call any constructor. The only restriction is: the target class MUST BE NON FINAL. It caches returned objects
  * and also thrown exceptions. It caches only public method invocations.
- *
+ * 
  * @author feu
  */
 public final class InvocationCacheFactory {
 
     /**
      * Internal cache factory class. It uses CGLib inside to subclass the target class.
-     *
+     * 
      * @author feu
      */
     private static class CachedInterceptor implements MethodInterceptor {
@@ -90,7 +91,7 @@ public final class InvocationCacheFactory {
 
             /**
              * Instantiates a new throwable wrapped.
-             *
+             * 
              * @param toWrap the to wrap
              */
             public ThrowableWrapped(
@@ -101,23 +102,23 @@ public final class InvocationCacheFactory {
         }
 
         /** The use enhanced method. */
-        private final UseEnhanced            useEnhancedMethod;
+        private final UseEnhanced                          useEnhancedMethod;
 
         /** The source. */
-        private Object                       source;
+        private Object                                     source;
 
         /** The cache. */
         private final Map<MethodWithParametersKey, Object> cache      = new HashMap<MethodWithParametersKey, Object>();
 
         /** The Constant NULL_VALUE. */
-        private static final Object          NULL_VALUE = new Object();
+        private static final Object                        NULL_VALUE = new Object();
 
         /** The Constant VOID_VALUE. */
-        private static final Object          VOID_VALUE = new Object();
+        private static final Object                        VOID_VALUE = new Object();
 
         /**
          * Instantiates a new cached interceptor using the behavior described on {@link UseEnhanced}.
-         *
+         * 
          * @param useEnhancedMethod the use enhanced method
          */
         public CachedInterceptor(
@@ -177,7 +178,7 @@ public final class InvocationCacheFactory {
 
         /**
          * Invoke the method itself.
-         *
+         * 
          * @param method the method
          * @param parameters the parameters
          * @param proxy the proxy
@@ -203,7 +204,7 @@ public final class InvocationCacheFactory {
 
         /**
          * Sets the source.
-         *
+         * 
          * @param source the new source
          */
         public void setSource( final Object source ) {
@@ -214,7 +215,7 @@ public final class InvocationCacheFactory {
 
     /**
      * Creates a new InvocationCache object.
-     *
+     * 
      * @param <T> the type been subclassed.
      * @param superClass the super class
      * @param argumentTypes the argument types
@@ -236,7 +237,7 @@ public final class InvocationCacheFactory {
 
     /**
      * Wrap into cached.
-     *
+     * 
      * @param <T> the type been subclassed.
      * @param toWrap the to wrap
      * @return the t

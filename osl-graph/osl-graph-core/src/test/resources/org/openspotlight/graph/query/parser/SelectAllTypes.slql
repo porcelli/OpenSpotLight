@@ -1,6 +1,6 @@
 select *
 	where
-		org.openspotlight.graph.test.domain.JavaType.*
+		org.openspotlight.graph.test.domain.node.JavaType.*
 			property caption <*> "Set"
-		org.openspotlight.graph.test.domain.JavaTypeMethod
+		org.openspotlight.graph.test.domain.node.JavaTypeMethod
 			property caption <*> "Set";

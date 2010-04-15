@@ -48,9 +48,9 @@
  */
 package org.openspotlight.graph;
 
-import org.apache.commons.collections15.Predicate;
-
 import java.io.Serializable;
+
+import org.apache.commons.collections15.Predicate;
 
 /**
  * The Interface SLNodePredicate.

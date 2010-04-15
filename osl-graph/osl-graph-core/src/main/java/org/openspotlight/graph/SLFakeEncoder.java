@@ -53,8 +53,8 @@ public class SLFakeEncoder implements SLEncoder {
     /**
      * {@inheritDoc}
      */
-	public String encode(String value) {
-		return value;
-	}
+    public String encode( String value ) {
+        return value;
+    }
 
 }

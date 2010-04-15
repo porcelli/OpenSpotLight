@@ -48,6 +48,10 @@
  */
 package org.openspotlight.graph;
 
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
+
+import java.util.List;
+
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Messages;
 import org.openspotlight.common.util.StringBuilderUtil;
@@ -55,11 +59,6 @@ import org.openspotlight.graph.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.SLMetadata.LogicOperator;
 import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-
-import java.util.List;
-
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 public class SLMetadataXPathSupporter {
 
@@ -69,7 +68,7 @@ public class SLMetadataXPathSupporter {
                                                     final MetaNodeTypeProperty property2Find,
                                                     final LogicOperator logicOp,
                                                     final BooleanOperator booleanOp,
-                                                    final List<String> values ) throws SLGraphSessionException {
+                                                    final List<String> values ) {
 
         if ((logicOp == LogicOperator.LIKE_CONTAINS || logicOp == LogicOperator.LIKE_BEGINS_WITH || logicOp == LogicOperator.LIKE_ENDS_WITH) && (property2Find == null || property2Find == MetaNodeTypeProperty.NAME)) {
             Exceptions.logAndThrow(new IllegalArgumentException(

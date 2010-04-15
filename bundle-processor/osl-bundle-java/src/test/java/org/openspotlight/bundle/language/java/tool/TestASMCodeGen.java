@@ -48,12 +48,12 @@
  */
 package org.openspotlight.bundle.language.java.tool;
 
+import java.io.File;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.asm.tool.CompiledTypesExtractorTask;
-
-import java.io.File;
 
 public class TestASMCodeGen {
 

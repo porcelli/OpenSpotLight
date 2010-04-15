@@ -54,18 +54,18 @@ package org.openspotlight.graph.annotation;
  * @author Vitor Hugo Chagas
  */
 public @interface SLRenderHint {
-	
-	/**
-	 * Name.
-	 * 
-	 * @return the string
-	 */
-	String name();
-	
-	/**
-	 * Value.
-	 * 
-	 * @return the string
-	 */
-	String value();
+
+    /**
+     * Name.
+     * 
+     * @return the string
+     */
+    String name();
+
+    /**
+     * Value.
+     * 
+     * @return the string
+     */
+    String value();
 }

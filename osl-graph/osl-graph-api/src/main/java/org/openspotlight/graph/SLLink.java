@@ -48,17 +48,15 @@
  */
 package org.openspotlight.graph;
 
+import java.io.Serializable;
+import java.text.Collator;
+
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException;
-import org.openspotlight.graph.exception.SLInvalidLinkSideException;
-import org.openspotlight.graph.exception.SLLinkPropertyNotFoundException;
+import org.openspotlight.graph.exception.SLPropertyNotFoundException;
+import org.openspotlight.graph.exception.SLPropertyTypeInvalidException;
 import org.openspotlight.remote.annotation.DisposeMethod;
-
-import java.io.Serializable;
-import java.text.Collator;
 
 /**
  * The Interface SLLink.
@@ -66,207 +64,164 @@ import java.text.Collator;
  * @author Vitor Hugo Chagas
  */
 public interface SLLink extends Comparable<SLLink>, LockContainer {
-	/** The Constant SIDE_SOURCE. */
-	public static final int SIDE_SOURCE = 4; // 100
+    /** The Constant SIDE_SOURCE. */
+    public static final int SIDE_SOURCE            = 4;                                                    // 100
 
-	/** The Constant SIDE_TARGET. */
-	public static final int SIDE_TARGET = 2; // 010
+    /** The Constant SIDE_TARGET. */
+    public static final int SIDE_TARGET            = 2;                                                    // 010
 
-	/** The Constant SIDE_BOTH. */
-	public static final int SIDE_BOTH = SLLink.SIDE_SOURCE | SLLink.SIDE_TARGET; // 001
+    /** The Constant SIDE_BOTH. */
+    public static final int SIDE_BOTH              = SLLink.SIDE_SOURCE | SLLink.SIDE_TARGET;              // 001
 
-	/** The Constant DIRECTION_UNI. */
-	public static final int DIRECTION_UNI = 4; // 100
+    /** The Constant DIRECTION_UNI. */
+    public static final int DIRECTION_UNI          = 4;                                                    // 100
 
-	/** The Constant DIRECTION_UNI_REVERSAL. */
-	public static final int DIRECTION_UNI_REVERSAL = 2; // 010
+    /** The Constant DIRECTION_UNI_REVERSAL. */
+    public static final int DIRECTION_UNI_REVERSAL = 2;                                                    // 010
 
-	/** The Constant DIRECTION_BI. */
-	public static final int DIRECTION_BI = 1; // 001
+    /** The Constant DIRECTION_BI. */
+    public static final int DIRECTION_BI           = 1;                                                    // 001
 
-	/** The Constant DIRECTION_ANY. */
-	public static final int DIRECTION_ANY = SLLink.DIRECTION_UNI
-			| SLLink.DIRECTION_UNI_REVERSAL | SLLink.DIRECTION_BI;
+    /** The Constant DIRECTION_ANY. */
+    public static final int DIRECTION_ANY          = SLLink.DIRECTION_UNI
+                                                     | SLLink.DIRECTION_UNI_REVERSAL | SLLink.DIRECTION_BI;
 
-	/**
-	 * Gets the iD.
-	 * 
-	 * @return the iD
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public String getID();
+    /**
+     * Gets the iD.
+     * 
+     * @return the iD
+     */
+    public String getID();
 
-	/**
-	 * Gets the link type.
-	 * 
-	 * @return the link type
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public Class<? extends SLLink> getLinkType();
+    /**
+     * Gets the link type.
+     * 
+     * @return the link type
+     */
+    public Class<? extends SLLink> getLinkType();
 
-	/**
-	 * Gets the meta link.
-	 * 
-	 * @return the meta link
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLMetaLink getMetaLink() throws SLGraphSessionException;
+    /**
+     * Gets the meta link.
+     * 
+     * @return the meta link
+     */
+    public SLMetaLink getMetaLink();
 
-	/**
-	 * Gets the other side.
-	 * 
-	 * @param side
-	 *            the side
-	 * @return the other side
-	 * @throws SLInvalidLinkSideException
-	 *             the SL invalid link side exception
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLNode getOtherSide(SLNode side) throws SLInvalidLinkSideException,
-			SLGraphSessionException;
+    /**
+     * Gets the other side.
+     * 
+     * @param side the side
+     * @return the other side
+     */
+    public SLNode getOtherSide( SLNode side );
 
-	/**
-	 * Gets the properties.
-	 * 
-	 * @return the properties
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public NeedsSyncronizationSet<SLLinkProperty<Serializable>> getProperties()
-			throws SLGraphSessionException;
+    /**
+     * Gets the properties.
+     * 
+     * @return the properties
+     */
+    public NeedsSyncronizationSet<SLLinkProperty<Serializable>> getProperties();
 
-	/**
-	 * Gets the property.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @param name
-	 *            the name
-	 * @return the property
-	 * @throws org.openspotlight.graph.exception.SLLinkPropertyNotFoundException
-	 *             the SL link property not found exception
-	 * @throws org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException
-	 *             the SL invalid link property type exception
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public <V extends Serializable> SLLinkProperty<V> getProperty(
-			Class<V> clazz, String name)
-			throws SLLinkPropertyNotFoundException,
-			SLInvalidLinkPropertyTypeException, SLGraphSessionException;
+    /**
+     * Gets the property.
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @return the property
+     * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL link property not found exception
+     * @throws org.openspotlight.graph.exception.SLPropertyTypeInvalidException the SL invalid link property type exception
+     */
+    public <V extends Serializable> SLLinkProperty<V> getProperty(
+                                                                   Class<V> clazz,
+                                                                   String name )
+            throws SLPropertyNotFoundException,
+            SLPropertyTypeInvalidException;
 
-	/**
-	 * Gets the property.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @param name
-	 *            the name
-	 * @param collator
-	 *            the collator
-	 * @return the property
-	 * @throws org.openspotlight.graph.exception.SLLinkPropertyNotFoundException
-	 *             the SL link property not found exception
-	 * @throws SLInvalidLinkPropertyTypeException
-	 *             the SL invalid link property type exception
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public <V extends Serializable> SLLinkProperty<V> getProperty(
-			Class<V> clazz, String name, Collator collator)
-			throws SLLinkPropertyNotFoundException,
-            SLInvalidLinkPropertyTypeException, SLGraphSessionException;
+    /**
+     * Gets the property.
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @param collator the collator
+     * @return the property
+     * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL link property not found exception
+     * @throws org.openspotlight.graph.exception.SLPropertyTypeInvalidException the SL invalid link property type exception
+     */
+    public <V extends Serializable> SLLinkProperty<V> getProperty(
+                                                                   Class<V> clazz,
+                                                                   String name,
+                                                                   Collator collator )
+            throws SLPropertyNotFoundException, SLPropertyTypeInvalidException;
 
-	/**
-	 * Gets the property value as string.
-	 * 
-	 * @param name
-	 *            the name
-	 * @return the property value as string
-	 * @throws org.openspotlight.graph.exception.SLLinkPropertyNotFoundException
-	 *             the SL link property not found exception
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public String getPropertyValueAsString(String name)
-			throws SLLinkPropertyNotFoundException, SLGraphSessionException;
+    /**
+     * Gets the property value as string.
+     * 
+     * @param name the name
+     * @return the property value as string
+     * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL link property not found exception
+     */
+    public String getPropertyValueAsString( String name )
+            throws SLPropertyNotFoundException;
 
-	/**
-	 * Gets the session.
-	 * 
-	 * @return the session
-	 */
-	public SLGraphSession getSession();
+    /**
+     * Gets the session.
+     * 
+     * @return the session
+     */
+    public SLGraphSession getSession();
 
-	/**
-	 * Gets the sides.
-	 * 
-	 * @return the sides
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLNode[] getSides();
+    /**
+     * Gets the sides.
+     * 
+     * @return the sides
+     */
+    public SLNode[] getSides();
 
-	/**
-	 * Gets the source.
-	 * 
-	 * @return the source
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLNode getSource();
+    /**
+     * Gets the source.
+     * 
+     * @return the source
+     */
+    public SLNode getSource();
 
-	/**
-	 * Gets the target.
-	 * 
-	 * @return the target
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLNode getTarget();
+    /**
+     * Gets the target.
+     * 
+     * @return the target
+     */
+    public SLNode getTarget();
 
-	/**
-	 * Checks if is bidirectional.
-	 * 
-	 * @return true, if is bidirectional
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public boolean isBidirectional();
+    /**
+     * Checks if is bidirectional.
+     * 
+     * @return true, if is bidirectional
+     */
+    public boolean isBidirectional();
 
-	/**
-	 * Removes the.
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	@DisposeMethod
-	public void remove() throws SLGraphSessionException;
+    /**
+     * Removes the.
+     */
+    @DisposeMethod
+    public void remove();
 
-	/**
-	 * Sets the property.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @param name
-	 *            the name
-	 * @param value
-	 *            the value
-	 * @return the sL link property< v>
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	@Deprecated
-	public <V extends Serializable> SLLinkProperty<V> setProperty(
-			Class<V> clazz, String name, V value)
-			throws SLGraphSessionException;
+    /**
+     * Sets the property.
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @param value the value
+     * @return the sL link property< v>
+     */
+    @Deprecated
+    public <V extends Serializable> SLLinkProperty<V> setProperty(
+                                                                   Class<V> clazz,
+                                                                   String name,
+                                                                   V value );
 
-	public <V extends Serializable> SLLinkProperty<V> setProperty(
-			Class<V> clazz, VisibilityLevel visibility, String name, V value)
-			throws SLGraphSessionException;
+    public <V extends Serializable> SLLinkProperty<V> setProperty(
+                                                                   Class<V> clazz,
+                                                                   VisibilityLevel visibility,
+                                                                   String name,
+                                                                   V value );
 
 }

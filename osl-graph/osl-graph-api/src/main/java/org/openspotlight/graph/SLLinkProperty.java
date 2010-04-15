@@ -48,9 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException;
-
 import java.io.Serializable;
 
 /**
@@ -59,56 +56,44 @@ import java.io.Serializable;
  * @author Vitor Hugo Chagas
  */
 public interface SLLinkProperty<V extends Serializable> {
-	
-	/**
-	 * Gets the link.
-	 * 
-	 * @return the link
-	 */
-	public SLLink getLink();
-	
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getName() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the value.
-	 * 
-	 * @return the value
-	 * 
-	 * @throws org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException the SL invalid link property type exception
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
-	 */
-	public V getValue() throws SLInvalidLinkPropertyTypeException, SLGraphSessionException;
 
-	/**
-	 * Gets the value as string.
-	 * 
-	 * @return the value as string
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getValueAsString() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the value.
-	 * 
-	 * @param value the new value
-	 * 
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
-	 */
-	public void setValue(V value) throws SLGraphSessionException;
-	
-	/**
-	 * Removes the.
-	 * 
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
-	 */
-	public void remove() throws SLGraphSessionException;
+    /**
+     * Gets the link.
+     * 
+     * @return the link
+     */
+    public SLLink getLink();
+
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName();
+
+    /**
+     * Gets the value.
+     * 
+     * @return the value
+     */
+    public V getValue();
+
+    /**
+     * Gets the value as string.
+     * 
+     * @return the value as string
+     */
+    public String getValueAsString();
+
+    /**
+     * Sets the value.
+     * 
+     * @param value the new value
+     */
+    public void setValue( V value );
+
+    /**
+     * Removes the.
+     */
+    public void remove();
 }
-

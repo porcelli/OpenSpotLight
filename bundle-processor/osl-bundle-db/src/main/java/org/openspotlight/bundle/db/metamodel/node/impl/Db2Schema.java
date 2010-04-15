@@ -47,10 +47,11 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.bundle.db.metamodel.node.impl;
+
 import org.openspotlight.bundle.db.metamodel.node.Schema;
 import org.openspotlight.graph.annotation.SLDescription;
 
-@SLDescription("Db2 Schema")
-public interface Db2Schema extends Schema{
+@SLDescription( "Db2 Schema" )
+public interface Db2Schema extends Schema {
 
 }

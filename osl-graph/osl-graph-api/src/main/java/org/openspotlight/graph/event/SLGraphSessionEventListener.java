@@ -51,79 +51,70 @@ package org.openspotlight.graph.event;
 import org.openspotlight.common.concurrent.LockContainer;
 
 /**
- * The listener interface for receiving SLGraphSessionEvent events. The class
- * that is interested in processing a SLGraphSessionEvent event implements this
- * interface, and the object created with that class is registered with a
- * component using the component's
- * <code>addSLGraphSessionEventListener<code> method. When
+ * The listener interface for receiving SLGraphSessionEvent events. The class that is interested in processing a
+ * SLGraphSessionEvent event implements this interface, and the object created with that class is registered with a component
+ * using the component's <code>addSLGraphSessionEventListener<code> method. When
  * the SLGraphSessionEvent event occurs, that object's appropriate
  * method is invoked.
- *
+ * 
  * All methods in this interface throw a {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level.
- * Any security violation throws {@link org.openspotlight.graph.exception.SLInvalidCredentialException}.
+ * Any security violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
  * 
  * @see org.openspotlight.graph.event.SLGraphSessionEvent
  */
 public interface SLGraphSessionEventListener extends LockContainer {
 
-	/**
-	 * Before save.
-	 * 
-	 * @param event
-	 *            the event
-	 */
-	public void beforeSave(SLGraphSessionSaveEvent event);
+    /**
+     * Before save.
+     * 
+     * @param event the event
+     */
+    public void beforeSave( SLGraphSessionSaveEvent event );
 
-	/**
-	 * Link added.
-	 * 
-	 * @param event
-	 *            the event
-	 */
-	public void linkAdded(SLLinkAddedEvent event);
+    /**
+     * Link added.
+     * 
+     * @param event the event
+     */
+    public void linkAdded( SLLinkAddedEvent event );
 
-	/**
-	 * Link property set.
-	 * 
-	 * @param event
-	 *            the event
-	 */
-	public void linkPropertySet(SLLinkPropertySetEvent event);
+    /**
+     * Link property set.
+     * 
+     * @param event the event
+     */
+    public void linkPropertySet( SLLinkPropertySetEvent event );
 
-	/**
-	 * Link removed.
-	 * 
-	 * @param event
-	 *            the event
-	 */
-	public void linkRemoved(SLLinkRemovedEvent event);
+    /**
+     * Link removed.
+     * 
+     * @param event the event
+     */
+    public void linkRemoved( SLLinkRemovedEvent event );
 
-	/**
-	 * Node added.
-	 * 
-	 * @param event
-	 *            the event
-	 */
-	public void nodeAdded(SLNodeAddedEvent event);
+    /**
+     * Node added.
+     * 
+     * @param event the event
+     */
+    public void nodeAdded( SLNodeAddedEvent event );
 
-	/**
-	 * Node property removed.
-	 * 
-	 * @param event
-	 *            the event
-	 */
-	public void nodePropertyRemoved(SLNodePropertyRemovedEvent event);
+    /**
+     * Node property removed.
+     * 
+     * @param event the event
+     */
+    public void nodePropertyRemoved( SLNodePropertyRemovedEvent event );
 
-	/**
-	 * Node property set.
-	 * 
-	 * @param event
-	 *            the event
-	 */
-	public void nodePropertySet(SLNodePropertySetEvent event);
+    /**
+     * Node property set.
+     * 
+     * @param event the event
+     */
+    public void nodePropertySet( SLNodePropertySetEvent event );
 
-	/**
-	 * Session cleaned.
-	 */
-	public void sessionCleaned();
+    /**
+     * Session cleaned.
+     */
+    public void sessionCleaned();
 }

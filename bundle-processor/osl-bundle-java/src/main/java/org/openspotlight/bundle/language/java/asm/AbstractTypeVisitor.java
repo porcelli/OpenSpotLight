@@ -48,7 +48,11 @@
  */
 package org.openspotlight.bundle.language.java.asm;
 
-import org.objectweb.asm.*;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Attribute;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 
 /**
  * This abstracy class has no goal other than enables the real implementation be focused just on necessary methods.

@@ -1,6 +1,6 @@
-select org.openspotlight.graph.test.domain.JavaType.*
+select org.openspotlight.graph.test.domain.node.JavaType.*
 	where 
-		org.openspotlight.graph.test.domain.JavaType.*
+		org.openspotlight.graph.test.domain.node.JavaType.*
 			property caption *... "java.util" &&
 			(	property caption <*> "Set" 	||
 				property caption <*> "List"	||

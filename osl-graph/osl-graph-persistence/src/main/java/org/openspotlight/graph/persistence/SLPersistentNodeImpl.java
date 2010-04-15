@@ -48,6 +48,19 @@
  */
 package org.openspotlight.graph.persistence;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
+
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
@@ -57,11 +70,6 @@ import org.openspotlight.jcr.util.JCRUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-
 /**
  * The Class SLPersistentNodeImpl.
  * 
@@ -69,7 +77,7 @@ import java.util.HashSet;
  */
 public class SLPersistentNodeImpl implements SLPersistentNode {
 
-//    private static AtomicInteger          nodeCount           = new AtomicInteger();
+    //    private static AtomicInteger          nodeCount           = new AtomicInteger();
     /** The session. */
     private final SLPersistentTreeSession session;
 
@@ -108,13 +116,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         lock = session.getLockObject();
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentNode#addNode(java.lang
-     * .String)
+    /**
+     * {@inheritDoc}
      */
     public SLPersistentNode addNode( final String name )
         throws SLPersistentTreeSessionException {
@@ -122,11 +125,11 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
 
             SLPersistentNode persistentNode = null;
             try {
-//                nodeCount.incrementAndGet();
-//                if (nodeCount.get() >= MAX_NODES_IN_MEMORY) {
-//                    getSession().save();
-//                    nodeCount.set(0);
-//                }
+                //                nodeCount.incrementAndGet();
+                //                if (nodeCount.get() >= MAX_NODES_IN_MEMORY) {
+                //                    getSession().save();
+                //                    nodeCount.set(0);
+                //                }
                 final Node jcrChildNode;
                 jcrChildNode = jcrNode.addNode(name);
                 jcrChildNode.addMixin("mix:referenceable");
@@ -144,6 +147,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals( final Object obj ) {
         synchronized (lock) {
@@ -158,11 +164,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentNode#getID()
+    /**
+     * {@inheritDoc}
      */
     public String getID() throws SLPersistentTreeSessionException {
         synchronized (lock) {
@@ -176,15 +179,15 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Lock getLockObject() {
         return lock;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentNode#getName()
+    /**
+     * {@inheritDoc}
      */
     public String getName() throws SLPersistentTreeSessionException {
         synchronized (lock) {
@@ -198,13 +201,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentNode#getNode(java.lang
-     * .String)
+    /**
+     * {@inheritDoc}
      */
     public SLPersistentNode getNode( final String name )
         throws SLPersistentTreeSessionException {
@@ -225,11 +223,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentNode#getNodes()
+    /**
+     * {@inheritDoc}
      */
     public NeedsSyncronizationSet<SLPersistentNode> getNodes()
         throws SLPersistentTreeSessionException {
@@ -254,13 +249,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentNode#getNodes(java.lang
-     * .String)
+    /**
+     * {@inheritDoc}
      */
     public NeedsSyncronizationCollection<SLPersistentNode> getNodes(
                                                                      final String name ) throws SLPersistentTreeSessionException {
@@ -284,21 +274,15 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentNode#getParent()
+    /**
+     * {@inheritDoc}
      */
     public SLPersistentNode getParent() throws SLPersistentTreeSessionException {
         return parent;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentNode#getPath()
+    /**
+     * {@inheritDoc}
      */
     public String getPath() throws SLPersistentTreeSessionException {
         synchronized (lock) {
@@ -311,13 +295,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentNode#getProperties(java
-     * .lang.String)
+    /**
+     * {@inheritDoc}
      */
     public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties(
                                                                                      final String pattern )
@@ -345,13 +324,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentNode#getProperty(java
-     * .lang.Class, java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public <V extends Serializable> SLPersistentProperty<V> getProperty(
                                                                          final Class<V> clazz,
@@ -376,21 +350,15 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentNode#getSession()
+    /**
+     * {@inheritDoc}
      */
     public SLPersistentTreeSession getSession() {
         return session;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentNode#remove()
+    /**
+     * {@inheritDoc}
      */
     public void remove() throws SLPersistentTreeSessionException {
         synchronized (lock) {
@@ -408,11 +376,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentNode#save()
+    /**
+     * {@inheritDoc}
      */
     public void save() throws SLPersistentTreeSessionException {
         synchronized (lock) {
@@ -426,13 +391,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentNode#setProperty(java
-     * .lang.Class, java.lang.String, java.io.Serializable)
+    /**
+     * {@inheritDoc}
      */
     public <V extends Serializable> SLPersistentProperty<V> setProperty(
                                                                          final Class<V> clazz,
@@ -469,11 +429,8 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
+    /**
+     * {@inheritDoc}
      */
     @Override
     public String toString() {

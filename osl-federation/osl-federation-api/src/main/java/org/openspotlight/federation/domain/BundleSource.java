@@ -48,6 +48,10 @@
  */
 package org.openspotlight.federation.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
@@ -56,130 +60,126 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * The Class BundleSource.
  */
 @Name( "bundle_source" )
 public class BundleSource implements SimpleNodeType, Serializable {
 
-	private static final long   serialVersionUID = -5266436076638737597L;
+    private static final long             serialVersionUID = -5266436076638737597L;
 
-	/** The relative. */
-	private String              relative;
+    /** The relative. */
+    private String                        relative;
 
-	/** The source. */
-	private transient BundleProcessorType bundleProcessorType;
+    /** The source. */
+    private transient BundleProcessorType bundleProcessorType;
 
-	/** The excludeds. */
-	private Set<String>         excludeds        = new HashSet<String>();
+    /** The excludeds. */
+    private Set<String>                   excludeds        = new HashSet<String>();
 
-	/** The includeds. */
-	private Set<String>         includeds        = new HashSet<String>();
+    /** The includeds. */
+    private Set<String>                   includeds        = new HashSet<String>();
 
-	/** The hash code. */
-	private volatile transient int        hashCode;
+    /** The hash code. */
+    private volatile transient int        hashCode;
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals( final Object o ) {
-		if (!(o instanceof BundleSource)) {
-			return false;
-		}
-		final BundleSource that = (BundleSource)o;
-		final boolean result = Equals.eachEquality(Arrays.of(bundleProcessorType, relative),
-				Arrays.andOf(that.bundleProcessorType, that.relative));
-		return result;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals( final Object o ) {
+        if (!(o instanceof BundleSource)) {
+            return false;
+        }
+        final BundleSource that = (BundleSource)o;
+        final boolean result = Equals.eachEquality(Arrays.of(bundleProcessorType, relative),
+                                                   Arrays.andOf(that.bundleProcessorType, that.relative));
+        return result;
+    }
 
-	/**
-	 * Gets the bundle processor type.
-	 * 
-	 * @return the bundle processor type
-	 */
-	@ParentProperty
-	public BundleProcessorType getBundleProcessorType() {
-		return bundleProcessorType;
-	}
+    /**
+     * Gets the bundle processor type.
+     * 
+     * @return the bundle processor type
+     */
+    @ParentProperty
+    public BundleProcessorType getBundleProcessorType() {
+        return bundleProcessorType;
+    }
 
-	/**
-	 * Gets the excludeds.
-	 * 
-	 * @return the excludeds
-	 */
-	public Set<String> getExcludeds() {
-		return excludeds;
-	}
+    /**
+     * Gets the excludeds.
+     * 
+     * @return the excludeds
+     */
+    public Set<String> getExcludeds() {
+        return excludeds;
+    }
 
-	/**
-	 * Gets the includeds.
-	 * 
-	 * @return the includeds
-	 */
-	public Set<String> getIncludeds() {
-		return includeds;
-	}
+    /**
+     * Gets the includeds.
+     * 
+     * @return the includeds
+     */
+    public Set<String> getIncludeds() {
+        return includeds;
+    }
 
-	/**
-	 * Gets the relative.
-	 * 
-	 * @return the relative
-	 */
-	@KeyProperty
-	public String getRelative() {
-		return relative;
-	}
+    /**
+     * Gets the relative.
+     * 
+     * @return the relative
+     */
+    @KeyProperty
+    public String getRelative() {
+        return relative;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		int result = hashCode;
-		if (result == 0) {
-			result = HashCodes.hashOf(bundleProcessorType, relative);
-			hashCode = result;
-		}
-		return result;
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        int result = hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(bundleProcessorType, relative);
+            hashCode = result;
+        }
+        return result;
+    }
 
-	/**
-	 * Sets the bundle processor type.
-	 * 
-	 * @param bundleProcessorType the new bundle processor type
-	 */
-	public void setBundleProcessorType( final BundleProcessorType bundleProcessorType ) {
-		this.bundleProcessorType = bundleProcessorType;
-	}
+    /**
+     * Sets the bundle processor type.
+     * 
+     * @param bundleProcessorType the new bundle processor type
+     */
+    public void setBundleProcessorType( final BundleProcessorType bundleProcessorType ) {
+        this.bundleProcessorType = bundleProcessorType;
+    }
 
-	/**
-	 * Sets the excludeds.
-	 * 
-	 * @param excludeds the new excludeds
-	 */
-	public void setExcludeds( final Set<String> excludeds ) {
-		this.excludeds = excludeds;
-	}
+    /**
+     * Sets the excludeds.
+     * 
+     * @param excludeds the new excludeds
+     */
+    public void setExcludeds( final Set<String> excludeds ) {
+        this.excludeds = excludeds;
+    }
 
-	/**
-	 * Sets the includeds.
-	 * 
-	 * @param includeds the new includeds
-	 */
-	public void setIncludeds( final Set<String> includeds ) {
-		this.includeds = includeds;
-	}
+    /**
+     * Sets the includeds.
+     * 
+     * @param includeds the new includeds
+     */
+    public void setIncludeds( final Set<String> includeds ) {
+        this.includeds = includeds;
+    }
 
-	/**
-	 * Sets the relative.
-	 * 
-	 * @param relative the new relative
-	 */
-	public void setRelative( final String relative ) {
-		this.relative = relative;
-	}
+    /**
+     * Sets the relative.
+     * 
+     * @param relative the new relative
+     */
+    public void setRelative( final String relative ) {
+        this.relative = relative;
+    }
 
 }

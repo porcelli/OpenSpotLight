@@ -47,10 +47,11 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.bundle.db.metamodel.node.impl;
+
 import org.openspotlight.bundle.db.metamodel.node.TableViewTable;
 import org.openspotlight.graph.annotation.SLDescription;
 
-@SLDescription("SqlServer TableViewTable")
-public interface SqlServerTableViewTable extends TableViewTable{
+@SLDescription( "SqlServer TableViewTable" )
+public interface SqlServerTableViewTable extends TableViewTable {
 
 }

@@ -59,47 +59,41 @@ import org.openspotlight.security.idm.User;
  */
 public interface SLGraph {
 
-	/**
-	 * The Enum GraphState.
-	 * 
-	 * @author porcelli
-	 */
-	public enum GraphState {
+    /**
+     * The Enum GraphState.
+     * 
+     * @author porcelli
+     */
+    public enum GraphState {
 
-		/** The OPENED. */
-		OPENED,
+        /** The OPENED. */
+        OPENED,
 
-		/** The SHUTDOWN. */
-		SHUTDOWN
-	}
+        /** The SHUTDOWN. */
+        SHUTDOWN
+    }
 
-	/**
-	 * Gets the user.
-	 * 
-	 * @return the user
-	 */
-	public User getUser();
+    /**
+     * Gets the user.
+     * 
+     * @return the user
+     */
+    public User getUser();
 
-	/**
-	 * Open repository session.
-	 * 
-	 * @param user
-	 *            the user
-	 * @param repositoryName
-	 *            the repository name
-	 * @return the sL graph session
-     * @throws org.openspotlight.graph.exception.SLGraphException
-     *             when user try to open, but graph is shutdown
-	 * @throws org.openspotlight.graph.exception.SLGraphRuntimeException
-	 *             the SL graph exception
-	 * @throws org.openspotlight.graph.exception.SLInvalidCredentialException
-	 *             the SL invalid credentials exception
-	 */
-	public SLGraphSession openSession(AuthenticatedUser user,
-			String repositoryName) throws SLGraphException;
+    /**
+     * Open repository session.
+     * 
+     * @param user the user
+     * @param repositoryName the repository name
+     * @return the sL graph session
+     * @throws org.openspotlight.graph.exception.SLGraphException when user try to open, but graph is shutdown
+     * @throws org.openspotlight.graph.exception.SLGraphRuntimeException the SL graph exception
+     */
+    public SLGraphSession openSession( AuthenticatedUser user,
+                                       String repositoryName ) throws SLGraphException;
 
-	/**
-	 * Shutdown.
-	 */
-	public void shutdown();
+    /**
+     * Shutdown.
+     */
+    public void shutdown();
 }

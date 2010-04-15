@@ -49,8 +49,6 @@
 
 package org.openspotlight.common.util.test;
 
-import org.junit.Test;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -59,30 +57,31 @@ import static org.openspotlight.common.util.Arrays.of;
 import static org.openspotlight.common.util.Compare.compareAll;
 import static org.openspotlight.common.util.Compare.npeSafeCompare;
 
+import org.junit.Test;
+
 /**
  * Test class for {@link Compare}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class CompareTest {
 
-    @SuppressWarnings("boxing")
-    @Test(expected = IllegalStateException.class)
+    @SuppressWarnings( "boxing" )
+    @Test( expected = IllegalStateException.class )
     public void shouldThrowExceptionGettingDifferentParameterSize() {
         compareAll(of(1, 2, 3), andOf(1, 2));
     }
 
     @Test
-    @SuppressWarnings("boxing")
+    @SuppressWarnings( "boxing" )
     public void shouldVerifyEquality() {
         assertThat(compareAll(of(1, 2, 3), andOf(1, 2, 3)), is(0));
         assertThat(compareAll(of(1, 2, 5), andOf(1, 2, 3)), is(not(0)));
     }
 
     @Test
-    @SuppressWarnings("boxing")
+    @SuppressWarnings( "boxing" )
     public void shouldVerifyEqualityInANullPointerSafeWay() {
         assertThat(npeSafeCompare(null, 1), is(not(0)));
         assertThat(npeSafeCompare(1, null), is(not(0)));
@@ -92,7 +91,7 @@ public class CompareTest {
     }
 
     @Test
-    @SuppressWarnings("boxing")
+    @SuppressWarnings( "boxing" )
     public void shouldWorkWithNonComparables() {
         final Object o1 = new Object();
         final Object o2 = new Object();
@@ -102,7 +101,7 @@ public class CompareTest {
     }
 
     @Test
-    @SuppressWarnings("boxing")
+    @SuppressWarnings( "boxing" )
     public void shouldWorkWithNulls() {
         assertThat(compareAll(of(1, 2, null), andOf(1, 2, null)), is(0));
         assertThat(compareAll(of(1, 2, null), andOf(1, 2, 3)), is(not(0)));

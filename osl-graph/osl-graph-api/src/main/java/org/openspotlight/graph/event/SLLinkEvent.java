@@ -54,7 +54,6 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLPersistenceMode;
-import org.openspotlight.graph.event.SLGraphSessionEvent;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 
 /**
@@ -64,202 +63,195 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
  */
 public abstract class SLLinkEvent extends SLGraphSessionEvent {
 
-	/** The link. */
-	private final SLLink link;
+    /** The link. */
+    private final SLLink      link;
 
-	/** The link node. */
-	private SLPersistentNode linkNode;
+    /** The link node. */
+    private SLPersistentNode  linkNode;
 
-	/** The persistence mode. */
-	private SLPersistenceMode persistenceMode;
+    /** The persistence mode. */
+    private SLPersistenceMode persistenceMode;
 
-	/** The new link. */
-	private boolean newLink;
+    /** The new link. */
+    private boolean           newLink;
 
-	/** The changed to bidirectional. */
-	private boolean changedToBidirectional;
+    /** The changed to bidirectional. */
+    private boolean           changedToBidirectional;
 
-	/** The bidirectional. */
-	private boolean bidirectional;
+    /** The bidirectional. */
+    private boolean           bidirectional;
 
-	/** The source. */
-	private final SLNode source;
+    /** The source. */
+    private final SLNode      source;
 
-	/** The target. */
-	private final SLNode target;
+    /** The target. */
+    private final SLNode      target;
 
-	/** The sides. */
-	private final SLNode[] sides;
+    /** The sides. */
+    private final SLNode[]    sides;
 
-	/**
-	 * Instantiates a new sL link event.
-	 * 
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException
-	 */
-	public SLLinkEvent(final SLLink link) {
-		super(link.getSession());
-		this.link = link;
-		try {
-			if (link.isBidirectional()) {
-				sides = link.getSides();
-				source = null;
-				target = null;
-			} else {
-				sides = null;
-				source = link.getSource();
-				target = link.getTarget();
-			}
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-	}
+    /**
+     * Instantiates a new sL link event.
+     */
+    public SLLinkEvent(
+                        final SLLink link ) {
+        super(link.getSession());
+        this.link = link;
+        try {
+            if (link.isBidirectional()) {
+                sides = link.getSides();
+                source = null;
+                target = null;
+            } else {
+                sides = null;
+                source = link.getSource();
+                target = link.getTarget();
+            }
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
 
-	/**
-	 * Instantiates a new sL link event.
-	 * 
-	 * @param type
-	 *            the type
-	 * @param link
-	 *            the link
-	 * @param linkNode
-	 *            the link node
-	 * @param persistenceMode
-	 *            the persistence mode
-	 */
-	public SLLinkEvent(final SLLink link, final SLPersistentNode linkNode,
-			final SLPersistenceMode persistenceMode) {
-		super(link.getSession());
-		this.link = link;
-		this.linkNode = linkNode;
-		this.persistenceMode = persistenceMode;
-		try {
-			if (link.isBidirectional()) {
-				sides = link.getSides();
-				Assertions.checkNotNull("sides", sides);
-				Assertions.checkNotNull("sides[0]", sides[0]);
-				Assertions.checkNotNull("sides[1]", sides[1]);
-				source = null;
-				target = null;
-			} else {
-				sides = null;
-				source = link.getSource();
-				target = link.getTarget();
-				Assertions.checkNotNull("source", source);
-				Assertions.checkNotNull("target", target);
-			}
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-	}
+    /**
+     * Instantiates a new sL link event.
+     * 
+     * @param type the type
+     * @param link the link
+     * @param linkNode the link node
+     * @param persistenceMode the persistence mode
+     */
+    public SLLinkEvent(
+                        final SLLink link, final SLPersistentNode linkNode,
+                        final SLPersistenceMode persistenceMode ) {
+        super(link.getSession());
+        this.link = link;
+        this.linkNode = linkNode;
+        this.persistenceMode = persistenceMode;
+        try {
+            if (link.isBidirectional()) {
+                sides = link.getSides();
+                Assertions.checkNotNull("sides", sides);
+                Assertions.checkNotNull("sides[0]", sides[0]);
+                Assertions.checkNotNull("sides[1]", sides[1]);
+                source = null;
+                target = null;
+            } else {
+                sides = null;
+                source = link.getSource();
+                target = link.getTarget();
+                Assertions.checkNotNull("source", source);
+                Assertions.checkNotNull("target", target);
+            }
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
 
-	/**
-	 * Gets the link.
-	 * 
-	 * @return the link
-	 */
-	public SLLink getLink() {
-		return link;
-	}
+    /**
+     * Gets the link.
+     * 
+     * @return the link
+     */
+    public SLLink getLink() {
+        return link;
+    }
 
-	/**
-	 * Gets the link node.
-	 * 
-	 * @return the link node
-	 */
-	public SLPersistentNode getLinkNode() {
-		return linkNode;
-	}
+    /**
+     * Gets the link node.
+     * 
+     * @return the link node
+     */
+    public SLPersistentNode getLinkNode() {
+        return linkNode;
+    }
 
-	/**
-	 * Gets the persistence mode.
-	 * 
-	 * @return the persistence mode
-	 */
-	public SLPersistenceMode getPersistenceMode() {
-		return persistenceMode;
-	}
+    /**
+     * Gets the persistence mode.
+     * 
+     * @return the persistence mode
+     */
+    public SLPersistenceMode getPersistenceMode() {
+        return persistenceMode;
+    }
 
-	/**
-	 * Gets the sides.
-	 * 
-	 * @return the sides
-	 */
-	public SLNode[] getSides() {
-		return sides;
-	}
+    /**
+     * Gets the sides.
+     * 
+     * @return the sides
+     */
+    public SLNode[] getSides() {
+        return sides;
+    }
 
-	/**
-	 * Gets the source.
-	 * 
-	 * @return the source
-	 */
-	public SLNode getSource() {
-		return source;
-	}
+    /**
+     * Gets the source.
+     * 
+     * @return the source
+     */
+    public SLNode getSource() {
+        return source;
+    }
 
-	/**
-	 * Gets the target.
-	 * 
-	 * @return the target
-	 */
-	public SLNode getTarget() {
-		return target;
-	}
+    /**
+     * Gets the target.
+     * 
+     * @return the target
+     */
+    public SLNode getTarget() {
+        return target;
+    }
 
-	/**
-	 * Checks if is bidirectional.
-	 * 
-	 * @return true, if is bidirectional
-	 */
-	public boolean isBidirectional() {
-		return bidirectional;
-	}
+    /**
+     * Checks if is bidirectional.
+     * 
+     * @return true, if is bidirectional
+     */
+    public boolean isBidirectional() {
+        return bidirectional;
+    }
 
-	/**
-	 * Checks if is changed to bidirectional.
-	 * 
-	 * @return true, if is changed to bidirectional
-	 */
-	public boolean isChangedToBidirectional() {
-		return changedToBidirectional;
-	}
+    /**
+     * Checks if is changed to bidirectional.
+     * 
+     * @return true, if is changed to bidirectional
+     */
+    public boolean isChangedToBidirectional() {
+        return changedToBidirectional;
+    }
 
-	/**
-	 * Checks if is new link.
-	 * 
-	 * @return true, if is new link
-	 */
-	public boolean isNewLink() {
-		return newLink;
-	}
+    /**
+     * Checks if is new link.
+     * 
+     * @return true, if is new link
+     */
+    public boolean isNewLink() {
+        return newLink;
+    }
 
-	/**
-	 * Sets the bidirectional.
-	 * 
-	 * @param bidirectional
-	 *            the new bidirectional
-	 */
-	public void setBidirectional(final boolean bidirectional) {
-		this.bidirectional = bidirectional;
-	}
+    /**
+     * Sets the bidirectional.
+     * 
+     * @param bidirectional the new bidirectional
+     */
+    public void setBidirectional( final boolean bidirectional ) {
+        this.bidirectional = bidirectional;
+    }
 
-	/**
-	 * Sets the changed to bidirectional.
-	 * 
-	 * @param allowsMultiple
-	 *            the new changed to bidirectional
-	 */
-	public void setChangedToBidirectional(final boolean allowsMultiple) {
-		changedToBidirectional = allowsMultiple;
-	}
+    /**
+     * Sets the changed to bidirectional.
+     * 
+     * @param allowsMultiple the new changed to bidirectional
+     */
+    public void setChangedToBidirectional( final boolean allowsMultiple ) {
+        changedToBidirectional = allowsMultiple;
+    }
 
-	/**
-	 * Sets the new link.
-	 * 
-	 * @param newLink
-	 *            the new new link
-	 */
-	public void setNewLink(final boolean newLink) {
-		this.newLink = newLink;
-	}
+    /**
+     * Sets the new link.
+     * 
+     * @param newLink the new new link
+     */
+    public void setNewLink( final boolean newLink ) {
+        this.newLink = newLink;
+    }
 }

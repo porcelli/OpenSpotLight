@@ -55,24 +55,24 @@ package org.openspotlight.federation.domain.artifact;
  */
 public enum SyntaxInformationType {
 
-	/** Comment or multi line comment. */
-	COMMENT,
+    /** Comment or multi line comment. */
+    COMMENT,
 
-	/** Reserved keyword. */
-	RESERVED,
+    /** Reserved keyword. */
+    RESERVED,
 
-	/** Number literal. */
-	NUMBER_LITERAL,
+    /** Number literal. */
+    NUMBER_LITERAL,
 
-	/** String literal. */
-	STRING_LITERAL,
+    /** String literal. */
+    STRING_LITERAL,
 
-	/** Variable identifier. */
-	IDENTIFIER,
+    /** Variable identifier. */
+    IDENTIFIER,
 
-	/** Symbol, such as +, -, /, ... */
-	SYMBOL,
+    /** Symbol, such as +, -, /, ... */
+    SYMBOL,
 
-	/** Hidden information on source code, such as form information on VB code. */
-	HIDDEN
+    /** Hidden information on source code, such as form information on VB code. */
+    HIDDEN
 }

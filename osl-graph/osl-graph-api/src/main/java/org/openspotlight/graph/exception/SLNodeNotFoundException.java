@@ -53,19 +53,20 @@ package org.openspotlight.graph.exception;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLNodeNotFoundException extends SLGraphSessionException {
+public class SLNodeNotFoundException extends SLGraphException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL node not found exception.
-	 * 
-	 * @param nodeID the node id
-	 * @param cause the cause
-	 */
-	public SLNodeNotFoundException(String nodeID, Throwable cause) {
-		super("Node of " + nodeID + " not found.", cause);
-	}
+    /**
+     * Instantiates a new sL node not found exception.
+     * 
+     * @param nodeID the node id
+     * @param cause the cause
+     */
+    public SLNodeNotFoundException(
+                                    String nodeID, Throwable cause ) {
+        super("Node of " + nodeID + " not found.", cause);
+    }
 
 }

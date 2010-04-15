@@ -48,11 +48,11 @@
  */
 package org.openspotlight.graph.persistence;
 
+import java.io.Serializable;
+
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
-
-import java.io.Serializable;
 
 /**
  * The Interface SLPersistentNode.
@@ -61,173 +61,137 @@ import java.io.Serializable;
  */
 public interface SLPersistentNode extends LockContainer {
 
-	/**
-	 * Adds the node.
-	 * 
-	 * @param name
-	 *            the name
-	 * 
-	 * @return the sL persistent node
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public SLPersistentNode addNode(String name)
-			throws SLPersistentTreeSessionException;
+    /**
+     * Adds the node.
+     * 
+     * @param name the name
+     * @return the sL persistent node
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public SLPersistentNode addNode( String name )
+            throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the iD.
-	 * 
-	 * @return the iD
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public String getID() throws SLPersistentTreeSessionException;
+    /**
+     * Gets the iD.
+     * 
+     * @return the iD
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public String getID() throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public String getName() throws SLPersistentTreeSessionException;
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public String getName() throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the node.
-	 * 
-	 * @param name
-	 *            the name
-	 * 
-	 * @return the node
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public SLPersistentNode getNode(String name)
-			throws SLPersistentTreeSessionException;
+    /**
+     * Gets the node.
+     * 
+     * @param name the name
+     * @return the node
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public SLPersistentNode getNode( String name )
+            throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the nodes.
-	 * 
-	 * @return the nodes
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public NeedsSyncronizationSet<SLPersistentNode> getNodes()
-			throws SLPersistentTreeSessionException;
+    /**
+     * Gets the nodes.
+     * 
+     * @return the nodes
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public NeedsSyncronizationSet<SLPersistentNode> getNodes()
+            throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the nodes.
-	 * 
-	 * @param name
-	 *            the name
-	 * 
-	 * @return the nodes
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public NeedsSyncronizationCollection<SLPersistentNode> getNodes(String name)
-			throws SLPersistentTreeSessionException;
+    /**
+     * Gets the nodes.
+     * 
+     * @param name the name
+     * @return the nodes
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public NeedsSyncronizationCollection<SLPersistentNode> getNodes( String name )
+            throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the parent.
-	 * 
-	 * @return the parent
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public SLPersistentNode getParent() throws SLPersistentTreeSessionException;
+    /**
+     * Gets the parent.
+     * 
+     * @return the parent
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public SLPersistentNode getParent() throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the path.
-	 * 
-	 * @return the path
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public String getPath() throws SLPersistentTreeSessionException;
+    /**
+     * Gets the path.
+     * 
+     * @return the path
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public String getPath() throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the properties.
-	 * 
-	 * @param pattern
-	 *            the pattern
-	 * 
-	 * @return the properties
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties(
-			String pattern) throws SLPersistentTreeSessionException;
+    /**
+     * Gets the properties.
+     * 
+     * @param pattern the pattern
+     * @return the properties
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties(
+                                                                                     String pattern )
+        throws SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the property.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @param name
-	 *            the name
-	 * 
-	 * @return the property
-	 * 
-	 * @throws SLPersistentPropertyNotFoundException
-	 *             the SL persistent property not found exception
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public <V extends Serializable> SLPersistentProperty<V> getProperty(
-			Class<V> clazz, String name)
-			throws SLPersistentPropertyNotFoundException,
-			SLPersistentTreeSessionException;
+    /**
+     * Gets the property.
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @return the property
+     * @throws SLPersistentPropertyNotFoundException the SL persistent property not found exception
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public <V extends Serializable> SLPersistentProperty<V> getProperty(
+                                                                         Class<V> clazz,
+                                                                         String name )
+            throws SLPersistentPropertyNotFoundException,
+            SLPersistentTreeSessionException;
 
-	/**
-	 * Gets the session.
-	 * 
-	 * @return the session
-	 */
-	public SLPersistentTreeSession getSession();
+    /**
+     * Gets the session.
+     * 
+     * @return the session
+     */
+    public SLPersistentTreeSession getSession();
 
-	/**
-	 * Removes the.
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public void remove() throws SLPersistentTreeSessionException;
+    /**
+     * Removes the.
+     * 
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void remove() throws SLPersistentTreeSessionException;
 
-	/**
-	 * Save.
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public void save() throws SLPersistentTreeSessionException;
+    /**
+     * Save.
+     * 
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void save() throws SLPersistentTreeSessionException;
 
-	/**
-	 * Sets the property.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @param name
-	 *            the name
-	 * @param value
-	 *            the value
-	 * 
-	 * @return the sL persistent property< v>
-	 * 
-	 * @throws SLPersistentTreeSessionException
-	 *             the SL persistent tree session exception
-	 */
-	public <V extends Serializable> SLPersistentProperty<V> setProperty(
-			Class<V> clazz, String name, V value)
-			throws SLPersistentTreeSessionException;
+    /**
+     * Sets the property.
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @param value the value
+     * @return the sL persistent property< v>
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public <V extends Serializable> SLPersistentProperty<V> setProperty(
+                                                                         Class<V> clazz,
+                                                                         String name,
+                                                                         V value )
+            throws SLPersistentTreeSessionException;
 
 }

@@ -55,35 +55,38 @@ package org.openspotlight.graph.exception;
  */
 public class SLGraphSessionException extends SLGraphRuntimeException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL graph session exception.
-	 * 
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public SLGraphSessionException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	/**
-	 * Instantiates a new sL graph session exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLGraphSessionException(String message) {
-		super(message);
-	}
-	
-	/**
-	 * Instantiates a new sL graph session exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLGraphSessionException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Instantiates a new sL graph session exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public SLGraphSessionException(
+                                    String message, Throwable cause ) {
+        super(message, cause);
+    }
+
+    /**
+     * Instantiates a new sL graph session exception.
+     * 
+     * @param message the message
+     */
+    public SLGraphSessionException(
+                                    String message ) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new sL graph session exception.
+     * 
+     * @param cause the cause
+     */
+    public SLGraphSessionException(
+                                    Throwable cause ) {
+        super(cause);
+    }
 
 }

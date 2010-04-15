@@ -48,14 +48,11 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.exception.SLRuntimeException;
+import java.io.Serializable;
+
 import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.exception.SLInvalidLinkPropertyTypeException;
-import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-
-import java.io.Serializable;
 
 /**
  * The Class SLLinkPropertyImpl.
@@ -63,109 +60,92 @@ import java.io.Serializable;
  * @author Vitor Hugo Chagas
  */
 public class SLLinkPropertyImpl<V extends Serializable> implements SLLinkProperty<V> {
-	
-	/** The link. */
-	private SLLink link;
-	
-	/** The persistent property. */
-	private SLPersistentProperty<V> persistentProperty;
-	
-	/**
-	 * Instantiates a new sL link property impl.
-	 * 
-	 * @param link the link
-	 * @param persistentProperty the persistent property
-	 */
-	public SLLinkPropertyImpl(SLLink link, SLPersistentProperty<V> persistentProperty) {
-		this.link = link;
-		this.persistentProperty = persistentProperty;
-	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLLinkProperty#getLink()
-	 */
-	public SLLink getLink() {
-		return link;
-	}
+    /** The link. */
+    private SLLink                  link;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLLinkProperty#getName()
-	 */
-	public String getName() throws SLGraphSessionException {
-		try {
-			return SLCommonSupport.toSimplePropertyName(persistentProperty.getName());
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to retrieve link property name.", e);
-		}
-	}
+    /** The persistent property. */
+    private SLPersistentProperty<V> persistentProperty;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLLinkProperty#getValue()
-	 */
-	public V getValue() throws SLInvalidLinkPropertyTypeException, SLGraphSessionException {
-		try {
-			return persistentProperty.getValue();
-		}
-		catch (SLInvalidPersistentPropertyTypeException e) {
-			throw new SLInvalidLinkPropertyTypeException(e);
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to retrieve link property value.", e);
-		}
-	}
+    /**
+     * Instantiates a new sL link property impl.
+     * 
+     * @param link the link
+     * @param persistentProperty the persistent property
+     */
+    public SLLinkPropertyImpl(
+                               SLLink link, SLPersistentProperty<V> persistentProperty ) {
+        this.link = link;
+        this.persistentProperty = persistentProperty;
+    }
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLLinkProperty#getValueAsString()
-	 */
-	public String getValueAsString() throws SLGraphSessionException {
-		return getValue().toString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public SLLink getLink() {
+        return link;
+    }
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLLinkProperty#remove()
-	 */
-	public void remove() throws SLGraphSessionException {
-		try {
-			persistentProperty.remove();
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to remove link property.", e);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getName() {
+        try {
+            return SLCommonSupport.toSimplePropertyName(persistentProperty.getName());
+        } catch (SLPersistentTreeSessionException e) {
+            throw new SLGraphSessionException("Error on attempt to retrieve link property name.", e);
+        }
+    }
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.SLLinkProperty#setValue(java.io.Serializable)
-	 */
-	public void setValue(V value) throws SLGraphSessionException {
-		try {
-			persistentProperty.setValue(value);
-		}
-		catch (SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException("Error on attempt to set link property value.", e);
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object obj) {
-		try {
-			if (obj == null || !(obj instanceof SLLinkProperty)) return false;
-			SLLinkProperty<? extends Serializable> property = (SLLinkProperty<? extends Serializable>) obj;
-			String name1 = property.getLink().getID() + ":" + getName();
-			String name2 = getLink().getID() + ":" + getName();
-			return name1.equals(name2);
-		}
-		catch (SLGraphSessionException e) {
-			throw new SLRuntimeException("Error on attempt to execute property equals method.");
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public V getValue() {
+        try {
+            return persistentProperty.getValue();
+        } catch (SLPersistentTreeSessionException e) {
+            throw new SLGraphSessionException("Error on attempt to retrieve link property value.", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getValueAsString() {
+        return getValue().toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void remove() {
+        try {
+            persistentProperty.remove();
+        } catch (SLPersistentTreeSessionException e) {
+            throw new SLGraphSessionException("Error on attempt to remove link property.", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setValue( V value ) {
+        try {
+            persistentProperty.setValue(value);
+        } catch (SLPersistentTreeSessionException e) {
+            throw new SLGraphSessionException("Error on attempt to set link property value.", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings( "unchecked" )
+    public boolean equals( Object obj ) {
+        if (obj == null || !(obj instanceof SLLinkProperty)) return false;
+        SLLinkProperty<? extends Serializable> property = (SLLinkProperty<? extends Serializable>)obj;
+        String name1 = property.getLink().getID() + ":" + getName();
+        String name2 = getLink().getID() + ":" + getName();
+        return name1.equals(name2);
+    }
 }

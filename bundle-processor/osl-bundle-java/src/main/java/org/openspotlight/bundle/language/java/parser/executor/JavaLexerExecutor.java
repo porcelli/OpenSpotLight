@@ -48,33 +48,34 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
+import javax.jcr.Session;
+
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.metrics.SyntaxInformationAggregator;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 
-import javax.jcr.Session;
-
 public final class JavaLexerExecutor {
 
-	private final ArtifactWithSyntaxInformation javaArtifact;
+    private final ArtifactWithSyntaxInformation javaArtifact;
 
-	private final SyntaxInformationAggregator syntaxAggregator;
+    private final SyntaxInformationAggregator   syntaxAggregator;
 
-	private final SourceLineInfoAggregator sourceLineAggregator;
+    private final SourceLineInfoAggregator      sourceLineAggregator;
 
-	public JavaLexerExecutor(final ArtifactWithSyntaxInformation javaArtifact,
-			final SourceLineInfoAggregator sourceLineAggregator, Session artifactSession) {
-		this.javaArtifact = javaArtifact;
-		syntaxAggregator = new SyntaxInformationAggregator(this.javaArtifact,artifactSession);
-		this.sourceLineAggregator = sourceLineAggregator;
-	}
+    public JavaLexerExecutor(
+                              final ArtifactWithSyntaxInformation javaArtifact,
+                              final SourceLineInfoAggregator sourceLineAggregator, Session artifactSession ) {
+        this.javaArtifact = javaArtifact;
+        syntaxAggregator = new SyntaxInformationAggregator(this.javaArtifact, artifactSession);
+        this.sourceLineAggregator = sourceLineAggregator;
+    }
 
-	public SourceLineInfoAggregator sourceLine() {
-		return sourceLineAggregator;
-	}
+    public SourceLineInfoAggregator sourceLine() {
+        return sourceLineAggregator;
+    }
 
-	public SyntaxInformationAggregator syntax() {
-		return syntaxAggregator;
-	}
+    public SyntaxInformationAggregator syntax() {
+        return syntaxAggregator;
+    }
 
 }

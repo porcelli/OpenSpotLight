@@ -61,26 +61,27 @@ import org.slf4j.LoggerFactory;
  * The Class ArtifactSourceSchedulable.
  */
 public class ArtifactSourceSchedulable implements
-		SchedulableCommand<ArtifactSource> {
+        SchedulableCommand<ArtifactSource> {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public void execute(final GlobalSettings settings,
-			final ExecutionContext ctx, final ArtifactSource schedulable) {
-		if (logger.isDebugEnabled()) {
-			logger.debug(" >>>> Executing artifact loadgin from source"
-					+ schedulable.toUniqueJobString());
-		}
-		JcrPersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
-				ctx.getDefaultConnectionProvider().getData(), schedulable
-						.getRepository());
-		ArtifactLoaderManager.INSTANCE.refreshResources(settings, schedulable,
-				provider);
-	}
+    public void execute( final GlobalSettings settings,
+                         final ExecutionContext ctx,
+                         final ArtifactSource schedulable ) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(" >>>> Executing artifact loadgin from source"
+                         + schedulable.toUniqueJobString());
+        }
+        JcrPersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+                                                                                                 ctx.getDefaultConnectionProvider().getData(), schedulable
+                                                                                                                                                          .getRepository());
+        ArtifactLoaderManager.INSTANCE.refreshResources(settings, schedulable,
+                                                        provider);
+    }
 
-	public String getRepositoryNameBeforeExecution(
-			final ArtifactSource schedulable) {
-		return schedulable.getRepository().getName();
-	}
+    public String getRepositoryNameBeforeExecution(
+                                                    final ArtifactSource schedulable ) {
+        return schedulable.getRepository().getName();
+    }
 
 }

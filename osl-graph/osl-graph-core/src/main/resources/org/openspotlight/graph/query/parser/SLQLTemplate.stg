@@ -58,7 +58,7 @@ compilationUnit(selects, generalCollatorLevel) ::=
     	query = $1.createQueryApi();
 		<generalCollatorLevel>
 		query<selects>;
-	} catch (org.openspotlight.graph.SLGraphSessionException e1) {
+	} catch (Exception e1) {
             throw new org.openspotlight.graph.query.SLQueryException(e1);
     }
 	
@@ -182,7 +182,7 @@ defineTargetWithSelect(select) ::=
     try {
     	query = $1.createQueryApi();
 		query<select>;
-	} catch (org.openspotlight.graph.SLGraphSessionException e1) {
+	} catch (Exception e1) {
             throw new org.openspotlight.graph.query.SLQueryException(e1);
     }
 
@@ -199,7 +199,7 @@ defineTarget(nodeType) ::=
     try {
     	query = $1.createQueryApi();
 		query.select()<nodeType>.selectEnd();
-	} catch (org.openspotlight.graph.SLGraphSessionException e1) {
+	} catch (Exception e1) {
             throw new org.openspotlight.graph.query.SLQueryException(e1);
     }
 

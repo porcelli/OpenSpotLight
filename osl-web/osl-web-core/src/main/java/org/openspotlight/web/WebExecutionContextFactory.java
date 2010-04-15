@@ -48,47 +48,47 @@
  */
 package org.openspotlight.web;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
 public enum WebExecutionContextFactory {
-	INSTANCE;
+    INSTANCE;
 
-	private ExecutionContextFactory factory;
+    private ExecutionContextFactory factory;
 
-	public synchronized void contextStarted() {
-		factory = DefaultExecutionContextFactory.createFactory();
-	}
+    public synchronized void contextStarted() {
+        factory = DefaultExecutionContextFactory.createFactory();
+    }
 
-	public synchronized void contextStopped() {
-		factory.closeResources();
-		factory = null;
-	}
+    public synchronized void contextStopped() {
+        factory.closeResources();
+        factory = null;
+    }
 
-	public ExecutionContext createExecutionContext(final ServletContext ctx,
-			final HttpServletRequest request) {
-		final String repositoryName = OslServletDataSupport
-				.getCurrentRepository(ctx, request);
-		Repository repo = new Repository();
-		repo.setActive(true);
-		repo.setName(repositoryName);
-		final JcrConnectionDescriptor descriptor = OslServletDataSupport
-				.getJcrDescriptor(ctx, request);
-		final String password = OslServletDataSupport.getPassword(ctx, request);
-		final String username = OslServletDataSupport.getUserName(ctx, request);
-		final ExecutionContext newContext = factory.createExecutionContext(
-				username, password, descriptor, repo);
-		return newContext;
-	}
+    public ExecutionContext createExecutionContext( final ServletContext ctx,
+                                                    final HttpServletRequest request ) {
+        final String repositoryName = OslServletDataSupport
+                                                           .getCurrentRepository(ctx, request);
+        Repository repo = new Repository();
+        repo.setActive(true);
+        repo.setName(repositoryName);
+        final JcrConnectionDescriptor descriptor = OslServletDataSupport
+                                                                        .getJcrDescriptor(ctx, request);
+        final String password = OslServletDataSupport.getPassword(ctx, request);
+        final String username = OslServletDataSupport.getUserName(ctx, request);
+        final ExecutionContext newContext = factory.createExecutionContext(
+                                                                           username, password, descriptor, repo);
+        return newContext;
+    }
 
-	public ExecutionContextFactory getFactory() {
-		return factory;
-	}
+    public ExecutionContextFactory getFactory() {
+        return factory;
+    }
 
 }

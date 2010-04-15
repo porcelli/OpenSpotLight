@@ -49,12 +49,12 @@
 package org.openspotlight.graph.event;
 
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.event.SLGraphSessionEvent;
 
 public final class SLGraphSessionSaveEvent extends SLGraphSessionEvent {
 
-	public SLGraphSessionSaveEvent(final SLGraphSession session) {
-		super(session);
-	}
+    public SLGraphSessionSaveEvent(
+                                    final SLGraphSession session ) {
+        super(session);
+    }
 
 }

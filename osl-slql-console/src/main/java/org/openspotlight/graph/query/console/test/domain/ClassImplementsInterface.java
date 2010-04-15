@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.query.console.test.domain;
 
-import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLProperty;
 
@@ -59,23 +58,19 @@ import org.openspotlight.graph.annotation.SLProperty;
  */
 public interface ClassImplementsInterface extends SLLink {
 
-	/**
-	 * Gets the tag.
-	 * 
-	 * @return the tag
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getTag();
-	
-	/**
-	 * Sets the tag.
-	 * 
-	 * @param tag the new tag
-	 * 
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
-	 */
-	public void setTag(Integer tag);
+    /**
+     * Gets the tag.
+     * 
+     * @return the tag
+     */
+    @SLProperty
+    public Integer getTag();
+
+    /**
+     * Sets the tag.
+     * 
+     * @param tag the new tag
+     */
+    public void setTag( Integer tag );
 
 }

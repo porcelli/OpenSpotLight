@@ -49,23 +49,24 @@
 
 package org.openspotlight.common.util.test;
 
-import org.junit.Test;
-import org.openspotlight.common.util.Dates;
-
-import java.util.Date;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Dates.*;
+import static org.openspotlight.common.util.Dates.dateFromString;
+import static org.openspotlight.common.util.Dates.dateTimeFromString;
+import static org.openspotlight.common.util.Dates.stringFromDate;
+import static org.openspotlight.common.util.Dates.stringFromDateTime;
+
+import java.util.Date;
+
+import org.junit.Test;
 
 /**
  * Test class for {@link Dates}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DatesTest {
 
     @Test
@@ -81,7 +82,7 @@ public class DatesTest {
     @Test
     public void shouldGetTheDateTimeWhenStringIsValid() {
         assertThat(
-                dateTimeFromString("2008-12-01 12:22:33"), is(notNullValue())); //$NON-NLS-1$
+                   dateTimeFromString("2008-12-01 12:22:33"), is(notNullValue())); //$NON-NLS-1$
     }
 
     @Test
@@ -89,7 +90,7 @@ public class DatesTest {
         assertThat(dateFromString("2008-12-01"), is(notNullValue())); //$NON-NLS-1$
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionGettingDateWithInvalidString() {
         dateFromString("Invalid string"); //$NON-NLS-1$
     }

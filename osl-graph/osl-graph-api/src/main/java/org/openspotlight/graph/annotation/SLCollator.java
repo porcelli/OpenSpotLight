@@ -59,22 +59,21 @@ import java.text.Collator;
  * 
  * @author Vitor Hugo Chagas
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention( RetentionPolicy.RUNTIME )
+@Target( {ElementType.TYPE, ElementType.METHOD} )
 public @interface SLCollator {
-	
-	/**
-	 * Locale.
-	 * 
-	 * @return the string
-	 */
-	String locale() default "en_US";
-	
-	/**
-	 * Strength.
-	 * 
-	 * @return the int
-	 */
-	int strength() default Collator.IDENTICAL;
-}
 
+    /**
+     * Locale.
+     * 
+     * @return the string
+     */
+    String locale() default "en_US";
+
+    /**
+     * Strength.
+     * 
+     * @return the int
+     */
+    int strength() default Collator.IDENTICAL;
+}

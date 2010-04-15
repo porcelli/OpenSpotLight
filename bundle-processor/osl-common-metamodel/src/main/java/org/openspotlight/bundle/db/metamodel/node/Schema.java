@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,11 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for node Schema Meta Model.
- *
- * {@link Database} should be used as parent.
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * The Interface for node Schema Meta Model. {@link Database} should be used as parent.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Schema")
+@SLDescription( "Schema" )
 public interface Schema extends SLNode {
 
-    
 }
-
-        

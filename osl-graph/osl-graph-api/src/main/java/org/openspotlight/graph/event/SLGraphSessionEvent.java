@@ -59,33 +59,33 @@ import org.openspotlight.graph.SLGraphSession;
  */
 public abstract class SLGraphSessionEvent implements LockContainer {
 
-	protected final Lock lock;
+    protected final Lock           lock;
 
-	/** The session. */
-	protected final SLGraphSession session;
+    /** The session. */
+    protected final SLGraphSession session;
 
-	/**
-	 * Instantiates a new sL graph session event.
-	 * 
-	 * @param session
-	 *            the session
-	 */
-	public SLGraphSessionEvent(final SLGraphSession session) {
-		this.session = session;
-		lock = session.getLockObject();
-	}
+    /**
+     * Instantiates a new sL graph session event.
+     * 
+     * @param session the session
+     */
+    public SLGraphSessionEvent(
+                                final SLGraphSession session ) {
+        this.session = session;
+        lock = session.getLockObject();
+    }
 
-	public Lock getLockObject() {
-		return lock;
-	}
+    public Lock getLockObject() {
+        return lock;
+    }
 
-	/**
-	 * Gets the session.
-	 * 
-	 * @return the session
-	 */
-	public SLGraphSession getSession() {
-		return session;
-	}
+    /**
+     * Gets the session.
+     * 
+     * @return the session
+     */
+    public SLGraphSession getSession() {
+        return session;
+    }
 
 }

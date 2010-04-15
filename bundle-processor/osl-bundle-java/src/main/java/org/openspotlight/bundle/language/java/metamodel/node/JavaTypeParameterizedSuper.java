@@ -55,7 +55,7 @@ import org.openspotlight.graph.annotation.SLDescription;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Java Type Parameterized")
+@SLDescription( "Java Type Parameterized" )
 public interface JavaTypeParameterizedSuper extends JavaTypeParameterized {
 
 }

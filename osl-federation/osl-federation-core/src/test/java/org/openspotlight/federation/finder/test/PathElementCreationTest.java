@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.finder.test;
 
-import org.junit.Test;
-import org.openspotlight.federation.domain.artifact.PathElement;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
+import org.openspotlight.federation.domain.artifact.PathElement;
 
 public class PathElementCreationTest {
 

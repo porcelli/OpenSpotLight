@@ -54,5 +54,5 @@ package org.openspotlight.graph.query;
  * @author Vitor Hugo Chagas
  */
 public interface SLSelect {
-	
+
 }

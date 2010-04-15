@@ -48,6 +48,15 @@
  */
 package org.openspotlight.graph;
 
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
@@ -57,25 +66,47 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.annotation.SLLinkAttribute;
-import org.openspotlight.graph.event.*;
+import org.openspotlight.graph.event.SLGraphSessionEventListener;
+import org.openspotlight.graph.event.SLGraphSessionEventPoster;
+import org.openspotlight.graph.event.SLGraphSessionSaveEvent;
+import org.openspotlight.graph.event.SLLinkAddedEvent;
+import org.openspotlight.graph.event.SLLinkEvent;
+import org.openspotlight.graph.exception.SLGraphException;
 import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.graph.exception.SLNodeNotFoundException;
-import org.openspotlight.graph.listeners.*;
-import org.openspotlight.graph.persistence.*;
-import org.openspotlight.graph.query.*;
+import org.openspotlight.graph.listeners.SLCollatorListener;
+import org.openspotlight.graph.listeners.SLLinkCountListener;
+import org.openspotlight.graph.listeners.SLMetadataListener;
+import org.openspotlight.graph.listeners.SLObjectMarkListener;
+import org.openspotlight.graph.listeners.SLTransientObjectListener;
+import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.persistence.SLPersistentNodeNotFoundException;
+import org.openspotlight.graph.persistence.SLPersistentProperty;
+import org.openspotlight.graph.persistence.SLPersistentQuery;
+import org.openspotlight.graph.persistence.SLPersistentQueryResult;
+import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.query.SLQueryApi;
+import org.openspotlight.graph.query.SLQueryApiImpl;
+import org.openspotlight.graph.query.SLQueryCache;
+import org.openspotlight.graph.query.SLQueryCacheImpl;
+import org.openspotlight.graph.query.SLQueryText;
+import org.openspotlight.graph.query.SLQueryTextImpl;
+import org.openspotlight.graph.query.SLQueryTextInternal;
 import org.openspotlight.graph.query.parser.SLQueryTextInternalBuilder;
 import org.openspotlight.graph.util.ProxyUtil;
-import org.openspotlight.security.authz.*;
+import org.openspotlight.security.SLInvalidCredentialException;
+import org.openspotlight.security.authz.Action;
+import org.openspotlight.security.authz.EnforcementContext;
+import org.openspotlight.security.authz.EnforcementException;
+import org.openspotlight.security.authz.EnforcementResponse;
+import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.authz.graph.GraphElement;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.Collator;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The Class SLGraphSessionImpl.
@@ -92,7 +123,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     private final SLPersistentTreeSession    treeSession;
 
     /** The event poster. */
-    private final SLGraphSessionEventPoster eventPoster;
+    private final SLGraphSessionEventPoster  eventPoster;
 
     /** The encoder. */
     private SLEncoder                        encoder;
@@ -757,8 +788,15 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                                                                 .getProperty(Integer.class,
                                                                                              SLConsts.PROPERTY_NAME_DIRECTION);
 
-                    final SLNode aNode = getNodeByID(aNodeIDProp.getValue());
-                    final SLNode bNode = getNodeByID(bNodeIDProp.getValue());
+                    SLNode aNode = null;
+                    SLNode bNode = null;
+                    try {
+                        aNode = getNodeByID(aNodeIDProp.getValue());
+                        bNode = getNodeByID(bNodeIDProp.getValue());
+                    } catch (SLNodeNotFoundException e) {
+                        throw new SLGraphSessionException(
+                                                          "Error on attempt to retrieve links.", e);
+                    }
 
                     boolean status;
 
@@ -1069,7 +1107,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         Class<? extends SLNode> nodeType = null;
         if (typeName != null) {
             try {
-                if (Class.forName(typeName).isAssignableFrom(SLNode.class)){
+                if (Class.forName(typeName).isAssignableFrom(SLNode.class)) {
                     nodeType = (Class<? extends SLNode>)Class.forName(typeName);
                 }
             } catch (final ClassNotFoundException ignored) {
@@ -1273,7 +1311,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 }
                 eventPoster.post(new SLGraphSessionSaveEvent(this));
                 logger.info("Starting to save graph");
-                    treeSession.save();
+                treeSession.save();
                 logger.info("Fisnihed to save graph");
             } catch (SLPersistentTreeSessionException e) {
                 Exceptions.catchAndLog(e);
@@ -1295,7 +1333,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                                                             text).typeEnd().whereEnd().collator(
                                                                                                                 Collator.PRIMARY);
             return query.execute().getNodes();
-        } catch (final SLInvalidQuerySyntaxException e) {
+        } catch (final SLGraphException e) {
             throw new SLGraphSessionException(
                                               "Error on attempt to execute search.", e);
         }
@@ -1304,8 +1342,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public void setDefaultEncoder( final SLEncoder encoder )
-        throws SLGraphSessionException {
+    public void setDefaultEncoder( final SLEncoder encoder ) {
         this.encoder = encoder;
     }
 }

@@ -48,12 +48,11 @@
  */
 package org.openspotlight.graph.event;
 
+import java.io.Serializable;
+
 import org.openspotlight.graph.SLLinkProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.event.SLGraphSessionEvent;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
-
-import java.io.Serializable;
 
 /**
  * The Class SLLinkPropertyEvent.
@@ -62,72 +61,68 @@ import java.io.Serializable;
  */
 public abstract class SLLinkPropertyEvent extends SLGraphSessionEvent {
 
-	/** The property. */
-	private final SLLinkProperty<? extends Serializable> property;
+    /** The property. */
+    private final SLLinkProperty<? extends Serializable>       property;
 
-	/** The p property. */
-	private final SLPersistentProperty<? extends Serializable> pProperty;
+    /** The p property. */
+    private final SLPersistentProperty<? extends Serializable> pProperty;
 
-	/** The visibility. */
-	private VisibilityLevel visibility;
+    /** The visibility. */
+    private VisibilityLevel                                    visibility;
 
-	/**
-	 * Instantiates a new sL link property event.
-	 * 
-	 * @param type
-	 *            the type
-	 * @param property
-	 *            the property
-	 * @param pProperty
-	 *            the property
-	 */
-	public SLLinkPropertyEvent(
-			final SLLinkProperty<? extends Serializable> property,
-			final SLPersistentProperty<? extends Serializable> pProperty) {
-		super(property.getLink().getSession());
-		this.property = property;
-		this.pProperty = pProperty;
-	}
+    /**
+     * Instantiates a new sL link property event.
+     * 
+     * @param type the type
+     * @param property the property
+     * @param pProperty the property
+     */
+    public SLLinkPropertyEvent(
+                                final SLLinkProperty<? extends Serializable> property,
+                                final SLPersistentProperty<? extends Serializable> pProperty ) {
+        super(property.getLink().getSession());
+        this.property = property;
+        this.pProperty = pProperty;
+    }
 
-	/**
-	 * Gets the persistent property.
-	 * 
-	 * @return the persistent property
-	 */
-	public SLPersistentProperty<? extends Serializable> getPersistentProperty() {
-		return pProperty;
-	}
+    /**
+     * Gets the persistent property.
+     * 
+     * @return the persistent property
+     */
+    public SLPersistentProperty<? extends Serializable> getPersistentProperty() {
+        return pProperty;
+    }
 
-	/**
-	 * Gets the property.
-	 * 
-	 * @return the property
-	 */
-	public SLLinkProperty<? extends Serializable> getProperty() {
-		return property;
-	}
+    /**
+     * Gets the property.
+     * 
+     * @return the property
+     */
+    public SLLinkProperty<? extends Serializable> getProperty() {
+        return property;
+    }
 
-	/**
-	 * Gets the visibility.
-	 * 
-	 * @return the visibility
-	 */
-	public VisibilityLevel getVisibility() {
-		synchronized (lock) {
-			return visibility;
-		}
-	}
+    /**
+     * Gets the visibility.
+     * 
+     * @return the visibility
+     */
+    public VisibilityLevel getVisibility() {
+        synchronized (lock) {
+            return visibility;
+        }
+    }
 
-	/**
-	 * Sets the visibility.
-	 * 
-	 * @param visibility
-	 *            the new visibility
-	 */
-	public void setVisibility(final VisibilityLevel visibility) {
-		synchronized (lock) {
-			this.visibility = visibility;
-		}
-	}
+    /**
+     * Sets the visibility.
+     * 
+     * @param visibility the new visibility
+     */
+    public void setVisibility( final VisibilityLevel visibility ) {
+        synchronized (lock) {
+            this.visibility = visibility;
+        }
+    }
 
 }

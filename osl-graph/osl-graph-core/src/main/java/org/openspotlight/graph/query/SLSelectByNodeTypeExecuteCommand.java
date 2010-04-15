@@ -48,9 +48,24 @@
  */
 package org.openspotlight.graph.query;
 
+import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.*;
-import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.SLCommonSupport;
+import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLMetaNodeType;
+import org.openspotlight.graph.SLMetadata;
+import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
@@ -58,17 +73,11 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
 import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
 import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
-
-import java.util.*;
-
-import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
-import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 /**
  * The Class SLSelectByNodeTypeExecuteCommand.
@@ -76,238 +85,225 @@ import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
  * @author Vitor Hugo Chagas
  */
 public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
-	
-	/** The select info. */
-	private SLSelectByNodeTypeInfo selectInfo;
-	
-	/** The command do. */
-	private SLSelectCommandDO commandDO;
-	
-	/** The node wrapper list map. */
-	private Map<String, List<PNodeWrapper>> nodeWrapperListMap;
-	
-	/** The metadata. */
-	private SLMetadata metadata;
-	
-	/**
-	 * Instantiates a new sL select by node type execute command.
-	 * 
-	 * @param selectInfo the select info
-	 * @param commandDO the command do
-	 */
-	SLSelectByNodeTypeExecuteCommand(SLSelectByNodeTypeInfo selectInfo, SLSelectCommandDO commandDO) {
-		this.selectInfo = selectInfo;
-		this.commandDO = commandDO;
-		this.metadata = commandDO.getMetadata();
-	}
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLSelectAbstractCommand#execute()
-	 */
-	@Override
-	public void execute() throws SLGraphSessionException {
-		
-		try {
-			
-			if (commandDO.getPreviousNodeWrappers() != null) {
-				nodeWrapperListMap = SLQuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
-			}
-			
-			Set<SLSelectTypeInfo> typeInfoSet = getSelectTypeInfoSet();
-			String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
-			SLWhereByNodeTypeInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
+    /** The select info. */
+    private SLSelectByNodeTypeInfo          selectInfo;
 
-			Set<String> typesNotFiltered = new HashSet<String>();
-	 		for (SLSelectTypeInfo typeInfo : typeInfoSet) {
-	 			List<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(metadata, typeInfo.getName(), typeInfo.isSubTypes());
-	 			typesNotFiltered.addAll(hierarchyTypeNames);
-			}
+    /** The command do. */
+    private SLSelectCommandDO               commandDO;
 
-	 		SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/contexts//*");
-	 		Statement rootStatement = statementBuilder.getRootStatement();
-	 		
-	 		if (whereStatementInfo != null) {
-	 	 		List<SLWhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
-	 			if (whereTypeInfoList != null && !whereTypeInfoList.isEmpty()) {
-	 				Map<String, SLWhereTypeInfo> whereTypeInfoMap = getWhereTypeInfoMap();
-	 				List<SLWhereTypeInfo> list = new ArrayList<SLWhereTypeInfo>(whereTypeInfoMap.values());
-	 				for (int i = 0; i < list.size(); i++) {
-	 					SLWhereTypeInfo typeInfo = list.get(i);
-	 					Statement typeStatement;
-	 					if (i > 0) typeStatement = rootStatement.operator(OR).openBracket();
-	 					else typeStatement = rootStatement.openBracket(); 
-	 					Statement typeFilterStatement = typeStatement.condition()
-	 						.leftOperand(typePropName).operator(EQUAL).rightOperand(typeInfo.getName())
-	 						.operator(AND).openBracket();
-	 					filterByWhereStatement(typeFilterStatement, typeInfo.getName(), typeInfo.getTypeStatementInfo());
-	 					typeFilterStatement.closeBracket();
-	 					typeStatement.closeBracket();
-	 					typesNotFiltered.remove(typeInfo.getName());
-					}
-	 			}
-	 		}
-	 		
-	 		if (commandDO.getPreviousNodeWrappers() == null) {
- 				for (String typeName : typesNotFiltered) {
-	 				Condition condition;
-	 				if (rootStatement.getConditionCount() == 0) {
-	 					condition = rootStatement.condition();
-	 				}
-	 				else {
-	 					condition = rootStatement.operator(OR).condition();
-	 				}
-	 				condition.leftOperand(typePropName).operator(EQUAL).rightOperand(typeName);
- 				}
-	 		}
-	 		
-	 		statementBuilder.setOrderBy(typePropName);
-	 		Set<PNodeWrapper> pNodeWrappers = new HashSet<PNodeWrapper>();
-	 		commandDO.setNodeWrappers(pNodeWrappers);
-	 		
-	 		if (statementBuilder.getRootStatement().getConditionCount() > 0) {
-				SLPersistentTreeSession treeSession = commandDO.getTreeSession();
-				String xpath = statementBuilder.getXPath();
-				SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
-				SLPersistentQueryResult result = query.execute();
-				pNodeWrappers.addAll(SLQuerySupport.wrapNodes(result.getNodes()));
-	 		}
-			
-			if (commandDO.getPreviousNodeWrappers() != null) {
-				for (String typeName : typesNotFiltered) {
-					List<PNodeWrapper> typeNodeWrappers = nodeWrapperListMap.get(typeName);
-					if (typeNodeWrappers != null) {
-						pNodeWrappers.addAll(typeNodeWrappers);
-					}
-				}
-			}
-		}
-		catch (SLException e) {
-			throw new SLGraphSessionException("Error on attempt to execute " + this.getClass().getName() + " command.");
-		}
-	}
-	
-	/**
-	 * Gets the where type info map.
-	 * 
-	 * @return the where type info map
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	private Map<String, SLWhereTypeInfo> getWhereTypeInfoMap() throws SLGraphSessionException {
-		Map<String, SLWhereTypeInfo> map = new HashMap<String, SLWhereTypeInfo>();
-		List<SLWhereTypeInfo> list = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
-		for (SLWhereTypeInfo whereTypeInfo : list) {
-			List<String> typeNames = SLQuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
-			for (String typeName : typeNames) {
-				if (!map.containsKey(typeName)) {
-					SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
-					typeInfo.setTypeStatementInfo(whereTypeInfo.getTypeStatementInfo());
-					map.put(typeName, typeInfo);
-				}
-			}
-		}
-		return map;
-	}
-	
-	/**
-	 * Filter by where statement.
-	 * 
-	 * @param statement the statement
-	 * @param typeName the type name
-	 * @param typeStatementInfo the type statement info
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	private void filterByWhereStatement(Statement statement, String typeName, SLTypeStatementInfo typeStatementInfo) throws SLGraphSessionException, SLPersistentTreeSessionException {
-		
-		List<SLConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
-		
-		for (SLConditionInfo conditionInfo : conditionInfoList) {
+    /** The node wrapper list map. */
+    private Map<String, List<PNodeWrapper>> nodeWrapperListMap;
 
-			Statement conditionStatement;
-			if (conditionInfo.getConditionalOperator() == null) {
-				conditionStatement = statement.openBracket();
-			}
-			else {
-				conditionStatement = statement.operator(conditionInfo.getConditionalOperator(), conditionInfo.isConditionalNotOperator()).openBracket();
-			}
-			
-			if (conditionInfo.getInnerStatementInfo() == null) {
-				Statement idStatement = null;
-				if (commandDO.getPreviousNodeWrappers() != null) {
-					List<PNodeWrapper> pNodeWrappers = nodeWrapperListMap.get(typeName);
-					if (pNodeWrappers != null && !pNodeWrappers.isEmpty()) {
-						idStatement = conditionStatement.openBracket();
-						for (int j = 0; j < pNodeWrappers.size(); j++) {
-							PNodeWrapper pNodeWrapper = pNodeWrappers.get(j);
-							Condition idCondition;
-							if (j == 0) idCondition = idStatement.condition();
-							else idCondition = idStatement.operator(OR).condition();
-							idCondition.leftOperand("jcr:uuid").operator(EQUAL).rightOperand(pNodeWrapper.getID());
-						}
-						idStatement.closeBracket();
-					}
-				}
-				Condition condition;
-				if (idStatement == null) {
-					condition = conditionStatement.condition();
-				}
-				else {
-					condition = conditionStatement.operator(AND).condition();
-				}
-				
-				String propertyName;
-				if (conditionInfo.getPropertyName() != null) {
-					propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
-				}
-				else {
-					propertyName = (conditionInfo.getSide().equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_COUNT : SLConsts.PROPERTY_NAME_TARGET_COUNT)	+ "." + conditionInfo.getLinkTypeName().hashCode();
-					propertyName = SLCommonSupport.toInternalPropertyName(propertyName);
-				}
-				
-				condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
-			}
-			else {
-				filterByWhereStatement(conditionStatement, typeName, conditionInfo.getInnerStatementInfo());
-			}
-			
-			conditionStatement.closeBracket();
-		}
-	}
-	
-	/**
-	 * Gets the select type info set.
-	 * 
-	 * @return the select type info set
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	private Set<SLSelectTypeInfo> getSelectTypeInfoSet() throws SLGraphSessionException {
-		Set<SLSelectTypeInfo> set = new HashSet<SLSelectTypeInfo>();
-		if (selectInfo.getAllTypes() != null) {
-			if (selectInfo.getAllTypes().isOnWhere()) {
-				List<SLWhereTypeInfo> whereTypeInfoList = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
-				for (SLWhereTypeInfo whereTypeInfo : whereTypeInfoList) {
-					SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(whereTypeInfo.getName());
-					typeInfo.setSubTypes(whereTypeInfo.isSubTypes());
-					set.add(typeInfo);
-				}
-			}
-			else {
-				Collection<SLMetaNodeType> metaNodeTypes = metadata.getMetaNodesTypes();
-				for (SLMetaNodeType metaNodeType : metaNodeTypes) {
-					SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(metaNodeType.getTypeName());
-					typeInfo.setSubTypes(true);
-					set.add(typeInfo);
-				}
-			}
-		}
-		else {
-			set.addAll(selectInfo.getTypeInfoList());
-		}
-		return set;
-	}
+    /** The metadata. */
+    private SLMetadata                      metadata;
+
+    /**
+     * Instantiates a new sL select by node type execute command.
+     * 
+     * @param selectInfo the select info
+     * @param commandDO the command do
+     */
+    SLSelectByNodeTypeExecuteCommand(
+                                      SLSelectByNodeTypeInfo selectInfo, SLSelectCommandDO commandDO ) {
+        this.selectInfo = selectInfo;
+        this.commandDO = commandDO;
+        this.metadata = commandDO.getMetadata();
+    }
+
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.query.SLSelectAbstractCommand#execute()
+     */
+    @Override
+    public void execute() {
+
+        try {
+
+            if (commandDO.getPreviousNodeWrappers() != null) {
+                nodeWrapperListMap = SLQuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
+            }
+
+            Set<SLSelectTypeInfo> typeInfoSet = getSelectTypeInfoSet();
+            String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
+            SLWhereByNodeTypeInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
+
+            Set<String> typesNotFiltered = new HashSet<String>();
+            for (SLSelectTypeInfo typeInfo : typeInfoSet) {
+                List<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(metadata, typeInfo.getName(), typeInfo.isSubTypes());
+                typesNotFiltered.addAll(hierarchyTypeNames);
+            }
+
+            SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/contexts//*");
+            Statement rootStatement = statementBuilder.getRootStatement();
+
+            if (whereStatementInfo != null) {
+                List<SLWhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
+                if (whereTypeInfoList != null && !whereTypeInfoList.isEmpty()) {
+                    Map<String, SLWhereTypeInfo> whereTypeInfoMap = getWhereTypeInfoMap();
+                    List<SLWhereTypeInfo> list = new ArrayList<SLWhereTypeInfo>(whereTypeInfoMap.values());
+                    for (int i = 0; i < list.size(); i++) {
+                        SLWhereTypeInfo typeInfo = list.get(i);
+                        Statement typeStatement;
+                        if (i > 0) typeStatement = rootStatement.operator(OR).openBracket();
+                        else typeStatement = rootStatement.openBracket();
+                        Statement typeFilterStatement = typeStatement.condition()
+                                                                     .leftOperand(typePropName).operator(EQUAL).rightOperand(typeInfo.getName())
+                                                                     .operator(AND).openBracket();
+                        filterByWhereStatement(typeFilterStatement, typeInfo.getName(), typeInfo.getTypeStatementInfo());
+                        typeFilterStatement.closeBracket();
+                        typeStatement.closeBracket();
+                        typesNotFiltered.remove(typeInfo.getName());
+                    }
+                }
+            }
+
+            if (commandDO.getPreviousNodeWrappers() == null) {
+                for (String typeName : typesNotFiltered) {
+                    Condition condition;
+                    if (rootStatement.getConditionCount() == 0) {
+                        condition = rootStatement.condition();
+                    } else {
+                        condition = rootStatement.operator(OR).condition();
+                    }
+                    condition.leftOperand(typePropName).operator(EQUAL).rightOperand(typeName);
+                }
+            }
+
+            statementBuilder.setOrderBy(typePropName);
+            Set<PNodeWrapper> pNodeWrappers = new HashSet<PNodeWrapper>();
+            commandDO.setNodeWrappers(pNodeWrappers);
+
+            if (statementBuilder.getRootStatement().getConditionCount() > 0) {
+                SLPersistentTreeSession treeSession = commandDO.getTreeSession();
+                String xpath = statementBuilder.getXPath();
+                SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
+                SLPersistentQueryResult result = query.execute();
+                pNodeWrappers.addAll(SLQuerySupport.wrapNodes(result.getNodes()));
+            }
+
+            if (commandDO.getPreviousNodeWrappers() != null) {
+                for (String typeName : typesNotFiltered) {
+                    List<PNodeWrapper> typeNodeWrappers = nodeWrapperListMap.get(typeName);
+                    if (typeNodeWrappers != null) {
+                        pNodeWrappers.addAll(typeNodeWrappers);
+                    }
+                }
+            }
+        } catch (SLException e) {
+            throw new SLQueryException("Error on attempt to execute " + this.getClass().getName() + " command.");
+        }
+    }
+
+    /**
+     * Gets the where type info map.
+     * 
+     * @return the where type info map
+     */
+    private Map<String, SLWhereTypeInfo> getWhereTypeInfoMap() throws SLMetaNodeTypeNotFoundException {
+        Map<String, SLWhereTypeInfo> map = new HashMap<String, SLWhereTypeInfo>();
+        List<SLWhereTypeInfo> list = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
+        for (SLWhereTypeInfo whereTypeInfo : list) {
+            List<String> typeNames = SLQuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+            for (String typeName : typeNames) {
+                if (!map.containsKey(typeName)) {
+                    SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
+                    typeInfo.setTypeStatementInfo(whereTypeInfo.getTypeStatementInfo());
+                    map.put(typeName, typeInfo);
+                }
+            }
+        }
+        return map;
+    }
+
+    /**
+     * Filter by where statement.
+     * 
+     * @param statement the statement
+     * @param typeName the type name
+     * @param typeStatementInfo the type statement info
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    private void filterByWhereStatement( Statement statement,
+                                         String typeName,
+                                         SLTypeStatementInfo typeStatementInfo ) throws SLPersistentTreeSessionException {
+
+        List<SLConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
+
+        for (SLConditionInfo conditionInfo : conditionInfoList) {
+
+            Statement conditionStatement;
+            if (conditionInfo.getConditionalOperator() == null) {
+                conditionStatement = statement.openBracket();
+            } else {
+                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(), conditionInfo.isConditionalNotOperator()).openBracket();
+            }
+
+            if (conditionInfo.getInnerStatementInfo() == null) {
+                Statement idStatement = null;
+                if (commandDO.getPreviousNodeWrappers() != null) {
+                    List<PNodeWrapper> pNodeWrappers = nodeWrapperListMap.get(typeName);
+                    if (pNodeWrappers != null && !pNodeWrappers.isEmpty()) {
+                        idStatement = conditionStatement.openBracket();
+                        for (int j = 0; j < pNodeWrappers.size(); j++) {
+                            PNodeWrapper pNodeWrapper = pNodeWrappers.get(j);
+                            Condition idCondition;
+                            if (j == 0) idCondition = idStatement.condition();
+                            else idCondition = idStatement.operator(OR).condition();
+                            idCondition.leftOperand("jcr:uuid").operator(EQUAL).rightOperand(pNodeWrapper.getID());
+                        }
+                        idStatement.closeBracket();
+                    }
+                }
+                Condition condition;
+                if (idStatement == null) {
+                    condition = conditionStatement.condition();
+                } else {
+                    condition = conditionStatement.operator(AND).condition();
+                }
+
+                String propertyName;
+                if (conditionInfo.getPropertyName() != null) {
+                    propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
+                } else {
+                    propertyName = (conditionInfo.getSide().equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_COUNT : SLConsts.PROPERTY_NAME_TARGET_COUNT) + "." + conditionInfo.getLinkTypeName().hashCode();
+                    propertyName = SLCommonSupport.toInternalPropertyName(propertyName);
+                }
+
+                condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
+            } else {
+                filterByWhereStatement(conditionStatement, typeName, conditionInfo.getInnerStatementInfo());
+            }
+
+            conditionStatement.closeBracket();
+        }
+    }
+
+    /**
+     * Gets the select type info set.
+     * 
+     * @return the select type info set
+     */
+    private Set<SLSelectTypeInfo> getSelectTypeInfoSet() {
+        Set<SLSelectTypeInfo> set = new HashSet<SLSelectTypeInfo>();
+        if (selectInfo.getAllTypes() != null) {
+            if (selectInfo.getAllTypes().isOnWhere()) {
+                List<SLWhereTypeInfo> whereTypeInfoList = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
+                for (SLWhereTypeInfo whereTypeInfo : whereTypeInfoList) {
+                    SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(whereTypeInfo.getName());
+                    typeInfo.setSubTypes(whereTypeInfo.isSubTypes());
+                    set.add(typeInfo);
+                }
+            } else {
+                Collection<SLMetaNodeType> metaNodeTypes = metadata.getMetaNodesTypes();
+                for (SLMetaNodeType metaNodeType : metaNodeTypes) {
+                    SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(metaNodeType.getTypeName());
+                    typeInfo.setSubTypes(true);
+                    set.add(typeInfo);
+                }
+            }
+        } else {
+            set.addAll(selectInfo.getTypeInfoList());
+        }
+        return set;
+    }
 }
-
-

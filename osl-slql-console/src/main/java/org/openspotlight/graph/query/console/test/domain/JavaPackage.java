@@ -57,24 +57,20 @@ import org.openspotlight.graph.annotation.SLProperty;
  * @author Vitor Hugo Chagas
  */
 public interface JavaPackage extends SLNode {
-	
-	/**
-	 * Gets the caption.
-	 * 
-	 * @return the caption
-	 * 
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getCaption();
-	
-	/**
-	 * Sets the caption.
-	 * 
-	 * @param caption the new caption
-	 * 
-	 * @throws org.openspotlight.graph.exception.SLGraphSessionException the SL graph session exception
-	 */
-	public void setCaption(String caption);
+
+    /**
+     * Gets the caption.
+     * 
+     * @return the caption
+     */
+    @SLProperty
+    public String getCaption();
+
+    /**
+     * Sets the caption.
+     * 
+     * @param caption the new caption
+     */
+    public void setCaption( String caption );
 
 }

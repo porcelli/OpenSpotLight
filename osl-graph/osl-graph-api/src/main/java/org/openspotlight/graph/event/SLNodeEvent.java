@@ -48,13 +48,12 @@
  */
 package org.openspotlight.graph.event;
 
+import java.util.Collection;
+
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLPersistenceMode;
-import org.openspotlight.graph.event.SLGraphSessionEvent;
 import org.openspotlight.graph.persistence.SLPersistentNode;
-
-import java.util.Collection;
 
 /**
  * The Class SLNodeEvent.
@@ -63,93 +62,87 @@ import java.util.Collection;
  */
 public abstract class SLNodeEvent extends SLGraphSessionEvent {
 
-	/** The node. */
-	private final SLNode node;
+    /** The node. */
+    private final SLNode                              node;
 
-	/** The p node. */
-	private final SLPersistentNode pNode;
+    /** The p node. */
+    private final SLPersistentNode                    pNode;
 
-	/** The persistent mode. */
-	private final SLPersistenceMode persistentMode;
+    /** The persistent mode. */
+    private final SLPersistenceMode                   persistentMode;
 
-	/** The link types for link deletion. */
-	private final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion;
+    /** The link types for link deletion. */
+    private final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion;
 
-	/** The link types for linked node deletion. */
-	private final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion;
+    /** The link types for linked node deletion. */
+    private final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion;
 
-	/**
-	 * Instantiates a new sL node event.
-	 * 
-	 * @param type
-	 *            the type
-	 * @param node
-	 *            the node
-	 * @param pNode
-	 *            the node
-	 * @param persistentMode
-	 *            the persistent mode
-	 * @param linkTypesForLinkDeletion
-	 *            the link types for link deletion
-	 * @param linkTypesForLinkedNodeDeletion
-	 *            the link types for linked node deletion
-	 */
-	public SLNodeEvent(
-			final SLNode node,
-			final SLPersistentNode pNode,
-			final SLPersistenceMode persistentMode,
-			final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-			final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
-		super(node.getSession());
-		this.node = node;
-		this.pNode = pNode;
-		this.persistentMode = persistentMode;
-		this.linkTypesForLinkDeletion = linkTypesForLinkDeletion;
-		this.linkTypesForLinkedNodeDeletion = linkTypesForLinkedNodeDeletion;
-	}
+    /**
+     * Instantiates a new sL node event.
+     * 
+     * @param type the type
+     * @param node the node
+     * @param pNode the node
+     * @param persistentMode the persistent mode
+     * @param linkTypesForLinkDeletion the link types for link deletion
+     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
+     */
+    public SLNodeEvent(
+                        final SLNode node,
+                        final SLPersistentNode pNode,
+                        final SLPersistenceMode persistentMode,
+                        final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+                        final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion ) {
+        super(node.getSession());
+        this.node = node;
+        this.pNode = pNode;
+        this.persistentMode = persistentMode;
+        this.linkTypesForLinkDeletion = linkTypesForLinkDeletion;
+        this.linkTypesForLinkedNodeDeletion = linkTypesForLinkedNodeDeletion;
+    }
 
-	/**
-	 * Gets the link types for link deletion.
-	 * 
-	 * @return the link types for link deletion
-	 */
-	public Collection<Class<? extends SLLink>> getLinkTypesForLinkDeletion() {
-		return linkTypesForLinkDeletion;
-	}
+    /**
+     * Gets the link types for link deletion.
+     * 
+     * @return the link types for link deletion
+     */
+    public Collection<Class<? extends SLLink>> getLinkTypesForLinkDeletion() {
+        return linkTypesForLinkDeletion;
+    }
 
-	/**
-	 * Gets the link types for linked nodes deletion.
-	 * 
-	 * @return the link types for linked nodes deletion
-	 */
-	public Collection<Class<? extends SLLink>> getLinkTypesForLinkedNodesDeletion() {
-		return linkTypesForLinkedNodeDeletion;
-	}
+    /**
+     * Gets the link types for linked nodes deletion.
+     * 
+     * @return the link types for linked nodes deletion
+     */
+    public Collection<Class<? extends SLLink>> getLinkTypesForLinkedNodesDeletion() {
+        return linkTypesForLinkedNodeDeletion;
+    }
 
-	/**
-	 * Gets the node.
-	 * 
-	 * @return the node
-	 */
-	public SLNode getNode() {
-		return node;
-	}
+    /**
+     * Gets the node.
+     * 
+     * @return the node
+     */
+    public SLNode getNode() {
+        return node;
+    }
 
-	/**
-	 * Gets the persistence mode.
-	 * 
-	 * @return the persistence mode
-	 */
-	public SLPersistenceMode getPersistenceMode() {
-		return persistentMode;
-	}
+    /**
+     * Gets the persistence mode.
+     * 
+     * @return the persistence mode
+     */
+    public SLPersistenceMode getPersistenceMode() {
+        return persistentMode;
+    }
 
-	/**
-	 * Gets the persistent node.
-	 * 
-	 * @return the persistent node
-	 */
-	public SLPersistentNode getPersistentNode() {
-		return pNode;
-	}
+    /**
+     * Gets the persistent node.
+     * 
+     * @return the persistent node
+     */
+    public SLPersistentNode getPersistentNode() {
+        return pNode;
+    }
 }

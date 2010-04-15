@@ -49,36 +49,36 @@
 
 package org.openspotlight.federation.finder.db.handler;
 
-import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
-import org.openspotlight.federation.finder.db.ScriptType;
-
 import java.sql.ResultSet;
 
+import org.openspotlight.federation.finder.db.ScriptType;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
+
 /**
- * The Class SqlServerProcedureFilterNameHandler is used to filter procedure
- * names.
+ * The Class SqlServerProcedureFilterNameHandler is used to filter procedure names.
  */
 public class SqlServerProcedureFilterNameHandler implements
-		DatabaseArtifactNameHandler {
-	public String fixName(final String oldName) {
-		if (oldName.indexOf(';') == -1) {
-			return oldName;
-		}
-		return oldName.substring(0, oldName.indexOf(';'));
+        DatabaseArtifactNameHandler {
+    public String fixName( final String oldName ) {
+        if (oldName.indexOf(';') == -1) {
+            return oldName;
+        }
+        return oldName.substring(0, oldName.indexOf(';'));
 
-	}
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean shouldIncludeName(final String artifactName,
-			final ScriptType type, final ResultSet resultSet) throws Exception {
-		final boolean isFunction = resultSet.getString("PROCEDURE_NAME")
-				.endsWith(";0");
-		if (!isFunction) {
-			return true;
-		}
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public boolean shouldIncludeName( final String artifactName,
+                                      final ScriptType type,
+                                      final ResultSet resultSet ) throws Exception {
+        final boolean isFunction = resultSet.getString("PROCEDURE_NAME")
+                                            .endsWith(";0");
+        if (!isFunction) {
+            return true;
+        }
+        return false;
+    }
 
 }

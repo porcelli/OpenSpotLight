@@ -51,6 +51,14 @@
  */
 package org.openspotlight.graph;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,191 +66,181 @@ import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.exception.SLGraphException;
-import org.openspotlight.graph.exception.SLInvalidCredentialException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
-import org.openspotlight.graph.test.domain.JavaClass;
-import org.openspotlight.graph.test.domain.JavaPackage;
-import org.openspotlight.graph.test.domain.JavaType;
+import org.openspotlight.graph.test.domain.node.JavaClass;
+import org.openspotlight.graph.test.domain.node.JavaPackage;
+import org.openspotlight.graph.test.domain.node.JavaType;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class DuplicateTest {
 
-	SLGraph graph = null;
-	SLGraphSession session = null;
-	AuthenticatedUser user = null;
+    SLGraph           graph   = null;
+    SLGraphSession    session = null;
+    AuthenticatedUser user    = null;
 
-	@Before
-	public void setup() throws AbstractFactoryException, SLGraphException,
-            SLInvalidCredentialException, IdentityException {
+    @Before
+    public void setup() throws AbstractFactoryException, SLGraphException, IdentityException {
 
-		final SecurityFactory securityFactory = AbstractFactory
-				.getDefaultInstance(SecurityFactory.class);
-		final User simpleUser = securityFactory.createUser("testUser");
-		user = securityFactory.createIdentityManager(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-				"password");
+        final SecurityFactory securityFactory = AbstractFactory
+                                                               .getDefaultInstance(SecurityFactory.class);
+        final User simpleUser = securityFactory.createUser("testUser");
+        user = securityFactory.createIdentityManager(
+                                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
+                                                                                                        "password");
 
-		final SLGraphFactory factory = AbstractFactory
-				.getDefaultInstance(SLGraphFactory.class);
-		graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-	}
+        final SLGraphFactory factory = AbstractFactory
+                                                      .getDefaultInstance(SLGraphFactory.class);
+        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+    }
 
-	@Test
-	public void shouldInsertTwoDifferentNodes() throws Exception {
-		final SLNode rootNode = session.createContext("tmpXX").getRootNode();
+    @Test
+    public void shouldInsertTwoDifferentNodes() throws Exception {
+        final SLNode rootNode = session.createContext("tmpXX").getRootNode();
 
-		final JavaClass javaClass = rootNode.addNode(JavaClass.class, "test");
-		final JavaPackage javaPackage = rootNode.addNode(JavaPackage.class,
-				"test");
+        final JavaClass javaClass = rootNode.addNode(JavaClass.class, "test");
+        final JavaPackage javaPackage = rootNode.addNode(JavaPackage.class,
+                                                         "test");
 
-		final List<SLNode> nodes = new ArrayList<SLNode>();
-		nodes.add(javaClass);
-		nodes.add(javaPackage);
+        final List<SLNode> nodes = new ArrayList<SLNode>();
+        nodes.add(javaClass);
+        nodes.add(javaPackage);
 
-		session.save();
-		session.cleanCache();
-		final NeedsSyncronizationSet<SLNode> foundNodes = rootNode.getNodes();
-		for (final SLNode n : foundNodes) {
-			System.err.println(n.getName() + " "
-					+ n.getClass().getInterfaces()[0].getSimpleName());
-		}
-		assertThat(foundNodes.size(), is(1));
+        session.save();
+        session.cleanCache();
+        final NeedsSyncronizationSet<SLNode> foundNodes = rootNode.getNodes();
+        for (final SLNode n : foundNodes) {
+            System.err.println(n.getName() + " "
+                               + n.getClass().getInterfaces()[0].getSimpleName());
+        }
+        assertThat(foundNodes.size(), is(1));
 
-		assertThat(session.getNodeByID(javaPackage.getID()).getID(),
-				is(javaPackage.getID()));
+        assertThat(session.getNodeByID(javaPackage.getID()).getID(),
+                   is(javaPackage.getID()));
 
-		final NeedsSyncronizationSet<JavaClass> classChildren = rootNode
-				.getChildNodes(JavaClass.class);
-		assertThat(classChildren.size(), is(0));
+        final NeedsSyncronizationSet<JavaClass> classChildren = rootNode
+                                                                        .getChildNodes(JavaClass.class);
+        assertThat(classChildren.size(), is(0));
 
-		final NeedsSyncronizationSet<JavaPackage> allChildren = rootNode
-				.getChildNodes(JavaPackage.class);
-		assertThat(allChildren.size(), is(1));
+        final NeedsSyncronizationSet<JavaPackage> allChildren = rootNode
+                                                                        .getChildNodes(JavaPackage.class);
+        assertThat(allChildren.size(), is(1));
 
-	}
+    }
 
-	@Test
-	public void shouldNotInsertTwoEqualNodes() throws Exception {
-		final SLNode rootNode = session.createContext("tmp").getRootNode();
-		final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
-		final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
-		final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
-		final JavaType n1 = parent.addNode(JavaClass.class, "someName");
-		n1.setCaption("someName");
-		final JavaType n2 = parent.addNode(JavaType.class, "another");
-		n2.setCaption("another");
-		final JavaType n3 = parent.addNode(JavaType.class, "someName");
+    @Test
+    public void shouldNotInsertTwoEqualNodes() throws Exception {
+        final SLNode rootNode = session.createContext("tmp").getRootNode();
+        final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
+        final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
+        final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
+        final JavaType n1 = parent.addNode(JavaClass.class, "someName");
+        n1.setCaption("someName");
+        final JavaType n2 = parent.addNode(JavaType.class, "another");
+        n2.setCaption("another");
+        final JavaType n3 = parent.addNode(JavaType.class, "someName");
 
-		assertThat(n1, is(n3));
+        assertThat(n1, is(n3));
 
-		n3.setCaption("someName");
-		final JavaType n1_ = parent1.addNode(JavaClass.class, "someName");
-		n1_.setCaption("someName");
-		final JavaType n2_ = parent1.addNode(JavaType.class, "another");
-		n2_.setCaption("another");
-		final JavaType n3_ = parent1.addNode(JavaType.class, "someName");
+        n3.setCaption("someName");
+        final JavaType n1_ = parent1.addNode(JavaClass.class, "someName");
+        n1_.setCaption("someName");
+        final JavaType n2_ = parent1.addNode(JavaType.class, "another");
+        n2_.setCaption("another");
+        final JavaType n3_ = parent1.addNode(JavaType.class, "someName");
 
-		assertThat(n1_, is(n3_));
+        assertThat(n1_, is(n3_));
 
-		n3_.setCaption("someName");
-		session.save();
-		session.close();
-		session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-		final SLQueryApi query = session.createQueryApi();
-		query
+        n3_.setCaption("someName");
+        session.save();
+        session.close();
+        session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+        final SLQueryApi query = session.createQueryApi();
+        query
 
-		.select().type(JavaType.class.getName()).subTypes().selectEnd().where()
-				.type(JavaType.class.getName()).subTypes().each().property(
-						"caption").equalsTo().value("someName").typeEnd()
-				.whereEnd();
+        .select().type(JavaType.class.getName()).subTypes().selectEnd().where()
+                .type(JavaType.class.getName()).subTypes().each().property(
+                                                                           "caption").equalsTo().value("someName").typeEnd()
+                .whereEnd();
 
-		final SLQueryResult result = query.execute();
-		// aqui o map possui uma lista de nodes para cada id de contexto.
-		final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
-		resultMap.put("tmp", new ArrayList<SLNode>());
-		resultMap.put("tmp1", new ArrayList<SLNode>());
-		for (final SLNode n : result.getNodes()) {
-			resultMap.get(n.getContext().getID()).add(n);
-		}
-		// aqui é verificado se cada id de contexto possui apenas um node
-		for (final Map.Entry<String, List<SLNode>> entry : resultMap.entrySet()) {
-			assertThat(entry.getValue().size(), is(1));
-		}
+        final SLQueryResult result = query.execute();
+        // aqui o map possui uma lista de nodes para cada id de contexto.
+        final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
+        resultMap.put("tmp", new ArrayList<SLNode>());
+        resultMap.put("tmp1", new ArrayList<SLNode>());
+        for (final SLNode n : result.getNodes()) {
+            resultMap.get(n.getContext().getID()).add(n);
+        }
+        // aqui é verificado se cada id de contexto possui apenas um node
+        for (final Map.Entry<String, List<SLNode>> entry : resultMap.entrySet()) {
+            assertThat(entry.getValue().size(), is(1));
+        }
 
-		session.close();
-		graph.shutdown();
-	}
+        session.close();
+        graph.shutdown();
+    }
 
-	@Test
-	public void shouldNotInsertTwoEqualNodes2() throws Exception {
-		final SLNode rootNode = session.createContext("tmp").getRootNode();
-		final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
-		final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
-		final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
-		final JavaType n1 = parent.addNode(JavaClass.class, "someName");
-		n1.setCaption("someName");
-		final JavaType n2 = parent.addNode(JavaType.class, "another");
-		n2.setCaption("another");
-		final JavaType n3 = parent.addNode(JavaType.class, "someName");
+    @Test
+    public void shouldNotInsertTwoEqualNodes2() throws Exception {
+        final SLNode rootNode = session.createContext("tmp").getRootNode();
+        final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
+        final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
+        final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
+        final JavaType n1 = parent.addNode(JavaClass.class, "someName");
+        n1.setCaption("someName");
+        final JavaType n2 = parent.addNode(JavaType.class, "another");
+        n2.setCaption("another");
+        final JavaType n3 = parent.addNode(JavaType.class, "someName");
 
-		assertThat(n1, is(n3));
+        assertThat(n1, is(n3));
 
-		n3.setCaption("someName");
-		final JavaType n1_ = parent1.addNode(JavaClass.class, "someName");
-		n1_.setCaption("someName");
-		final JavaType n2_ = parent1.addNode(JavaType.class, "another");
-		n2_.setCaption("another");
-		final JavaType n3_ = parent1.addNode(JavaType.class, "someName");
+        n3.setCaption("someName");
+        final JavaType n1_ = parent1.addNode(JavaClass.class, "someName");
+        n1_.setCaption("someName");
+        final JavaType n2_ = parent1.addNode(JavaType.class, "another");
+        n2_.setCaption("another");
+        final JavaType n3_ = parent1.addNode(JavaType.class, "someName");
 
-		assertThat(n1_, is(n3_));
+        assertThat(n1_, is(n3_));
 
-		n3_.setCaption("someName");
-//		session.save();
-		session.close();
-		session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-		final SLQueryApi query = session.createQueryApi();
-		query
+        n3_.setCaption("someName");
+        //		session.save();
+        session.close();
+        session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+        final SLQueryApi query = session.createQueryApi();
+        query
 
-		.select().type(JavaType.class.getName()).subTypes().selectEnd().where()
-				.type(JavaType.class.getName()).subTypes().each().property(
-						"caption").equalsTo().value("someName").typeEnd()
-				.whereEnd();
+        .select().type(JavaType.class.getName()).subTypes().selectEnd().where()
+                .type(JavaType.class.getName()).subTypes().each().property(
+                                                                           "caption").equalsTo().value("someName").typeEnd()
+                .whereEnd();
 
-		final SLQueryResult result = query.execute();
-		// aqui o map possui uma lista de nodes para cada id de contexto.
-		final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
-		resultMap.put("tmp", new ArrayList<SLNode>());
-		resultMap.put("tmp1", new ArrayList<SLNode>());
-		for (final SLNode n : result.getNodes()) {
-			resultMap.get(n.getContext().getID()).add(n);
-		}
-		// aqui é verificado se cada id de contexto possui apenas um node
-		for (final Map.Entry<String, List<SLNode>> entry : resultMap.entrySet()) {
-			assertThat(entry.getValue().size(), is(1));
-		}
+        final SLQueryResult result = query.execute();
+        // aqui o map possui uma lista de nodes para cada id de contexto.
+        final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
+        resultMap.put("tmp", new ArrayList<SLNode>());
+        resultMap.put("tmp1", new ArrayList<SLNode>());
+        for (final SLNode n : result.getNodes()) {
+            resultMap.get(n.getContext().getID()).add(n);
+        }
+        // aqui é verificado se cada id de contexto possui apenas um node
+        for (final Map.Entry<String, List<SLNode>> entry : resultMap.entrySet()) {
+            assertThat(entry.getValue().size(), is(1));
+        }
 
-	}
+    }
 
-	@After
-	public void shutdown() {
-		session.close();
-		graph.shutdown();
-	}
+    @After
+    public void shutdown() {
+        session.close();
+        graph.shutdown();
+    }
 }

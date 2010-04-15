@@ -52,12 +52,13 @@ import org.openspotlight.federation.processing.internal.RunnableWithBundleContex
 
 public class SaveGraphTask extends RunnableWithBundleContext {
 
-	public SaveGraphTask(final String repository) {
-		super(repository);
-	}
+    public SaveGraphTask(
+                          final String repository ) {
+        super(repository);
+    }
 
-	public void doIt() throws Exception {
-		getBundleContext().getGraphSession().save();
-	}
+    public void doIt() throws Exception {
+        getBundleContext().getGraphSession().save();
+    }
 
 }

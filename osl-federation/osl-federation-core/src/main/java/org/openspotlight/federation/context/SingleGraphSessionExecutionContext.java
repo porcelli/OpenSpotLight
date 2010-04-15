@@ -55,37 +55,36 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
- * This class is an {@link ExecutionContext} which initialize all resources in a
- * lazy way, and also close it in a lazy way also.
+ * This class is an {@link ExecutionContext} which initialize all resources in a lazy way, and also close it in a lazy way also.
  * 
  * @author feu
- * 
  */
 public class SingleGraphSessionExecutionContext extends DefaultExecutionContext {
 
-	private final AuthenticatedUser user;
-	private final SLGraphSession uniqueGraphSession;
+    private final AuthenticatedUser user;
+    private final SLGraphSession    uniqueGraphSession;
 
-	SingleGraphSessionExecutionContext(final String username,
-			final String password, final JcrConnectionDescriptor descriptor,
-			final Repository repository,
-			final DisposingListener<DefaultExecutionContext> listener,
-			final AuthenticatedUser user,
-			final SLGraphSession uniqueGraphSession) {
-		super(username, password, descriptor,  listener, repository);
-		this.uniqueGraphSession = uniqueGraphSession;
-		this.user = user;
+    SingleGraphSessionExecutionContext(
+                                        final String username,
+                                        final String password, final JcrConnectionDescriptor descriptor,
+                                        final Repository repository,
+                                        final DisposingListener<DefaultExecutionContext> listener,
+                                        final AuthenticatedUser user,
+                                        final SLGraphSession uniqueGraphSession ) {
+        super(username, password, descriptor, listener, repository);
+        this.uniqueGraphSession = uniqueGraphSession;
+        this.user = user;
 
-	}
+    }
 
-	@Override
-	public SLGraphSession getGraphSession() {
-		return uniqueGraphSession;
-	}
+    @Override
+    public SLGraphSession getGraphSession() {
+        return uniqueGraphSession;
+    }
 
-	@Override
-	public AuthenticatedUser getUser() {
-		return user;
-	}
+    @Override
+    public AuthenticatedUser getUser() {
+        return user;
+    }
 
 }

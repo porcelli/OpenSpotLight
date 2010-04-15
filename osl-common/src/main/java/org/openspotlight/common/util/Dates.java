@@ -49,19 +49,21 @@
 
 package org.openspotlight.common.util;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import static java.text.DateFormat.getDateInstance;
 import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.*;
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Helper class to deal with dates
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Dates {
@@ -83,7 +85,7 @@ public class Dates {
 
     /**
      * Creates a date using the default date format
-     *
+     * 
      * @param dateString
      * @return a new date
      */
@@ -99,7 +101,7 @@ public class Dates {
 
     /**
      * Creates a date using the default date time format
-     *
+     * 
      * @param dateString
      * @return a new date
      */
@@ -115,7 +117,7 @@ public class Dates {
 
     /**
      * Returns a string using the date passed on argument and the default format
-     *
+     * 
      * @param date
      * @return a formatted string
      */
@@ -127,7 +129,7 @@ public class Dates {
 
     /**
      * Returns a string using the date passed on argument and the default date time format
-     *
+     * 
      * @param date
      * @return a formatted string
      */

@@ -48,10 +48,10 @@
  */
 package org.openspotlight.graph.util;
 
-import org.openspotlight.graph.SLLink;
-
 import java.util.Arrays;
 import java.util.Collection;
+
+import org.openspotlight.graph.SLLink;
 
 public class GraphManipulationSupport {
 

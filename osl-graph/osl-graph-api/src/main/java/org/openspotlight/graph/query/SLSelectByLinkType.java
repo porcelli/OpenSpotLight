@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.query;
 
-
 /**
  * The Interface SLSelectByLinkType.
  * 

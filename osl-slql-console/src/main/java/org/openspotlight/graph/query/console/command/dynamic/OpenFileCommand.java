@@ -48,15 +48,16 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
-import jline.ConsoleReader;
-import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.command.DynamicCommand;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
+
+import jline.ConsoleReader;
+
+import org.openspotlight.common.util.Assertions;
+import org.openspotlight.graph.query.console.ConsoleState;
+import org.openspotlight.graph.query.console.command.DynamicCommand;
 
 /**
  * The Class OpenFileCommand. This command opens a file and loads its content into active query buffer.

@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.query.info;
 
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.graph.query.SLSideType;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.graph.query.SLSideType;
 
 /**
  * The Class SLSelectByLinkTypeInfo.
@@ -61,304 +61,304 @@ import java.util.List;
  * @author Vitor Hugo Chagas
  */
 public class SLSelectByLinkTypeInfo extends SLSelectInfo {
-	
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
 
-	/** The type info list. */
-	private List<SLSelectTypeInfo> typeInfoList;
-	
-	/** The by link info list. */
-	private List<SLSelectByLinkInfo> byLinkInfoList;
-	
-	/** The where by link type info. */
-	private SLWhereByLinkTypeInfo whereByLinkTypeInfo;
+    /** The Constant serialVersionUID. */
+    private static final long        serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL select by link type info.
-	 */
-	public SLSelectByLinkTypeInfo() {
-		typeInfoList = new ArrayList<SLSelectTypeInfo>();
-		byLinkInfoList = new ArrayList<SLSelectByLinkInfo>();
-	}
-	
-	/**
-	 * Adds the type.
-	 * 
-	 * @param name the name
-	 * 
-	 * @return the sL select type info
-	 */
-	public SLSelectTypeInfo addType(String name) {
-		SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(name);
-		typeInfoList.add(typeInfo);
-		return typeInfo;
-	}
-	
-	/**
-	 * Adds the by link.
-	 * 
-	 * @param name the name
-	 * 
-	 * @return the sL select by link info
-	 */
-	public SLSelectByLinkInfo addByLink(String name) {
-		SLSelectByLinkInfo byLinkInfo = new SLSelectByLinkInfo(name);
-		byLinkInfoList.add(byLinkInfo);
-		return byLinkInfo;
-	}
+    /** The type info list. */
+    private List<SLSelectTypeInfo>   typeInfoList;
 
-	/**
-	 * Gets the type info list.
-	 * 
-	 * @return the type info list
-	 */
-	public List<SLSelectTypeInfo> getTypeInfoList() {
-		return typeInfoList;
-	}
+    /** The by link info list. */
+    private List<SLSelectByLinkInfo> byLinkInfoList;
 
-	/**
-	 * Gets the by link info list.
-	 * 
-	 * @return the by link info list
-	 */
-	public List<SLSelectByLinkInfo> getByLinkInfoList() {
-		return byLinkInfoList;
-	}
+    /** The where by link type info. */
+    private SLWhereByLinkTypeInfo    whereByLinkTypeInfo;
 
-	/**
-	 * Gets the where by link type info.
-	 * 
-	 * @return the where by link type info
-	 */
-	public SLWhereByLinkTypeInfo getWhereByLinkTypeInfo() {
-		return whereByLinkTypeInfo;
-	}
+    /**
+     * Instantiates a new sL select by link type info.
+     */
+    public SLSelectByLinkTypeInfo() {
+        typeInfoList = new ArrayList<SLSelectTypeInfo>();
+        byLinkInfoList = new ArrayList<SLSelectByLinkInfo>();
+    }
 
-	/**
-	 * Sets the where by link type info.
-	 * 
-	 * @param whereStatementInfo the new where by link type info
-	 */
-	public void setWhereByLinkTypeInfo(SLWhereByLinkTypeInfo whereStatementInfo) {
-		this.whereByLinkTypeInfo = whereStatementInfo;
-	}
+    /**
+     * Adds the type.
+     * 
+     * @param name the name
+     * @return the sL select type info
+     */
+    public SLSelectTypeInfo addType( String name ) {
+        SLSelectTypeInfo typeInfo = new SLSelectTypeInfo(name);
+        typeInfoList.add(typeInfo);
+        return typeInfo;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
-	 */
-	@Override
-	public String toString() {
-		
-		StringBuilder buffer = new StringBuilder();
-		
-		// SELECT clause ...
-		buffer.append("\nSELECT\n");
-		
-		// types ...
-		for (int i = 0; i < typeInfoList.size(); i++) {
-			SLSelectTypeInfo typeInfo = typeInfoList.get(i);
-			if (i > 0) buffer.append(",\n");
-			buffer.append('\t').append('"').append(typeInfo.getName());
-			if (typeInfo.isSubTypes()) buffer.append(".*");
-			buffer.append('"');
-		}
-		
-		// by links ...
-		int byLinkSize = byLinkInfoList.size();
-		if (byLinkSize > 0) {
-			buffer.append("\n\tby link\n");
-			for (int i = 0; i < byLinkInfoList.size(); i++) {
-				SLSelectByLinkInfo byLinkInfo = byLinkInfoList.get(i);
-				if (i > 0) buffer.append(",\n");
-				buffer.append("\t\t").append(byLinkInfo.getName());
-				
-				// sides ...
-				buffer.append(" (");
-				SLSideType side = byLinkInfo.getSide(); 
-				buffer.append(side.symbol());
-				buffer.append(')');
-			}
-		}
+    /**
+     * Adds the by link.
+     * 
+     * @param name the name
+     * @return the sL select by link info
+     */
+    public SLSelectByLinkInfo addByLink( String name ) {
+        SLSelectByLinkInfo byLinkInfo = new SLSelectByLinkInfo(name);
+        byLinkInfoList.add(byLinkInfo);
+        return byLinkInfo;
+    }
 
-		// where ...
-		if (whereByLinkTypeInfo != null) {
-			buffer.append(whereByLinkTypeInfo);	
-		}
-		
-		buffer.append(super.toString());
+    /**
+     * Gets the type info list.
+     * 
+     * @return the type info list
+     */
+    public List<SLSelectTypeInfo> getTypeInfoList() {
+        return typeInfoList;
+    }
 
-		return buffer.toString();
-	}
-	
-	/**
-	 * The Class SLSelectTypeInfo.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static class SLSelectTypeInfo {
+    /**
+     * Gets the by link info list.
+     * 
+     * @return the by link info list
+     */
+    public List<SLSelectByLinkInfo> getByLinkInfoList() {
+        return byLinkInfoList;
+    }
 
-		/** The name. */
-		private String name;
-		
-		/** The sub types. */
-		private boolean subTypes;
-		
-		/** The comma. */
-		private boolean comma;
-		
-		/**
-		 * Instantiates a new sL select type info.
-		 * 
-		 * @param name the name
-		 */
-		public SLSelectTypeInfo(String name) {
-			setName(name);
-		}
-		
-		/**
-		 * Gets the name.
-		 * 
-		 * @return the name
-		 */
-		public String getName() {
-			return name;
-		}
-		
-		/**
-		 * Sets the name.
-		 * 
-		 * @param name the new name
-		 */
-		public void setName(String name) {
-			this.name = name;
-		}
-		
-		/**
-		 * Checks if is sub types.
-		 * 
-		 * @return true, if is sub types
-		 */
-		public boolean isSubTypes() {
-			return subTypes;
-		}
-		
-		/**
-		 * Sets the sub types.
-		 * 
-		 * @param subTypes the new sub types
-		 */
-		public void setSubTypes(boolean subTypes) {
-			this.subTypes = subTypes;
-		}
-		
-		/**
-		 * Checks if is comma.
-		 * 
-		 * @return true, if is comma
-		 */
-		public boolean isComma() {
-			return comma;
-		}
-		
-		/**
-		 * Sets the comma.
-		 * 
-		 * @param comma the new comma
-		 */
-		public void setComma(boolean comma) {
-			this.comma = comma;
-		}
-		
-		/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
-		}
-	}
-	
-	/**
-	 * The Class SLSelectByLinkInfo.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static class SLSelectByLinkInfo implements Serializable {
+    /**
+     * Gets the where by link type info.
+     * 
+     * @return the where by link type info
+     */
+    public SLWhereByLinkTypeInfo getWhereByLinkTypeInfo() {
+        return whereByLinkTypeInfo;
+    }
 
-		/** The Constant serialVersionUID. */
-		private static final long serialVersionUID = 1L;
-		
-		/** The name. */
-		private String name;
-		
-		/** The side. */
-		private SLSideType side;
-		
-		/** The comma. */
-		private boolean comma;
-		
-		/**
-		 * Instantiates a new sL select by link info.
-		 * 
-		 * @param name the name
-		 */
-		SLSelectByLinkInfo(String name) {
-			setName(name);
-		}
+    /**
+     * Sets the where by link type info.
+     * 
+     * @param whereStatementInfo the new where by link type info
+     */
+    public void setWhereByLinkTypeInfo( SLWhereByLinkTypeInfo whereStatementInfo ) {
+        this.whereByLinkTypeInfo = whereStatementInfo;
+    }
 
-		/**
-		 * Gets the name.
-		 * 
-		 * @return the name
-		 */
-		public String getName() {
-			return name;
-		}
+    /* (non-Javadoc)
+     * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
+     */
+    @Override
+    public String toString() {
 
-		/**
-		 * Sets the name.
-		 * 
-		 * @param name the new name
-		 */
-		public void setName(String name) {
-			this.name = name;
-		}
+        StringBuilder buffer = new StringBuilder();
 
-		/**
-		 * Checks if is comma.
-		 * 
-		 * @return true, if is comma
-		 */
-		public boolean isComma() {
-			return comma;
-		}
+        // SELECT clause ...
+        buffer.append("\nSELECT\n");
 
-		/**
-		 * Sets the comma.
-		 * 
-		 * @param comma the new comma
-		 */
-		public void setComma(boolean comma) {
-			this.comma = comma;
-		}
+        // types ...
+        for (int i = 0; i < typeInfoList.size(); i++) {
+            SLSelectTypeInfo typeInfo = typeInfoList.get(i);
+            if (i > 0) buffer.append(",\n");
+            buffer.append('\t').append('"').append(typeInfo.getName());
+            if (typeInfo.isSubTypes()) buffer.append(".*");
+            buffer.append('"');
+        }
 
-		/**
-		 * Gets the side.
-		 * 
-		 * @return the side
-		 */
-		public SLSideType getSide() {
-			return side;
-		}
+        // by links ...
+        int byLinkSize = byLinkInfoList.size();
+        if (byLinkSize > 0) {
+            buffer.append("\n\tby link\n");
+            for (int i = 0; i < byLinkInfoList.size(); i++) {
+                SLSelectByLinkInfo byLinkInfo = byLinkInfoList.get(i);
+                if (i > 0) buffer.append(",\n");
+                buffer.append("\t\t").append(byLinkInfo.getName());
 
-		/**
-		 * Sets the side.
-		 * 
-		 * @param side the new side
-		 */
-		public void setSide(SLSideType side) {
-			this.side = side;
-		}
-	}
+                // sides ...
+                buffer.append(" (");
+                SLSideType side = byLinkInfo.getSide();
+                buffer.append(side.symbol());
+                buffer.append(')');
+            }
+        }
+
+        // where ...
+        if (whereByLinkTypeInfo != null) {
+            buffer.append(whereByLinkTypeInfo);
+        }
+
+        buffer.append(super.toString());
+
+        return buffer.toString();
+    }
+
+    /**
+     * The Class SLSelectTypeInfo.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class SLSelectTypeInfo {
+
+        /** The name. */
+        private String  name;
+
+        /** The sub types. */
+        private boolean subTypes;
+
+        /** The comma. */
+        private boolean comma;
+
+        /**
+         * Instantiates a new sL select type info.
+         * 
+         * @param name the name
+         */
+        public SLSelectTypeInfo(
+                                 String name ) {
+            setName(name);
+        }
+
+        /**
+         * Gets the name.
+         * 
+         * @return the name
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Sets the name.
+         * 
+         * @param name the new name
+         */
+        public void setName( String name ) {
+            this.name = name;
+        }
+
+        /**
+         * Checks if is sub types.
+         * 
+         * @return true, if is sub types
+         */
+        public boolean isSubTypes() {
+            return subTypes;
+        }
+
+        /**
+         * Sets the sub types.
+         * 
+         * @param subTypes the new sub types
+         */
+        public void setSubTypes( boolean subTypes ) {
+            this.subTypes = subTypes;
+        }
+
+        /**
+         * Checks if is comma.
+         * 
+         * @return true, if is comma
+         */
+        public boolean isComma() {
+            return comma;
+        }
+
+        /**
+         * Sets the comma.
+         * 
+         * @param comma the new comma
+         */
+        public void setComma( boolean comma ) {
+            this.comma = comma;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals( Object obj ) {
+            return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
+        }
+    }
+
+    /**
+     * The Class SLSelectByLinkInfo.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static class SLSelectByLinkInfo implements Serializable {
+
+        /** The Constant serialVersionUID. */
+        private static final long serialVersionUID = 1L;
+
+        /** The name. */
+        private String            name;
+
+        /** The side. */
+        private SLSideType        side;
+
+        /** The comma. */
+        private boolean           comma;
+
+        /**
+         * Instantiates a new sL select by link info.
+         * 
+         * @param name the name
+         */
+        SLSelectByLinkInfo(
+                            String name ) {
+            setName(name);
+        }
+
+        /**
+         * Gets the name.
+         * 
+         * @return the name
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Sets the name.
+         * 
+         * @param name the new name
+         */
+        public void setName( String name ) {
+            this.name = name;
+        }
+
+        /**
+         * Checks if is comma.
+         * 
+         * @return true, if is comma
+         */
+        public boolean isComma() {
+            return comma;
+        }
+
+        /**
+         * Sets the comma.
+         * 
+         * @param comma the new comma
+         */
+        public void setComma( boolean comma ) {
+            this.comma = comma;
+        }
+
+        /**
+         * Gets the side.
+         * 
+         * @return the side
+         */
+        public SLSideType getSide() {
+            return side;
+        }
+
+        /**
+         * Sets the side.
+         * 
+         * @param side the new side
+         */
+        public void setSide( SLSideType side ) {
+            this.side = side;
+        }
+    }
 }

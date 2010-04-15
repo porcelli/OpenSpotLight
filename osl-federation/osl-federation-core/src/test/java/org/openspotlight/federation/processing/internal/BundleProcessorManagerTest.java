@@ -48,6 +48,12 @@
  */
 package org.openspotlight.federation.processing.internal;
 
+import java.io.File;
+import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.jcr.Session;
+
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
@@ -61,7 +67,13 @@ import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.context.SingleGraphSessionExecutionContextFactory;
-import org.openspotlight.federation.domain.*;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.federation.domain.BundleProcessorType;
+import org.openspotlight.federation.domain.BundleSource;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.GroupListener;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -70,8 +82,8 @@ import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
-import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
+import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLLink;
@@ -79,146 +91,141 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
-import javax.jcr.Session;
-import java.io.File;
-import java.util.HashSet;
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class BundleProcessorManagerTest {
 
-	public static class SampleGroupListener implements GroupListener {
+    public static class SampleGroupListener implements GroupListener {
 
-		public static AtomicInteger count = new AtomicInteger();
+        public static AtomicInteger count = new AtomicInteger();
 
-		public ListenerAction groupAdded(final SLNode groupNode,
-				final ExecutionContext context) {
-			count.incrementAndGet();
-			return ListenerAction.CONTINUE;
-		}
+        public ListenerAction groupAdded( final SLNode groupNode,
+                                          final ExecutionContext context ) {
+            count.incrementAndGet();
+            return ListenerAction.CONTINUE;
+        }
 
-		public ListenerAction groupRemoved(final SLNode groupNode,
-				final ExecutionContext context) {
-			return null;
-		}
+        public ListenerAction groupRemoved( final SLNode groupNode,
+                                            final ExecutionContext context ) {
+            return null;
+        }
 
-	}
+    }
 
-	@Before
-	public void cleanGroupListenerCount() throws Exception {
-		SampleGroupListener.count.set(0);
-	}
+    @Before
+    public void cleanGroupListenerCount() throws Exception {
+        SampleGroupListener.count.set(0);
+    }
 
-	@Before
-	public void cleanupOldEntries() throws Exception {
-		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-				.closeRepositoryAndCleanResources();
-	}
+    @Before
+    public void cleanupOldEntries() throws Exception {
+        JcrConnectionProvider.createFromData(
+                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+                             .closeRepositoryAndCleanResources();
+    }
 
-	@Test
-	public void shouldProcessMappedArtifactsUsingJcrStreamArtifacts()
-			throws Exception {
-		ExampleBundleProcessor.allStatus.clear();
+    @Test
+    public void shouldProcessMappedArtifactsUsingJcrStreamArtifacts()
+            throws Exception {
+        ExampleBundleProcessor.allStatus.clear();
 
-		final ArtifactSource source = new ArtifactSource();
-		final String initialRawPath = Files
-				.getNormalizedFileName(new File(".."));
-		final String initial = initialRawPath.substring(0, initialRawPath
-				.lastIndexOf('/'));
-		final String finalStr = initialRawPath.substring(initial.length());
-		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-		mapping.setSource(source);
-		mapping.setFrom(finalStr);
-		mapping.setTo("/sources/java/myProject");
-		mapping.setExcludeds(new HashSet<String>());
-		mapping.getIncludeds().add("**/ConfigurationManagerProvider.java");
-		source.setMappings(new HashSet<ArtifactSourceMapping>());
-		source.getMappings().add(mapping);
-		source.setActive(true);
-		source.setInitialLookup(initial);
-		source.setName("sourceName");
+        final ArtifactSource source = new ArtifactSource();
+        final String initialRawPath = Files
+                                           .getNormalizedFileName(new File(".."));
+        final String initial = initialRawPath.substring(0, initialRawPath
+                                                                         .lastIndexOf('/'));
+        final String finalStr = initialRawPath.substring(initial.length());
+        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+        mapping.setSource(source);
+        mapping.setFrom(finalStr);
+        mapping.setTo("/sources/java/myProject");
+        mapping.setExcludeds(new HashSet<String>());
+        mapping.getIncludeds().add("**/ConfigurationManagerProvider.java");
+        source.setMappings(new HashSet<ArtifactSourceMapping>());
+        source.getMappings().add(mapping);
+        source.setActive(true);
+        source.setInitialLookup(initial);
+        source.setName("sourceName");
 
-		final GlobalSettings settings = new GlobalSettings();
-		settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
-		settings.setDefaultSleepingIntervalInMilliseconds(1000);
-		final Repository repository = new Repository();
-		repository.setActive(true);
-		repository.setName("repository");
-		source.setRepository(repository);
-		final Group group = new Group();
-		group.setActive(true);
-		group.setName("Group name");
-		group.setRepository(repository);
-		repository.getGroups().add(group);
-		final BundleProcessorType bundleType = new BundleProcessorType();
-		bundleType.setActive(true);
-		bundleType.setGroup(group);
-		bundleType.setGlobalPhase(ExampleBundleProcessor.class);
-		group.getBundleTypes().add(bundleType);
-		final BundleSource bundleSource = new BundleSource();
-		bundleType.getSources().add(bundleSource);
-		bundleSource.setBundleProcessorType(bundleType);
-		bundleSource.setRelative("/sources/java/myProject");
-		bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
-		JcrPersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
-		ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,
-				provider);
+        final GlobalSettings settings = new GlobalSettings();
+        settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
+        settings.setDefaultSleepingIntervalInMilliseconds(1000);
+        final Repository repository = new Repository();
+        repository.setActive(true);
+        repository.setName("repository");
+        source.setRepository(repository);
+        final Group group = new Group();
+        group.setActive(true);
+        group.setName("Group name");
+        group.setRepository(repository);
+        repository.getGroups().add(group);
+        final BundleProcessorType bundleType = new BundleProcessorType();
+        bundleType.setActive(true);
+        bundleType.setGroup(group);
+        bundleType.setGlobalPhase(ExampleBundleProcessor.class);
+        group.getBundleTypes().add(bundleType);
+        final BundleSource bundleSource = new BundleSource();
+        bundleType.getSources().add(bundleSource);
+        bundleSource.setBundleProcessorType(bundleType);
+        bundleSource.setRelative("/sources/java/myProject");
+        bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
+        JcrPersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+                                                                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
+        ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,
+                                                        provider);
 
-		final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
-				.createFactory();
-		final ExecutionContext context = contextFactory.createExecutionContext(
-				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				repository);
-		context.getDefaultConfigurationManager().saveGlobalSettings(settings);
-		context.getDefaultConfigurationManager().saveRepository(repository);
-		contextFactory.closeResources();
+        final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
+                                                                                     .createFactory();
+        final ExecutionContext context = contextFactory.createExecutionContext(
+                                                                               "username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                               repository);
+        context.getDefaultConfigurationManager().saveGlobalSettings(settings);
+        context.getDefaultConfigurationManager().saveRepository(repository);
+        contextFactory.closeResources();
 
-		final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
-				.executeBundles("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-						SingleGraphSessionExecutionContextFactory
-								.createFactory(), settings, group);
-		Assert.assertThat(ExampleBundleProcessor.allStatus
-				.contains(LastProcessStatus.ERROR), Is.is(false));
-		Assert.assertThat(ExampleBundleProcessor.allStatus
-				.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
-				.is(false));
-		Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
-		final ConfigurationManager xmlManager = XmlConfigurationManagerFactory
-				.loadMutableFromFile("target/BundleProcessorManagerTest/exampleConfigurationFile.xml");
-		GlobalSettingsSupport.initializeScheduleMap(settings);
-		xmlManager.saveGlobalSettings(settings);
-		xmlManager.saveRepository(repository);
-		final ExecutionContext context1 = contextFactory
-				.createExecutionContext("username", "password",
-						DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
-		final String nodeName = "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java1";
-		final SLNode node = context1.getGraphSession().getContext(
-				SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
-				group.getUniqueName()).getNode(nodeName);
-		Assert.assertThat(node, Is.is(IsNull.notNullValue()));
-		final SLNode node2 = node.getNode(nodeName);
-		Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
-		final NeedsSyncronizationCollection<SLLink> links = context1
-				.getGraphSession().getLinks(node, node2);
-		Assert.assertThat(links.size(), Is.is(IsNot.not(0)));
-		final StringArtifact sourceFile = context1
-				.getPersistentArtifactManager()
-				.findByPath(
-						StringArtifact.class,
-						"/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
-		Assert.assertThat(sourceFile, Is.is(IsNull.notNullValue()));
-		Assert.assertThat(sourceFile.getUnwrappedSyntaxInformation(
-				(Session) context1.getPersistentArtifactManager()
-						.getPersistentEngine()).size(), Is.is(IsNot.not(0)));
+        final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
+                                                                                   .executeBundles("username", "password",
+                                                                                                   DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                                   SingleGraphSessionExecutionContextFactory
+                                                                                                                                            .createFactory(), settings, group);
+        Assert.assertThat(ExampleBundleProcessor.allStatus
+                                                          .contains(LastProcessStatus.ERROR), Is.is(false));
+        Assert.assertThat(ExampleBundleProcessor.allStatus
+                                                          .contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is
+                                                                                                                    .is(false));
+        Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
+        final ConfigurationManager xmlManager = XmlConfigurationManagerFactory
+                                                                              .loadMutableFromFile("target/BundleProcessorManagerTest/exampleConfigurationFile.xml");
+        GlobalSettingsSupport.initializeScheduleMap(settings);
+        xmlManager.saveGlobalSettings(settings);
+        xmlManager.saveRepository(repository);
+        final ExecutionContext context1 = contextFactory
+                                                        .createExecutionContext("username", "password",
+                                                                                DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
+        final String nodeName = "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java1";
+        final SLNode node = context1.getGraphSession().getContext(
+                                                                  SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
+                                                                                                                        group.getUniqueName()).getNode(nodeName);
+        Assert.assertThat(node, Is.is(IsNull.notNullValue()));
+        final SLNode node2 = node.getNode(nodeName);
+        Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
+        final NeedsSyncronizationCollection<SLLink> links = context1
+                                                                    .getGraphSession().getLinks(node, node2);
+        Assert.assertThat(links.size(), Is.is(IsNot.not(0)));
+        final StringArtifact sourceFile = context1
+                                                  .getPersistentArtifactManager()
+                                                  .findByPath(
+                                                              StringArtifact.class,
+                                                              "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
+        Assert.assertThat(sourceFile, Is.is(IsNull.notNullValue()));
+        Assert.assertThat(sourceFile.getUnwrappedSyntaxInformation(
+                                                                   (Session)context1.getPersistentArtifactManager()
+                                                                                    .getPersistentEngine()).size(), Is.is(IsNot.not(0)));
 
-	}
+    }
 
-	@After
-	public void sleepAndGc() throws Exception {
-		Thread.sleep(500);
-		System.gc();
-	}
+    @After
+    public void sleepAndGc() throws Exception {
+        Thread.sleep(500);
+        System.gc();
+    }
 
 }

@@ -48,17 +48,17 @@
  */
 package org.openspotlight.graph.query.console.command.system;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.Test;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.AbstractCommandTest;
 import org.openspotlight.graph.query.console.command.Command;
 import org.openspotlight.graph.query.console.command.dynamic.SaveQueryCommand;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class TestHelpSystemCommand extends AbstractCommandTest {
 
@@ -144,7 +144,7 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
         commands.add(null);
         commands.add(new SaveQueryCommand());
         command = new HelpSystemCommand(commands);
-        
+
         ConsoleState state = new ConsoleState(null);
         state.setInput("help");
         state.appendBuffer("something");

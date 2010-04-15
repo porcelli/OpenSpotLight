@@ -48,14 +48,15 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
-import jline.ConsoleReader;
-import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.command.DynamicCommand;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import jline.ConsoleReader;
+
+import org.openspotlight.common.util.Assertions;
+import org.openspotlight.graph.query.console.ConsoleState;
+import org.openspotlight.graph.query.console.command.DynamicCommand;
 
 /**
  * The Class SaveQueryCommand. This command saves to an output file the last executed query.

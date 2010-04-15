@@ -48,12 +48,8 @@
  */
 package org.openspotlight.federation.domain;
 
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.Name;
-import org.openspotlight.persist.annotation.SimpleNodeType;
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -61,128 +57,130 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.openspotlight.common.util.Arrays.andOf;
-import static org.openspotlight.common.util.Arrays.of;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class Repository.
  */
-@Name("repository")
+@Name( "repository" )
 public class Repository implements SimpleNodeType, Serializable {
 
-	public static interface GroupVisitor {
-		public void visitGroup(Group group);
-	}
+    public static interface GroupVisitor {
+        public void visitGroup( Group group );
+    }
 
-	private List<Class<? extends GroupListener>> groupListeners = new ArrayList<Class<? extends GroupListener>>();
+    private List<Class<? extends GroupListener>> groupListeners   = new ArrayList<Class<? extends GroupListener>>();
 
-	private static final long serialVersionUID = -8278810189446649901L;
+    private static final long                    serialVersionUID = -8278810189446649901L;
 
-	/** The artifact sources. */
-	private Set<ArtifactSource> artifactSources = new HashSet<ArtifactSource>();
+    /** The artifact sources. */
+    private Set<ArtifactSource>                  artifactSources  = new HashSet<ArtifactSource>();
 
-	/** The name. */
-	private String name;
+    /** The name. */
+    private String                               name;
 
-	/** The groups. */
-	private Set<Group> groups = new HashSet<Group>();
+    /** The groups. */
+    private Set<Group>                           groups           = new HashSet<Group>();
 
-	/** The active. */
-	private boolean active;
+    /** The active. */
+    private boolean                              active;
 
-	private volatile transient int hashCode;
+    private volatile transient int               hashCode;
 
-	public void acceptGroupVisitor(final GroupVisitor visitor) {
-		for (final Group entry : getGroups()) {
-			entry.acceptVisitor(visitor);
-		}
-	}
+    public void acceptGroupVisitor( final GroupVisitor visitor ) {
+        for (final Group entry : getGroups()) {
+            entry.acceptVisitor(visitor);
+        }
+    }
 
-	public boolean equals(final Object o) {
-		if (!(o instanceof Repository)) {
-			return false;
-		}
-		final Repository that = (Repository) o;
-		return Equals.eachEquality(of(name), andOf(that.name));
-	}
+    public boolean equals( final Object o ) {
+        if (!(o instanceof Repository)) {
+            return false;
+        }
+        final Repository that = (Repository)o;
+        return Equals.eachEquality(of(name), andOf(that.name));
+    }
 
-	public Set<ArtifactSource> getArtifactSources() {
-		return artifactSources;
-	}
+    public Set<ArtifactSource> getArtifactSources() {
+        return artifactSources;
+    }
 
-	public List<Class<? extends GroupListener>> getGroupListeners() {
-		return groupListeners;
-	}
+    public List<Class<? extends GroupListener>> getGroupListeners() {
+        return groupListeners;
+    }
 
-	/**
-	 * Gets the groups.
-	 * 
-	 * @return the groups
-	 */
-	public Set<Group> getGroups() {
-		return groups;
-	}
+    /**
+     * Gets the groups.
+     * 
+     * @return the groups
+     */
+    public Set<Group> getGroups() {
+        return groups;
+    }
 
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 */
-	@KeyProperty
-	public String getName() {
-		return name;
-	}
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    @KeyProperty
+    public String getName() {
+        return name;
+    }
 
-	public int hashCode() {
-		int result = hashCode;
-		if (result == 0) {
-			result = HashCodes.hashOf(name);
-			hashCode = result;
-		}
-		return result;
-	}
+    public int hashCode() {
+        int result = hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(name);
+            hashCode = result;
+        }
+        return result;
+    }
 
-	/**
-	 * Checks if is active.
-	 * 
-	 * @return true, if is active
-	 */
-	public boolean isActive() {
-		return active;
-	}
+    /**
+     * Checks if is active.
+     * 
+     * @return true, if is active
+     */
+    public boolean isActive() {
+        return active;
+    }
 
-	/**
-	 * Sets the active.
-	 * 
-	 * @param active
-	 *            the new active
-	 */
-	public void setActive(final boolean active) {
-		this.active = active;
-	}
+    /**
+     * Sets the active.
+     * 
+     * @param active the new active
+     */
+    public void setActive( final boolean active ) {
+        this.active = active;
+    }
 
-	public void setArtifactSources(final Set<ArtifactSource> artifactSources) {
-		this.artifactSources = artifactSources;
-	}
+    public void setArtifactSources( final Set<ArtifactSource> artifactSources ) {
+        this.artifactSources = artifactSources;
+    }
 
-	public void setGroupListeners(
-			final List<Class<? extends GroupListener>> groupListeners) {
-		this.groupListeners = groupListeners;
-	}
+    public void setGroupListeners(
+                                   final List<Class<? extends GroupListener>> groupListeners ) {
+        this.groupListeners = groupListeners;
+    }
 
-	public void setGroups(final Set<Group> groups) {
-		this.groups = groups;
-	}
+    public void setGroups( final Set<Group> groups ) {
+        this.groups = groups;
+    }
 
-	/**
-	 * Sets the name.
-	 * 
-	 * @param name
-	 *            the new name
-	 */
-	public void setName(final String name) {
-		this.name = name;
-	}
+    /**
+     * Sets the name.
+     * 
+     * @param name the new name
+     */
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
 }

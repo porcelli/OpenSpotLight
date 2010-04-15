@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph;
 
+import java.io.Serializable;
+
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-
-import java.io.Serializable;
 
 /**
  * The Class SLMetaNodePropertyImpl.
@@ -93,11 +93,8 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
         lock = pProperty.getLockObject();
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
+    /**
+     * {@inheritDoc}
      */
     public boolean equals( final Object obj ) {
         synchronized (lock) {
@@ -110,37 +107,31 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Lock getLockObject() {
         return lock;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaElement#getMetadata()
+    /**
+     * {@inheritDoc}
      */
-    public SLMetadata getMetadata() throws SLGraphSessionException {
+    public SLMetadata getMetadata() {
         return metadata;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaNodeProperty#getMetaNode()
+    /**
+     * {@inheritDoc}
      */
-    public SLMetaNodeType getMetaNode() throws SLGraphSessionException {
+    public SLMetaNodeType getMetaNode() {
         return metaNode;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaNodeProperty#getName()
+    /**
+     * {@inheritDoc}
      */
-    public String getName() throws SLGraphSessionException {
+    public String getName() {
         synchronized (lock) {
             try {
                 return SLCommonSupport
@@ -153,17 +144,12 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaNodeProperty#getType()
+    /**
+     * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
-    public Class<? extends Serializable> getType()
-        throws SLGraphSessionException {
+    public Class<? extends Serializable> getType() {
         synchronized (lock) {
-
             try {
                 return (Class<? extends Serializable>)Class
                                                            .forName((String)pProperty.getValue());
@@ -178,7 +164,7 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
     /**
      * {@inheritDoc}
      */
-    public VisibilityLevel getVisibility() throws SLGraphSessionException {
+    public VisibilityLevel getVisibility() {
         try {
             if (visibility == null) {
                 final String propName = SLCommonSupport
@@ -195,11 +181,8 @@ public class SLMetaNodePropertyImpl implements SLMetaNodeProperty {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
+    /**
+     * {@inheritDoc}
      */
     public int hashCode() {
         return pProperty.hashCode();

@@ -48,24 +48,22 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
-import jline.ConsoleReader;
-import org.apache.commons.lang.StringUtils;
-import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQueryResult;
-import org.openspotlight.graph.query.SLQueryText;
-import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.command.DynamicCommand;
-
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import jline.ConsoleReader;
+
+import org.apache.commons.lang.StringUtils;
+import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.StringBuilderUtil;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.query.SLQueryResult;
+import org.openspotlight.graph.query.SLQueryText;
+import org.openspotlight.graph.query.console.ConsoleState;
+import org.openspotlight.graph.query.console.command.DynamicCommand;
 
 /**
  * The Class QueryCommand. This command executes a slql query.
@@ -159,13 +157,7 @@ public class QueryCommand implements DynamicCommand {
             } else if (slqlText.getVariables() == null) {
                 out.println("ERROR: can't execute queries with variables.");
             }
-        } catch (SLGraphSessionException e) {
-            out.print("ERROR: ");
-            out.println(e.getMessage());
-        } catch (SLInvalidQuerySyntaxException e) {
-            out.print("ERROR: ");
-            out.println(e.getMessage());
-        } catch (IOException e) {
+        } catch (Throwable e) {
             out.print("ERROR: ");
             out.println(e.getMessage());
         }
@@ -178,7 +170,6 @@ public class QueryCommand implements DynamicCommand {
      * @param nodes the nodes
      * @param additionalProperties the additional properties
      * @return the string
-     * @throws SLGraphSessionException the SL graph session exception
      */
     protected String generateOutput( Collection<SLNode> nodes,
                                      Collection<String> additionalProperties ) {

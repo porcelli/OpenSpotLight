@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.persistence;
 
-
 /**
  * The Interface SLPersistentEventPoster.
  * 
@@ -56,22 +55,20 @@ package org.openspotlight.graph.persistence;
  */
 public interface SLPersistentEventPoster {
 
-	/**
-	 * Post.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void post(SLPersistentNodeEvent event) throws SLPersistentTreeSessionException;
-	
-	/**
-	 * Post.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void post(SLPersistentPropertyEvent event) throws SLPersistentTreeSessionException;
-	
+    /**
+     * Post.
+     * 
+     * @param event the event
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void post( SLPersistentNodeEvent event ) throws SLPersistentTreeSessionException;
+
+    /**
+     * Post.
+     * 
+     * @param event the event
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void post( SLPersistentPropertyEvent event ) throws SLPersistentTreeSessionException;
+
 }

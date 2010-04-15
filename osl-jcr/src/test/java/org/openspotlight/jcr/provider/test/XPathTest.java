@@ -48,6 +48,11 @@
  */
 package org.openspotlight.jcr.provider.test;
 
+import javax.jcr.Node;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryResult;
+
 import org.hamcrest.core.Is;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -55,11 +60,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryResult;
 
 public class XPathTest {
 

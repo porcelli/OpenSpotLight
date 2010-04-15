@@ -48,30 +48,35 @@
  */
 package org.openspotlight.federation.scheduler;
 
+import java.util.Set;
+
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Schedulable;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
-import java.util.Set;
-
 public interface SLScheduler {
 
-	public <T extends Schedulable> void fireSchedulable(String username,
-			String password, final T... schedulable);
+    public <T extends Schedulable> void fireSchedulable( String username,
+                                                         String password,
+                                                         final T... schedulable );
 
-	public <T extends Schedulable> void fireSchedulableInBackground(
-			String username, String password, final T... schedulable);
+    public <T extends Schedulable> void fireSchedulableInBackground(
+                                                                     String username,
+                                                                     String password,
+                                                                     final T... schedulable );
 
-	public void initializeSettings(ExecutionContextFactory contextFactory,
-			String username, String password, JcrConnectionDescriptor descriptor);
+    public void initializeSettings( ExecutionContextFactory contextFactory,
+                                    String username,
+                                    String password,
+                                    JcrConnectionDescriptor descriptor );
 
-	public void refreshJobs(GlobalSettings settings,
-			Set<Repository> repositories);
+    public void refreshJobs( GlobalSettings settings,
+                             Set<Repository> repositories );
 
-	public void startScheduler();
+    public void startScheduler();
 
-	public void stopScheduler();
+    public void stopScheduler();
 
 }

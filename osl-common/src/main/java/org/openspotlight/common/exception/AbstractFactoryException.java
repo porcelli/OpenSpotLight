@@ -48,42 +48,44 @@
  */
 package org.openspotlight.common.exception;
 
-
 /**
  * The Class AbstractFactoryException.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public class AbstractFactoryException extends SLException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new abstract factory exception.
-	 *
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public AbstractFactoryException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Instantiates a new abstract factory exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public AbstractFactoryException(
+                                     final String message, final Throwable cause ) {
+        super(message, cause);
+    }
 
-	/**
-	 * Instantiates a new abstract factory exception.
-	 *
-	 * @param message the message
-	 */
-	public AbstractFactoryException(final String message) {
-		super(message);
-	}
+    /**
+     * Instantiates a new abstract factory exception.
+     * 
+     * @param message the message
+     */
+    public AbstractFactoryException(
+                                     final String message ) {
+        super(message);
+    }
 
-	/**
-	 * Instantiates a new abstract factory exception.
-	 *
-	 * @param cause the cause
-	 */
-	public AbstractFactoryException(final Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Instantiates a new abstract factory exception.
+     * 
+     * @param cause the cause
+     */
+    public AbstractFactoryException(
+                                     final Throwable cause ) {
+        super(cause);
+    }
 }

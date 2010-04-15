@@ -48,84 +48,85 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
+import javax.jcr.Session;
+
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
 
-import javax.jcr.Session;
-
 public class SyntaxInformationAggregator {
-	private final ArtifactWithSyntaxInformation artifact;
+    private final ArtifactWithSyntaxInformation artifact;
 
-	private final Session artifactSession;
-	
-	public SyntaxInformationAggregator(
-			final ArtifactWithSyntaxInformation artifact, Session artifactSession) {
-		this.artifact = artifact;
-		this.artifactSession  = artifactSession;
-	}
+    private final Session                       artifactSession;
 
-	public void addHidden(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.HIDDEN,artifactSession);
-	}
+    public SyntaxInformationAggregator(
+                                        final ArtifactWithSyntaxInformation artifact, Session artifactSession ) {
+        this.artifact = artifact;
+        this.artifactSession = artifactSession;
+    }
 
-	public void addIdentifier(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.IDENTIFIER,artifactSession);
-	}
+    public void addHidden( final int tokenLine,
+                           final int tokenStartCharPositionInLine,
+                           final int tokenEndCharPositionInLine ) {
+        artifact.addSyntaxInformation(tokenLine, tokenLine,
+                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+                                      SyntaxInformationType.HIDDEN, artifactSession);
+    }
 
-	public void addMultiLineComment(final int tokenStartLine,
-			final int tokenStartCharPositionInLine, final int tokenEndLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenStartLine, tokenEndLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.COMMENT,artifactSession);
-	}
+    public void addIdentifier( final int tokenLine,
+                               final int tokenStartCharPositionInLine,
+                               final int tokenEndCharPositionInLine ) {
+        artifact.addSyntaxInformation(tokenLine, tokenLine,
+                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+                                      SyntaxInformationType.IDENTIFIER, artifactSession);
+    }
 
-	public void addNumberLiteral(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.NUMBER_LITERAL,artifactSession);
-	}
+    public void addMultiLineComment( final int tokenStartLine,
+                                     final int tokenStartCharPositionInLine,
+                                     final int tokenEndLine,
+                                     final int tokenEndCharPositionInLine ) {
+        artifact.addSyntaxInformation(tokenStartLine, tokenEndLine,
+                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+                                      SyntaxInformationType.COMMENT, artifactSession);
+    }
 
-	public void addReserved(final int tokenStartLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenStartLine, tokenStartLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.RESERVED,artifactSession);
-	}
+    public void addNumberLiteral( final int tokenLine,
+                                  final int tokenStartCharPositionInLine,
+                                  final int tokenEndCharPositionInLine ) {
+        artifact.addSyntaxInformation(tokenLine, tokenLine,
+                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+                                      SyntaxInformationType.NUMBER_LITERAL, artifactSession);
+    }
 
-	public void addSingleLineComment(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.COMMENT,artifactSession);
-	}
+    public void addReserved( final int tokenStartLine,
+                             final int tokenStartCharPositionInLine,
+                             final int tokenEndCharPositionInLine ) {
+        artifact.addSyntaxInformation(tokenStartLine, tokenStartLine,
+                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+                                      SyntaxInformationType.RESERVED, artifactSession);
+    }
 
-	public void addStringLiteral(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.STRING_LITERAL,artifactSession);
-	}
+    public void addSingleLineComment( final int tokenLine,
+                                      final int tokenStartCharPositionInLine,
+                                      final int tokenEndCharPositionInLine ) {
+        artifact.addSyntaxInformation(tokenLine, tokenLine,
+                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+                                      SyntaxInformationType.COMMENT, artifactSession);
+    }
 
-	public void addSymbol(final int tokenLine,
-			final int tokenStartCharPositionInLine,
-			final int tokenEndCharPositionInLine) {
-		artifact.addSyntaxInformation(tokenLine, tokenLine,
-				tokenStartCharPositionInLine, tokenEndCharPositionInLine,
-				SyntaxInformationType.SYMBOL,artifactSession);
-	}
+    public void addStringLiteral( final int tokenLine,
+                                  final int tokenStartCharPositionInLine,
+                                  final int tokenEndCharPositionInLine ) {
+        artifact.addSyntaxInformation(tokenLine, tokenLine,
+                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+                                      SyntaxInformationType.STRING_LITERAL, artifactSession);
+    }
+
+    public void addSymbol( final int tokenLine,
+                           final int tokenStartCharPositionInLine,
+                           final int tokenEndCharPositionInLine ) {
+        artifact.addSyntaxInformation(tokenLine, tokenLine,
+                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+                                      SyntaxInformationType.SYMBOL, artifactSession);
+    }
 
 }

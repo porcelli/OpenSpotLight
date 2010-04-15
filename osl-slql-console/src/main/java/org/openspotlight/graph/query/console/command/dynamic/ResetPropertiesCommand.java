@@ -48,12 +48,13 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
+import java.io.PrintWriter;
+
 import jline.ConsoleReader;
+
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
-
-import java.io.PrintWriter;
 
 /**
  * The Class ResetPropertiesCommand. This command resets properties from query output result.

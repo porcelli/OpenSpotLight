@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,10 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Database - Schema.
+ * The Interface for a link between Database - Schema. Database A2B Schema
  * 
- *
- * Database A2B Schema
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Database - Schema")
+@SLDescription( "Database - Schema" )
 public interface DatabaseSchema extends SLLink {
 }
-
-
-        

@@ -52,11 +52,9 @@ import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockContainer;
 
 /**
- * The listener interface for receiving SLAbstractGraphSessionEvent events. The
- * class that is interested in processing a SLAbstractGraphSessionEvent event
- * implements this interface, and the object created with that class is
- * registered with a component using the component's
- * <code>SLAbstractGraphSessionEventListener<code> method. When
+ * The listener interface for receiving SLAbstractGraphSessionEvent events. The class that is interested in processing a
+ * SLAbstractGraphSessionEvent event implements this interface, and the object created with that class is registered with a
+ * component using the component's <code>SLAbstractGraphSessionEventListener<code> method. When
  * the SLAbstractGraphSessionEventListener event occurs, that object's appropriate
  * method is invoked.
  * 
@@ -65,61 +63,62 @@ import org.openspotlight.common.concurrent.LockContainer;
 public abstract class SLAbstractGraphSessionEventListener implements
         SLGraphSessionEventListener {
 
-	protected Lock lock;
+    protected Lock lock;
 
-	protected SLAbstractGraphSessionEventListener(final LockContainer parent) {
-		lock = parent.getLockObject();
-	}
-
-    /**
-     * {@inheritDoc}
-     */
-	public void beforeSave(final SLGraphSessionSaveEvent event) {
-	}
-
-	public Lock getLockObject() {
-		return lock;
-	}
+    protected SLAbstractGraphSessionEventListener(
+                                                   final LockContainer parent ) {
+        lock = parent.getLockObject();
+    }
 
     /**
      * {@inheritDoc}
      */
-	public void linkAdded(final SLLinkAddedEvent event) {
-	}
+    public void beforeSave( final SLGraphSessionSaveEvent event ) {
+    }
+
+    public Lock getLockObject() {
+        return lock;
+    }
 
     /**
      * {@inheritDoc}
      */
-	public void linkPropertySet(final SLLinkPropertySetEvent event) {
-	}
+    public void linkAdded( final SLLinkAddedEvent event ) {
+    }
 
     /**
      * {@inheritDoc}
      */
-	public void linkRemoved(final SLLinkRemovedEvent event) {
-	}
+    public void linkPropertySet( final SLLinkPropertySetEvent event ) {
+    }
 
     /**
      * {@inheritDoc}
      */
-	public void nodeAdded(final SLNodeAddedEvent event) {
-	}
+    public void linkRemoved( final SLLinkRemovedEvent event ) {
+    }
 
     /**
      * {@inheritDoc}
      */
-	public void nodePropertyRemoved(final SLNodePropertyRemovedEvent event) {
-	}
+    public void nodeAdded( final SLNodeAddedEvent event ) {
+    }
 
     /**
      * {@inheritDoc}
      */
-	public void nodePropertySet(final SLNodePropertySetEvent event){
-	}
+    public void nodePropertyRemoved( final SLNodePropertyRemovedEvent event ) {
+    }
 
     /**
      * {@inheritDoc}
      */
-	public void sessionCleaned() {
-	}
+    public void nodePropertySet( final SLNodePropertySetEvent event ) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void sessionCleaned() {
+    }
 }

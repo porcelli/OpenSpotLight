@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.query.info;
 
+import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
+
 import org.openspotlight.graph.query.SLConditionalOperatorType;
 import org.openspotlight.graph.query.SLRelationalOperatorType;
 import org.openspotlight.graph.query.SLSideType;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
-
-import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
 
 /**
  * The Class SLConditionInfo.
@@ -62,333 +62,335 @@ import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
  */
 public class SLConditionInfo {
 
-	/** The link type info. */
-	private SLWhereLinkTypeInfo linkTypeInfo;
-	
-	/** The type info. */
-	private SLWhereTypeInfo typeInfo; 
-	
-	/** The relational operator. */
-	private SLRelationalOperatorType relationalOperator;
-	
-	/** The conditional operator. */
-	private SLConditionalOperatorType conditionalOperator;
-	
-	/** The inner statement info. */
-	private SLLinkTypeStatementInfo innerStatementInfo;
-	
-	/** The outer statement info. */
-	private SLLinkTypeStatementInfo outerStatementInfo;
-	
-	/** The conditional not operator. */
-	private boolean conditionalNotOperator;
-	
-	/** The side. */
-	private SLSideType side;
-	
-	/** The property name. */
-	private String propertyName;
-	
-	/** The link type name. */
-	private String linkTypeName;
-	
-	/** The value. */
-	private Object value;
-	
-	/** The closed. */
-	private boolean closed; 
-	
-	/** The relational not operator. */
-	private boolean relationalNotOperator;
+    /** The link type info. */
+    private SLWhereLinkTypeInfo       linkTypeInfo;
 
-	/**
-	 * Instantiates a new sL condition info.
-	 * 
-	 * @param linkTypeInfo the link type info
-	 */
-	public SLConditionInfo(SLWhereLinkTypeInfo linkTypeInfo) {
-		this(linkTypeInfo, null);
-	}
-	
-	/**
-	 * Instantiates a new sL condition info.
-	 * 
-	 * @param typeInfo the type info
-	 */
-	public SLConditionInfo(SLWhereTypeInfo typeInfo) {
-		this(typeInfo, null);
-	}
+    /** The type info. */
+    private SLWhereTypeInfo           typeInfo;
 
-	/**
-	 * Instantiates a new sL condition info.
-	 * 
-	 * @param linkTypeInfo the type info
-	 * @param conditionalOperator the conditional operator
-	 */
-	public SLConditionInfo(SLWhereLinkTypeInfo linkTypeInfo, SLConditionalOperatorType conditionalOperator) {
-		this.linkTypeInfo = linkTypeInfo;
-		this.conditionalOperator = conditionalOperator;
-	}
+    /** The relational operator. */
+    private SLRelationalOperatorType  relationalOperator;
 
-	/**
-	 * Instantiates a new sL condition info.
-	 * 
-	 * @param typeInfo the type info
-	 * @param conditionalOperator the conditional operator
-	 */
-	public SLConditionInfo(SLWhereTypeInfo typeInfo, SLConditionalOperatorType conditionalOperator) {
-		this.typeInfo = typeInfo;
-		this.conditionalOperator = conditionalOperator;
-	}
+    /** The conditional operator. */
+    private SLConditionalOperatorType conditionalOperator;
 
-	/**
-	 * Gets the property name.
-	 * 
-	 * @return the property name
-	 */
-	public String getPropertyName() {
-		return propertyName;
-	}
+    /** The inner statement info. */
+    private SLLinkTypeStatementInfo   innerStatementInfo;
 
-	/**
-	 * Sets the property name.
-	 * 
-	 * @param propertyName the new property name
-	 */
-	public void setPropertyName(String propertyName) {
-		this.propertyName = propertyName;
-	}
+    /** The outer statement info. */
+    private SLLinkTypeStatementInfo   outerStatementInfo;
 
-	/**
-	 * Gets the value.
-	 * 
-	 * @return the value
-	 */
-	public Object getValue() {
-		return value;
-	}
+    /** The conditional not operator. */
+    private boolean                   conditionalNotOperator;
 
-	/**
-	 * Sets the value.
-	 * 
-	 * @param value the new value
-	 */
-	public void setValue(Object value) {
-		this.value = value;
-		setClosed(true);
-	}
+    /** The side. */
+    private SLSideType                side;
 
-	/**
-	 * Gets the side.
-	 * 
-	 * @return the side
-	 */
-	public SLSideType getSide() {
-		return side;
-	}
+    /** The property name. */
+    private String                    propertyName;
 
-	/**
-	 * Sets the side.
-	 * 
-	 * @param side the new side
-	 */
-	public void setSide(SLSideType side) {
-		this.side = side;
-	}
+    /** The link type name. */
+    private String                    linkTypeName;
 
-	/**
-	 * Gets the link type name.
-	 * 
-	 * @return the link type name
-	 */
-	public String getLinkTypeName() {
-		return linkTypeName;
-	}
+    /** The value. */
+    private Object                    value;
 
-	/**
-	 * Sets the link type name.
-	 * 
-	 * @param linkTypeName the new link type name
-	 */
-	public void setLinkTypeName(String linkTypeName) {
-		this.linkTypeName = linkTypeName;
-	}
+    /** The closed. */
+    private boolean                   closed;
 
-	/**
-	 * Gets the inner statement info.
-	 * 
-	 * @return the inner statement info
-	 */
-	public SLLinkTypeStatementInfo getInnerStatementInfo() {
-		return innerStatementInfo;
-	}
+    /** The relational not operator. */
+    private boolean                   relationalNotOperator;
 
-	/**
-	 * Sets the inner statement info.
-	 * 
-	 * @param statementInfo the new inner statement info
-	 */
-	public void setInnerStatementInfo(SLLinkTypeStatementInfo statementInfo) {
-		this.innerStatementInfo = statementInfo;
-	}
+    /**
+     * Instantiates a new sL condition info.
+     * 
+     * @param linkTypeInfo the link type info
+     */
+    public SLConditionInfo(
+                            SLWhereLinkTypeInfo linkTypeInfo ) {
+        this(linkTypeInfo, null);
+    }
 
-	/**
-	 * Checks if is closed.
-	 * 
-	 * @return true, if is closed
-	 */
-	public boolean isClosed() {
-		return closed;
-	}
+    /**
+     * Instantiates a new sL condition info.
+     * 
+     * @param typeInfo the type info
+     */
+    public SLConditionInfo(
+                            SLWhereTypeInfo typeInfo ) {
+        this(typeInfo, null);
+    }
 
-	/**
-	 * Sets the closed.
-	 * 
-	 * @param closed the new closed
-	 */
-	public void setClosed(boolean closed) {
-		this.closed = closed;
-	}
+    /**
+     * Instantiates a new sL condition info.
+     * 
+     * @param linkTypeInfo the type info
+     * @param conditionalOperator the conditional operator
+     */
+    public SLConditionInfo(
+                            SLWhereLinkTypeInfo linkTypeInfo, SLConditionalOperatorType conditionalOperator ) {
+        this.linkTypeInfo = linkTypeInfo;
+        this.conditionalOperator = conditionalOperator;
+    }
 
-	/**
-	 * Gets the relational operator.
-	 * 
-	 * @return the relational operator
-	 */
-	public SLRelationalOperatorType getRelationalOperator() {
-		return relationalOperator;
-	}
+    /**
+     * Instantiates a new sL condition info.
+     * 
+     * @param typeInfo the type info
+     * @param conditionalOperator the conditional operator
+     */
+    public SLConditionInfo(
+                            SLWhereTypeInfo typeInfo, SLConditionalOperatorType conditionalOperator ) {
+        this.typeInfo = typeInfo;
+        this.conditionalOperator = conditionalOperator;
+    }
 
-	/**
-	 * Sets the relational operator.
-	 * 
-	 * @param operator the new relational operator
-	 */
-	public void setRelationalOperator(SLRelationalOperatorType operator) {
-		this.relationalOperator = operator;
-	}
+    /**
+     * Gets the property name.
+     * 
+     * @return the property name
+     */
+    public String getPropertyName() {
+        return propertyName;
+    }
 
-	/**
-	 * Gets the conditional operator.
-	 * 
-	 * @return the conditional operator
-	 */
-	public SLConditionalOperatorType getConditionalOperator() {
-		return conditionalOperator;
-	}
+    /**
+     * Sets the property name.
+     * 
+     * @param propertyName the new property name
+     */
+    public void setPropertyName( String propertyName ) {
+        this.propertyName = propertyName;
+    }
 
-	/**
-	 * Sets the conditional operator.
-	 * 
-	 * @param conditionalOperator the new conditional operator
-	 */
-	public void setConditionalOperator(SLConditionalOperatorType conditionalOperator) {
-		this.conditionalOperator = conditionalOperator;
-	}
+    /**
+     * Gets the value.
+     * 
+     * @return the value
+     */
+    public Object getValue() {
+        return value;
+    }
 
-	/**
-	 * Gets the outer statement info.
-	 * 
-	 * @return the outer statement info
-	 */
-	public SLLinkTypeStatementInfo getOuterStatementInfo() {
-		return outerStatementInfo;
-	}
+    /**
+     * Sets the value.
+     * 
+     * @param value the new value
+     */
+    public void setValue( Object value ) {
+        this.value = value;
+        setClosed(true);
+    }
 
-	/**
-	 * Sets the outer statement info.
-	 * 
-	 * @param outerStatementInfo the new outer statement info
-	 */
-	public void setOuterStatementInfo(SLLinkTypeStatementInfo outerStatementInfo) {
-		this.outerStatementInfo = outerStatementInfo;
-	}
+    /**
+     * Gets the side.
+     * 
+     * @return the side
+     */
+    public SLSideType getSide() {
+        return side;
+    }
 
-	/**
-	 * Gets the link type info.
-	 * 
-	 * @return the link type info
-	 */
-	public SLWhereLinkTypeInfo getLinkTypeInfo() {
-		return linkTypeInfo;
-	}
+    /**
+     * Sets the side.
+     * 
+     * @param side the new side
+     */
+    public void setSide( SLSideType side ) {
+        this.side = side;
+    }
 
-	/**
-	 * Sets the link type info.
-	 * 
-	 * @param typeInfo the new link type info
-	 */
-	public void setLinkTypeInfo(SLWhereLinkTypeInfo typeInfo) {
-		this.linkTypeInfo = typeInfo;
-	}
+    /**
+     * Gets the link type name.
+     * 
+     * @return the link type name
+     */
+    public String getLinkTypeName() {
+        return linkTypeName;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		
-		String typeName = linkTypeInfo.getName();
-		
-		StringBuilder buffer = new StringBuilder();
-		appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
-		appendIfNotNull(buffer, relationalOperator, '"', typeName, "\" ");
-		appendIfNotNull(buffer, propertyName,  "property \"", propertyName, "\" ");
-		appendIfNotNull(buffer, linkTypeName, "link \"", linkTypeName, "\" ");
-		appendIfNotNull(buffer, relationalOperator, (relationalNotOperator ? "!" : ""), relationalOperator);
-		if (value != null) {
-			if (value instanceof Number) {
-				appendIfNotNull(buffer, value, ' ', value);		
-			}
-			else {
-				appendIfNotNull(buffer, value, " \"", value, '"');
-			}
-		}
-		return buffer.toString();
-	}
+    /**
+     * Sets the link type name.
+     * 
+     * @param linkTypeName the new link type name
+     */
+    public void setLinkTypeName( String linkTypeName ) {
+        this.linkTypeName = linkTypeName;
+    }
 
-	/**
-	 * Checks if is relational not operator.
-	 * 
-	 * @return true, if is relational not operator
-	 */
-	public boolean isRelationalNotOperator() {
-		return relationalNotOperator;
-	}
+    /**
+     * Gets the inner statement info.
+     * 
+     * @return the inner statement info
+     */
+    public SLLinkTypeStatementInfo getInnerStatementInfo() {
+        return innerStatementInfo;
+    }
 
-	/**
-	 * Sets the relational not operator.
-	 * 
-	 * @param relationalNotOperator the new relational not operator
-	 */
-	public void setRelationalNotOperator(boolean relationalNotOperator) {
-		this.relationalNotOperator = relationalNotOperator;
-	}
+    /**
+     * Sets the inner statement info.
+     * 
+     * @param statementInfo the new inner statement info
+     */
+    public void setInnerStatementInfo( SLLinkTypeStatementInfo statementInfo ) {
+        this.innerStatementInfo = statementInfo;
+    }
 
-	/**
-	 * Checks if is conditional not operator.
-	 * 
-	 * @return true, if is conditional not operator
-	 */
-	public boolean isConditionalNotOperator() {
-		return conditionalNotOperator;
-	}
+    /**
+     * Checks if is closed.
+     * 
+     * @return true, if is closed
+     */
+    public boolean isClosed() {
+        return closed;
+    }
 
-	/**
-	 * Sets the conditional not operator.
-	 * 
-	 * @param conditionalNotOperator the new conditional not operator
-	 */
-	public void setConditionalNotOperator(boolean conditionalNotOperator) {
-		this.conditionalNotOperator = conditionalNotOperator;
-	}
+    /**
+     * Sets the closed.
+     * 
+     * @param closed the new closed
+     */
+    public void setClosed( boolean closed ) {
+        this.closed = closed;
+    }
 
-	public SLWhereTypeInfo getTypeInfo() {
-		return typeInfo;
-	}
+    /**
+     * Gets the relational operator.
+     * 
+     * @return the relational operator
+     */
+    public SLRelationalOperatorType getRelationalOperator() {
+        return relationalOperator;
+    }
 
-	public void setTypeInfo(SLWhereTypeInfo typeInfo) {
-		this.typeInfo = typeInfo;
-	}
+    /**
+     * Sets the relational operator.
+     * 
+     * @param operator the new relational operator
+     */
+    public void setRelationalOperator( SLRelationalOperatorType operator ) {
+        this.relationalOperator = operator;
+    }
+
+    /**
+     * Gets the conditional operator.
+     * 
+     * @return the conditional operator
+     */
+    public SLConditionalOperatorType getConditionalOperator() {
+        return conditionalOperator;
+    }
+
+    /**
+     * Sets the conditional operator.
+     * 
+     * @param conditionalOperator the new conditional operator
+     */
+    public void setConditionalOperator( SLConditionalOperatorType conditionalOperator ) {
+        this.conditionalOperator = conditionalOperator;
+    }
+
+    /**
+     * Gets the outer statement info.
+     * 
+     * @return the outer statement info
+     */
+    public SLLinkTypeStatementInfo getOuterStatementInfo() {
+        return outerStatementInfo;
+    }
+
+    /**
+     * Sets the outer statement info.
+     * 
+     * @param outerStatementInfo the new outer statement info
+     */
+    public void setOuterStatementInfo( SLLinkTypeStatementInfo outerStatementInfo ) {
+        this.outerStatementInfo = outerStatementInfo;
+    }
+
+    /**
+     * Gets the link type info.
+     * 
+     * @return the link type info
+     */
+    public SLWhereLinkTypeInfo getLinkTypeInfo() {
+        return linkTypeInfo;
+    }
+
+    /**
+     * Sets the link type info.
+     * 
+     * @param typeInfo the new link type info
+     */
+    public void setLinkTypeInfo( SLWhereLinkTypeInfo typeInfo ) {
+        this.linkTypeInfo = typeInfo;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+
+        String typeName = linkTypeInfo.getName();
+
+        StringBuilder buffer = new StringBuilder();
+        appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
+        appendIfNotNull(buffer, relationalOperator, '"', typeName, "\" ");
+        appendIfNotNull(buffer, propertyName, "property \"", propertyName, "\" ");
+        appendIfNotNull(buffer, linkTypeName, "link \"", linkTypeName, "\" ");
+        appendIfNotNull(buffer, relationalOperator, (relationalNotOperator ? "!" : ""), relationalOperator);
+        if (value != null) {
+            if (value instanceof Number) {
+                appendIfNotNull(buffer, value, ' ', value);
+            } else {
+                appendIfNotNull(buffer, value, " \"", value, '"');
+            }
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * Checks if is relational not operator.
+     * 
+     * @return true, if is relational not operator
+     */
+    public boolean isRelationalNotOperator() {
+        return relationalNotOperator;
+    }
+
+    /**
+     * Sets the relational not operator.
+     * 
+     * @param relationalNotOperator the new relational not operator
+     */
+    public void setRelationalNotOperator( boolean relationalNotOperator ) {
+        this.relationalNotOperator = relationalNotOperator;
+    }
+
+    /**
+     * Checks if is conditional not operator.
+     * 
+     * @return true, if is conditional not operator
+     */
+    public boolean isConditionalNotOperator() {
+        return conditionalNotOperator;
+    }
+
+    /**
+     * Sets the conditional not operator.
+     * 
+     * @param conditionalNotOperator the new conditional not operator
+     */
+    public void setConditionalNotOperator( boolean conditionalNotOperator ) {
+        this.conditionalNotOperator = conditionalNotOperator;
+    }
+
+    public SLWhereTypeInfo getTypeInfo() {
+        return typeInfo;
+    }
+
+    public void setTypeInfo( SLWhereTypeInfo typeInfo ) {
+        this.typeInfo = typeInfo;
+    }
 }
-

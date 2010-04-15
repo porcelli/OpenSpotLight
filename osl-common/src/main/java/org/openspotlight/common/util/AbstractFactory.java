@@ -48,69 +48,63 @@
  */
 package org.openspotlight.common.util;
 
-import org.openspotlight.common.exception.AbstractFactoryException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.openspotlight.common.exception.AbstractFactoryException;
+
 /**
  * A factory for creating Abstract objects.
  */
 public abstract class AbstractFactory {
 
-	/** The factory map. */
-	private static Map<Class<? extends AbstractFactory>, AbstractFactory> factoryMap = new HashMap<Class<? extends AbstractFactory>, AbstractFactory>();
+    /** The factory map. */
+    private static Map<Class<? extends AbstractFactory>, AbstractFactory> factoryMap = new HashMap<Class<? extends AbstractFactory>, AbstractFactory>();
 
-	/**
-	 * Gets the default instance.
-	 *
-	 * @param clazz the clazz
-	 *
-	 * @return the default instance
-	 *
-	 * @throws AbstractFactoryException the abstract factory exception
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends AbstractFactory> T getDefaultInstance(final Class<T> clazz) throws AbstractFactoryException {
-		T factory = null;
-		try {
-			factory = (T) factoryMap.get(clazz);
-			if (factory == null) {
-				final Properties props = loadProps(clazz);
-				final String implClassName = props.getProperty("defaultImpl");
-				final Class<? extends T> implClass = (Class<? extends T>) Class.forName(implClassName, true, clazz.getClassLoader());
-				factory = implClass.newInstance();
-				factoryMap.put(clazz, factory);
-			}
-		}
-		catch (final Exception e) {
-			throw new AbstractFactoryException("Error on attempt to create the factory.", e);
-		}
-		return factory;
-	}
+    /**
+     * Gets the default instance.
+     * 
+     * @param clazz the clazz
+     * @return the default instance
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    @SuppressWarnings( "unchecked" )
+    public static <T extends AbstractFactory> T getDefaultInstance( final Class<T> clazz ) throws AbstractFactoryException {
+        T factory = null;
+        try {
+            factory = (T)factoryMap.get(clazz);
+            if (factory == null) {
+                final Properties props = loadProps(clazz);
+                final String implClassName = props.getProperty("defaultImpl");
+                final Class<? extends T> implClass = (Class<? extends T>)Class.forName(implClassName, true, clazz.getClassLoader());
+                factory = implClass.newInstance();
+                factoryMap.put(clazz, factory);
+            }
+        } catch (final Exception e) {
+            throw new AbstractFactoryException("Error on attempt to create the factory.", e);
+        }
+        return factory;
+    }
 
-	/**
-	 * Load props.
-	 *
-	 * @param clazz the clazz
-	 *
-	 * @return the properties
-	 *
-	 * @throws AbstractFactoryException the abstract factory exception
-	 */
-	private static Properties loadProps(final Class<?> clazz) throws AbstractFactoryException {
-		final String resource = clazz.getName().replace('.', '/').concat(".properties");
-		try {
-			final InputStream inputStream = AbstractFactory.class.getClassLoader().getResourceAsStream(resource);
-			final Properties props = new Properties();
-			props.load(inputStream);
-			return props;
-		}
-		catch (final IOException e) {
-			throw new AbstractFactoryException("Error on attempt to load factory properties file " + resource, e);
-		}
-	}
+    /**
+     * Load props.
+     * 
+     * @param clazz the clazz
+     * @return the properties
+     * @throws AbstractFactoryException the abstract factory exception
+     */
+    private static Properties loadProps( final Class<?> clazz ) throws AbstractFactoryException {
+        final String resource = clazz.getName().replace('.', '/').concat(".properties");
+        try {
+            final InputStream inputStream = AbstractFactory.class.getClassLoader().getResourceAsStream(resource);
+            final Properties props = new Properties();
+            props.load(inputStream);
+            return props;
+        } catch (final IOException e) {
+            throw new AbstractFactoryException("Error on attempt to load factory properties file " + resource, e);
+        }
+    }
 }

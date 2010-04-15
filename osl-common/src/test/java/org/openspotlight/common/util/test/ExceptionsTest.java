@@ -49,19 +49,20 @@
 
 package org.openspotlight.common.util.test;
 
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
+
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.util.Exceptions;
-
-import static org.openspotlight.common.util.Exceptions.*;
 
 /**
  * Test class for {@link Exceptions}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class ExceptionsTest {
 
     public void dangerousMethod() throws Exception {
@@ -77,7 +78,7 @@ public class ExceptionsTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldCatchExceptionAndThrowAnotherKind() throws Exception {
         try {
             this.dangerousMethod();
@@ -86,7 +87,7 @@ public class ExceptionsTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldCatchExceptionAndThrowAnotherKindThatReturned()
             throws Exception {
         try {
@@ -96,29 +97,29 @@ public class ExceptionsTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldCatchExceptionAndThrowAnotherKindThatReturnedWithMessage()
             throws Exception {
         try {
             this.dangerousMethod();
         } catch (final Exception e) {
             throw logAndReturnNew("it was so dangerous!", e, //$NON-NLS-1$
-                    IllegalArgumentException.class);
+            IllegalArgumentException.class);
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldCatchExceptionAndThrowAnotherKindWithMessage()
             throws Exception {
         try {
             this.dangerousMethod();
         } catch (final Exception e) {
             logAndThrowNew("it was so dangerous!", e, //$NON-NLS-1$
-                    IllegalArgumentException.class);
+            IllegalArgumentException.class);
         }
     }
 
-    @Test(expected = ConfigurationException.class)
+    @Test( expected = ConfigurationException.class )
     public void shouldCatchExceptionAndThrowTheSame()
             throws ConfigurationException {
         try {
@@ -128,7 +129,7 @@ public class ExceptionsTest {
         }
     }
 
-    @Test(expected = ConfigurationException.class)
+    @Test( expected = ConfigurationException.class )
     public void shouldCatchExceptionAndThrowTheSameThatReturned()
             throws Exception {
         try {

@@ -48,7 +48,6 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-
 public interface SLLineInfo {
 
     public int getStartLine();

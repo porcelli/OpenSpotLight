@@ -48,19 +48,20 @@
  */
 package org.openspotlight.graph.query;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Sha1;
-import org.openspotlight.graph.*;
-import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.SLCommonSupport;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.exception.SLNodeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.util.ProxyUtil;
-
-import java.util.Collection;
-import java.util.List;
 
 // TODO: Auto-generated Javadoc
 //FIXME maybe it needs some synchronization
@@ -95,8 +96,7 @@ public class SLQueryCacheImpl implements SLQueryCache {
      */
     public void add2Cache( final String queryId,
                            final Collection<PNodeWrapper> nodes )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException,
-            SLGraphSessionException {
+        throws SLPersistentTreeSessionException, SLNodeNotFoundException {
         final SLPersistentNode pcacheRootNode = SLCommonSupport
                                                                .getQueryCacheNode(treeSession);
         final SLPersistentNode queryCache = pcacheRootNode.addNode(queryId);
@@ -153,8 +153,7 @@ public class SLQueryCacheImpl implements SLQueryCache {
      * {@inheritDoc}
      */
     public SLQueryResultImpl getCache( final String queryId )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException,
-        SLGraphSessionException {
+        throws SLPersistentTreeSessionException, SLNodeNotFoundException {
         final SLPersistentNode pcacheRootNode = SLCommonSupport
                                                                .getQueryCacheNode(treeSession);
         SLPersistentNode queryCache;
@@ -179,7 +178,7 @@ public class SLQueryCacheImpl implements SLQueryCache {
     /**
      * {@inheritDoc}
      */
-    public void flush() throws SLGraphSessionException, SLPersistentTreeSessionException {
+    public void flush() throws SLPersistentTreeSessionException {
         SLCommonSupport
                        .getQueryCacheNode(treeSession).remove();
     }

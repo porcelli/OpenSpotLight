@@ -58,30 +58,28 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 /**
- * Artifact loader that loads Artifact for file system using DNA File System
- * Connector.
+ * Artifact loader that loads Artifact for file system using DNA File System Connector.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class DnaFileSystemArtifactFinder extends DnaArtifactFinder {
 
-	@Override
-	protected void configureWithBundle(
-			final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
-			final ArtifactSource source) {
-		repositorySource2.usingClass(FileSystemSource.class).setProperty(
-				"workspaceRootPath", source.getInitialLookup()).setProperty( //$NON-NLS-1$ 
-				"creatingWorkspacesAllowed", true).setProperty(
-		//$NON-NLS-1$
-				"defaultWorkspaceName", "."); //$NON-NLS-1$          
+    @Override
+    protected void configureWithBundle(
+                                        final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+                                        final ArtifactSource source ) {
+        repositorySource2.usingClass(FileSystemSource.class).setProperty("workspaceRootPath", source.getInitialLookup()).setProperty( //$NON-NLS-1$ 
+        "creatingWorkspacesAllowed", true).setProperty(//$NON-NLS-1$
+                                                       "defaultWorkspaceName", "."); //$NON-NLS-1$          
 
-	}
+    }
 
-	@Override
-	protected <A extends Artifact> boolean internalAccept(
-			ArtifactSource source, Class<A> type) throws Exception {
-		return source instanceof DnaFileSystemArtifactSource
-				&& StringArtifact.class.equals(type);
-	}
+    @Override
+    protected <A extends Artifact> boolean internalAccept(
+                                                           ArtifactSource source,
+                                                           Class<A> type ) throws Exception {
+        return source instanceof DnaFileSystemArtifactSource
+                && StringArtifact.class.equals(type);
+    }
 
 }

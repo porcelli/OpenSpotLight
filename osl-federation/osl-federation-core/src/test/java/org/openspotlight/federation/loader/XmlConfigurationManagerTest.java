@@ -48,9 +48,9 @@
  */
 package org.openspotlight.federation.loader;
 
-import org.junit.BeforeClass;
-
 import java.io.File;
+
+import org.junit.BeforeClass;
 
 /**
  * The Class XmlConfigurationManagerTest.

@@ -48,12 +48,13 @@
  */
 package org.openspotlight.graph.persistence;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * The Class SLPersistentQueryResultImpl.

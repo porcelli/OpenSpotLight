@@ -48,6 +48,8 @@
  */
 package org.openspotlight.graph;
 
+import java.io.Serializable;
+
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.event.SLGraphSessionEventPoster;
 import org.openspotlight.graph.persistence.SLPersistentNode;
@@ -56,8 +58,6 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.AuthenticatedUser;
-
-import java.io.Serializable;
 
 /**
  * A factory for creating SLGraph objects.

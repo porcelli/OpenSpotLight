@@ -48,74 +48,76 @@
  */
 package org.openspotlight.common.concurrent.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 import org.openspotlight.common.concurrent.GossipExecutor;
 import org.openspotlight.common.concurrent.GossipExecutor.TaskListener;
 import org.openspotlight.common.concurrent.GossipExecutor.ThreadListener;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 public class CautiousExecutorTest {
 
-	public static class CustomRunnable implements Runnable {
+    public static class CustomRunnable implements Runnable {
 
-		public void run() {
+        public void run() {
 
-		}
+        }
 
-	}
+    }
 
-	private static class CustomTaskListener implements TaskListener {
+    private static class CustomTaskListener implements TaskListener {
 
-		final AtomicInteger integer = new AtomicInteger();
+        final AtomicInteger integer = new AtomicInteger();
 
-		public void afterExecutingTask(final Runnable r, final Throwable t) {
-			if (r instanceof CustomRunnable) {
-				integer.incrementAndGet();
-			}
+        public void afterExecutingTask( final Runnable r,
+                                        final Throwable t ) {
+            if (r instanceof CustomRunnable) {
+                integer.incrementAndGet();
+            }
 
-		}
+        }
 
-		public void beforeExecutingTask(final Thread t, final Runnable r) {
-			// TODO Auto-generated method stub
+        public void beforeExecutingTask( final Thread t,
+                                         final Runnable r ) {
+            // TODO Auto-generated method stub
 
-		}
+        }
 
-	}
+    }
 
-	private static class CustomThreadListener implements ThreadListener {
+    private static class CustomThreadListener implements ThreadListener {
 
-		final AtomicInteger integer = new AtomicInteger();
+        final AtomicInteger integer = new AtomicInteger();
 
-		public void afterCreatingThread(final Thread t) {
-			integer.incrementAndGet();
+        public void afterCreatingThread( final Thread t ) {
+            integer.incrementAndGet();
 
-		}
-	};
+        }
+    };
 
-	private final CustomThreadListener threadListener = new CustomThreadListener();
-	private final CustomTaskListener taskListener = new CustomTaskListener();
-	private GossipExecutor executor;
+    private final CustomThreadListener threadListener = new CustomThreadListener();
+    private final CustomTaskListener   taskListener   = new CustomTaskListener();
+    private GossipExecutor             executor;
 
-	@Test
-	public void setup() throws Exception {
+    @Test
+    public void setup() throws Exception {
 
-		executor = GossipExecutor.newFixedThreadPool(4, "testPool");
-		executor.addTaskListener(taskListener);
-		executor.addThreadListener(threadListener);
-		for (int i = 0; i < 100; i++) {
-			executor.execute(new CustomRunnable());
-		}
-		Thread.sleep(100);
+        executor = GossipExecutor.newFixedThreadPool(4, "testPool");
+        executor.addTaskListener(taskListener);
+        executor.addThreadListener(threadListener);
+        for (int i = 0; i < 100; i++) {
+            executor.execute(new CustomRunnable());
+        }
+        Thread.sleep(100);
 
-		executor.shutdown();
+        executor.shutdown();
 
-		assertThat(taskListener.integer.get(), is(100));
+        assertThat(taskListener.integer.get(), is(100));
 
-		assertThat(threadListener.integer.get(), is(4));
-	}
+        assertThat(threadListener.integer.get(), is(4));
+    }
 
 }

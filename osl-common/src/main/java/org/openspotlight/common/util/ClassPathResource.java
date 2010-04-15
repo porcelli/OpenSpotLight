@@ -49,23 +49,23 @@
 
 package org.openspotlight.common.util;
 
-import org.openspotlight.common.exception.SLException;
-
-import java.io.InputStream;
-
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
+import java.io.InputStream;
+
+import org.openspotlight.common.exception.SLException;
+
 /**
  * Class for resource loading.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class ClassPathResource {
 
     /**
      * Loads a resource from the current classpath.
-     *
+     * 
      * @param artifactName
      * @return a input stream from classpath
      * @throws SLException
@@ -91,7 +91,7 @@ public class ClassPathResource {
 
     /**
      * Loads a resource from the current classpath.
-     *
+     * 
      * @param clasz class that defines the correct place to search for resource
      * @param resourceName resource name
      * @return a input stream from classpath

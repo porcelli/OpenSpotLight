@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.query.console;
 
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.console.command.Command;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.query.console.command.Command;
 
 /**
  * The Class ConsoleState. This is a simple data class that holds console application state.

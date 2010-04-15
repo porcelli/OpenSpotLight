@@ -48,13 +48,12 @@
  */
 package org.openspotlight.graph.query;
 
+import java.util.Collection;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
-
-import java.util.Collection;
 
 /**
  * The Class QueryUtil.
@@ -70,9 +69,8 @@ public class QueryUtil {
      * Prints the result.
      * 
      * @param nodes the nodes
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    static void printResult( final Collection<SLNode> nodes ) throws SLGraphSessionException {
+    static void printResult( final Collection<SLNode> nodes ) {
         final StringBuilder buffer = new StringBuilder();
         StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
         for (final SLNode node : nodes) {

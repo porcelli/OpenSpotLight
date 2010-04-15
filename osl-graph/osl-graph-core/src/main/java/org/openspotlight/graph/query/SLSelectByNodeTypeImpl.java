@@ -48,15 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.query.info.SLAllTypesInfo;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openspotlight.graph.query.info.SLAllTypesInfo;
+import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SLSelectInfo;
+import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInfo;
 
 /**
  * The Class SLSelectStatementImpl.
@@ -86,16 +85,16 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
         this.selectEnd = new EndImpl(selectFacade, selectInfo);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectByNodeType#allTypes()
+    /**
+     * {@inheritDoc}
      */
     public AllTypes allTypes() {
         SLAllTypesInfo allTypesInfo = selectInfo.addAllTypes();
         return new AllTypesImpl(this, allTypesInfo);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatement#type(java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public Type type( String typeName ) {
         SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
@@ -104,24 +103,21 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
         return type;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatement#end()
+    /**
+     * {@inheritDoc}
      */
     public End end() {
         verifyIfLastItemTerminatedWithComma();
         return selectEnd;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatementInfoGetter#getSelectInfo()
+    /**
+     * {@inheritDoc}
      */
     public SLSelectInfo getSelectInfo() {
         return selectInfo;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return selectInfo.toString();
@@ -162,16 +158,16 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
             this.allTypesInfo = allTypesInfo;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.AllTypes#onWhere()
+        /**
+         * {@inheritDoc}
          */
         public AllTypes onWhere() {
             allTypesInfo.setOnWhere(true);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.AllTypes#selectEnd()
+        /**
+         * {@inheritDoc}
          */
         public End selectEnd() {
             return selectByNodeType.end();
@@ -203,23 +199,23 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
             this.typeInfo = typeInfo;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.Type#comma()
+        /**
+         * {@inheritDoc}
          */
         public SLSelectByNodeType comma() {
             typeInfo.setComma(true);
             return selectByNodeType;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.Type#selectEnd()
+        /**
+         * {@inheritDoc}
          */
         public End selectEnd() {
             return selectByNodeType.end();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.Type#subTypes()
+        /**
+         * {@inheritDoc}
          */
         public Type subTypes() {
             typeInfo.setSubTypes(true);
@@ -260,8 +256,8 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
             //this.orderBy = new SLOrderByStatementImpl();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.End#where()
+        /**
+         * {@inheritDoc}
          */
         public SLWhereByNodeType where() {
             if (this.where == null) {
@@ -272,15 +268,15 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
             return where;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.End#orderBy()
+        /**
+         * {@inheritDoc}
          */
         public SLOrderByStatement orderBy() {
             return orderBy;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.End#keepResult()
+        /**
+         * {@inheritDoc}
          */
         public End keepResult() {
             selectInfo.setKeepResult(true);
@@ -305,47 +301,47 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.End#executeXTimes()
+        /**
+         * {@inheritDoc}
          */
         public End executeXTimes() {
             selectInfo.setXTimes(0);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByNodeType.End#executeXTimes(int)
+        /**
+         * {@inheritDoc}
          */
         public End executeXTimes( int x ) {
             selectInfo.setXTimes(x);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkType()
+        /**
+         * {@inheritDoc}
          */
-        public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException {
+        public SLSelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectFacade#selectByNodeType()
+        /**
+         * {@inheritDoc}
          */
-        public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
+        public SLSelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkCount()
+        /**
+         * {@inheritDoc}
          */
-        public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
+        public SLSelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectFacade#select()
+        /**
+         * {@inheritDoc}
          */
-        public SLSelectStatement select() throws SLGraphSessionException {
+        public SLSelectStatement select() {
             return selectFacade.select();
         }
     }

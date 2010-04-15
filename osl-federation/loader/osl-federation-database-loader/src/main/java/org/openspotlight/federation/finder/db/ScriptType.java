@@ -48,79 +48,79 @@
  */
 package org.openspotlight.federation.finder.db;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Script types to be used inside the artifact loader implementation.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public enum ScriptType {
-	/**
-	 * Constraint creation script.
-	 */
-	CONSTRAINT(),
-	/**
-	 * Foreign key information.
-	 */
-	FK(ForeignKeyConstraintArtifact.class),
-	/**
-	 * Function type.
-	 */
-	FUNCTION(RoutineArtifact.class),
-	/**
-	 * Index creation script.
-	 */
-	INDEX,
-	/**
-	 * Package creation script.
-	 */
-	PACKAGE,
-	/**
-	 * Procedure type.
-	 */
-	PROCEDURE(RoutineArtifact.class),
-	/**
-	 * Sequence creation script.
-	 */
-	SEQUENCE,
-	/**
-	 * Table creation script.
-	 */
-	TABLE(TableArtifact.class),
-	/**
-	 * Tablespace creation script.
-	 */
-	TABLESPACE,
-	/**
-	 * Trigger type.
-	 */
-	TRIGGER,
-	/**
-	 * View creation script.
-	 */
-	VIEW(ViewArtifact.class);
+    /**
+     * Constraint creation script.
+     */
+    CONSTRAINT(),
+    /**
+     * Foreign key information.
+     */
+    FK(ForeignKeyConstraintArtifact.class),
+    /**
+     * Function type.
+     */
+    FUNCTION(RoutineArtifact.class),
+    /**
+     * Index creation script.
+     */
+    INDEX,
+    /**
+     * Package creation script.
+     */
+    PACKAGE,
+    /**
+     * Procedure type.
+     */
+    PROCEDURE(RoutineArtifact.class),
+    /**
+     * Sequence creation script.
+     */
+    SEQUENCE,
+    /**
+     * Table creation script.
+     */
+    TABLE(TableArtifact.class),
+    /**
+     * Tablespace creation script.
+     */
+    TABLESPACE,
+    /**
+     * Trigger type.
+     */
+    TRIGGER,
+    /**
+     * View creation script.
+     */
+    VIEW(ViewArtifact.class);
 
-	private ScriptType(Class<? extends Artifact>... classes) {
-		types = Arrays.asList(classes);
-	}
+    private ScriptType(
+                        Class<? extends Artifact>... classes ) {
+        types = Arrays.asList(classes);
+    }
 
-	private List<Class<? extends Artifact>> types;
+    private List<Class<? extends Artifact>> types;
 
-	public boolean acceptType(Class<? extends Artifact> type) {
-		return types.contains(type);
-	}
+    public boolean acceptType( Class<? extends Artifact> type ) {
+        return types.contains(type);
+    }
 
-	public boolean acceptName(String name) {
-		return name != null
-				&& name.toLowerCase().contains(this.name().toLowerCase());
-	}
+    public boolean acceptName( String name ) {
+        return name != null
+                && name.toLowerCase().contains(this.name().toLowerCase());
+    }
 }

@@ -56,12 +56,12 @@ import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
  * @author Vitor Hugo Chagas
  */
 public interface SLWhereByNodeTypeInfoGetter {
-	
-	/**
-	 * Gets the where statement info.
-	 * 
-	 * @return the where statement info
-	 */
-	public SLWhereByNodeTypeInfo getWhereStatementInfo();
+
+    /**
+     * Gets the where statement info.
+     * 
+     * @return the where statement info
+     */
+    public SLWhereByNodeTypeInfo getWhereStatementInfo();
 
 }

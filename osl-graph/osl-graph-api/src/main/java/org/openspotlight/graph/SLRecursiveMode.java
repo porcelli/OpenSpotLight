@@ -54,8 +54,8 @@ package org.openspotlight.graph;
  * @author Vitor Hugo Chagas
  */
 public enum SLRecursiveMode {
-	
-	NOT_RECURSIVE,
-	
-	RECURSIVE
+
+    NOT_RECURSIVE,
+
+    RECURSIVE
 }
