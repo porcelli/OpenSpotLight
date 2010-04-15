@@ -76,6 +76,7 @@
 	</pluginRepositories>
 	<modules>
 		<module>osl-common</module>
+		<module>osl-persistence</module>
 		<module>osl-remote-support</module>
 		<module>osl-jcr</module>
 		<module>osl-simple-persist</module>
@@ -182,6 +183,21 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-common</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-persistence-api</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-persistence-core</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-persistence-redis</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
@@ -356,6 +372,27 @@
 				<artifactId>idm-core</artifactId>
 				<classifier>tests</classifier>
 				<version>1.0.0-Beta4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>google</groupId>
+				<artifactId>collect</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>google</groupId>
+				<artifactId>guice</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>aopalliance</groupId>
+				<artifactId>aopalliance</artifactId>
+				<version>guice-2.0-dep</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>jredis</groupId>
+				<artifactId>jredis</artifactId>
+				<version>1.0-rc1-java5</version>
 			</dependency>
 			<!-- parsing and code generation dependencies -->
 			<dependency>
