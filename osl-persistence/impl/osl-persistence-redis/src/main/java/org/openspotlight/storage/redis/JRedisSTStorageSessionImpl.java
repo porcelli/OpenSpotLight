@@ -81,6 +81,7 @@ import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitive
  */
 public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
+    private static final String NULL_VALUE_AS_STRING="___N_U_L_L__V_A_L_U_E___";
     private static final String SET_WITH_ALL_KEYS_CONTAINING = "*{0}*";
     private static final String SET_WITH_ALL_KEYS = "all-unique-keys";
     private static final String SET_WITH_ALL_NODE_KEYS_FOR_NAME = "name:{0}:unique-keys";
@@ -109,7 +110,11 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
     private static String getPropertyKey(String propertyName, Class<?> type, Object value, String nodeId) throws Exception {
         String valueAsString = convert(value, String.class);
-        if (valueAsString != null) valueAsString = valueAsString.replaceAll(" ", "");
+        if (valueAsString != null) {
+            valueAsString = valueAsString.replaceAll(" ", "");
+        }else{
+             valueAsString = NULL_VALUE_AS_STRING;
+        }
         String proposedKey = format(KEY_WITH_PROPERTY_NODE_ID, propertyName, type.getName(), valueAsString, nodeId);
         return proposedKey;
 

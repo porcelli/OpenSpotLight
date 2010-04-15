@@ -739,17 +739,15 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
                 breakIfNull(transientPropertyType);
 
-                if (transientPropertyValue != null) {
-                    item = new STPropertyCriteriaItemImpl(transientPropertyValue, transientPropertyType,
-                            transientPropertyName, transientNodeEntryName);
-                } else if (startsWith != null) {
+                if (startsWith != null) {
                     item = new STPropertyStartsWithStringImpl(transientNodeEntryName, transientPropertyName, startsWith);
                 } else if (endsWith != null) {
                     item = new STPropertyEndsWithStringImpl(transientNodeEntryName, transientPropertyName, endsWith);
                 } else if (contains != null) {
                     item = new STPropertyContainsStringImpl(transientNodeEntryName, transientPropertyName, contains);
                 } else {
-                    throw new IllegalStateException();
+                    item = new STPropertyCriteriaItemImpl(transientPropertyValue, transientPropertyType,
+                            transientPropertyName, transientNodeEntryName);
                 }
             }
             transientPropertyName = null;
