@@ -7,7 +7,7 @@ public class ClassWithLazyProperty implements SimpleNodeType {
 
 	private String test;
 
-	private LazyProperty<SerializablePojoProperty> bigPojoProperty;
+	private final LazyProperty<SerializablePojoProperty> bigPojoProperty = LazyProperty.Factory.create(SerializablePojoProperty.class,this);
 
 
 	public LazyProperty<SerializablePojoProperty> getBigPojoProperty() {
@@ -16,11 +16,6 @@ public class ClassWithLazyProperty implements SimpleNodeType {
 
 	public String getTest() {
 		return test;
-	}
-
-	public void setBigPojoProperty(
-			final LazyProperty<SerializablePojoProperty> bigPojoProperty) {
-		this.bigPojoProperty = bigPojoProperty;
 	}
 
 	public void setTest(final String test) {

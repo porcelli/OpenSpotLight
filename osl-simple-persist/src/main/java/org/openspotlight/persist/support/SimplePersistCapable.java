@@ -1,8 +1,11 @@
 package org.openspotlight.persist.support;
 
+import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.Set;
 
 /**
@@ -34,6 +37,13 @@ public interface SimplePersistCapable<N, S> {
 
     public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
                                         String[] propertyNames, Object[] propertyValues)throws Exception;
+
+
+    interface InternalMethods {
+        public  Object beforeUnConvert(SimpleNodeType bean, Serializable value, Method readMethod) throws Exception;
+    }
+
+    public InternalMethods getInternalMethods();
 
     
 }

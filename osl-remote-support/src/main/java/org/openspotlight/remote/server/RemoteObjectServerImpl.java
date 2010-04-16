@@ -581,7 +581,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 			throws InternalErrorOnMethodInvocationException,
 			InvocationTargetException, RemoteReferenceInvalid, UserTokenInvalid {
 		checkNotNull("invocation", invocation);
-		checkCondition("remoteReferenceValid",
+		checkCondition("remoteReferenceValid:" + invocation.getMethodName(),
 				isRemoteReferenceValid(invocation.getRemoteReference()));
 
 		try {
