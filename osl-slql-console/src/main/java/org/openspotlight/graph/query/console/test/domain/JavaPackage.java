@@ -58,19 +58,4 @@ import org.openspotlight.graph.annotation.SLProperty;
  */
 public interface JavaPackage extends SLNode {
 
-    /**
-     * Gets the caption.
-     * 
-     * @return the caption
-     */
-    @SLProperty
-    public String getCaption();
-
-    /**
-     * Sets the caption.
-     * 
-     * @param caption the new caption
-     */
-    public void setCaption( String caption );
-
 }

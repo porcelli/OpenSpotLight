@@ -478,6 +478,14 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
         }
     }
+    /**
+     * {@inheritDoc}
+     */
+    public void setCaption(String caption) {
+        synchronized (lock) {
+            setProperty(String.class, VisibilityLevel.PUBLIC, SLConsts.PROPERTY_CAPTION_NAME, caption);
+        }
+    }
 
     /**
      * Gets the child node.

@@ -2481,4 +2481,31 @@ public abstract class BaseGraphTest {
 
         Assert.assertFalse(javaClassNode1.getID().equals(javaClassNode2.getID()));
     }
+
+    /**
+     * Test typed on different contexts.
+     */
+    @Test
+    public void testContextAndNodeCaption() throws SLGraphException {
+        // add new node ...
+        SLContext myNewContext = session.createContext("MyNewContext");
+
+        Assert.assertEquals(myNewContext.getCaption(), "MyNewContext");
+        Assert.assertEquals(myNewContext.getRootNode().getCaption(), "MyNewContext");
+
+        myNewContext.setCaption("newContextCaption");
+        Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
+        Assert.assertEquals(myNewContext.getRootNode().getCaption(), "newContextCaption");
+
+        session.save();
+        session.close();
+        session = openSession();
+
+        myNewContext = session.getContext("newContextCaption");
+        Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
+        Assert.assertEquals(myNewContext.getRootNode().getCaption(), "newContextCaption");
+
+    }
+
+    
 }
