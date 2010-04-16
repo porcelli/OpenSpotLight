@@ -93,10 +93,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 Descriptors parentDescriptors = Descriptors.fillDescriptors(bean);
                 cached = createNewNode(context, parentNode, parentDescriptors, propertyName);
                 context.nodesConverted.put(bean, cached);
-                fillSimpleProperties(context.session, bean, parentDescriptors.simplePropertiesDescriptor, cached);
-                fillStreamProperties(context.session, bean, parentDescriptors.streamPropertiesDescriptor, cached);
-                fillChildrenProperties(context, bean, parentDescriptors.childrenPropertiesDescriptor, cached);
-                fillLazyProperties(context, bean, parentDescriptors.lazyPropertiesDescriptor, cached);
+                fillNodeSimpleProperties(context.session, bean, parentDescriptors.simplePropertiesDescriptor, cached);
+                fillNodeStreamProperties(context.session, bean, parentDescriptors.streamPropertiesDescriptor, cached);
+                fillNodeChildrenProperties(context, bean, parentDescriptors.childrenPropertiesDescriptor, cached);
+                fillNodeLazyProperties(context, bean, parentDescriptors.lazyPropertiesDescriptor, cached);
                 if (bean == context.bean) context.nodeReference.setWrapped(cached);
             }
             return cached;
@@ -104,7 +104,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     }
 
-    private void fillLazyProperties(ConversionToNodeContext context, SimpleNodeType bean,
+    private void fillNodeLazyProperties(ConversionToNodeContext context, SimpleNodeType bean,
                                     List<PropertyDescriptor> lazyPropertiesDescriptor, STNodeEntry nodeEntry) throws Exception {
         for (PropertyDescriptor descriptor : lazyPropertiesDescriptor) {
             LazyProperty<?> property = (LazyProperty<?>) descriptor.getReadMethod().invoke(bean);
@@ -127,7 +127,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
 
-    private <T> void fillChildrenProperties(ConversionToNodeContext context, T bean,
+    private <T> void fillNodeChildrenProperties(ConversionToNodeContext context, T bean,
                                             List<PropertyDescriptor> childrenPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
 
         Map<String, BeanToNodeChildData> nodesToConvert = newHashMap();
@@ -175,7 +175,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     }
 
-    private <T> void fillStreamProperties(STStorageSession session, T bean, List<PropertyDescriptor> streamPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
+    private <T> void fillNodeStreamProperties(STStorageSession session, T bean, List<PropertyDescriptor> streamPropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
         for (PropertyDescriptor property : streamPropertiesDescriptor) {
             Class<?> propertyType = property.getPropertyType();
             Method readMethod = property.getReadMethod();
@@ -220,7 +220,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         }
     }
 
-    private <T> void fillSimpleProperties(STStorageSession session, T bean,
+    private <T> void fillNodeSimpleProperties(STStorageSession session, T bean,
                                           List<PropertyDescriptor> simplePropertiesDescriptor, STNodeEntry newNodeEntry) throws Exception {
         for (PropertyDescriptor property : simplePropertiesDescriptor) {
             newNodeEntry.getVerifiedOperations().setSimpleProperty(session, property.getName(),
@@ -299,12 +299,12 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 cached = beanType.newInstance();
                 context.beansConverted.put(nodeEntry, cached);
                 Descriptors descriptors = Descriptors.fillDescriptors(beanType);
-                fillParent(descriptors.parentPropertiesDescriptor, cached, beanParent);
-                fillSimpleProperties(context.session, nodeEntry, cached, descriptors.keyPropertiesDescriptor);
-                fillSimpleProperties(context.session, nodeEntry, cached, descriptors.simplePropertiesDescriptor);
-                fillStreamProperties(context.session, nodeEntry, cached, descriptors.streamPropertiesDescriptor);
-                fillLazyProperties(context.session, nodeEntry, cached, descriptors.lazyPropertiesDescriptor);
-                fillChildren(context, nodeEntry, cached, descriptors.childrenPropertiesDescriptor);
+                fillBeanParent(descriptors.parentPropertiesDescriptor, cached, beanParent);
+                fillBeanSimpleProperties(context.session, nodeEntry, cached, descriptors.keyPropertiesDescriptor);
+                fillBeanSimpleProperties(context.session, nodeEntry, cached, descriptors.simplePropertiesDescriptor);
+                fillBeanStreamProperties(context.session, nodeEntry, cached, descriptors.streamPropertiesDescriptor);
+                fillBeanLazyProperties(context.session, nodeEntry, cached, descriptors.lazyPropertiesDescriptor);
+                fillBeanChildren(context, nodeEntry, cached, descriptors.childrenPropertiesDescriptor);
                 if (nodeEntry.equals(context.node)) context.beanReference.setWrapped((SimpleNodeType) cached);
             }
             return cached;
@@ -312,7 +312,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     }
 
-    private void fillLazyProperties(STStorageSession session, STNodeEntry cached, Object bean, List<PropertyDescriptor> lazyPropertiesDescriptors) throws Exception {
+    private void fillBeanLazyProperties(STStorageSession session, STNodeEntry cached, Object bean, List<PropertyDescriptor> lazyPropertiesDescriptors) throws Exception {
         for (PropertyDescriptor property : lazyPropertiesDescriptors) {
 
             String propertyName = property.getName();
@@ -325,7 +325,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     }
 
-    private <T> void fillChildren(ConversionToBeanContext context, STNodeEntry node, T bean, List<PropertyDescriptor> childrenPropertiesDescriptor) throws Exception {
+    private <T> void fillBeanChildren(ConversionToBeanContext context, STNodeEntry node, T bean, List<PropertyDescriptor> childrenPropertiesDescriptor) throws Exception {
         for (PropertyDescriptor descriptor : childrenPropertiesDescriptor) {
             Class<?> propertyType = descriptor.getPropertyType();
             Class<?> nodeType = null;
@@ -379,7 +379,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return filtered;
     }
 
-    private <T> void fillStreamProperties(STStorageSession session, STNodeEntry node, T bean,
+    private <T> void fillBeanStreamProperties(STStorageSession session, STNodeEntry node, T bean,
                                           List<PropertyDescriptor> streamPropertiesDescriptor) throws Exception {
         for (PropertyDescriptor descriptor : streamPropertiesDescriptor) {
             Class<?> propertyType = descriptor.getPropertyType();
@@ -397,7 +397,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
 
-    private <T> void fillSimpleProperties(STStorageSession session, STNodeEntry node, T bean,
+    private <T> void fillBeanSimpleProperties(STStorageSession session, STNodeEntry node, T bean,
                                           List<PropertyDescriptor> simplePropertiesDescriptor) throws IllegalAccessException, InvocationTargetException {
         for (PropertyDescriptor descriptor : simplePropertiesDescriptor) {
             Object value = node.<Object>getPropertyValue(session, descriptor.getName());
@@ -406,7 +406,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         }
     }
 
-    private void fillParent(List<PropertyDescriptor> parentPropertyDescriptors, Object bean, Object beanParent) throws Exception {
+    private void fillBeanParent(List<PropertyDescriptor> parentPropertyDescriptors, Object bean, Object beanParent) throws Exception {
         if (beanParent != null) {
             Class<?> parentType = beanParent.getClass();
             for (PropertyDescriptor descriptor : parentPropertyDescriptors) {
