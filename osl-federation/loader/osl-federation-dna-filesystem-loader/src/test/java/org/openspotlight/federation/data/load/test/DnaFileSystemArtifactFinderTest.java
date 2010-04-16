@@ -69,44 +69,44 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
  */
 public class DnaFileSystemArtifactFinderTest {
 
-	@Test
-	public void shouldLoadAFile() throws Exception {
-		final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
-		artifactSource.setActive(true);
-		artifactSource.setInitialLookup("../");
-		artifactSource.setName("Dna FileSystem");
-		final Repository repository = new Repository();
-		repository.setName("repository");
-		artifactSource.setRepository(repository);
-		final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
+    @Test
+    public void shouldLoadAFile() throws Exception {
+        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
+        artifactSource.setActive(true);
+        artifactSource.setInitialLookup("../");
+        artifactSource.setName("Dna FileSystem");
+        final Repository repository = new Repository();
+        repository.setName("repository");
+        artifactSource.setRepository(repository);
+        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
 
-		final StringArtifact sa = finder
-				.findByPath(
-						StringArtifact.class,
-						artifactSource,
-						"osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
+        final StringArtifact sa = finder
+                                        .findByPath(
+                                                    StringArtifact.class,
+                                                    artifactSource,
+                                                    "osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
 
-		assertThat(sa, is(notNullValue()));
-		assertThat(sa.getContent(), is(notNullValue()));
+        assertThat(sa, is(notNullValue()));
+        assertThat(sa.getContent(), is(notNullValue()));
 
-		finder.closeResources();
-	}
+        finder.closeResources();
+    }
 
-	@Test
-	public void shouldRetrieveFileNames() throws Exception {
-		final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
-		artifactSource.setActive(true);
-		artifactSource.setInitialLookup("../");
-		final Repository repository = new Repository();
-		repository.setName("repository");
-		artifactSource.setRepository(repository);
-		artifactSource.setName("Dna FileSystem");
-		final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
+    @Test
+    public void shouldRetrieveFileNames() throws Exception {
+        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
+        artifactSource.setActive(true);
+        artifactSource.setInitialLookup("../");
+        final Repository repository = new Repository();
+        repository.setName("repository");
+        artifactSource.setRepository(repository);
+        artifactSource.setName("Dna FileSystem");
+        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
 
-		final Set<String> names = finder.getInternalMethods()
-				.retrieveOriginalNames(StringArtifact.class, artifactSource,
-						"osl-federation-dna-filesystem-loader");
-		assertThat(names.size(), is(not(0)));
-		finder.closeResources();
-	}
+        final Set<String> names = finder.getInternalMethods()
+                                        .retrieveOriginalNames(StringArtifact.class, artifactSource,
+                                                               "osl-federation-dna-filesystem-loader");
+        assertThat(names.size(), is(not(0)));
+        finder.closeResources();
+    }
 }

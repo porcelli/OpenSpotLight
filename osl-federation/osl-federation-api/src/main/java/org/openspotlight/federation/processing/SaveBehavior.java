@@ -53,9 +53,9 @@ package org.openspotlight.federation.processing;
  */
 public enum SaveBehavior {
 
-	/** The PE r_ artifact. */
-	PER_ARTIFACT,
+    /** The PE r_ artifact. */
+    PER_ARTIFACT,
 
-	/** The PE r_ processing. */
-	PER_PROCESSING
+    /** The PE r_ processing. */
+    PER_PROCESSING
 }

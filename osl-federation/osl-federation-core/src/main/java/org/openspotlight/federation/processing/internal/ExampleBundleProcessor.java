@@ -72,80 +72,80 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExampleBundleProcessor implements
-		BundleProcessorSinglePhase<StringArtifact> {
+        BundleProcessorSinglePhase<StringArtifact> {
 
-	public static List<LastProcessStatus> allStatus = new CopyOnWriteArrayList<LastProcessStatus>();
+    public static List<LastProcessStatus> allStatus = new CopyOnWriteArrayList<LastProcessStatus>();
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger                  logger    = LoggerFactory.getLogger(this.getClass());
 
-	public <A extends Artifact> boolean acceptKindOfArtifact(
-			final Class<A> kindOfArtifact) {
-		return StringArtifact.class.equals(kindOfArtifact);
-	}
+    public <A extends Artifact> boolean acceptKindOfArtifact(
+                                                              final Class<A> kindOfArtifact ) {
+        return StringArtifact.class.equals(kindOfArtifact);
+    }
 
-	public void beforeProcessArtifact(final StringArtifact artifact,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) {
-		logger.info("starting to process " + artifact);
-	}
+    public void beforeProcessArtifact( final StringArtifact artifact,
+                                       final CurrentProcessorContext currentContext,
+                                       final ExecutionContext context ) {
+        logger.info("starting to process " + artifact);
+    }
 
-	public void didFinishProcessing(final ArtifactChanges<Artifact> changes,
-			final ExecutionContext context,
-			final CurrentProcessorContext currentContext) {
+    public void didFinishProcessing( final ArtifactChanges<Artifact> changes,
+                                     final ExecutionContext context,
+                                     final CurrentProcessorContext currentContext ) {
 
-	}
+    }
 
-	public void didFinishToProcessArtifact(final StringArtifact artifact,
-			final LastProcessStatus status,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) {
-		ExampleBundleProcessor.allStatus.add(status);
+    public void didFinishToProcessArtifact( final StringArtifact artifact,
+                                            final LastProcessStatus status,
+                                            final CurrentProcessorContext currentContext,
+                                            final ExecutionContext context ) {
+        ExampleBundleProcessor.allStatus.add(status);
 
-		logger.info("processed " + artifact);
-	}
+        logger.info("processed " + artifact);
+    }
 
-	public Class<StringArtifact> getArtifactType() {
-		return StringArtifact.class;
-	}
+    public Class<StringArtifact> getArtifactType() {
+        return StringArtifact.class;
+    }
 
-	@SuppressWarnings("unchecked")
-	public Set<Class<? extends StringArtifact>> getArtifactTypes() {
-		return SLCollections
-				.<Class<? extends StringArtifact>> setOf(StringArtifact.class);
-	}
+    @SuppressWarnings( "unchecked" )
+    public Set<Class<? extends StringArtifact>> getArtifactTypes() {
+        return SLCollections
+                            .<Class<? extends StringArtifact>>setOf(StringArtifact.class);
+    }
 
-	public SaveBehavior getSaveBehavior() {
-		return SaveBehavior.PER_PROCESSING;
-	}
+    public SaveBehavior getSaveBehavior() {
+        return SaveBehavior.PER_PROCESSING;
+    }
 
-	public LastProcessStatus processArtifact(final StringArtifact artifact,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) throws Exception {
-		context.getLogger().log(context.getUser(), LogEventType.DEBUG,
-				"another test", artifact);
-		for (int i = 0; i < 10; i++) {
-			final SLNode groupNode = currentContext.getCurrentNodeGroup();
-			final String nodeName = artifact.getArtifactCompleteName() + i;
-			final SLNode node = groupNode.addNode(nodeName);
-			final SLNode node1 = node.addNode(nodeName);
-			context.getGraphSession().addLink(SLLink.class, node, node1, false);
-		}
+    public LastProcessStatus processArtifact( final StringArtifact artifact,
+                                              final CurrentProcessorContext currentContext,
+                                              final ExecutionContext context ) throws Exception {
+        context.getLogger().log(context.getUser(), LogEventType.DEBUG,
+                                "another test", artifact);
+        for (int i = 0; i < 10; i++) {
+            final SLNode groupNode = currentContext.getCurrentNodeGroup();
+            final String nodeName = artifact.getArtifactCompleteName() + i;
+            final SLNode node = groupNode.addNode(nodeName);
+            final SLNode node1 = node.addNode(nodeName);
+            context.getGraphSession().addLink(SLLink.class, node, node1, false);
+        }
 
-		Session session = (Session) context.getPersistentArtifactManager()
-				.getPersistentEngine();
+        Session session = (Session)context.getPersistentArtifactManager()
+                                          .getPersistentEngine();
 
-		artifact.addSyntaxInformation(2, 4, 5, 6,
-				SyntaxInformationType.COMMENT, session);
+        artifact.addSyntaxInformation(2, 4, 5, 6,
+                                      SyntaxInformationType.COMMENT, session);
 
-		return LastProcessStatus.PROCESSED;
-	}
+        return LastProcessStatus.PROCESSED;
+    }
 
-	public void selectArtifactsToBeProcessed(
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context,
-			final ArtifactChanges<Artifact> changes,
-			final ArtifactsToBeProcessed<Artifact> toBeReturned) {
+    public void selectArtifactsToBeProcessed(
+                                              final CurrentProcessorContext currentContext,
+                                              final ExecutionContext context,
+                                              final ArtifactChanges<Artifact> changes,
+                                              final ArtifactsToBeProcessed<Artifact> toBeReturned ) {
 
-	}
+    }
 
 }

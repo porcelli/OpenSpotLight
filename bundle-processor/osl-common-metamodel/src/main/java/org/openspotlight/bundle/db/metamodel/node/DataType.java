@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,11 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for node DataType Meta Model.
- *
- * {@link Column} should be used as parent.
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * The Interface for node DataType Meta Model. {@link Column} should be used as parent.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("DataType")
+@SLDescription( "DataType" )
 public interface DataType extends SLNode {
 
-    
 }
-
-        

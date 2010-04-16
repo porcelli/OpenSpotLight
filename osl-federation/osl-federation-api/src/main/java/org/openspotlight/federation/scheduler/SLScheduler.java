@@ -58,20 +58,25 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public interface SLScheduler {
 
-	public <T extends Schedulable> void fireSchedulable(String username,
-			String password, final T... schedulable);
+    public <T extends Schedulable> void fireSchedulable( String username,
+                                                         String password,
+                                                         final T... schedulable );
 
-	public <T extends Schedulable> void fireSchedulableInBackground(
-			String username, String password, final T... schedulable);
+    public <T extends Schedulable> void fireSchedulableInBackground(
+                                                                     String username,
+                                                                     String password,
+                                                                     final T... schedulable );
 
-	public void initializeSettings(ExecutionContextFactory contextFactory,
-			String username, String password, JcrConnectionDescriptor descriptor);
+    public void initializeSettings( ExecutionContextFactory contextFactory,
+                                    String username,
+                                    String password,
+                                    JcrConnectionDescriptor descriptor );
 
-	public void refreshJobs(GlobalSettings settings,
-			Set<Repository> repositories);
+    public void refreshJobs( GlobalSettings settings,
+                             Set<Repository> repositories );
 
-	public void startScheduler();
+    public void startScheduler();
 
-	public void stopScheduler();
+    public void stopScheduler();
 
 }

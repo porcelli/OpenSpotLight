@@ -52,7 +52,6 @@ import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import gnu.cajo.invoke.Remote;
 import gnu.cajo.utils.extra.TransparentItemProxy;
 
 import java.lang.reflect.InvocationHandler;
@@ -207,8 +206,8 @@ public class RemoteObjectFactory {
                                     if (invocationHandlerForTest instanceof RemoteReferenceHandler<?>) {
                                         //here, it *needs* to wrap only the references before sending it to the server
                                         final Collection<Object> newCollection = SLCollections.createNewCollection(
-                                                                                                                 collection.getClass(),
-                                                                                                                 collection.size());
+                                                                                                                   collection.getClass(),
+                                                                                                                   collection.size());
                                         for (final Object item : collection) {
                                             if (item != null) {
                                                 final InvocationHandler invocationHandler = Proxy.getInvocationHandler(item);
@@ -292,9 +291,9 @@ public class RemoteObjectFactory {
 
                     final CollectionOfRemoteInvocationResponse resultCollection = (CollectionOfRemoteInvocationResponse)result;
                     final Collection<Object> remoteResultCollection = (Collection<Object>)SLCollections.createNewCollection(
-                                                                                                                          resultCollection.getResultType(),
+                                                                                                                            resultCollection.getResultType(),
 
-                                                                                                                          resultCollection.getResult().size());
+                                                                                                                            resultCollection.getResult().size());
 
                     final Collection<RemoteReference<Object>> colection = resultCollection.getResult();
                     for (final RemoteReference<Object> remoteRef : colection) {

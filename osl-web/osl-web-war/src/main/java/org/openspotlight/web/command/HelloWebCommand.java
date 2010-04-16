@@ -62,18 +62,14 @@ import org.openspotlight.web.json.Message;
  */
 public class HelloWebCommand implements WebCommand {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.web.command.WebCommand#execute(org.openspotlight.web
-	 * .command.WebCommand.WebCommandContext, java.util.Map)
-	 */
-	public String execute(final ExecutionContext context,
-			final Map<String, String> parameters) throws WebException {
-		final Message message = new Message();
-		message.setMessage("hello world!");
-		return JSONObject.fromObject(message).toString();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String execute( final ExecutionContext context,
+                           final Map<String, String> parameters ) throws WebException {
+        final Message message = new Message();
+        message.setMessage("hello world!");
+        return JSONObject.fromObject(message).toString();
+    }
 
 }

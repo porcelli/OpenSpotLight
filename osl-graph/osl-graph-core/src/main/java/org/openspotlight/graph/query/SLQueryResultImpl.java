@@ -63,70 +63,70 @@ import org.openspotlight.graph.SLNode;
  * @author Vitor Hugo Chagas
  */
 public class SLQueryResultImpl implements SLQueryResult {
-	private final Lock lockObject;
-	/** The nodes. */
-	private final NeedsSyncronizationList<SLNode> nodes;
+    private final Lock                            lockObject;
+    /** The nodes. */
+    private final NeedsSyncronizationList<SLNode> nodes;
 
-	/** The query id. */
-	private final String queryId;
+    /** The query id. */
+    private final String                          queryId;
 
-	/**
-	 * Instantiates a new sL query result impl.
-	 * 
-	 * @param nodes
-	 *            the nodes
-	 */
-	public SLQueryResultImpl(final LockContainer parent,
-			final List<SLNode> nodes, final String queryId) {
-		lockObject = parent.getLockObject();
-		this.queryId = queryId;
-		if (nodes == null) {
-			this.nodes = LockedCollections.createListWithLock(this,
-					new ArrayList<SLNode>(0));
-		} else {
-			this.nodes = LockedCollections.createListWithLock(this, nodes);
-		}
-	}
+    /**
+     * Instantiates a new sL query result impl.
+     * 
+     * @param nodes the nodes
+     */
+    public SLQueryResultImpl(
+                              final LockContainer parent,
+                              final List<SLNode> nodes, final String queryId ) {
+        lockObject = parent.getLockObject();
+        this.queryId = queryId;
+        if (nodes == null) {
+            this.nodes = LockedCollections.createListWithLock(this,
+                                                              new ArrayList<SLNode>(0));
+        } else {
+            this.nodes = LockedCollections.createListWithLock(this, nodes);
+        }
+    }
 
-	/**
-	 * Instantiates a new sL query result impl.
-	 * 
-	 * @param nodes
-	 *            the nodes
-	 */
-	public SLQueryResultImpl(final LockContainer parent, final SLNode[] nodes,
-			final String queryId) {
-		lockObject = parent.getLockObject();
-		this.queryId = queryId;
-		if (nodes == null) {
-			this.nodes = LockedCollections.createListWithLock(this,
-					new ArrayList<SLNode>(0));
-		} else {
-			this.nodes = LockedCollections.createListWithLock(this,
-					new ArrayList<SLNode>(nodes.length));
-			for (final SLNode slNode : nodes) {
-				this.nodes.add(slNode);
-			}
-		}
-	}
+    /**
+     * Instantiates a new sL query result impl.
+     * 
+     * @param nodes the nodes
+     */
+    public SLQueryResultImpl(
+                              final LockContainer parent, final SLNode[] nodes,
+                              final String queryId ) {
+        lockObject = parent.getLockObject();
+        this.queryId = queryId;
+        if (nodes == null) {
+            this.nodes = LockedCollections.createListWithLock(this,
+                                                              new ArrayList<SLNode>(0));
+        } else {
+            this.nodes = LockedCollections.createListWithLock(this,
+                                                              new ArrayList<SLNode>(nodes.length));
+            for (final SLNode slNode : nodes) {
+                this.nodes.add(slNode);
+            }
+        }
+    }
 
-	public Lock getLockObject() {
-		return lockObject;
-	}
+    public Lock getLockObject() {
+        return lockObject;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
-	 */
-	public NeedsSyncronizationList<SLNode> getNodes() throws SLQueryException {
-		return nodes;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
+     */
+    public NeedsSyncronizationList<SLNode> getNodes() throws SLQueryException {
+        return nodes;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getQueryId() {
-		return queryId;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getQueryId() {
+        return queryId;
+    }
 }

@@ -71,110 +71,111 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EachArtifactTask<T extends Artifact> extends
-		RunnableWithBundleContext {
+        RunnableWithBundleContext {
 
-	private static final Object SAVE_LOCK = new Object();
-	private final boolean first;
+    private static final Object                   SAVE_LOCK = new Object();
+    private final boolean                         first;
 
-	private final T artifact;
-	private final SaveBehavior saveBehavior;
-	private final BundleProcessorArtifactPhase<T> bundleProcessor;
-	private final CurrentProcessorContextImpl currentContextImpl;
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final T                               artifact;
+    private final SaveBehavior                    saveBehavior;
+    private final BundleProcessorArtifactPhase<T> bundleProcessor;
+    private final CurrentProcessorContextImpl     currentContextImpl;
+    private final Logger                          logger    = LoggerFactory.getLogger(getClass());
 
-	public EachArtifactTask(final boolean first, final String repositoryName,
-			final T artifact, final SaveBehavior saveBehavior,
-			final BundleProcessorArtifactPhase<T> bundleProcessor,
-			final CurrentProcessorContextImpl currentContextImpl) {
-		super(repositoryName);
-		this.first = first;
-		this.artifact = artifact;
-		this.saveBehavior = saveBehavior;
-		this.bundleProcessor = bundleProcessor;
-		this.currentContextImpl = currentContextImpl;
-	}
+    public EachArtifactTask(
+                             final boolean first, final String repositoryName,
+                             final T artifact, final SaveBehavior saveBehavior,
+                             final BundleProcessorArtifactPhase<T> bundleProcessor,
+                             final CurrentProcessorContextImpl currentContextImpl ) {
+        super(repositoryName);
+        this.first = first;
+        this.artifact = artifact;
+        this.saveBehavior = saveBehavior;
+        this.bundleProcessor = bundleProcessor;
+        this.currentContextImpl = currentContextImpl;
+    }
 
-	public void doIt() throws Exception {
+    public void doIt() throws Exception {
 
-		if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact
-				.getLastProcessStatus())
-				|| LastProcessStatus.EXCEPTION_DURRING_PROCESS
-						.equals(this.artifact.getLastProcessStatus())) {
-			logger.info("ignoring " + this.artifact
-					+ " due to its last process status: "
-					+ this.artifact.getLastProcessStatus());
-			return;
-		}
-		this.bundleProcessor.beforeProcessArtifact(this.artifact,
-				this.currentContextImpl, getBundleContext());
-		LastProcessStatus result = null;
-		try {
-			if (first && this.artifact instanceof ArtifactWithSyntaxInformation) {
-				final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation) this.artifact;
-				artifactWithInfo.getSyntaxInformationSet().setTransient(
-						new HashSet<SyntaxInformation>());
-			}
-			result = this.bundleProcessor.processArtifact(this.artifact,
-					this.currentContextImpl, getBundleContext());
-			if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
-				getBundleContext().getGraphSession().save();
-			} else {
-				logger.warn("Didn't save because of its save behavior");
-			}
-		} catch (final Exception e) {
-			result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
-			Exceptions.catchAndLog(e);
-			getBundleContext().getLogger().log(
-					getBundleContext().getUser(),
-					LogEventType.ERROR,
-					"Error during artifact processing on bundle processor "
-							+ this.bundleProcessor.getClass().getName(),
-					this.artifact);
-			throw e;
-		} finally {
-			this.artifact.setLastProcessStatus(result);
-			this.artifact.setLastProcessedDate(new Date());
-			final PersistentArtifactManager manager = getBundleContext()
-					.getPersistentArtifactManager();
-			Exception ex = null;
-			try {
-				synchronized (SAVE_LOCK) {
-					if (ChangeType.EXCLUDED.equals(this.artifact
-							.getChangeType())) {
-						manager.markAsRemoved(this.artifact);
-					} else {
-						manager.addTransient(this.artifact);
-					}
-					manager.saveTransientData();
-				}
+        if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact
+                                                                            .getLastProcessStatus())
+                || LastProcessStatus.EXCEPTION_DURRING_PROCESS
+                                                              .equals(this.artifact.getLastProcessStatus())) {
+            logger.info("ignoring " + this.artifact
+                        + " due to its last process status: "
+                        + this.artifact.getLastProcessStatus());
+            return;
+        }
+        this.bundleProcessor.beforeProcessArtifact(this.artifact,
+                                                   this.currentContextImpl, getBundleContext());
+        LastProcessStatus result = null;
+        try {
+            if (first && this.artifact instanceof ArtifactWithSyntaxInformation) {
+                final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation)this.artifact;
+                artifactWithInfo.getSyntaxInformationSet().setTransient(
+                                                                        new HashSet<SyntaxInformation>());
+            }
+            result = this.bundleProcessor.processArtifact(this.artifact,
+                                                          this.currentContextImpl, getBundleContext());
+            if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
+                getBundleContext().getGraphSession().save();
+            } else {
+                logger.warn("Didn't save because of its save behavior");
+            }
+        } catch (final Exception e) {
+            result = LastProcessStatus.EXCEPTION_DURRING_PROCESS;
+            Exceptions.catchAndLog(e);
+            getBundleContext().getLogger().log(
+                                               getBundleContext().getUser(),
+                                               LogEventType.ERROR,
+                                               "Error during artifact processing on bundle processor "
+                                               + this.bundleProcessor.getClass().getName(),
+                                               this.artifact);
+            throw e;
+        } finally {
+            this.artifact.setLastProcessStatus(result);
+            this.artifact.setLastProcessedDate(new Date());
+            final PersistentArtifactManager manager = getBundleContext()
+                                                                        .getPersistentArtifactManager();
+            Exception ex = null;
+            try {
+                synchronized (SAVE_LOCK) {
+                    if (ChangeType.EXCLUDED.equals(this.artifact
+                                                                .getChangeType())) {
+                        manager.markAsRemoved(this.artifact);
+                    } else {
+                        manager.addTransient(this.artifact);
+                    }
+                    manager.saveTransientData();
+                }
 
-			} catch (final Exception e) {
-				Exceptions.catchAndLog(e);
-				ex = e;
-			}
-			this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
-					result, this.currentContextImpl, getBundleContext());
-			if (ex != null) {
-				throw ex;
-			}
-		}
-	}
+            } catch (final Exception e) {
+                Exceptions.catchAndLog(e);
+                ex = e;
+            }
+            this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
+                                                            result, this.currentContextImpl, getBundleContext());
+            if (ex != null) {
+                throw ex;
+            }
+        }
+    }
 
-	public CurrentProcessorContextImpl getCurrentContext() {
-		return this.currentContextImpl;
-	}
+    public CurrentProcessorContextImpl getCurrentContext() {
+        return this.currentContextImpl;
+    }
 
-	@Override
-	public void setBundleContext(final ExecutionContext bundleContext) {
-		super.setBundleContext(bundleContext);
-		SLContext groupContext;
-		try {
-			groupContext = bundleContext.getGraphSession().createContext(
-					SLConsts.DEFAULT_GROUP_CONTEXT);
-			this.currentContextImpl.setGroupContext(groupContext);
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-	}
+    @Override
+    public void setBundleContext( final ExecutionContext bundleContext ) {
+        super.setBundleContext(bundleContext);
+        SLContext groupContext;
+        try {
+            groupContext = bundleContext.getGraphSession().createContext(
+                                                                         SLConsts.DEFAULT_GROUP_CONTEXT);
+            this.currentContextImpl.setGroupContext(groupContext);
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
 
 }

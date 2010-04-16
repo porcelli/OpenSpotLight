@@ -74,60 +74,60 @@ import org.openspotlight.bundle.db.processor.DbWrappedType;
 
 public enum H2WrappedType implements DbWrappedType {
 
-	INSTANCE;
+    INSTANCE;
 
-	public Class<? extends Catalog> getCatalogType() {
-		return H2Catalog.class;
-	}
+    public Class<? extends Catalog> getCatalogType() {
+        return H2Catalog.class;
+    }
 
-	public Class<? extends Column> getColumnType() {
+    public Class<? extends Column> getColumnType() {
 
-		return H2Column.class;
-	}
+        return H2Column.class;
+    }
 
-	public Class<? extends DatabaseConstraintForeignKey> getDatabaseConstraintForeignKeyType() {
+    public Class<? extends DatabaseConstraintForeignKey> getDatabaseConstraintForeignKeyType() {
 
-		return H2DatabaseConstraintForeignKey.class;
-	}
+        return H2DatabaseConstraintForeignKey.class;
+    }
 
-	public Class<? extends DatabaseConstraintPrimaryKey> getDatabaseConstraintPrimaryKeyType() {
+    public Class<? extends DatabaseConstraintPrimaryKey> getDatabaseConstraintPrimaryKeyType() {
 
-		return H2DatabaseConstraintPrimaryKey.class;
-	}
+        return H2DatabaseConstraintPrimaryKey.class;
+    }
 
-	public Class<? extends Database> getDatabaseType() {
+    public Class<? extends Database> getDatabaseType() {
 
-		return H2Database.class;
-	}
+        return H2Database.class;
+    }
 
-	public Class<? extends DataType> getDataTypeType() {
+    public Class<? extends DataType> getDataTypeType() {
 
-		return H2DataType.class;
-	}
+        return H2DataType.class;
+    }
 
-	public Class<? extends Schema> getSchemaType() {
+    public Class<? extends Schema> getSchemaType() {
 
-		return H2Schema.class;
-	}
+        return H2Schema.class;
+    }
 
-	public Class<? extends Server> getServerType() {
+    public Class<? extends Server> getServerType() {
 
-		return H2Server.class;
-	}
+        return H2Server.class;
+    }
 
-	public Class<? extends TableViewTable> getTableViewTableType() {
+    public Class<? extends TableViewTable> getTableViewTableType() {
 
-		return H2TableViewTable.class;
-	}
+        return H2TableViewTable.class;
+    }
 
-	public Class<? extends TableView> getTableViewType() {
+    public Class<? extends TableView> getTableViewType() {
 
-		return H2TableView.class;
-	}
+        return H2TableView.class;
+    }
 
-	public Class<? extends TableViewView> getTableViewViewType() {
+    public Class<? extends TableViewView> getTableViewViewType() {
 
-		return H2TableViewView.class;
-	}
+        return H2TableViewView.class;
+    }
 
 }

@@ -48,10 +48,10 @@
  */
 package org.openspotlight.graph;
 
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,6 +60,7 @@ import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Assertions;
+import org.openspotlight.graph.event.SLGraphSessionEventPoster;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTree;
@@ -67,6 +68,7 @@ import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.security.SLInvalidCredentialException;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.AuthenticatedUser;
@@ -80,236 +82,117 @@ import org.openspotlight.security.idm.auth.IdentityManager;
  */
 public class SLGraphFactoryImpl extends SLGraphFactory {
 
-	public static interface SLGraphClosingListener {
-		public void graphClosed(SLGraph desc);
-	}
+    public static interface SLGraphClosingListener {
+        public void graphClosed( SLGraph desc );
+    }
 
-	private class SLGraphClosingListenerImpl implements SLGraphClosingListener {
+    private class SLGraphClosingListenerImpl implements SLGraphClosingListener {
 
-		public void graphClosed(final SLGraph desc) {
-			JcrConnectionDescriptor data = null;
-			for (final Entry<JcrConnectionDescriptor, SLGraph> entry : cache
-					.entrySet()) {
-				if (entry.getValue().equals(desc)) {
-					data = entry.getKey();
-					break;
-				}
-			}
-			synchronized (cache) {
-				if (data != null) {
-					cache.remove(data);
-				}
+        public void graphClosed( final SLGraph desc ) {
+            JcrConnectionDescriptor data = null;
+            for (final Entry<JcrConnectionDescriptor, SLGraph> entry : cache
+                                                                            .entrySet()) {
+                if (entry.getValue().equals(desc)) {
+                    data = entry.getKey();
+                    break;
+                }
+            }
+            synchronized (cache) {
+                if (data != null) {
+                    cache.remove(data);
+                }
 
-			}
+            }
 
-		}
+        }
 
-	}
+    }
 
-	private final Map<JcrConnectionDescriptor, SLGraph> cache = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
+    private final Map<JcrConnectionDescriptor, SLGraph> cache = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
 
-	@Override
-	public synchronized SLGraph createGraph(
-			final JcrConnectionDescriptor descriptor)
-			throws SLGraphFactoryException, SLInvalidCredentialException {
-		SLGraph cached = cache.get(descriptor);
-		if (cached == null) {
-			try {
-				final SecurityFactory securityFactory = AbstractFactory
-						.getDefaultInstance(SecurityFactory.class);
-				final SLPersistentTreeFactory factory = AbstractFactory
-						.getDefaultInstance(SLPersistentTreeFactory.class);
-				final JcrConnectionProvider provider = JcrConnectionProvider
-						.createFromData(descriptor);
-				provider.openRepository();
+    @Override
+    public synchronized SLGraph createGraph(
+                                             final JcrConnectionDescriptor descriptor ) {
+        SLGraph cached = cache.get(descriptor);
+        if (cached == null) {
+            try {
+                final SecurityFactory securityFactory = AbstractFactory
+                                                                       .getDefaultInstance(SecurityFactory.class);
+                final SLPersistentTreeFactory factory = AbstractFactory
+                                                                       .getDefaultInstance(SLPersistentTreeFactory.class);
+                final JcrConnectionProvider provider = JcrConnectionProvider
+                                                                            .createFromData(descriptor);
+                provider.openRepository();
 
-				final SLPersistentTree tree = factory
-						.createPersistentTree(descriptor);
-				final SystemUser systemUser = securityFactory
-						.createSystemUser();
-				final IdentityManager identityManager = securityFactory
-						.createIdentityManager(descriptor);
-				final PolicyEnforcement graphPolicyEnforcement = securityFactory
-						.createGraphPolicyEnforcement(descriptor);
+                final SLPersistentTree tree = factory
+                                                     .createPersistentTree(descriptor);
+                final SystemUser systemUser = securityFactory
+                                                             .createSystemUser();
+                final IdentityManager identityManager = securityFactory
+                                                                       .createIdentityManager(descriptor);
+                final PolicyEnforcement graphPolicyEnforcement = securityFactory
+                                                                                .createGraphPolicyEnforcement(descriptor);
 
-				cached = new SLGraphImpl(tree,
-						new SLGraphClosingListenerImpl(), identityManager,
-						graphPolicyEnforcement, systemUser);
-				cache.put(descriptor, cached);
-			} catch (final AbstractFactoryException e) {
-				throw logAndReturnNew(e, ConfigurationException.class);
-			} catch (final SLInvalidCredentialException e) {
-				throw logAndReturnNew(e, SLInvalidCredentialException.class);
-			}
-		}
-		return cached;
-	}
+                cached = new SLGraphImpl(tree,
+                                         new SLGraphClosingListenerImpl(), identityManager,
+                                         graphPolicyEnforcement, systemUser);
+                cache.put(descriptor, cached);
+            } catch (final AbstractFactoryException e) {
+                throw logAndReturnNew(e, ConfigurationException.class);
+            } catch (final SLInvalidCredentialException e) {
+                catchAndLog(e);
+            }
+        }
+        return cached;
+    }
 
-	/**
-	 * Creates the graph session.
-	 * 
-	 * @param treeSession
-	 *            the tree session
-	 * @param user
-	 *            the user
-	 * @return the sL graph session
-	 */
-	@Override
-	SLGraphSession createGraphSession(
-			final SLPersistentTreeSession treeSession,
-			final PolicyEnforcement policyEnforcement,
-			final AuthenticatedUser user) {
-		Assertions.checkNotNull("treeSession", treeSession);
-		Assertions.checkNotNull("policyEnforcement", policyEnforcement);
-		Assertions.checkNotNull("user", user);
-		return new SLGraphSessionImpl(treeSession, policyEnforcement, user);
-	}
+    /**
+     * Creates the graph session.
+     * 
+     * @param treeSession the tree session
+     * @param user the user
+     * @return the sL graph session
+     */
+    @Override
+    SLGraphSession createGraphSession(
+                                       final SLPersistentTreeSession treeSession,
+                                       final PolicyEnforcement policyEnforcement,
+                                       final AuthenticatedUser user ) {
+        Assertions.checkNotNull("treeSession", treeSession);
+        Assertions.checkNotNull("policyEnforcement", policyEnforcement);
+        Assertions.checkNotNull("user", user);
+        return new SLGraphSessionImpl(treeSession, policyEnforcement, user);
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLGraphFactory#createNode(java.lang.Class,
-	 * org.openspotlight.graph.SLContext, org.openspotlight.graph.SLNode,
-	 * org.openspotlight.graph.persistence.SLPersistentNode)
-	 */
-	/**
-	 * Creates the node.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @param context
-	 *            the context
-	 * @param parent
-	 *            the parent
-	 * @param persistentNode
-	 *            the persistent node
-	 * @return the t
-	 * @throws SLGraphFactoryException
-	 *             the SL graph factory exception
-	 */
-	@Override
-	<T extends SLNode> T createNode(final Class<T> clazz,
-			final SLContext context, final SLNode parent,
-			final SLPersistentNode persistentNode)
-			throws SLGraphFactoryException {
-		try {
-			final Constructor<T> constructor = clazz.getConstructor(
-					SLContext.class, SLNode.class, SLPersistentNode.class);
-			return constructor.newInstance(context, parent, persistentNode);
-		} catch (final Exception e) {
-			throw new SLGraphFactoryException("Couldn't instantiate node type "
-					+ clazz.getName(), e);
-		}
-	}
+    /**
+     * Creates the node.
+     * 
+     * @param context the context
+     * @param parent the parent
+     * @param persistentNode the persistent node
+     * @param eventPoster the event poster
+     * @return the sL node
+     */
+    @Override
+    SLNode createNode( final SLContext context,
+                       final SLNode parent,
+                       final SLPersistentNode persistentNode,
+                       final SLGraphSessionEventPoster eventPoster ) {
+        return new SLNodeImpl(context, parent, persistentNode, eventPoster);
+    }
 
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphFactory#createNode(org.openspotlight.graph
-	 * .SLContext, org.openspotlight.graph.SLNode,
-	 * org.openspotlight.graph.persistence.SLPersistentNode,
-	 * org.openspotlight.graph.SLGraphSessionEventPoster)
-	 */
-	/**
-	 * Creates the node.
-	 * 
-	 * @param context
-	 *            the context
-	 * @param parent
-	 *            the parent
-	 * @param persistentNode
-	 *            the persistent node
-	 * @param eventPoster
-	 *            the event poster
-	 * @return the sL node
-	 * @throws SLGraphFactoryException
-	 *             the SL graph factory exception
-	 */
-	@Override
-	SLNode createNode(final SLContext context, final SLNode parent,
-			final SLPersistentNode persistentNode,
-			final SLGraphSessionEventPoster eventPoster)
-			throws SLGraphFactoryException {
-		return new SLNodeImpl(context, parent, persistentNode, eventPoster);
-	}
-
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphFactory#createNode(org.openspotlight.graph
-	 * .SLContext, org.openspotlight.graph.persistence.SLPersistentNode,
-	 * org.openspotlight.graph.SLGraphSessionEventPoster)
-	 */
-	/**
-	 * Creates the node.
-	 * 
-	 * @param context
-	 *            the context
-	 * @param persistentNode
-	 *            the persistent node
-	 * @param eventPoster
-	 *            the event poster
-	 * @return the sL node
-	 * @throws SLGraphFactoryException
-	 *             the SL graph factory exception
-	 */
-	@Override
-	SLNode createNode(final SLContext context,
-			final SLPersistentNode persistentNode,
-			final SLGraphSessionEventPoster eventPoster)
-			throws SLGraphFactoryException {
-		return new SLNodeImpl(context, null, persistentNode, eventPoster);
-	}
-
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.openspotlight.graph.SLGraphFactory#createProperty(org.openspotlight
-	 * .graph.SLNode, org.openspotlight.graph.persistence.SLPersistentProperty)
-	 */
-	/**
-	 * Creates the property.
-	 * 
-	 * @param node
-	 *            the node
-	 * @param persistentProperty
-	 *            the persistent property
-	 * @return the sL node property< v>
-	 * @throws SLGraphFactoryException
-	 *             the SL graph factory exception
-	 */
-	@Override
-	<V extends Serializable> SLNodeProperty<V> createProperty(
-			final SLNode node,
-			final SLPersistentProperty<V> persistentProperty,
-			final SLGraphSessionEventPoster eventPoster)
-			throws SLGraphFactoryException {
-		return new SLNodePropertyImpl<V>(node, persistentProperty, eventPoster);
-	}
-
-	// @Override
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLGraphFactory#getContextImplClass()
-	 */
-	/**
-	 * Gets the context impl class.
-	 * 
-	 * @return the context impl class
-	 * @throws SLGraphFactoryException
-	 *             the SL graph factory exception
-	 */
-	@Override
-	Class<? extends SLContext> getContextImplClass()
-			throws SLGraphFactoryException {
-		return SLContextImpl.class;
-	}
+    /**
+     * Creates the property.
+     * 
+     * @param node the node
+     * @param persistentProperty the persistent property
+     * @return the sL node property< v>
+     */
+    @Override
+    <V extends Serializable> SLNodeProperty<V> createProperty(
+                                                               final SLNode node,
+                                                               final SLPersistentProperty<V> persistentProperty,
+                                                               final SLGraphSessionEventPoster eventPoster ) {
+        return new SLNodePropertyImpl<V>(node, persistentProperty, eventPoster);
+    }
 }

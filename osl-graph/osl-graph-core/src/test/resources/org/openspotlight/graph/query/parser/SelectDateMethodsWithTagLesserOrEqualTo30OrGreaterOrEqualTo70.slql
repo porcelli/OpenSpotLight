@@ -1,11 +1,11 @@
-select org.openspotlight.graph.test.domain.JavaType.*
+select org.openspotlight.graph.test.domain.node.JavaType.*
 	where
-		org.openspotlight.graph.test.domain.JavaType.*
+		org.openspotlight.graph.test.domain.node.JavaType.*
 			property caption == "java.util.Date"
 
-select org.openspotlight.graph.test.domain.JavaTypeMethod
-	by link org.openspotlight.graph.test.domain.TypeContainsMethod (b)
+select org.openspotlight.graph.test.domain.node.JavaTypeMethod
+	by link org.openspotlight.graph.test.domain.link.TypeContainsMethod (b)
 	where
-		linkType org.openspotlight.graph.test.domain.TypeContainsMethod
+		linkType org.openspotlight.graph.test.domain.link.TypeContainsMethod
 			property tag <= 30 ||
 			property tag >= 70;

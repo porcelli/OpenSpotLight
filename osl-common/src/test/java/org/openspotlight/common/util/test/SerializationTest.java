@@ -62,15 +62,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.junit.Test;
-import org.openspotlight.common.util.Serialization;
 
 /**
  * Test class for {@link Serialization}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class SerializationTest {
 
     @Test

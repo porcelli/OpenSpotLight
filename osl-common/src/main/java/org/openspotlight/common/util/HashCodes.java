@@ -58,10 +58,10 @@ import java.util.Map;
 /**
  * Helper class to build hashCode methods in a secure and concise way. All the hash functions for primitive types was created
  * based on Effective Java book. to be used like this...
- *
+ * 
  * <pre>
  * private volatile hashcode;
- *
+ * 
  * public int hashCode(){
  *  int result = hashcode;
  *  if(result = 0){
@@ -70,11 +70,11 @@ import java.util.Map;
  *  }
  *  return result;
  * }
- *
+ * 
  * </pre>
- *
+ * 
  * or like this...
- *
+ * 
  * <pre>
  * public int hashCode(){
  *  int result = hashcode;
@@ -85,17 +85,17 @@ import java.util.Map;
  *  return result;
  * }
  * </pre>
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -107,9 +107,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param b
      * @return the hash code
      */
@@ -119,10 +119,10 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -134,9 +134,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param b
      * @return the hash code
      */
@@ -146,10 +146,10 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -161,9 +161,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param c
      * @return the hash code
      */
@@ -173,10 +173,10 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -188,9 +188,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param d
      * @return the hash code
      */
@@ -200,10 +200,10 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -215,9 +215,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param f
      * @return the hash code
      */
@@ -227,10 +227,10 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -242,9 +242,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param i
      * @return the hash code
      */
@@ -254,7 +254,7 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book). To be used like this:
-     *
+     * 
      * <pre>
      * public int hashCode(){
      *  int result = hashcode;
@@ -265,7 +265,7 @@ public class HashCodes {
      *  return result;
      * }
      * </pre>
-     *
+     * 
      * @param iterable
      * @return the hash code
      */
@@ -279,10 +279,10 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -294,9 +294,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param l
      * @return the hash code
      */
@@ -306,7 +306,7 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book). To be used like this:
-     *
+     * 
      * <pre>
      * public int hashCode(){
      *  int result = hashcode;
@@ -317,7 +317,7 @@ public class HashCodes {
      *  return result;
      * }
      * </pre>
-     *
+     * 
      * @param map
      * @return the hash code
      */
@@ -332,10 +332,10 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -347,9 +347,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param o
      * @return the hash code
      */
@@ -359,7 +359,7 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book). To be used like this:
-     *
+     * 
      * <pre>
      * public int hashCode(){
      *  int result = hashcode;
@@ -370,7 +370,7 @@ public class HashCodes {
      *  return result;
      * }
      * </pre>
-     *
+     * 
      * @param attributes
      * @return the hash code
      */
@@ -391,10 +391,10 @@ public class HashCodes {
 
     /**
      * Hash helper method to be used like this (based on Effective Java book):
-     *
+     * 
      * <pre>
      * private volatile hashcode;
-     *
+     * 
      * public int hashCode(){
      *  int result = hashcode;
      *  if(result = 0){
@@ -406,9 +406,9 @@ public class HashCodes {
      *  }
      *  return result;
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param s
      * @return the hash code
      */

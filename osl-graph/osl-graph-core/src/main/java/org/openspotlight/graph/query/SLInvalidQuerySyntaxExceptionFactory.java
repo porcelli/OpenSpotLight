@@ -69,34 +69,34 @@ import org.openspotlight.graph.query.parser.SLQLLexer;
  * @see SLInvalidQuerySyntaxException
  */
 public class SLInvalidQuerySyntaxExceptionFactory {
-    
+
     /** The Constant MISMATCHED_TOKEN_MESSAGE_COMPLETE. */
     private final static String MISMATCHED_TOKEN_MESSAGE_COMPLETE     = "Line %1$d:%2$d mismatched input '%3$s' expecting '%4$s'";
-    
+
     /** The Constant MISMATCHED_TOKEN_MESSAGE_PART. */
     private final static String MISMATCHED_TOKEN_MESSAGE_PART         = "Line %1$d:%2$d mismatched input '%3$s'";
-    
+
     /** The Constant MISMATCHED_TREE_NODE_MESSAGE_COMPLETE. */
     private final static String MISMATCHED_TREE_NODE_MESSAGE_COMPLETE = "Line %1$d:%2$d mismatched tree node '%3$s' expecting '%4$s'";
-    
+
     /** The Constant MISMATCHED_TREE_NODE_MESSAGE_PART. */
     private final static String MISMATCHED_TREE_NODE_MESSAGE_PART     = "Line %1$d:%2$d mismatched tree node '%3$s'";
-    
+
     /** The Constant NO_VIABLE_ALT_MESSAGE. */
     private final static String NO_VIABLE_ALT_MESSAGE                 = "Line %1$d:%2$d no viable alternative at input '%3$s'";
-    
+
     /** The Constant EARLY_EXIT_MESSAGE. */
     private final static String EARLY_EXIT_MESSAGE                    = "Line %1$d:%2$d required (...)+ loop did not match anything at input '%3$s'";
-    
+
     /** The Constant MISMATCHED_SET_MESSAGE. */
     private final static String MISMATCHED_SET_MESSAGE                = "Line %1$d:%2$d mismatched input '%3$' expecting set '%4$s'.";
-    
+
     /** The Constant MISMATCHED_NOT_SET_MESSAGE. */
     private final static String MISMATCHED_NOT_SET_MESSAGE            = "Line %1$d:%2$d mismatched input '%3$' expecting set '%4$s'";
-    
+
     /** The Constant FAILED_PREDICATE_MESSAGE. */
     private final static String FAILED_PREDICATE_MESSAGE              = "Line %1$d:%2$d rule '%3$s' failed predicate: {%4$s}?";
- 
+
     /** The token names. */
     private String[]            tokenNames                            = null;
 
@@ -114,7 +114,6 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * This method creates a SLInvalidQuerySyntaxException full of information.
      * 
      * @param e original exception
-     * 
      * @return SLInvalidQuerySyntaxException filled.
      */
     public SLInvalidQuerySyntaxException createSLQueryLanguageException(
@@ -217,7 +216,6 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * This will take a RecognitionException, and create a sensible error message out of it.
      * 
      * @param e the e
-     * 
      * @return the list< string>
      */
     private List<String> createErrorMessage( RecognitionException e ) {
@@ -313,7 +311,6 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * Helper method that creates a user friendly token definition.
      * 
      * @param token token
-     * 
      * @return user friendly token definition
      */
     private String getBetterToken( Token token ) {
@@ -327,7 +324,6 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * Helper method that creates a user friendly token definition.
      * 
      * @param tokenType token type
-     * 
      * @return user friendly token definition
      */
     private String getBetterToken( int tokenType ) {
@@ -339,7 +335,6 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * 
      * @param tokenType token type
      * @param defaultValue default value for identifier token, may be null
-     * 
      * @return user friendly token definition
      */
     private String getBetterToken( int tokenType,

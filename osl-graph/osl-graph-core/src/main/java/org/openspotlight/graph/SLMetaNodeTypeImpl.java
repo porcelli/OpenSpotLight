@@ -57,11 +57,12 @@ import java.util.Set;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.graph.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.SLMetadata.LogicOperator;
 import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLRenderHintNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentPropertyNotFoundException;
@@ -102,21 +103,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public boolean equals( final Object obj ) {
-        synchronized (lock) {
-            if (!(obj instanceof SLMetaNodeTypeImpl)) {
-                return false;
-            }
-            final SLMetaNodeTypeImpl metaNode = (SLMetaNodeTypeImpl)obj;
-            return pMetaNode.equals(metaNode);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String getDescription() throws SLGraphSessionException {
+    public String getDescription() {
         synchronized (lock) {
             try {
                 final String propName = SLCommonSupport
@@ -135,7 +122,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public VisibilityLevel getVisibility() throws SLGraphSessionException {
+    public VisibilityLevel getVisibility() {
         synchronized (lock) {
             try {
                 final String propName = SLCommonSupport
@@ -161,22 +148,21 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public SLMetadata getMetadata() throws SLGraphSessionException {
+    public SLMetadata getMetadata() {
         return metadata;
     }
 
     /**
      * {@inheritDoc}
      */
-    public SLPersistentNode getNode() throws SLGraphSessionException {
+    public SLPersistentNode getNode() {
         return pMetaNode;
     }
 
     /**
      * {@inheritDoc}
      */
-    public Collection<SLMetaNodeProperty> getMetaProperties()
-        throws SLGraphSessionException {
+    public Collection<SLMetaNodeProperty> getMetaProperties() {
         synchronized (lock) {
             try {
                 final Collection<SLMetaNodeProperty> metaProperties = new HashSet<SLMetaNodeProperty>();
@@ -199,8 +185,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public SLMetaNodeProperty getMetaProperty( final String name )
-        throws SLGraphSessionException {
+    public SLMetaNodeProperty getMetaProperty( final String name ) {
         synchronized (lock) {
 
             try {
@@ -228,10 +213,8 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public SLMetaRenderHint getMetaRenderHint( final String name )
-        throws SLGraphSessionException {
+    public SLMetaRenderHint getMetaRenderHint( final String name ) throws SLRenderHintNotFoundException {
         synchronized (lock) {
-
             try {
                 SLMetaRenderHint renderHint = null;
                 final String pattern = SLCommonSupport
@@ -241,6 +224,8 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
                                                                                     .getProperty(pMetaNode, Serializable.class, pattern);
                 if (pProperty != null) {
                     renderHint = new SLMetaRenderHintImpl(this, pProperty);
+                } else {
+                    throw new SLRenderHintNotFoundException(name);
                 }
                 return renderHint;
             } catch (final SLPersistentTreeSessionException e) {
@@ -253,8 +238,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public Collection<SLMetaRenderHint> getMetaRenderHints()
-        throws SLGraphSessionException {
+    public Collection<SLMetaRenderHint> getMetaRenderHints() {
         synchronized (lock) {
 
             try {
@@ -280,7 +264,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public SLMetaNodeType getParent() throws SLGraphSessionException {
+    public SLMetaNodeType getParent() {
         synchronized (lock) {
 
             try {
@@ -307,8 +291,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
      * {@inheritDoc}
      */
     public SLMetaNodeType getSubMetaNodeType(
-                                              final Class<? extends SLNode> nodeClass )
-        throws SLGraphSessionException {
+                                              final Class<? extends SLNode> nodeClass ) {
         synchronized (lock) {
             return getSubMetaNodeType(nodeClass.getName());
         }
@@ -317,8 +300,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public SLMetaNodeType getSubMetaNodeType( final String name )
-        throws SLGraphSessionException {
+    public SLMetaNodeType getSubMetaNodeType( final String name ) {
         synchronized (lock) {
             try {
                 SLMetaNodeType metaNode = null;
@@ -337,8 +319,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public Collection<SLMetaNodeType> getSubMetaNodeTypes()
-        throws SLGraphSessionException {
+    public Collection<SLMetaNodeType> getSubMetaNodeTypes() {
         synchronized (lock) {
             try {
                 final Collection<SLMetaNodeType> subMetaNodeTypes = new ArrayList<SLMetaNodeType>();
@@ -365,7 +346,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
                                                               MetaNodeTypeProperty property2Find,
                                                               LogicOperator logicOp,
                                                               BooleanOperator booleanOp,
-                                                              List<String> values ) throws SLGraphSessionException {
+                                                              List<String> values ) {
         synchronized (lock) {
             try {
                 final String statement = SLMetadataXPathSupporter.buildXpathForMetaNodeType("/" + pMetaNode.getPath(), recursiveMode, visibility, property2Find, logicOp, booleanOp, values);
@@ -393,7 +374,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
      * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
-    public Class<? extends SLNode> getType() throws SLGraphSessionException {
+    public Class<? extends SLNode> getType() {
         try {
             return (Class<? extends SLNode>)Class.forName(pMetaNode.getName());
         } catch (final Exception e) {
@@ -405,12 +386,26 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public String getTypeName() throws SLGraphSessionException {
+    public String getTypeName() {
         try {
             return pMetaNode.getName();
         } catch (final Exception e) {
             throw new SLGraphSessionException(
                                               "Error on attempt to retrieve node type name.", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals( final Object obj ) {
+        synchronized (lock) {
+            if (!(obj instanceof SLMetaNodeTypeImpl)) {
+                return false;
+            }
+            final SLMetaNodeTypeImpl metaNode = (SLMetaNodeTypeImpl)obj;
+            return pMetaNode.equals(metaNode);
         }
     }
 
@@ -428,14 +423,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     @Override
     public String toString() {
         synchronized (lock) {
-
-            try {
-                return getType().toString();
-            } catch (final SLGraphSessionException e) {
-                throw new SLRuntimeException(
-                                             "Error on attempt to string meta node type.", e);
-
-            }
+            return getType().toString();
         }
     }
 }

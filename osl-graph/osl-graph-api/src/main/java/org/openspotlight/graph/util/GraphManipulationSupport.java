@@ -50,7 +50,6 @@ package org.openspotlight.graph.util;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.openspotlight.graph.SLLink;
 
@@ -58,8 +57,7 @@ public class GraphManipulationSupport {
 
     public static Collection<Class<? extends SLLink>> links(
                                                              final Class<? extends SLLink>... linkTypes ) {
-        final List<Class<? extends SLLink>> list = Arrays.asList(linkTypes);
-        return list;
+        return Arrays.asList(linkTypes);
     }
 
 }

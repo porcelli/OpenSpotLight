@@ -78,10 +78,8 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a byte array representing the signature
-	 * @throws SLRuntimeException
 	 */
-	public static byte[] getSha1Signature(final byte[] content)
-			throws SLRuntimeException {
+	public static byte[] getSha1Signature(final byte[] content) {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			return DIGESTER.digest(content);
@@ -95,10 +93,8 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a byte array representing the signature
-	 * @throws SLRuntimeException
 	 */
-	public static byte[] getSha1Signature(final InputStream content)
-			throws SLRuntimeException {
+	public static byte[] getSha1Signature(final InputStream content) {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			if (content.markSupported())
@@ -118,10 +114,8 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a byte array representing the signature
-	 * @throws SLRuntimeException
 	 */
-	public static byte[] getSha1Signature(final String content)
-			throws SLRuntimeException {
+	public static byte[] getSha1Signature(final String content){
 		return getSha1Signature(content.getBytes());
 	}
 
@@ -130,10 +124,8 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a base64 string representing the signature
-	 * @throws SLRuntimeException
 	 */
-	public static String getSha1SignatureEncodedAsBase64(final byte[] content)
-			throws SLRuntimeException {
+	public static String getSha1SignatureEncodedAsBase64(final byte[] content) {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			final byte[] sha1 = getSha1Signature(content);
@@ -149,10 +141,8 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a base64 string representing the signature
-	 * @throws SLRuntimeException
 	 */
-	public static String getSha1SignatureEncodedAsBase64(final InputStream content)
-			throws SLRuntimeException {
+	public static String getSha1SignatureEncodedAsBase64(final InputStream content) {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			final byte[] sha1 = getSha1Signature(content);
@@ -169,10 +159,8 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return sha-1 base64 string
-	 * @throws SLRuntimeException
 	 */
-	public static String getSha1SignatureEncodedAsBase64(final String content)
-			throws SLRuntimeException {
+	public static String getSha1SignatureEncodedAsBase64(final String content) {
 		return getSha1SignatureEncodedAsBase64(content.getBytes());
 	}
 
@@ -181,10 +169,8 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a base64 string representing the signature
-	 * @throws SLRuntimeException
 	 */
-	public static String getSha1SignatureEncodedAsHexa(final byte[] content)
-			throws SLRuntimeException {
+	public static String getSha1SignatureEncodedAsHexa(final byte[] content) {
 		checkNotNull("content", content);//$NON-NLS-1$
 		try {
 			final byte[] sha1 = getSha1Signature(content);
@@ -200,10 +186,8 @@ public class Sha1 {
 	 * 
 	 * @param content
 	 * @return a base64 string representing the signature
-	 * @throws SLRuntimeException
 	 */
-	public static String getSha1SignatureEncodedAsHexa(final String content)
-			throws SLRuntimeException {
+	public static String getSha1SignatureEncodedAsHexa(final String content) {
 		return getSha1SignatureEncodedAsHexa(content.getBytes());
 	}
 

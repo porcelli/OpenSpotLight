@@ -51,6 +51,7 @@ package org.openspotlight.graph;
 import java.io.Serializable;
 
 import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
@@ -61,80 +62,71 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  */
 public class SLMetaRenderHintImpl implements SLMetaRenderHint {
 
-	private final Lock lock;
+    private final Lock                               lock;
 
-	/** The meta node. */
-	private final SLMetaNodeType metaNode;
+    /** The meta node. */
+    private final SLMetaNodeType                     metaNode;
 
-	/** The property. */
-	private final SLPersistentProperty<Serializable> property;
+    /** The property. */
+    private final SLPersistentProperty<Serializable> property;
 
-	/**
-	 * Instantiates a new sL meta render hint impl.
-	 * 
-	 * @param metaNode
-	 *            the meta node
-	 * @param property
-	 *            the property
-	 */
-	SLMetaRenderHintImpl(final SLMetaNodeType metaNode,
-			final SLPersistentProperty<Serializable> property) {
-		this.metaNode = metaNode;
-		this.property = property;
-		lock = property.getLockObject();
-	}
+    /**
+     * Instantiates a new sL meta render hint impl.
+     * 
+     * @param metaNode the meta node
+     * @param property the property
+     */
+    SLMetaRenderHintImpl(
+                          final SLMetaNodeType metaNode,
+                          final SLPersistentProperty<Serializable> property ) {
+        this.metaNode = metaNode;
+        this.property = property;
+        lock = property.getLockObject();
+    }
 
-	public Lock getLockObject() {
-		return lock;
-	}
+    public Lock getLockObject() {
+        return lock;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetaElement#getMetadata()
-	 */
-	public SLMetadata getMetadata() throws SLGraphSessionException {
-		return metaNode.getMetadata();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public SLMetadata getMetadata() {
+        return metaNode.getMetadata();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetaRenderHint#getMetaNode()
-	 */
-	public SLMetaNodeType getMetaNode() throws SLGraphSessionException {
-		return metaNode;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public SLMetaNodeType getMetaNode() {
+        return metaNode;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetaRenderHint#getName()
-	 */
-	public String getName() throws SLGraphSessionException {
-		synchronized (lock) {
+    /**
+     * {@inheritDoc}
+     */
+    public String getName() {
+        synchronized (lock) {
 
-			try {
-				return SLCommonSupport.toSimplePropertyName(property.getName());
-			} catch (final SLPersistentTreeSessionException e) {
-				throw new SLGraphSessionException(
-						"Error on attempt to retrieve render hint name.", e);
-			}
-		}
-	}
+            try {
+                return SLCommonSupport.toSimplePropertyName(property.getName());
+            } catch (final SLPersistentTreeSessionException e) {
+                throw new SLGraphSessionException(
+                                                  "Error on attempt to retrieve render hint name.", e);
+            }
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openspotlight.graph.SLMetaRenderHint#getValue()
-	 */
-	public String getValue() throws SLGraphSessionException {
-		try {
-			return property.getValue().toString();
-		} catch (final SLPersistentTreeSessionException e) {
-			throw new SLGraphSessionException(
-					"Error on attempt to retrieve render hint value.", e);
-		}
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public String getValue() {
+        try {
+            return property.getValue().toString();
+        } catch (final SLPersistentTreeSessionException e) {
+            throw new SLGraphSessionException(
+                                              "Error on attempt to retrieve render hint value.", e);
+        }
+    }
 
 }

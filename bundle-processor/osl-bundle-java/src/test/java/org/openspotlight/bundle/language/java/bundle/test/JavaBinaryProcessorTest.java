@@ -82,134 +82,135 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class JavaBinaryProcessorTest {
 
-	private static class RepositoryData {
-		public final GlobalSettings settings;
-		public final Repository repository;
-		public final Group group;
-		public final ArtifactSource artifactSource;
+    private static class RepositoryData {
+        public final GlobalSettings settings;
+        public final Repository     repository;
+        public final Group          group;
+        public final ArtifactSource artifactSource;
 
-		public RepositoryData(final GlobalSettings settings,
-				final Repository repository, final Group group,
-				final ArtifactSource artifactSource) {
-			this.settings = settings;
-			this.repository = repository;
-			this.group = group;
-			this.artifactSource = artifactSource;
-		}
-	}
+        public RepositoryData(
+                               final GlobalSettings settings,
+                               final Repository repository, final Group group,
+                               final ArtifactSource artifactSource ) {
+            this.settings = settings;
+            this.repository = repository;
+            this.group = group;
+            this.artifactSource = artifactSource;
+        }
+    }
 
-	private static ExecutionContextFactory contextFactory;
-	private static RepositoryData data;
-	private static DefaultScheduler scheduler;
+    private static ExecutionContextFactory contextFactory;
+    private static RepositoryData          data;
+    private static DefaultScheduler        scheduler;
 
-	@AfterClass
-	public static void closeResources() throws Exception {
-		contextFactory.closeResources();
-	}
+    @AfterClass
+    public static void closeResources() throws Exception {
+        contextFactory.closeResources();
+    }
 
-	private static RepositoryData createRepositoryData() {
-		final GlobalSettings settings = new GlobalSettings();
-		settings.setDefaultSleepingIntervalInMilliseconds(1000);
+    private static RepositoryData createRepositoryData() {
+        final GlobalSettings settings = new GlobalSettings();
+        settings.setDefaultSleepingIntervalInMilliseconds(1000);
 
-		GlobalSettingsSupport.initializeScheduleMap(settings);
-		final Repository repository = new Repository();
-		repository.setName("sampleRepository");
-		repository.setActive(true);
-		final Group group = new Group();
-		group.setName("sampleGroup");
-		group.setRepository(repository);
-		repository.getGroups().add(group);
-		group.setActive(true);
-		final ArtifactSource artifactSource = new ArtifactSource();
-		repository.getArtifactSources().add(artifactSource);
-		artifactSource.setRepository(repository);
-		artifactSource.setName("jar files");
-		artifactSource.setActive(true);
-		artifactSource.setBinary(true);
-		artifactSource.setInitialLookup("src/test/");
+        GlobalSettingsSupport.initializeScheduleMap(settings);
+        final Repository repository = new Repository();
+        repository.setName("sampleRepository");
+        repository.setActive(true);
+        final Group group = new Group();
+        group.setName("sampleGroup");
+        group.setRepository(repository);
+        repository.getGroups().add(group);
+        group.setActive(true);
+        final ArtifactSource artifactSource = new ArtifactSource();
+        repository.getArtifactSources().add(artifactSource);
+        artifactSource.setRepository(repository);
+        artifactSource.setName("jar files");
+        artifactSource.setActive(true);
+        artifactSource.setBinary(true);
+        artifactSource.setInitialLookup("src/test/");
 
-		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-		mapping.setSource(artifactSource);
-		artifactSource.getMappings().add(mapping);
-		mapping.setFrom("resources/");
-		mapping.setTo("jars");
-		artifactSource.getMappings().add(mapping);
-		mapping.getIncludeds().add("**dynamo-file-gen-1.0.1.jar");
-		final BundleProcessorType commonProcessor = new BundleProcessorType();
-		commonProcessor.setActive(true);
-		commonProcessor.setGroup(group);
-		commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
-		commonProcessor.getArtifactPhases().add(JavaBinaryProcessor.class);
-		group.getBundleTypes().add(commonProcessor);
+        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+        mapping.setSource(artifactSource);
+        artifactSource.getMappings().add(mapping);
+        mapping.setFrom("resources/");
+        mapping.setTo("jars");
+        artifactSource.getMappings().add(mapping);
+        mapping.getIncludeds().add("**dynamo-file-gen-1.0.1.jar");
+        final BundleProcessorType commonProcessor = new BundleProcessorType();
+        commonProcessor.setActive(true);
+        commonProcessor.setGroup(group);
+        commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
+        commonProcessor.getArtifactPhases().add(JavaBinaryProcessor.class);
+        group.getBundleTypes().add(commonProcessor);
 
-		final BundleSource bundleSource = new BundleSource();
-		commonProcessor.getSources().add(bundleSource);
-		bundleSource.setBundleProcessorType(commonProcessor);
-		bundleSource.setRelative("/jars/");
-		bundleSource.getIncludeds().add("**/dynamo-file-gen-1.0.1.jar");
+        final BundleSource bundleSource = new BundleSource();
+        commonProcessor.getSources().add(bundleSource);
+        bundleSource.setBundleProcessorType(commonProcessor);
+        bundleSource.setRelative("/jars/");
+        bundleSource.getIncludeds().add("**/dynamo-file-gen-1.0.1.jar");
 
-		return new RepositoryData(settings, repository, group, artifactSource);
-	}
+        return new RepositoryData(settings, repository, group, artifactSource);
+    }
 
-	@BeforeClass
-	public static void setupResources() throws Exception {
-		delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
+    @BeforeClass
+    public static void setupResources() throws Exception {
+        delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
 
-		JcrConnectionProvider.createFromData(
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-				.closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(
+                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
+                             .closeRepositoryAndCleanResources();
 
-		data = createRepositoryData();
+        data = createRepositoryData();
 
-		contextFactory = DefaultExecutionContextFactory.createFactory();
+        contextFactory = DefaultExecutionContextFactory.createFactory();
 
-		final ExecutionContext context = contextFactory.createExecutionContext(
-				"username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-				data.repository);
-		
-		context.getDefaultConfigurationManager().saveGlobalSettings(
-				data.settings);
-		context.getDefaultConfigurationManager()
-				.saveRepository(data.repository);
-		context.closeResources();
+        final ExecutionContext context = contextFactory.createExecutionContext(
+                                                                               "username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                               data.repository);
 
-		scheduler = DefaultScheduler.INSTANCE;
-		scheduler.initializeSettings(contextFactory, "user", "password",
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		scheduler.refreshJobs(data.settings, SLCollections
-				.setOf(data.repository));
-		scheduler.startScheduler();
+        context.getDefaultConfigurationManager().saveGlobalSettings(
+                                                                    data.settings);
+        context.getDefaultConfigurationManager()
+                .saveRepository(data.repository);
+        context.closeResources();
 
-	}
+        scheduler = DefaultScheduler.INSTANCE;
+        scheduler.initializeSettings(contextFactory, "user", "password",
+                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        scheduler.refreshJobs(data.settings, SLCollections
+                                                          .setOf(data.repository));
+        scheduler.startScheduler();
 
-	@After
-	public void closeTestResources() {
-		contextFactory.closeResources();
-	}
+    }
 
-	private void reloadArtifactsAndCallBundleProcessor() {
-		scheduler.fireSchedulable("username", "password", data.artifactSource);
-		scheduler.fireSchedulable("username", "password", data.group);
-	}
+    @After
+    public void closeTestResources() {
+        contextFactory.closeResources();
+    }
 
-	@Test
-	public void shouldProcessJarFile() throws Exception {
-		reloadArtifactsAndCallBundleProcessor();
+    private void reloadArtifactsAndCallBundleProcessor() {
+        scheduler.fireSchedulable("username", "password", data.artifactSource);
+        scheduler.fireSchedulable("username", "password", data.group);
+    }
 
-		final ExecutionContext context = contextFactory.createExecutionContext(
-				"", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-		Set<String> list = context.getPersistentArtifactManager()
-				.getInternalMethods().retrieveNames(StreamArtifact.class, null);
-		for (String s : list)
-			System.err.println(s);
-		final StreamArtifact jarArtifact = context
-				.getPersistentArtifactManager().findByPath(
-						StreamArtifact.class,
-						"/jars/resources/dynamo-file-gen-1.0.1.jar");
-		Assert.assertThat(jarArtifact.getLastProcessStatus(), Is
-				.is(LastProcessStatus.PROCESSED));
-		Assert.assertThat(jarArtifact.getUniqueContextName(), Is.is(IsNull
-				.notNullValue()));
-	}
+    @Test
+    public void shouldProcessJarFile() throws Exception {
+        reloadArtifactsAndCallBundleProcessor();
+
+        final ExecutionContext context = contextFactory.createExecutionContext(
+                                                                               "", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
+        Set<String> list = context.getPersistentArtifactManager()
+                                  .getInternalMethods().retrieveNames(StreamArtifact.class, null);
+        for (String s : list)
+            System.err.println(s);
+        final StreamArtifact jarArtifact = context
+                                                  .getPersistentArtifactManager().findByPath(
+                                                                                             StreamArtifact.class,
+                                                                                             "/jars/resources/dynamo-file-gen-1.0.1.jar");
+        Assert.assertThat(jarArtifact.getLastProcessStatus(), Is
+                                                                .is(LastProcessStatus.PROCESSED));
+        Assert.assertThat(jarArtifact.getUniqueContextName(), Is.is(IsNull
+                                                                          .notNullValue()));
+    }
 
 }

@@ -73,212 +73,192 @@ import org.openspotlight.jcr.provider.SessionWithLock;
  */
 public class JCRUtil {
 
-	/**
-	 * Creates the value.
-	 * 
-	 * @param session
-	 *            the session
-	 * @param value
-	 *            the value
-	 * 
-	 * @return the value
-	 * 
-	 * @throws JCRUtilException
-	 *             the JCR util exception
-	 */
-	public static Value createValue(final Session session, final Object value)
-			throws JCRUtilException {
-		try {
-			Value jcrValue = null;
-			final ValueFactory factory = session.getValueFactory();
-			if (value.getClass().equals(Integer.class)
-					|| value.getClass().equals(Long.class)) {
-				final Number number = Number.class.cast(value);
-				jcrValue = factory.createValue(number.longValue());
-			} else if (value.getClass().equals(Float.class)
-					|| value.getClass().equals(Double.class)) {
-				final Number number = Number.class.cast(value);
-				jcrValue = factory.createValue(number.doubleValue());
-			} else if (value.getClass().equals(String.class)) {
-				jcrValue = factory.createValue(String.class.cast(value));
-			} else if (value.getClass().equals(Boolean.class)) {
-				jcrValue = factory.createValue(Boolean.class.cast(value));
-			} else {
-				final InputStream inputStream = SerializationUtil
-						.serialize(value);
-				jcrValue = factory.createValue(inputStream);
-			}
-			return jcrValue;
-		} catch (final Exception e) {
-			throw new JCRUtilException("Error on attempt to create value.", e);
-		}
-	}
+    /**
+     * Creates the value.
+     * 
+     * @param session the session
+     * @param value the value
+     * @return the value
+     * @throws JCRUtilException the JCR util exception
+     */
+    public static Value createValue( final Session session,
+                                     final Object value )
+            throws JCRUtilException {
+        try {
+            Value jcrValue = null;
+            final ValueFactory factory = session.getValueFactory();
+            if (value.getClass().equals(Integer.class)
+                    || value.getClass().equals(Long.class)) {
+                final Number number = Number.class.cast(value);
+                jcrValue = factory.createValue(number.longValue());
+            } else if (value.getClass().equals(Float.class)
+                       || value.getClass().equals(Double.class)) {
+                final Number number = Number.class.cast(value);
+                jcrValue = factory.createValue(number.doubleValue());
+            } else if (value.getClass().equals(String.class)) {
+                jcrValue = factory.createValue(String.class.cast(value));
+            } else if (value.getClass().equals(Boolean.class)) {
+                jcrValue = factory.createValue(Boolean.class.cast(value));
+            } else {
+                final InputStream inputStream = SerializationUtil
+                                                                 .serialize(value);
+                jcrValue = factory.createValue(inputStream);
+            }
+            return jcrValue;
+        } catch (final Exception e) {
+            throw new JCRUtilException("Error on attempt to create value.", e);
+        }
+    }
 
-	/**
-	 * Creates the values.
-	 * 
-	 * @param session
-	 *            the session
-	 * @param value
-	 *            the value
-	 * 
-	 * @return the value[]
-	 * 
-	 * @throws JCRUtilException
-	 *             the JCR util exception
-	 */
-	public static Value[] createValues(final Session session, final Object value)
-			throws JCRUtilException {
-		try {
-			Value[] jcrValues = null;
-			final ValueFactory factory = session.getValueFactory();
-			if (value.getClass().equals(Integer[].class)
-					|| value.getClass().equals(Long[].class)) {
-				final Long[] arr = (Long[]) value;
-				jcrValues = new Value[arr.length];
-				for (int i = 0; i < arr.length; i++) {
-					jcrValues[i] = factory.createValue(arr[i]);
-				}
-			} else if (value.getClass().equals(Float[].class)
-					|| value.getClass().equals(Double[].class)) {
-				final Float[] arr = (Float[]) value;
-				jcrValues = new Value[arr.length];
-				for (int i = 0; i < arr.length; i++) {
-					jcrValues[i] = factory.createValue(arr[i]);
-				}
-			} else if (value.getClass().equals(String[].class)) {
-				final String[] arr = (String[]) value;
-				jcrValues = new Value[arr.length];
-				for (int i = 0; i < jcrValues.length; i++) {
-					jcrValues[i] = factory.createValue(arr[i]);
-				}
-			} else if (value.getClass().equals(Boolean[].class)) {
-				final Boolean[] arr = (Boolean[]) value;
-				jcrValues = new Value[arr.length];
-				for (int i = 0; i < jcrValues.length; i++) {
-					jcrValues[i] = factory.createValue(arr[i]);
-				}
-			} else {
-				final Serializable[] arr = (Serializable[]) value;
-				jcrValues = new Value[arr.length];
-				for (int i = 0; i < jcrValues.length; i++) {
-					final InputStream inputStream = SerializationUtil
-							.serialize(arr[i]);
-					jcrValues[i] = factory.createValue(inputStream);
-				}
-			}
-			return jcrValues;
+    /**
+     * Creates the values.
+     * 
+     * @param session the session
+     * @param value the value
+     * @return the value[]
+     * @throws JCRUtilException the JCR util exception
+     */
+    public static Value[] createValues( final Session session,
+                                        final Object value )
+            throws JCRUtilException {
+        try {
+            Value[] jcrValues = null;
+            final ValueFactory factory = session.getValueFactory();
+            if (value.getClass().equals(Integer[].class)
+                    || value.getClass().equals(Long[].class)) {
+                final Long[] arr = (Long[])value;
+                jcrValues = new Value[arr.length];
+                for (int i = 0; i < arr.length; i++) {
+                    jcrValues[i] = factory.createValue(arr[i]);
+                }
+            } else if (value.getClass().equals(Float[].class)
+                       || value.getClass().equals(Double[].class)) {
+                final Float[] arr = (Float[])value;
+                jcrValues = new Value[arr.length];
+                for (int i = 0; i < arr.length; i++) {
+                    jcrValues[i] = factory.createValue(arr[i]);
+                }
+            } else if (value.getClass().equals(String[].class)) {
+                final String[] arr = (String[])value;
+                jcrValues = new Value[arr.length];
+                for (int i = 0; i < jcrValues.length; i++) {
+                    jcrValues[i] = factory.createValue(arr[i]);
+                }
+            } else if (value.getClass().equals(Boolean[].class)) {
+                final Boolean[] arr = (Boolean[])value;
+                jcrValues = new Value[arr.length];
+                for (int i = 0; i < jcrValues.length; i++) {
+                    jcrValues[i] = factory.createValue(arr[i]);
+                }
+            } else {
+                final Serializable[] arr = (Serializable[])value;
+                jcrValues = new Value[arr.length];
+                for (int i = 0; i < jcrValues.length; i++) {
+                    final InputStream inputStream = SerializationUtil
+                                                                     .serialize(arr[i]);
+                    jcrValues[i] = factory.createValue(inputStream);
+                }
+            }
+            return jcrValues;
 
-		} catch (final Exception e) {
-			throw new JCRUtilException(
-					"Error on attempt to create value array.", e);
-		}
-	}
+        } catch (final Exception e) {
+            throw new JCRUtilException(
+                                       "Error on attempt to create value array.", e);
+        }
+    }
 
-	/**
-	 * Gets the child node.
-	 * 
-	 * @param node
-	 *            the node
-	 * @param name
-	 *            the name
-	 * 
-	 * @return the child node
-	 * 
-	 * @throws RepositoryException
-	 *             the repository exception
-	 */
-	public static Node getChildNode(final Node node, final String name)
-			throws RepositoryException {
-		try {
-			return node.getNode(name);
-		} catch (final PathNotFoundException e) {
-		}
-		return null;
-	}
+    /**
+     * Gets the child node.
+     * 
+     * @param node the node
+     * @param name the name
+     * @return the child node
+     * @throws RepositoryException the repository exception
+     */
+    public static Node getChildNode( final Node node,
+                                     final String name )
+            throws RepositoryException {
+        try {
+            return node.getNode(name);
+        } catch (final PathNotFoundException e) {
+        }
+        return null;
+    }
 
-	public static Node getOrCreateByPath(final Session session,
-			final Node parentNode, final String pathWithSlashes) {
-		if (session instanceof SessionWithLock) {
-			final SessionWithLock sessionWithLock = (SessionWithLock) session;
-			synchronized (sessionWithLock.getLockObject()) {
-				return internalGetOrCreateByPath(sessionWithLock, parentNode,
-						pathWithSlashes);
-			}
-		}
-		return internalGetOrCreateByPath(session, parentNode, pathWithSlashes);
+    public static Node getOrCreateByPath( final Session session,
+                                          final Node parentNode,
+                                          final String pathWithSlashes ) {
+        if (session instanceof SessionWithLock) {
+            final SessionWithLock sessionWithLock = (SessionWithLock)session;
+            synchronized (sessionWithLock.getLockObject()) {
+                return internalGetOrCreateByPath(sessionWithLock, parentNode,
+                                                 pathWithSlashes);
+            }
+        }
+        return internalGetOrCreateByPath(session, parentNode, pathWithSlashes);
 
-	}
+    }
 
-	/**
-	 * Gets the parent.
-	 * 
-	 * @param node
-	 *            the node
-	 * 
-	 * @return the parent
-	 * 
-	 * @throws RepositoryException
-	 *             the repository exception
-	 */
-	public static Node getParent(final Node node) throws RepositoryException {
-		Node parent = null;
-		try {
-			parent = node.getParent();
-		} catch (final ItemNotFoundException e) {
-		}
-		return parent;
-	}
+    /**
+     * Gets the parent.
+     * 
+     * @param node the node
+     * @return the parent
+     * @throws RepositoryException the repository exception
+     */
+    public static Node getParent( final Node node ) throws RepositoryException {
+        Node parent = null;
+        try {
+            parent = node.getParent();
+        } catch (final ItemNotFoundException e) {
+        }
+        return parent;
+    }
 
-	private static Node internalGetOrCreateByPath(final Session session,
-			final Node parentNode, final String pathWithSlashes) {
-		try {
-			Node newParent = parentNode;
-			final StringTokenizer tok = new StringTokenizer(pathWithSlashes,
-					"/");
-			while (tok.hasMoreTokens()) {
-				final String currentToken = tok.nextToken();
-				if (currentToken.length() == 0) {
-					continue;
-				}
-				try {
-					newParent = newParent.getNode(currentToken);
-				} catch (final PathNotFoundException e) {
-					newParent = newParent.addNode(currentToken);
-				}
+    private static Node internalGetOrCreateByPath( final Session session,
+                                                   final Node parentNode,
+                                                   final String pathWithSlashes ) {
+        try {
+            Node newParent = parentNode;
+            final StringTokenizer tok = new StringTokenizer(pathWithSlashes,
+                                                            "/");
+            while (tok.hasMoreTokens()) {
+                final String currentToken = tok.nextToken();
+                if (currentToken.length() == 0) {
+                    continue;
+                }
+                try {
+                    newParent = newParent.getNode(currentToken);
+                } catch (final PathNotFoundException e) {
+                    newParent = newParent.addNode(currentToken);
+                }
 
-			}
-			return newParent;
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-	}
+            }
+            return newParent;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
 
-	/**
-	 * Make referenceable.
-	 * 
-	 * @param node
-	 *            the node
-	 * 
-	 * @throws RepositoryException
-	 *             the repository exception
-	 */
-	public static void makeReferenceable(final Node node)
-			throws RepositoryException {
-		node.addMixin("mix:referenceable");
-	}
+    /**
+     * Make referenceable.
+     * 
+     * @param node the node
+     * @throws RepositoryException the repository exception
+     */
+    public static void makeReferenceable( final Node node )
+            throws RepositoryException {
+        node.addMixin("mix:referenceable");
+    }
 
-	/**
-	 * Make versionable.
-	 * 
-	 * @param node
-	 *            the node
-	 * 
-	 * @throws RepositoryException
-	 *             the repository exception
-	 */
-	public static void makeVersionable(final Node node)
-			throws RepositoryException {
-		node.addMixin("mix:versionable");
-	}
+    /**
+     * Make versionable.
+     * 
+     * @param node the node
+     * @throws RepositoryException the repository exception
+     */
+    public static void makeVersionable( final Node node )
+            throws RepositoryException {
+        node.addMixin("mix:versionable");
+    }
 }

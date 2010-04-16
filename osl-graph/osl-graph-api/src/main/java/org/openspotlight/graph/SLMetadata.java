@@ -53,6 +53,8 @@ import java.util.List;
 import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLMetaLinkTypeNotFoundException;
+import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
 
 /**
  * The Interface SLMetadata.
@@ -114,94 +116,75 @@ public interface SLMetadata extends LockContainer {
      * 
      * @param nodeClass the node class
      * @return the sL meta node type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaNodeType findMetaNodeType( Class<? extends SLNode> nodeClass )
-        throws SLGraphSessionException;
+    public SLMetaNodeType getMetaNodeType( Class<? extends SLNode> nodeClass ) throws SLMetaNodeTypeNotFoundException;
 
     /**
      * Find meta node type.
      * 
      * @param typeName the type name
      * @return the sL meta node type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaNodeType findMetaNodeType( String typeName )
-        throws SLGraphSessionException;
+    public SLMetaNodeType getMetaNodeType( String typeName ) throws SLMetaNodeTypeNotFoundException;
 
     /**
      * Find meta node type by description.
      * 
      * @param description the description
      * @return the sL meta node type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaNodeType findMetaNodeTypeByDescription( String description )
-        throws SLGraphSessionException;
+    public SLMetaNodeType getMetaNodeTypeByDescription( String description ) throws SLMetaNodeTypeNotFoundException;
 
     /**
      * Gets the meta link type.
      * 
      * @param linkType the link type
      * @return the meta link type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaLinkType getMetaLinkType( Class<? extends SLLink> linkType )
-        throws SLGraphSessionException;
+    public SLMetaLinkType getMetaLinkType( Class<? extends SLLink> linkType ) throws SLMetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link type.
      * 
      * @param name the name
      * @return the meta link type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaLinkType getMetaLinkType( String name )
-        throws SLGraphSessionException;
+    public SLMetaLinkType getMetaLinkType( String name ) throws SLMetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link type by description.
      * 
      * @param description the description
      * @return the meta link type by description
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaLinkType getMetaLinkTypeByDescription( String description )
-        throws SLGraphSessionException;
+    public SLMetaLinkType getMetaLinkTypeByDescription( String description ) throws SLMetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link types.
      * 
      * @return the meta link types
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes()
-        throws SLGraphSessionException;
+    public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes();
 
     /**
      * Gets the meta nodes types.
      * 
      * @return the meta nodes types
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes()
-        throws SLGraphSessionException;
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes();
 
     /**
      * Gets the meta nodes types.
      * 
      * @param recursiveMode the recursive mode
      * @return the meta nodes types
-     * @throws SLGraphSessionException the SL graph session exception
      */
     public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
-                                                                            SLRecursiveMode recursiveMode )
-        throws SLGraphSessionException;
+                                                                            SLRecursiveMode recursiveMode );
 
     public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
                                                                             SLRecursiveMode recursiveMode,
-                                                                            final VisibilityLevel visibility )
-        throws SLGraphSessionException;
+                                                                            final VisibilityLevel visibility );
 
     /**
      * Search meta node type.
@@ -213,7 +196,6 @@ public interface SLMetadata extends LockContainer {
      * @param booleanOp the boolean op
      * @param values the values
      * @return the collection< sl meta node type>
-     * @throws SLGraphSessionException the SL graph session exception
      */
     public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType(
                                                                              final SLRecursiveMode recursiveMode,
@@ -221,6 +203,7 @@ public interface SLMetadata extends LockContainer {
                                                                              final MetaNodeTypeProperty property2Find,
                                                                              final LogicOperator logicOp,
                                                                              final BooleanOperator booleanOp,
-                                                                             final List<String> values )
-        throws SLGraphSessionException;
+                                                                             final List<String> values );
+
+    //TODO implement searchMetaLinkType 
 }

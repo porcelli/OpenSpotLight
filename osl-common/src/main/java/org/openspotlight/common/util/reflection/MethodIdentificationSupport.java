@@ -53,14 +53,14 @@ import java.lang.reflect.Method;
 /**
  * This class contains some useful static methods and inner classes to be used to identify a method or a method with specific
  * parameters. This class should be used only on API stuffs.
- *
+ * 
  * @author feu
  */
 public class MethodIdentificationSupport {
 
     /**
      * Parameter key to be used as a key inside the cache map for method invocation.
-     *
+     * 
      * @author feu
      */
     public static final class MethodWithParametersKey {
@@ -76,12 +76,12 @@ public class MethodIdentificationSupport {
 
         /**
          * Constructor with final fields.
-         *
+         * 
          * @param key the key
          * @param parameters the parameters
          */
         public MethodWithParametersKey(
-                          final String key, final Object... parameters ) {
+                                        final String key, final Object... parameters ) {
             if (parameters == null) {
                 throw new IllegalArgumentException();
             }
@@ -146,7 +146,7 @@ public class MethodIdentificationSupport {
 
     /**
      * Gets the method unique name.
-     *
+     * 
      * @param arg1 the arg1
      * @return the method unique name
      */
@@ -168,7 +168,7 @@ public class MethodIdentificationSupport {
 
     /**
      * Checks if is equals in a null pointer safe way.
-     *
+     * 
      * @param o1 the o1
      * @param o2 the o2
      * @return true, if is equals

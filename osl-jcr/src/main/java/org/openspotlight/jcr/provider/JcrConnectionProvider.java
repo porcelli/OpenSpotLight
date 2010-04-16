@@ -69,281 +69,278 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Files;
 
 /**
- * The Class JcrConnectionProvider is used to provide access to {@link Session
- * jcr sessions} and {@link Repository jcr repositories} in a way that there's
- * no need to know the implementation.
+ * The Class JcrConnectionProvider is used to provide access to {@link Session jcr sessions} and {@link Repository jcr
+ * repositories} in a way that there's no need to know the implementation.
  * 
  * @author feu
  */
 public abstract class JcrConnectionProvider {
 
-	/**
-	 * The Class JackRabbitConnectionProvider is a {@link JcrConnectionProvider}
-	 * based on Jack Rabbit.
-	 */
-	private static class JackRabbitConnectionProvider extends
-	JcrConnectionProvider {
+    /**
+     * The Class JackRabbitConnectionProvider is a {@link JcrConnectionProvider} based on Jack Rabbit.
+     */
+    private static class JackRabbitConnectionProvider extends
+        JcrConnectionProvider {
 
-		/** The repository. */
-		private Repository repository;
+        /** The repository. */
+        private Repository                                       repository;
 
-		/** The repository closed. */
-		private boolean repositoryClosed = true;
+        /** The repository closed. */
+        private boolean                                          repositoryClosed = true;
 
-		private static final AtomicInteger sessionIdFactory = new AtomicInteger(
-				0);
+        private static final AtomicInteger                       sessionIdFactory = new AtomicInteger(
+                                                                                                      0);
 
-		private static final CopyOnWriteArraySet<SessionWrapper> openSessions = new CopyOnWriteArraySet<SessionWrapper>();
+        private static final CopyOnWriteArraySet<SessionWrapper> openSessions     = new CopyOnWriteArraySet<SessionWrapper>();
 
-		/**
-		 * Instantiates a new jack rabbit connection provider.
-		 * 
-		 * @param data
-		 *            the data
-		 */
-		public JackRabbitConnectionProvider(final JcrConnectionDescriptor data) {
-			super(data);
-		}
+        /**
+         * Instantiates a new jack rabbit connection provider.
+         * 
+         * @param data the data
+         */
+        public JackRabbitConnectionProvider(
+                                             final JcrConnectionDescriptor data ) {
+            super(data);
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.openspotlight.jcr.provider.JcrConnectionProvider#closeRepository
-		 * ()
-		 */
-		@Override
-		public synchronized void beforeCloseRepository() {
-			if (repository == null) {
-				repositoryClosed = true;
-				return;
-			}
-			final RepositoryImpl repositoryCasted = (org.apache.jackrabbit.core.RepositoryImpl) repository;
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.openspotlight.jcr.provider.JcrConnectionProvider#closeRepository
+         * ()
+         */
+        @Override
+        public synchronized void beforeCloseRepository() {
+            if (repository == null) {
+                repositoryClosed = true;
+                return;
+            }
+            final RepositoryImpl repositoryCasted = (org.apache.jackrabbit.core.RepositoryImpl)repository;
 
-			repositoryCasted.shutdown();
+            repositoryCasted.shutdown();
 
-			final RepositoryLock repoLock = new RepositoryLock();
-			try {
-				repoLock.init(getData().getConfigurationDirectory());
-				repoLock.acquire();
-				repoLock.release();
-			} catch (final RepositoryException e) {
-			}
-			if (getData().isTemporary()) {
-				try {
-					Files.delete(getData().getConfigurationDirectory());
-				} catch (final SLException e) {
-					throw Exceptions.logAndReturnNew(e,
-							SLRuntimeException.class);
+            final RepositoryLock repoLock = new RepositoryLock();
+            try {
+                repoLock.init(getData().getConfigurationDirectory());
+                repoLock.acquire();
+                repoLock.release();
+            } catch (final RepositoryException e) {
+            }
+            if (getData().isTemporary()) {
+                try {
+                    Files.delete(getData().getConfigurationDirectory());
+                } catch (final SLException e) {
+                    throw Exceptions.logAndReturnNew(e,
+                                                     SLRuntimeException.class);
 
-				}
-			}
+                }
+            }
 
-			repositoryClosed = true;
-		}
+            repositoryClosed = true;
+        }
 
-		public Repository getRepository() {
-			return repository;
-		}
+        public Repository getRepository() {
+            return repository;
+        }
 
-		@Override
-		public Repository internalOpenRepository() {
-			if (repository == null || repositoryClosed) {
-				try {
-					if (getData().isTemporary()) {
-						try {
-							Files.delete(getData().getConfigurationDirectory());
-						} catch (final SLException e) {
-							throw Exceptions.logAndReturnNew(e,
-									SLRuntimeException.class);
+        @Override
+        public Repository internalOpenRepository() {
+            if (repository == null || repositoryClosed) {
+                try {
+                    if (getData().isTemporary()) {
+                        try {
+                            Files.delete(getData().getConfigurationDirectory());
+                        } catch (final SLException e) {
+                            throw Exceptions.logAndReturnNew(e,
+                                                             SLRuntimeException.class);
 
-						}
-					}
+                        }
+                    }
 
-					final RepositoryConfig config = RepositoryConfig.create(
-							ClassPathResource
-							.getResourceFromClassPath(getData()
-									.getXmlClasspathLocation()),
-									getData().getConfigurationDirectory());
+                    final RepositoryConfig config = RepositoryConfig.create(
+                                                                            ClassPathResource
+                                                                                             .getResourceFromClassPath(getData()
+                                                                                                                                .getXmlClasspathLocation()),
+                                                                            getData().getConfigurationDirectory());
 
-					repository = RepositoryImpl.create(config);
-					repositoryClosed = false;
-				} catch (final Exception e) {
-					throw Exceptions.logAndReturnNew(e,
-							ConfigurationException.class);
-				}
-			}
+                    repository = RepositoryImpl.create(config);
+                    repositoryClosed = false;
+                } catch (final Exception e) {
+                    throw Exceptions.logAndReturnNew(e,
+                                                     ConfigurationException.class);
+                }
+            }
 
-			return repository;
-		}
+            return repository;
+        }
 
-		@Override
-		protected void internalShutdownRepository() {
-			final RepositoryImpl repositoryTyped = (RepositoryImpl) getRepository();
-			repositoryTyped.shutdown();
-		}
+        @Override
+        protected void internalShutdownRepository() {
+            final RepositoryImpl repositoryTyped = (RepositoryImpl)getRepository();
+            repositoryTyped.shutdown();
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.openspotlight.jcr.provider.JcrConnectionProvider#openSession()
-		 */
-		@Override
-		public SessionWithLock openSession() {
-			try {
-				openRepository();
-				final Session newSession = repository.login(getData()
-						.getCredentials());
-				final int sessionId = JackRabbitConnectionProvider.sessionIdFactory
-				.getAndIncrement();
-				final SessionWrapper wrappedSession = new SessionWrapper(
-						newSession, sessionId, new SessionClosingListener() {
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.openspotlight.jcr.provider.JcrConnectionProvider#openSession()
+         */
+        @Override
+        public SessionWithLock openSession() {
+            try {
+                openRepository();
+                final Session newSession = repository.login(getData()
+                                                                     .getCredentials());
+                final int sessionId = JackRabbitConnectionProvider.sessionIdFactory
+                                                                                   .getAndIncrement();
+                final SessionWrapper wrappedSession = new SessionWrapper(
+                                                                         newSession, sessionId, new SessionClosingListener() {
 
-							public void sessionClosed(final int id,
-									final SessionWrapper wrapper,
-									final Session session) {
-								JackRabbitConnectionProvider.openSessions
-								.remove(wrapper);
+                                                                             public void sessionClosed( final int id,
+                                                                                                        final SessionWrapper wrapper,
+                                                                                                        final Session session ) {
+                                                                                 JackRabbitConnectionProvider.openSessions
+                                                                                                                          .remove(wrapper);
 
-							}
-						});
-				JackRabbitConnectionProvider.openSessions.add(wrappedSession);
-				return wrappedSession;
-			} catch (final Exception e) {
-				throw Exceptions.logAndReturnNew(e,
-						ConfigurationException.class);
-			}
-		}
+                                                                             }
+                                                                         });
+                JackRabbitConnectionProvider.openSessions.add(wrappedSession);
+                return wrappedSession;
+            } catch (final Exception e) {
+                throw Exceptions.logAndReturnNew(e,
+                                                 ConfigurationException.class);
+            }
+        }
 
-	}
+    }
 
-	interface SessionClosingListener {
-		public void sessionClosed(int id, SessionWrapper wrapper,
-				Session session);
-	}
+    interface SessionClosingListener {
+        public void sessionClosed( int id,
+                                   SessionWrapper wrapper,
+                                   Session session );
+    }
 
-	/** The cache. */
-	private static Map<JcrConnectionDescriptor, JcrConnectionProvider> cache = new ConcurrentHashMap<JcrConnectionDescriptor, JcrConnectionProvider>();
+    /** The cache. */
+    private static Map<JcrConnectionDescriptor, JcrConnectionProvider> cache = new ConcurrentHashMap<JcrConnectionDescriptor, JcrConnectionProvider>();
 
-	/**
-	 * Creates the from data.
-	 * 
-	 * @param data
-	 *            the data
-	 * @return the jcr connection provider
-	 */
-	public static synchronized JcrConnectionProvider createFromData(
-			final JcrConnectionDescriptor data) {
-		JcrConnectionProvider provider = JcrConnectionProvider.cache.get(data);
-		if (provider == null) {
-			switch (data.getJcrType()) {
-			case JACKRABBIT:
-				provider = new JackRabbitConnectionProvider(data);
-				break;
-			default:
-				throw Exceptions.logAndReturn(new IllegalStateException(
-				"Invalid jcr type"));
-			}
-			JcrConnectionProvider.cache.put(data, provider);
-		}
-		return provider;
-	}
+    /**
+     * Creates the from data.
+     * 
+     * @param data the data
+     * @return the jcr connection provider
+     */
+    public static synchronized JcrConnectionProvider createFromData(
+                                                                     final JcrConnectionDescriptor data ) {
+        JcrConnectionProvider provider = JcrConnectionProvider.cache.get(data);
+        if (provider == null) {
+            switch (data.getJcrType()) {
+                case JACKRABBIT:
+                    provider = new JackRabbitConnectionProvider(data);
+                    break;
+                default:
+                    throw Exceptions.logAndReturn(new IllegalStateException(
+                                                                            "Invalid jcr type"));
+            }
+            JcrConnectionProvider.cache.put(data, provider);
+        }
+        return provider;
+    }
 
-	/** The data. */
-	private final JcrConnectionDescriptor data;
-	private final AtomicReference<Thread> shutdownHook = new AtomicReference<Thread>();
+    /** The data. */
+    private final JcrConnectionDescriptor data;
+    private final AtomicReference<Thread> shutdownHook = new AtomicReference<Thread>();
 
-	/**
-	 * Instantiates a new jcr connection provider.
-	 * 
-	 * @param data
-	 *            the data
-	 */
-	JcrConnectionProvider(final JcrConnectionDescriptor data) {
-		this.data = data;
+    /**
+     * Instantiates a new jcr connection provider.
+     * 
+     * @param data the data
+     */
+    JcrConnectionProvider(
+                           final JcrConnectionDescriptor data ) {
+        this.data = data;
 
-	}
+    }
 
-	/**
-	 * Close repository.
-	 */
-	protected abstract void beforeCloseRepository();
+    /**
+     * Close repository.
+     */
+    protected abstract void beforeCloseRepository();
 
-	public void closeRepositoryAndCleanResources() {
-		beforeCloseRepository();
-		JcrConnectionProvider.cache.remove(this);
-	}
+    public void closeRepositoryAndCleanResources() {
+        beforeCloseRepository();
+        JcrConnectionProvider.cache.remove(this);
+    }
 
+    /**
+     * Gets the data.
+     * 
+     * @return the data
+     */
+    public JcrConnectionDescriptor getData() {
+        return data;
+    }
 
-	/**
-	 * Gets the data.
-	 * 
-	 * @return the data
-	 */
-	public JcrConnectionDescriptor getData() {
-		return data;
-	}
+    /**
+     * Open repository.
+     * 
+     * @return the repository
+     */
+    public abstract Repository getRepository();
 
-	/**
-	 * Open repository.
-	 * 
-	 * @return the repository
-	 */
-	public abstract Repository getRepository();
+    /**
+     * Close repository.
+     */
+    protected abstract Repository internalOpenRepository();
 
-	/**
-	 * Close repository.
-	 */
-	protected abstract Repository internalOpenRepository();
+    /**
+     * Close repository.
+     */
+    protected abstract void internalShutdownRepository();
 
-	/**
-	 * Close repository.
-	 */
-	protected abstract void internalShutdownRepository();
+    public final boolean isTemporary() {
+        return data.isTemporary();
+    }
 
-	public final boolean isTemporary() {
-		return data.isTemporary();
-	}
+    /**
+     * Open repository.
+     * 
+     * @return the repository
+     */
+    public synchronized final Repository openRepository() {
+        final Repository repository = internalOpenRepository();
+        if (shutdownHook.get() == null) {
+            shutdownHook.set(new Thread(new Runnable() {
 
-	/**
-	 * Open repository.
-	 * 
-	 * @return the repository
-	 */
-	public synchronized final Repository openRepository() {
-		final Repository repository = internalOpenRepository();
-		if (shutdownHook.get() == null) {
-			shutdownHook.set(new Thread(new Runnable() {
+                public void run() {
 
-				public void run() {
+                    internalShutdownRepository();
 
-					internalShutdownRepository();
+                }
+            }));
 
-				}
-			}));
+            Runtime.getRuntime().addShutdownHook(shutdownHook.get());
+        }
+        return repository;
+    }
 
-			Runtime.getRuntime().addShutdownHook(shutdownHook.get());
-		}
-		return repository;
-	}
+    /**
+     * Open session.
+     * 
+     * @return the session
+     */
+    public abstract SessionWithLock openSession();
 
-	/**
-	 * Open session.
-	 * 
-	 * @return the session
-	 */
-	public abstract SessionWithLock openSession();
-
-	/**
-	 * This method should be called once in the JVM lifetime. 
-	 */
-	public synchronized final void shutdownRepository() {
-		if(shutdownHook.get()!=null) {
-			Runtime.getRuntime().removeShutdownHook(shutdownHook.get());
-		}
-		shutdownHook.set(null);
-		internalShutdownRepository();
-	}
+    /**
+     * This method should be called once in the JVM lifetime.
+     */
+    public synchronized final void shutdownRepository() {
+        if (shutdownHook.get() != null) {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook.get());
+        }
+        shutdownHook.set(null);
+        internalShutdownRepository();
+    }
 
 }

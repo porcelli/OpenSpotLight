@@ -62,14 +62,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * This class wraps object instances from a given interface inside a timeout object. This timeout object will run a background
  * thread to monitor how many time the wrapped object wasn't invoked. If this time is so long, it will finalize this object,
  * calling a method decribed inside an interface called {@link TaskFinalizer}.
- *
+ * 
  * @author feu
  */
 public final class TimeOutFactory {
 
     /**
      * This interface will be used when the monitored object reaches the time out.
-     *
+     * 
      * @param <T> object type
      * @author feu
      */
@@ -77,7 +77,7 @@ public final class TimeOutFactory {
 
         /**
          * Finalize task.
-         *
+         * 
          * @param target the target
          */
         public void finalizeTask( T target );
@@ -86,7 +86,7 @@ public final class TimeOutFactory {
     /**
      * This Java Proxy {@link InvocationHandler} will start a background thread to monitor if the wrapped object reaches the time
      * out or not. And this invocation handler will update the {@link #lastInvocation} attribute each time it is invoked.
-     *
+     * 
      * @author feu
      * @param <T> object type
      */
@@ -139,7 +139,7 @@ public final class TimeOutFactory {
 
         /**
          * Instantiates a new time out cache interceptor.
-         *
+         * 
          * @param intervalInMilliseconds the interval in milliseconds
          * @param wrapped the wrapped
          * @param taskFinalizer the task finalizer
@@ -175,7 +175,7 @@ public final class TimeOutFactory {
 
     /**
      * Creates a new timed out object.
-     *
+     * 
      * @param <T> Object type
      * @param interfaceType the interface type
      * @param intervalInMilliseconds the interval in milliseconds

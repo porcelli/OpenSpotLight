@@ -61,8 +61,7 @@ public interface SLMetaElement extends LockContainer {
      * Gets the metadata.
      * 
      * @return the metadata
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetadata getMetadata() throws SLGraphSessionException;
+    public SLMetadata getMetadata();
 
 }

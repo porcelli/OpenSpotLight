@@ -58,7 +58,7 @@ import java.lang.annotation.Target;
  * 
  * @author Vitor Hugo Chagas
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.METHOD )
 public @interface SLProperty {
 }

@@ -64,14 +64,13 @@ import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.test.domain.JavaInterface;
-import org.openspotlight.graph.test.domain.JavaTypeMethod;
-import org.openspotlight.graph.test.domain.MethodContainsParam;
-import org.openspotlight.graph.test.domain.MethodParam;
-import org.openspotlight.graph.test.domain.TypeContainsMethod;
+import org.openspotlight.graph.test.domain.link.MethodContainsParam;
+import org.openspotlight.graph.test.domain.link.TypeContainsMethod;
+import org.openspotlight.graph.test.domain.node.JavaInterface;
+import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
+import org.openspotlight.graph.test.domain.node.MethodParam;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.security.SecurityFactory;
@@ -188,11 +187,10 @@ public class SLGraphQueryLinkCountTest {
      * 
      * @param type the type
      * @return the string
-     * @throws SLGraphSessionException the SL graph session exception
      * @throws SLInvalidQuerySyntaxException
      */
     private String findIFaceID( final Class<?> type )
-        throws SLGraphSessionException, SLInvalidQuerySyntaxException {
+            throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
         final SLQueryApi query = session.createQueryApi();
         query.select().allTypes().onWhere().selectEnd().where().type(
                                                                      JavaInterface.class.getName()).each().property("caption")

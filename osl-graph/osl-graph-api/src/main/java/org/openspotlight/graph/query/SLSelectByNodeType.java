@@ -48,114 +48,112 @@
  */
 package org.openspotlight.graph.query;
 
-
 /**
  * The Interface SLSelect.
  * 
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectByNodeType extends SLSelect {
-	
-	/**
-	 * All types.
-	 * 
-	 * @return the all types
-	 */
-	public AllTypes allTypes(); 
-	
-	/**
-	 * Type.
-	 * 
-	 * @param typeName the type name
-	 * 
-	 * @return the type
-	 */
-	public Type type(String typeName);
-	
-	/**
-	 * End.
-	 * 
-	 * @return the end
-	 */
-	public End end();
-	
-	/**
-	 * The Interface AllTypes.
-	 */
-	public static interface AllTypes {
-		
-		/**
-		 * On where.
-		 * 
-		 * @return the all types
-		 */
-		public AllTypes onWhere();
-		
-		/**
-		 * Select end.
-		 * 
-		 * @return the end
-		 */
-		public End selectEnd();
-	}
-	
-	/**
-	 * The Interface Type.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface Type {
-		
-		/**
-		 * Comma.
-		 * 
-		 * @return the sL select by node type
-		 */
-		public SLSelectByNodeType comma();
-		
-		/**
-		 * Select end.
-		 * 
-		 * @return the end
-		 */
-		public End selectEnd();
-		
-		/**
-		 * Sub types.
-		 * 
-		 * @return the type
-		 */
-		public Type subTypes();
-	}
-	
-	/**
-	 * The Interface End.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface End extends SLSelectFacade {
-		
-		/**
-		 * Where.
-		 * 
-		 * @return the sL where by node type
-		 */
-		public SLWhereByNodeType where();
-		
-		/**
-		 * Order by.
-		 * 
-		 * @return the sL order by statement
-		 */
-		public SLOrderByStatement orderBy();
-		
-		/**
-		 * Keep result.
-		 * 
-		 * @return the end
-		 */
-		public End keepResult();
-		
+
+    /**
+     * All types.
+     * 
+     * @return the all types
+     */
+    public AllTypes allTypes();
+
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type( String typeName );
+
+    /**
+     * End.
+     * 
+     * @return the end
+     */
+    public End end();
+
+    /**
+     * The Interface AllTypes.
+     */
+    public static interface AllTypes {
+
+        /**
+         * On where.
+         * 
+         * @return the all types
+         */
+        public AllTypes onWhere();
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+    }
+
+    /**
+     * The Interface Type.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface Type {
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select by node type
+         */
+        public SLSelectByNodeType comma();
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+
+        /**
+         * Sub types.
+         * 
+         * @return the type
+         */
+        public Type subTypes();
+    }
+
+    /**
+     * The Interface End.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface End extends SLSelectFacade {
+
+        /**
+         * Where.
+         * 
+         * @return the sL where by node type
+         */
+        public SLWhereByNodeType where();
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public SLOrderByStatement orderBy();
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
         /**
          * Limit.
          * 
@@ -174,20 +172,19 @@ public interface SLSelectByNodeType extends SLSelect {
         public End limit( Integer size,
                           Integer offset );
 
-		/**
-		 * Execute x times.
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes();
-		
-		/**
-		 * Execute x times.
-		 * 
-		 * @param x the x
-		 * 
-		 * @return the end
-		 */
-		public End executeXTimes(int x);
-	}
+        /**
+         * Execute x times.
+         * 
+         * @return the end
+         */
+        public End executeXTimes();
+
+        /**
+         * Execute x times.
+         * 
+         * @param x the x
+         * @return the end
+         */
+        public End executeXTimes( int x );
+    }
 }

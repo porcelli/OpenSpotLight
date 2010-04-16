@@ -61,94 +61,98 @@ import org.openspotlight.federation.domain.artifact.db.DatabaseType;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class ConfigurationExamples {
 
-	private static Repository createDatabaseRepository(
-			final String repositoryName, final String groupName,
-			final String sourceName, final String user, final String password,
-			final DatabaseType type, final String initialLookup,
-			final String driver) {
-		final Repository repository = new Repository();
-		repository.setName(repositoryName);
-		repository.setActive(true);
-		final Group group = new Group();
-		group.setName(groupName);
-		group.setRepository(repository);
-		repository.getGroups().add(group);
-		group.setActive(true);
-		final DbArtifactSource artifactSource = new DbArtifactSource();
-		artifactSource.setServerName("server name " + sourceName);
-		artifactSource.setDatabaseName("db name " + sourceName);
-		repository.getArtifactSources().add(artifactSource);
-		artifactSource.setRepository(repository);
-		artifactSource.setName(sourceName);
-		artifactSource.setActive(true);
-		artifactSource.setUser(user);
-		artifactSource.setPassword(password);
-		artifactSource.setMaxConnections(4);
-		artifactSource.setType(type);
-		artifactSource.setInitialLookup(initialLookup);
-		artifactSource.setDriverClass(driver);
+    private static Repository createDatabaseRepository(
+                                                        final String repositoryName,
+                                                        final String groupName,
+                                                        final String sourceName,
+                                                        final String user,
+                                                        final String password,
+                                                        final DatabaseType type,
+                                                        final String initialLookup,
+                                                        final String driver ) {
+        final Repository repository = new Repository();
+        repository.setName(repositoryName);
+        repository.setActive(true);
+        final Group group = new Group();
+        group.setName(groupName);
+        group.setRepository(repository);
+        repository.getGroups().add(group);
+        group.setActive(true);
+        final DbArtifactSource artifactSource = new DbArtifactSource();
+        artifactSource.setServerName("server name " + sourceName);
+        artifactSource.setDatabaseName("db name " + sourceName);
+        repository.getArtifactSources().add(artifactSource);
+        artifactSource.setRepository(repository);
+        artifactSource.setName(sourceName);
+        artifactSource.setActive(true);
+        artifactSource.setUser(user);
+        artifactSource.setPassword(password);
+        artifactSource.setMaxConnections(4);
+        artifactSource.setType(type);
+        artifactSource.setInitialLookup(initialLookup);
+        artifactSource.setDriverClass(driver);
 
-		final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
-		mapping.setSource(artifactSource);
-		artifactSource.getMappings().add(mapping);
-		mapping.setFrom("/PUBLIC");
-		mapping.setTo("/databaseArtifacts");
-		artifactSource.getMappings().add(mapping);
-		mapping.getIncludeds().add("**");
-		final BundleProcessorType commonProcessor = new BundleProcessorType();
-		commonProcessor.setActive(true);
-		commonProcessor.setGroup(group);
-		group.getBundleTypes().add(commonProcessor);
-		final BundleProcessorType customProcessor = new BundleProcessorType();
-		customProcessor.setActive(true);
-		customProcessor.setGroup(group);
-		group.getBundleTypes().add(customProcessor);
-		return repository;
-	}
+        final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
+        mapping.setSource(artifactSource);
+        artifactSource.getMappings().add(mapping);
+        mapping.setFrom("/PUBLIC");
+        mapping.setTo("/databaseArtifacts");
+        artifactSource.getMappings().add(mapping);
+        mapping.getIncludeds().add("**");
+        final BundleProcessorType commonProcessor = new BundleProcessorType();
+        commonProcessor.setActive(true);
+        commonProcessor.setGroup(group);
+        group.getBundleTypes().add(commonProcessor);
+        final BundleProcessorType customProcessor = new BundleProcessorType();
+        customProcessor.setActive(true);
+        customProcessor.setGroup(group);
+        group.getBundleTypes().add(customProcessor);
+        return repository;
+    }
 
-	public static Repository createDb2Configuration() {
-		return createDatabaseRepository("db2 Repository", "db2 Group",
-				"db2 Connection", "db2admin", "db2admin", DatabaseType.DB2,
-				"jdbc:db2://localhost:50000/SAMPLE",
-		"com.ibm.db2.jcc.DB2Driver");
-	}
+    public static Repository createDb2Configuration() {
+        return createDatabaseRepository("db2 Repository", "db2 Group",
+                                        "db2 Connection", "db2admin", "db2admin", DatabaseType.DB2,
+                                        "jdbc:db2://localhost:50000/SAMPLE",
+                                        "com.ibm.db2.jcc.DB2Driver");
+    }
 
-	public static Repository createH2DbConfiguration(final String dirName) {
-		return createDatabaseRepository("H2 Repository", "h2 Group",
-				"H2 Connection", "sa", null, DatabaseType.H2,
-				"jdbc:h2:./target/test-data/" + dirName + "/h2/db",
-		"org.h2.Driver");
-	}
+    public static Repository createH2DbConfiguration( final String dirName ) {
+        return createDatabaseRepository("H2 Repository", "h2 Group",
+                                        "H2 Connection", "sa", null, DatabaseType.H2,
+                                        "jdbc:h2:./target/test-data/" + dirName + "/h2/db",
+                                        "org.h2.Driver");
+    }
 
-	public static Repository createMySqlDbConfiguration() {
-		return createDatabaseRepository("mysql Repository", "mysql Group",
-				"mysql Connection", "root", null, DatabaseType.MY_SQL,
-				"jdbc:mysql://localhost:3306/test", "com.mysql.jdbc.Driver");
-	}
+    public static Repository createMySqlDbConfiguration() {
+        return createDatabaseRepository("mysql Repository", "mysql Group",
+                                        "mysql Connection", "root", null, DatabaseType.MY_SQL,
+                                        "jdbc:mysql://localhost:3306/test", "com.mysql.jdbc.Driver");
+    }
 
-	public static Repository createOracleOciDbConfiguration() {
-		return createDatabaseRepository("oracle Repository", "oracle Group",
-				"oracle Connection", "HR", "pass", DatabaseType.ORACLE,
-				"jdbc:oracle:oci8:@orcl", "oracle.jdbc.driver.OracleDriver");
-	}
+    public static Repository createOracleOciDbConfiguration() {
+        return createDatabaseRepository("oracle Repository", "oracle Group",
+                                        "oracle Connection", "HR", "pass", DatabaseType.ORACLE,
+                                        "jdbc:oracle:oci8:@orcl", "oracle.jdbc.driver.OracleDriver");
+    }
 
-	public static Repository createPostgresqlConfiguration() {
-		return createDatabaseRepository("postgresql Repository",
-				"postgresql Group", "postgresql Connection", "postgres",
-				"postgres", DatabaseType.POSTGRES,
-				"jdbc:postgresql://localhost:5432/osl?charSet=UTF8",
-		"org.postgresql.Driver");
-	}
+    public static Repository createPostgresqlConfiguration() {
+        return createDatabaseRepository("postgresql Repository",
+                                        "postgresql Group", "postgresql Connection", "postgres",
+                                        "postgres", DatabaseType.POSTGRES,
+                                        "jdbc:postgresql://localhost:5432/osl?charSet=UTF8",
+                                        "org.postgresql.Driver");
+    }
 
-	public static Repository createSqlServerDbConfiguration() {
-		return createDatabaseRepository("sqlserver Repository",
-				"sqlserver Group", "sqlserver Connection", "sa", null,
-				DatabaseType.SQL_SERVER,
-				"jdbc:jtds:sqlserver://localhost:49385",
-		"net.sourceforge.jtds.jdbc.Driver");
-	}
+    public static Repository createSqlServerDbConfiguration() {
+        return createDatabaseRepository("sqlserver Repository",
+                                        "sqlserver Group", "sqlserver Connection", "sa", null,
+                                        DatabaseType.SQL_SERVER,
+                                        "jdbc:jtds:sqlserver://localhost:49385",
+                                        "net.sourceforge.jtds.jdbc.Driver");
+    }
 
 }

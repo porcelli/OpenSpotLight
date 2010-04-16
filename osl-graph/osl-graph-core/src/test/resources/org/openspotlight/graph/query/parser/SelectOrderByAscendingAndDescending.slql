@@ -1,9 +1,9 @@
 select **
 	where
-		org.openspotlight.graph.test.domain.JavaType.*
+		org.openspotlight.graph.test.domain.node.JavaType.*
 			property caption <*> "Set"
 	order by
-		org.openspotlight.graph.test.domain.JavaInterface
+		org.openspotlight.graph.test.domain.node.JavaInterface
 			property caption asc,
-		org.openspotlight.graph.test.domain.JavaClass
+		org.openspotlight.graph.test.domain.node.JavaClass
 			property caption desc;

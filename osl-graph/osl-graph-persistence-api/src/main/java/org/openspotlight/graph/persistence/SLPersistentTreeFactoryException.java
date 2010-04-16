@@ -57,34 +57,37 @@ import org.openspotlight.common.exception.AbstractFactoryException;
  */
 public class SLPersistentTreeFactoryException extends AbstractFactoryException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Instantiates a new sL persistent tree factory exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLPersistentTreeFactoryException(String message) {
-		super(message);
-	}
-	
-	/**
-	 * Instantiates a new sL persistent tree factory exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLPersistentTreeFactoryException(Throwable cause) {
-		super(cause);
-	}
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL persistent tree factory exception.
-	 * 
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public SLPersistentTreeFactoryException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Instantiates a new sL persistent tree factory exception.
+     * 
+     * @param message the message
+     */
+    public SLPersistentTreeFactoryException(
+                                             String message ) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new sL persistent tree factory exception.
+     * 
+     * @param cause the cause
+     */
+    public SLPersistentTreeFactoryException(
+                                             Throwable cause ) {
+        super(cause);
+    }
+
+    /**
+     * Instantiates a new sL persistent tree factory exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public SLPersistentTreeFactoryException(
+                                             String message, Throwable cause ) {
+        super(message, cause);
+    }
 }

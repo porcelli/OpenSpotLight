@@ -51,46 +51,46 @@ package org.openspotlight.federation.domain.artifact.db;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
 
-@Name("database")
+@Name( "database" )
 public abstract class DatabaseCustomArtifact extends Artifact {
 
-	private String serverName;
-	private String databaseName;
-	private String url;
-	private DatabaseType databaseType;
+    private String            serverName;
+    private String            databaseName;
+    private String            url;
+    private DatabaseType      databaseType;
 
-	private static final long serialVersionUID = -1600651697651996477L;
+    private static final long serialVersionUID = -1600651697651996477L;
 
-	public String getDatabaseName() {
-		return databaseName;
-	}
+    public String getDatabaseName() {
+        return databaseName;
+    }
 
-	public DatabaseType getDatabaseType() {
-		return databaseType;
-	}
+    public DatabaseType getDatabaseType() {
+        return databaseType;
+    }
 
-	public String getServerName() {
-		return serverName;
-	}
+    public String getServerName() {
+        return serverName;
+    }
 
-	public String getUrl() {
-		return url;
-	}
+    public String getUrl() {
+        return url;
+    }
 
-	public void setDatabaseName(final String databaseName) {
-		this.databaseName = databaseName;
-	}
+    public void setDatabaseName( final String databaseName ) {
+        this.databaseName = databaseName;
+    }
 
-	public void setDatabaseType(final DatabaseType databaseType) {
-		this.databaseType = databaseType;
-	}
+    public void setDatabaseType( final DatabaseType databaseType ) {
+        this.databaseType = databaseType;
+    }
 
-	public void setServerName(final String serverName) {
-		this.serverName = serverName;
-	}
+    public void setServerName( final String serverName ) {
+        this.serverName = serverName;
+    }
 
-	public void setUrl(final String url) {
-		this.url = url;
-	}
+    public void setUrl( final String url ) {
+        this.url = url;
+    }
 
 }

@@ -58,11 +58,11 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
  */
 public interface SLPNodeGetter extends LockContainer {
 
-	/**
-	 * Gets the p node.
-	 * 
-	 * @return the p node
-	 */
-	public SLPersistentNode getPNode();
+    /**
+     * Gets the p node.
+     * 
+     * @return the p node
+     */
+    public SLPersistentNode getPNode();
 
 }

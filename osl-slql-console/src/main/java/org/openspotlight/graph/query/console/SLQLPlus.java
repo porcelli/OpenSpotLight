@@ -242,6 +242,7 @@ public class SLQLPlus {
 
             final ConsoleState state = new ConsoleState(loginState.getK2());
             String input;
+            //TODO handle exceptions here
             while ((input = reader.readLine(getPrompt())) != null) {
                 state.setInput(input.trim());
                 boolean inputAccepted = false;

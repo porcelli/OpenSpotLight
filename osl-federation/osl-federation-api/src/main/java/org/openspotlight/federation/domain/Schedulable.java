@@ -59,48 +59,49 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
  * The Interface Schedulable.
  */
 public interface Schedulable extends SimpleNodeType {
-	
-	public Repository getRepositoryForSchedulable();
-	/**
-	 * The Interface SchedulableCommand.
-	 */
-	public static interface SchedulableCommand<S extends Schedulable> {
 
-		/**
-		 * Execute.
-		 * 
-		 * @param schedulable
-		 *            the schedulable
-		 */
-		public void execute(GlobalSettings settings, ExecutionContext ctx,
-				S schedulable) throws Exception;
+    public Repository getRepositoryForSchedulable();
 
-		public String getRepositoryNameBeforeExecution(S schedulable);
-	}
+    /**
+     * The Interface SchedulableCommand.
+     */
+    public static interface SchedulableCommand<S extends Schedulable> {
 
-	public static interface SchedulableCommandWithContextFactory<S extends Schedulable>
-			extends SchedulableCommand<S> {
-		public void setContextFactoryBeforeExecution(GlobalSettings settings,
-				JcrConnectionDescriptor descriptor, String username,
-				String password, String repository,
-				ExecutionContextFactory factory);
-	}
+        /**
+         * Execute.
+         * 
+         * @param schedulable the schedulable
+         */
+        public void execute( GlobalSettings settings,
+                             ExecutionContext ctx,
+                             S schedulable ) throws Exception;
 
-	/**
-	 * Gets the cron information. For each String, please follow the cron syntax
-	 * described on
-	 * http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
-	 * 
-	 * @return the cron information
-	 */
-	public List<String> getCronInformation();
+        public String getRepositoryNameBeforeExecution( S schedulable );
+    }
 
-	/**
-	 * This string should return an unique identifier for this job to be used
-	 * inside the scheduler.
-	 * 
-	 * @return
-	 */
-	public String toUniqueJobString();
+    public static interface SchedulableCommandWithContextFactory<S extends Schedulable>
+            extends SchedulableCommand<S> {
+        public void setContextFactoryBeforeExecution( GlobalSettings settings,
+                                                      JcrConnectionDescriptor descriptor,
+                                                      String username,
+                                                      String password,
+                                                      String repository,
+                                                      ExecutionContextFactory factory );
+    }
+
+    /**
+     * Gets the cron information. For each String, please follow the cron syntax described on
+     * http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+     * 
+     * @return the cron information
+     */
+    public List<String> getCronInformation();
+
+    /**
+     * This string should return an unique identifier for this job to be used inside the scheduler.
+     * 
+     * @return
+     */
+    public String toUniqueJobString();
 
 }

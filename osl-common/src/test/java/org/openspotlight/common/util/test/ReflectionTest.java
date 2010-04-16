@@ -70,7 +70,7 @@ import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn
 
 /**
  * Test for the class {@link Reflection}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SuppressWarnings( "all" )

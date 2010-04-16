@@ -59,20 +59,20 @@ import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArt
  */
 public class SqlServerViewFilterNameHandler implements DatabaseArtifactNameHandler {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean shouldIncludeName(String artifactName, ScriptType type,
-			ResultSet resultSet) throws Exception {
-		if("VIEW".equals(resultSet.getString("TABLE_TYPE"))){
-			return true;
-		}
-		return false;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public boolean shouldIncludeName( String artifactName,
+                                      ScriptType type,
+                                      ResultSet resultSet ) throws Exception {
+        if ("VIEW".equals(resultSet.getString("TABLE_TYPE"))) {
+            return true;
+        }
+        return false;
+    }
 
-	public String fixName(String oldName) {
-		return oldName;
-	}
-	
+    public String fixName( String oldName ) {
+        return oldName;
+    }
 
 }

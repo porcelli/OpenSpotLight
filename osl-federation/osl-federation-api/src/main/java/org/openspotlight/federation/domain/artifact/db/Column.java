@@ -58,101 +58,101 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name("column")
+@Name( "column" )
 public class Column implements SimpleNodeType, Serializable {
-	private static final long serialVersionUID = -1495010016475838851L;
+    private static final long         serialVersionUID = -1495010016475838851L;
 
-	private String name;
+    private String                    name;
 
-	private ColumnType type;
+    private ColumnType                type;
 
-	private NullableSqlType nullable;
+    private NullableSqlType           nullable;
 
-	private int columnSize;
+    private int                       columnSize;
 
-	private int decimalSize;
+    private int                       decimalSize;
 
-	private transient TableArtifact table;
+    private transient TableArtifact   table;
 
-	private volatile transient String description;
+    private volatile transient String description;
 
-	private volatile transient int hashCode;
+    private volatile transient int    hashCode;
 
-	public boolean equals(final Object o) {
-		if (!(o instanceof Column)) {
-			return false;
-		}
-		final Column that = (Column) o;
-		return Equals.eachEquality(Arrays.of(table, name), Arrays.andOf(
-				that.table, that.name));
-	}
+    public boolean equals( final Object o ) {
+        if (!(o instanceof Column)) {
+            return false;
+        }
+        final Column that = (Column)o;
+        return Equals.eachEquality(Arrays.of(table, name), Arrays.andOf(
+                                                                        that.table, that.name));
+    }
 
-	public int getColumnSize() {
-		return columnSize;
-	}
+    public int getColumnSize() {
+        return columnSize;
+    }
 
-	public int getDecimalSize() {
-		return decimalSize;
-	}
+    public int getDecimalSize() {
+        return decimalSize;
+    }
 
-	@KeyProperty
-	public String getName() {
-		return name;
-	}
+    @KeyProperty
+    public String getName() {
+        return name;
+    }
 
-	public NullableSqlType getNullable() {
-		return nullable;
-	}
+    public NullableSqlType getNullable() {
+        return nullable;
+    }
 
-	@ParentProperty
-	public TableArtifact getTable() {
-		return table;
-	}
+    @ParentProperty
+    public TableArtifact getTable() {
+        return table;
+    }
 
-	public ColumnType getType() {
-		return type;
-	}
+    public ColumnType getType() {
+        return type;
+    }
 
-	public int hashCode() {
-		int res = hashCode;
-		if (res == 0) {
-			res = HashCodes.hashOf(table, name);
-			hashCode = res;
-		}
-		return res;
-	}
+    public int hashCode() {
+        int res = hashCode;
+        if (res == 0) {
+            res = HashCodes.hashOf(table, name);
+            hashCode = res;
+        }
+        return res;
+    }
 
-	public void setColumnSize(final int columnSize) {
-		this.columnSize = columnSize;
-	}
+    public void setColumnSize( final int columnSize ) {
+        this.columnSize = columnSize;
+    }
 
-	public void setDecimalSize(final int decimalSize) {
-		this.decimalSize = decimalSize;
-	}
+    public void setDecimalSize( final int decimalSize ) {
+        this.decimalSize = decimalSize;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	public void setNullable(final NullableSqlType nullable) {
-		this.nullable = nullable;
-	}
+    public void setNullable( final NullableSqlType nullable ) {
+        this.nullable = nullable;
+    }
 
-	public void setTable(final TableArtifact table) {
-		this.table = table;
-	}
+    public void setTable( final TableArtifact table ) {
+        this.table = table;
+    }
 
-	public void setType(final ColumnType type) {
-		this.type = type;
-	}
+    public void setType( final ColumnType type ) {
+        this.type = type;
+    }
 
-	public String toString() {
-		String toString = description;
-		if (toString == null) {
-			toString = "Column " + name + " "
-			+ (table != null ? table.toString() : "no_table ");
-			description = toString;
-		}
-		return toString;
-	}
+    public String toString() {
+        String toString = description;
+        if (toString == null) {
+            toString = "Column " + name + " "
+                       + (table != null ? table.toString() : "no_table ");
+            description = toString;
+        }
+        return toString;
+    }
 }

@@ -95,8 +95,8 @@ public class TemplateTask extends Task {
     private final Set<String> xmlFiles               = new HashSet<String>();
 
     /** The script file location. */
-    @SuppressWarnings("unused")
-	private String            scriptFileLocation;
+    @SuppressWarnings( "unused" )
+    private String            scriptFileLocation;
 
     /** The execute bean shell script. */
     private boolean           executeBeanShellScript = false;

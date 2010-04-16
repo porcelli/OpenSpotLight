@@ -57,15 +57,16 @@ import org.openspotlight.common.exception.SLRuntimeException;
  */
 public class SLInvalidQuerySyntaxRuntimeException extends SLRuntimeException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Instantiates a new sL invalid query syntax runtime exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLInvalidQuerySyntaxRuntimeException(String message) {
-		super(message);
-	}
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Instantiates a new sL invalid query syntax runtime exception.
+     * 
+     * @param message the message
+     */
+    public SLInvalidQuerySyntaxRuntimeException(
+                                                 String message ) {
+        super(message);
+    }
 }

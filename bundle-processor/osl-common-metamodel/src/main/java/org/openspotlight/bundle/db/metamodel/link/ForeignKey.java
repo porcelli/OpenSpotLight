@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,10 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Foreign Key.
+ * The Interface for a link between Foreign Key. Column A2B Column
  * 
- *
- * Column A2B Column
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Foreign Key")
+@SLDescription( "Foreign Key" )
 public interface ForeignKey extends SLLink {
 }
-
-
-        

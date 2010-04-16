@@ -56,36 +56,36 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class RootObj implements SimpleNodeType, Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 6600988707146639211L;
+    private static final long                       serialVersionUID = 6600988707146639211L;
 
-	private String uuid;
+    private String                                  uuid;
 
-	private ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType;
+    private ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType;
 
-	public boolean equals(final Object o) {
-		return o instanceof RootObj;
-	}
+    public boolean equals( final Object o ) {
+        return o instanceof RootObj;
+    }
 
-	@PersistPropertyAsStream
-	public ObjectThatDoesntImplementSimpleNodeType getObjectThatDoesntImplementSimpleNodeType() {
-		return objectThatDoesntImplementSimpleNodeType;
-	}
+    @PersistPropertyAsStream
+    public ObjectThatDoesntImplementSimpleNodeType getObjectThatDoesntImplementSimpleNodeType() {
+        return objectThatDoesntImplementSimpleNodeType;
+    }
 
-	@SetUniqueIdOnThisProperty
-	public String getUuid() {
-		return uuid;
-	}
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
+    }
 
-	public void setObjectThatDoesntImplementSimpleNodeType(
-			final ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType) {
-		this.objectThatDoesntImplementSimpleNodeType = objectThatDoesntImplementSimpleNodeType;
-	}
+    public void setObjectThatDoesntImplementSimpleNodeType(
+                                                            final ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType ) {
+        this.objectThatDoesntImplementSimpleNodeType = objectThatDoesntImplementSimpleNodeType;
+    }
 
-	public void setUuid(final String uuid) {
-		this.uuid = uuid;
-	}
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
+    }
 
 }

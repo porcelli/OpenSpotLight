@@ -56,11 +56,11 @@ import org.openspotlight.graph.query.info.SLSelectStatementInfo;
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectStatementInfoGetter {
-	
-	/**
-	 * Gets the select statement info.
-	 * 
-	 * @return the select statement info
-	 */
-	public SLSelectStatementInfo getSelectStatementInfo();
+
+    /**
+     * Gets the select statement info.
+     * 
+     * @return the select statement info
+     */
+    public SLSelectStatementInfo getSelectStatementInfo();
 }

@@ -60,7 +60,7 @@ import java.util.Set;
 
 /**
  * Helper class to deal with arrays
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Arrays {
@@ -68,12 +68,12 @@ public class Arrays {
     /**
      * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
      * Ts on a method.
-     *
+     * 
      * <pre>
      * someMethod(of(someParam1,   someParam2,...,   someParamN),
      *         andOf(anotherParam1,anotherParam2,...,anotherParamN));
      * </pre>
-     *
+     * 
      * @param <T>
      * @param array
      * @return the same parameters in a array
@@ -85,12 +85,12 @@ public class Arrays {
     /**
      * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
      * Ts on a method.
-     *
+     * 
      * <pre>
      * someMethod(ofNames(someParam1,   someParam2,...,   someParamN),
      *         andValues(anotherParam1,anotherParam2,...,anotherParamN));
      * </pre>
-     *
+     * 
      * @param <T>
      * @param array
      * @return the same parameters in a array
@@ -101,7 +101,7 @@ public class Arrays {
 
     /**
      * Simple method to see if an element is inside a array.
-     *
+     * 
      * @param <T>
      * @param target
      * @param toSearch
@@ -121,11 +121,11 @@ public class Arrays {
 
     /**
      * Returns a Map in the following way:
-     *
+     * 
      * <pre>
      * Map&lt;String, Integer&gt; map = map(ofKeys(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;), andValues(1, 2, 3));
      * </pre>
-     *
+     * 
      * @param <K>
      * @param ofKeys
      * @param andValues
@@ -134,7 +134,7 @@ public class Arrays {
     public static <K> Map<K, Class<?>> map( final K[] ofKeys,
                                             final Class<?>[] andValues ) {
         checkCondition("keysAndValuesWithSameSize", //$NON-NLS-1$
-                       ofKeys == null || andValues == null || ofKeys.length == andValues.length);
+        ofKeys == null || andValues == null || ofKeys.length == andValues.length);
         if (ofKeys == null) {
             return new HashMap<K, Class<?>>();
         }
@@ -149,11 +149,11 @@ public class Arrays {
 
     /**
      * Returns a Map in the following way:
-     *
+     * 
      * <pre>
      * Map&lt;String, Integer&gt; map = map(ofKeys(&quot;1&quot;, &quot;2&quot;, &quot;3&quot;), andValues(1, 2, 3));
      * </pre>
-     *
+     * 
      * @param <K>
      * @param <V>
      * @param ofKeys
@@ -163,7 +163,7 @@ public class Arrays {
     public static <K, V> Map<K, V> map( final K[] ofKeys,
                                         final V[] andValues ) {
         checkCondition("keysAndValuesWithSameSize", //$NON-NLS-1$
-                       ofKeys == null || andValues == null || ofKeys.length == andValues.length);
+        ofKeys == null || andValues == null || ofKeys.length == andValues.length);
         if (ofKeys == null) {
             return new HashMap<K, V>();
         }
@@ -179,12 +179,12 @@ public class Arrays {
     /**
      * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
      * Ts on a method.
-     *
+     * 
      * <pre>
      * someMethod(of(someParam1,   someParam2,...,   someParamN),
      *         andOf(anotherParam1,anotherParam2,...,anotherParamN));
      * </pre>
-     *
+     * 
      * @param <T>
      * @param array
      * @return the same parameters in a array
@@ -196,12 +196,12 @@ public class Arrays {
     /**
      * Convenient method to group varargs on a array. This can be used on a situation that is needed to group more than a group of
      * Ts on a method.
-     *
+     * 
      * <pre>
      * someMethod(ofNames(someParam1,   someParam2,...,   someParamN),
      *         andValues(anotherParam1,anotherParam2,...,anotherParamN));
      * </pre>
-     *
+     * 
      * @param <T>
      * @param array
      * @return the same parameters in a array

@@ -52,19 +52,19 @@ package org.openspotlight.graph;
  * A factory for creating SLEncoder objects.
  */
 public interface SLEncoderFactory {
-	
-	/**
-	 * Gets the uUID encoder.
-	 * 
-	 * @return the uUID encoder
-	 */
-	public SLEncoder getUUIDEncoder();
-	
-	/**
-	 * Gets the fake encoder.
-	 * 
-	 * @return the fake encoder
-	 */
-	public SLEncoder getFakeEncoder();
+
+    /**
+     * Gets the uUID encoder.
+     * 
+     * @return the uUID encoder
+     */
+    public SLEncoder getUUIDEncoder();
+
+    /**
+     * Gets the fake encoder.
+     * 
+     * @return the fake encoder
+     */
+    public SLEncoder getFakeEncoder();
 
 }

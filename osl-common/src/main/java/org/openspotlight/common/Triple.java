@@ -55,7 +55,7 @@ import org.openspotlight.common.util.HashCodes;
 
 /**
  * This is a simple class to store three objects.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * @param <K1>
  * @param <K2>
@@ -79,7 +79,7 @@ public class Triple<K1, K2, K3> {
 
     /**
      * Creates a new pair using the two keys provided.
-     *
+     * 
      * @param k1
      * @param k2
      * @param k3

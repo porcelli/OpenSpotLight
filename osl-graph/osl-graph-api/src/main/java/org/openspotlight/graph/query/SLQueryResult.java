@@ -59,19 +59,18 @@ import org.openspotlight.graph.SLNode;
  */
 public interface SLQueryResult extends LockContainer {
 
-	/**
-	 * Gets the nodes.
-	 * 
-	 * @return the nodes
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public NeedsSyncronizationList<SLNode> getNodes() throws SLQueryException;
+    /**
+     * Gets the nodes.
+     * 
+     * @return the nodes
+     * @throws SLQueryException the SL query exception
+     */
+    public NeedsSyncronizationList<SLNode> getNodes() throws SLQueryException;
 
-	/**
-	 * Gets the query id. This id is related to cache.
-	 * 
-	 * @return the query id
-	 */
-	public String getQueryId();
+    /**
+     * Gets the query id. This id is related to cache.
+     * 
+     * @return the query id
+     */
+    public String getQueryId();
 }

@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,10 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between TableView - Columns.
+ * The Interface for a link between TableView - Columns. TableView A2B Column
  * 
- *
- * TableView A2B Column
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("TableView - Columns")
+@SLDescription( "TableView - Columns" )
 public interface TableViewColumns extends SLLink {
 }
-
-
-        

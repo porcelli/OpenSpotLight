@@ -66,7 +66,7 @@ public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
                                       final String version ) throws IOException {
         this.name = fedaratedArtifactPath;
         this.data = artifactContent.toCharArray();
-        this.version= version;
+        this.version = version;
         n = artifactContent.length();
         int count = 0;
         final BufferedReader reader = new BufferedReader(new StringReader(

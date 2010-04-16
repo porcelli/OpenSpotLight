@@ -53,22 +53,20 @@ import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
 /**
- * The Interface for node Column Meta Model.
- * 
- * {@link TableView} should be used as parent.
+ * The Interface for node Column Meta Model. {@link TableView} should be used as parent.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Column")
+@SLDescription( "Column" )
 public interface Column extends SLNode {
 
-	@SLProperty
-	public String getDataType();
+    @SLProperty
+    public String getDataType();
 
-	@SLProperty
-	public Integer getOrder();
+    @SLProperty
+    public Integer getOrder();
 
-	public void setDataType(String dataType);
+    public void setDataType( String dataType );
 
-	public void setOrder(Integer order);
+    public void setOrder( Integer order );
 }

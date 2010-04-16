@@ -54,31 +54,25 @@ package org.openspotlight.graph;
  * @author Vitor Hugo Chagas
  */
 public interface SLMetaRenderHint extends SLMetaElement {
-	
-	/**
-	 * Gets the meta node.
-	 * 
-	 * @return the meta node
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public SLMetaNodeType getMetaNode() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getName() throws SLGraphSessionException;
-	
-	/**
-	 * Gets the value.
-	 * 
-	 * @return the value
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public String getValue() throws SLGraphSessionException;
+
+    /**
+     * Gets the meta node.
+     * 
+     * @return the meta node
+     */
+    public SLMetaNodeType getMetaNode();
+
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName();
+
+    /**
+     * Gets the value.
+     * 
+     * @return the value
+     */
+    public String getValue();
 }

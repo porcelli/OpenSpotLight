@@ -49,11 +49,9 @@
 package org.openspotlight.graph.persistence;
 
 /**
- * The listener interface for receiving SLPersistentEvent events.
- * The class that is interested in processing a SLPersistentEvent
- * event implements this interface, and the object created
- * with that class is registered with a component using the
- * component's <code>addSLPersistentEventListener<code> method. When
+ * The listener interface for receiving SLPersistentEvent events. The class that is interested in processing a SLPersistentEvent
+ * event implements this interface, and the object created with that class is registered with a component using the component's
+ * <code>addSLPersistentEventListener<code> method. When
  * the SLPersistentEvent event occurs, that object's appropriate
  * method is invoked.
  * 
@@ -61,40 +59,36 @@ package org.openspotlight.graph.persistence;
  * @author Vitor Hugo Chagas
  */
 public interface SLPersistentEventListener {
-	
-	/**
-	 * Node added.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void nodeAdded(SLPersistentNodeEvent event) throws SLPersistentTreeSessionException;
-	
-	/**
-	 * Node removed.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void nodeRemoved(SLPersistentNodeEvent event) throws SLPersistentTreeSessionException;
-	
-	/**
-	 * Property set.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void propertySet(SLPersistentPropertyEvent event) throws SLPersistentTreeSessionException;
-	
-	/**
-	 * Property removed.
-	 * 
-	 * @param event the event
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public void propertyRemoved(SLPersistentPropertyEvent event) throws SLPersistentTreeSessionException;
+
+    /**
+     * Node added.
+     * 
+     * @param event the event
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void nodeAdded( SLPersistentNodeEvent event ) throws SLPersistentTreeSessionException;
+
+    /**
+     * Node removed.
+     * 
+     * @param event the event
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void nodeRemoved( SLPersistentNodeEvent event ) throws SLPersistentTreeSessionException;
+
+    /**
+     * Property set.
+     * 
+     * @param event the event
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void propertySet( SLPersistentPropertyEvent event ) throws SLPersistentTreeSessionException;
+
+    /**
+     * Property removed.
+     * 
+     * @param event the event
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public void propertyRemoved( SLPersistentPropertyEvent event ) throws SLPersistentTreeSessionException;
 }

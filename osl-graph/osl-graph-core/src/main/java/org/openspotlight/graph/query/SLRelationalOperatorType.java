@@ -58,89 +58,82 @@ import org.openspotlight.common.util.Strings;
  * @author Vitor Hugo Chagas
  */
 public enum SLRelationalOperatorType implements SLOperatorType {
-	
-	/** The EQUAL. */
-	EQUAL ("="),
-	
-	/** The GREATE r_ than. */
-	GREATER_THAN (">"),
-	
-	/** The LESSE r_ than. */
-	LESSER_THAN ("<"),
-	
-	/** The GREATE r_ o r_ equa l_ than. */
-	GREATER_OR_EQUAL_THAN (">="),
-	
-	/** The LESSE r_ o r_ equa l_ than. */
-	LESSER_OR_EQUAL_THAN ("<="),
-	
-	/** The START s_ with. */
-	STARTS_WITH ("..*"),
-	
-	/** The END s_ with. */
-	ENDS_WITH ("*.."),
-	
-	/** The CONTAINS. */
-	CONTAINS ("<*>");
-	
-	/** The symbol. */
-	private String symbol;
-	
-	/**
-	 * Instantiates a new sL relational operator type.
-	 * 
-	 * @param symbol the symbol
-	 */
-	SLRelationalOperatorType(String symbol) {
-		this.symbol = symbol;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLOperatorType#symbol()
-	 */
-	public String symbol() {
-		return symbol;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.query.SLOperatorType#xPathExpression(java.lang.Object, java.lang.Object)
-	 */
-	/**
-	 * X path expression.
-	 * 
-	 * @param leftOperand the left operand
-	 * @param rightOperand the right operand
-	 * @param applyNot the apply not
-	 * 
-	 * @return the string
-	 */
-	public String xPathExpression(Object leftOperand, Object rightOperand, boolean applyNot) {
-		StringBuilder buffer = new StringBuilder();
-		if (this.equals(STARTS_WITH)) {
-			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '", rightOperand, "%')");
-		}
-		else if (this.equals(ENDS_WITH)) {
-			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "')");
-		}
-		else if (this.equals(CONTAINS)) {
-			StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "%')");
-		}
-		else {
-			StringBuilderUtil.append(buffer, leftOperand, ' ', symbol, ' ', Strings.quote(rightOperand));	
-		}
-		if (applyNot) {
-			buffer.insert(0, "not(");
-			buffer.append(')');
-		}
-		return buffer.toString();
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Enum#toString()
-	 */
-	@Override
-	public String toString() {
-		return symbol;
-	}
+
+    /** The EQUAL. */
+    EQUAL("="),
+
+    /** The GREATE r_ than. */
+    GREATER_THAN(">"),
+
+    /** The LESSE r_ than. */
+    LESSER_THAN("<"),
+
+    /** The GREATE r_ o r_ equa l_ than. */
+    GREATER_OR_EQUAL_THAN(">="),
+
+    /** The LESSE r_ o r_ equa l_ than. */
+    LESSER_OR_EQUAL_THAN("<="),
+
+    /** The START s_ with. */
+    STARTS_WITH("..*"),
+
+    /** The END s_ with. */
+    ENDS_WITH("*.."),
+
+    /** The CONTAINS. */
+    CONTAINS("<*>");
+
+    /** The symbol. */
+    private String symbol;
+
+    /**
+     * Instantiates a new sL relational operator type.
+     * 
+     * @param symbol the symbol
+     */
+    SLRelationalOperatorType(
+                              String symbol ) {
+        this.symbol = symbol;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String symbol() {
+        return symbol;
+    }
+
+    /**
+     * X path expression.
+     * 
+     * @param leftOperand the left operand
+     * @param rightOperand the right operand
+     * @param applyNot the apply not
+     * @return the string
+     */
+    public String xPathExpression( Object leftOperand,
+                                   Object rightOperand,
+                                   boolean applyNot ) {
+        StringBuilder buffer = new StringBuilder();
+        if (this.equals(STARTS_WITH)) {
+            StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '", rightOperand, "%')");
+        } else if (this.equals(ENDS_WITH)) {
+            StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "')");
+        } else if (this.equals(CONTAINS)) {
+            StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "%')");
+        } else {
+            StringBuilderUtil.append(buffer, leftOperand, ' ', symbol, ' ', Strings.quote(rightOperand));
+        }
+        if (applyNot) {
+            buffer.insert(0, "not(");
+            buffer.append(')');
+        }
+        return buffer.toString();
+    }
+
+    @Override
+    public String toString() {
+        return symbol;
+    }
 
 }

@@ -63,90 +63,89 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 /**
  * The Class Configuration.
  */
-@Name("configuration")
+@Name( "configuration" )
 public class GlobalSettings implements SimpleNodeType, Serializable {
 
-	private static final long serialVersionUID = 3443359462450366393L;
+    private static final long                          serialVersionUID = 3443359462450366393L;
 
-	private Set<Class<? extends OriginArtifactLoader>> loaderRegistry = new HashSet<Class<? extends OriginArtifactLoader>>();
+    private Set<Class<? extends OriginArtifactLoader>> loaderRegistry   = new HashSet<Class<? extends OriginArtifactLoader>>();
 
-	public Set<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
-		return loaderRegistry;
-	}
+    public Set<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
+        return loaderRegistry;
+    }
 
-	public void setLoaderRegistry(
-			Set<Class<? extends OriginArtifactLoader>> loaderRegistry) {
-		this.loaderRegistry = loaderRegistry;
-	}
+    public void setLoaderRegistry(
+                                   Set<Class<? extends OriginArtifactLoader>> loaderRegistry ) {
+        this.loaderRegistry = loaderRegistry;
+    }
 
-	@SuppressWarnings("unchecked")
-	private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
+    @SuppressWarnings( "unchecked" )
+    private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
 
-	private long defaultSleepingIntervalInMilliseconds;
+    private long                                                                   defaultSleepingIntervalInMilliseconds;
 
-	/** The max result list size. */
-	private int maxResultListSize;
+    /** The max result list size. */
+    private int                                                                    maxResultListSize;
 
-	private String systemUser;
+    private String                                                                 systemUser;
 
-	private String systemPassword;
+    private String                                                                 systemPassword;
 
-	public GlobalSettings() {
-	}
+    public GlobalSettings() {
+    }
 
-	public long getDefaultSleepingIntervalInMilliseconds() {
-		return defaultSleepingIntervalInMilliseconds;
-	}
+    public long getDefaultSleepingIntervalInMilliseconds() {
+        return defaultSleepingIntervalInMilliseconds;
+    }
 
-	/**
-	 * Gets the max result list size.
-	 * 
-	 * @return the max result list size
-	 */
-	public int getMaxResultListSize() {
-		return maxResultListSize;
-	}
+    /**
+     * Gets the max result list size.
+     * 
+     * @return the max result list size
+     */
+    public int getMaxResultListSize() {
+        return maxResultListSize;
+    }
 
-	@SuppressWarnings("unchecked")
-	public Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> getSchedulableCommandMap() {
-		return schedulableCommandMap;
-	}
+    @SuppressWarnings( "unchecked" )
+    public Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> getSchedulableCommandMap() {
+        return schedulableCommandMap;
+    }
 
-	public String getSystemPassword() {
-		return systemPassword;
-	}
+    public String getSystemPassword() {
+        return systemPassword;
+    }
 
-	public String getSystemUser() {
-		return systemUser;
-	}
+    public String getSystemUser() {
+        return systemUser;
+    }
 
-	public void setDefaultSleepingIntervalInMilliseconds(
-			final long defaultSleepingIntervalInMilliseconds) {
-		this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
-	}
+    public void setDefaultSleepingIntervalInMilliseconds(
+                                                          final long defaultSleepingIntervalInMilliseconds ) {
+        this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
+    }
 
-	/**
-	 * Sets the max result list size.
-	 * 
-	 * @param maxResultListSize
-	 *            the new max result list size
-	 */
-	public void setMaxResultListSize(final int maxResultListSize) {
-		this.maxResultListSize = maxResultListSize;
-	}
+    /**
+     * Sets the max result list size.
+     * 
+     * @param maxResultListSize the new max result list size
+     */
+    public void setMaxResultListSize( final int maxResultListSize ) {
+        this.maxResultListSize = maxResultListSize;
+    }
 
-	@SuppressWarnings("unchecked")
-	public void setSchedulableCommandMap(
-			final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap) {
-		this.schedulableCommandMap = schedulableCommandMap;
-	}
+    @SuppressWarnings( "unchecked" )
+    public void setSchedulableCommandMap(
+                                          final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap ) {
+        this.schedulableCommandMap = schedulableCommandMap;
+    }
 
-	public void setSystemPassword(final String systemPassword) {
-		this.systemPassword = systemPassword;
-	}
+    public void setSystemPassword( final String systemPassword ) {
+        this.systemPassword = systemPassword;
+    }
 
-	public void setSystemUser(final String systemUser) {
-		this.systemUser = systemUser;
-	}
+    public void setSystemUser( final String systemUser ) {
+        this.systemUser = systemUser;
+    }
 
 }

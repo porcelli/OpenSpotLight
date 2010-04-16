@@ -65,92 +65,71 @@ public interface SLMetaLink extends SLMetaElement {
      * Gets the meta link type.
      * 
      * @return the meta link type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaLinkType getMetaLinkType() throws SLGraphSessionException;
+    public SLMetaLinkType getMetaLinkType();
 
     /**
      * Gets the source type.
      * 
      * @return the source type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Class<? extends SLNode> getSourceType() throws SLGraphSessionException;
+    public Class<? extends SLNode> getSourceType();
 
     /**
      * Gets the target type.
      * 
      * @return the target type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Class<? extends SLNode> getTargetType() throws SLGraphSessionException;
-
-    /**
-     * Gets the other side type.
-     * 
-     * @param sideType the side type
-     * @return the other side type
-     * @throws SLInvalidMetaLinkSideTypeException the SL invalid meta link side type exception
-     * @throws SLGraphSessionException the SL graph session exception
-     */
-    public Class<? extends SLNode> getOtherSideType( Class<? extends SLNode> sideType )
-        throws SLInvalidMetaLinkSideTypeException, SLGraphSessionException;
+    public Class<? extends SLNode> getTargetType();
 
     /**
      * Gets the side types.
      * 
      * @return the side types
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public List<Class<? extends SLNode>> getSideTypes() throws SLGraphSessionException;
+    public List<Class<? extends SLNode>> getSideTypes();
 
     /**
      * Checks if is bidirectional.
      * 
      * @return true, if is bidirectional
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public boolean isBidirectional() throws SLGraphSessionException;
+    public boolean isBidirectional();
 
     /**
      * Gets the meta properties.
      * 
      * @return the meta properties
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Collection<SLMetaLinkProperty> getMetaProperties() throws SLGraphSessionException;
+    public Collection<SLMetaLinkProperty> getMetaProperties();
 
     /**
      * Gets the meta property.
      * 
      * @param name the name
      * @return the meta property
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaLinkProperty getMetaProperty( String name ) throws SLGraphSessionException;
+    public SLMetaLinkProperty getMetaProperty( String name );
 
     /**
      * Gets the description.
      * 
      * @return the description
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public String getDescription() throws SLGraphSessionException;
+    public String getDescription();
 
     /**
      * Gets the visibility.
      * 
      * @return the visibility
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public VisibilityLevel getVisibility() throws SLGraphSessionException;
+    public VisibilityLevel getVisibility();
 
     /**
      * Gets the node.
      * 
      * @return the node
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLPersistentNode getNode() throws SLGraphSessionException;
+    public SLPersistentNode getNode();
 
 }

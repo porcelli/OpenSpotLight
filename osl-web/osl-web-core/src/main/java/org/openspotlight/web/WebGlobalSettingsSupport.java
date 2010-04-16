@@ -53,11 +53,11 @@ import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 
 public class WebGlobalSettingsSupport {
 
-	public static void initializeSettings(final GlobalSettings settings) {
-		GlobalSettingsSupport.initializeScheduleMap(settings);
-	}
+    public static void initializeSettings( final GlobalSettings settings ) {
+        GlobalSettingsSupport.initializeScheduleMap(settings);
+    }
 
-	private WebGlobalSettingsSupport() {
-	}
+    private WebGlobalSettingsSupport() {
+    }
 
 }

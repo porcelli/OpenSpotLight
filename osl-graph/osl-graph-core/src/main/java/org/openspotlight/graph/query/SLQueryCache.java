@@ -52,8 +52,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLNodeNotFoundException;
+import org.openspotlight.graph.exception.SLNodeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 
@@ -71,12 +70,10 @@ public interface SLQueryCache {
      * @param nodes the nodes
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      * @throws SLNodeNotFoundException the SL node not found exception
-     * @throws SLGraphSessionException the SL graph session exception
      */
     public abstract void add2Cache( final String queryId,
                                     final Collection<PNodeWrapper> nodes )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException,
-        SLGraphSessionException;
+        throws SLPersistentTreeSessionException, SLNodeNotFoundException;
 
     /**
      * Builds a unique query id.
@@ -105,17 +102,14 @@ public interface SLQueryCache {
      * @return the cache
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      * @throws SLNodeNotFoundException the SL node not found exception
-     * @throws SLGraphSessionException the SL graph session exception
      */
     public abstract SLQueryResult getCache( final String queryId )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException,
-        SLGraphSessionException;
+        throws SLPersistentTreeSessionException, SLNodeNotFoundException;
 
     /**
      * Flush cache.
      * 
-     * @throws SLGraphSessionException the SL graph session exception
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public void flush() throws SLGraphSessionException, SLPersistentTreeSessionException;
+    public void flush() throws SLPersistentTreeSessionException;
 }

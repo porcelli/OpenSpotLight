@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,10 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Server - Database.
+ * The Interface for a link between Server - Database. Server A2B Database
  * 
- *
- * Server A2B Database
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Server - Database")
+@SLDescription( "Server - Database" )
 public interface ServerDatabase extends SLLink {
 }
-
-
-        

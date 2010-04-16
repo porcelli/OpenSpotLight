@@ -54,35 +54,33 @@ import org.openspotlight.persist.internal.LazyProperty;
 
 // TODO: Auto-generated Javadoc
 /**
- * This is the {@link StringArtifact} class 'on steroids'. It has a lot of
- * {@link PathElement path elements} used to locate a new {@link StringArtifact}
- * based on another one.
+ * This is the {@link StringArtifact} class 'on steroids'. It has a lot of {@link PathElement path elements} used to locate a new
+ * {@link StringArtifact} based on another one.
  */
-@Name("string_artifact")
+@Name( "string_artifact" )
 public class StringArtifact extends ArtifactWithSyntaxInformation {
 
+    private static final long    serialVersionUID = -8912205023568005794L;
 
-	private static final long serialVersionUID = -8912205023568005794L;
+    private LazyProperty<String> content          = LazyProperty.Factory.create(this);
 
-	private LazyProperty<String> content = LazyProperty.Factory.create(this);
+    @Override
+    public boolean contentEquals( final Artifact other ) {
+        if (other instanceof StringArtifact) {
+            final StringArtifact that = (StringArtifact)other;
+            return Equals.eachEquality(content == null ? null : content
+                                                                       .getMetadata().getSha1(), that.content == null ? null : that.content
+                                                                                                                                           .getMetadata().getSha1());
+        }
+        return false;
+    }
 
-	@Override
-	public boolean contentEquals(final Artifact other) {
-		if (other instanceof StringArtifact) {
-			final StringArtifact that = (StringArtifact) other;
-			return Equals.eachEquality(content == null ? null : content
-					.getMetadata().getSha1(), that.content == null ? null : that.content
-							.getMetadata().getSha1());
-		}
-		return false;
-	}
+    public LazyProperty<String> getContent() {
+        return content;
+    }
 
-	public LazyProperty<String> getContent() {
-		return content;
-	}
-
-	public void setContent(final LazyProperty<String> content) {
-		this.content = content;
-	}
+    public void setContent( final LazyProperty<String> content ) {
+        this.content = content;
+    }
 
 }

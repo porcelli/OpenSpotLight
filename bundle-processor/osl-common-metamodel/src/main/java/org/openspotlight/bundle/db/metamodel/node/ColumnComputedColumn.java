@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,28 +52,26 @@ import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
 /**
- * The Interface for node Column Computed Column Meta Model.
- *
- * {@link TableView} should be used as parent.
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * The Interface for node Column Computed Column Meta Model. {@link TableView} should be used as parent.
+ * 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Column Computed Column")
+@SLDescription( "Column Computed Column" )
 public interface ColumnComputedColumn extends Column {
 
     @SLProperty
     public Integer getOrder();
-    public void setOrder(Integer newOrder);
+
+    public void setOrder( Integer newOrder );
 
     @SLProperty
     public String getDataType();
-    public void setDataType(String newDataType);
+
+    public void setDataType( String newDataType );
 
     @SLProperty
     public String getPk();
-    public void setPk(String newPk);
 
-    
+    public void setPk( String newPk );
+
 }
-
-        

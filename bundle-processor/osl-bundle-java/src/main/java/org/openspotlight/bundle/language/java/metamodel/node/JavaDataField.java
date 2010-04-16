@@ -57,124 +57,117 @@ import org.openspotlight.graph.annotation.SLProperty;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Java Data Field")
+@SLDescription( "Java Data Field" )
 public interface JavaDataField extends JavaData {
 
-	/**
-	 * Gets the final.
-	 * 
-	 * @return the final
-	 */
-	@SLProperty
-	public Boolean getFinal();
+    /**
+     * Gets the final.
+     * 
+     * @return the final
+     */
+    @SLProperty
+    public Boolean getFinal();
 
-	/**
-	 * Gets the private.
-	 * 
-	 * @return the private
-	 */
-	@SLProperty
-	public Boolean getPrivate();
+    /**
+     * Gets the private.
+     * 
+     * @return the private
+     */
+    @SLProperty
+    public Boolean getPrivate();
 
-	/**
-	 * Gets the protected.
-	 * 
-	 * @return the protected
-	 */
-	@SLProperty
-	public Boolean getProtected();
+    /**
+     * Gets the protected.
+     * 
+     * @return the protected
+     */
+    @SLProperty
+    public Boolean getProtected();
 
-	/**
-	 * Gets the public.
-	 * 
-	 * @return the public
-	 */
-	@SLProperty
-	public Boolean getPublic();
+    /**
+     * Gets the public.
+     * 
+     * @return the public
+     */
+    @SLProperty
+    public Boolean getPublic();
 
-	@SLProperty
-	public String getQualifiedName();
+    @SLProperty
+    public String getQualifiedName();
 
-	/**
-	 * Gets the static.
-	 * 
-	 * @return the static
-	 */
-	@SLProperty
-	public Boolean getStatic();
+    /**
+     * Gets the static.
+     * 
+     * @return the static
+     */
+    @SLProperty
+    public Boolean getStatic();
 
-	/**
-	 * Gets the transient.
-	 * 
-	 * @return the transient
-	 */
-	@SLProperty
-	public Boolean getTransient();
+    /**
+     * Gets the transient.
+     * 
+     * @return the transient
+     */
+    @SLProperty
+    public Boolean getTransient();
 
-	/**
-	 * Gets the volatile.
-	 * 
-	 * @return the volatile
-	 */
-	@SLProperty
-	public Boolean getVolatile();
+    /**
+     * Gets the volatile.
+     * 
+     * @return the volatile
+     */
+    @SLProperty
+    public Boolean getVolatile();
 
-	/**
-	 * Sets the final.
-	 * 
-	 * @param newFinal
-	 *            the new final
-	 */
-	public void setFinal(Boolean newFinal);
+    /**
+     * Sets the final.
+     * 
+     * @param newFinal the new final
+     */
+    public void setFinal( Boolean newFinal );
 
-	/**
-	 * Sets the private.
-	 * 
-	 * @param newPrivate
-	 *            the new private
-	 */
-	public void setPrivate(Boolean newPrivate);
+    /**
+     * Sets the private.
+     * 
+     * @param newPrivate the new private
+     */
+    public void setPrivate( Boolean newPrivate );
 
-	/**
-	 * Sets the protected.
-	 * 
-	 * @param newProtected
-	 *            the new protected
-	 */
-	public void setProtected(Boolean newProtected);
+    /**
+     * Sets the protected.
+     * 
+     * @param newProtected the new protected
+     */
+    public void setProtected( Boolean newProtected );
 
-	/**
-	 * Sets the public.
-	 * 
-	 * @param newPublic
-	 *            the new public
-	 */
-	public void setPublic(Boolean newPublic);
+    /**
+     * Sets the public.
+     * 
+     * @param newPublic the new public
+     */
+    public void setPublic( Boolean newPublic );
 
-	public void setQualifiedName(String newQualifiedName);
+    public void setQualifiedName( String newQualifiedName );
 
-	/**
-	 * Sets the static.
-	 * 
-	 * @param newStatic
-	 *            the new static
-	 */
-	public void setStatic(Boolean newStatic);
+    /**
+     * Sets the static.
+     * 
+     * @param newStatic the new static
+     */
+    public void setStatic( Boolean newStatic );
 
-	/**
-	 * Sets the transient.
-	 * 
-	 * @param newTransient
-	 *            the new transient
-	 */
-	public void setTransient(Boolean newTransient);
+    /**
+     * Sets the transient.
+     * 
+     * @param newTransient the new transient
+     */
+    public void setTransient( Boolean newTransient );
 
-	/**
-	 * Sets the volatile.
-	 * 
-	 * @param newVolatile
-	 *            the new volatile
-	 */
-	public void setVolatile(Boolean newVolatile);
+    /**
+     * Sets the volatile.
+     * 
+     * @param newVolatile the new volatile
+     */
+    public void setVolatile( Boolean newVolatile );
 
 }

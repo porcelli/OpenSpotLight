@@ -49,7 +49,6 @@
 package org.openspotlight.bundle.language.java;
 
 import org.junit.Test;
-import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;

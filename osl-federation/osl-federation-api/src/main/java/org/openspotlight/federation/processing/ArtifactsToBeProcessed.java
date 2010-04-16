@@ -57,34 +57,32 @@ import org.openspotlight.federation.domain.artifact.Artifact;
  */
 public interface ArtifactsToBeProcessed<T extends Artifact> {
 
-	/**
-	 * Gets the artifacts already processed.
-	 * 
-	 * @return the artifacts already processed
-	 */
-	public Set<T> getArtifactsAlreadyProcessed();
+    /**
+     * Gets the artifacts already processed.
+     * 
+     * @return the artifacts already processed
+     */
+    public Set<T> getArtifactsAlreadyProcessed();
 
-	/**
-	 * Gets the artifacts to be processed.
-	 * 
-	 * @return the artifacts to be processed
-	 */
-	public Set<T> getArtifactsToBeProcessed();
+    /**
+     * Gets the artifacts to be processed.
+     * 
+     * @return the artifacts to be processed
+     */
+    public Set<T> getArtifactsToBeProcessed();
 
-	/**
-	 * Sets the artifacts already processed.
-	 * 
-	 * @param artifacts
-	 *            the new artifacts already processed
-	 */
-	public void setArtifactsAlreadyProcessed(Set<T> artifacts);
+    /**
+     * Sets the artifacts already processed.
+     * 
+     * @param artifacts the new artifacts already processed
+     */
+    public void setArtifactsAlreadyProcessed( Set<T> artifacts );
 
-	/**
-	 * Sets the artifacts to be processed.
-	 * 
-	 * @param artifacts
-	 *            the new artifacts to be processed
-	 */
-	public void setArtifactsToBeProcessed(Set<T> artifacts);
+    /**
+     * Sets the artifacts to be processed.
+     * 
+     * @param artifacts the new artifacts to be processed
+     */
+    public void setArtifactsToBeProcessed( Set<T> artifacts );
 
 }

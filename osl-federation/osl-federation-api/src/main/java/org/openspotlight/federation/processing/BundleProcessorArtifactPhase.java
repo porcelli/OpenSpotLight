@@ -54,44 +54,40 @@ import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 
 public interface BundleProcessorArtifactPhase<T extends Artifact> {
 
-	/**
-	 * Before process artifact.
-	 * 
-	 * @param artifact
-	 *            the artifact
-	 */
-	public void beforeProcessArtifact(T artifact,
-			CurrentProcessorContext currentContext, ExecutionContext context);
+    /**
+     * Before process artifact.
+     * 
+     * @param artifact the artifact
+     */
+    public void beforeProcessArtifact( T artifact,
+                                       CurrentProcessorContext currentContext,
+                                       ExecutionContext context );
 
-	/**
-	 * After process artifact.
-	 * 
-	 * @param artifact
-	 *            the artifact
-	 * @param status
-	 *            the status
-	 */
-	public void didFinishToProcessArtifact(T artifact,
-			LastProcessStatus status, CurrentProcessorContext currentContext,
-			ExecutionContext context);
+    /**
+     * After process artifact.
+     * 
+     * @param artifact the artifact
+     * @param status the status
+     */
+    public void didFinishToProcessArtifact( T artifact,
+                                            LastProcessStatus status,
+                                            CurrentProcessorContext currentContext,
+                                            ExecutionContext context );
 
-	public Class<T> getArtifactType();
+    public Class<T> getArtifactType();
 
-	/**
-	 * Process artifact.
-	 * 
-	 * @param artifact
-	 *            the artifact
-	 * @param context
-	 *            the context
-	 * @param currentContext
-	 *            the current context
-	 * @return the last process status
-	 * @throws Exception
-	 *             the exception
-	 */
-	public LastProcessStatus processArtifact(T artifact,
-			CurrentProcessorContext currentContext, ExecutionContext context)
-			throws Exception;
+    /**
+     * Process artifact.
+     * 
+     * @param artifact the artifact
+     * @param context the context
+     * @param currentContext the current context
+     * @return the last process status
+     * @throws Exception the exception
+     */
+    public LastProcessStatus processArtifact( T artifact,
+                                              CurrentProcessorContext currentContext,
+                                              ExecutionContext context )
+            throws Exception;
 
 }

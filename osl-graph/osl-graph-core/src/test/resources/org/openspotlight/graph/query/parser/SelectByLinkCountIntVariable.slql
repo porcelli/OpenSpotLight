@@ -1,5 +1,5 @@
 select **
 	where
-		org.openspotlight.graph.test.domain.JavaType.*
-			link org.openspotlight.graph.test.domain.TypeContainsMethod (a) > #intVar &&
-			link org.openspotlight.graph.test.domain.TypeContainsMethod (a) <= 12;
+		org.openspotlight.graph.test.domain.node.JavaType.*
+			link org.openspotlight.graph.test.domain.link.TypeContainsMethod (a) > #intVar &&
+			link org.openspotlight.graph.test.domain.link.TypeContainsMethod (a) <= 12;

@@ -54,33 +54,32 @@ package org.openspotlight.graph.persistence;
  * @author Vitor Hugo Chagas
  */
 public interface SLPersistentQuery {
-	
-	/** The Constant TYPE_XPATH. */
-	public static final int TYPE_XPATH = 1;
-	
-	/** The Constant TYPE_SQL. */
-	public static final int TYPE_SQL = 2;
 
-	/**
-	 * Execute.
-	 * 
-	 * @return the sL persistent query result
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public SLPersistentQueryResult execute() throws SLPersistentTreeSessionException;
-	
-	/**
-	 * Gets the statement.
-	 * 
-	 * @return the statement
-	 */
-	public String getStatement();
-	
-	/**
-	 * Gets the type.
-	 * 
-	 * @return the type
-	 */
-	public int getType();
+    /** The Constant TYPE_XPATH. */
+    public static final int TYPE_XPATH = 1;
+
+    /** The Constant TYPE_SQL. */
+    public static final int TYPE_SQL   = 2;
+
+    /**
+     * Execute.
+     * 
+     * @return the sL persistent query result
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public SLPersistentQueryResult execute() throws SLPersistentTreeSessionException;
+
+    /**
+     * Gets the statement.
+     * 
+     * @return the statement
+     */
+    public String getStatement();
+
+    /**
+     * Gets the type.
+     * 
+     * @return the type
+     */
+    public int getType();
 }

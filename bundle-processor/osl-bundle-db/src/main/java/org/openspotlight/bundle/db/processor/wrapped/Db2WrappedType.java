@@ -74,60 +74,60 @@ import org.openspotlight.bundle.db.processor.DbWrappedType;
 
 public enum Db2WrappedType implements DbWrappedType {
 
-	INSTANCE;
+    INSTANCE;
 
-	public Class<? extends Catalog> getCatalogType() {
-		return Db2Catalog.class;
-	}
+    public Class<? extends Catalog> getCatalogType() {
+        return Db2Catalog.class;
+    }
 
-	public Class<? extends Column> getColumnType() {
+    public Class<? extends Column> getColumnType() {
 
-		return Db2Column.class;
-	}
+        return Db2Column.class;
+    }
 
-	public Class<? extends DatabaseConstraintForeignKey> getDatabaseConstraintForeignKeyType() {
+    public Class<? extends DatabaseConstraintForeignKey> getDatabaseConstraintForeignKeyType() {
 
-		return Db2DatabaseConstraintForeignKey.class;
-	}
+        return Db2DatabaseConstraintForeignKey.class;
+    }
 
-	public Class<? extends DatabaseConstraintPrimaryKey> getDatabaseConstraintPrimaryKeyType() {
+    public Class<? extends DatabaseConstraintPrimaryKey> getDatabaseConstraintPrimaryKeyType() {
 
-		return Db2DatabaseConstraintPrimaryKey.class;
-	}
+        return Db2DatabaseConstraintPrimaryKey.class;
+    }
 
-	public Class<? extends Database> getDatabaseType() {
+    public Class<? extends Database> getDatabaseType() {
 
-		return Db2Database.class;
-	}
+        return Db2Database.class;
+    }
 
-	public Class<? extends DataType> getDataTypeType() {
+    public Class<? extends DataType> getDataTypeType() {
 
-		return Db2DataType.class;
-	}
+        return Db2DataType.class;
+    }
 
-	public Class<? extends Schema> getSchemaType() {
+    public Class<? extends Schema> getSchemaType() {
 
-		return Db2Schema.class;
-	}
+        return Db2Schema.class;
+    }
 
-	public Class<? extends Server> getServerType() {
+    public Class<? extends Server> getServerType() {
 
-		return Db2Server.class;
-	}
+        return Db2Server.class;
+    }
 
-	public Class<? extends TableViewTable> getTableViewTableType() {
+    public Class<? extends TableViewTable> getTableViewTableType() {
 
-		return Db2TableViewTable.class;
-	}
+        return Db2TableViewTable.class;
+    }
 
-	public Class<? extends TableView> getTableViewType() {
+    public Class<? extends TableView> getTableViewType() {
 
-		return Db2TableView.class;
-	}
+        return Db2TableView.class;
+    }
 
-	public Class<? extends TableViewView> getTableViewViewType() {
+    public Class<? extends TableViewView> getTableViewViewType() {
 
-		return Db2TableViewView.class;
-	}
+        return Db2TableViewView.class;
+    }
 
 }

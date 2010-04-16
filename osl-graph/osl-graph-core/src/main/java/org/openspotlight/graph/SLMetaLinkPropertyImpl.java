@@ -52,6 +52,7 @@ import java.io.Serializable;
 
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 
@@ -86,37 +87,31 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
         lock = pProperty.getLockObject();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Lock getLockObject() {
         return lock;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaElement#getMetadata()
+    /**
+     * {@inheritDoc}
      */
-    public SLMetadata getMetadata() throws SLGraphSessionException {
+    public SLMetadata getMetadata() {
         return metaLink.getMetadata();
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaLinkProperty#getMetaLink()
+    /**
+     * {@inheritDoc}
      */
-    public SLMetaLink getMetaLink() throws SLGraphSessionException {
+    public SLMetaLink getMetaLink() {
         return metaLink;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaLinkProperty#getName()
+    /**
+     * {@inheritDoc}
      */
-    public String getName() throws SLGraphSessionException {
+    public String getName() {
         synchronized (lock) {
 
             try {
@@ -130,15 +125,11 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaLinkProperty#getType()
+    /**
+     * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
-    public Class<? extends Serializable> getType()
-        throws SLGraphSessionException {
+    public Class<? extends Serializable> getType() {
         synchronized (lock) {
             try {
                 return (Class<? extends Serializable>)Class
@@ -154,7 +145,7 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
     /**
      * {@inheritDoc}
      */
-    public VisibilityLevel getVisibility() throws SLGraphSessionException {
+    public VisibilityLevel getVisibility() {
         try {
             if (visibility == null) {
                 final String propName = SLCommonSupport

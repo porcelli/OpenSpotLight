@@ -53,7 +53,6 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.openspotlight.bundle.language.java.asm.ASMParser;
 import org.openspotlight.bundle.language.java.asm.model.MethodDeclaration;
 import org.openspotlight.bundle.language.java.asm.model.TypeReference;
 

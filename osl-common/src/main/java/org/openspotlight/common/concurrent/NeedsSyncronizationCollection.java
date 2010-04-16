@@ -51,29 +51,23 @@ package org.openspotlight.common.concurrent;
 import java.util.Collection;
 
 /**
- * This is a {@link Collection} with a {@link LockContainer} used to
- * synchronize all its methods. Its behavior works like
- * {@link SLCollections#synchronizedCollection(Collection)}. The
- * synchronization during iterations to avoid
- * {@link ConcurrentModificationException} needs to be done with
- * {@link LockContainer#getLockObject()} instead of the intrinsic object
- * lock.
- * 
- * example:
+ * This is a {@link Collection} with a {@link LockContainer} used to synchronize all its methods. Its behavior works like
+ * {@link SLCollections#synchronizedCollection(Collection)}. The synchronization during iterations to avoid
+ * {@link ConcurrentModificationException} needs to be done with {@link LockContainer#getLockObject()} instead of the intrinsic
+ * object lock. example:
  * 
  * <pre>
  * synchronized (items.getLockObject()) {
- * 	for (A a : items) {
- * 		// do stuff
- * 	}
+ *     for (A a : items) {
+ *         // do stuff
+ *     }
  * }
  * </pre>
  * 
  * @author feu
- * 
  * @param <E>
  */
 public interface NeedsSyncronizationCollection<E> extends Collection<E>,
-		LockContainer {
+        LockContainer {
 
 }

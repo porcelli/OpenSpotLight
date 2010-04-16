@@ -99,9 +99,7 @@ public interface SLQueryText extends SLQuery {
      * Execute.
      * 
      * @param variableValues the variable values
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -115,9 +113,7 @@ public interface SLQueryText extends SLQuery {
      * @param variableValues the variable values
      * @param limit the limit
      * @param offset the offset
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -132,9 +128,7 @@ public interface SLQueryText extends SLQuery {
      * 
      * @param inputNodes the input nodes
      * @param variableValues the variable values
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -150,9 +144,7 @@ public interface SLQueryText extends SLQuery {
      * @param variableValues the variable values
      * @param limit the limit
      * @param offset the offset
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -168,9 +160,7 @@ public interface SLQueryText extends SLQuery {
      * 
      * @param inputNodesIDs the input nodes id
      * @param variableValues the variable values
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -186,9 +176,7 @@ public interface SLQueryText extends SLQuery {
      * @param variableValues the variable values
      * @param limit the limit
      * @param offset the offset
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -205,9 +193,7 @@ public interface SLQueryText extends SLQuery {
      * @param variableValues the variable values
      * @param sortMode the sort mode
      * @param showSLQL the show slql
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -225,9 +211,7 @@ public interface SLQueryText extends SLQuery {
      * @param showSLQL the show slql
      * @param limit the limit
      * @param offset the offset
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -246,9 +230,7 @@ public interface SLQueryText extends SLQuery {
      * @param variableValues the variable values
      * @param sortMode the sort mode
      * @param showSLQL the show slql
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -268,9 +250,7 @@ public interface SLQueryText extends SLQuery {
      * @param showSLQL the show slql
      * @param limit the limit
      * @param offset the offset
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -290,9 +270,7 @@ public interface SLQueryText extends SLQuery {
      * @param variableValues the variable values
      * @param sortMode the sort mode
      * @param showSLQL the show slql
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -312,9 +290,7 @@ public interface SLQueryText extends SLQuery {
      * @param showSLQL the show slql
      * @param limit the limit
      * @param offset the offset
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -331,7 +307,6 @@ public interface SLQueryText extends SLQuery {
      * Execute target query. If there is no target query, returns empty result.
      * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
@@ -344,9 +319,7 @@ public interface SLQueryText extends SLQuery {
      * 
      * @param sortMode the sort mode
      * @param showSLQL the show slql
-     * 
      * @return the sL query result
-     * 
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception

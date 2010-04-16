@@ -61,26 +61,26 @@ import org.openspotlight.bundle.common.tool.template.TemplateTask;
 
 public class DbTestNodesAndLinksGeneration {
 
-	@Test
-	public void shouldCreateClassFiles() throws Exception {
-		final TemplateTask task = new TemplateTask();
-		task.setProject(new Project());
-		task.setExecuteBeanShellScript(false);
-		task.setTemplatePath("src/test/resources/template/sourcecode/");
-		task.addTemplateFiles("OslNode.ftl", "OslLink.ftl");
-		final FileSet xmls = new FileSet();
-		xmls.setDir(new File("src/test/resources/data/sourcecode/"));
-		xmls.setIncludes("*.xml");
-		task.addXmlFiles(xmls);
-		task
-				.setOutputDirectory("./target/test-data/DbTestNodesAndLinksGeneration/output/");
-		task.execute();
-		final String linkDir = "target/test-data/DbTestNodesAndLinksGeneration/output/bundle-processor/osl-db-bundle/src/main/java/org/openspotlight/bundle/db/metamodel/link";
-		assertThat(new File(linkDir).exists(), is(true));
-		assertThat(new File(linkDir).list().length, is(not(0)));
+    @Test
+    public void shouldCreateClassFiles() throws Exception {
+        final TemplateTask task = new TemplateTask();
+        task.setProject(new Project());
+        task.setExecuteBeanShellScript(false);
+        task.setTemplatePath("src/test/resources/template/sourcecode/");
+        task.addTemplateFiles("OslNode.ftl", "OslLink.ftl");
+        final FileSet xmls = new FileSet();
+        xmls.setDir(new File("src/test/resources/data/sourcecode/"));
+        xmls.setIncludes("*.xml");
+        task.addXmlFiles(xmls);
+        task
+                .setOutputDirectory("./target/test-data/DbTestNodesAndLinksGeneration/output/");
+        task.execute();
+        final String linkDir = "target/test-data/DbTestNodesAndLinksGeneration/output/bundle-processor/osl-db-bundle/src/main/java/org/openspotlight/bundle/db/metamodel/link";
+        assertThat(new File(linkDir).exists(), is(true));
+        assertThat(new File(linkDir).list().length, is(not(0)));
 
-		final String nodeDir = "target/test-data/DbTestNodesAndLinksGeneration/output/bundle-processor/osl-db-bundle/src/main/java/org/openspotlight/bundle/db/metamodel/node";
-		assertThat(new File(nodeDir).exists(), is(true));
-		assertThat(new File(nodeDir).list().length, is(not(0)));
-	}
+        final String nodeDir = "target/test-data/DbTestNodesAndLinksGeneration/output/bundle-processor/osl-db-bundle/src/main/java/org/openspotlight/bundle/db/metamodel/node";
+        assertThat(new File(nodeDir).exists(), is(true));
+        assertThat(new File(nodeDir).list().length, is(not(0)));
+    }
 }

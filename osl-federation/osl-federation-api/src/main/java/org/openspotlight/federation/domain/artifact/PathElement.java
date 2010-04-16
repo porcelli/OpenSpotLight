@@ -63,180 +63,181 @@ import org.openspotlight.persist.annotation.TransientProperty;
 /**
  * The Class PathElement.
  */
-@Name("path_element")
+@Name( "path_element" )
 public class PathElement implements Comparable<PathElement>, SimpleNodeType,
-Serializable {
+    Serializable {
 
-	private static final long serialVersionUID = -6520096568789344933L;
+    private static final long serialVersionUID = -6520096568789344933L;
 
-	/**
-	 * Creates the from path string.
-	 * 
-	 * @param pathString
-	 *            the path string
-	 * @return the path element
-	 */
-	public static PathElement createFromPathString(final String pathString) {
-		Assertions.checkNotEmpty("pathString", pathString);
-		final StringTokenizer tok = new StringTokenizer(pathString, "/");
+    /**
+     * Creates the from path string.
+     * 
+     * @param pathString the path string
+     * @return the path element
+     */
+    public static PathElement createFromPathString( final String pathString ) {
+        Assertions.checkNotEmpty("pathString", pathString);
+        final StringTokenizer tok = new StringTokenizer(pathString, "/");
 
-		if (!tok.hasMoreTokens()) {
-			return null;
-		}
+        if (!tok.hasMoreTokens()) {
+            return null;
+        }
 
-		PathElement lastPath = new PathElement();
-		lastPath.setName(tok.nextToken());
-		while (tok.hasMoreTokens()) {
-			final String nextToken = tok.nextToken();
-			if (nextToken.equals(".")) {
-				continue;
-			}
-			if (nextToken.equals("..")) {
-				lastPath = lastPath.getParent();
-				continue;
-			}
-			final PathElement newPath = new PathElement(nextToken, lastPath);
-			lastPath = newPath;
-		}
-		return lastPath;
+        PathElement lastPath = new PathElement();
+        lastPath.setName(tok.nextToken());
+        while (tok.hasMoreTokens()) {
+            final String nextToken = tok.nextToken();
+            if (nextToken.equals(".")) {
+                continue;
+            }
+            if (nextToken.equals("..")) {
+                lastPath = lastPath.getParent();
+                continue;
+            }
+            final PathElement newPath = new PathElement(nextToken, lastPath);
+            lastPath = newPath;
+        }
+        return lastPath;
 
-	}
+    }
 
-	public static PathElement createRelativePath(
-			final PathElement initialPathElement, final String pathString) {
-		final String newPathString = pathString.startsWith("/") ? Strings
-				.removeBegginingFrom("/", pathString) : pathString;
+    public static PathElement createRelativePath(
+                                                  final PathElement initialPathElement,
+                                                  final String pathString ) {
+        final String newPathString = pathString.startsWith("/") ? Strings
+                                                                         .removeBegginingFrom("/", pathString) : pathString;
 
-				return createFromPathString(initialPathElement.getCompletePath()
-						+ Artifact.SEPARATOR + newPathString);
+        return createFromPathString(initialPathElement.getCompletePath()
+                                    + Artifact.SEPARATOR + newPathString);
 
-	}
+    }
 
-	/** The name. */
-	private String name;
+    /** The name. */
+    private String                    name;
 
-	/** The parent. */
-	private transient PathElement parent;
+    /** The parent. */
+    private transient PathElement     parent;
 
-	/** The hashcode. */
-	private volatile transient int hashcode;
+    /** The hashcode. */
+    private volatile transient int    hashcode;
 
-	private volatile transient String completePathCache = null;
+    private volatile transient String completePathCache = null;
 
-	public PathElement() {
+    public PathElement() {
 
-	}
+    }
 
-	public PathElement(final String name, final PathElement parent) {
-		this.name = name;
-		this.parent = parent;
-	}
+    public PathElement(
+                        final String name, final PathElement parent ) {
+        this.name = name;
+        this.parent = parent;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	public int compareTo(final PathElement o) {
-		return getCompletePath().compareTo(o.getCompletePath());
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo( final PathElement o ) {
+        return getCompletePath().compareTo(o.getCompletePath());
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(final Object o) {
-		if (!(o instanceof PathElement)) {
-			return false;
-		}
-		final PathElement that = (PathElement) o;
-		return Equals.eachEquality(name, that.name)
-		&& Equals.eachEquality(parent, that.parent);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals( final Object o ) {
+        if (!(o instanceof PathElement)) {
+            return false;
+        }
+        final PathElement that = (PathElement)o;
+        return Equals.eachEquality(name, that.name)
+               && Equals.eachEquality(parent, that.parent);
 
-	}
+    }
 
-	/**
-	 * Gets the complete path.
-	 * 
-	 * @return the complete path
-	 */
-	public String getCompletePath() {
-		String path = completePathCache;
-		if (path == null) {
-			if (isRootElement()) {
-				path = "/" + name;
-			} else {
-				path = getParent().getCompletePath() + Artifact.SEPARATOR
-				+ getName();
-			}
-			completePathCache = path;
-		}
-		return path;
-	}
+    /**
+     * Gets the complete path.
+     * 
+     * @return the complete path
+     */
+    public String getCompletePath() {
+        String path = completePathCache;
+        if (path == null) {
+            if (isRootElement()) {
+                path = "/" + name;
+            } else {
+                path = getParent().getCompletePath() + Artifact.SEPARATOR
+                       + getName();
+            }
+            completePathCache = path;
+        }
+        return path;
+    }
 
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 */
-	@KeyProperty
-	public String getName() {
-		return name;
-	}
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    @KeyProperty
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Gets the parent.
-	 * 
-	 * @return the parent
-	 */
-	@ParentProperty
-	public PathElement getParent() {
-		return parent;
-	}
+    /**
+     * Gets the parent.
+     * 
+     * @return the parent
+     */
+    @ParentProperty
+    public PathElement getParent() {
+        return parent;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		int result = hashcode;
-		if (result == 0) {
-			result = 17;
-			result = 31 * result + (parent != null ? parent.hashCode() : 0);
-			result = 31 * result + (name != null ? name.hashCode() : 0);
-			hashcode = result;
-		}
-		return result;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        int result = hashcode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + (parent != null ? parent.hashCode() : 0);
+            result = 31 * result + (name != null ? name.hashCode() : 0);
+            hashcode = result;
+        }
+        return result;
+    }
 
-	/**
-	 * Checks if is root element.
-	 * 
-	 * @return true, if is root element
-	 */
-	@TransientProperty
-	public boolean isRootElement() {
-		return parent == null;
-	}
+    /**
+     * Checks if is root element.
+     * 
+     * @return true, if is root element
+     */
+    @TransientProperty
+    public boolean isRootElement() {
+        return parent == null;
+    }
 
-	public void setCompletePath(final String s) {
+    public void setCompletePath( final String s ) {
 
-	}
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	public void setParent(final PathElement parent) {
-		this.parent = parent;
-	}
+    public void setParent( final PathElement parent ) {
+        this.parent = parent;
+    }
 
-	public String toString() {
-		return "PathElement: " + getCompletePath();
-	}
+    public String toString() {
+        return "PathElement: " + getCompletePath();
+    }
 
 }

@@ -60,55 +60,55 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class GroupDifferences implements SimpleNodeType, Serializable {
 
-	private String repositoryName;
+    private String            repositoryName;
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 6595595697385787637L;
+    private static final long serialVersionUID = 6595595697385787637L;
 
-	private Set<String> addedGroups = new HashSet<String>();
+    private Set<String>       addedGroups      = new HashSet<String>();
 
-	private Set<String> removedGroups = new HashSet<String>();
+    private Set<String>       removedGroups    = new HashSet<String>();
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (!(obj instanceof GroupDifferences)) {
-			return false;
-		}
-		final GroupDifferences that = (GroupDifferences) obj;
-		return Equals.eachEquality(Arrays.of(getRepositoryName()), Arrays
-				.andOf(that.getRepositoryName()));
-	}
+    @Override
+    public boolean equals( final Object obj ) {
+        if (!(obj instanceof GroupDifferences)) {
+            return false;
+        }
+        final GroupDifferences that = (GroupDifferences)obj;
+        return Equals.eachEquality(Arrays.of(getRepositoryName()), Arrays
+                                                                         .andOf(that.getRepositoryName()));
+    }
 
-	public Set<String> getAddedGroups() {
-		return addedGroups;
-	}
+    public Set<String> getAddedGroups() {
+        return addedGroups;
+    }
 
-	public Set<String> getRemovedGroups() {
-		return removedGroups;
-	}
+    public Set<String> getRemovedGroups() {
+        return removedGroups;
+    }
 
-	@KeyProperty
-	public String getRepositoryName() {
-		return repositoryName;
-	}
+    @KeyProperty
+    public String getRepositoryName() {
+        return repositoryName;
+    }
 
-	@Override
-	public int hashCode() {
-		return HashCodes.hashOf(getClass(), repositoryName);
-	}
+    @Override
+    public int hashCode() {
+        return HashCodes.hashOf(getClass(), repositoryName);
+    }
 
-	public void setAddedGroups(final Set<String> addedGroups) {
-		this.addedGroups = addedGroups;
-	}
+    public void setAddedGroups( final Set<String> addedGroups ) {
+        this.addedGroups = addedGroups;
+    }
 
-	public void setRemovedGroups(final Set<String> removedGroups) {
-		this.removedGroups = removedGroups;
-	}
+    public void setRemovedGroups( final Set<String> removedGroups ) {
+        this.removedGroups = removedGroups;
+    }
 
-	public void setRepositoryName(final String repositoryName) {
-		this.repositoryName = repositoryName;
-	}
+    public void setRepositoryName( final String repositoryName ) {
+        this.repositoryName = repositoryName;
+    }
 
 }

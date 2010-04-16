@@ -68,7 +68,7 @@ public class SLMetadataXPathSupporter {
                                                     final MetaNodeTypeProperty property2Find,
                                                     final LogicOperator logicOp,
                                                     final BooleanOperator booleanOp,
-                                                    final List<String> values ) throws SLGraphSessionException {
+                                                    final List<String> values ) {
 
         if ((logicOp == LogicOperator.LIKE_CONTAINS || logicOp == LogicOperator.LIKE_BEGINS_WITH || logicOp == LogicOperator.LIKE_ENDS_WITH) && (property2Find == null || property2Find == MetaNodeTypeProperty.NAME)) {
             Exceptions.logAndThrow(new IllegalArgumentException(

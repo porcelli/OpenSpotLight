@@ -51,7 +51,7 @@ package org.openspotlight.common;
 
 /**
  * Enum for describing lazy behavior.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public enum LazyType {

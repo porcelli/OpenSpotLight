@@ -54,7 +54,6 @@ import java.util.Collection;
 import jline.ConsoleReader;
 
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLMetaNodeType;
 import org.openspotlight.graph.SLRecursiveMode;
 import org.openspotlight.graph.query.console.ConsoleState;
@@ -79,24 +78,19 @@ public class ShowNodeTypesCommand implements DynamicCommand {
         if (!accept(state)) {
             return;
         }
-        try {
-            out.println("node types:");
-            if (state.getSession() == null) {
+        out.println("node types:");
+        if (state.getSession() == null) {
+            out.println("\t(none)");
+        } else {
+            Collection<SLMetaNodeType> nodeTypes = state.getSession().getMetadata().getMetaNodesTypes(SLRecursiveMode.RECURSIVE);
+            if (nodeTypes.size() == 0) {
                 out.println("\t(none)");
             } else {
-                Collection<SLMetaNodeType> nodeTypes = state.getSession().getMetadata().getMetaNodesTypes(SLRecursiveMode.RECURSIVE);
-                if (nodeTypes.size() == 0) {
-                    out.println("\t(none)");
-                } else {
-                    for (SLMetaNodeType nodeType : nodeTypes) {
-                        out.print("\t- ");
-                        out.println(nodeType.getTypeName());
-                    }
+                for (SLMetaNodeType nodeType : nodeTypes) {
+                    out.print("\t- ");
+                    out.println(nodeType.getTypeName());
                 }
             }
-        } catch (SLGraphSessionException e) {
-            out.print("ERROR: ");
-            out.println(e.getMessage());
         }
         out.flush();
         state.setInput(null);

@@ -63,7 +63,7 @@ import java.util.Date;
 
 /**
  * Helper class to deal with dates
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Dates {
@@ -85,7 +85,7 @@ public class Dates {
 
     /**
      * Creates a date using the default date format
-     *
+     * 
      * @param dateString
      * @return a new date
      */
@@ -101,7 +101,7 @@ public class Dates {
 
     /**
      * Creates a date using the default date time format
-     *
+     * 
      * @param dateString
      * @return a new date
      */
@@ -117,7 +117,7 @@ public class Dates {
 
     /**
      * Returns a string using the date passed on argument and the default format
-     *
+     * 
      * @param date
      * @return a formatted string
      */
@@ -129,7 +129,7 @@ public class Dates {
 
     /**
      * Returns a string using the date passed on argument and the default date time format
-     *
+     * 
      * @param date
      * @return a formatted string
      */

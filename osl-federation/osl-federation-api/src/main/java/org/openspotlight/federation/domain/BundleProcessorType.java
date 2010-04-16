@@ -71,169 +71,166 @@ import org.openspotlight.persist.annotation.TransientProperty;
 /**
  * The Class BundleProcessorType.
  */
-@Name("bundle_processor_type")
+@Name( "bundle_processor_type" )
 public class BundleProcessorType implements SimpleNodeType, Serializable {
 
-	private volatile transient String uniqueName = null;
+    private volatile transient String                                       uniqueName       = null;
 
-	private String name;
+    private String                                                          name;
 
-	private Map<String, String> bundleProperties = new HashMap<String, String>();
+    private Map<String, String>                                             bundleProperties = new HashMap<String, String>();
 
-	private static final long serialVersionUID = -8305990807194729295L;
+    private static final long                                               serialVersionUID = -8305990807194729295L;
 
-	/** The type. */
-	private Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase;
+    /** The type. */
+    private Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase;
 
-	private List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases = new ArrayList<Class<? extends BundleProcessorArtifactPhase<?>>>();
+    private List<Class<? extends BundleProcessorArtifactPhase<?>>>          artifactPhases   = new ArrayList<Class<? extends BundleProcessorArtifactPhase<?>>>();
 
-	/** The active. */
-	private boolean active;
+    /** The active. */
+    private boolean                                                         active;
 
-	/** The group. */
-	private transient Group group;
+    /** The group. */
+    private transient Group                                                 group;
 
-	/** The sources. */
-	private Set<BundleSource> sources = new HashSet<BundleSource>();
+    /** The sources. */
+    private Set<BundleSource>                                               sources          = new HashSet<BundleSource>();
 
-	/** The hash code. */
-	private volatile transient int hashCode;
+    /** The hash code. */
+    private volatile transient int                                          hashCode;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(final Object o) {
-		if (o == this) {
-			return true;
-		}
-		if (!(o instanceof BundleProcessorType)) {
-			return false;
-		}
-		final BundleProcessorType that = (BundleProcessorType) o;
-		final boolean result = Equals.eachEquality(Arrays.of(group,
-				globalPhase, name), Arrays.andOf(that.group, that.globalPhase,
-						that.name));
-		return result;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof BundleProcessorType)) {
+            return false;
+        }
+        final BundleProcessorType that = (BundleProcessorType)o;
+        final boolean result = Equals.eachEquality(Arrays.of(group,
+                                                             globalPhase, name), Arrays.andOf(that.group, that.globalPhase,
+                                                                                              that.name));
+        return result;
+    }
 
-	public List<Class<? extends BundleProcessorArtifactPhase<?>>> getArtifactPhases() {
-		return artifactPhases;
-	}
+    public List<Class<? extends BundleProcessorArtifactPhase<?>>> getArtifactPhases() {
+        return artifactPhases;
+    }
 
-	public Map<String, String> getBundleProperties() {
-		return bundleProperties;
-	}
+    public Map<String, String> getBundleProperties() {
+        return bundleProperties;
+    }
 
-	@KeyProperty
-	public Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> getGlobalPhase() {
-		return globalPhase;
-	}
+    @KeyProperty
+    public Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> getGlobalPhase() {
+        return globalPhase;
+    }
 
-	/**
-	 * Gets the artifact source.
-	 * 
-	 * @return the artifact source
-	 */
-	@ParentProperty
-	public Group getGroup() {
-		return group;
-	}
+    /**
+     * Gets the artifact source.
+     * 
+     * @return the artifact source
+     */
+    @ParentProperty
+    public Group getGroup() {
+        return group;
+    }
 
-	@KeyProperty
-	public String getName() {
-		return name;
-	}
+    @KeyProperty
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Gets the sources.
-	 * 
-	 * @return the sources
-	 */
-	public Set<BundleSource> getSources() {
-		return sources;
-	}
+    /**
+     * Gets the sources.
+     * 
+     * @return the sources
+     */
+    public Set<BundleSource> getSources() {
+        return sources;
+    }
 
-	@TransientProperty
-	public String getUniqueName() {
-		String temp = uniqueName;
-		if (temp == null) {
-			temp = getGroup().getUniqueName() + "/" + getName();
-			uniqueName = temp;
-		}
-		return temp;
-	}
+    @TransientProperty
+    public String getUniqueName() {
+        String temp = uniqueName;
+        if (temp == null) {
+            temp = getGroup().getUniqueName() + "/" + getName();
+            uniqueName = temp;
+        }
+        return temp;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		int result = hashCode;
-		if (result == 0) {
-			result = HashCodes.hashOf(group, globalPhase, name);
-			hashCode = result;
-		}
-		return result;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        int result = hashCode;
+        if (result == 0) {
+            result = HashCodes.hashOf(group, globalPhase, name);
+            hashCode = result;
+        }
+        return result;
+    }
 
-	/**
-	 * Checks if is active.
-	 * 
-	 * @return true, if is active
-	 */
-	public boolean isActive() {
-		return active;
-	}
+    /**
+     * Checks if is active.
+     * 
+     * @return true, if is active
+     */
+    public boolean isActive() {
+        return active;
+    }
 
-	/**
-	 * Sets the active.
-	 * 
-	 * @param active
-	 *            the new active
-	 */
-	public void setActive(final boolean active) {
-		this.active = active;
-	}
+    /**
+     * Sets the active.
+     * 
+     * @param active the new active
+     */
+    public void setActive( final boolean active ) {
+        this.active = active;
+    }
 
-	public void setArtifactPhases(
-			final List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases) {
-		this.artifactPhases = artifactPhases;
-	}
+    public void setArtifactPhases(
+                                   final List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases ) {
+        this.artifactPhases = artifactPhases;
+    }
 
-	public void setBundleProperties(final Map<String, String> bundleProperties) {
-		this.bundleProperties = bundleProperties;
-	}
+    public void setBundleProperties( final Map<String, String> bundleProperties ) {
+        this.bundleProperties = bundleProperties;
+    }
 
-	public void setGlobalPhase(
-			final Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase) {
-		this.globalPhase = globalPhase;
-	}
+    public void setGlobalPhase(
+                                final Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase ) {
+        this.globalPhase = globalPhase;
+    }
 
-	/**
-	 * Sets the group.
-	 * 
-	 * @param group
-	 *            the new group
-	 */
-	public void setGroup(final Group group) {
-		this.group = group;
-	}
+    /**
+     * Sets the group.
+     * 
+     * @param group the new group
+     */
+    public void setGroup( final Group group ) {
+        this.group = group;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	/**
-	 * Sets the sources.
-	 * 
-	 * @param sources
-	 *            the new sources
-	 */
-	public void setSources(final Set<BundleSource> sources) {
-		this.sources = sources;
-	}
+    /**
+     * Sets the sources.
+     * 
+     * @param sources the new sources
+     */
+    public void setSources( final Set<BundleSource> sources ) {
+        this.sources = sources;
+    }
 
 }

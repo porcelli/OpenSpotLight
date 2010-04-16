@@ -66,109 +66,128 @@ import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
- * The JcrDetailedLogger is an implementation of {@link DetailedLogger} based on
- * Jcr. This kind of logger was implemented 'by hand' instead of using
- * {@link SLNode} or {@link ConfigurationNode} by a simple reason. Should not be
- * possible to log the log. If it's necessary this implementation could be
- * changed on the future.
+ * The JcrDetailedLogger is an implementation of {@link DetailedLogger} based on Jcr. This kind of logger was implemented 'by
+ * hand' instead of using {@link SLNode} or {@link ConfigurationNode} by a simple reason. Should not be possible to log the log.
+ * If it's necessary this implementation could be changed on the future.
  */
 public final class JcrDetailedLogger implements DetailedLogger {
 
-	// FIXME remove this as soon as apache's ticket JCR-2428 is solved. To test
-	// it, run the bundle processor test with multiple threads enabled
+    // FIXME remove this as soon as apache's ticket JCR-2428 is solved. To test
+    // it, run the bundle processor test with multiple threads enabled
 
-	private final String initialPath;
+    private final String  initialPath;
 
-	/** The session. */
-	private final Session session;
+    /** The session. */
+    private final Session session;
 
-	public JcrDetailedLogger(final Session session,
-			final LockContainer temporaryLock) {
-		try {
-			this.session = session;
-			final String thisSessionEntry = UUID.randomUUID().toString();
-			initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/log/"
-					+ thisSessionEntry;
-			synchronized (temporaryLock.getLockObject()) {
-				JCRUtil.getOrCreateByPath(session, session.getRootNode(),
-						initialPath);
-				this.session.save();
-			}
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
+    public JcrDetailedLogger(
+                              final Session session,
+                              final LockContainer temporaryLock ) {
+        try {
+            this.session = session;
+            final String thisSessionEntry = UUID.randomUUID().toString();
+            initialPath = SharedConstants.DEFAULT_JCR_ROOT_NAME + "/log/"
+                          + thisSessionEntry;
+            synchronized (temporaryLock.getLockObject()) {
+                JCRUtil.getOrCreateByPath(session, session.getRootNode(),
+                                          initialPath);
+                this.session.save();
+            }
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final LogEventType type,
-			final ErrorCode errorCode, final String detailedMessage,
-			final LogableObject... anotherNodes) {
+    public void log( final AuthenticatedUser user,
+                     final LogEventType type,
+                     final ErrorCode errorCode,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final LogEventType type,
-			final ErrorCode errorCode, final String message,
-			final String detailedMessage, final LogableObject... anotherNodes) {
-		this.log(user, null, type, errorCode, message, detailedMessage,
-				anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final LogEventType type,
+                     final ErrorCode errorCode,
+                     final String message,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, null, type, errorCode, message, detailedMessage,
+                 anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final LogEventType type,
-			final String message, final LogableObject... anotherNodes) {
-		this.log(user, null, type, null, message, null, anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final LogEventType type,
+                     final String message,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, null, type, null, message, null, anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final LogEventType type,
-			final String message, final String detailedMessage,
-			final LogableObject... anotherNodes) {
-		this
-				.log(user, null, type, null, message, detailedMessage,
-						anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final LogEventType type,
+                     final String message,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        this
+                .log(user, null, type, null, message, detailedMessage,
+                        anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final String repository,
-			final LogEventType type, final ErrorCode errorCode,
-			final String detailedMessage, final LogableObject... anotherNodes) {
-		this.log(user, repository, type, errorCode, null, detailedMessage,
-				anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final String repository,
+                     final LogEventType type,
+                     final ErrorCode errorCode,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, repository, type, errorCode, null, detailedMessage,
+                 anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final String repository,
-			final LogEventType type, final ErrorCode errorCode,
-			final String message, final String detailedMessage,
-			final LogableObject... anotherNodes) {
-		final LogEntry entry = new LogEntry(errorCode, new Date(), type,
-				message, detailedMessage, LoggedObjectInformation
-						.getHierarchyFrom(anotherNodes));
+    public void log( final AuthenticatedUser user,
+                     final String repository,
+                     final LogEventType type,
+                     final ErrorCode errorCode,
+                     final String message,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        final LogEntry entry = new LogEntry(errorCode, new Date(), type,
+                                            message, detailedMessage, LoggedObjectInformation
+                                                                                             .getHierarchyFrom(anotherNodes));
 
-		final String initialPath = this.initialPath + "/"
-				+ (repository != null ? repository : "noRepository") + "/"
-				+ (user != null ? user.getId() : "noUser") + "/log";
-		SimplePersistSupport.convertBeanToJcr(initialPath, session, entry);
-		try {
-			session.save();
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
+        final String initialPath = this.initialPath + "/"
+                                   + (repository != null ? repository : "noRepository") + "/"
+                                   + (user != null ? user.getId() : "noUser") + "/log";
+        SimplePersistSupport.convertBeanToJcr(initialPath, session, entry);
+        try {
+            session.save();
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final String repository,
-			final LogEventType type, final String message,
-			final LogableObject... anotherNodes) {
-		this.log(user, repository, type, null, message, null, anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final String repository,
+                     final LogEventType type,
+                     final String message,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, repository, type, null, message, null, anotherNodes);
 
-	}
+    }
 
-	public void log(final AuthenticatedUser user, final String repository,
-			final LogEventType type, final String message,
-			final String detailedMessage, final LogableObject... anotherNodes) {
-		this.log(user, repository, type, null, message, detailedMessage,
-				anotherNodes);
-	}
+    public void log( final AuthenticatedUser user,
+                     final String repository,
+                     final LogEventType type,
+                     final String message,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, repository, type, null, message, detailedMessage,
+                 anotherNodes);
+    }
 
 }

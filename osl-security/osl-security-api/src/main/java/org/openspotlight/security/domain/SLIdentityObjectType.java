@@ -56,30 +56,30 @@ import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class SLIdentityObjectType implements IdentityObjectType,
-		SimpleNodeType, Serializable {
+        SimpleNodeType, Serializable {
 
     private static final long serialVersionUID = 802461661886618314L;
 
-    private String name;
+    private String            name;
 
-	private SLIdentityObject parent;
+    private SLIdentityObject  parent;
 
-	@KeyProperty
-	public String getName() {
-		return this.name;
-	}
+    @KeyProperty
+    public String getName() {
+        return this.name;
+    }
 
-	@ParentProperty
-	public SLIdentityObject getParent() {
-		return this.parent;
-	}
+    @ParentProperty
+    public SLIdentityObject getParent() {
+        return this.parent;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	public void setParent(final SLIdentityObject parent) {
-		this.parent = parent;
-	}
+    public void setParent( final SLIdentityObject parent ) {
+        this.parent = parent;
+    }
 
 }

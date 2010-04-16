@@ -56,62 +56,53 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 
 /**
- * Interface responsible to load and save the configuration data on a persistent
- * layer.
+ * Interface responsible to load and save the configuration data on a persistent layer.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public interface ConfigurationManager {
 
-	/**
-	 * Close resources.
-	 */
-	public void closeResources();
+    /**
+     * Close resources.
+     */
+    public void closeResources();
 
-	Set<Repository> getAllRepositories() throws ConfigurationException;
+    Set<Repository> getAllRepositories() throws ConfigurationException;
 
-	Set<String> getAllRepositoryNames() throws ConfigurationException;
+    Set<String> getAllRepositoryNames() throws ConfigurationException;
 
-	/**
-	 * Gets the global settings.
-	 * 
-	 * @return the global settings
-	 */
-	GlobalSettings getGlobalSettings();
+    /**
+     * Gets the global settings.
+     * 
+     * @return the global settings
+     */
+    GlobalSettings getGlobalSettings();
 
-	/**
-	 * Loads the current group from configuration, marking the configuration as
-	 * saved.
-	 * 
-	 * @param name
-	 *            the name
-	 * @return a fresh configuration
-	 * @throws ConfigurationException
-	 *             the configuration exception
-	 * @throws NoConfigurationYetException
-	 */
-	Repository getRepositoryByName(String name) throws ConfigurationException;
+    /**
+     * Loads the current group from configuration, marking the configuration as saved.
+     * 
+     * @param name the name
+     * @return a fresh configuration
+     * @throws ConfigurationException the configuration exception
+     * @throws NoConfigurationYetException
+     */
+    Repository getRepositoryByName( String name ) throws ConfigurationException;
 
-	/**
-	 * Save global settings.
-	 * 
-	 * @param globalSettings
-	 *            the global settings
-	 * @throws ConfigurationException
-	 *             the configuration exception
-	 */
-	void saveGlobalSettings(GlobalSettings globalSettings)
-			throws ConfigurationException;
+    /**
+     * Save global settings.
+     * 
+     * @param globalSettings the global settings
+     * @throws ConfigurationException the configuration exception
+     */
+    void saveGlobalSettings( GlobalSettings globalSettings )
+            throws ConfigurationException;
 
-	/**
-	 * Saves the group on a persistent layer marking the current configuration
-	 * as a saved configuration.
-	 * 
-	 * @param configuration
-	 *            the configuration
-	 * @throws ConfigurationException
-	 *             the configuration exception
-	 */
-	void saveRepository(Repository configuration) throws ConfigurationException;
+    /**
+     * Saves the group on a persistent layer marking the current configuration as a saved configuration.
+     * 
+     * @param configuration the configuration
+     * @throws ConfigurationException the configuration exception
+     */
+    void saveRepository( Repository configuration ) throws ConfigurationException;
 
 }

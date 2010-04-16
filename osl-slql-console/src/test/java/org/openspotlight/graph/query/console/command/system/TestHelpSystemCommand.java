@@ -144,7 +144,7 @@ public class TestHelpSystemCommand extends AbstractCommandTest {
         commands.add(null);
         commands.add(new SaveQueryCommand());
         command = new HelpSystemCommand(commands);
-        
+
         ConsoleState state = new ConsoleState(null);
         state.setInput("help");
         state.appendBuffer("something");

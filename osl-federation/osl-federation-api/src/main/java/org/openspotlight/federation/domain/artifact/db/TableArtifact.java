@@ -57,55 +57,55 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@Name("database")
+@Name( "database" )
 public class TableArtifact extends DatabaseCustomArtifact implements
-SimpleNodeType, Serializable {
-	private static final long serialVersionUID = -4527063248944852023L;
+    SimpleNodeType, Serializable {
+    private static final long serialVersionUID = -4527063248944852023L;
 
-	private String tableName;
-	private String catalogName;
-	private String schemaName;
-	private Set<Column> columns = new HashSet<Column>();
+    private String            tableName;
+    private String            catalogName;
+    private String            schemaName;
+    private Set<Column>       columns          = new HashSet<Column>();
 
-	@Override
-	public boolean contentEquals(final Artifact other) {
-		if (!(other instanceof TableArtifact)) {
-			return false;
-		}
-		final TableArtifact that = (TableArtifact) other;
-		return Equals.eachEquality(getColumns(), that.getColumns());
-	}
+    @Override
+    public boolean contentEquals( final Artifact other ) {
+        if (!(other instanceof TableArtifact)) {
+            return false;
+        }
+        final TableArtifact that = (TableArtifact)other;
+        return Equals.eachEquality(getColumns(), that.getColumns());
+    }
 
-	public String getCatalogName() {
-		return catalogName;
-	}
+    public String getCatalogName() {
+        return catalogName;
+    }
 
-	public Set<Column> getColumns() {
-		return columns;
-	}
+    public Set<Column> getColumns() {
+        return columns;
+    }
 
-	public String getSchemaName() {
-		return schemaName;
-	}
+    public String getSchemaName() {
+        return schemaName;
+    }
 
-	public String getTableName() {
-		return tableName;
-	}
+    public String getTableName() {
+        return tableName;
+    }
 
-	public void setCatalogName(final String catalogName) {
-		this.catalogName = catalogName;
-	}
+    public void setCatalogName( final String catalogName ) {
+        this.catalogName = catalogName;
+    }
 
-	public void setColumns(final Set<Column> columns) {
-		this.columns = columns;
-	}
+    public void setColumns( final Set<Column> columns ) {
+        this.columns = columns;
+    }
 
-	public void setSchemaName(final String schemaName) {
-		this.schemaName = schemaName;
-	}
+    public void setSchemaName( final String schemaName ) {
+        this.schemaName = schemaName;
+    }
 
-	public void setTableName(final String tableName) {
-		this.tableName = tableName;
-	}
+    public void setTableName( final String tableName ) {
+        this.tableName = tableName;
+    }
 
 }

@@ -54,53 +54,48 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Helper class with comparable convenient methods. To be used like that:
- *
- *
+ * 
  * <pre>
  * import static org.openspotlight.common.util.Arrays.of;
  * import static org.openspotlight.common.util.Arrays.andOf;
  * import static org.openspotlight.common.util.Compare.compareAll;
- *
+ * 
  *  //...
  * public int compareTo(That that){
  *     compareAll(of(attribute1,attribute2), andOf(that.attribute1,that.attribute2));
  * }
- *
+ * 
  * </pre>
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
 public class Compare {
 
     /**
-     * Comparable method to be used inside Comparable classes to compare each
-     * parameter and return the first non zero result.
-     *
-     * If the objects are instances of Comparable, it will use the compareTo
-     * method. On the other side, it will use the toString().compareTo() method.
-     * This can make a class comparable just calling this method with all the
-     * attributes of the class, also it the parameters itself are not
-     * comparables.
-     *
+     * Comparable method to be used inside Comparable classes to compare each parameter and return the first non zero result. If
+     * the objects are instances of Comparable, it will use the compareTo method. On the other side, it will use the
+     * toString().compareTo() method. This can make a class comparable just calling this method with all the attributes of the
+     * class, also it the parameters itself are not comparables.
+     * 
      * <pre>
      * import static org.openspotlight.common.util.Arrays.of;
      * import static org.openspotlight.common.util.Arrays.andOf;
      * import static org.openspotlight.common.util.Compare.compareAll;
-     *
+     * 
      *  //...
      * public int compareTo(That that){
      *     compareAll(of(attribute1,attribute2), andOf(that.attribute1,that.attribute2));
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param <T>
      * @param of
      * @param andOf
      * @return a int resulted by the items comparison
      */
-    public static <T> int compareAll(final T[] of, final T andOf[]) {
+    public static <T> int compareAll( final T[] of,
+                                      final T andOf[] ) {
         if ((of == null) && (andOf == null)) {
             return 0;
         }
@@ -123,21 +118,18 @@ public class Compare {
     }
 
     /**
-     * Comparable method witch don't throw null pointer exception.
-     *
-     * If the objects are instances of Comparable, it will use the compareTo
-     * method. On the other side, it will use the toString().compareTo() method.
-     * This can make a class comparable just calling this method with all the
-     * attributes of the class, also it the parameters itself are not
-     * comparables.
-     *
+     * Comparable method witch don't throw null pointer exception. If the objects are instances of Comparable, it will use the
+     * compareTo method. On the other side, it will use the toString().compareTo() method. This can make a class comparable just
+     * calling this method with all the attributes of the class, also it the parameters itself are not comparables.
+     * 
      * @param <T>
      * @param thisObject
      * @param thatObject
      * @return an int resulted by the comparison
      */
-    @SuppressWarnings("unchecked")
-    public static <T> int npeSafeCompare(final T thisObject, final T thatObject) {
+    @SuppressWarnings( "unchecked" )
+    public static <T> int npeSafeCompare( final T thisObject,
+                                          final T thatObject ) {
         if (thisObject == thatObject) {
             return 0;
         }
@@ -156,7 +148,7 @@ public class Compare {
         }
         if ((thisObject instanceof Comparable<?>)
                 && (thatObject instanceof Comparable<?>)) {
-            return ((Comparable<T>) thisObject).compareTo(thatObject);
+            return ((Comparable<T>)thisObject).compareTo(thatObject);
         } else {
             return npeSafeCompare(thisObject.toString(), thatObject.toString());
         }
@@ -167,6 +159,6 @@ public class Compare {
      */
     private Compare() {
         logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

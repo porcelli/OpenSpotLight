@@ -53,6 +53,8 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public interface ExecutionContextFactory extends Disposable {
-	ExecutionContext createExecutionContext(String username, String password,
-			JcrConnectionDescriptor descriptor, Repository repository);
+    ExecutionContext createExecutionContext( String username,
+                                             String password,
+                                             JcrConnectionDescriptor descriptor,
+                                             Repository repository );
 }

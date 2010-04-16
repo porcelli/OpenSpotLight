@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,10 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Contraint - Database Column .
+ * The Interface for a link between Contraint - Database Column . Database Constraint A2B Column
  * 
- *
- * Database Constraint A2B Column
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Contraint - Database Column ")
+@SLDescription( "Contraint - Database Column " )
 public interface ConstraintDatabaseColumn extends SLLink {
 }
-
-
-        

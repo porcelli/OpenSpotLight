@@ -54,6 +54,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 
@@ -88,28 +89,25 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
         lock = pNode.getLockObject();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Lock getLockObject() {
         return lock;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaElement#getMetadata()
+    /**
+     * {@inheritDoc}
      */
-    public SLMetadata getMetadata() throws SLGraphSessionException {
+    public SLMetadata getMetadata() {
         return metadata;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaLinkType#getMetalinks()
+    /**
+     * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
-    public Collection<SLMetaLink> getMetalinks() throws SLGraphSessionException {
+    public Collection<SLMetaLink> getMetalinks() {
         synchronized (lock) {
 
             try {
@@ -179,25 +177,24 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaLinkType#getMetaLinks(java.lang.Class,
-     * java.lang.Class, java.lang.Boolean)
+    /**
+     * {@inheritDoc}
      */
     public Collection<SLMetaLink> getMetaLinks(
                                                 final Class<? extends SLNode> sourceType,
                                                 final Class<? extends SLNode> targetType,
-                                                final Boolean bidirectional ) throws SLGraphSessionException {
+                                                final Boolean bidirectional ) {
         synchronized (lock) {
             return getMetaLinks(sourceType.getName(), targetType.getName(), bidirectional);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Collection<SLMetaLink> getMetaLinks( String sourceType,
                                                 String targetType,
-                                                Boolean bidirectional ) throws SLGraphSessionException {
+                                                Boolean bidirectional ) {
         final Collection<SLMetaLink> metaLinks = getMetalinks();
         final Iterator<SLMetaLink> iter = metaLinks.iterator();
         while (iter.hasNext()) {
@@ -233,14 +230,11 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
         return metaLinks;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.SLMetaLinkType#getType()
+    /**
+     * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
-    // @Override
-    public Class<? extends SLLink> getType() throws SLGraphSessionException {
+    public Class<? extends SLLink> getType() {
         synchronized (lock) {
 
             if (linkType == null) {

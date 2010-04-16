@@ -72,47 +72,47 @@ import dynamo.string.StringTool;
 
 public class NodeInheritanceTemplateGeneration {
 
-	Class<?>[] databaseNodeTypes = new Class<?>[] { Catalog.class,
-			Column.class, DataType.class, Database.class,
-			DatabaseConstraintForeignKey.class,
-			DatabaseConstraintPrimaryKey.class, Schema.class, Server.class,
-			TableView.class, TableViewTable.class, TableViewView.class };
+    Class<?>[] databaseNodeTypes = new Class<?>[] {Catalog.class,
+                                 Column.class, DataType.class, Database.class,
+                                 DatabaseConstraintForeignKey.class,
+                                 DatabaseConstraintPrimaryKey.class, Schema.class, Server.class,
+                                 TableView.class, TableViewTable.class, TableViewView.class};
 
-	@Test
-	public void shouldCreateNodeInheritanceFiles() throws Exception {
-		final String dir = "target/test-data/NodeInheritanceTemplateGeneration/generated";
-		new File(dir).mkdirs();
-		new File(dir + "/wrapped").mkdirs();
+    @Test
+    public void shouldCreateNodeInheritanceFiles() throws Exception {
+        final String dir = "target/test-data/NodeInheritanceTemplateGeneration/generated";
+        new File(dir).mkdirs();
+        new File(dir + "/wrapped").mkdirs();
 
-		final StringTemplateGroup group = new StringTemplateGroup("myGroup",
-				"src/test/resources/template/sourcecode",
-				DefaultTemplateLexer.class);
-		final StringTool t = new StringTool();
-		for (final DatabaseType dbType : DatabaseType.values()) {
-			final String prefix = t.camelCase(dbType.name().toLowerCase());
+        final StringTemplateGroup group = new StringTemplateGroup("myGroup",
+                                                                  "src/test/resources/template/sourcecode",
+                                                                  DefaultTemplateLexer.class);
+        final StringTool t = new StringTool();
+        for (final DatabaseType dbType : DatabaseType.values()) {
+            final String prefix = t.camelCase(dbType.name().toLowerCase());
 
-			final StringTemplate wrapTemplate = group
-					.getInstanceOf("WrappedType");
-			wrapTemplate.setAttribute("dbName", prefix);
-			final FileWriter wrapWriter = new FileWriter(dir + "/wrapped/"
-					+ prefix + "WrappedType.java");
-			wrapWriter.write(wrapTemplate.toString());
-			wrapWriter.flush();
-			wrapWriter.close();
+            final StringTemplate wrapTemplate = group
+                                                     .getInstanceOf("WrappedType");
+            wrapTemplate.setAttribute("dbName", prefix);
+            final FileWriter wrapWriter = new FileWriter(dir + "/wrapped/"
+                                                         + prefix + "WrappedType.java");
+            wrapWriter.write(wrapTemplate.toString());
+            wrapWriter.flush();
+            wrapWriter.close();
 
-			for (final Class<?> nodeType : databaseNodeTypes) {
-				final StringTemplate template = group
-						.getInstanceOf("DatabaseNode");
-				template.setAttribute("dbName", prefix);
-				final String nodeTypeName = nodeType.getSimpleName();
-				template.setAttribute("nodeName", nodeTypeName);
-				final FileWriter writer = new FileWriter(dir + "/" + prefix
-						+ nodeTypeName + ".java");
-				writer.write(template.toString());
-				writer.flush();
-				writer.close();
-			}
-		}
-	}
+            for (final Class<?> nodeType : databaseNodeTypes) {
+                final StringTemplate template = group
+                                                     .getInstanceOf("DatabaseNode");
+                template.setAttribute("dbName", prefix);
+                final String nodeTypeName = nodeType.getSimpleName();
+                template.setAttribute("nodeName", nodeTypeName);
+                final FileWriter writer = new FileWriter(dir + "/" + prefix
+                                                         + nodeTypeName + ".java");
+                writer.write(template.toString());
+                writer.flush();
+                writer.close();
+            }
+        }
+    }
 
 }

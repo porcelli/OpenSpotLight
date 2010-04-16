@@ -59,60 +59,61 @@ import java.util.List;
  */
 public class SLOrderByStatementInfo implements Serializable {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
-	
-	/** The select statement info. */
-	private SLSelectStatementInfo selectStatementInfo;
-	
-	/** The order by type info list. */
-	private List<SLOrderByTypeInfo> orderByTypeInfoList = new ArrayList<SLOrderByTypeInfo>();
-	
-	/**
-	 * Instantiates a new sL order by statement info.
-	 * 
-	 * @param selectStatementInfo the select statement info
-	 */
-	public SLOrderByStatementInfo(SLSelectStatementInfo selectStatementInfo) {
-		this.selectStatementInfo = selectStatementInfo;
-	}
+    /** The Constant serialVersionUID. */
+    private static final long       serialVersionUID    = 1L;
 
-	/**
-	 * Gets the select statement info.
-	 * 
-	 * @return the select statement info
-	 */
-	public SLSelectStatementInfo getSelectStatementInfo() {
-		return selectStatementInfo;
-	}
+    /** The select statement info. */
+    private SLSelectStatementInfo   selectStatementInfo;
 
-	/**
-	 * Sets the select statement info.
-	 * 
-	 * @param selectStatementInfo the new select statement info
-	 */
-	public void setSelectStatementInfo(SLSelectStatementInfo selectStatementInfo) {
-		this.selectStatementInfo = selectStatementInfo;
-	}
+    /** The order by type info list. */
+    private List<SLOrderByTypeInfo> orderByTypeInfoList = new ArrayList<SLOrderByTypeInfo>();
 
-	/**
-	 * Gets the order by type info list.
-	 * 
-	 * @return the order by type info list
-	 */
-	public List<SLOrderByTypeInfo> getOrderByTypeInfoList() {
-		return orderByTypeInfoList;
-	}
+    /**
+     * Instantiates a new sL order by statement info.
+     * 
+     * @param selectStatementInfo the select statement info
+     */
+    public SLOrderByStatementInfo(
+                                   SLSelectStatementInfo selectStatementInfo ) {
+        this.selectStatementInfo = selectStatementInfo;
+    }
 
-	/**
-	 * Sets the order by type info list.
-	 * 
-	 * @param orderByTypeInfoList the new order by type info list
-	 */
-	public void setOrderByTypeInfoList(List<SLOrderByTypeInfo> orderByTypeInfoList) {
-		this.orderByTypeInfoList = orderByTypeInfoList;
-	}
-	
+    /**
+     * Gets the select statement info.
+     * 
+     * @return the select statement info
+     */
+    public SLSelectStatementInfo getSelectStatementInfo() {
+        return selectStatementInfo;
+    }
+
+    /**
+     * Sets the select statement info.
+     * 
+     * @param selectStatementInfo the new select statement info
+     */
+    public void setSelectStatementInfo( SLSelectStatementInfo selectStatementInfo ) {
+        this.selectStatementInfo = selectStatementInfo;
+    }
+
+    /**
+     * Gets the order by type info list.
+     * 
+     * @return the order by type info list
+     */
+    public List<SLOrderByTypeInfo> getOrderByTypeInfoList() {
+        return orderByTypeInfoList;
+    }
+
+    /**
+     * Sets the order by type info list.
+     * 
+     * @param orderByTypeInfoList the new order by type info list
+     */
+    public void setOrderByTypeInfoList( List<SLOrderByTypeInfo> orderByTypeInfoList ) {
+        this.orderByTypeInfoList = orderByTypeInfoList;
+    }
+
     /**
      * {@inheritDoc}
      */

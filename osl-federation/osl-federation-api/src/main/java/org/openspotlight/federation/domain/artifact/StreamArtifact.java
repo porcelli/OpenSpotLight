@@ -54,41 +54,41 @@ import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.internal.LazyProperty;
 
-@Name("stream_artifact")
+@Name( "stream_artifact" )
 public class StreamArtifact extends ArtifactWithSyntaxInformation {
 
-	private long lastChange;
-	
-	public long getLastChange() {
-		return lastChange;
-	}
+    private long lastChange;
 
-	public void setLastChange(long lastChange) {
-		this.lastChange = lastChange;
-	}
-	private static final long serialVersionUID = -8912205023568005794L;
+    public long getLastChange() {
+        return lastChange;
+    }
 
-	private LazyProperty<InputStream> content = LazyProperty.Factory
-			.create(this);
+    public void setLastChange( long lastChange ) {
+        this.lastChange = lastChange;
+    }
 
-	@Override
-	public boolean contentEquals(final Artifact other) {
-		if (other instanceof StreamArtifact) {
-			final StreamArtifact that = (StreamArtifact) other;
-			return Equals.eachEquality(content == null ? null : content
-					.getMetadata().getSha1(), that.content == null ? null : that.content
-					.getMetadata().getSha1());
-		}
-		return false;
-	}
+    private static final long         serialVersionUID = -8912205023568005794L;
 
-	public LazyProperty<InputStream> getContent() {
-		return content;
-	}
+    private LazyProperty<InputStream> content          = LazyProperty.Factory
+                                                                             .create(this);
 
-	public void setContent(final LazyProperty<InputStream> content) {
-		this.content = content;
-	}
+    @Override
+    public boolean contentEquals( final Artifact other ) {
+        if (other instanceof StreamArtifact) {
+            final StreamArtifact that = (StreamArtifact)other;
+            return Equals.eachEquality(content == null ? null : content
+                                                                       .getMetadata().getSha1(), that.content == null ? null : that.content
+                                                                                                                                           .getMetadata().getSha1());
+        }
+        return false;
+    }
 
+    public LazyProperty<InputStream> getContent() {
+        return content;
+    }
+
+    public void setContent( final LazyProperty<InputStream> content ) {
+        this.content = content;
+    }
 
 }

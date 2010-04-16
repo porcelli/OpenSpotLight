@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.exception.SLGraphException;
 
 /**
  * This exception class represents any kind of sysntax error on queries - using api or text.
  * 
  * @author porcelli
  */
-public class SLInvalidQuerySyntaxException extends SLException {
+public class SLInvalidQuerySyntaxException extends SLGraphException {
 
     private static final long serialVersionUID = 400L;
 

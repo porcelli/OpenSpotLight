@@ -56,11 +56,10 @@ import java.util.Map;
  * Enum for column types from {@link Types} constants.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("boxing")
+@SuppressWarnings( "boxing" )
 public enum ColumnType {
-    
+
     /**
      * Enum for sql type BIT.
      */
@@ -181,7 +180,7 @@ public enum ColumnType {
      * Enum for sql type BOOLEAN.
      */
     BOOLEAN(Types.BOOLEAN);
-    
+
     /**
      * Internal cache
      */
@@ -191,29 +190,29 @@ public enum ColumnType {
             typesCache.put(t.getSqlTypeValue(), t);
         }
     }
-    
+
     /**
      * Static factory method
      * 
      * @param sqlType
      * @return the correct column type by sql int constant
      */
-    public static ColumnType getTypeByInt(final int sqlType) {
+    public static ColumnType getTypeByInt( final int sqlType ) {
         return typesCache.get(sqlType);
     }
-    
+
     private final int sqlTypeValue;
-    
-    private ColumnType(final int sqlTypeValue) {
+
+    private ColumnType(
+                        final int sqlTypeValue ) {
         this.sqlTypeValue = sqlTypeValue;
     }
-    
+
     /**
-     * 
      * @return the int value equivalent to {@link Types} constants
      */
     public int getSqlTypeValue() {
         return this.sqlTypeValue;
     }
-    
+
 }

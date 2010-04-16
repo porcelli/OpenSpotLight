@@ -58,35 +58,35 @@ import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 
 public class DbPrimaryKeyProcessor implements
-		BundleProcessorArtifactPhase<PrimaryKeyConstraintArtifact> {
+        BundleProcessorArtifactPhase<PrimaryKeyConstraintArtifact> {
 
-	public void beforeProcessArtifact(
-			final PrimaryKeyConstraintArtifact artifact,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) {
+    public void beforeProcessArtifact(
+                                       final PrimaryKeyConstraintArtifact artifact,
+                                       final CurrentProcessorContext currentContext,
+                                       final ExecutionContext context ) {
 
-	}
+    }
 
-	public void didFinishToProcessArtifact(
-			final PrimaryKeyConstraintArtifact artifact,
-			final LastProcessStatus status,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) {
+    public void didFinishToProcessArtifact(
+                                            final PrimaryKeyConstraintArtifact artifact,
+                                            final LastProcessStatus status,
+                                            final CurrentProcessorContext currentContext,
+                                            final ExecutionContext context ) {
 
-	}
+    }
 
-	public Class<PrimaryKeyConstraintArtifact> getArtifactType() {
-		return PrimaryKeyConstraintArtifact.class;
-	}
+    public Class<PrimaryKeyConstraintArtifact> getArtifactType() {
+        return PrimaryKeyConstraintArtifact.class;
+    }
 
-	public LastProcessStatus processArtifact(
-			final PrimaryKeyConstraintArtifact artifact,
-			final CurrentProcessorContext currentContext,
-			final ExecutionContext context) throws Exception {
-		final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-				.createByType(artifact.getDatabaseType());
-		createPrimaryKey(wrappedType, context, currentContext, artifact);
-		return LastProcessStatus.PROCESSED;
-	}
+    public LastProcessStatus processArtifact(
+                                              final PrimaryKeyConstraintArtifact artifact,
+                                              final CurrentProcessorContext currentContext,
+                                              final ExecutionContext context ) throws Exception {
+        final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
+                                                                     .createByType(artifact.getDatabaseType());
+        createPrimaryKey(wrappedType, context, currentContext, artifact);
+        return LastProcessStatus.PROCESSED;
+    }
 
 }

@@ -55,6 +55,7 @@ import org.openspotlight.graph.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.SLMetadata.LogicOperator;
 import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLRenderHintNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 
 /**
@@ -68,109 +69,96 @@ public interface SLMetaNodeType extends SLMetaElement {
      * Gets the type.
      * 
      * @return the type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Class<? extends SLNode> getType() throws SLGraphSessionException;
+    public Class<? extends SLNode> getType();
 
     /**
      * Gets the type name.
      * 
      * @return the type name
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public String getTypeName() throws SLGraphSessionException;
+    public String getTypeName();
 
     /**
      * Gets the meta properties.
      * 
      * @return the meta properties
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Collection<SLMetaNodeProperty> getMetaProperties() throws SLGraphSessionException;
+    public Collection<SLMetaNodeProperty> getMetaProperties();
 
     /**
      * Gets the meta property.
      * 
      * @param name the name
      * @return the meta property
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaNodeProperty getMetaProperty( String name ) throws SLGraphSessionException;
+    public SLMetaNodeProperty getMetaProperty( String name );
 
     /**
      * Gets the sub meta node type.
      * 
      * @param nodeClass the node class
      * @return the sub meta node type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaNodeType getSubMetaNodeType( Class<? extends SLNode> nodeClass ) throws SLGraphSessionException;
+    public SLMetaNodeType getSubMetaNodeType( Class<? extends SLNode> nodeClass );
 
     /**
      * Gets the sub meta node type.
      * 
      * @param name the name
      * @return the sub meta node type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaNodeType getSubMetaNodeType( String name ) throws SLGraphSessionException;
+    public SLMetaNodeType getSubMetaNodeType( String name );
 
     /**
      * Gets the sub meta node types.
      * 
      * @return the sub meta node types
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Collection<SLMetaNodeType> getSubMetaNodeTypes() throws SLGraphSessionException;
+    public Collection<SLMetaNodeType> getSubMetaNodeTypes();
 
     /**
      * Gets the meta render hint.
      * 
      * @param name the name
      * @return the meta render hint
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaRenderHint getMetaRenderHint( String name ) throws SLGraphSessionException;
+    public SLMetaRenderHint getMetaRenderHint( String name ) throws SLRenderHintNotFoundException;
 
     /**
      * Gets the meta render hints.
      * 
      * @return the meta render hints
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Collection<SLMetaRenderHint> getMetaRenderHints() throws SLGraphSessionException;
+    public Collection<SLMetaRenderHint> getMetaRenderHints();
 
     /**
      * Gets the description.
      * 
      * @return the description
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public String getDescription() throws SLGraphSessionException;
+    public String getDescription();
 
     /**
      * Gets the visibility.
      * 
      * @return the visibility
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public VisibilityLevel getVisibility() throws SLGraphSessionException;
+    public VisibilityLevel getVisibility();
 
     /**
      * Gets the parent.
      * 
      * @return the parent
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLMetaNodeType getParent() throws SLGraphSessionException;
+    public SLMetaNodeType getParent();
 
     /**
      * Gets the node.
      * 
      * @return the node
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public SLPersistentNode getNode() throws SLGraphSessionException;
+    public SLPersistentNode getNode();
 
     /**
      * Search sub meta node types.
@@ -182,13 +170,12 @@ public interface SLMetaNodeType extends SLMetaElement {
      * @param booleanOp the boolean op
      * @param values the values
      * @return the collection< sl meta node type>
-     * @throws SLGraphSessionException the SL graph session exception
      */
     public Collection<SLMetaNodeType> searchSubMetaNodeTypes( final SLRecursiveMode recursiveMode,
                                                               final VisibilityLevel visibility,
                                                               final MetaNodeTypeProperty property2Find,
                                                               final LogicOperator logicOp,
                                                               final BooleanOperator booleanOp,
-                                                              final List<String> values ) throws SLGraphSessionException;
+                                                              final List<String> values );
 
 }

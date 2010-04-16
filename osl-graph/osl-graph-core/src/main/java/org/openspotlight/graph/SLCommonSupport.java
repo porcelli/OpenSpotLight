@@ -207,9 +207,8 @@ public class SLCommonSupport {
      * 
      * @param node the node
      * @return the name in id form
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public static String getNameInIDForm( SLNode node ) throws SLGraphSessionException {
+    public static String getNameInIDForm( SLNode node ) {
         return "node.".concat(node.getID().replace("-", "."));
     }
 

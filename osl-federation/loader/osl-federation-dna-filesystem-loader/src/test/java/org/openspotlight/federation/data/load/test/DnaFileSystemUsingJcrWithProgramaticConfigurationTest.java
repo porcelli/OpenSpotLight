@@ -65,41 +65,38 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.DefaultSecurityContext;
 
 /**
- * Test class to validate a programatic example for DNA File System Connector
- * using JCR.
+ * Test class to validate a programatic example for DNA File System Connector using JCR.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DnaFileSystemUsingJcrWithProgramaticConfigurationTest {
     private JcrEngine engine;
-    private Session session;
-    
+    private Session   session;
+
     @Before
     public void setup() throws Exception {
         final String javaFilesRepositorySource = "JavaFileRepositorySource";
         final String repositoryName = "JavaRepository";
         final JcrConfiguration configuration = new JcrConfiguration();
         configuration.repositorySource(javaFilesRepositorySource).usingClass(
-                FileSystemSource.class).setProperty(
-                "workspaceRootPath", "./src/main/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$
-                "creatingWorkspacesAllowed", true).setProperty(
-                "defaultWorkspaceName", "java");
-        
+                                                                             FileSystemSource.class).setProperty("workspaceRootPath", "./src/main/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$
+        "creatingWorkspacesAllowed", true).setProperty(
+                                                       "defaultWorkspaceName", "java");
+
         configuration.repository(repositoryName).setSource(
-                javaFilesRepositorySource);
+                                                           javaFilesRepositorySource);
         configuration.save();
         this.engine = configuration.build();
         this.engine.start();
-        
+
         this.session = this.engine.getRepository(repositoryName)
-                .login(
-                        new SecurityContextCredentials(
-                                DefaultSecurityContext.READ_ONLY));
-        
+                                  .login(
+                                         new SecurityContextCredentials(
+                                                                        DefaultSecurityContext.READ_ONLY));
+
     }
-    
+
     @After
     public void shutdown() throws Exception {
         if (this.session != null) {
@@ -109,11 +106,11 @@ public class DnaFileSystemUsingJcrWithProgramaticConfigurationTest {
             this.engine.shutdown();
         }
     }
-    
+
     @Test
     public void test() throws Exception {
-        
+
         assertThat(this.session.getRootNode().getNode("org"),
-                is(notNullValue()));
+                   is(notNullValue()));
     }
 }

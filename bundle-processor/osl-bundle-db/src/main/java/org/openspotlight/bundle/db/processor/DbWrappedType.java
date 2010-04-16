@@ -62,26 +62,26 @@ import org.openspotlight.bundle.db.metamodel.node.TableViewView;
 
 public interface DbWrappedType {
 
-	public abstract Class<? extends Catalog> getCatalogType();
+    public abstract Class<? extends Catalog> getCatalogType();
 
-	public abstract Class<? extends Column> getColumnType();
+    public abstract Class<? extends Column> getColumnType();
 
-	public abstract Class<? extends DatabaseConstraintForeignKey> getDatabaseConstraintForeignKeyType();
+    public abstract Class<? extends DatabaseConstraintForeignKey> getDatabaseConstraintForeignKeyType();
 
-	public abstract Class<? extends DatabaseConstraintPrimaryKey> getDatabaseConstraintPrimaryKeyType();
+    public abstract Class<? extends DatabaseConstraintPrimaryKey> getDatabaseConstraintPrimaryKeyType();
 
-	public abstract Class<? extends Database> getDatabaseType();
+    public abstract Class<? extends Database> getDatabaseType();
 
-	public abstract Class<? extends DataType> getDataTypeType();
+    public abstract Class<? extends DataType> getDataTypeType();
 
-	public abstract Class<? extends Schema> getSchemaType();
+    public abstract Class<? extends Schema> getSchemaType();
 
-	public abstract Class<? extends Server> getServerType();
+    public abstract Class<? extends Server> getServerType();
 
-	public abstract Class<? extends TableViewTable> getTableViewTableType();
+    public abstract Class<? extends TableViewTable> getTableViewTableType();
 
-	public abstract Class<? extends TableView> getTableViewType();
+    public abstract Class<? extends TableView> getTableViewType();
 
-	public abstract Class<? extends TableViewView> getTableViewViewType();
+    public abstract Class<? extends TableViewView> getTableViewViewType();
 
 }

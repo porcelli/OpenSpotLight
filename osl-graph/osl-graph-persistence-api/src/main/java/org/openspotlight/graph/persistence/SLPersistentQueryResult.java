@@ -57,21 +57,19 @@ import java.util.Collection;
  */
 public interface SLPersistentQueryResult {
 
-	/**
-	 * Gets the nodes.
-	 * 
-	 * @return the nodes
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public Collection<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException;
-	
-	/**
-	 * Gets the row count.
-	 * 
-	 * @return the row count
-	 * 
-	 * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-	 */
-	public int getRowCount() throws SLPersistentTreeSessionException;
+    /**
+     * Gets the nodes.
+     * 
+     * @return the nodes
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public Collection<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException;
+
+    /**
+     * Gets the row count.
+     * 
+     * @return the row count
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     */
+    public int getRowCount() throws SLPersistentTreeSessionException;
 }

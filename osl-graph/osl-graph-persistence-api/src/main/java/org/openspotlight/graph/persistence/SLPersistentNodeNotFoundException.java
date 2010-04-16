@@ -55,16 +55,17 @@ package org.openspotlight.graph.persistence;
  */
 public class SLPersistentNodeNotFoundException extends SLPersistentTreeSessionException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL persistent node not found exception.
-	 * 
-	 * @param nodeID the node id
-	 * @param cause the cause
-	 */
-	public SLPersistentNodeNotFoundException(String nodeID, Throwable cause) {
-		super("Persistent node of ID " + nodeID + " not found.", cause);
-	}
+    /**
+     * Instantiates a new sL persistent node not found exception.
+     * 
+     * @param nodeID the node id
+     * @param cause the cause
+     */
+    public SLPersistentNodeNotFoundException(
+                                              String nodeID, Throwable cause ) {
+        super("Persistent node of ID " + nodeID + " not found.", cause);
+    }
 }

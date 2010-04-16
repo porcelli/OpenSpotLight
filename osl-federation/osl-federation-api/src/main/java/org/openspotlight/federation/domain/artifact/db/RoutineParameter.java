@@ -57,71 +57,71 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name( "routine_parameter" )
 public class RoutineParameter implements SimpleNodeType, Serializable {
-	private static final long    serialVersionUID = -4738878595542581888L;
+    private static final long         serialVersionUID = -4738878595542581888L;
 
-	private String               name;
-	private ColumnType           type;
-	private NullableSqlType      nullable;
-	private int                  columnSize;
-	private int                  decimalSize;
-	private transient RoutineArtifact routine;
-	private RoutineParameterType parameterType;
+    private String                    name;
+    private ColumnType                type;
+    private NullableSqlType           nullable;
+    private int                       columnSize;
+    private int                       decimalSize;
+    private transient RoutineArtifact routine;
+    private RoutineParameterType      parameterType;
 
-	public int getColumnSize() {
-		return columnSize;
-	}
+    public int getColumnSize() {
+        return columnSize;
+    }
 
-	public int getDecimalSize() {
-		return decimalSize;
-	}
+    public int getDecimalSize() {
+        return decimalSize;
+    }
 
-	@KeyProperty
-	public String getName() {
-		return name;
-	}
+    @KeyProperty
+    public String getName() {
+        return name;
+    }
 
-	public NullableSqlType getNullable() {
-		return nullable;
-	}
+    public NullableSqlType getNullable() {
+        return nullable;
+    }
 
-	public RoutineParameterType getParameterType() {
-		return parameterType;
-	}
+    public RoutineParameterType getParameterType() {
+        return parameterType;
+    }
 
-	@ParentProperty
-	public RoutineArtifact getRoutine() {
-		return routine;
-	}
+    @ParentProperty
+    public RoutineArtifact getRoutine() {
+        return routine;
+    }
 
-	public ColumnType getType() {
-		return type;
-	}
+    public ColumnType getType() {
+        return type;
+    }
 
-	public void setColumnSize( final int columnSize ) {
-		this.columnSize = columnSize;
-	}
+    public void setColumnSize( final int columnSize ) {
+        this.columnSize = columnSize;
+    }
 
-	public void setDecimalSize( final int decimalSize ) {
-		this.decimalSize = decimalSize;
-	}
+    public void setDecimalSize( final int decimalSize ) {
+        this.decimalSize = decimalSize;
+    }
 
-	public void setName( final String name ) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	public void setNullable( final NullableSqlType nullable ) {
-		this.nullable = nullable;
-	}
+    public void setNullable( final NullableSqlType nullable ) {
+        this.nullable = nullable;
+    }
 
-	public void setParameterType( final RoutineParameterType parameterType ) {
-		this.parameterType = parameterType;
-	}
+    public void setParameterType( final RoutineParameterType parameterType ) {
+        this.parameterType = parameterType;
+    }
 
-	public void setRoutine( final RoutineArtifact routine ) {
-		this.routine = routine;
-	}
+    public void setRoutine( final RoutineArtifact routine ) {
+        this.routine = routine;
+    }
 
-	public void setType( final ColumnType type ) {
-		this.type = type;
-	}
+    public void setType( final ColumnType type ) {
+        this.type = type;
+    }
 }

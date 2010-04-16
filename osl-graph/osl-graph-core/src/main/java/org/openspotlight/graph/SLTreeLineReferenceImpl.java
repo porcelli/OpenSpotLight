@@ -70,11 +70,10 @@ public class SLTreeLineReferenceImpl implements SLTreeLineReference {
      * 
      * @param id the id
      * @param lineReferences the line references
-     * @throws SLGraphSessionException the SL graph session exception
      */
     public SLTreeLineReferenceImpl(
                                     String id,
-                                    Collection<SLLineReference> lineReferences ) throws SLGraphSessionException {
+                                    Collection<SLLineReference> lineReferences ) {
 
         if (lineReferences != null && lineReferences.size() > 0) {
             this.id = id;

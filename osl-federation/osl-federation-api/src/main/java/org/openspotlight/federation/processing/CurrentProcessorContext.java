@@ -54,69 +54,49 @@ import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 
 /**
  * The Interface CurrentProcessorContext.
  */
 public interface CurrentProcessorContext {
-	public ArtifactSource getArtifactSource();
+    public ArtifactSource getArtifactSource();
 
-	public BundleProcessorType getBundleProcessor();
+    public BundleProcessorType getBundleProcessor();
 
-	public Map<String, String> getBundleProperties();
+    public Map<String, String> getBundleProperties();
 
-	/**
-	 * Gets the current group.
-	 * 
-	 * @return the current group
-	 */
-	public Group getCurrentGroup();
+    /**
+     * Gets the current group.
+     * 
+     * @return the current group
+     */
+    public Group getCurrentGroup();
 
-	/**
-	 * Gets the current node group.
-	 * 
-	 * @return the current node group
-	 * @throws SLInvalidCredentialException
-	 *             the SL invalid credential exception
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 * @throws SLNodeTypeNotInExistentHierarchy
-	 *             the SL node type not in existent hierarchy
-	 */
-	public SLNode getCurrentNodeGroup()
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
-			SLInvalidCredentialException;
+    /**
+     * Gets the current node group.
+     * 
+     * @return the current node group
+     */
+    public SLNode getCurrentNodeGroup();
 
-	/**
-	 * Gets the current repository.
-	 * 
-	 * @return the current repository
-	 */
-	public Repository getCurrentRepository();
+    /**
+     * Gets the current repository.
+     * 
+     * @return the current repository
+     */
+    public Repository getCurrentRepository();
 
-	/**
-	 * Gets the node for group.
-	 * 
-	 * @param group
-	 *            the group
-	 * @return the node for group
-	 * @throws SLInvalidCredentialException
-	 *             the SL invalid credential exception
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 * @throws SLNodeTypeNotInExistentHierarchy
-	 *             the SL node type not in existent hierarchy
-	 */
-	public SLNode getNodeForGroup(Group group)
-			throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException,
-			SLInvalidCredentialException;
+    /**
+     * Gets the node for group.
+     * 
+     * @param group the group
+     * @return the node for group
+     */
+    public SLNode getNodeForGroup( Group group );
 
-	public SLNode getNodeForUniqueBundleConfig();
+    public SLNode getNodeForUniqueBundleConfig();
 
-	public Map<String, Object> getTransientProperties();
+    public Map<String, Object> getTransientProperties();
 
 }

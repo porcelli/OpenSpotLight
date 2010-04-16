@@ -62,7 +62,7 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLCollatorSupport;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
@@ -108,7 +108,7 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
      * @see org.openspotlight.graph.query.SLSelectAbstractCommand#execute()
      */
     @Override
-    public void execute() throws SLGraphSessionException {
+    public void execute() {
         try {
             if (commandDO.getPreviousNodeWrappers() != null) {
                 nodeWrapperListMap = SLQuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
@@ -193,13 +193,12 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
      * @param statement the statement
      * @param typeName the type name
      * @param typeStatementInfo the type statement info
-     * @throws SLGraphSessionException the SL graph session exception
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     private void filterByWhereStatement( Statement statement,
                                          String typeName,
                                          SLTypeStatementInfo typeStatementInfo )
-        throws SLGraphSessionException, SLPersistentTreeSessionException {
+        throws SLPersistentTreeSessionException {
 
         List<SLTypeConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
 

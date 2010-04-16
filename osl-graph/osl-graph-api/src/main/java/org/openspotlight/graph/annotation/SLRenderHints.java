@@ -58,14 +58,14 @@ import java.lang.annotation.Target;
  * 
  * @author Vitor Hugo Chagas
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
 public @interface SLRenderHints {
-	
-	/**
-	 * Value.
-	 * 
-	 * @return the sL render hint[]
-	 */
-	SLRenderHint[] value();
+
+    /**
+     * Value.
+     * 
+     * @return the sL render hint[]
+     */
+    SLRenderHint[] value();
 }

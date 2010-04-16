@@ -74,60 +74,60 @@ import org.openspotlight.bundle.db.processor.DbWrappedType;
 
 public enum SqlServerWrappedType implements DbWrappedType {
 
-	INSTANCE;
+    INSTANCE;
 
-	public Class<? extends Catalog> getCatalogType() {
-		return SqlServerCatalog.class;
-	}
+    public Class<? extends Catalog> getCatalogType() {
+        return SqlServerCatalog.class;
+    }
 
-	public Class<? extends Column> getColumnType() {
+    public Class<? extends Column> getColumnType() {
 
-		return SqlServerColumn.class;
-	}
+        return SqlServerColumn.class;
+    }
 
-	public Class<? extends DatabaseConstraintForeignKey> getDatabaseConstraintForeignKeyType() {
+    public Class<? extends DatabaseConstraintForeignKey> getDatabaseConstraintForeignKeyType() {
 
-		return SqlServerDatabaseConstraintForeignKey.class;
-	}
+        return SqlServerDatabaseConstraintForeignKey.class;
+    }
 
-	public Class<? extends DatabaseConstraintPrimaryKey> getDatabaseConstraintPrimaryKeyType() {
+    public Class<? extends DatabaseConstraintPrimaryKey> getDatabaseConstraintPrimaryKeyType() {
 
-		return SqlServerDatabaseConstraintPrimaryKey.class;
-	}
+        return SqlServerDatabaseConstraintPrimaryKey.class;
+    }
 
-	public Class<? extends Database> getDatabaseType() {
+    public Class<? extends Database> getDatabaseType() {
 
-		return SqlServerDatabase.class;
-	}
+        return SqlServerDatabase.class;
+    }
 
-	public Class<? extends DataType> getDataTypeType() {
+    public Class<? extends DataType> getDataTypeType() {
 
-		return SqlServerDataType.class;
-	}
+        return SqlServerDataType.class;
+    }
 
-	public Class<? extends Schema> getSchemaType() {
+    public Class<? extends Schema> getSchemaType() {
 
-		return SqlServerSchema.class;
-	}
+        return SqlServerSchema.class;
+    }
 
-	public Class<? extends Server> getServerType() {
+    public Class<? extends Server> getServerType() {
 
-		return SqlServerServer.class;
-	}
+        return SqlServerServer.class;
+    }
 
-	public Class<? extends TableViewTable> getTableViewTableType() {
+    public Class<? extends TableViewTable> getTableViewTableType() {
 
-		return SqlServerTableViewTable.class;
-	}
+        return SqlServerTableViewTable.class;
+    }
 
-	public Class<? extends TableView> getTableViewType() {
+    public Class<? extends TableView> getTableViewType() {
 
-		return SqlServerTableView.class;
-	}
+        return SqlServerTableView.class;
+    }
 
-	public Class<? extends TableViewView> getTableViewViewType() {
+    public Class<? extends TableViewView> getTableViewViewType() {
 
-		return SqlServerTableViewView.class;
-	}
+        return SqlServerTableViewView.class;
+    }
 
 }

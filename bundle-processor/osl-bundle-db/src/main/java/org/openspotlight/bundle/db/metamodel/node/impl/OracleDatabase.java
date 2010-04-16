@@ -47,10 +47,11 @@
  * Boston, MA  02110-1301  USA
  */
 package org.openspotlight.bundle.db.metamodel.node.impl;
+
 import org.openspotlight.bundle.db.metamodel.node.Database;
 import org.openspotlight.graph.annotation.SLDescription;
 
-@SLDescription("Oracle Database")
-public interface OracleDatabase extends Database{
+@SLDescription( "Oracle Database" )
+public interface OracleDatabase extends Database {
 
 }

@@ -58,264 +58,256 @@ import org.slf4j.LoggerFactory;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Exceptions {
-	/**
-	 * internal sl4j logger.
-	 */
-	private static final Logger logger = LoggerFactory
-			.getLogger(Exceptions.class);
+    /**
+     * internal sl4j logger.
+     */
+    private static final Logger logger = LoggerFactory
+                                                      .getLogger(Exceptions.class);
 
-	/**
-	 * Just catch and log the exception.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	catchAndLog(e);
-	 * }
-	 * </pre>
-	 * 
-	 * @param exception
-	 */
-	public static void catchAndLog(final Exception exception) {
-		logger.error(exception.getMessage(), exception);
-	}
+    /**
+     * Just catch and log the exception.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     catchAndLog(e);
+     * }
+     * </pre>
+     * 
+     * @param exception
+     */
+    public static void catchAndLog( final Exception exception ) {
+        logger.error(exception.getMessage(), exception);
+    }
 
-	/**
-	 * Just catch and log the exception.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	catchAndLog(e);
-	 * }
-	 * </pre>
-	 * 
-	 * @param message
-	 * @param exception
-	 */
-	public static void catchAndLog(final String message,
-			final Throwable exception) {
-		logger.error(message, exception);
-	}
+    /**
+     * Just catch and log the exception.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     catchAndLog(e);
+     * }
+     * </pre>
+     * 
+     * @param message
+     * @param exception
+     */
+    public static void catchAndLog( final String message,
+                                    final Throwable exception ) {
+        logger.error(message, exception);
+    }
 
-	/**
-	 * Log the exception and return the same exception to be used in non void
-	 * methods.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	throw logAndReturn(e);
-	 * }
-	 * </pre>
-	 * 
-	 * @param <E>
-	 * @param exception
-	 * @return the same exception
-	 */
-	public static <E extends Throwable> E logAndReturn(final E exception) {
-		logger.error(exception.getMessage(), exception);
-		return exception;
-	}
+    /**
+     * Log the exception and return the same exception to be used in non void methods.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     throw logAndReturn(e);
+     * }
+     * </pre>
+     * 
+     * @param <E>
+     * @param exception
+     * @return the same exception
+     */
+    public static <E extends Throwable> E logAndReturn( final E exception ) {
+        logger.error(exception.getMessage(), exception);
+        return exception;
+    }
 
-	/**
-	 * Log the exception and return the same exception to be used in non void
-	 * methods.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	throw logAndReturn(e);
-	 * }
-	 * </pre>
-	 * 
-	 * @param <E>
-	 * @param message
-	 * @param exception
-	 * @return the same exception
-	 */
-	public static <E extends Throwable> E logAndReturn(final String message,
-			final E exception) {
-		logger.error(message);
-		logger.error(exception.getMessage(), exception);
-		return exception;
-	}
+    /**
+     * Log the exception and return the same exception to be used in non void methods.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     throw logAndReturn(e);
+     * }
+     * </pre>
+     * 
+     * @param <E>
+     * @param message
+     * @param exception
+     * @return the same exception
+     */
+    public static <E extends Throwable> E logAndReturn( final String message,
+                                                        final E exception ) {
+        logger.error(message);
+        logger.error(exception.getMessage(), exception);
+        return exception;
+    }
 
-	/**
-	 * Log the exception and return a new exception on the described class. To
-	 * be used on non void methods.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	throw logAndReturnNew(e, MyCheckedException.class);
-	 * }
-	 * </pre>
-	 * 
-	 * @param <E>
-	 * @param baseException
-	 * @param newExceptionClass
-	 *            that has a constructor to wrap the original exception
-	 * @return a new exception wich type is the same as passed on parameter
-	 */
-	@SuppressWarnings("unchecked")
-	public static <E extends Exception> E logAndReturnNew(
-			final Exception baseException, final Class<E> newExceptionClass) {
-		logger.error(baseException.getMessage(), baseException);
-		if (baseException.getClass().equals(newExceptionClass)) {
-			return (E) baseException;
-		}
-		E newException;
-		try {
-			newException = newExceptionClass.getDeclaredConstructor(
-					Throwable.class).newInstance(baseException);
-		} catch (final Exception e) {
-			logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
-			throw new RuntimeException(e);
-		}
-		return newException;
-	}
+    /**
+     * Log the exception and return a new exception on the described class. To be used on non void methods.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     throw logAndReturnNew(e, MyCheckedException.class);
+     * }
+     * </pre>
+     * 
+     * @param <E>
+     * @param baseException
+     * @param newExceptionClass that has a constructor to wrap the original exception
+     * @return a new exception wich type is the same as passed on parameter
+     */
+    @SuppressWarnings( "unchecked" )
+    public static <E extends Exception> E logAndReturnNew(
+                                                           final Exception baseException,
+                                                           final Class<E> newExceptionClass ) {
+        logger.error(baseException.getMessage(), baseException);
+        if (baseException.getClass().equals(newExceptionClass)) {
+            return (E)baseException;
+        }
+        E newException;
+        try {
+            newException = newExceptionClass.getDeclaredConstructor(
+                                                                    Throwable.class).newInstance(baseException);
+        } catch (final Exception e) {
+            logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
+            throw new RuntimeException(e);
+        }
+        return newException;
+    }
 
-	/**
-	 * Log the exception and return a new exception on the described class. To
-	 * be used on non void methods.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	throw logAndReturnNew(&quot;it was so dangerous&quot;, e, MyCheckedException.class);
-	 * }
-	 * </pre>
-	 * 
-	 * @param <E>
-	 * @param message
-	 * @param baseException
-	 * @param newExceptionClass
-	 *            that has a constructor to wrap the original exception
-	 * @return a new exception wich type is the same as passed on parameter
-	 */
-	public static <E extends Exception> E logAndReturnNew(final String message,
-			final Exception baseException, final Class<E> newExceptionClass) {
-		logger.error(message, baseException);
-		E newException;
-		try {
-			newException = newExceptionClass.getDeclaredConstructor(
-					String.class, Throwable.class).newInstance(message,
-					baseException);
-		} catch (final Exception e) {
-			logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
-			throw new RuntimeException(e);
-		}
-		return newException;
-	}
+    /**
+     * Log the exception and return a new exception on the described class. To be used on non void methods.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     throw logAndReturnNew(&quot;it was so dangerous&quot;, e, MyCheckedException.class);
+     * }
+     * </pre>
+     * 
+     * @param <E>
+     * @param message
+     * @param baseException
+     * @param newExceptionClass that has a constructor to wrap the original exception
+     * @return a new exception wich type is the same as passed on parameter
+     */
+    public static <E extends Exception> E logAndReturnNew( final String message,
+                                                           final Exception baseException,
+                                                           final Class<E> newExceptionClass ) {
+        logger.error(message, baseException);
+        E newException;
+        try {
+            newException = newExceptionClass.getDeclaredConstructor(
+                                                                    String.class, Throwable.class).newInstance(message,
+                                                                                                               baseException);
+        } catch (final Exception e) {
+            logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
+            throw new RuntimeException(e);
+        }
+        return newException;
+    }
 
-	/**
-	 * Log the exception and throw the same exception on a void method.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	logAndThrow(e);
-	 * }
-	 * </pre>
-	 * 
-	 * @param <E>
-	 * @param exception
-	 * @throws E
-	 */
-	public static <E extends Throwable> void logAndThrow(final E exception)
-			throws E {
-		logger.error(exception.getMessage(), exception);
-		throw exception;
-	}
+    /**
+     * Log the exception and throw the same exception on a void method.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     logAndThrow(e);
+     * }
+     * </pre>
+     * 
+     * @param <E>
+     * @param exception
+     * @throws E
+     */
+    public static <E extends Throwable> void logAndThrow( final E exception )
+            throws E {
+        logger.error(exception.getMessage(), exception);
+        throw exception;
+    }
 
-	/**
-	 * Log the exception and throw a new exception on the described class. To be
-	 * used on void methods.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	logAndThrowNew(e, MyCheckedException.class);
-	 * }
-	 * </pre>
-	 * 
-	 * @param <E>
-	 * @param baseException
-	 * @param newExceptionClass
-	 *            that has a constructor to wrap the original exception
-	 * @throws E
-	 *             the new exception
-	 */
-	@SuppressWarnings("unchecked")
-	public static <E extends Exception> void logAndThrowNew(
-			final Exception baseException, final Class<E> newExceptionClass)
-			throws E {
-		logger.error(baseException.getMessage(), baseException);
-		if (baseException.getClass().equals(newExceptionClass)) {
-			throw (E) baseException;
-		}
-		E newException;
-		try {
-			newException = newExceptionClass.getDeclaredConstructor(
-					Throwable.class).newInstance(baseException);
-		} catch (final Exception e) {
-			logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
-			throw new RuntimeException(e);
-		}
-		throw newException;
-	}
+    /**
+     * Log the exception and throw a new exception on the described class. To be used on void methods.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     logAndThrowNew(e, MyCheckedException.class);
+     * }
+     * </pre>
+     * 
+     * @param <E>
+     * @param baseException
+     * @param newExceptionClass that has a constructor to wrap the original exception
+     * @throws E the new exception
+     */
+    @SuppressWarnings( "unchecked" )
+    public static <E extends Exception> void logAndThrowNew(
+                                                             final Exception baseException,
+                                                             final Class<E> newExceptionClass )
+            throws E {
+        logger.error(baseException.getMessage(), baseException);
+        if (baseException.getClass().equals(newExceptionClass)) {
+            throw (E)baseException;
+        }
+        E newException;
+        try {
+            newException = newExceptionClass.getDeclaredConstructor(
+                                                                    Throwable.class).newInstance(baseException);
+        } catch (final Exception e) {
+            logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
+            throw new RuntimeException(e);
+        }
+        throw newException;
+    }
 
-	/**
-	 * Log the exception and throw a new exception on the described class. To be
-	 * used on void methods.
-	 * 
-	 * <pre>
-	 * try {
-	 * 	somethingDangerous();
-	 * } catch (Exception e) {
-	 * 	logAndThrowNew(&quot;it was so dangerous&quot;, e, MyCheckedException.class);
-	 * }
-	 * </pre>
-	 * 
-	 * @param <E>
-	 * @param message
-	 * @param baseException
-	 * @param newExceptionClass
-	 *            that has a constructor to wrap the original exception
-	 * @throws E
-	 *             the new exception
-	 */
-	public static <E extends Exception> void logAndThrowNew(
-			final String message, final Exception baseException,
-			final Class<E> newExceptionClass) throws E {
-		logger.error(message, baseException);
-		E newException;
-		try {
-			newException = newExceptionClass.getDeclaredConstructor(
-					String.class, Throwable.class).newInstance(message,
-					baseException);
-		} catch (final Exception e) {
-			logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
-			throw new RuntimeException(e);
-		}
-		throw newException;
-	}
+    /**
+     * Log the exception and throw a new exception on the described class. To be used on void methods.
+     * 
+     * <pre>
+     * try {
+     *     somethingDangerous();
+     * } catch (Exception e) {
+     *     logAndThrowNew(&quot;it was so dangerous&quot;, e, MyCheckedException.class);
+     * }
+     * </pre>
+     * 
+     * @param <E>
+     * @param message
+     * @param baseException
+     * @param newExceptionClass that has a constructor to wrap the original exception
+     * @throws E the new exception
+     */
+    public static <E extends Exception> void logAndThrowNew(
+                                                             final String message,
+                                                             final Exception baseException,
+                                                             final Class<E> newExceptionClass ) throws E {
+        logger.error(message, baseException);
+        E newException;
+        try {
+            newException = newExceptionClass.getDeclaredConstructor(
+                                                                    String.class, Throwable.class).newInstance(message,
+                                                                                                               baseException);
+        } catch (final Exception e) {
+            logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
+            throw new RuntimeException(e);
+        }
+        throw newException;
+    }
 
-	/**
-	 * Should not be instantiated
-	 */
-	private Exceptions() {
-		throw new IllegalStateException(Messages
-				.getString("invalidConstructor")); //$NON-NLS-1$
-	}
+    /**
+     * Should not be instantiated
+     */
+    private Exceptions() {
+        throw new IllegalStateException(Messages
+                                                .getString("invalidConstructor")); //$NON-NLS-1$
+    }
 
 }

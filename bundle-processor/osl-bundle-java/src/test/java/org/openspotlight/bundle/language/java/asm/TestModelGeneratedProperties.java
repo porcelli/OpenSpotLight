@@ -177,7 +177,7 @@ public class TestModelGeneratedProperties {
         Assert.assertEquals("org.openspotlight.Test2<? extends org.openspotlight.Test>", parameterizedType.getFullName());
 
         typeReferences.add(new SimpleTypeReference("java.lang", "String"));
-        
+
         parameterizedType = new ParameterizedTypeReference(typeReferences, simpleType);
         Assert.assertEquals("Test2<? extends org.openspotlight.Test, java.lang.String>", parameterizedType.getName());
         Assert.assertEquals("org.openspotlight.Test2<? extends org.openspotlight.Test, java.lang.String>", parameterizedType.getFullName());

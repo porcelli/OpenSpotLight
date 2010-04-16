@@ -48,87 +48,85 @@
  */
 package org.openspotlight.graph.query;
 
-
 /**
  * The Interface SLSelectByLinkCount.
  * 
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectByLinkCount extends SLSelect {
-	
-	/**
-	 * Type.
-	 * 
-	 * @param typeName the type name
-	 * 
-	 * @return the type
-	 */
-	public Type type(String typeName);
-	
-	/**
-	 * End.
-	 * 
-	 * @return the end
-	 */
-	public End end();
-	
-	/**
-	 * The Interface Type.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface Type {
-		
-		/**
-		 * Comma.
-		 * 
-		 * @return the sL select by link count
-		 */
-		public SLSelectByLinkCount comma();
-		
-		/**
-		 * Select end.
-		 * 
-		 * @return the end
-		 */
-		public End selectEnd();
-		
-		/**
-		 * Sub types.
-		 * 
-		 * @return the type
-		 */
-		public Type subTypes();
-	}
-	
-	/**
-	 * The Interface End.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static interface End extends SLSelectFacade {
-		
-		/**
-		 * Where.
-		 * 
-		 * @return the sL where by link count
-		 */
-		public SLWhereByLinkCount where();
-		
-		/**
-		 * Order by.
-		 * 
-		 * @return the sL order by statement
-		 */
-		public SLOrderByStatement orderBy();
-		
-		/**
-		 * Keep result.
-		 * 
-		 * @return the end
-		 */
-		public End keepResult();
-		
+
+    /**
+     * Type.
+     * 
+     * @param typeName the type name
+     * @return the type
+     */
+    public Type type( String typeName );
+
+    /**
+     * End.
+     * 
+     * @return the end
+     */
+    public End end();
+
+    /**
+     * The Interface Type.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface Type {
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select by link count
+         */
+        public SLSelectByLinkCount comma();
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+
+        /**
+         * Sub types.
+         * 
+         * @return the type
+         */
+        public Type subTypes();
+    }
+
+    /**
+     * The Interface End.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface End extends SLSelectFacade {
+
+        /**
+         * Where.
+         * 
+         * @return the sL where by link count
+         */
+        public SLWhereByLinkCount where();
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public SLOrderByStatement orderBy();
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
         /**
          * Limit.
          * 
@@ -146,5 +144,5 @@ public interface SLSelectByLinkCount extends SLSelect {
          */
         public End limit( Integer size,
                           Integer offset );
-	}
+    }
 }

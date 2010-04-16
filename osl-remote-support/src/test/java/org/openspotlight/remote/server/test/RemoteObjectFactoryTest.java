@@ -79,8 +79,8 @@ public class RemoteObjectFactoryTest {
      */
     static class AllowUserValidAutenticator implements UserAuthenticator {
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.remote.server.UserAuthenticator#canConnect(java.lang.String, java.lang.String, java.lang.String)
+        /**
+         * {@inheritDoc}
          */
         public boolean canConnect( final String userName,
                                    final String password,

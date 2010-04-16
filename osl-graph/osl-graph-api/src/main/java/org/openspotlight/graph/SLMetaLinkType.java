@@ -61,17 +61,15 @@ public interface SLMetaLinkType extends SLMetaElement {
      * Gets the type.
      * 
      * @return the type
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Class<? extends SLLink> getType() throws SLGraphSessionException;
+    public Class<? extends SLLink> getType();
 
     /**
      * Gets the metalinks.
      * 
      * @return the metalinks
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public Collection<SLMetaLink> getMetalinks() throws SLGraphSessionException;
+    public Collection<SLMetaLink> getMetalinks();
 
     /**
      * Gets the meta links.
@@ -80,11 +78,10 @@ public interface SLMetaLinkType extends SLMetaElement {
      * @param targetType the target type
      * @param bidirectional the bidirectional
      * @return the meta links
-     * @throws SLGraphSessionException the SL graph session exception
      */
     public Collection<SLMetaLink> getMetaLinks( Class<? extends SLNode> sourceType,
                                                 Class<? extends SLNode> targetType,
-                                                Boolean bidirectional ) throws SLGraphSessionException;
+                                                Boolean bidirectional );
 
     /**
      * Gets the meta links.
@@ -93,10 +90,9 @@ public interface SLMetaLinkType extends SLMetaElement {
      * @param targetType the target type
      * @param bidirectional the bidirectional
      * @return the meta links
-     * @throws SLGraphSessionException the SL graph session exception
      */
     public Collection<SLMetaLink> getMetaLinks( String sourceType,
                                                 String targetType,
-                                                Boolean bidirectional ) throws SLGraphSessionException;
+                                                Boolean bidirectional );
 
 }

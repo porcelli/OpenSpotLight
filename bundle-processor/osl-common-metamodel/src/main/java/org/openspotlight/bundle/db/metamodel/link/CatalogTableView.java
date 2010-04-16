@@ -1,4 +1,3 @@
-
 /*
  * OpenSpotLight - Open Source IT Governance Platform
  *
@@ -53,16 +52,10 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
- * The Interface for a link between Catalog - TableView.
+ * The Interface for a link between Catalog - TableView. Catalog A2B TableView
  * 
- *
- * Catalog A2B TableView
- *
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com 
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription("Catalog - TableView")
+@SLDescription( "Catalog - TableView" )
 public interface CatalogTableView extends SLLink {
 }
-
-
-        

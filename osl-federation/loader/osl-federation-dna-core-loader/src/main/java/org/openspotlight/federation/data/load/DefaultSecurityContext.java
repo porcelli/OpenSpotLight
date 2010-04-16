@@ -59,45 +59,42 @@ import org.jboss.dna.graph.SecurityContext;
  * Default DNA security context for internal use on OSL.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public enum DefaultSecurityContext implements SecurityContext {
-    
+
     /**
      * Default read only security context.
      */
     READ_ONLY("readonly", "readonly"); //$NON-NLS-1$//$NON-NLS-2$
-    
-    private final String userName;
+
+    private final String      userName;
     private final Set<String> entitlements;
-    
-    DefaultSecurityContext(final String userName, final String... entitlements) {
+
+    DefaultSecurityContext(
+                            final String userName, final String... entitlements ) {
         this.userName = userName;
         this.entitlements = setOf(entitlements);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     public String getUserName() {
         return this.userName;
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
-    public boolean hasRole(final String roleName) {
+    public boolean hasRole( final String roleName ) {
         return this.entitlements.contains(roleName);
     }
-    
+
     /**
-     * 
      * {@inheritDoc}
      */
     public void logout() {
         // nothing to do here
     }
-    
+
 }

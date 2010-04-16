@@ -58,89 +58,85 @@ import org.openspotlight.persist.internal.LazyProperty;
 
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 
-	private static final long serialVersionUID = -3359480990669655877L;
+    private static final long                    serialVersionUID     = -3359480990669655877L;
 
-	/** The syntax information set. */
-	private LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory
-	.create(this);
+    /** The syntax information set. */
+    private LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory
+                                                                                            .create(this);
 
-	public ArtifactWithSyntaxInformation() {
-		super();
-	}
+    public ArtifactWithSyntaxInformation() {
+        super();
+    }
 
-	/**
-	 * Adds the syntax information.
-	 * 
-	 * @param lineStart
-	 *            the line start
-	 * @param lineEnd
-	 *            the line end
-	 * @param columnStart
-	 *            the column start
-	 * @param columnEnd
-	 *            the column end
-	 * @param type
-	 *            the type
-	 */
-	public void addSyntaxInformation(final int lineStart, final int lineEnd,
-			final int columnStart, final int columnEnd,
-			final SyntaxInformationType type, final Session session) {
-		final SyntaxInformation syntaxInformation = new SyntaxInformation(this,
-				lineStart, lineEnd, columnStart, columnEnd, type);
-		getUnwrappedSyntaxInformation(session).add(syntaxInformation);
-	}
+    /**
+     * Adds the syntax information.
+     * 
+     * @param lineStart the line start
+     * @param lineEnd the line end
+     * @param columnStart the column start
+     * @param columnEnd the column end
+     * @param type the type
+     */
+    public void addSyntaxInformation( final int lineStart,
+                                      final int lineEnd,
+                                      final int columnStart,
+                                      final int columnEnd,
+                                      final SyntaxInformationType type,
+                                      final Session session ) {
+        final SyntaxInformation syntaxInformation = new SyntaxInformation(this,
+                                                                          lineStart, lineEnd, columnStart, columnEnd, type);
+        getUnwrappedSyntaxInformation(session).add(syntaxInformation);
+    }
 
-	public LazyProperty<Set<SyntaxInformation>> getSyntaxInformationSet() {
-		return syntaxInformationSet;
-	}
+    public LazyProperty<Set<SyntaxInformation>> getSyntaxInformationSet() {
+        return syntaxInformationSet;
+    }
 
-	@TransientProperty
-	public Set<SyntaxInformation> getUnwrappedSyntaxInformation(final Session session) {
-		try {
-			syntaxInformationSet.getMetadata().getLock().lock();
-			Set<SyntaxInformation> currentSet = syntaxInformationSet
-			.get(session);
-			if (currentSet == null) {
-				currentSet = new HashSet<SyntaxInformation>();
-				syntaxInformationSet.setTransient(currentSet);
-			}
-			return currentSet;
-		} finally {
-			syntaxInformationSet.getMetadata().getLock().unlock();
-		}
+    @TransientProperty
+    public Set<SyntaxInformation> getUnwrappedSyntaxInformation( final Session session ) {
+        try {
+            syntaxInformationSet.getMetadata().getLock().lock();
+            Set<SyntaxInformation> currentSet = syntaxInformationSet
+                                                                    .get(session);
+            if (currentSet == null) {
+                currentSet = new HashSet<SyntaxInformation>();
+                syntaxInformationSet.setTransient(currentSet);
+            }
+            return currentSet;
+        } finally {
+            syntaxInformationSet.getMetadata().getLock().unlock();
+        }
 
-	}
+    }
 
-	/**
-	 * Removes the syntax information.
-	 * 
-	 * @param lineStart
-	 *            the line start
-	 * @param lineEnd
-	 *            the line end
-	 * @param columnStart
-	 *            the column start
-	 * @param columnEnd
-	 *            the column end
-	 * @param type
-	 *            the type
-	 */
-	public void removeSyntaxInformation(final int lineStart, final int lineEnd,
-			final int columnStart, final int columnEnd,
-			final SyntaxInformationType type, final Session session) {
-		final SyntaxInformation syntaxInformation = new SyntaxInformation();
-		syntaxInformation.setColumnEnd(columnEnd);
-		syntaxInformation.setColumnStart(columnStart);
-		syntaxInformation.setLineEnd(lineEnd);
-		syntaxInformation.setLineStart(lineStart);
-		syntaxInformation.setParent(this);
-		syntaxInformation.setType(type);
-		getUnwrappedSyntaxInformation(session).remove(syntaxInformation);
-	}
+    /**
+     * Removes the syntax information.
+     * 
+     * @param lineStart the line start
+     * @param lineEnd the line end
+     * @param columnStart the column start
+     * @param columnEnd the column end
+     * @param type the type
+     */
+    public void removeSyntaxInformation( final int lineStart,
+                                         final int lineEnd,
+                                         final int columnStart,
+                                         final int columnEnd,
+                                         final SyntaxInformationType type,
+                                         final Session session ) {
+        final SyntaxInformation syntaxInformation = new SyntaxInformation();
+        syntaxInformation.setColumnEnd(columnEnd);
+        syntaxInformation.setColumnStart(columnStart);
+        syntaxInformation.setLineEnd(lineEnd);
+        syntaxInformation.setLineStart(lineStart);
+        syntaxInformation.setParent(this);
+        syntaxInformation.setType(type);
+        getUnwrappedSyntaxInformation(session).remove(syntaxInformation);
+    }
 
-	public void setSyntaxInformationSet(
-			final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet) {
-		this.syntaxInformationSet = syntaxInformationSet;
-	}
+    public void setSyntaxInformationSet(
+                                         final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet ) {
+        this.syntaxInformationSet = syntaxInformationSet;
+    }
 
 }

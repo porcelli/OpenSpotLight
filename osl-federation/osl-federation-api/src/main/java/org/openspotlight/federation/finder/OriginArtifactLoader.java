@@ -55,83 +55,81 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
 /**
- * The Interface OriginArtifactLoader. It should work on a multi threaded
- * environmnent. It should be very easy to do, since there's no need to store
- * any state on this class.
+ * The Interface OriginArtifactLoader. It should work on a multi threaded environmnent. It should be very easy to do, since
+ * there's no need to store any state on this class.
  */
 public interface OriginArtifactLoader extends Disposable {
 
-	public LoaderInternalMethods getInternalMethods();
+    public LoaderInternalMethods getInternalMethods();
 
-	public interface LoaderInternalMethods {
+    public interface LoaderInternalMethods {
 
-		public <A extends Artifact> boolean accept(ArtifactSource source,
-				Class<A> type);
+        public <A extends Artifact> boolean accept( ArtifactSource source,
+                                                    Class<A> type );
 
-		/**
-		 * Retrieve all artifact names.
-		 * 
-		 * @param artifactSource
-		 *            the artifact source
-		 * @return the set< string>
-		 */
-		public <A extends Artifact> Set<String> retrieveOriginalNames(
-				Class<A> type, ArtifactSource source, String initialPath);
+        /**
+         * Retrieve all artifact names.
+         * 
+         * @param artifactSource the artifact source
+         * @return the set< string>
+         */
+        public <A extends Artifact> Set<String> retrieveOriginalNames(
+                                                                       Class<A> type,
+                                                                       ArtifactSource source,
+                                                                       String initialPath );
 
-		public Set<Class<? extends Artifact>> getAvailableTypes();
+        public Set<Class<? extends Artifact>> getAvailableTypes();
 
-		public boolean isTypeSupported(Class<? extends Artifact> type);
+        public boolean isTypeSupported( Class<? extends Artifact> type );
 
-		/**
-		 * This method verifies if the artifact with given name is changed
-		 * comparing with the old one. It may return false yes, but never false
-		 * no. It is used to get few optimizations on artifact loading process.
-		 * 
-		 * @param artifactName
-		 * @param oldOne
-		 * @return
-		 */
-		public <A extends Artifact> boolean isMaybeChanged(
-				ArtifactSource source, String artifactName, A oldOne);
+        /**
+         * This method verifies if the artifact with given name is changed comparing with the old one. It may return false yes,
+         * but never false no. It is used to get few optimizations on artifact loading process.
+         * 
+         * @param artifactName
+         * @param oldOne
+         * @return
+         */
+        public <A extends Artifact> boolean isMaybeChanged(
+                                                            ArtifactSource source,
+                                                            String artifactName,
+                                                            A oldOne );
 
-	}
+    }
 
-	/**
-	 * Find by path.
-	 * 
-	 * @param path
-	 *            the path
-	 * @param artifactSource
-	 *            the artifact source
-	 * @return the stream artifact
-	 */
-	public <A extends Artifact> A findByPath(Class<A> type,
-			ArtifactSource source, String path);
+    /**
+     * Find by path.
+     * 
+     * @param path the path
+     * @param artifactSource the artifact source
+     * @return the stream artifact
+     */
+    public <A extends Artifact> A findByPath( Class<A> type,
+                                              ArtifactSource source,
+                                              String path );
 
-	/**
-	 * Find by relative path.
-	 * 
-	 * @param relativeTo
-	 *            the relative to
-	 * @param path
-	 *            the path
-	 * @param artifactSource
-	 *            the artifact source
-	 * @return the stream artifact
-	 */
-	public <A extends Artifact> A findByRelativePath(Class<A> type,
-			ArtifactSource source, A relativeTo, String path);
+    /**
+     * Find by relative path.
+     * 
+     * @param relativeTo the relative to
+     * @param path the path
+     * @param artifactSource the artifact source
+     * @return the stream artifact
+     */
+    public <A extends Artifact> A findByRelativePath( Class<A> type,
+                                                      ArtifactSource source,
+                                                      A relativeTo,
+                                                      String path );
 
-	/**
-	 * List by path.
-	 * 
-	 * @param path
-	 *            the path
-	 * @param artifactSource
-	 *            the artifact source
-	 * @return the set< stream artifact>
-	 */
-	public <A extends Artifact> Set<A> listByPath(Class<A> type,
-			ArtifactSource source, String path);
+    /**
+     * List by path.
+     * 
+     * @param path the path
+     * @param artifactSource the artifact source
+     * @return the set< stream artifact>
+     */
+    public <A extends Artifact> Set<A> listByPath( Class<A> type,
+                                                   ArtifactSource source,
+                                                   String path );
 
 }
