@@ -868,18 +868,19 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
         synchronized (lock) {
             try {
                 Class<? extends SLNode> type = null;
-                final String propName = SLCommonSupport
-                                                       .toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
-                final SLPersistentProperty<String> typeNameProp = SLCommonSupport
-                                                                                 .getProperty(pNode, String.class, propName);
+                final String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
+                final SLPersistentProperty<String> typeNameProp = SLCommonSupport.getProperty(pNode, String.class, propName);
                 if (typeNameProp != null) {
-                    type = (Class<? extends SLNode>)Class.forName(typeNameProp
-                                                                              .getValue());
+                    try {
+                        type = (Class<? extends SLNode>)Class.forName(typeNameProp
+                                                                                  .getValue());
+                    } catch (ClassNotFoundException e) {
+                        type = SLNode.class;
+                    }
                 }
-                return type == null ? SLNode.class : type;
-            } catch (final Exception e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node type.", e);
+                return type;
+            } catch (SLPersistentTreeSessionException e) {
+                throw new SLGraphSessionException("Error on attempt to retrieve node type.", e);
             }
         }
     }
