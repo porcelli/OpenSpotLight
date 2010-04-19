@@ -69,6 +69,7 @@ import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.graph.query.SLQueryTextInternal;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.test.domain.node.JavaClass;
+import org.openspotlight.graph.test.domain.node.JavaInnerInterface;
 import org.openspotlight.graph.test.domain.node.JavaInterface;
 import org.openspotlight.graph.test.domain.node.JavaPackage;
 import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
@@ -418,7 +419,8 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length, is(64));
+                assertThat(wrappers.length, is(65));
+                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
                                            "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang",
@@ -2240,7 +2242,8 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length, is(8));
+                assertThat(wrappers.length, is(9));
+                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
                                            "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util",
@@ -2301,7 +2304,8 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length, is(55));
+                assertThat(wrappers.length, is(56));
+                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
                                            "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
@@ -2821,7 +2825,8 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length, is(55));
+                assertThat(wrappers.length, is(56));
+                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
                                            "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
@@ -2956,7 +2961,8 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length, is(55));
+                assertThat(wrappers.length, is(56));
+                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
                                            "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
@@ -3092,7 +3098,8 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length, is(55));
+                assertThat(wrappers.length, is(56));
+                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
                                            "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
@@ -4380,7 +4387,8 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
         new AssertResult() {
             public void execute() {
-                assertThat(wrappers.length, is(64));
+                assertThat(wrappers.length, is(65));
+                assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util",
                                            "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang",

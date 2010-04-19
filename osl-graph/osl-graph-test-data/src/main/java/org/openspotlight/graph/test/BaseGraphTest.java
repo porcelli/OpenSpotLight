@@ -67,7 +67,6 @@ import java.util.TreeSet;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;

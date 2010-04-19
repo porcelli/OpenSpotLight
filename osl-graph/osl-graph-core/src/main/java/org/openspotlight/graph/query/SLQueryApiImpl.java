@@ -567,8 +567,7 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
             }
             metaNodeTypes.add(metaNodeType);
             if (subTypes) {
-                final Collection<SLMetaNodeType> subMetaNodeTypes = metaNodeType
-                                                                                .getSubMetaNodeTypes();
+                final Collection<SLMetaNodeType> subMetaNodeTypes = metaNodeType.searchSubMetaNodeTypes(SLRecursiveMode.RECURSIVE, null, null, null, null, null);
                 for (final SLMetaNodeType subMetaNodeType : subMetaNodeTypes) {
                     metaNodeTypes.add(subMetaNodeType);
                 }

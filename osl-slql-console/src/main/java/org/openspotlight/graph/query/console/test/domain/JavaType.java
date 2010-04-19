@@ -49,7 +49,6 @@
 package org.openspotlight.graph.query.console.test.domain;
 
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLProperty;
 
 /**
  * The Interface JavaType.

@@ -52,7 +52,6 @@ import java.util.Set;
 
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.parser.JavaBodyElements;
 import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
 import org.openspotlight.bundle.language.java.parser.executor.JavaExecutorSupport;
 import org.openspotlight.federation.context.ExecutionContext;

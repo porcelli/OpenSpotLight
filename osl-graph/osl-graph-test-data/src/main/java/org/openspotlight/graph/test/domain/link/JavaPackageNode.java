@@ -49,7 +49,6 @@
 package org.openspotlight.graph.test.domain.link;
 
 import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.test.domain.node.JavaElementNode;
 
 /**
