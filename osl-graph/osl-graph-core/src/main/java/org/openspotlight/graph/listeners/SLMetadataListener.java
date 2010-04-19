@@ -63,11 +63,7 @@ import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkProperty;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
@@ -699,6 +695,11 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                         pMetaNodeTypeParent.setProperty(String.class,
                                                         SLConsts.PROPERTY_NAME_NODE_TYPE,
                                                         currentNodeType.getName());
+                        propertySet(treeSession,
+                                    currentNodeType.getName(),
+                                    SLConsts.PROPERTY_CAPTION_INTERNAL_NAME,
+                                    String.class.getName(),
+                                    VisibilityLevel.PUBLIC.toString());
                         addRenderHints(currentNodeType, pMetaNodeTypeParent);
                         addDescription(currentNodeType, pMetaNodeTypeParent);
                         addVisibility(currentNodeType, pMetaNodeTypeParent);
@@ -728,27 +729,33 @@ public class SLMetadataListener extends SLAbstractGraphSessionEventListener {
                 final String typeName = SLCommonSupport.getNodeTypeName(pNode);
                 final String propertyName = pProperty.getName();
 
-                final String fullPropertyName = typeName + "." + propertyName;
-                if (!nodePropertyNameCache.contains(fullPropertyName)) {
-                    final SLPersistentNode metaNodeType = getMetaNodeType(pNode
-                                                                               .getSession(), typeName);
-                    if (metaNodeType != null) {
-                        metaNodeType.setProperty(String.class, propertyName,
-                                                 pProperty.getValue().getClass().getName());
+                propertySet(pNode.getSession(), typeName, propertyName, pProperty.getValue().getClass().getName(), event.getVisibility().toString());
 
-                        final String propVisibilityName = SLCommonSupport
-                                                                         .toInternalPropertyName(propertyName + "."
-                                                                                                 + SLConsts.PROPERTY_NAME_VISIBILITY);
-
-                        metaNodeType.setProperty(String.class,
-                                                 propVisibilityName, event.getVisibility()
-                                                                          .toString());
-                        nodePropertyNameCache.add(fullPropertyName);
-                    }
-                }
             } catch (final SLPersistentTreeSessionException e) {
                 throw new SLGraphSessionException(
                                                   "Error on attempt to set meta node property.", e);
+            }
+        }
+    }
+
+    private void propertySet( SLPersistentTreeSession session,
+                              String typeName,
+                              String propertyName,
+                              String propertyType,
+                              String visibility ) throws SLPersistentTreeSessionException {
+        final String fullPropertyName = typeName + "." + propertyName;
+        if (!nodePropertyNameCache.contains(fullPropertyName)) {
+            final SLPersistentNode metaNodeType = getMetaNodeType(session, typeName);
+            if (metaNodeType != null) {
+                metaNodeType.setProperty(String.class, propertyName,
+                                         propertyType);
+
+                final String propVisibilityName = SLCommonSupport
+                                                                 .toInternalPropertyName(propertyName + "."
+                                                                                         + SLConsts.PROPERTY_NAME_VISIBILITY);
+
+                metaNodeType.setProperty(String.class, propVisibilityName, visibility);
+                nodePropertyNameCache.add(fullPropertyName);
             }
         }
     }

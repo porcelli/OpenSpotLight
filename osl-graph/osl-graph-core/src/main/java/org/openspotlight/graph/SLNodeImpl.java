@@ -478,10 +478,11 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
         }
     }
+
     /**
      * {@inheritDoc}
      */
-    public void setCaption(String caption) {
+    public void setCaption( String caption ) {
         synchronized (lock) {
             setProperty(String.class, VisibilityLevel.PUBLIC, SLConsts.PROPERTY_CAPTION_NAME, caption);
         }
@@ -912,12 +913,14 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 final Set<SLPersistentProperty<Serializable>> persistentProperties = pNode
                                                                                           .getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
                 for (final SLPersistentProperty<Serializable> persistentProperty : persistentProperties) {
-                    final SLNode nodeProxy = ProxyUtil.createNodeProxy(
-                                                                       nodeType, this);
-                    final SLNodeProperty<Serializable> property = factory
-                                                                         .createProperty(nodeProxy, persistentProperty,
-                                                                                         eventPoster);
-                    properties.add(property);
+                    if (persistentProperty.getName().lastIndexOf('.') == SLConsts.PROPERTY_PREFIX_USER.length()) {
+                        final SLNode nodeProxy = ProxyUtil.createNodeProxy(
+                                                                           nodeType, this);
+                        final SLNodeProperty<Serializable> property = factory
+                                                                             .createProperty(nodeProxy, persistentProperty,
+                                                                                             eventPoster);
+                        properties.add(property);
+                    }
                 }
                 return properties;
             } catch (final SLException e) {

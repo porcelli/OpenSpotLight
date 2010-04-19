@@ -105,7 +105,7 @@ public class SLContextImpl implements SLContext {
     /**
      * {@inheritDoc}
      */
-    public void setCaption(String caption) {
+    public void setCaption( String caption ) {
         rootNode.setCaption(caption);
     }
 

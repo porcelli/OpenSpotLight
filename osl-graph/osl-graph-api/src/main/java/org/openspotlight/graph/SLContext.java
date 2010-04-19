@@ -66,16 +66,15 @@ public interface SLContext extends LockContainer {
 
     /**
      * Gets the caption.
-     *
+     * 
      * @return the caption
      */
     public String getCaption();
 
     /**
      * Sets the caption.
-     *
      */
-    public void setCaption(String caption);
+    public void setCaption( String caption );
 
     /**
      * Gets the root node.

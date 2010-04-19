@@ -143,6 +143,9 @@ public abstract class SLConsts implements SharedConstants {
     /** The Constant PROPERTY_NAME_DECODED_NAME. */
     public static final String PROPERTY_CAPTION_NAME                       = "caption";
 
+    /** The Constant PROPERTY_NAME_DECODED_NAME. */
+    public static final String PROPERTY_CAPTION_INTERNAL_NAME              = "user.caption";
+
     /** The Constant PROPERTY_NAME_A_NODE_ID. */
     public static final String PROPERTY_NAME_A_NODE_ID                     = "aNodeID";
 

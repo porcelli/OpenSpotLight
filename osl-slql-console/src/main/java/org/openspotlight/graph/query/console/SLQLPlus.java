@@ -243,7 +243,7 @@ public class SLQLPlus {
             final ConsoleState state = new ConsoleState(loginState.getK2());
             String input;
             while ((input = reader.readLine(getPrompt())) != null) {
-                try{
+                try {
                     state.setInput(input.trim());
                     boolean inputAccepted = false;
                     for (final Command activeCommand : commands) {
@@ -260,7 +260,7 @@ public class SLQLPlus {
                     } else if (state.quitApplication()) {
                         break;
                     }
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     out.print("ERROR: ");
                     out.print(ex.getMessage());
                     out.println(".");

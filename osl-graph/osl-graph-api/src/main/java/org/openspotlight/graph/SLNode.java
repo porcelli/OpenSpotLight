@@ -236,10 +236,10 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
 
     /**
      * Sets the caption.
+     * 
      * @param caption the caption
-     *
      */
-    public void setCaption(String caption);
+    public void setCaption( String caption );
 
     /**
      * Gets the child node.

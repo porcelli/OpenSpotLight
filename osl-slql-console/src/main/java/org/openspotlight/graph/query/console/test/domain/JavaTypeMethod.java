@@ -58,5 +58,4 @@ import org.openspotlight.graph.annotation.SLProperty;
  */
 public interface JavaTypeMethod extends SLNode {
 
-
 }

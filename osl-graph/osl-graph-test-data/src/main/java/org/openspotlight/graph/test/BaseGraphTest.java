@@ -1285,18 +1285,18 @@ public abstract class BaseGraphTest {
      * Test get meta node properties.
      */
     @Test
-    @Ignore
     public void testGetMetaNodeProperties() throws SLMetaNodeTypeNotFoundException {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         javaClassNode1.setClassName("HelloWorld");
         javaClassNode1.setModifier(JavaClassNode.MODIFIER_PUBLIC);
         javaClassNode1.setCreationTime(new Date());
+        javaClassNode1.setProperty(String.class, "newProperty", "someãCc");
 
         final SLMetadata metadata = session.getMetadata();
         final SLMetaNodeType metaNode = metadata.getMetaNodeType(JavaClassNode.class);
         final Collection<SLMetaNodeProperty> metaProperties = metaNode.getMetaProperties();
-        Assert.assertEquals(metaProperties.size(), 3);
+        Assert.assertEquals(metaProperties.size(), 5);
 
         for (final SLMetaNodeProperty metaProperty : metaProperties) {
             Assert.assertNotNull(metaProperty.getName());
@@ -1306,6 +1306,10 @@ public abstract class BaseGraphTest {
                 Assert.assertEquals(metaProperty.getType(), Long.class);
             } else if (metaProperty.getName().equals("creationTime")) {
                 Assert.assertEquals(metaProperty.getType(), Date.class);
+            } else if (metaProperty.getName().equals("caption")) {
+                Assert.assertEquals(metaProperty.getType(), String.class);
+            } else if (metaProperty.getName().equals("newProperty")) {
+                Assert.assertEquals(metaProperty.getType(), String.class);
             } else {
                 Assert.fail();
             }
@@ -1313,6 +1317,7 @@ public abstract class BaseGraphTest {
 
         for (SLNodeProperty<Serializable> activeProperty : javaClassNode1.getProperties()) {
             SLMetaNodeProperty metaProperty = session.getMetadata().getMetaNodeType(JavaClassNode.class).getMetaProperty(activeProperty.getName());
+            //            System.out.println(activeProperty.getName() + ":" + activeProperty.getValueAsString() + " -> " + metaProperty);
             Assert.assertNotNull("Property " + activeProperty.getName() + " not found on metadata registry.", metaProperty);
         }
     }
@@ -2507,5 +2512,4 @@ public abstract class BaseGraphTest {
 
     }
 
-    
 }
