@@ -121,6 +121,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         STUniqueKey possibleParentKey = possibleParent.getUniqueKey();
         while(parentKey!=null){
             if(parentKey.equals(possibleParentKey)) return true;
+            parentKey = parentKey.getParentKey();
         }
         return false;
     }

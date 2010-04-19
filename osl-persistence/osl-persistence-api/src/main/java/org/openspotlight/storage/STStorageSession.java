@@ -86,6 +86,8 @@ public interface STStorageSession {
         STStorageSessionInternalMethods getInternalMethods();
 
         STUniqueKey createNewSimpleKey(String... nodePaths);
+        STNodeEntry createNewSimpleNode(String... nodePaths);
+
 
     }
 

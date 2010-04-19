@@ -173,6 +173,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return parentKey;
         }
 
+        public STNodeEntry createNewSimpleNode(String... nodePaths) {
+            STUniqueKey key = createNewSimpleKey(nodePaths);
+            return new STNodeEntryImpl(key);
+        }
+
         public STUniqueKeyBuilder createKey(String nodeEntryName) {
             return new STUniqueKeyBuilderImpl(nodeEntryName, partition);
         }

@@ -300,7 +300,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         if (nodeEntry == null) {
             List<STNodeEntry> parents = newLinkedList();
             STNodeEntry currentParent = context.node;
-            while (currentParent != null) {
+            while (currentParent != null && isSimpleNode(currentParent)) {
                 parents.add(currentParent);
                 currentParent = currentParent.getParent(currentSession);
             }
@@ -328,6 +328,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             return cached;
         }
 
+    }
+
+    private boolean isSimpleNode(STNodeEntry currentParent) {
+        return currentParent.getNodeEntryName().startsWith(NODE_NAME_PREFIX);
     }
 
     private Class<?> findClassFromNode(STNodeEntry nodeEntry) throws Exception{
