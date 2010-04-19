@@ -78,14 +78,10 @@ import org.jboss.identity.idm.spi.store.IdentityObjectSearchCriteriaType;
 import org.jboss.identity.idm.spi.store.IdentityStore;
 import org.jboss.identity.idm.spi.store.IdentityStoreInvocationContext;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
-import org.openspotlight.common.LazyType;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.security.domain.SLAttributeEntry;
 import org.openspotlight.security.domain.SLIdentityObject;
 import org.openspotlight.security.domain.SLIdentityObjectRelationship;
@@ -98,20 +94,12 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
     private static final long                  serialVersionUID  = -1340118659974257278L;
 
-    public static final String                 JCR_PROVIDER_NAME = "jcrProviderName";
-
-    public static final String                 REPOSITORY_NAME   = "repositoryName";
-
-    private JcrConnectionProvider              provider;
-
     private IdentityStoreConfigurationMetaData configurationMetaData;
 
     private String                             id;
 
     private String                             repositoryName;
-
-    private DefaultJcrDescriptor               providerDescriptor;
-
+    
     private FeaturesMetaData                   supportedFeatures;
 
     @SuppressWarnings( "unchecked" )
@@ -158,12 +146,6 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         try {
             configurationMetaData = configurationContext
                                                         .getStoreConfigurationMetaData();
-            final String providerName = configurationMetaData
-                                                             .getOptionSingleValue(SLIdentityStoreImpl.JCR_PROVIDER_NAME);
-            repositoryName = configurationMetaData
-                                                  .getOptionSingleValue(SLIdentityStoreImpl.REPOSITORY_NAME);
-            providerDescriptor = DefaultJcrDescriptor.valueOf(providerName);
-            provider = JcrConnectionProvider.createFromData(providerDescriptor);
             id = configurationMetaData.getId();
             supportedFeatures = new FeaturesMetaDataImpl(configurationMetaData,
                                                          java.util.Collections

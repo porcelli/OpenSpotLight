@@ -84,12 +84,16 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 5:08:39 PM
  */
 public class JRedisStorageSessionTest {
+    public JRedisStorageSessionTest() {
+        autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath")));
+    }
 
 
     private enum JRedisServerConfigExample implements JRedisServerDetail {
@@ -150,9 +154,9 @@ public class JRedisStorageSessionTest {
                 .put(ExamplePartition.SECOND, JRedisServerConfigExample.SECOND).build();
     }
 
-    final Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig));
+    final Injector autoFlushInjector;
 
-    final Injector explicitFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.EXPLICIT, mappedServerConfig));
+    final Injector explicitFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.EXPLICIT, mappedServerConfig, repositoryPath("repositoryPath")));
 
     @Before
     public void cleanPreviousData() throws Exception {

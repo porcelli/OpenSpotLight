@@ -53,6 +53,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.openspotlight.guice.ThreadLocalProvider;
 import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.JRedisSTStorageSessionImpl;
 
@@ -63,16 +64,19 @@ import org.openspotlight.storage.redis.JRedisSTStorageSessionImpl;
 public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorageSession> {
 
     @Inject
-    public JRedisSTStorageSessionProvider(STStorageSession.STFlushMode flushMode,  JRedisFactory factory) {
+    public JRedisSTStorageSessionProvider(STStorageSession.STFlushMode flushMode, JRedisFactory factory, STRepositoryPath repositoryPath) {
         this.flushMode = flushMode;
         this.factory = factory;
+        this.repositoryPath = repositoryPath;
     }
 
     private final STStorageSession.STFlushMode flushMode;
     private final JRedisFactory factory;
+    private final STRepositoryPath repositoryPath;
+
 
     @Override
     protected STStorageSession createInstance() {
-        return new JRedisSTStorageSessionImpl(flushMode, factory);
+        return new JRedisSTStorageSessionImpl(flushMode, factory,repositoryPath);
     }
 }

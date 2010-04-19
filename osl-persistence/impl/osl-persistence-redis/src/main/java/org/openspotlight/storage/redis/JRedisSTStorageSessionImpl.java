@@ -56,6 +56,7 @@ import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
@@ -81,7 +82,7 @@ import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitive
  */
 public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
-    private static final String NULL_VALUE_AS_STRING="___N_U_L_L__V_A_L_U_E___";
+    private static final String NULL_VALUE_AS_STRING="__NULL__";
     private static final String SET_WITH_ALL_KEYS_CONTAINING = "*{0}*";
     private static final String SET_WITH_ALL_KEYS = "all-unique-keys";
     private static final String SET_WITH_ALL_NODE_KEYS_FOR_NAME = "name:{0}:unique-keys";
@@ -103,8 +104,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     private final JRedisFactory factory;
 
     @Inject
-    public JRedisSTStorageSessionImpl(STFlushMode flushMode, JRedisFactory factory) {
-        super(flushMode);
+    public JRedisSTStorageSessionImpl(STFlushMode flushMode, JRedisFactory factory, STRepositoryPath repositoryPath) {
+        super(flushMode,repositoryPath);
         this.factory = factory;
     }
 

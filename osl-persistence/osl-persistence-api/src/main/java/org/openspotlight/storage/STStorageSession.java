@@ -65,6 +65,8 @@ import java.util.Set;
  */
 public interface STStorageSession {
 
+    public STRepositoryPath getRepositoryPath();
+
     STPartitionMethods withPartition(STPartition partition);
 
     interface STPartitionMethods extends STNodeEntryFactory {
@@ -82,6 +84,8 @@ public interface STStorageSession {
         STNodeEntryBuilder createWithName(String name);
 
         STStorageSessionInternalMethods getInternalMethods();
+
+        STUniqueKey createNewSimpleKey(String... nodePaths);
 
     }
 

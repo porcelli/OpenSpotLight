@@ -17,26 +17,35 @@ import java.util.Set;
  */
 public interface SimplePersistCapable<N, S> {
 
-    public <T> Iterable<N> convertBeansToNodes(STPartition partition,
-                                               final S session,
-                                               final Iterable<T> beans) throws Exception;
+    STStorageSession getCurrentSession();
 
-    public <T> N convertBeanToNode(STPartition partition,
-                                   final S session, final T bean) throws Exception;
+    STPartition getCurrentPartition();
 
-    public <T> Iterable<T> convertNodesToBeans(final S session,
-                                               final Iterable<N> nodes) throws Exception;
+    public <T> Iterable<N> convertBeansToNodes(final Iterable<T> beans) throws Exception;
 
-    public <T> T convertNodeToBean(final S session,
-                                   final N nodes)
+    public <T> N convertBeanToNode(final T bean) throws Exception;
+
+    public <T> Iterable<T> convertNodesToBeans(final Iterable<N> nodes) throws Exception;
+
+    public <T> T convertNodeToBean(final N nodes)
             throws Exception;
 
-    public <T> Iterable<T> findByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                       String[] propertyNames, Object[] propertyValues)throws Exception;
+    public <T> Iterable<T> findByProperties(Class<T> beanType, String[] propertyNames,
+                                            Object[] propertyValues)throws Exception;
+
+    public <T> T findUniqueByProperties(Class<T> beanType, String[] propertyNames,
+                                        Object[] propertyValues)throws Exception;
+
+    public <T> Iterable<N> convertBeansToNodes(N parentNode, final Iterable<T> beans) throws Exception;
+
+    public <T> N convertBeanToNode(N parentNode, final T bean) throws Exception;
+
+    public <T> Iterable<T> findByProperties(N parentNode, Class<T> beanType, String[] propertyNames,
+                                            Object[] propertyValues)throws Exception;
 
 
-    public <T> T findUniqueByProperties(STPartition partition, STStorageSession session, Class<T> beanType,
-                                        String[] propertyNames, Object[] propertyValues)throws Exception;
+    public <T> T findUniqueByProperties(N parentNode, Class<T> beanType, String[] propertyNames,
+                                        Object[] propertyValues)throws Exception;
 
 
     interface InternalMethods {

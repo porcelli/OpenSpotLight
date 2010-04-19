@@ -74,14 +74,19 @@ import java.util.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * The Class SimplePersistSupportTest.
  */
 public class SimplePersistSupportTest {
 
-    SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = new SimplePersistImpl();
+    SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
     private STStorageSession session;
+
+    public SimplePersistSupportTest() {
+        autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath")));
+    }
 
     private enum JRedisServerConfigExample implements JRedisServerDetail {
         DEFAULT("localhost", 6379, 0);
@@ -137,7 +142,7 @@ public class SimplePersistSupportTest {
                 .put(ExamplePartition.DEFAULT, JRedisServerConfigExample.DEFAULT).build();
     }
 
-    final Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig));
+    final Injector autoFlushInjector;
 
     /**
      * Setup session.
@@ -147,6 +152,7 @@ public class SimplePersistSupportTest {
         JRedis jRedis = autoFlushInjector.getInstance(JRedisFactory.class).getFrom(ExamplePartition.DEFAULT);
         jRedis.flushall();
         session = autoFlushInjector.getInstance(STStorageSession.class);
+        simplePersist = new SimplePersistImpl(session, ExamplePartition.DEFAULT);
     }
 
     @Test
@@ -160,10 +166,10 @@ public class SimplePersistSupportTest {
         propertyObj.setName("name");
         propertyObj.setValue(3);
         levelTwo.setPropertyObj(propertyObj);
-        STNodeEntry asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        STNodeEntry asJcr = simplePersist.convertBeanToNode(
                 levelTwo);
         LevelTwoObj anotherLevelTwo = simplePersist.convertNodeToBean(
-                session, asJcr);
+                 asJcr);
         assertThat(anotherLevelTwo.getPropertyObj().getName(), Is
                 .is(propertyObj.getName()));
         assertThat(anotherLevelTwo.getPropertyObj().getValue(), Is
@@ -171,17 +177,17 @@ public class SimplePersistSupportTest {
 
         propertyObj.setName("anotherName");
         propertyObj.setValue(4);
-        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        asJcr = simplePersist.convertBeanToNode(
                 levelTwo);
-        anotherLevelTwo = simplePersist.convertNodeToBean(session, asJcr);
+        anotherLevelTwo = simplePersist.convertNodeToBean( asJcr);
         assertThat(anotherLevelTwo.getPropertyObj().getName(), Is
                 .is(propertyObj.getName()));
         assertThat(anotherLevelTwo.getPropertyObj().getValue(), Is
                 .is(propertyObj.getValue()));
         levelTwo.setPropertyObj(null);
-        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        asJcr = simplePersist.convertBeanToNode(
                 levelTwo);
-        anotherLevelTwo = simplePersist.convertNodeToBean(session, asJcr);
+        anotherLevelTwo = simplePersist.convertNodeToBean( asJcr);
         assertThat(anotherLevelTwo.getPropertyObj(), Is.is(IsNull
                 .nullValue()));
 
@@ -201,10 +207,10 @@ public class SimplePersistSupportTest {
         obj1.setName("obj 1");
         obj1.setValue(5);
         levelThree.getObjList().add(obj1);
-        STNodeEntry asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        STNodeEntry asJcr = simplePersist.convertBeanToNode(
                 levelThree);
         LevelThreeObj anotherLevelThree = simplePersist
-                .convertNodeToBean(session, asJcr);
+                .convertNodeToBean( asJcr);
         assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
         assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is
                 .is(obj1.getValue()));
@@ -216,9 +222,9 @@ public class SimplePersistSupportTest {
         obj2.setName("another name 2");
         obj2.setValue(33);
         levelThree.getObjList().add(obj2);
-        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        asJcr = simplePersist.convertBeanToNode(
                 levelThree);
-        anotherLevelThree = simplePersist.convertNodeToBean(session,
+        anotherLevelThree = simplePersist.convertNodeToBean(
                 asJcr);
         assertThat(anotherLevelThree.getObjList().size(), Is.is(2));
         assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is
@@ -231,9 +237,9 @@ public class SimplePersistSupportTest {
                 .is(obj2.getName()));
 
         levelThree.getObjList().clear();
-        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        asJcr = simplePersist.convertBeanToNode(
                 levelThree);
-        anotherLevelThree = simplePersist.convertNodeToBean(session,
+        anotherLevelThree = simplePersist.convertNodeToBean(
                 asJcr);
         assertThat(anotherLevelThree.getObjList().size(), Is.is(0));
     }
@@ -250,19 +256,19 @@ public class SimplePersistSupportTest {
         final MapValueObj obj1 = new MapValueObj();
         obj1.setName("obj 1");
         obj1.setValue(5);
-        STNodeEntry asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        STNodeEntry asJcr = simplePersist.convertBeanToNode(
                 levelThree);
         LevelThreeObj anotherLevelThree = simplePersist
-                .convertNodeToBean(session, asJcr);
+                .convertNodeToBean( asJcr);
 
         obj1.setValue(4);
-        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        asJcr = simplePersist.convertBeanToNode(
                 levelThree);
-        anotherLevelThree = simplePersist.convertNodeToBean(session,
+        anotherLevelThree = simplePersist.convertNodeToBean(
                 asJcr);
-        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        asJcr = simplePersist.convertBeanToNode(
                 levelThree);
-        anotherLevelThree = simplePersist.convertNodeToBean(session,
+        anotherLevelThree = simplePersist.convertNodeToBean(
                 asJcr);
     }
 
@@ -277,18 +283,18 @@ public class SimplePersistSupportTest {
         levelThree.setLevelTwoObj(levelTwo);
         levelThree.setBooleanList(new ArrayList<Boolean>());
         levelThree.getBooleanList().add(true);
-        STNodeEntry asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        STNodeEntry asJcr = simplePersist.convertBeanToNode(
                 levelThree);
         LevelThreeObj anotherLevelThree = simplePersist
-                .convertNodeToBean(session, asJcr);
+                .convertNodeToBean( asJcr);
         assertThat(anotherLevelThree.getBooleanList().size(), Is.is(1));
         assertThat(anotherLevelThree.getBooleanList().get(0), Is
                 .is(true));
 
         levelThree.getBooleanList().add(false);
-        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        asJcr = simplePersist.convertBeanToNode(
                 levelThree);
-        anotherLevelThree = simplePersist.convertNodeToBean(session,
+        anotherLevelThree = simplePersist.convertNodeToBean(
                 asJcr);
         assertThat(anotherLevelThree.getBooleanList().size(), Is.is(2));
         assertThat(anotherLevelThree.getBooleanList().get(0), Is
@@ -297,9 +303,9 @@ public class SimplePersistSupportTest {
                 .is(false));
 
         levelThree.getBooleanList().clear();
-        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+        asJcr = simplePersist.convertBeanToNode(
                 levelThree);
-        anotherLevelThree = simplePersist.convertNodeToBean(session,
+        anotherLevelThree = simplePersist.convertNodeToBean(
                 asJcr);
         assertThat(anotherLevelThree.getObjList().size(), Is.is(0));
     }
@@ -315,27 +321,27 @@ public class SimplePersistSupportTest {
 //        levelThree.setLevelTwoObj(levelTwo);
 //        levelThree.setNumberMap(new HashMap<Double, Integer>());
 //        levelThree.getNumberMap().put(1.0, 1);
-//        STNodeEntry asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+//        STNodeEntry asJcr = simplePersist.convertBeanToNode(
 //                levelThree);
 //        LevelThreeObj anotherLevelThree = simplePersist
-//                .convertNodeToBean(session, asJcr);
+//                .convertNodeToBean( asJcr);
 //        assertThat(anotherLevelThree.getNumberMap().size(), Is.is(1));
 //        assertThat(anotherLevelThree.getNumberMap().get(1.0), Is.is(1));
 //
 //        levelThree.getNumberMap().put(2.0, 2);
 //
-//        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+//        asJcr = simplePersist.convertBeanToNode(
 //                levelThree);
-//        anotherLevelThree = simplePersist.convertNodeToBean(session,
+//        anotherLevelThree = simplePersist.convertNodeToBean(
 //                asJcr);
 //        assertThat(anotherLevelThree.getNumberMap().size(), Is.is(2));
 //        assertThat(anotherLevelThree.getNumberMap().get(1.0), Is.is(1));
 //        assertThat(anotherLevelThree.getNumberMap().get(2.0), Is.is(2));
 //
 //        levelThree.getNumberMap().clear();
-//        asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session,
+//        asJcr = simplePersist.convertBeanToNode(
 //                levelThree);
-//        anotherLevelThree = simplePersist.convertNodeToBean(session,
+//        anotherLevelThree = simplePersist.convertNodeToBean(
 //                asJcr);
 //        assertThat(anotherLevelThree.getNumberMap().size(), Is.is(0));
 //    }
@@ -361,7 +367,7 @@ public class SimplePersistSupportTest {
 //		obj3.setLevelTwoObj(obj2);
 //		obj2.setProperty("propVal");
 //		final STNodeEntry STNodeEntry = simplePersist.convertBeanToNode(
-//				SharedConstants.DEFAULT_JCR_ROOT_NAME, session, obj3);
+//				SharedConstants.DEFAULT_JCR_ROOT_NAME,  obj3);
 //		final String path = node.getPath();
 //		assertThat(
 //						path,
@@ -459,10 +465,10 @@ public class SimplePersistSupportTest {
         obj2.setPropertyObj(propertyObj);
 
         final STNodeEntry node = simplePersist.convertBeanToNode(
-                ExamplePartition.DEFAULT,
-                session, obj3);
+                
+                 obj3);
         final LevelThreeObj convertedFromJcr = simplePersist
-                .convertNodeToBean(session, node);
+                .convertNodeToBean( node);
         assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
         assertThat(obj3.getProperty(), Is.is(convertedFromJcr
                 .getProperty()));
@@ -505,17 +511,17 @@ public class SimplePersistSupportTest {
         obj1.setName("obj 1");
         obj1.setValue(5);
         levelThree.getObjList().add(obj1);
-        final STNodeEntry asJcr = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT,
-                session, levelThree);
+        final STNodeEntry asJcr = simplePersist.convertBeanToNode(
+                 levelThree);
         final LevelThreeObj anotherLevelThree = simplePersist
-                .convertNodeToBean(session, asJcr);
+                .convertNodeToBean( asJcr);
         assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
         assertThat(anotherLevelThree.getObjList().get(0).getValue(), Is
                 .is(obj1.getValue()));
         assertThat(anotherLevelThree.getObjList().get(0).getName(), Is
                 .is(obj1.getName()));
         final Iterable<ListItemObj> result = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, ListItemObj.class,
+                .findByProperties( ListItemObj.class,
                         new String[]{"name"},
                         new Object[]{"obj 1"});
         final ListItemObj item = result.iterator().next();
@@ -570,26 +576,26 @@ public class SimplePersistSupportTest {
         final LevelTwoObj obj2_2 = new LevelTwoObj();
         obj2_2.setKey("3");
 
-        simplePersist.convertBeanToNode(ExamplePartition.DEFAULT,
-                session, obj2);
         simplePersist.convertBeanToNode(
-                ExamplePartition.DEFAULT,
-                session, obj2_1);
-        simplePersist.convertBeanToNode(ExamplePartition.DEFAULT,
-                session, obj2_2);
+                 obj2);
+        simplePersist.convertBeanToNode(
+                
+                 obj2_1);
+        simplePersist.convertBeanToNode(
+                 obj2_2);
 
         final Iterable<LevelTwoObj> result1 = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, LevelTwoObj.class,
+                .findByProperties( LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("1"));
         final Iterable<LevelTwoObj> result2 = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, LevelTwoObj.class,
+                .findByProperties( LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("2"));
         final Iterable<LevelTwoObj> result3 = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, LevelTwoObj.class,
+                .findByProperties( LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("3"));
@@ -653,27 +659,27 @@ public class SimplePersistSupportTest {
         obj2_2.setKey("3");
 
         simplePersist.convertBeanToNode(
-                ExamplePartition.DEFAULT,
-                session, obj2);
+                
+                 obj2);
         simplePersist.convertBeanToNode(
-                ExamplePartition.DEFAULT,
-                session, obj2_1);
+                
+                 obj2_1);
         simplePersist.convertBeanToNode(
-                ExamplePartition.DEFAULT,
-                session, obj2_2);
+                
+                 obj2_2);
 
         final Iterable<LevelTwoObj> result1 = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, LevelTwoObj.class,
+                .findByProperties( LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("1"));
         final Iterable<LevelTwoObj> result2 = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, LevelTwoObj.class,
+                .findByProperties( LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("2"));
         final Iterable<LevelTwoObj> result3 = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, LevelTwoObj.class,
+                .findByProperties( LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("3"));
@@ -703,11 +709,11 @@ public class SimplePersistSupportTest {
         object3.setKey1("another key");
         object3.setKey2(1);
 
-        simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, object1);
-        simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, object2);
-        simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, object3);
+        simplePersist.convertBeanToNode( object1);
+        simplePersist.convertBeanToNode( object2);
+        simplePersist.convertBeanToNode( object3);
         final Iterable<ComposedKeyObject> foundNodes = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session,
+                .findByProperties(
                         ComposedKeyObject.class,
                         new String[]{"key1"}, new Object[]{"same key"});
         Iterator<ComposedKeyObject> it = foundNodes.iterator();
@@ -723,10 +729,10 @@ public class SimplePersistSupportTest {
         final LevelOneObj obj2 = new LevelOneObj();
         obj2.setProperty(null);
 
-        simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, obj1);
-        simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, obj2);
+        simplePersist.convertBeanToNode( obj1);
+        simplePersist.convertBeanToNode( obj2);
         final Iterable<LevelOneObj> result = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, LevelOneObj.class,
+                .findByProperties( LevelOneObj.class,
                         new String[]{"property"},
                         new Object[]{null});
         Iterator<LevelOneObj> it = result.iterator();
@@ -742,10 +748,10 @@ public class SimplePersistSupportTest {
         propertyObj.setName("obj 1");
         propertyObj.setValue(5);
         levelTwo.setPropertyObj(propertyObj);
-        simplePersist.convertBeanToNode(ExamplePartition.DEFAULT, session, levelTwo);
+        simplePersist.convertBeanToNode( levelTwo);
 
         final Iterable<PropertyObj> result = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, PropertyObj.class,
+                .findByProperties( PropertyObj.class,
                         new String[]{"name"},
                         new Object[]{"obj 1"});
         Iterator<PropertyObj> it = result.iterator();
@@ -768,10 +774,10 @@ public class SimplePersistSupportTest {
             objs.add(root);
         }
 
-        simplePersist.convertBeansToNodes(ExamplePartition.DEFAULT, session, objs);
+        simplePersist.convertBeansToNodes( objs);
 
         final Iterable<SimpleObject> nodes = simplePersist
-                .findByProperties(ExamplePartition.DEFAULT, session, SimpleObject.class,
+                .findByProperties( SimpleObject.class,
                         new String[]{}, new Object[]{});
 
         int i = 0;
@@ -784,7 +790,7 @@ public class SimplePersistSupportTest {
 
     @Test(expected = SLRuntimeException.class)
     public void shouldNotFindWithWrongPropertyName() throws Exception {
-        simplePersist.findByProperties(ExamplePartition.DEFAULT, session,
+        simplePersist.findByProperties(
                 RootObj.class,
                 new String[]{"invalidProperty"}, new Object[]{null});
     }
@@ -796,10 +802,10 @@ public class SimplePersistSupportTest {
         final InputStream content = new ByteArrayInputStream(contentAsString
                 .getBytes());
         pojo.setStream(content);
-        final STNodeEntry jcrSTNodeEntry = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT,
-                session, pojo);
+        final STNodeEntry jcrSTNodeEntry = simplePersist.convertBeanToNode(
+                 pojo);
         final ObjectWithInputStream convertedPojo = simplePersist
-                .convertNodeToBean(session, jcrSTNodeEntry);
+                .convertNodeToBean( jcrSTNodeEntry);
         final byte[] contentAsBytes = new byte[convertedPojo.getStream()
                 .available()];
         convertedPojo.getStream().read(contentAsBytes);
@@ -817,8 +823,8 @@ public class SimplePersistSupportTest {
         obj
                 .setObjectThatDoesntImplementSimpleNodeType(objectThatDoesntImplementSimpleNodeType);
         final STNodeEntry jcrSTNodeEntry = simplePersist.convertBeanToNode(
-                ExamplePartition.DEFAULT, session, obj);
-        final RootObj fromJcr = simplePersist.convertNodeToBean(session,
+                 obj);
+        final RootObj fromJcr = simplePersist.convertNodeToBean(
                 jcrSTNodeEntry);
         assertThat(fromJcr.getObjectThatDoesntImplementSimpleNodeType()
                 .getName(), Is.is(obj
@@ -844,12 +850,12 @@ public class SimplePersistSupportTest {
         object3.setKey1("same");
         object3.setKey2(1);
 
-        final STNodeEntry newNode1 = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT,
-                session, object1);
-        final STNodeEntry newNode2 = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT,
-                session, object2);
-        final STNodeEntry newNode3 = simplePersist.convertBeanToNode(ExamplePartition.DEFAULT,
-                session, object3);
+        final STNodeEntry newNode1 = simplePersist.convertBeanToNode(
+                 object1);
+        final STNodeEntry newNode2 = simplePersist.convertBeanToNode(
+                 object2);
+        final STNodeEntry newNode3 = simplePersist.convertBeanToNode(
+                 object3);
         assertThat(newNode1.getUniqueKey(), Is.is(IsNot.not(newNode2
                 .getUniqueKey())));
         assertThat(newNode1.getUniqueKey(), Is.is(newNode3.getUniqueKey()));

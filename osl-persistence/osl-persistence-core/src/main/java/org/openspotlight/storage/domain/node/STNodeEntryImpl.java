@@ -116,6 +116,15 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     private final STUniqueKey uniqueKey;
 
+    public boolean isChildOf(STNodeEntry possibleParent) {
+        STUniqueKey parentKey = this.getUniqueKey();
+        STUniqueKey possibleParentKey = possibleParent.getUniqueKey();
+        while(parentKey!=null){
+            if(parentKey.equals(possibleParentKey)) return true;
+        }
+        return false;
+    }
+
     public String getNodeEntryName() {
         return nodeEntryName;
     }

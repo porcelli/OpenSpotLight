@@ -59,6 +59,7 @@ import org.openspotlight.storage.domain.node.STProperty;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -66,7 +67,6 @@ import java.util.WeakHashMap;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.collect.Sets.newLinkedHashSet;
-import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 
@@ -74,6 +74,12 @@ import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
 public abstract class AbstractSTStorageSession implements STStorageSession {
+    public STRepositoryPath getRepositoryPath() {
+        return repositoryPath;
+    }
+
+    protected final STRepositoryPath repositoryPath;
+
 
     public void discardTransient() {
         this.newNodes.clear();
@@ -156,6 +162,15 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         public STStorageSessionInternalMethods getInternalMethods() {
             return internalMethods;
+        }
+
+        public STUniqueKey createNewSimpleKey(String... nodePaths) {
+            STUniqueKey parentKey = null;
+            for (String path : nodePaths) {
+                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry<?>>emptySet(), path),
+                        parentKey, partition, repositoryPath);
+            }
+            return parentKey;
         }
 
         public STUniqueKeyBuilder createKey(String nodeEntryName) {
@@ -246,7 +261,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                 sb.append(getLocalKeyAsSimpleString(currentKey.getLocalKey())).append(":");
                 currentKey = currentKey.getParentKey();
             }
-
+            sb.append(uniqueKey.getRepositoryPath().getRepositoryPathAsString());
             return sb.toString();
         }
 
@@ -804,9 +819,9 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
 
-    protected AbstractSTStorageSession(STFlushMode flushMode) {
+    protected AbstractSTStorageSession(STFlushMode flushMode, STRepositoryPath repositoryPath) {
         this.flushMode = flushMode;
-
+        this.repositoryPath = repositoryPath;
     }
 
     public STPartitionMethods withPartition(STPartition partition) {
@@ -1008,7 +1023,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         private Set<String> keyNames = newHashSet();
 
         public <T extends Serializable> STNodeEntryFactory.STNodeEntryBuilder withKey(String name, Class<T> type, Serializable value) {
-            if(keyNames.contains(name)) throw new IllegalStateException("key name already inserted");
+            if (keyNames.contains(name)) throw new IllegalStateException("key name already inserted");
             this.keys.add(STKeyEntryImpl.create(type, (T) value, name));
             this.keyNames.add(name);
             return this;
@@ -1029,7 +1044,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public STNodeEntry andCreate() {
             STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
-            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parentKey, partition);
+            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parentKey, partition, repositoryPath);
             STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey);
             AbstractSTStorageSession.this.handleNewItem(result);
             return result;
@@ -1101,7 +1116,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
 
-    private static class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
+    private class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
 
         private Set<STKeyEntry<?>> localEntries = newHashSet();
         private Set<String> namesInsideEntries = newHashSet();
@@ -1138,7 +1153,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             STUniqueKeyBuilderImpl currentBuilder = this;
             while (currentBuilder != null) {
                 STLocalKey localKey = new STLocalKeyImpl(currentBuilder.localEntries, currentBuilder.name);
-                currentKey = new STUniqueKeyImpl(localKey, currentKey, partition);
+                currentKey = new STUniqueKeyImpl(localKey, currentKey, partition, repositoryPath);
                 currentBuilder = currentBuilder.child;
             }
             return currentKey;

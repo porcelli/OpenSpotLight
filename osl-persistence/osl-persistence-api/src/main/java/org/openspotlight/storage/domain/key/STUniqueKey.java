@@ -49,12 +49,9 @@
 
 package org.openspotlight.storage.domain.key;
 
+import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.domain.STAData;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -71,5 +68,7 @@ public interface STUniqueKey extends STAData , Comparable<STUniqueKey>{
     STLocalKey getLocalKey();
 
     STUniqueKey getParentKey();
+
+    STRepositoryPath getRepositoryPath();
 
 }

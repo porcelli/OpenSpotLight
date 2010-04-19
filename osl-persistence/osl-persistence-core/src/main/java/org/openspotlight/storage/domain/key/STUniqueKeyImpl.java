@@ -50,17 +50,21 @@
 package org.openspotlight.storage.domain.key;
 
 import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STRepositoryPath;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:48:26 AM
  */
 public class STUniqueKeyImpl implements STUniqueKey {
 
-    public STUniqueKeyImpl(STLocalKey localKey, STUniqueKey parentKey, STPartition partition) {
+    public STUniqueKeyImpl(STLocalKey localKey, STUniqueKey parentKey, STPartition partition, STRepositoryPath repositoryPath) {
         this.localKey = localKey;
         this.parentKey = parentKey;
         this.partition = partition;
+        this.repositoryPath = repositoryPath;
     }
+
+    private final STRepositoryPath repositoryPath;
 
     private final STPartition partition;
 
@@ -80,23 +84,30 @@ public class STUniqueKeyImpl implements STUniqueKey {
         return parentKey;
     }
 
+    public STRepositoryPath getRepositoryPath() {
+        return repositoryPath;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        STUniqueKeyImpl that = (STUniqueKeyImpl) o;
+        STUniqueKeyImpl uniqueKey = (STUniqueKeyImpl) o;
 
-        if (localKey != null ? !localKey.equals(that.localKey) : that.localKey != null) return false;
-        if (parentKey != null ? !parentKey.equals(that.parentKey) : that.parentKey != null) return false;
-        if (partition != null ? !partition.equals(that.partition) : that.partition != null) return false;
+        if (localKey != null ? !localKey.equals(uniqueKey.localKey) : uniqueKey.localKey != null) return false;
+        if (parentKey != null ? !parentKey.equals(uniqueKey.parentKey) : uniqueKey.parentKey != null) return false;
+        if (partition != null ? !partition.equals(uniqueKey.partition) : uniqueKey.partition != null) return false;
+        if (repositoryPath != null ? !repositoryPath.equals(uniqueKey.repositoryPath) : uniqueKey.repositoryPath != null)
+            return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = partition != null ? partition.hashCode() : 0;
+        int result = repositoryPath != null ? repositoryPath.hashCode() : 0;
+        result = 31 * result + (partition != null ? partition.hashCode() : 0);
         result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
         result = 31 * result + (parentKey != null ? parentKey.hashCode() : 0);
         return result;

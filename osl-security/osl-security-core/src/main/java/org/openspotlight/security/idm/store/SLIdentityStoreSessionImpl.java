@@ -53,30 +53,31 @@ import java.text.MessageFormat;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.jboss.identity.idm.common.exception.IdentityException;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistSupport;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
+@Singleton
 public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
-    public static final String                  SECURITY_NODE = SharedConstants.DEFAULT_JCR_ROOT_NAME
-                                                                + "/{0}/securityStore";
+    private final STStorageSession session;
+    private final SimplePersistCapable<STNodeEntry,STStorageSession> simplePersist;
+   
+    private final SLIdentityStoreSessionContext context       = new SLIdentityStoreSessionContext(this);
 
-    private final Session                       session;
-    private final SLIdentityStoreSessionContext context       = new SLIdentityStoreSessionContext(
-                                                                                                  this);
-
-    private final String                        rootNode;
-
-    public SLIdentityStoreSessionImpl(
-                                       final Session session,
-                                       final String repositoryName ) {
+    @Inject
+    public SLIdentityStoreSessionImpl(STStorageSession session, 
+                                      SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
         this.session = session;
-        this.rootNode = MessageFormat.format(
-                                             SLIdentityStoreSessionImpl.SECURITY_NODE, repositoryName);
+        this.simplePersist = simplePersist;
     }
 
     public void addNode( final SimpleNodeType node ) throws Exception {
