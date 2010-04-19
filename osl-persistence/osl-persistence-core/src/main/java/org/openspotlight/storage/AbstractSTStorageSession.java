@@ -174,8 +174,16 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
         public STNodeEntry createNewSimpleNode(String... nodePaths) {
-            STUniqueKey key = createNewSimpleKey(nodePaths);
-            return new STNodeEntryImpl(key);
+            STNodeEntry parent = null;
+            STUniqueKey parentKey = null;
+            for (String nodePath : nodePaths) {
+                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry<?>>emptySet(), nodePath),
+                        parentKey, partition, repositoryPath);
+                parent = new STNodeEntryImpl(parentKey);
+                handleNewItem(parent);
+            }
+
+            return parent;
         }
 
         public STUniqueKeyBuilder createKey(String nodeEntryName) {
@@ -262,6 +270,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey) {
             StringBuilder sb = new StringBuilder();
             STUniqueKey currentKey = uniqueKey;
+
             while (currentKey != null) {
                 sb.append(getLocalKeyAsSimpleString(currentKey.getLocalKey())).append(":");
                 currentKey = currentKey.getParentKey();

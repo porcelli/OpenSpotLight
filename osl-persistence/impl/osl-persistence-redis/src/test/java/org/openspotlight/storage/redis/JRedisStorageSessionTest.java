@@ -163,7 +163,15 @@ public class JRedisStorageSessionTest {
         JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
         autoFlushFactory.getFrom(ExamplePartition.DEFAULT).flushall();
     }
+    @Test
+    public void shouldSaveSimpleNodesOnAutoFlush() throws Exception {
+        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
+        session.withPartition(ExamplePartition.DEFAULT)
+                .createNewSimpleNode("a","b","c");
+        Iterable<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("c");
+        assertThat(result.iterator().hasNext(),is(true));
 
+    }
     @Test
     public void shouldInstantiateOneSessionPerThread() throws Exception {
         STStorageSession session1 = autoFlushInjector.getInstance(STStorageSession.class);

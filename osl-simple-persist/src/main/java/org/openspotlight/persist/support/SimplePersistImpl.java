@@ -51,7 +51,6 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     private static final String NODE_ENTRY_TYPE = "internal-node-entry-type";
     private static final String NODE_PROPERTY_NAME = "internal-node-proeprty-name";
     private static final String SHA1_PROPERTY_NAME = "internal-{0}-sha1";
-    private static final String NODE_NAME_PREFIX = "simplePersistNode:";
 
     private final STStorageSession currentSession;
 
@@ -81,8 +80,8 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     private <T> STNodeEntry internalConvertBeanToNode(STNodeEntry parent, T bean) throws Exception {
-        ConversionToNodeContext context = new ConversionToNodeContext(parent, (SimpleNodeType) bean);
-        internalConvertBeanToNode(context, null, null, null);
+        ConversionToNodeContext context = new ConversionToNodeContext((SimpleNodeType) bean);
+        internalConvertBeanToNode(context, null, null, parent);
         STNodeEntry result = context.nodeReference.getWrapped();
         checkNotNull("result", result);
         return result;
@@ -93,7 +92,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                                                       SimpleNodeType bean, STNodeEntry parentNode) throws Exception {
         boolean firstInvocation = bean == null;
         if (firstInvocation) {
-            STNodeEntry currentParentNode = null;
+            STNodeEntry currentParentNode = parentNode;
             Descriptors currentBeanDescriptors = Descriptors.fillDescriptors(context.bean);
             List<Pair<String, SimpleNodeType>> rootObjects = currentBeanDescriptors.getRootObjects();
             for (Pair<String, SimpleNodeType> pair : rootObjects) {
@@ -252,9 +251,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
         if (parentNode != null) {
             builder.withParent(parentNode);
-        } else if (context.parent != null) {
-            builder.withParent(context.parent);
-        }
+        } 
         for (PropertyDescriptor descriptor : descriptors.keyPropertiesDescriptor) {
             builder.withKey(descriptor.getName(), (Class<? extends Serializable>) descriptor.getPropertyType(),
                     (Serializable) descriptor.getReadMethod().invoke(descriptors.bean));
@@ -287,7 +284,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     private <T> String internalGetNodeName(Class<T> beanType) {
-     return NODE_NAME_PREFIX + beanType.getName();
+     return beanType.getName();
     }
 
     public <T> T convertNodeToBean(STNodeEntry node) throws Exception {
@@ -331,11 +328,11 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     private boolean isSimpleNode(STNodeEntry currentParent) {
-        return currentParent.getNodeEntryName().startsWith(NODE_NAME_PREFIX);
+        return currentParent.getPropertyValue(currentSession,NODE_ENTRY_TYPE)!=null;
     }
 
     private Class<?> findClassFromNode(STNodeEntry nodeEntry) throws Exception{
-        return forName(removeBegginingFrom(NODE_NAME_PREFIX,nodeEntry.getNodeEntryName()));
+        return forName(nodeEntry.getNodeEntryName());
     }
 
     private void fillBeanLazyProperties(STNodeEntry cached, Object bean, List<PropertyDescriptor> lazyPropertiesDescriptors) throws Exception {
@@ -740,12 +737,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
 
     private static class ConversionToNodeContext {
-        ConversionToNodeContext(STNodeEntry parent, SimpleNodeType bean) {
+        ConversionToNodeContext(SimpleNodeType bean) {
             this.bean = bean;
-            this.parent = parent;
         }
 
-        final STNodeEntry parent;
         final Set<STNodeEntry> allNodes = newHashSet();
         final Wrapper<STNodeEntry> nodeReference = Wrapper.createMutable();
         final SimpleNodeType bean;

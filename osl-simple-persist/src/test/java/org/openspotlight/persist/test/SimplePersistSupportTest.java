@@ -908,6 +908,7 @@ public class SimplePersistSupportTest {
 
 
         final STNodeEntry node = simplePersist.convertBeanToNode(parentNode, obj3);
+        
         assertThat(node.isChildOf(parentNode), is(true));
         final LevelThreeObj convertedFromJcr = simplePersist
                 .convertNodeToBean(node);
@@ -940,7 +941,6 @@ public class SimplePersistSupportTest {
     }
 
 
-
     @Test
     public void shouldFindCollectionItemsWithParent() throws Exception {
         STNodeEntry parentNode = session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode("a", "b", "c");
@@ -960,7 +960,7 @@ public class SimplePersistSupportTest {
         levelThree.getObjList().add(obj1);
         final STNodeEntry asJcr = simplePersist.convertBeanToNode(parentNode,
                 levelThree);
-        assertThat(asJcr.isChildOf(parentNode),is(true));
+        assertThat(asJcr.isChildOf(parentNode), is(true));
         final LevelThreeObj anotherLevelThree = simplePersist
                 .convertNodeToBean(asJcr);
 
@@ -970,7 +970,7 @@ public class SimplePersistSupportTest {
         assertThat(anotherLevelThree.getObjList().get(0).getName(), Is
                 .is(obj1.getName()));
         final Iterable<ListItemObj> result = simplePersist
-                .findByProperties(parentNode,ListItemObj.class,
+                .findByProperties(parentNode, ListItemObj.class,
                         new String[]{"name"},
                         new Object[]{"obj 1"});
         final ListItemObj item = result.iterator().next();
@@ -1036,17 +1036,17 @@ public class SimplePersistSupportTest {
                 obj2_2);
 
         final Iterable<LevelTwoObj> result1 = simplePersist
-                .findByProperties(parentNode,LevelTwoObj.class,
+                .findByProperties(parentNode, LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("1"));
         final Iterable<LevelTwoObj> result2 = simplePersist
-                .findByProperties(parentNode,LevelTwoObj.class,
+                .findByProperties(parentNode, LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("2"));
         final Iterable<LevelTwoObj> result3 = simplePersist
-                .findByProperties(parentNode,LevelTwoObj.class,
+                .findByProperties(parentNode, LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("3"));
@@ -1110,28 +1110,28 @@ public class SimplePersistSupportTest {
         final LevelTwoObj obj2_2 = new LevelTwoObj();
         obj2_2.setKey("3");
 
-        simplePersist.convertBeanToNode( parentNode,
+        simplePersist.convertBeanToNode(parentNode,
 
                 obj2);
-        simplePersist.convertBeanToNode( parentNode,
+        simplePersist.convertBeanToNode(parentNode,
 
                 obj2_1);
-        simplePersist.convertBeanToNode( parentNode,
+        simplePersist.convertBeanToNode(parentNode,
 
                 obj2_2);
 
         final Iterable<LevelTwoObj> result1 = simplePersist
-                .findByProperties(parentNode,LevelTwoObj.class,
+                .findByProperties(parentNode, LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("1"));
         final Iterable<LevelTwoObj> result2 = simplePersist
-                .findByProperties(parentNode,LevelTwoObj.class,
+                .findByProperties(parentNode, LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("2"));
         final Iterable<LevelTwoObj> result3 = simplePersist
-                .findByProperties(parentNode,LevelTwoObj.class,
+                .findByProperties(parentNode, LevelTwoObj.class,
                         org.openspotlight.common.util.Arrays
                                 .of("key"),
                         org.openspotlight.common.util.Arrays.of("3"));
@@ -1163,8 +1163,8 @@ public class SimplePersistSupportTest {
         object3.setKey1("another key");
         object3.setKey2(1);
 
-        simplePersist.convertBeanToNode(parentNode,object1);
-        simplePersist.convertBeanToNode(parentNode,object2);
+        simplePersist.convertBeanToNode(parentNode, object1);
+        simplePersist.convertBeanToNode(parentNode, object2);
         simplePersist.convertBeanToNode(object3);
         final Iterable<ComposedKeyObject> foundNodes = simplePersist
                 .findByProperties(parentNode,
@@ -1185,10 +1185,10 @@ public class SimplePersistSupportTest {
         final LevelOneObj obj2 = new LevelOneObj();
         obj2.setProperty(null);
 
-        simplePersist.convertBeanToNode(parentNode,obj1);
-        simplePersist.convertBeanToNode(parentNode,obj2);
+        simplePersist.convertBeanToNode(parentNode, obj1);
+        simplePersist.convertBeanToNode(parentNode, obj2);
         final Iterable<LevelOneObj> result = simplePersist
-                .findByProperties(parentNode,LevelOneObj.class,
+                .findByProperties(parentNode, LevelOneObj.class,
                         new String[]{"property"},
                         new Object[]{null});
         Iterator<LevelOneObj> it = result.iterator();
@@ -1205,10 +1205,10 @@ public class SimplePersistSupportTest {
         propertyObj.setName("obj 1");
         propertyObj.setValue(5);
         levelTwo.setPropertyObj(propertyObj);
-        simplePersist.convertBeanToNode(parentNode,levelTwo);
+        simplePersist.convertBeanToNode(parentNode, levelTwo);
 
         final Iterable<PropertyObj> result = simplePersist
-                .findByProperties(parentNode,PropertyObj.class,
+                .findByProperties(parentNode, PropertyObj.class,
                         new String[]{"name"},
                         new Object[]{"obj 1"});
         Iterator<PropertyObj> it = result.iterator();
@@ -1218,7 +1218,6 @@ public class SimplePersistSupportTest {
         assertThat(it.hasNext(), Is.is(false));
 
     }
-
 
 
 }
