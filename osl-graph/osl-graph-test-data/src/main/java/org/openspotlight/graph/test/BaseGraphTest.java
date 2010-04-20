@@ -1796,17 +1796,17 @@ public abstract class BaseGraphTest {
 
         for (final SLLineReference lineRef : lineRefs) {
             if (lineRef.getArtifactId().equals("1")) {
-                Assert.assertEquals(lineRef1.getStartLine(), new Integer(8));
-                Assert.assertEquals(lineRef1.getEndLine(), new Integer(17));
-                Assert.assertEquals(lineRef1.getStartColumn(), new Integer(26));
-                Assert.assertEquals(lineRef1.getEndColumn(), new Integer(44));
+                Assert.assertEquals(lineRef1.getStartLine(), 8);
+                Assert.assertEquals(lineRef1.getEndLine(), 17);
+                Assert.assertEquals(lineRef1.getStartColumn(), 26);
+                Assert.assertEquals(lineRef1.getEndColumn(), 44);
                 Assert.assertEquals(lineRef1.getStatement(), "Hello World!");
                 Assert.assertEquals(lineRef1.getArtifactVersion(), "1");
             } else if (lineRef.getArtifactId().equals("2")) {
-                Assert.assertEquals(lineRef2.getStartLine(), new Integer(71));
-                Assert.assertEquals(lineRef2.getEndLine(), new Integer(80));
-                Assert.assertEquals(lineRef2.getStartColumn(), new Integer(35));
-                Assert.assertEquals(lineRef2.getEndColumn(), new Integer(53));
+                Assert.assertEquals(lineRef2.getStartLine(), 71);
+                Assert.assertEquals(lineRef2.getEndLine(), 80);
+                Assert.assertEquals(lineRef2.getStartColumn(), 35);
+                Assert.assertEquals(lineRef2.getEndColumn(), 53);
                 Assert.assertEquals(lineRef2.getStatement(), "Bye World!");
                 Assert.assertEquals(lineRef2.getArtifactVersion(), "1");
             } else {
@@ -1833,10 +1833,10 @@ public abstract class BaseGraphTest {
 
         for (final SLLineReference lineRef : lineRefs) {
             if (lineRef.getArtifactId().equals(artifactId)) {
-                Assert.assertEquals(lineRef1.getStartLine(), new Integer(8));
-                Assert.assertEquals(lineRef1.getEndLine(), new Integer(17));
-                Assert.assertEquals(lineRef1.getStartColumn(), new Integer(26));
-                Assert.assertEquals(lineRef1.getEndColumn(), new Integer(44));
+                Assert.assertEquals(lineRef1.getStartLine(), 8);
+                Assert.assertEquals(lineRef1.getEndLine(), 17);
+                Assert.assertEquals(lineRef1.getStartColumn(), 26);
+                Assert.assertEquals(lineRef1.getEndColumn(), 44);
                 Assert.assertEquals(lineRef1.getStatement(), "Hello World!");
                 Assert.assertEquals(lineRef1.getArtifactVersion(), "1");
             } else {

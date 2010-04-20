@@ -59,6 +59,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.openspotlight.common.LazyType;
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
@@ -66,7 +67,9 @@ import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Sha1;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.event.SLGraphSessionEventPoster;
 import org.openspotlight.graph.event.SLNodeAddedEvent;
@@ -80,6 +83,7 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
+import org.openspotlight.persist.support.SimplePersistSupport;
 import org.openspotlight.security.SLInvalidCredentialException;
 import org.openspotlight.security.authz.Action;
 import org.openspotlight.security.authz.EnforcementContext;
@@ -232,23 +236,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                                                            "User does not have privilegies to line references.");
                 }
 
-                final StringBuilder lineReferenceKey = new StringBuilder()
-                                                                          .append(startLine).append('.').append(endLine).append(
-                                                                                                                                '.').append(startColumn).append('.').append(
-                                                                                                                                                                            endColumn).append('.').append(statement)
-                                                                          .append(artifactId).append('.').append(artifactVersion);
+                final SLLineReference lineRef = new SLLineReference();
 
-                final SLEncoderFactory factory = getSession()
-                                                             .getEncoderFactory();
-                final SLEncoder fakeEncoder = factory.getFakeEncoder();
-                final SLEncoder uuidEncoder = factory.getUUIDEncoder();
-
-                final String propName = "lineRef."
-                                        + uuidEncoder.encode(lineReferenceKey.toString());
-                final SLLineReference lineRef = this.addChildNode(
-                                                                  SLLineReference.class, propName, fakeEncoder,
-                                                                  SLPersistenceMode.NORMAL, null, null);
-
+                lineRef.setNodeId(getID());
                 lineRef.setStartLine(startLine);
                 lineRef.setEndLine(endLine);
                 lineRef.setStartColumn(startColumn);
@@ -257,8 +247,12 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 lineRef.setArtifactId(artifactId);
                 lineRef.setArtifactVersion(artifactVersion);
 
+                SimplePersistSupport.convertBeanToJcr(pNode.getSession().getLineReferenceRootPath(), pNode.getSession().getJCRSession(), lineRef);
+
+                pNode.getSession().getJCRSession().save();
+
                 return lineRef;
-            } catch (final SLGraphSessionException e) {
+            } catch (final Exception e) {
                 throw new SLGraphSessionException(
                                                   "Error on attempt to add line reference.", e);
             }
@@ -727,21 +721,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      */
     public NeedsSyncronizationCollection<SLLineReference> getLineReferences() {
         synchronized (lock) {
-            try {
-                final NeedsSyncronizationCollection<SLLineReference> lineReferences = LockedCollections
-                                                                                                       .createCollectionWithLock(this,
-                                                                                                                                 new ArrayList<SLLineReference>());
-                final Collection<SLNode> nodes = getChildNodes("lineRef.*");
-                for (final SLNode node : nodes) {
-                    final SLLineReference lineRef = SLLineReference.class
-                                                                         .cast(node);
-                    lineReferences.add(lineRef);
-                }
-                return lineReferences;
-            } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve line references.", e);
-            }
+            return LockedCollections.createCollectionWithLock(this, new ArrayList<SLLineReference>(SimplePersistSupport.findNodesByProperties(pNode.getSession().getLineReferenceRootPath(), pNode.getSession().getJCRSession(), SLLineReference.class, LazyType.EAGER, Arrays.of("nodeId"), Arrays.of(getID()))));
         }
     }
 
@@ -754,24 +734,12 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
             return null;
         }
         synchronized (lock) {
-            try {
-                final NeedsSyncronizationCollection<SLLineReference> lineReferences = LockedCollections
-                                                                                                       .createCollectionWithLock(this,
-                                                                                                                                 new ArrayList<SLLineReference>());
-                final Collection<SLNode> nodes = getChildNodes("lineRef.*");
-                for (final SLNode node : nodes) {
-                    final SLLineReference lineRef = SLLineReference.class
-                                                                         .cast(node);
-                    if (artifactId.equals(lineRef.getArtifactId())) {
-                        lineReferences.add(lineRef);
-                    }
-                }
-                return lineReferences;
-            } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve line references.", e);
-            }
+            return LockedCollections.createCollectionWithLock(this, new HashSet<SLLineReference>(SimplePersistSupport.findNodesByProperties(pNode.getSession().getLineReferenceRootPath(), pNode.getSession().getJCRSession(), SLLineReference.class, LazyType.EAGER, Arrays.of("nodeId", "artifactId"), Arrays.of(getID(), artifactId))));
         }
+    }
+
+    private String getIDXPathFriendly() {
+        return Sha1.getSha1SignatureEncodedAsHexa(getID());
     }
 
     public Lock getLockObject() {
@@ -867,7 +835,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     private Class<? extends SLNode> getNodeType( final SLPersistentNode pNode ) {
         synchronized (lock) {
             try {
-                Class<? extends SLNode> type = null;
+                Class<? extends SLNode> type = SLNode.class;
                 final String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
                 final SLPersistentProperty<String> typeNameProp = SLCommonSupport.getProperty(pNode, String.class, propName);
                 if (typeNameProp != null) {
@@ -875,7 +843,6 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                         type = (Class<? extends SLNode>)Class.forName(typeNameProp
                                                                                   .getValue());
                     } catch (ClassNotFoundException e) {
-                        type = SLNode.class;
                     }
                 }
                 return type;

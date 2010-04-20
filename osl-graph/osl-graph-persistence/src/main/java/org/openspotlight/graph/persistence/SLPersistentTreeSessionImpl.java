@@ -108,11 +108,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
                         + repositoryName;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#clear()
+    /**
+     * {@inheritDoc}
      */
     public void clear() throws SLPersistentTreeSessionException {
         synchronized (lock) {
@@ -133,11 +130,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
 
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#close()
+    /**
+     * {@inheritDoc}
      */
     public void close() {
         jcrSession.logout();
@@ -154,13 +148,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
                                                 SharedConstants.DEFAULT_JCR_ROOT_NAME);
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentTreeSession#createQuery
-     * (java.lang.String, int)
+    /**
+     * {@inheritDoc}
      */
     public SLPersistentQuery createQuery( final String statement,
                                           final int type )
@@ -189,17 +178,15 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Lock getLockObject() {
         return lock;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentTreeSession#getNodeByID
-     * (java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public SLPersistentNode getNodeByID( final String id )
         throws SLPersistentNodeNotFoundException,
@@ -228,13 +215,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentTreeSession#getNodeByPath
-     * (java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public SLPersistentNode getNodeByPath( final String path )
         throws SLPersistentTreeSessionException {
@@ -247,12 +229,8 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         }
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.persistence.SLPersistentTreeSession#getRootNode()
+    /**
+     * {@inheritDoc}
      */
     public SLPersistentNode getRootNode()
         throws SLPersistentTreeSessionException {
@@ -271,32 +249,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
                         createRepositoryRootNode(oslRootNode);
                         jcrSession.save();
                     }
-                    // else {
-                    // final SortedSet<Double> versionNumbers = new
-                    // TreeSet<Double>();
-                    // final VersionIterator iter = rootNode
-                    // .getVersionHistory().getAllVersions();
-                    // while (iter.hasNext()) {
-                    // final Version version = iter.nextVersion();
-                    // if (!version.getName().equals("jcr:rootVersion")) {
-                    // versionNumbers
-                    // .add(new Double(version.getName()));
-                    // }
-                    // }
-                    // if (versionNumbers.isEmpty()) {
-                    // rootNode.remove();
-                    // createRepositoryRootNode(oslRootNode);
-                    // jcrSession.save();
-                    // } else {
-                    // // rootNode.restore(versionNumbers.last().toString(),
-                    // // true);
-                    // }
-                    // }
-
                 }
-                // if (!rootNode.isCheckedOut()) {
-                // rootNode.checkout();
-                // }
                 return new SLPersistentNodeImpl(this, null, rootNode,
                                                 eventPoster);
             } catch (final RepositoryException e) {
@@ -313,21 +266,15 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         return xpathRootPath;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.openspotlight.graph.persistence.SLPersistentTreeSession#save()
+    /**
+     * {@inheritDoc}
      */
     public void save() throws SLPersistentTreeSessionException {
         synchronized (lock) {
             try {
-                // rootNode.checkin();
                 if (!isClosed) {
                     jcrSession.save();
                 }
-                // rootNode.checkout();
-                // jcrSession.logout();
             } catch (final RepositoryException e) {
                 Exceptions.catchAndLog(e);
                 throw new SLPersistentTreeSessionException(
@@ -335,5 +282,19 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
             }
         }
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Session getJCRSession() {
+        return jcrSession;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getLineReferenceRootPath() {
+        return SharedConstants.DEFAULT_JCR_ROOT_NAME + "/" + repositoryName + "/" + SharedConstants.DEFAULT_JCR_LINE_REFENCE;
     }
 }

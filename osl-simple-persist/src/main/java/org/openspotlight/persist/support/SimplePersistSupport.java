@@ -260,70 +260,74 @@ public class SimplePersistSupport {
     }
 
     /** The Constant defaultPrefix_ */
-    private static final String  DEFAULT_NODE_PREFIX              = "node_";
+    private static final String   DEFAULT_NODE_PREFIX              = "node_";
 
-    private static final String  DEFAULT_STREAM_PREFIX            = "stream_property_";
+    private static final String   DEFAULT_STREAM_PREFIX            = "stream_property_";
 
-    private static final String  DEFAULT_SERIALIZED_PREFIX        = "serialized_property_";
+    private static final String   DEFAULT_SERIALIZED_PREFIX        = "serialized_property_";
 
     /** The Constant defaultPrefix_ */
-    public static final String   DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple_property_";
+    public static final String    DEFAULT_MULTIPLE_PROPERTY_PREFIX = "multiple_property_";
 
     /** The Constant typeName_ */
-    public static final String   TYPE_NAME                        = "node_typeName";
+    public static final String    TYPE_NAME                        = "node_typeName";
 
     /** The Constant MULTIPLE_PROPERTY_KEYS_ */
-    public static final String   MULTIPLE_PROPERTY_KEYS           = "multiple_property_{0}_keys";
+    public static final String    MULTIPLE_PROPERTY_KEYS           = "multiple_property_{0}_keys";
 
     /** The Constant MULTIPLE_PROPERTY_VALUES_ */
-    public static final String   MULTIPLE_PROPERTY_VALUES         = "multiple_property_{0}_values";
+    public static final String    MULTIPLE_PROPERTY_VALUES         = "multiple_property_{0}_values";
 
-    public static final String   STREAM_PROPERTY_VALUE            = "stream_property_{0}_value";
-    public static final String   SERIALIZED_PROPERTY_VALUE        = "serialized_property_{0}_value";
+    public static final String    STREAM_PROPERTY_VALUE            = "stream_property_{0}_value";
+    public static final String    SERIALIZED_PROPERTY_VALUE        = "serialized_property_{0}_value";
 
-    public static final String   LAZY_PROPERTY_VALUE              = "lazy_property_{0}_value";
+    public static final String    LAZY_PROPERTY_VALUE              = "lazy_property_{0}_value";
 
     /** The Constant MULTIPLE_PROPERTY_MULTIPLE_TYPE_ */
-    public static final String   MULTIPLE_PROPERTY_MULTIPLE_TYPE  = "multiple_property_{0}_multiple_type";
+    public static final String    MULTIPLE_PROPERTY_MULTIPLE_TYPE  = "multiple_property_{0}_multiple_type";
 
     /** The Constant MULTIPLE_PROPERTY_VALUE_TYPE_ */
-    public static final String   MULTIPLE_PROPERTY_VALUE_TYPE     = "multiple_property_{0}_value_type";
+    public static final String    MULTIPLE_PROPERTY_VALUE_TYPE     = "multiple_property_{0}_value_type";
 
     /** The Constant MULTIPLE_PROPERTY_KEY_TYPE_ */
-    public static final String   MULTIPLE_PROPERTY_KEY_TYPE       = "multiple_property_{0}_key_type";
+    public static final String    MULTIPLE_PROPERTY_KEY_TYPE       = "multiple_property_{0}_key_type";
 
     /** The Constant MULTIPLE_PROPERTY_KEY_VALUE_ */
-    public static final String   MULTIPLE_PROPERTY_KEY_VALUE      = "multiple_property_{0}_key_value";
+    public static final String    MULTIPLE_PROPERTY_KEY_VALUE      = "multiple_property_{0}_key_value";
 
     /** The Constant nodePropertyName_ */
-    public static final String   PROPERTY_NAME                    = "property_name";
+    public static final String    PROPERTY_NAME                    = "property_name";
 
     /** The Constant hashValue_ */
-    public static final String   HASH_VALUE                       = "node_hashValue";
+    public static final String    HASH_VALUE                       = "node_hashValue";
 
     /** The Constant hashValue_ */
-    public static final String   LOCAL_HASH_VALUE                 = "node_pkonly_hashValue";
+    public static final String    LOCAL_HASH_VALUE                 = "node_pkonly_hashValue";
 
     /** The Constant propertyValue_ */
-    public static final String   PROPERTY_VALUE                   = "node_property_{0}_value";
+    public static final String    PROPERTY_VALUE                   = "node_property_{0}_value";
 
-    public static final String   INTERNAL_TIMESTAMP               = "internal_timestamp";
+    public static final String    INTERNAL_TIMESTAMP               = "internal_timestamp";
 
     /** The Constant propertyType_ */
-    public static final String   PROPERTY_TYPE                    = "node_property_{0}_type";
+    public static final String    PROPERTY_TYPE                    = "node_property_{0}_type";
 
     /** The Constant keyValue_ */
-    public static final String   KEY_VALUE                        = "node_key_{0}_value";
+    public static final String    KEY_VALUE                        = "node_key_{0}_value";
 
     /** The Constant keyType_ */
-    public static final String   KEY_TYPE                         = "node_key_{0}_type";
+    public static final String    KEY_TYPE                         = "node_key_{0}_type";
 
-    private static Logger        logger                           = LoggerFactory
-                                                                                 .getLogger(SimplePersistSupport.class);
+    private static Logger         logger                           = LoggerFactory
+                                                                                  .getLogger(SimplePersistSupport.class);
 
-    private static final Value[] emptyValue                       = new Value[] {};
+    private static final Value[]  emptyValue                       = new Value[] {};
 
-    private static final String  LAZY_PROPERTY_SHA1               = "lazy_property_{0}_sha1";
+    private static final String   LAZY_PROPERTY_SHA1               = "lazy_property_{0}_sha1";
+
+    private static final String[] emptyStringArray                 = new String[] {};
+
+    private static final Object[] emptyObjectArray                 = new Object[] {};
 
     /**
      * Adds the or create jcr node.
@@ -1245,6 +1249,14 @@ public class SimplePersistSupport {
         final String newPropertyName = propertyName.substring(0, propertyName
                                                                              .indexOf('_'));
         return newPropertyName;
+    }
+
+    public static <T> Set<T> findNodes( final String rootPath,
+                                        final Session session,
+                                        final Class<T> nodeType,
+                                        final LazyType multipleLoadingStrategy ) {
+        return findNodesByProperties(rootPath, session, nodeType,
+                                     multipleLoadingStrategy, emptyStringArray, emptyObjectArray);
     }
 
     /**

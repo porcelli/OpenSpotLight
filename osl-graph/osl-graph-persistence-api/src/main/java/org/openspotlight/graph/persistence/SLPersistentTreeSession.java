@@ -48,6 +48,8 @@
  */
 package org.openspotlight.graph.persistence;
 
+import javax.jcr.Session;
+
 import org.openspotlight.common.concurrent.LockContainer;
 
 /**
@@ -125,4 +127,21 @@ public interface SLPersistentTreeSession extends LockContainer {
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     public void save() throws SLPersistentTreeSessionException;
+
+    /**
+     * This getter is necessary just for Simple Persist.
+     * 
+     * @return jcr session
+     */
+    @Deprecated
+    public Session getJCRSession();
+
+    /**
+     * Gets the root path for line reference
+     * 
+     * @return root path line reference
+     */
+    @Deprecated
+    public String getLineReferenceRootPath();
+
 }

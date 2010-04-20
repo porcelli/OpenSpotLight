@@ -49,6 +49,7 @@
 package org.openspotlight.bundle.language.java.bundle;
 
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.openspotlight.bundle.language.java.parser.JavaPublicElementsTree;
 import org.openspotlight.bundle.language.java.parser.executor.JavaExecutorSupport;
 import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElementsTreeExecutor;
 import org.openspotlight.federation.context.ExecutionContext;
