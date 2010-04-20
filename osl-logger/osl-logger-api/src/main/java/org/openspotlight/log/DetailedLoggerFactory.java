@@ -49,6 +49,9 @@
 package org.openspotlight.log;
 
 import org.openspotlight.common.Disposable;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -61,5 +64,5 @@ public interface DetailedLoggerFactory extends Disposable {
      * 
      * @return the detailed logger
      */
-    public DetailedLogger createNewLogger();
+    public DetailedLogger createNewLogger(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist);
 }

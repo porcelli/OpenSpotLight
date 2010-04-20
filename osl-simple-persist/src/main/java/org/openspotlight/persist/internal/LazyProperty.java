@@ -62,9 +62,9 @@ public final class LazyProperty<T> implements Serializable {
          * @param parent
          * @return
          */
-        public static <T> LazyProperty<T> create(Class<T> type, final SimpleNodeType parent) {
+        public static <T> LazyProperty<T> create(Class<? super T> type, final SimpleNodeType parent) {
             Assertions.checkNotNull("parent", parent);
-            return new LazyProperty<T>(parent, type);
+            return new LazyProperty<T>(parent, (Class<T>) type);
         }
 
         private Factory() {
@@ -134,19 +134,18 @@ public final class LazyProperty<T> implements Serializable {
          * value should be cached, but if it isn't, it will throw a
          * {@link NullPointerException}.
          *
-         * @param session
          * @return
          */
         @SuppressWarnings("unchecked")
-        public T getCached(STPartition partition, SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist, final STStorageSession session) {
+        public T getCached(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
             try {
                 lock.lock();
                 final T cachedValue = cached == null ? null : cached.get();
                 if (cachedValue == null) {
-                    if (session == null && parentKey == null) {
+                    if (simplePersist == null && parentKey == null) {
                         return null;
                     }
-                    if (session == null) {
+                    if (simplePersist == null) {
                         throw Exceptions
                                 .logAndReturn(new IllegalStateException(
                                         "trying to retrieve a value with a null session"));
@@ -154,9 +153,9 @@ public final class LazyProperty<T> implements Serializable {
                     Assertions.checkNotNull("parentKey", parentKey);
                     Assertions.checkNotEmpty("propertyName", propertyName);
                     try {
-                        final STNodeEntry node = session.withPartition(partition).createCriteria()
-                                .withUniqueKey(parentKey).buildCriteria().andFindUnique(session);
-                        Object o = node.getPropertyValue(session, propertyName);
+                        final STNodeEntry node = simplePersist.getCurrentSession().withPartition(simplePersist.getCurrentPartition())
+                                .createCriteria().withUniqueKey(parentKey).buildCriteria().andFindUnique(simplePersist.getCurrentSession());
+                        Object o = node.getPropertyValue(simplePersist.getCurrentSession(), propertyName);
                         if (o instanceof InputStream) {
                             InputStream is = (InputStream) o;
                             if (is.markSupported()) {
@@ -308,16 +307,14 @@ public final class LazyProperty<T> implements Serializable {
      * It will try to return, in this order, the transient value, and if there's
      * no transient value, it will return the saved value.
      *
-     * @param session
      * @return
      */
-    public T get(STPartition partition, SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
-                 final STStorageSession session) {
+    public T get(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
         try {
             lock.lock();
             T value = metadata.getTransient();
             if (value == null) {
-                value = metadata.getCached(partition, simplePersist, session);
+                value = metadata.getCached(simplePersist);
             }
             return value;
         } finally {

@@ -38,7 +38,7 @@ public interface SimplePersistCapable<N, S> {
 
     public <T> Iterable<N> convertBeansToNodes(N parentNode, final Iterable<T> beans);
 
-    public <T> N convertBeanToNode(N parentNode, final T bean) throws Exception;
+    public <T> N convertBeanToNode(N parentNode, final T bean) ;
 
     public <T> Iterable<T> findByProperties(N parentNode, Class<T> beanType, String[] propertyNames,
                                             Object[] propertyValues);

@@ -70,7 +70,7 @@ public class StreamArtifact extends ArtifactWithSyntaxInformation {
     private static final long         serialVersionUID = -8912205023568005794L;
 
     private LazyProperty<InputStream> content          = LazyProperty.Factory
-                                                                             .create(this);
+                                                                             .create(InputStream.class,this);
 
     @Override
     public boolean contentEquals( final Artifact other ) {

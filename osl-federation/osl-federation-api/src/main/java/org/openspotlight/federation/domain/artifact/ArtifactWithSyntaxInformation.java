@@ -55,6 +55,9 @@ import javax.jcr.Session;
 
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.internal.LazyProperty;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 public abstract class ArtifactWithSyntaxInformation extends Artifact {
 
@@ -62,7 +65,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
 
     /** The syntax information set. */
     private LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory
-                                                                                            .create(this);
+                                                                                            .create(Set.class,this);
 
     public ArtifactWithSyntaxInformation() {
         super();
@@ -82,10 +85,10 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
                                       final int columnStart,
                                       final int columnEnd,
                                       final SyntaxInformationType type,
-                                      final Session session ) {
+                                      final SimplePersistCapable<STNodeEntry,STStorageSession> simplePersist  ) {
         final SyntaxInformation syntaxInformation = new SyntaxInformation(this,
                                                                           lineStart, lineEnd, columnStart, columnEnd, type);
-        getUnwrappedSyntaxInformation(session).add(syntaxInformation);
+        getUnwrappedSyntaxInformation(simplePersist).add(syntaxInformation);
     }
 
     public LazyProperty<Set<SyntaxInformation>> getSyntaxInformationSet() {
@@ -93,11 +96,11 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
     }
 
     @TransientProperty
-    public Set<SyntaxInformation> getUnwrappedSyntaxInformation( final Session session ) {
+    public Set<SyntaxInformation> getUnwrappedSyntaxInformation( final SimplePersistCapable<STNodeEntry,STStorageSession> simplePersist ) {
         try {
             syntaxInformationSet.getMetadata().getLock().lock();
             Set<SyntaxInformation> currentSet = syntaxInformationSet
-                                                                    .get(session);
+                                                                    .get(simplePersist);
             if (currentSet == null) {
                 currentSet = new HashSet<SyntaxInformation>();
                 syntaxInformationSet.setTransient(currentSet);
@@ -123,7 +126,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
                                          final int columnStart,
                                          final int columnEnd,
                                          final SyntaxInformationType type,
-                                         final Session session ) {
+                                         final SimplePersistCapable<STNodeEntry,STStorageSession> simplePersist ) {
         final SyntaxInformation syntaxInformation = new SyntaxInformation();
         syntaxInformation.setColumnEnd(columnEnd);
         syntaxInformation.setColumnStart(columnStart);
@@ -131,7 +134,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
         syntaxInformation.setLineStart(lineStart);
         syntaxInformation.setParent(this);
         syntaxInformation.setType(type);
-        getUnwrappedSyntaxInformation(session).remove(syntaxInformation);
+        getUnwrappedSyntaxInformation(simplePersist).remove(syntaxInformation);
     }
 
     public void setSyntaxInformationSet(

@@ -54,12 +54,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jcr.Session;
 
 import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Equals;
@@ -68,7 +66,6 @@ import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.DetailedLoggerFactory;
@@ -78,12 +75,14 @@ import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 /**
  * The Factory used to create {@link DetailedLogger}.
  */
-public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
-        LockContainer {
+public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory{
 
     /**
      * The Class LogEntry is used to represent a new log entry.
@@ -282,7 +281,6 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
         /**
          * Gets the hierarchy from.
          * 
-         * @param node the node
          * @param anotherNodes the another nodes
          * @return the hierarchy from
          */
@@ -452,38 +450,22 @@ public final class DetailedJcrLoggerFactory implements DetailedLoggerFactory,
 
     }
 
-    private static final Lock                   LOG_LOCK_OBJECT = new Lock();
-
-    final JcrConnectionProvider                 provider;
-
-    private final CopyOnWriteArrayList<Session> oppenedSessions = new CopyOnWriteArrayList<Session>();
-
-    public DetailedJcrLoggerFactory(
-                                     final JcrConnectionDescriptor descriptor ) {
-        provider = JcrConnectionProvider.createFromData(descriptor);
+    
+    public DetailedJcrLoggerFactory() {
     }
 
     public void closeResources() {
-        for (final Session session : oppenedSessions) {
-            session.logout();
-        }
 
     }
 
     /**
      * Creates the jcr detailed logger.
      * 
-     * @param session the session
      * @return the detailed logger
      */
-    public DetailedLogger createNewLogger() {
-        final Session session = provider.openSession();
-        oppenedSessions.add(session);
-        return new JcrDetailedLogger(session, this);
+    public DetailedLogger createNewLogger(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
+        return new DetailedLoggerImpl(simplePersist);
     }
 
-    public Lock getLockObject() {
-        return LOG_LOCK_OBJECT;
-    }
 
 }

@@ -101,12 +101,12 @@ public class SimplePersistLazyBehaviorTest {
 
         bean.getBigPojoProperty().setTransient(
                 new SerializablePojoProperty());
-        bean.getBigPojoProperty().get(ExamplePartition.DEFAULT, simplePersist, session).setAnotherProperty("test");
+        bean.getBigPojoProperty().get(simplePersist).setAnotherProperty("test");
         assertThat(bean.getBigPojoProperty().getMetadata().getTransient(),
                 is(notNullValue()));
         final STNodeEntry node = simplePersist.convertBeanToNode( bean);
         bean = simplePersist.convertNodeToBean(node);
-        assertThat(bean.getBigPojoProperty().get(ExamplePartition.DEFAULT, simplePersist, session),
+        assertThat(bean.getBigPojoProperty().get(simplePersist),
                 is(notNullValue()));
 
     }
@@ -117,8 +117,8 @@ public class SimplePersistLazyBehaviorTest {
         bean.setTest("test");
         bean.getBigPojoProperty().getMetadata().setCached(
                 new SerializablePojoProperty());
-        bean.getBigPojoProperty().get(null, null, null).setAnotherProperty("test");
-        assertThat(bean.getBigPojoProperty().get(null, null, null), is(notNullValue()));
+        bean.getBigPojoProperty().get( null).setAnotherProperty("test");
+        assertThat(bean.getBigPojoProperty().get(null), is(notNullValue()));
         System.gc();
         assertThat(bean.getBigPojoProperty().getMetadata().getTransient(),
                 is(nullValue()));
@@ -132,14 +132,13 @@ public class SimplePersistLazyBehaviorTest {
 
         bean.getBigPojoProperty().setTransient(
                 new SerializablePojoProperty());
-        bean.getBigPojoProperty().get(ExamplePartition.DEFAULT, simplePersist, session).setAnotherProperty("test");
+        bean.getBigPojoProperty().get(simplePersist).setAnotherProperty("test");
         assertThat(bean.getBigPojoProperty().getMetadata().getTransient(),
                 is(notNullValue()));
         final STNodeEntry node = simplePersist.convertBeanToNode(bean);
 
         bean = simplePersist.convertNodeToBean(node);
-        assertThat(bean.getBigPojoProperty().getMetadata().getCached(
-                ExamplePartition.DEFAULT, simplePersist, session), is(notNullValue()));
+        assertThat(bean.getBigPojoProperty().getMetadata().getCached( simplePersist), is(notNullValue()));
         assertThat(bean.getBigPojoProperty().getMetadata().getTransient(),
                 is(nullValue()));
     }

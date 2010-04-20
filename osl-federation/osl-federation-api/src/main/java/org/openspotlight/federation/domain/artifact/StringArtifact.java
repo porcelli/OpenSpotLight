@@ -62,7 +62,7 @@ public class StringArtifact extends ArtifactWithSyntaxInformation {
 
     private static final long    serialVersionUID = -8912205023568005794L;
 
-    private LazyProperty<String> content          = LazyProperty.Factory.create(this);
+    private LazyProperty<String> content          = LazyProperty.Factory.create(String.class,this);
 
     @Override
     public boolean contentEquals( final Artifact other ) {

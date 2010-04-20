@@ -81,8 +81,14 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     }
 
-    public <T> STNodeEntry convertBeanToNode(STNodeEntry parent, T bean) throws Exception {
-        return internalConvertBeanToNode(parent, bean);
+    public <T> STNodeEntry convertBeanToNode(STNodeEntry parent, T bean) {
+        try {
+            return internalConvertBeanToNode(parent, bean);
+        } catch (Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+
+        }
+
     }
 
     private <T> STNodeEntry internalConvertBeanToNode(STNodeEntry parent, T bean) throws Exception {
