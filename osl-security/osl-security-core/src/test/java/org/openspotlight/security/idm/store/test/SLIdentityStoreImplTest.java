@@ -77,6 +77,7 @@ import org.openspotlight.security.idm.store.SLIdentityStoreSessionImpl;
 
 public class SLIdentityStoreImplTest {
 
+    
     private static class SLIdStoreTestContext implements
             IdentityStoreTestContext {
 
@@ -144,31 +145,13 @@ public class SLIdentityStoreImplTest {
 
     }
 
-    private static JcrConnectionProvider provider;
-
-    @BeforeClass
-    public static void setup() throws Exception {
-        SLIdentityStoreImplTest.provider = JcrConnectionProvider
-                                                                .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-
-    }
 
     private final CommonIdentityStoreTest test = new CommonIdentityStoreTest(
                                                                              new SLIdStoreTestContext());
 
     @Before
     public void clearAllData() throws Exception {
-        final String nodeName = MessageFormat.format(
-                                                     SLIdentityStoreSessionImpl.SECURITY_NODE, "testRepository");
-        final Session session = SLIdentityStoreImplTest.provider.openSession();
-        try {
-            final Node foundNode = session.getRootNode().getNode(nodeName);
-            foundNode.remove();
-            session.save();
-        } catch (final PathNotFoundException e) {
-
-        }
-        session.logout();
+        
     }
 
     @Test

@@ -35,8 +35,8 @@ import static java.util.Collections.sort;
 import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Reflection.*;
-import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 /**
  * Created by IntelliJ IDEA.
@@ -69,10 +69,16 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return currentPartition;
     }
 
-    public <T> Iterable<STNodeEntry> convertBeansToNodes(STNodeEntry parent, Iterable<T> beans) throws Exception {
-        List<STNodeEntry> itemsConverted = newArrayList();
-        for (T bean : beans) itemsConverted.add(convertBeanToNode(parent, bean));
-        return itemsConverted;
+    public <T> Iterable<STNodeEntry> convertBeansToNodes(STNodeEntry parent, Iterable<T> beans) {
+        try {
+            List<STNodeEntry> itemsConverted = newArrayList();
+            for (T bean : beans) itemsConverted.add(convertBeanToNode(parent, bean));
+            return itemsConverted;
+        } catch (Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+
+        }
+
     }
 
     public <T> STNodeEntry convertBeanToNode(STNodeEntry parent, T bean) throws Exception {
@@ -251,7 +257,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
         if (parentNode != null) {
             builder.withParent(parentNode);
-        } 
+        }
         for (PropertyDescriptor descriptor : descriptors.keyPropertiesDescriptor) {
             builder.withKey(descriptor.getName(), (Class<? extends Serializable>) descriptor.getPropertyType(),
                     (Serializable) descriptor.getReadMethod().invoke(descriptors.bean));
@@ -264,8 +270,14 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return newNode;
     }
 
-    public <T> Iterable<T> convertNodesToBeans(Iterable<STNodeEntry> nodes) throws Exception {
-        return internalConvertNodesToBeans(nodes);
+    public <T> Iterable<T> convertNodesToBeans(Iterable<STNodeEntry> nodes) {
+        try {
+            return internalConvertNodesToBeans(nodes);
+        } catch (Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+
+        }
+
     }
 
     private <T> List<T> internalConvertNodesToBeans(Iterable<STNodeEntry> nodes) throws Exception {
@@ -284,7 +296,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     private <T> String internalGetNodeName(Class<T> beanType) {
-     return beanType.getName();
+        return beanType.getName();
     }
 
     public <T> T convertNodeToBean(STNodeEntry node) throws Exception {
@@ -328,10 +340,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     private boolean isSimpleNode(STNodeEntry currentParent) {
-        return currentParent.getPropertyValue(currentSession,NODE_ENTRY_TYPE)!=null;
+        return currentParent.getPropertyValue(currentSession, NODE_ENTRY_TYPE) != null;
     }
 
-    private Class<?> findClassFromNode(STNodeEntry nodeEntry) throws Exception{
+    private Class<?> findClassFromNode(STNodeEntry nodeEntry) throws Exception {
         return forName(nodeEntry.getNodeEntryName());
     }
 
@@ -449,43 +461,49 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     private class InternalMethodsImpl implements InternalMethods {
-        public Object beforeUnConvert(SimpleNodeType bean, Serializable value, Method readMethod) throws Exception {
-            if (value instanceof Collection) {
-                boolean mayBeStreamPropertyWithParent = true;
-                if (readMethod != null) {
-                    Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodDescription
-                            = unwrapCollectionFromMethodReturn(readMethod);
-                    mayBeStreamPropertyWithParent = StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType());
-                }
-                if (mayBeStreamPropertyWithParent) {
-                    Collection valueAsCollection = (Collection) value;
-                    for (Object o : valueAsCollection) {
-                        if (o instanceof StreamPropertyWithParent) {
-                            ((StreamPropertyWithParent) o).setParent(bean);
+        public Object beforeUnConvert(SimpleNodeType bean, Serializable value, Method readMethod) {
+            try {
+                if (value instanceof Collection) {
+                    boolean mayBeStreamPropertyWithParent = true;
+                    if (readMethod != null) {
+                        Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodDescription
+                                = unwrapCollectionFromMethodReturn(readMethod);
+                        mayBeStreamPropertyWithParent = StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType());
+                    }
+                    if (mayBeStreamPropertyWithParent) {
+                        Collection valueAsCollection = (Collection) value;
+                        for (Object o : valueAsCollection) {
+                            if (o instanceof StreamPropertyWithParent) {
+                                ((StreamPropertyWithParent) o).setParent(bean);
+                            }
                         }
                     }
-                }
-            } else if (value instanceof Map) {
-                boolean mayBeStreamPropertyWithParent = true;
-                if (readMethod != null) {
-                    Reflection.UnwrappedMapTypeFromMethodReturn<Object, Object> methodDescription
-                            = unwrapMapFromMethodReturn(readMethod);
-                    mayBeStreamPropertyWithParent = StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType().getK2());
+                } else if (value instanceof Map) {
+                    boolean mayBeStreamPropertyWithParent = true;
+                    if (readMethod != null) {
+                        Reflection.UnwrappedMapTypeFromMethodReturn<Object, Object> methodDescription
+                                = unwrapMapFromMethodReturn(readMethod);
+                        mayBeStreamPropertyWithParent = StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType().getK2());
 
-                }
+                    }
 
-                if (mayBeStreamPropertyWithParent) {
-                    Map<?, ?> valueAsMap = (Map<?, ?>) value;
-                    for (Map.Entry<?, ?> entry : valueAsMap.entrySet()) {
-                        if (entry.getValue() instanceof StreamPropertyWithParent) {
-                            ((StreamPropertyWithParent) entry.getValue()).setParent(bean);
+                    if (mayBeStreamPropertyWithParent) {
+                        Map<?, ?> valueAsMap = (Map<?, ?>) value;
+                        for (Map.Entry<?, ?> entry : valueAsMap.entrySet()) {
+                            if (entry.getValue() instanceof StreamPropertyWithParent) {
+                                ((StreamPropertyWithParent) entry.getValue()).setParent(bean);
+                            }
                         }
                     }
+                } else if (value instanceof StreamPropertyWithParent) {
+                    ((StreamPropertyWithParent) value).setParent(bean);
                 }
-            } else if (value instanceof StreamPropertyWithParent) {
-                ((StreamPropertyWithParent) value).setParent(bean);
+                return value;
+            } catch (Exception e) {
+                throw logAndReturnNew(e, SLRuntimeException.class);
+
             }
-            return value;
+
         }
 
     }
@@ -544,50 +562,56 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     public <T> Iterable<T> findByProperties(STNodeEntry parent, Class<T> beanType,
-                                            String[] propertyNames, Object[] propertyValues) throws Exception {
-        checkNotNull("currentPartition", currentPartition);
-        checkNotNull("currentSession", currentSession);
-        checkNotNull("beanType", beanType);
-        checkNotNull("propertyNames", propertyNames);
-        checkNotNull("propertyValues", propertyValues);
-        checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
+                                            String[] propertyNames, Object[] propertyValues) {
+        try {
+            checkNotNull("currentPartition", currentPartition);
+            checkNotNull("currentSession", currentSession);
+            checkNotNull("beanType", beanType);
+            checkNotNull("propertyNames", propertyNames);
+            checkNotNull("propertyValues", propertyValues);
+            checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
 
-        STStorageSession.STCriteriaBuilder builder = currentSession.withPartition(currentPartition).createCriteria()
-                .withProperty(NODE_ENTRY_TYPE).equals(String.class, internalGetNodeName(beanType));
-        Object dummyInstance = beanType.newInstance();
-        for (int i = 0, size = propertyNames.length; i < size; i++) {
+            STStorageSession.STCriteriaBuilder builder = currentSession.withPartition(currentPartition).createCriteria()
+                    .withProperty(NODE_ENTRY_TYPE).equals(String.class, internalGetNodeName(beanType));
+            Object dummyInstance = beanType.newInstance();
+            for (int i = 0, size = propertyNames.length; i < size; i++) {
 
-            PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(dummyInstance, propertyNames[i]);
-            if (descriptor == null) throw new SLRuntimeException("invalid property:" + propertyNames[i]);
-            builder.withProperty(propertyNames[i]).equals((Class<? extends Serializable>)
-                    findClassWithoutPrimitives(descriptor.getPropertyType()), (Serializable) propertyValues[i]);
-        }
-        Set<STNodeEntry> foundItems = builder.buildCriteria().andFind(currentSession);
-        if (parent != null) {
-            Set<STNodeEntry> children = newHashSet();
-            for (STNodeEntry n : foundItems) {
-                if (n.isChildOf(parent)) children.add(n);
+                PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(dummyInstance, propertyNames[i]);
+                if (descriptor == null) throw new SLRuntimeException("invalid property:" + propertyNames[i]);
+                builder.withProperty(propertyNames[i]).equals((Class<? extends Serializable>)
+                        findClassWithoutPrimitives(descriptor.getPropertyType()), (Serializable) propertyValues[i]);
             }
-            foundItems = children;
+            Set<STNodeEntry> foundItems = builder.buildCriteria().andFind(currentSession);
+            if (parent != null) {
+                Set<STNodeEntry> children = newHashSet();
+                for (STNodeEntry n : foundItems) {
+                    if (n.isChildOf(parent)) children.add(n);
+                }
+                foundItems = children;
+            }
+
+
+            List<T> result = this.<T>internalConvertNodesToBeans(foundItems);
+
+            if (Comparable.class.isAssignableFrom(beanType)) {
+                sort((List<Comparable<? super Comparable<?>>>) result);
+            }
+            return result;
+        } catch (Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+
         }
 
-
-        List<T> result = this.<T>internalConvertNodesToBeans(foundItems);
-
-        if (Comparable.class.isAssignableFrom(beanType)) {
-            sort((List<Comparable<? super Comparable<?>>>) result);
-        }
-        return result;
     }
 
 
-    public <T> T findUniqueByProperties(STNodeEntry parent, Class<T> beanType, String[] propertyNames, Object[] propertyValues) throws Exception {
+    public <T> T findUniqueByProperties(STNodeEntry parent, Class<T> beanType, String[] propertyNames, Object[] propertyValues) {
         Iterable<T> result = findByProperties(parent, beanType, propertyNames, propertyValues);
         Iterator<T> it = result.iterator();
         return it.hasNext() ? it.next() : null;
     }
 
-    public <T> Iterable<STNodeEntry> convertBeansToNodes(Iterable<T> beans) throws Exception {
+    public <T> Iterable<STNodeEntry> convertBeansToNodes(Iterable<T> beans) {
         return convertBeansToNodes(null, beans);
     }
 
@@ -595,11 +619,11 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return convertBeanToNode(null, bean);
     }
 
-    public <T> Iterable<T> findByProperties(Class<T> beanType, String[] propertyNames, Object[] propertyValues) throws Exception {
+    public <T> Iterable<T> findByProperties(Class<T> beanType, String[] propertyNames, Object[] propertyValues) {
         return findByProperties(null, beanType, propertyNames, propertyValues);
     }
 
-    public <T> T findUniqueByProperties(Class<T> beanType, String[] propertyNames, Object[] propertyValues) throws Exception {
+    public <T> T findUniqueByProperties(Class<T> beanType, String[] propertyNames, Object[] propertyValues) {
         return findUniqueByProperties(null, beanType, propertyNames, propertyValues);
     }
 

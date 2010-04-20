@@ -78,8 +78,8 @@ public class JRedisStorageModule extends AbstractModule {
     protected void configure() {
         bind(STStorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
         bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
-        bind(new TypeLiteral<Map<STPartition, JRedisServerDetail>>() {
-        }).toInstance(mappedServerConfig);
+        bind(new TypeLiteral<Map<STPartition, JRedisServerDetail>>() {})
+                .toInstance(mappedServerConfig);
         bind(STRepositoryPath.class).toInstance(repositoryPath);
         bind(JRedisFactory.class).to(JRedisFacoryImpl.class);
     }
