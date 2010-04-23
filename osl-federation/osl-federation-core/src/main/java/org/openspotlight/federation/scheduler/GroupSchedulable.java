@@ -75,8 +75,8 @@ public class GroupSchedulable implements
             return groupsWithBundles;
         }
 
-        public <X extends Group> void visitBean( final X bean ) {
-            if (bean.getBundleTypes().size() != 0) {
+        public void visitBean(Group bean) {
+                    if (bean.getBundleTypes().size() != 0) {
                 groupsWithBundles.add(bean);
                 if (logger.isDebugEnabled()) {
                     logger.debug("adding group " + bean + " because it has "
@@ -90,6 +90,7 @@ public class GroupSchedulable implements
 
             }
         }
+
 
     }
 

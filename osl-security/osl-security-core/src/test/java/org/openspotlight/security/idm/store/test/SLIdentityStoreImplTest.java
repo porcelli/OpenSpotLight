@@ -199,7 +199,7 @@ public class SLIdentityStoreImplTest {
                     @Override
                     protected void configure() {
                         super.configure();
-                        bind(SimplePersistFactory.class).toInstance(new SimplePersistFactoryImpl());
+                        bind(SimplePersistFactory.class).to(SimplePersistFactoryImpl.class);
                     }
                 });
         autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.SECURITY).flushall();

@@ -52,8 +52,6 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.jcr.Session;
-
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
@@ -78,7 +76,7 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
@@ -167,7 +165,7 @@ public class BundleProcessorManagerTest {
         bundleSource.setBundleProcessorType(bundleType);
         bundleSource.setRelative("/sources/java/myProject");
         bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
-        JcrPersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+        PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
                                                                                                  DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,
                                                         provider);
@@ -217,8 +215,8 @@ public class BundleProcessorManagerTest {
                                                               "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
         Assert.assertThat(sourceFile, Is.is(IsNull.notNullValue()));
         Assert.assertThat(sourceFile.getUnwrappedSyntaxInformation(
-                                                                   (Session)context1.getPersistentArtifactManager()
-                                                                                    .getPersistentEngine()).size(), Is.is(IsNot.not(0)));
+                                                                   context1.getPersistentArtifactManager()
+                                                                                    .getSimplePersist()).size(), Is.is(IsNot.not(0)));
 
     }
 

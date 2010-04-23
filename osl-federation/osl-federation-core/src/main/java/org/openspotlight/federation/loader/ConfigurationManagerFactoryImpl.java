@@ -65,12 +65,12 @@ import java.util.Set;
 /**
  * A factory for creating JcrSessionConfigurationManager objects.
  */
-public class JcrSessionConfigurationManagerFactory {
+public class ConfigurationManagerFactoryImpl {
 
     /**
-     * The Class MutableJcrSessionConfigurationManager.
+     * The Class MutableConfigurationManager.
      */
-    private static class MutableJcrSessionConfigurationManager implements
+    private static class MutableConfigurationManager implements
             ConfigurationManager {
 
         /**
@@ -90,7 +90,7 @@ public class JcrSessionConfigurationManagerFactory {
         /**
          * Instantiates a new mutable jcr session configuration manager.
          */
-        public MutableJcrSessionConfigurationManager(
+        public MutableConfigurationManager(
                 final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
             this.simplePersist = simplePersist;
             this.globalSettingsRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration", "global-settings");
@@ -250,7 +250,7 @@ public class JcrSessionConfigurationManagerFactory {
      */
     public static ConfigurationManager createMutableUsingSession(
             final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
-        return new MutableJcrSessionConfigurationManager(simplePersist);
+        return new MutableConfigurationManager(simplePersist);
     }
 
 }

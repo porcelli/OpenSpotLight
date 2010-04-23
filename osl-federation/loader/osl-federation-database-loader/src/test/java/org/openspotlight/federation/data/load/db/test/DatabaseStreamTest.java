@@ -73,7 +73,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.DatabaseStreamArtifactFinder;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
@@ -173,7 +173,7 @@ public abstract class DatabaseStreamTest {
             conn.close();
         }
 
-        PersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
                                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR, bundle.getRepository());
 
         ArtifactLoaderManager.INSTANCE.refreshResources(configuration, bundle,

@@ -59,11 +59,11 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.task.ExecutorInstance;
 
 public abstract class AbstractPersistentArtifactManager implements
         PersistentArtifactManager {
-
     protected abstract boolean isMultithreaded();
 
     private final PersistentArtifactInternalMethods internalMethods = new PersistentArtifactInternalMethodsImpl();

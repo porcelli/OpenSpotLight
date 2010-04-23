@@ -111,7 +111,6 @@ public class BundleProcessorExecution {
      * @param contextFactory the context factory
      * @param settings the settings
      * @param groups the repositories
-     * @param artifactTypes the artifact types
      */
     public BundleProcessorExecution(
                                      final String username,
@@ -268,7 +267,7 @@ public class BundleProcessorExecution {
                                                                        .createExecutionContext(username, password, descriptor,
                                                                                                repository);
                 final GroupDifferences differences = GroupSupport
-                                                                 .getDifferences(session, repository.getName());
+                                                                 .getDifferences(internalContext.getPersistentArtifactManager().getSimplePersist(), repository.getName());
 
                 final SLContext groupContext = internalContext
                                                               .getGraphSession().createContext(

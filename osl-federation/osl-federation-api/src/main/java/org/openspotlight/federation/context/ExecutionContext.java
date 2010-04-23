@@ -55,6 +55,7 @@ import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 public interface ExecutionContext extends Disposable {
@@ -77,4 +78,5 @@ public interface ExecutionContext extends Disposable {
     public AuthenticatedUser getUser();
 
     public String getUserName();
+
 }

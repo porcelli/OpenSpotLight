@@ -52,22 +52,24 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
 
-public class JcrPersistentArtifactManager extends
+public class PersistentArtifactManagerImpl extends
         AbstractPersistentArtifactManager {
 
     private final String repositoryName;
     private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
     private final STNodeEntry rootPath;
 
-    public JcrPersistentArtifactManager(Repository repository, SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
-        this.simplePersist = simplePersist;
+    public PersistentArtifactManagerImpl(Repository repository, SimplePersistFactory factory) {
+        this.simplePersist = factory.createSimplePersist(SLPartition.FEDERATION);
         this.repositoryName = repository.getName();
         this.rootPath = simplePersist.getPartitionMethods().createNewSimpleNode("artifacts");
     }
@@ -188,4 +190,11 @@ public class JcrPersistentArtifactManager extends
         return true;
     }
 
+    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist() {
+        return simplePersist;
+    }
+
+    public STStorageSession getSession() {
+        return simplePersist.getCurrentSession();
+    }
 }

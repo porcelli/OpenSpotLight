@@ -52,7 +52,7 @@ import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public class ArtifactSourceSchedulable implements
             logger.debug(" >>>> Executing artifact loadgin from source"
                          + schedulable.toUniqueJobString());
         }
-        JcrPersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+        PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
                                                                                                  ctx.getDefaultConnectionProvider().getData(), schedulable
                                                                                                                                                           .getRepository());
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, schedulable,

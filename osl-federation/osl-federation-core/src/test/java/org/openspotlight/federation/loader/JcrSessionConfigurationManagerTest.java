@@ -52,6 +52,8 @@ import java.util.Set;
 
 import javax.jcr.Session;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Assert;
@@ -62,8 +64,16 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
+import org.openspotlight.federation.util.test.ExampleModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * The Class JcrSessionConfigurationManagerTest.
@@ -73,10 +83,15 @@ public class JcrSessionConfigurationManagerTest extends
 
     private static JcrConnectionProvider provider;
 
+    private static Injector injector;
+    private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+
     @BeforeClass
     public static void setupJcrRepo() throws Exception {
         provider = JcrConnectionProvider
                                         .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        injector = Guice.createInjector(new ExampleModule(repositoryPath("newRepository")));
+        simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.FEDERATION);
     }
 
     private Session session;
@@ -91,8 +106,8 @@ public class JcrSessionConfigurationManagerTest extends
 
     @Override
     protected ConfigurationManager createNewConfigurationManager() {
-        return JcrSessionConfigurationManagerFactory
-                                                    .createMutableUsingSession(session);
+        return ConfigurationManagerFactoryImpl
+                                                    .createMutableUsingSession(simplePersist);
     }
 
     @Before
@@ -102,6 +117,7 @@ public class JcrSessionConfigurationManagerTest extends
 
     @Test
     public void shouldFindGroupDeltas() throws Exception {
+
         final Repository repository = new Repository();
         repository.setName("newRepository");
         final Group group = new Group();
@@ -118,7 +134,7 @@ public class JcrSessionConfigurationManagerTest extends
         manager1.saveRepository(repository);
 
         final GroupDifferences differences = GroupSupport.getDifferences(
-                                                                         session, repository.getName());
+                                                                         simplePersist, repository.getName());
         final Set<String> added = differences.getAddedGroups();
 
         Assert.assertThat(added.contains("newRepository/new"), Is.is(true));

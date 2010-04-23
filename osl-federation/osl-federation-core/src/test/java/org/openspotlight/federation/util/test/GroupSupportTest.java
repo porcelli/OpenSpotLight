@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.util.test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
@@ -59,6 +61,13 @@ import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class GroupSupportTest {
 
@@ -335,6 +344,9 @@ public class GroupSupportTest {
     public void shouldPersistAndRetrieveProperties() throws Exception {
         final SessionWithLock session = JcrConnectionProvider.createFromData(
                                                                              DefaultJcrDescriptor.TEMP_DESCRIPTOR).openSession();
+        Injector injector = Guice.createInjector(new ExampleModule(repositoryPath("respositoryName")));
+        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.FEDERATION);
+
         final GroupDifferences differences = new GroupDifferences();
         differences.setRepositoryName("repositoryName");
         differences.getAddedGroups().add("a");
@@ -344,9 +356,9 @@ public class GroupSupportTest {
         differences.getRemovedGroups().add("d");
         differences.getRemovedGroups().add("e");
         differences.getRemovedGroups().add("f");
-        GroupSupport.saveDifferences(session, differences);
+        GroupSupport.saveDifferences(simplePersist, differences);
         session.save();
-        final GroupDifferences loaded = GroupSupport.getDifferences(session,
+        final GroupDifferences loaded = GroupSupport.getDifferences(simplePersist,
                                                                     "repositoryName");
         Assert.assertThat(loaded.getRepositoryName(), Is.is(differences
                                                                        .getRepositoryName()));

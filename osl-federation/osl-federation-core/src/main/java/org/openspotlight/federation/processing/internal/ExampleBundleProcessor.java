@@ -68,6 +68,9 @@ import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger.LogEventType;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,11 +134,11 @@ public class ExampleBundleProcessor implements
             context.getGraphSession().addLink(SLLink.class, node, node1, false);
         }
 
-        Session session = (Session)context.getPersistentArtifactManager()
-                                          .getPersistentEngine();
+        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = context.getPersistentArtifactManager()
+                .getSimplePersist();
 
         artifact.addSyntaxInformation(2, 4, 5, 6,
-                                      SyntaxInformationType.COMMENT, session);
+                                      SyntaxInformationType.COMMENT, simplePersist);
 
         return LastProcessStatus.PROCESSED;
     }

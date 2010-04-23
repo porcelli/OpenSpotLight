@@ -70,7 +70,7 @@ import org.openspotlight.federation.domain.artifact.db.RoutineType;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.Constraints;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 
@@ -84,7 +84,7 @@ public class DatabaseCustomTest {
 
     private DatabaseCustomArtifactFinder         finder;
     private DbArtifactSource                     bundle;
-    private JcrPersistentArtifactManagerProvider persistentManagerProvider;
+    private PersistentArtifactManagerProviderImpl persistentManagerProvider;
 
     @Before
     public void setup() throws Exception {
@@ -99,7 +99,7 @@ public class DatabaseCustomTest {
         bundle
                 .setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         finder = new DatabaseCustomArtifactFinder();
-        persistentManagerProvider = new JcrPersistentArtifactManagerProvider(
+        persistentManagerProvider = new PersistentArtifactManagerProviderImpl(
                                                                              DefaultJcrDescriptor.TEMP_DESCRIPTOR, bundle.getRepository());
     }
 

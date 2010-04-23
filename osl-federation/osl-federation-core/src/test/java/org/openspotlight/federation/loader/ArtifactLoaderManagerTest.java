@@ -65,7 +65,7 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 
 public class ArtifactLoaderManagerTest {
@@ -97,7 +97,7 @@ public class ArtifactLoaderManagerTest {
         source.setBinary(false);
         source.setInitialLookup(initial);
         source.setName("sourceName");
-        JcrPersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+        PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
                                                                                                  DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
 
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,

@@ -53,6 +53,9 @@ import java.util.Set;
 import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 /**
  * This class persists the artifacts loaded from {@link OriginArtifactLoader} classes. So, this class unifies the {@link Artifact
@@ -174,5 +177,10 @@ public interface PersistentArtifactManager extends Disposable {
      * Saves or flush transient data to the persistent store
      */
     public void saveTransientData();
+
+
+    public STStorageSession getSession();
+
+    public SimplePersistCapable<STNodeEntry,STStorageSession> getSimplePersist();
 
 }

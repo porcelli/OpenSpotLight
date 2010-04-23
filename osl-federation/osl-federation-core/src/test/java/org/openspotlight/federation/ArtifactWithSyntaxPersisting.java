@@ -48,38 +48,46 @@
  */
 package org.openspotlight.federation;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Test;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.jcr.provider.SessionWithLock;
-import org.openspotlight.persist.support.SimplePersistSupport;
+import org.openspotlight.federation.util.test.ExampleModule;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class ArtifactWithSyntaxPersisting {
-    public static void main( final String... args ) throws Exception {
+
+
+    public static void main(final String... args) throws Exception {
         final ArtifactWithSyntaxPersisting test = new ArtifactWithSyntaxPersisting();
         test.shouldPersistLotsOfStuff();
     }
 
-    Random         r           = new Random();
+    Random r = new Random();
 
-    String[]       sampleLines = {
-                               "ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD\n",
-                               "     SDFSDFSDFSDFS FDS DFSDF\n", "     sdfsfasdfasd FDS DFSDF\n",
-                               "\n"};
+    String[] sampleLines = {
+            "ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD\n",
+            "     SDFSDFSDFSDFS FDS DFSDF\n", "     sdfsfasdfasd FDS DFSDF\n",
+            "\n"};
 
-    String[]       samplePaths = {"dir1", "dir2", "dirthreebigger", "anotherPath"};
+    String[] samplePaths = {"dir1", "dir2", "dirthreebigger", "anotherPath"};
 
-    int            maxPath     = 16;
+    int maxPath = 16;
 
-    private String content     = null;
+    private String content = null;
 
     Set<StringArtifact> createLotsOfStuff() {
         final Set<StringArtifact> stuffList = new HashSet<StringArtifact>();
@@ -101,11 +109,11 @@ public class ArtifactWithSyntaxPersisting {
             }
         }
         final StringArtifact sa = Artifact.createArtifact(StringArtifact.class,
-                                                          path.toString(), ChangeType.INCLUDED);
+                path.toString(), ChangeType.INCLUDED);
         sa.getContent().setTransient(getContent());
         for (int i = 0; i < 16000; i++) {
             sa.addSyntaxInformation(i, i, i, i, SyntaxInformationType.COMMENT,
-                                    null);
+                    null);
         }
 
         return sa;
@@ -127,22 +135,23 @@ public class ArtifactWithSyntaxPersisting {
     @Test
     public void shouldPersistLotsOfStuff() throws Exception {
         final Set<StringArtifact> lotsOfStuff = createLotsOfStuff();
-        final JcrConnectionProvider provider = JcrConnectionProvider
-                                                                    .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        final SessionWithLock session = provider.openSession();
+
+        Injector injector = Guice.createInjector(new ExampleModule(repositoryPath("sampleRepository")));
+        STStorageSession session = injector.getProvider(STStorageSession.class).get();
+        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(session, SLPartition.FEDERATION);
+
         int count = 0;
         final long start = System.currentTimeMillis();
         for (final StringArtifact a : lotsOfStuff) {
             count++;
-            SimplePersistSupport.convertBeanToJcr("a/b/c", session, a);
-            session.save();
+            simplePersist.convertBeanToNode(a);
             if (count % 10 == 0) {
                 System.out.println(count);
             }
         }
         final long end = System.currentTimeMillis();
         System.out.println("spent on jcr convert and saving: " + (end - start)
-                           / 1000 + "s");
+                / 1000 + "s");
     }
 
 }

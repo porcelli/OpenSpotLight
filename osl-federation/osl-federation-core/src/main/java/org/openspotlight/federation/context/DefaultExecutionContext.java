@@ -55,10 +55,10 @@ import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManager;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
+import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;
 import org.openspotlight.federation.loader.ConfigurationManager;
-import org.openspotlight.federation.loader.JcrSessionConfigurationManagerFactory;
+import org.openspotlight.federation.loader.ConfigurationManagerFactoryImpl;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
@@ -73,7 +73,7 @@ import org.openspotlight.security.idm.User;
 
 /**
  * This class is an {@link ExecutionContext} which initialize all resources in a lazy way, and also close it in a lazy way also.
- * 
+ *
  * @author feu
  */
 public class DefaultExecutionContext implements ExecutionContext, LockContainer {
@@ -81,22 +81,22 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
     private final class LazyConfigurationManagerProvider extends
             AtomicLazyResource<ConfigurationManager> {
         private LazyConfigurationManagerProvider(
-                                                  final LockContainer lockContainer ) {
+                final LockContainer lockContainer) {
             super(lockContainer);
         }
 
         @Override
         protected ConfigurationManager createReference() {
-            return JcrSessionConfigurationManagerFactory
-                                                        .createMutableUsingSession(JcrConnectionProvider
-                                                                                                        .createFromData(descriptor).openSession());
+            return ConfigurationManagerFactoryImpl
+                    .createMutableUsingSession(JcrConnectionProvider
+                            .createFromData(descriptor).openSession());
         }
     }
 
     private final class LazyDetailedLoggerProvider extends
             AtomicLazyResource<DetailedLogger> {
         private LazyDetailedLoggerProvider(
-                                            final LockContainer lockContainer ) {
+                final LockContainer lockContainer) {
             super(lockContainer);
         }
 
@@ -109,14 +109,14 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
     private final class LazyGraphSessionProvider extends
             AtomicLazyResource<SLGraphSession> {
         private LazyGraphSessionProvider(
-                                          final LockContainer lockContainer ) {
+                final LockContainer lockContainer) {
             super(lockContainer);
         }
 
         @Override
         protected SLGraphSession createReference() throws Exception {
             final SLGraph graph = AbstractFactory.getDefaultInstance(
-                                                                     SLGraphFactory.class).createGraph(descriptor);
+                    SLGraphFactory.class).createGraph(descriptor);
             return graph.openSession(getUser(), repositoryName);
         }
     }
@@ -124,7 +124,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
     private final class LazyJcrConnectionProvider extends
             AtomicLazyResource<JcrConnectionProvider> {
         private LazyJcrConnectionProvider(
-                                           final LockContainer lockContainer ) {
+                final LockContainer lockContainer) {
             super(lockContainer);
         }
 
@@ -137,62 +137,62 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
     private final class LazyJcrPersistentArtifactManager extends
             AtomicLazyResource<PersistentArtifactManager> {
         private LazyJcrPersistentArtifactManager(
-                                                  final LockContainer lockContainer ) {
+                final LockContainer lockContainer) {
             super(lockContainer);
         }
 
         @Override
         protected PersistentArtifactManager createReference() {
-            return new JcrPersistentArtifactManager(JcrConnectionProvider
-                                                                         .createFromData(descriptor).openSession(), repository);
+            return new PersistentArtifactManagerImpl(JcrConnectionProvider
+                    .createFromData(descriptor).openSession(), repository);
         }
     }
 
-    private final String                                        username;
-    private final String                                        password;
-    private final JcrConnectionDescriptor                       descriptor;
-    private final String                                        repositoryName;
-    private final Repository                                    repository;
-    private final DisposingListener<DefaultExecutionContext>    listener;
-    private final Lock                                          lock                                     = new Lock();
+    private final String username;
+    private final String password;
+    private final JcrConnectionDescriptor descriptor;
+    private final String repositoryName;
+    private final Repository repository;
+    private final DisposingListener<DefaultExecutionContext> listener;
+    private final Lock lock = new Lock();
 
-    private final AtomicLazyResource<AuthenticatedUser>         lazyAuthenticatedUserReference           = new AtomicLazyResource<AuthenticatedUser>() {
+    private final AtomicLazyResource<AuthenticatedUser> lazyAuthenticatedUserReference = new AtomicLazyResource<AuthenticatedUser>() {
 
-                                                                                                             @Override
-                                                                                                             protected AuthenticatedUser createReference()
-                                                                                                                 throws Exception {
-                                                                                                                 final SecurityFactory securityFactory = AbstractFactory
-                                                                                                                                                                        .getDefaultInstance(SecurityFactory.class);
-                                                                                                                 final User simpleUser = securityFactory.createUser(username);
-                                                                                                                 final AuthenticatedUser user = securityFactory
-                                                                                                                                                               .createIdentityManager(descriptor).authenticate(simpleUser,
-                                                                                                                                                                                                               password);
-                                                                                                                 return user;
-                                                                                                             }
-                                                                                                         };
+        @Override
+        protected AuthenticatedUser createReference()
+                throws Exception {
+            final SecurityFactory securityFactory = AbstractFactory
+                    .getDefaultInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser(username);
+            final AuthenticatedUser user = securityFactory
+                    .createIdentityManager(descriptor).authenticate(simpleUser,
+                            password);
+            return user;
+        }
+    };
 
-    private final AtomicLazyResource<JcrConnectionProvider>     lazyConnectionProviderReference          = new LazyJcrConnectionProvider(
-                                                                                                                                         this);
+    private final AtomicLazyResource<JcrConnectionProvider> lazyConnectionProviderReference = new LazyJcrConnectionProvider(
+            this);
 
     private final AtomicLazyResource<PersistentArtifactManager> lazyJcrPersistentArtifactManagerProvider = new LazyJcrPersistentArtifactManager(
-                                                                                                                                                this);
+            this);
 
-    private final AtomicLazyResource<ConfigurationManager>      lazyConfigurationManagerReference        = new LazyConfigurationManagerProvider(
-                                                                                                                                                this);
+    private final AtomicLazyResource<ConfigurationManager> lazyConfigurationManagerReference = new LazyConfigurationManagerProvider(
+            this);
 
-    private final AtomicLazyResource<SLGraphSession>            lazyGraphSessionReference                = new LazyGraphSessionProvider(
-                                                                                                                                        this);
+    private final AtomicLazyResource<SLGraphSession> lazyGraphSessionReference = new LazyGraphSessionProvider(
+            this);
 
-    private final AtomicLazyResource<DetailedLogger>            lazyDetailedLoggerReference              = new LazyDetailedLoggerProvider(
-                                                                                                                                          this);
+    private final AtomicLazyResource<DetailedLogger> lazyDetailedLoggerReference = new LazyDetailedLoggerProvider(
+            this);
 
-    private final DetailedLoggerFactory                         logFactory;
+    private final DetailedLoggerFactory logFactory;
 
     DefaultExecutionContext(
-                             final String username, final String password,
-                             final JcrConnectionDescriptor descriptor,
-                             final DisposingListener<DefaultExecutionContext> listener,
-                             Repository repository ) {
+            final String username, final String password,
+            final JcrConnectionDescriptor descriptor,
+            final DisposingListener<DefaultExecutionContext> listener,
+            Repository repository) {
         this.username = username;
         this.password = password;
         this.descriptor = descriptor;
@@ -203,7 +203,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
     }
 
     public boolean artifactFinderSupportsThisType(
-                                                   final Class<? extends Artifact> type ) {
+            final Class<? extends Artifact> type) {
         return true;
     }
 

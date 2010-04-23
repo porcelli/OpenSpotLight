@@ -83,8 +83,6 @@ import org.openspotlight.storage.redis.guice.JRedisSTStorageSessionProvider;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
-import javax.jcr.Session;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -174,9 +172,9 @@ public class DetailedLoggerTest {
         autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.LOG).flushall();
         graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class)
                 .createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        SimplePersistFactory simplePersistFactory = new SimplePersistFactoryImpl();
+        SimplePersistFactory simplePersistFactory = new SimplePersistFactoryImpl(autoFlushInjector.getProvider(STStorageSession.class));
 
-        simplePersist = simplePersistFactory.createSimplePersist(autoFlushInjector.getProvider(STStorageSession.class).get(), SLPartition.LOG);
+        simplePersist = simplePersistFactory.createSimplePersist(SLPartition.LOG);
         loggerProvider = new DetailedLoggerProvider(simplePersistFactory, autoFlushInjector.getInstance(JRedisSTStorageSessionProvider.class));
         final SecurityFactory securityFactory = AbstractFactory
                 .getDefaultInstance(SecurityFactory.class);

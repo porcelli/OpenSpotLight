@@ -49,28 +49,25 @@
 package org.openspotlight.federation.finder;
 
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.jcr.provider.SessionWithLock;
+import org.openspotlight.persist.support.SimplePersistFactory;
 
-public class JcrPersistentArtifactManagerProvider extends
+public class PersistentArtifactManagerProviderImpl extends
         PersistentArtifactManagerProvider {
 
-    private static class JcrPersistentArtifactManagerItemFactory implements
+    private static class PersistentArtifactManagerItemFactoryImpl implements
             ItemFactory<PersistentArtifactManager> {
-        private final Repository            repository;
-        private final JcrConnectionProvider provider;
 
-        public JcrPersistentArtifactManagerItemFactory(
-                                                        JcrConnectionDescriptor descriptor, Repository repository ) {
-            this.provider = JcrConnectionProvider.createFromData(descriptor);
+        private final Repository repository;
+        private final SimplePersistFactory simplePersistFactory;
+
+        private PersistentArtifactManagerItemFactoryImpl(Repository repository, SimplePersistFactory simplePersistFactory) {
             this.repository = repository;
+            this.simplePersistFactory = simplePersistFactory;
         }
 
         public PersistentArtifactManager createNew() {
-            SessionWithLock session = provider.openSession();
-            JcrPersistentArtifactManager manager = new JcrPersistentArtifactManager(
-                                                                                    session, repository);
+            PersistentArtifactManagerImpl manager = new PersistentArtifactManagerImpl(
+                    repository, simplePersistFactory);
             return manager;
         }
 
@@ -80,10 +77,10 @@ public class JcrPersistentArtifactManagerProvider extends
 
     }
 
-    public JcrPersistentArtifactManagerProvider(
-                                                 JcrConnectionDescriptor descriptor, Repository repository ) {
-        super(new JcrPersistentArtifactManagerItemFactory(descriptor,
-                                                          repository));
+    public PersistentArtifactManagerProviderImpl(
+            SimplePersistFactory simplePersistFactory, Repository repository) {
+        super(new PersistentArtifactManagerItemFactoryImpl(repository,
+                simplePersistFactory));
     }
 
 }

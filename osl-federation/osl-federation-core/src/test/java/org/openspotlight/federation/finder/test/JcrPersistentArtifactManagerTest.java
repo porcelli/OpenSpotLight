@@ -52,9 +52,12 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.util.Set;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -62,10 +65,12 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManager;
+import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;
+import org.openspotlight.federation.util.test.ExampleModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
+import org.openspotlight.persist.support.SimplePersistFactory;
 
 public class JcrPersistentArtifactManagerTest {
     /** The provider. */
@@ -75,7 +80,7 @@ public class JcrPersistentArtifactManagerTest {
 
     private static Repository                   repository;
 
-    private static JcrPersistentArtifactManager persistenArtifactManager;
+    private static PersistentArtifactManagerImpl persistenArtifactManager;
 
     /**
      * Setup.
@@ -86,6 +91,8 @@ public class JcrPersistentArtifactManagerTest {
     public static void setup() throws Exception {
         provider = JcrConnectionProvider
                                         .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        Injector injector = Guice.createInjector(new ExampleModule(repositoryPath(repository.getName())));
+
         final SessionWithLock session = provider.openSession();
         artifactSource = new ArtifactSource();
         artifactSource.setName("classpath");
@@ -96,8 +103,8 @@ public class JcrPersistentArtifactManagerTest {
         final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
         final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(
                                                                           StringArtifact.class, artifactSource, null);
-        persistenArtifactManager = new JcrPersistentArtifactManager(session,
-                                                                    repository);
+        persistenArtifactManager = new PersistentArtifactManagerImpl(repository,
+                injector.getInstance(SimplePersistFactory.class));
         for (StringArtifact artifact : artifacts)
             persistenArtifactManager.addTransient(artifact);
         persistenArtifactManager.saveTransientData();

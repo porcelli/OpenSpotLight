@@ -64,7 +64,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
-import org.openspotlight.federation.finder.JcrPersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
@@ -104,7 +104,7 @@ public class ColumnChangingFiresTableChangeTest {
         GlobalSettings globalSettings = new GlobalSettings();
         globalSettings.getLoaderRegistry().add(
                                                DatabaseCustomArtifactFinder.class);
-        PersistentArtifactManagerProvider provider = new JcrPersistentArtifactManagerProvider(
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
                                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR, dbBundle.getRepository());
 
         ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings,

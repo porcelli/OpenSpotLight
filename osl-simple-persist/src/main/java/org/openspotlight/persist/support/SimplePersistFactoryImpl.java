@@ -1,5 +1,7 @@
 package org.openspotlight.persist.support;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STRepositoryPath;
@@ -11,8 +13,14 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
  */
 @Singleton
 public class SimplePersistFactoryImpl implements SimplePersistFactory{
-    
-    public SimplePersistCapable<STNodeEntry,STStorageSession> createSimplePersist(STStorageSession session, STPartition partition) {
-        return new SimplePersistImpl(session,partition);
+
+    private final Provider<STStorageSession> sessionProvider;
+
+    public SimplePersistFactoryImpl(Provider<STStorageSession> sessionProvider) {
+        this.sessionProvider = sessionProvider;
+    }
+
+    public SimplePersistCapable<STNodeEntry,STStorageSession> createSimplePersist(STPartition partition) {
+        return new SimplePersistImpl(sessionProvider.get(),partition);
     }
 }

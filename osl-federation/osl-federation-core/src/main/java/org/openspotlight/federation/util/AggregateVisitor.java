@@ -62,7 +62,7 @@ public class AggregateVisitor<A extends SimpleNodeType> implements
         this.sources = sources;
     }
 
-    public <X extends A> void visitBean( final X bean ) {
+    public  void visitBean( final A bean ) {
         sources.add(bean);
     }
 }
