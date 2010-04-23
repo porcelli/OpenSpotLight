@@ -47,27 +47,48 @@
  * Boston, MA  02110-1301  USA
  */
 
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.federation.log.DetailedJcrLoggerFactory;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.DetailedLogger.ErrorCode;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.persist.support.SimplePersistFactoryImpl;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
+import org.openspotlight.storage.redis.guice.JRedisSTStorageSessionProvider;
+import org.openspotlight.storage.redis.guice.JRedisServerDetail;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
 import javax.jcr.Session;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class DetailedLoggerTest {
 
@@ -96,9 +117,8 @@ public class DetailedLoggerTest {
 
     }
 
-    private static DetailedJcrLoggerFactory factory;
+    private static DetailedLoggerProvider loggerProvider;
 
-    private Session session;
 
     private SLGraphSession graphSession;
 
@@ -108,11 +128,56 @@ public class DetailedLoggerTest {
 
     private static AuthenticatedUser user;
 
+
+    private enum JRedisServerConfigExample implements JRedisServerDetail {
+        DEFAULT("localhost", 6379, 0);
+
+        private JRedisServerConfigExample(String serverName, int serverPort, int db) {
+            this.serverName = serverName;
+            this.serverPort = serverPort;
+            this.db = db;
+        }
+
+        private final String serverName;
+
+        private final int db;
+
+        public int getDb() {
+            return db;
+        }
+
+        public String getPassword() {
+            return null;
+        }
+
+        private final int serverPort;
+
+        public String getServerName() {
+            return serverName;
+        }
+
+        public int getServerPort() {
+            return serverPort;
+        }
+    }
+
+
+    private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+
+
     @BeforeClass
     public static void setupJcr() throws Exception {
+
+        ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
+                .put(SLPartition.LOG, JRedisServerConfigExample.DEFAULT).build();
+        Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath")));
+        autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.LOG).flushall();
         graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class)
                 .createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        factory = new DetailedJcrLoggerFactory();
+        SimplePersistFactory simplePersistFactory = new SimplePersistFactoryImpl();
+
+        simplePersist = simplePersistFactory.createSimplePersist(autoFlushInjector.getProvider(STStorageSession.class).get(), SLPartition.LOG);
+        loggerProvider = new DetailedLoggerProvider(simplePersistFactory, autoFlushInjector.getInstance(JRedisSTStorageSessionProvider.class));
         final SecurityFactory securityFactory = AbstractFactory
                 .getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
@@ -120,19 +185,14 @@ public class DetailedLoggerTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
                 "password");
 
+
     }
 
     private DetailedLogger logger;
 
     @After
     public void releaseAttributes() throws Exception {
-        factory.closeResources();
-        if (session != null) {
-            if (session.isLive()) {
-                session.logout();
-            }
-            session = null;
-        }
+        loggerProvider.closeResources();
         if (graphSession != null) {
             graphSession.close();
             graphSession = null;
@@ -147,45 +207,38 @@ public class DetailedLoggerTest {
 
     @Test
     public void shouldLogSomeStuff() throws Exception {
-//
-//        final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(
-//                                                                               StringArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
-//        final SLNode node = graphSession.createContext("ctx").getRootNode()
-//                                        .addNode("node1");
-//        final SLNode node2 = node.addNode("node2");
-//        final SLNode node3 = node2.addNode("node3");
-//        logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(),
-//                   "firstEntry", node3, artifact);
-//
-//        logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(),
-//                   "secondEntry", artifact);
-//        logger.log(user, "tempRepo", LogEventType.DEBUG, new CustomErrorCode(),
-//                   "thirdEntry", node3);
-//
-//        final Query query = session.getWorkspace().getQueryManager()
-//                                   .createQuery(
-//                                                SharedConstants.DEFAULT_JCR_ROOT_NAME
-//                                                + "//"
-//                                                + SimplePersistSupport
-//                                                                      .getJcrNodeName(LogEntry.class),
-//                                                Query.XPATH);
-//        final NodeIterator foundNodes = query.execute().getNodes();
-//        final Iterable<LogEntry> foundEntries = SimplePersistSupport
-//                                                                    .convertJcrsToBeans(session, foundNodes, LazyType.EAGER);
+
+        graphSession = graph.openSession(user,"tempRepo");
+        logger =loggerProvider.get();
+        final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(
+                StringArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
+        final SLNode node = graphSession.createContext("ctx").getRootNode()
+                .addNode("node1");
+        final SLNode node2 = node.addNode("node2");
+        final SLNode node3 = node2.addNode("node3");
+        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(),
+                "firstEntry", node3, artifact);
+
+        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(),
+                "secondEntry", artifact);
+        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(),
+                "thirdEntry", node3);
+
+        final Iterable<DetailedLoggerProvider.LogEntry> foundEntries = simplePersist.findAll(DetailedLoggerProvider.LogEntry.class);
+
         boolean hasAnyEntry = false;
         boolean hasAnyObject = false;
-//        for (final LogEntry entry : foundEntries) {
-//            hasAnyEntry = true;
-//            for (final LoggedObjectInformation info : entry.getNodes()) {
-//                hasAnyObject = true;
-//                assertThat(info.getClassName(), is(notNullValue()));
-//                assertThat(info.getFriendlyDescription(), is(notNullValue()));
-//            }
-//            assertThat(entry.getType(), is(notNullValue()));
-//            assertThat(entry.getDate(), is(notNullValue()));
-//            assertThat(entry.getDetailedMessage(), is(notNullValue()));
-//            assertThat(entry.getErrorCode(), is(notNullValue()));
-//        }
+        for (final DetailedLoggerProvider.LogEntry entry : foundEntries) {
+            hasAnyEntry = true;
+            for (final DetailedLoggerProvider.LoggedObjectInformation info : entry.getNodes()) {
+                hasAnyObject = true;
+                assertThat(info.getClassName(), is(notNullValue()));
+                assertThat(info.getFriendlyDescription(), is(notNullValue()));
+            }
+            assertThat(entry.getType(), is(notNullValue()));
+            assertThat(entry.getDate(), is(notNullValue()));
+            assertThat(entry.getDetailedMessage(), is(notNullValue()));
+        }
         assertThat(hasAnyEntry, is(true));
         assertThat(hasAnyObject, is(true));
 

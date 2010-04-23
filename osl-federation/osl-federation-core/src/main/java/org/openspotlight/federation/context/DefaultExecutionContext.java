@@ -59,7 +59,7 @@ import org.openspotlight.federation.finder.JcrPersistentArtifactManager;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.JcrSessionConfigurationManagerFactory;
-import org.openspotlight.federation.log.DetailedJcrLoggerFactory;
+import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
@@ -199,7 +199,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
         this.repositoryName = repository.getName();
         this.repository = repository;
         this.listener = listener;
-        logFactory = new DetailedJcrLoggerFactory(descriptor);
+        logFactory = new DetailedLoggerProvider(descriptor);
     }
 
     public boolean artifactFinderSupportsThisType(

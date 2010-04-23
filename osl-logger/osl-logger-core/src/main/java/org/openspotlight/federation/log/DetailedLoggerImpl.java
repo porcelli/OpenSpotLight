@@ -50,8 +50,8 @@ package org.openspotlight.federation.log;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LogEntry;
-import org.openspotlight.federation.log.DetailedJcrLoggerFactory.LoggedObjectInformation;
+import org.openspotlight.federation.log.DetailedLoggerProvider.LogEntry;
+import org.openspotlight.federation.log.DetailedLoggerProvider.LoggedObjectInformation;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.support.SimplePersistCapable;
@@ -62,9 +62,6 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import java.util.Date;
 
 public final class DetailedLoggerImpl implements DetailedLogger {
-
-    // FIXME remove this as soon as apache's ticket JCR-2428 is solved. To test
-    // it, run the bundle processor test with multiple threads enabled
 
     private final STNodeEntry rootNode;
 
@@ -138,7 +135,7 @@ public final class DetailedLoggerImpl implements DetailedLogger {
                     final String message,
                     final String detailedMessage,
                     final LogableObject... anotherNodes) {
-        final LogEntry entry = new LogEntry(errorCode, new Date(), type,
+        final LogEntry entry = new LogEntry(errorCode, System.currentTimeMillis(), type,
                 message, detailedMessage, LoggedObjectInformation
                         .getHierarchyFrom(anotherNodes));
 

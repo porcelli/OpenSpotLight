@@ -13,6 +13,7 @@ public enum SLPartition implements STPartition {
     SYNTAX_HIGHLIGHT("syntax-highlight",FEDERATION),
     LINE_REFERENCE("line-reference",GRAPH),
     SECURITY("security"),
+    LOG("log")
     ;
 
     private String partitionName;

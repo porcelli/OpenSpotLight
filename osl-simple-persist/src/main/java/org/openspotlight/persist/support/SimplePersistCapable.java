@@ -6,7 +6,6 @@ import org.openspotlight.storage.STStorageSession;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,11 +20,13 @@ public interface SimplePersistCapable<N, S> {
 
     STPartition getCurrentPartition();
 
-    public <T> Iterable<N> convertBeansToNodes(final Iterable<T> beans) ;
+    STStorageSession.STPartitionMethods getPartitionMethods();
+
+    public <T> Iterable<N> convertBeansToNodes(final Iterable<T> beans);
 
     public <T> N convertBeanToNode(final T bean) throws Exception;
 
-    public <T> Iterable<T> convertNodesToBeans(final Iterable<N> nodes) ;
+    public <T> Iterable<T> convertNodesToBeans(final Iterable<N> nodes);
 
     public <T> T convertNodeToBean(final N nodes)
             throws Exception;
@@ -33,12 +34,20 @@ public interface SimplePersistCapable<N, S> {
     public <T> Iterable<T> findByProperties(Class<T> beanType, String[] propertyNames,
                                             Object[] propertyValues);
 
+    public <T> Iterable<T> findAll(Class<T> beanType);
+
+    public <T> Iterable<T> findAll(N parentNode, Class<T> beanType);
+
+    public <T> T findUnique(Class<T> beanType);
+
+    public <T> T findUnique(N parentNode, Class<T> beanType);
+
     public <T> T findUniqueByProperties(Class<T> beanType, String[] propertyNames,
                                         Object[] propertyValues);
 
     public <T> Iterable<N> convertBeansToNodes(N parentNode, final Iterable<T> beans);
 
-    public <T> N convertBeanToNode(N parentNode, final T bean) ;
+    public <T> N convertBeanToNode(N parentNode, final T bean);
 
     public <T> Iterable<T> findByProperties(N parentNode, Class<T> beanType, String[] propertyNames,
                                             Object[] propertyValues);
@@ -49,10 +58,11 @@ public interface SimplePersistCapable<N, S> {
 
 
     interface InternalMethods {
-        public  Object beforeUnConvert(SimpleNodeType bean, Serializable value, Method readMethod);
+        public Object beforeUnConvert(SimpleNodeType bean, Serializable value, Method readMethod);
+        public String getNodeName(Class<?> nodeType);
     }
 
     public InternalMethods getInternalMethods();
 
-    
+
 }

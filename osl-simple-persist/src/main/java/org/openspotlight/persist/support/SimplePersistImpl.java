@@ -69,6 +69,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return currentPartition;
     }
 
+    public STStorageSession.STPartitionMethods getPartitionMethods() {
+        return currentSession.withPartition(currentPartition);
+    }
+
     public <T> Iterable<STNodeEntry> convertBeansToNodes(STNodeEntry parent, Iterable<T> beans) {
         try {
             List<STNodeEntry> itemsConverted = newArrayList();
@@ -512,6 +516,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
         }
 
+        public String getNodeName(Class<?> nodeType) {
+            return internalGetNodeName(nodeType);
+        }
+
     }
 
 
@@ -627,6 +635,26 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     public <T> Iterable<T> findByProperties(Class<T> beanType, String[] propertyNames, Object[] propertyValues) {
         return findByProperties(null, beanType, propertyNames, propertyValues);
+    }
+
+    private static final String[] EMPTY_NAMES = new String[]{};
+
+    private static final Object[] EMPTY_VALUES = new Object[]{};
+
+    public <T> Iterable<T> findAll(Class<T> beanType) {
+        return findByProperties(beanType, EMPTY_NAMES, EMPTY_VALUES);
+    }
+
+    public <T> Iterable<T> findAll(STNodeEntry parentNode, Class<T> beanType) {
+        return findByProperties(parentNode, beanType, EMPTY_NAMES, EMPTY_VALUES);
+    }
+
+    public <T> T findUnique(Class<T> beanType) {
+        return findUniqueByProperties(beanType, EMPTY_NAMES, EMPTY_VALUES);
+    }
+
+    public <T> T findUnique(STNodeEntry parentNode, Class<T> beanType) {
+        return findUniqueByProperties(parentNode, beanType, EMPTY_NAMES, EMPTY_VALUES);
     }
 
     public <T> T findUniqueByProperties(Class<T> beanType, String[] propertyNames, Object[] propertyValues) {

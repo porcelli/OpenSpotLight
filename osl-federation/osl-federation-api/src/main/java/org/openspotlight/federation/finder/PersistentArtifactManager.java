@@ -62,10 +62,8 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
  */
 public interface PersistentArtifactManager extends Disposable {
 
-    public Object getPersistentEngine();
-
     /**
-     * @return {@link InternalMethods} instance
+     * @return {@link PersistentArtifactInternalMethods} instance
      */
     public PersistentArtifactInternalMethods getInternalMethods();
 
@@ -100,7 +98,7 @@ public interface PersistentArtifactManager extends Disposable {
          * This method returns the current names as it is.
          * 
          * @param <A>
-         * @param source
+         * @param initialPath
          * @param type
          * @return
          */

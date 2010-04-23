@@ -67,7 +67,7 @@ public interface ConfigurationManager {
      */
     public void closeResources();
 
-    Set<Repository> getAllRepositories() throws ConfigurationException;
+    Iterable<Repository> getAllRepositories() throws ConfigurationException;
 
     Set<String> getAllRepositoryNames() throws ConfigurationException;
 

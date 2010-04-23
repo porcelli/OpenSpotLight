@@ -48,23 +48,19 @@
  */
 package org.openspotlight.federation.loader;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-
-import org.openspotlight.common.LazyType;
-import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
-import org.openspotlight.persist.support.SimplePersistSupport;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * A factory for creating JcrSessionConfigurationManager objects.
@@ -77,52 +73,51 @@ public class JcrSessionConfigurationManagerFactory {
     private static class MutableJcrSessionConfigurationManager implements
             ConfigurationManager {
 
-        /** The session. */
-        private final Session       session;
+        /**
+         * The session.
+         */
+        private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-        /** The Constant GLOBAL_SETTINGS_LOCATION. */
-        private static final String GLOBAL_SETTINGS_LOCATION = SharedConstants.DEFAULT_JCR_ROOT_NAME
-                                                               + "/config/global";
-
-        /** The Constant REPOSITORIES_LOCATION. */
-        private static final String REPOSITORIES_LOCATION    = SharedConstants.DEFAULT_JCR_ROOT_NAME
-                                                               + "/config/repositories";
+        /**
+         * The Constant globalSettingsRootNode.
+         */
+        private final STNodeEntry globalSettingsRootNode;
+        /**
+         * The Constant repositoriesRootNode.
+         */
+        private final STNodeEntry repositoriesRootNode;
 
         /**
          * Instantiates a new mutable jcr session configuration manager.
-         * 
-         * @param session the session
          */
         public MutableJcrSessionConfigurationManager(
-                                                      final Session session ) {
-            this.session = session;
+                final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
+            this.simplePersist = simplePersist;
+            this.globalSettingsRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration", "global-settings");
+            this.repositoriesRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration", "repositories");
         }
 
-        private void applyGroupDeltas( final Repository configuration ) {
+        private void applyGroupDeltas(final Repository configuration) {
             GroupDifferences existentDeltas = GroupSupport.getDifferences(
-                                                                          session, configuration.getName());
+                    simplePersist, configuration.getName());
             if (existentDeltas == null) {
                 existentDeltas = new GroupDifferences();
                 existentDeltas.setRepositoryName(configuration.getName());
             }
-            final Set<Repository> existentRepository = SimplePersistSupport
-                                                                           .findNodesByProperties(
-                                                                                                  MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-                                                                                                  session, Repository.class, LazyType.EAGER,
-                                                                                                  new String[] {"name"},
-                                                                                                  new Object[] {configuration.getName()});
+            final Iterable<Repository> existentRepository = simplePersist
+                    .findByProperties(
+                            repositoriesRootNode, Repository.class,
+                            new String[]{"name"},
+                            new Object[]{configuration.getName()});
+            Iterator<Repository> it = existentRepository.iterator();
             Repository old = null;
-            if (existentRepository.size() > 1) {
-                throw Exceptions
-                                .logAndReturn(new IllegalStateException(
-                                                                        "unexpected number of repositories with the same name found"));
-            } else if (existentRepository.size() == 1) {
-                old = existentRepository.iterator().next();
+            if (it.hasNext()) {
+                old = it.next();
             }
 
             GroupSupport.findDifferencesOnAllRepositories(existentDeltas, old,
-                                                          configuration);
-            GroupSupport.saveDifferences(session, existentDeltas);
+                    configuration);
+            GroupSupport.saveDifferences(simplePersist, existentDeltas);
         }
 
         /*
@@ -132,30 +127,25 @@ public class JcrSessionConfigurationManagerFactory {
          * org.openspotlight.federation.loader.ConfigurationManager#closeResources
          * ()
          */
+
         public void closeResources() {
-            if (session.isLive()) {
-                session.logout();
-            }
 
         }
 
-        public Set<Repository> getAllRepositories()
+        public Iterable<Repository> getAllRepositories()
                 throws ConfigurationException {
-            final Set<Repository> repositories = SimplePersistSupport
-                                                                     .findNodesByProperties(
-                                                                                            MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-                                                                                            session, Repository.class, LazyType.EAGER,
-                                                                                            new String[] {}, new Object[] {});
+            final Iterable<Repository> repositories = simplePersist.findByProperties(repositoriesRootNode, Repository.class,
+                    new String[]{}, new Object[]{});
             return repositories;
         }
 
         public Set<String> getAllRepositoryNames()
                 throws ConfigurationException {
-            final Set<Repository> repositories = SimplePersistSupport
-                                                                     .findNodesByProperties(
-                                                                                            MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-                                                                                            session, Repository.class, LazyType.EAGER,
-                                                                                            new String[] {}, new Object[] {});
+            final Iterable<Repository> repositories = simplePersist
+                    .findByProperties(
+                            repositoriesRootNode,
+                            Repository.class,
+                            new String[]{}, new Object[]{});
             final Set<String> repositoryNames = new HashSet<String>();
             for (final Repository repo : repositories) {
                 repositoryNames.add(repo.getName());
@@ -169,25 +159,16 @@ public class JcrSessionConfigurationManagerFactory {
          * @seeorg.openspotlight.federation.loader.ConfigurationManager#
          * getGlobalSettings()
          */
+
         public GlobalSettings getGlobalSettings() {
             try {
-                final String nodeName = SimplePersistSupport
-                                                            .getJcrNodeName(GlobalSettings.class);
-                final String xpath = MutableJcrSessionConfigurationManager.GLOBAL_SETTINGS_LOCATION
-                                     + "/" + nodeName;
-                final Query query = session.getWorkspace().getQueryManager()
-                                           .createQuery(xpath, Query.XPATH);
-                final NodeIterator nodeIterator = query.execute().getNodes();
-                if (nodeIterator.hasNext()) {
-                    final Node node = nodeIterator.nextNode();
-                    final GlobalSettings settings = SimplePersistSupport
-                                                                        .convertJcrToBean(session, node, LazyType.EAGER);
-                    return settings;
-                }
-                return null;
+                GlobalSettings settings = simplePersist
+                        .findUnique(GlobalSettings.class);
+                return settings;
+
             } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e,
-                                                 ConfigurationException.class);
+                        ConfigurationException.class);
             }
 
         }
@@ -198,21 +179,19 @@ public class JcrSessionConfigurationManagerFactory {
          * @seeorg.openspotlight.federation.loader.ConfigurationManager#
          * getRepositoryByName(java.lang.String)
          */
-        public Repository getRepositoryByName( final String name )
+
+        public Repository getRepositoryByName(final String name)
                 throws ConfigurationException {
             try {
-                final Set<Repository> repository = SimplePersistSupport
-                                                                       .findNodesByProperties(
-                                                                                              MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-                                                                                              session, Repository.class, LazyType.EAGER,
-                                                                                              new String[] {"name"}, new Object[] {name});
-                if (repository.size() == 0) {
-                    return null;
-                }
-                return repository.iterator().next();
+                final Repository repository = simplePersist
+                        .findUniqueByProperties(repositoriesRootNode,
+                                 Repository.class,
+                                new String[]{"name"}, new Object[]{name});
+
+                return repository;
             } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e,
-                                                 ConfigurationException.class);
+                        ConfigurationException.class);
             }
         }
 
@@ -223,17 +202,18 @@ public class JcrSessionConfigurationManagerFactory {
          * saveGlobalSettings
          * (org.openspotlight.federation.domain.GlobalSettings)
          */
-        public void saveGlobalSettings( final GlobalSettings globalSettings )
+
+        public void saveGlobalSettings(final GlobalSettings globalSettings)
                 throws ConfigurationException {
             try {
-                SimplePersistSupport
-                                    .convertBeanToJcr(
-                                                      MutableJcrSessionConfigurationManager.GLOBAL_SETTINGS_LOCATION,
-                                                      session, globalSettings);
-                session.save();
+                simplePersist
+                        .convertBeanToNode(
+                                globalSettingsRootNode,
+                                 globalSettings);
+                simplePersist.getCurrentSession().flushTransient();
             } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e,
-                                                 ConfigurationException.class);
+                        ConfigurationException.class);
             }
         }
 
@@ -244,18 +224,19 @@ public class JcrSessionConfigurationManagerFactory {
          * org.openspotlight.federation.loader.ConfigurationManager#saveRepository
          * (org.openspotlight.federation.domain.Repository)
          */
-        public void saveRepository( final Repository configuration )
+
+        public void saveRepository(final Repository configuration)
                 throws ConfigurationException {
             try {
                 applyGroupDeltas(configuration);
-                SimplePersistSupport
-                                    .convertBeanToJcr(
-                                                      MutableJcrSessionConfigurationManager.REPOSITORIES_LOCATION,
-                                                      session, configuration);
-                session.save();
+                simplePersist
+                        .convertBeanToNode(
+                                repositoriesRootNode,
+                                 configuration);
+                simplePersist.getCurrentSession().flushTransient();
             } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e,
-                                                 ConfigurationException.class);
+                        ConfigurationException.class);
             }
         }
 
@@ -263,13 +244,13 @@ public class JcrSessionConfigurationManagerFactory {
 
     /**
      * Creates a new JcrSessionConfigurationManager object.
-     * 
-     * @param session the session
+     *
+     * @param simplePersist the simplePersist
      * @return the configuration manager
      */
     public static ConfigurationManager createMutableUsingSession(
-                                                                  final Session session ) {
-        return new MutableJcrSessionConfigurationManager(session);
+            final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
+        return new MutableJcrSessionConfigurationManager(simplePersist);
     }
 
 }
