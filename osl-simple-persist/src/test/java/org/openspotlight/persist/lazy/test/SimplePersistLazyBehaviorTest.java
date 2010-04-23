@@ -88,7 +88,7 @@ public class SimplePersistLazyBehaviorTest {
         JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
         autoFlushFactory.getFrom(ExamplePartition.DEFAULT).flushall();
         this.session = autoFlushInjector.getInstance(STStorageSession.class);
-        new SimplePersistImpl(session, ExamplePartition.DEFAULT);
+        this.simplePersist = new SimplePersistImpl(session, ExamplePartition.DEFAULT);
     }
 
 

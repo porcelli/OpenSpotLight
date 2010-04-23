@@ -48,12 +48,9 @@
  */
 package org.openspotlight.security.idm.store.test;
 
-import java.text.MessageFormat;
-
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Session;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.jboss.identity.idm.impl.configuration.IdentityConfigurationImpl;
 import org.jboss.identity.idm.impl.configuration.IdentityStoreConfigurationContextImpl;
 import org.jboss.identity.idm.impl.configuration.jaxb2.JAXB2IdentityConfiguration;
@@ -67,36 +64,44 @@ import org.jboss.identity.idm.spi.store.IdentityStore;
 import org.jboss.identity.idm.spi.store.IdentityStoreInvocationContext;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.persist.support.SimplePersistFactoryImpl;
 import org.openspotlight.security.idm.store.SLIdentityStoreImpl;
 import org.openspotlight.security.idm.store.SLIdentityStoreSessionImpl;
+import org.openspotlight.security.idm.store.StaticInjector;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
+import org.openspotlight.storage.redis.guice.JRedisServerDetail;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class SLIdentityStoreImplTest {
 
-    
+
     private static class SLIdStoreTestContext implements
             IdentityStoreTestContext {
 
-        private SLIdentityStoreImpl        store;
+        private SLIdentityStoreImpl store;
 
         private SLIdentityStoreSessionImpl session;
 
         public void begin() throws Exception {
 
             final IdentityConfigurationMetaData configurationMD = JAXB2IdentityConfiguration
-                                                                                            .createConfigurationMetaData("slstore.xml");
+                    .createConfigurationMetaData("slstore.xml");
 
-            final IdentityConfigurationContextRegistry registry = (IdentityConfigurationContextRegistry)new IdentityConfigurationImpl()
-                                                                                                                                       .configure(configurationMD);
+            final IdentityConfigurationContextRegistry registry = (IdentityConfigurationContextRegistry) new IdentityConfigurationImpl()
+                    .configure(configurationMD);
 
             IdentityStoreConfigurationMetaData storeMD = null;
 
             for (final IdentityStoreConfigurationMetaData metaData : configurationMD
-                                                                                    .getIdentityStores()) {
+                    .getIdentityStores()) {
                 if (metaData.getId().equals("SLStore")) {
                     storeMD = metaData;
                     break;
@@ -104,12 +109,12 @@ public class SLIdentityStoreImplTest {
             }
 
             final IdentityStoreConfigurationContext context = new IdentityStoreConfigurationContextImpl(
-                                                                                                        configurationMD, registry, storeMD);
+                    configurationMD, registry, storeMD);
 
             this.store = new SLIdentityStoreImpl();
             this.store.bootstrap(context);
-            this.session = (SLIdentityStoreSessionImpl)this.store
-                                                                 .createIdentityStoreSession();
+            this.session = (SLIdentityStoreSessionImpl) this.store
+                    .createIdentityStoreSession();
         }
 
         public void commit() throws Exception {
@@ -147,11 +152,58 @@ public class SLIdentityStoreImplTest {
 
 
     private final CommonIdentityStoreTest test = new CommonIdentityStoreTest(
-                                                                             new SLIdStoreTestContext());
+            new SLIdStoreTestContext());
+
+
+    private enum JRedisServerConfigExample implements JRedisServerDetail {
+        DEFAULT("localhost", 6379, 0);
+
+        private JRedisServerConfigExample(String serverName, int serverPort, int db) {
+            this.serverName = serverName;
+            this.serverPort = serverPort;
+            this.db = db;
+        }
+
+        private final String serverName;
+
+        private final int db;
+
+        public int getDb() {
+            return db;
+        }
+
+        public String getPassword() {
+            return null;
+        }
+
+        private final int serverPort;
+
+        public String getServerName() {
+            return serverName;
+        }
+
+        public int getServerPort() {
+            return serverPort;
+        }
+    }
+
 
     @Before
     public void clearAllData() throws Exception {
-        
+
+        ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
+                .put(SLPartition.SECURITY, JRedisServerConfigExample.DEFAULT).build();
+        Injector autoFlushInjector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath")) {
+
+                    @Override
+                    protected void configure() {
+                        super.configure();
+                        bind(SimplePersistFactory.class).toInstance(new SimplePersistFactoryImpl());
+                    }
+                });
+        autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.SECURITY).flushall();
+        StaticInjector.INSTANCE.setInjector(autoFlushInjector);
     }
 
     @Test
