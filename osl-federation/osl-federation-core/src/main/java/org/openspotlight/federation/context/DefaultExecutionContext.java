@@ -66,11 +66,20 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STRepositoryPath;
+import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import java.util.Map;
+
+import static com.google.common.collect.Maps.newHashMap;
 
 /**
  * This class is an {@link ExecutionContext} which initialize all resources in a lazy way, and also close it in a lazy way also.
@@ -80,6 +89,9 @@ import org.openspotlight.storage.domain.SLPartition;
 public class DefaultExecutionContext implements ExecutionContext, LockContainer {
 
     private final SimplePersistFactory simplePersistFactory;
+
+    private final STRepositoryPath repositoryPath;
+
     private final DetailedLoggerProvider detailedLoggerProvider;
 
     private final class LazyConfigurationManagerProvider extends
@@ -202,6 +214,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
         this.repositoryName = repository.getName();
         this.repository = repository;
         this.listener = listener;
+        this.repositoryPath = STRepositoryPath.repositoryPath(repository.getName());
     }
 
     public boolean artifactFinderSupportsThisType(
@@ -254,6 +267,21 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
     public String getUserName() {
         return username;
+    }
+
+    private Map<STPartition,SimplePersistCapable<STNodeEntry, STStorageSession>> openedSimplePersists = newHashMap();
+
+    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist(STPartition partition) {
+        SimplePersistCapable<STNodeEntry, STStorageSession> result = openedSimplePersists.get(partition);
+        if(result==null){
+            result = simplePersistFactory.createSimplePersist(partition);
+            openedSimplePersists.put(partition,result);
+        }
+        return result;
+    }
+
+    public STRepositoryPath getRepositoryPath() {
+        return repositoryPath;
     }
 
     public PersistentArtifactManager getPersistentArtifactManager() {

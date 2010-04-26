@@ -62,10 +62,6 @@ public class DefaultExecutionContextFactory implements ExecutionContextFactory,
     private final SimplePersistFactory simplePersistFactory;
     private final DetailedLoggerProvider detailedLoggerProvider;
 
-    public static ExecutionContextFactory createFactory(final SimplePersistFactory simplePersistFactory,
-        final DetailedLoggerProvider detailedLoggerProvider) {
-        return new DefaultExecutionContextFactory(detailedLoggerProvider, simplePersistFactory);
-    }
 
     private final CopyOnWriteArrayList<DefaultExecutionContext> openedContexts = new CopyOnWriteArrayList<DefaultExecutionContext>();
 

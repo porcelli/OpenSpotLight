@@ -48,29 +48,90 @@
  */
 package org.openspotlight.federation.context;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.DetailedLogger.LogEventType;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisServerDetail;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class DefaultExecutionContextFactoryTest {
 
     private ExecutionContext              context;
 
-    private final ExecutionContextFactory factory = DefaultExecutionContextFactory
-                                                                                  .createFactory();
+    private static ExecutionContextFactory factory;
+
+    private static ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
+                    .put(SLPartition.GRAPH, ExampleRedisConfig.INSTANCE).build();
+
+
+    private enum ExampleRedisConfig implements JRedisServerDetail {
+        INSTANCE("localhost",6379,1,null);
+
+        private ExampleRedisConfig(String serverName, int serverPort, int db, String password) {
+            this.serverName = serverName;
+            this.serverPort = serverPort;
+            this.db = db;
+            this.password = password;
+        }
+
+        private final String serverName;
+
+        private final int serverPort;
+
+        private final int db;
+
+        private final String password;
+
+        public String getServerName() {
+            return serverName;
+        }
+
+        public int getServerPort() {
+            return serverPort;
+        }
+
+        public int getDb() {
+            return db;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+    }
+
+    @BeforeClass
+    public static void setup() throws Exception{
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        mappedServerConfig,repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+        factory = injector.getInstance(ExecutionContextFactory.class);
+
+    }
+
+
 
     @After
     public void closeResources() throws Exception {
