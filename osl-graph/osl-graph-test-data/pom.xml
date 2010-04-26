@@ -1,38 +1,42 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.openspotlight</groupId>
-		<artifactId>osl-graph</artifactId>
-		<version>0.7-SNAPSHOT</version>
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.openspotlight</groupId>
+        <artifactId>osl-graph</artifactId>
+        <version>0.7-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>osl-graph-test-data</artifactId>
-	<packaging>jar</packaging>
-	<name>OpenSpotLight Graph Library</name>
+    <artifactId>osl-graph-test-data</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenSpotLight Graph Library</name>
 
-	<dependencies>
-		<!-- Internal dependencies -->
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-remote-support</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-				<scope>compile</scope>
+    <dependencies>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-graph-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-persistence-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-remote-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>compile</scope>
 
-		</dependency>
-		
-	</dependencies>
+        </dependency>
+
+    </dependencies>
 </project>

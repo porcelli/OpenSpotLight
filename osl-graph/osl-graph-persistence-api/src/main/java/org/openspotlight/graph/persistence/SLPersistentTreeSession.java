@@ -136,12 +136,5 @@ public interface SLPersistentTreeSession extends LockContainer {
     @Deprecated
     public Session getJCRSession();
 
-    /**
-     * Gets the root path for line reference
-     * 
-     * @return root path line reference
-     */
-    @Deprecated
-    public String getLineReferenceRootPath();
 
 }

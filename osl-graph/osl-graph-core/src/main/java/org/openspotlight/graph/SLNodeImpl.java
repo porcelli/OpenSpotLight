@@ -49,17 +49,8 @@
 
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.openspotlight.common.LazyType;
+import com.google.common.collect.ImmutableList;
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
@@ -83,51 +74,68 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
-import org.openspotlight.persist.support.SimplePersistSupport;
+import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.security.SLInvalidCredentialException;
 import org.openspotlight.security.authz.Action;
 import org.openspotlight.security.authz.EnforcementContext;
 import org.openspotlight.security.authz.EnforcementException;
 import org.openspotlight.security.authz.EnforcementResponse;
 import org.openspotlight.security.authz.graph.GraphElement;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.text.Collator;
+import java.util.*;
+
 /**
  * The Class SLNodeImpl.
- * 
+ *
  * @author Vitor Hugo Chagas
  */
 public class SLNodeImpl implements SLNode, SLPNodeGetter {
-    private SLMetaNodeType                  metaType = null;
+    private SLMetaNodeType metaType = null;
 
-    private final Lock                      lock;
+    private final Lock lock;
 
-    /** The context. */
-    private final SLContext                 context;
+    /**
+     * The context.
+     */
+    private final SLContext context;
 
-    /** The parent. */
-    private final SLNode                    parent;
-    /** The p node. */
-    private final SLPersistentNode          pNode;
+    /**
+     * The parent.
+     */
+    private final SLNode parent;
+    /**
+     * The p node.
+     */
+    private final SLPersistentNode pNode;
 
-    /** The event poster. */
+    /**
+     * The event poster.
+     */
     private final SLGraphSessionEventPoster eventPoster;
 
-    private final Logger                    logger   = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private STNodeEntry lineReferenceRootNode;
 
     /**
      * Instantiates a new sL node impl.
-     * 
-     * @param context the context
-     * @param parent the parent
+     *
+     * @param context        the context
+     * @param parent         the parent
      * @param persistentNode the persistent node
-     * @param eventPoster the event poster
+     * @param eventPoster    the event poster
      */
     public SLNodeImpl(
-                       final SLContext context, final SLNode parent,
-                       final SLPersistentNode persistentNode,
-                       final SLGraphSessionEventPoster eventPoster ) {
+            final SLContext context, final SLNode parent,
+            final SLPersistentNode persistentNode,
+            final SLGraphSessionEventPoster eventPoster) {
         this.context = context;
         this.parent = parent;
         pNode = persistentNode;
@@ -137,77 +145,77 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
     /**
      * Adds the child node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param encoder the encoder
-     * @param persistenceMode the persistence mode
-     * @param linkTypesForLinkDeletion the link types for link deletion
+     *
+     * @param clazz                          the clazz
+     * @param name                           the name
+     * @param encoder                        the encoder
+     * @param persistenceMode                the persistence mode
+     * @param linkTypesForLinkDeletion       the link types for link deletion
      * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
      * @return the t
      */
     private <T extends SLNode> T addChildNode(
-                                               final Class<T> clazz,
-                                               final String name,
-                                               final SLEncoder encoder,
-                                               final SLPersistenceMode persistenceMode,
-                                               final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                               final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion ) {
+            final Class<T> clazz,
+            final String name,
+            final SLEncoder encoder,
+            final SLPersistenceMode persistenceMode,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
         synchronized (lock) {
             try {
 
                 if (!hasPrivileges(GraphElement.NODE, Action.WRITE)) {
                     throw new SLInvalidCredentialException(
-                                                           "User does not have privilegies to add nodes.");
+                            "User does not have privilegies to add nodes.");
                 }
 
                 Class<T> type = null;
                 final String encodedName = encoder.encode(name);
                 SLPersistentNode pChildNode = getHierarchyChildNode(
-                                                                    SLNode.class, name, encodedName, clazz);
+                        SLNode.class, name, encodedName, clazz);
                 if (pChildNode == null) {
                     type = clazz;
                     pChildNode = pNode.addNode(encodedName);
                     SLCommonSupport.setInternalStringProperty(pChildNode,
-                                                              SLConsts.PROPERTY_NAME_DECODED_NAME, name);
+                            SLConsts.PROPERTY_NAME_DECODED_NAME, name);
                 } else {
                     final Class<? extends SLNode> nodeType = getNodeType(pChildNode);
                     type = this.getLessGenericNodeType(clazz, nodeType);
                 }
                 final String typeName = SLCommonSupport
-                                                       .getInternalPropertyAsString(pChildNode,
-                                                                                    SLConsts.PROPERTY_NAME_TYPE);
+                        .getInternalPropertyAsString(pChildNode,
+                                SLConsts.PROPERTY_NAME_TYPE);
                 if (typeName == null || !typeName.equals(type.getName())) {
                     SLCommonSupport.setInternalStringProperty(pChildNode,
-                                                              SLConsts.PROPERTY_NAME_TYPE, type.getName());
+                            SLConsts.PROPERTY_NAME_TYPE, type.getName());
                 }
 
                 final T nodeProxy = this.createNodeProxy(type, pChildNode);
                 if (typeName == null) {
                     nodeProxy.setProperty(String.class, VisibilityLevel.PUBLIC,
-                                          SLConsts.PROPERTY_CAPTION_NAME, name);
+                            SLConsts.PROPERTY_CAPTION_NAME, name);
                 }
                 eventPoster.post(new SLNodeAddedEvent(nodeProxy, pChildNode,
-                                                      persistenceMode, linkTypesForLinkDeletion,
-                                                      linkTypesForLinkedNodeDeletion));
+                        persistenceMode, linkTypesForLinkDeletion,
+                        linkTypesForLinkedNodeDeletion));
 
                 return nodeProxy;
             } catch (final SLException e) {
                 Exceptions.catchAndLog(e);
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to add node.", e);
+                        "Error on attempt to add node.", e);
             }
         }
     }
 
     /**
      * Adds the child nodes.
-     * 
+     *
      * @param childNodes the child nodes
-     * @param node the node
+     * @param node       the node
      */
-    private void addChildNodes( final Collection<SLNode> childNodes,
-                                final SLNode node ) {
+    private void addChildNodes(final Collection<SLNode> childNodes,
+                               final SLNode node) {
         synchronized (lock) {
             final Collection<SLNode> nodes = node.getNodes();
             for (final SLNode current : nodes) {
@@ -220,20 +228,21 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public SLLineReference addLineReference( final int startLine,
-                                             final int endLine,
-                                             final int startColumn,
-                                             final int endColumn,
-                                             final String statement,
-                                             final String artifactId,
-                                             final String artifactVersion ) {
+    public SLLineReference addLineReference(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
+                                            final int startLine,
+                                            final int endLine,
+                                            final int startColumn,
+                                            final int endColumn,
+                                            final String statement,
+                                            final String artifactId,
+                                            final String artifactVersion) {
         synchronized (lock) {
 
             try {
 
                 if (!hasPrivileges(GraphElement.LINE_REFERENCE, Action.WRITE)) {
                     throw new SLInvalidCredentialException(
-                                                           "User does not have privilegies to line references.");
+                            "User does not have privilegies to line references.");
                 }
 
                 final SLLineReference lineRef = new SLLineReference();
@@ -247,26 +256,33 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 lineRef.setArtifactId(artifactId);
                 lineRef.setArtifactVersion(artifactVersion);
 
-                SimplePersistSupport.convertBeanToJcr(pNode.getSession().getLineReferenceRootPath(), pNode.getSession().getJCRSession(), lineRef);
-
-                pNode.getSession().getJCRSession().save();
-
+                simplePersist.convertBeanToNode(createLineReferenceRootNode(simplePersist),
+                        lineRef);
+                simplePersist.getCurrentSession().flushTransient();
                 return lineRef;
             } catch (final Exception e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to add line reference.", e);
+                        "Error on attempt to add line reference.", e);
             }
         }
     }
 
+    private STNodeEntry createLineReferenceRootNode(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
+        if (lineReferenceRootNode == null) {
+            lineReferenceRootNode = simplePersist.getPartitionMethods()
+                    .createNewSimpleNode(SLConsts.DEFAULT_JCR_ROOT_NAME, SharedConstants.DEFAULT_JCR_LINE_REFENCE);
+        }
+        return lineReferenceRootNode;
+    }
+
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T addNode( final Class<T> clazz,
-                                         final String name ) {
+    public <T extends SLNode> T addNode(final Class<T> clazz,
+                                        final String name) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, getSession()
-                                                              .getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
+                    .getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
         }
     }
 
@@ -274,26 +290,26 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public <T extends SLNode> T addNode(
-                                         final Class<T> clazz,
-                                         final String name,
-                                         final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion ) {
+            final Class<T> clazz,
+            final String name,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, getSession()
-                                                              .getDefaultEncoder(), SLPersistenceMode.NORMAL,
-                                     linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+                    .getDefaultEncoder(), SLPersistenceMode.NORMAL,
+                    linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T addNode( final Class<T> clazz,
-                                         final String name,
-                                         final SLEncoder encoder ) {
+    public <T extends SLNode> T addNode(final Class<T> clazz,
+                                        final String name,
+                                        final SLEncoder encoder) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, encoder,
-                                     SLPersistenceMode.NORMAL, null, null);
+                    SLPersistenceMode.NORMAL, null, null);
         }
     }
 
@@ -301,28 +317,28 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public <T extends SLNode> T addNode(
-                                         final Class<T> clazz,
-                                         final String name,
-                                         final SLEncoder encoder,
-                                         final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion ) {
+            final Class<T> clazz,
+            final String name,
+            final SLEncoder encoder,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, getSession()
-                                                              .getDefaultEncoder(), SLPersistenceMode.NORMAL,
-                                     linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+                    .getDefaultEncoder(), SLPersistenceMode.NORMAL,
+                    linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T addNode( final Class<T> clazz,
-                                         final String name,
-                                         final SLEncoder encoder,
-                                         final SLPersistenceMode persistenceMode ) {
+    public <T extends SLNode> T addNode(final Class<T> clazz,
+                                        final String name,
+                                        final SLEncoder encoder,
+                                        final SLPersistenceMode persistenceMode) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, encoder, persistenceMode,
-                                     null, null);
+                    null, null);
         }
     }
 
@@ -330,27 +346,27 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public <T extends SLNode> T addNode(
-                                         final Class<T> clazz,
-                                         final String name,
-                                         final SLEncoder encoder,
-                                         final SLPersistenceMode persistenceMode,
-                                         final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion ) {
+            final Class<T> clazz,
+            final String name,
+            final SLEncoder encoder,
+            final SLPersistenceMode persistenceMode,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, encoder, persistenceMode,
-                                     linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+                    linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T addNode( final Class<T> clazz,
-                                         final String name,
-                                         final SLPersistenceMode persistenceMode ) {
+    public <T extends SLNode> T addNode(final Class<T> clazz,
+                                        final String name,
+                                        final SLPersistenceMode persistenceMode) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, getSession()
-                                                              .getDefaultEncoder(), persistenceMode, null, null);
+                    .getDefaultEncoder(), persistenceMode, null, null);
         }
     }
 
@@ -358,68 +374,68 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public <T extends SLNode> T addNode(
-                                         final Class<T> clazz,
-                                         final String name,
-                                         final SLPersistenceMode persistenceMode,
-                                         final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion ) {
+            final Class<T> clazz,
+            final String name,
+            final SLPersistenceMode persistenceMode,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+            final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, getSession()
-                                                              .getDefaultEncoder(), persistenceMode,
-                                     linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+                    .getDefaultEncoder(), persistenceMode,
+                    linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public SLNode addNode( final String name ) {
+    public SLNode addNode(final String name) {
         synchronized (lock) {
             return this.addChildNode(SLNode.class, name, getSession()
-                                                                     .getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
+                    .getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public SLNode addNode( final String name,
-                           final SLEncoder encoder ) {
+    public SLNode addNode(final String name,
+                          final SLEncoder encoder) {
         synchronized (lock) {
             return this.addChildNode(SLNode.class, name, encoder,
-                                     SLPersistenceMode.NORMAL, null, null);
+                    SLPersistenceMode.NORMAL, null, null);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public int compareTo( final SLNode node ) {
+    public int compareTo(final SLNode node) {
         synchronized (lock) {
             try {
-                final SLNodeInvocationHandler handler = (SLNodeInvocationHandler)Proxy
-                                                                                      .getInvocationHandler(node);
-                final SLNodeImpl n = (SLNodeImpl)handler.getNode();
+                final SLNodeInvocationHandler handler = (SLNodeInvocationHandler) Proxy
+                        .getInvocationHandler(node);
+                final SLNodeImpl n = (SLNodeImpl) handler.getNode();
                 return pNode.getPath().compareTo(n.pNode.getPath());
             } catch (final SLException e) {
                 throw new SLRuntimeException(
-                                             "Error on attempt to compare nodes.", e);
+                        "Error on attempt to compare nodes.", e);
             }
         }
     }
 
     /**
      * Creates the node proxy.
-     * 
+     *
      * @param clazz the clazz
      * @param pNode the node
      * @return the t
      */
-    public <T extends SLNode> T createNodeProxy( final Class<T> clazz,
-                                                 final SLPersistentNode pNode ) {
+    public <T extends SLNode> T createNodeProxy(final Class<T> clazz,
+                                                final SLPersistentNode pNode) {
         synchronized (lock) {
             final SLNode node = new SLNodeImpl(context, this, pNode,
-                                               eventPoster);
+                    eventPoster);
             final InvocationHandler handler = new SLNodeInvocationHandler(node);
             return ProxyUtil.createProxy(clazz, handler);
         }
@@ -428,11 +444,11 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings( "unchecked" )
-    public <T extends SLNode> T doCast( final Class<T> clazz ) {
+    @SuppressWarnings("unchecked")
+    public <T extends SLNode> T doCast(final Class<T> clazz) {
         final Class<? extends SLNode> nodeType = getNodeType(pNode);
         if (nodeType.equals(clazz) || clazz.isAssignableFrom(nodeType)) {
-            return (T)createNodeProxy(nodeType, pNode);
+            return (T) createNodeProxy(nodeType, pNode);
         } else {
             throw new ClassCastException();
         }
@@ -442,18 +458,18 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     @Override
-    public boolean equals( final Object obj ) {
+    public boolean equals(final Object obj) {
         synchronized (lock) {
             try {
                 if (obj == null || !(obj instanceof SLNode)) {
                     return false;
                 }
                 final SLPersistentNode pNode = SLCommonSupport
-                                                              .getPNode((SLNode)obj);
+                        .getPNode((SLNode) obj);
                 return this.pNode.getID().equals(pNode.getID());
             } catch (final SLException e) {
                 throw new RuntimeException("Error on " + this.getClass()
-                                           + " equals method.", e);
+                        + " equals method.", e);
             }
         }
     }
@@ -467,7 +483,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 return getPropertyValueAsString(SLConsts.PROPERTY_CAPTION_NAME);
             } catch (SLPropertyNotFoundException ex) {
                 throw new SLGraphSessionException(
-                                                  "Can't access property caption.", ex);
+                        "Can't access property caption.", ex);
             }
 
         }
@@ -476,7 +492,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public void setCaption( String caption ) {
+    public void setCaption(String caption) {
         synchronized (lock) {
             setProperty(String.class, VisibilityLevel.PUBLIC, SLConsts.PROPERTY_CAPTION_NAME, caption);
         }
@@ -484,78 +500,78 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
     /**
      * Gets the child node.
-     * 
+     *
      * @param clazz the clazz
-     * @param name the name
+     * @param name  the name
      * @return the child node
      */
-    <T extends SLNode> T getChildNode( final Class<T> clazz,
-                                       final String name ) {
+    <T extends SLNode> T getChildNode(final Class<T> clazz,
+                                      final String name) {
         synchronized (lock) {
             return this.getChildNode(clazz, name, getSession()
-                                                              .getDefaultEncoder());
+                    .getDefaultEncoder());
         }
     }
 
     /**
      * Gets the child node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
+     *
+     * @param clazz   the clazz
+     * @param name    the name
      * @param encoder the encoder
      * @return the child node
      */
-    <T extends SLNode> T getChildNode( final Class<T> clazz,
-                                       final String name,
-                                       final SLEncoder encoder ) {
+    <T extends SLNode> T getChildNode(final Class<T> clazz,
+                                      final String name,
+                                      final SLEncoder encoder) {
         synchronized (lock) {
             try {
                 T proxyNode = null;
                 final String nodeName = encoder.encode(name);
                 Collection<SLPersistentNode> pChildNodes = pNode
-                                                                .getNodes(nodeName);
+                        .getNodes(nodeName);
                 for (final SLPersistentNode pChildNode : pChildNodes) {
                     final Class<? extends SLNode> nodeType = getNodeType(pChildNode);
                     // if classes are of same hierarchy ...
                     if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
                         // gets the less generic type ...
                         final Class<? extends T> lessGenericNodeType = this
-                                                                           .getLessGenericNodeType(clazz, nodeType);
+                                .getLessGenericNodeType(clazz, nodeType);
                         final SLNode node = new SLNodeImpl(getContext(), this,
-                                                           pChildNode, eventPoster);
+                                pChildNode, eventPoster);
                         final InvocationHandler handler = new SLNodeInvocationHandler(
-                                                                                      node);
+                                node);
                         proxyNode = ProxyUtil.createProxy(lessGenericNodeType,
-                                                          handler);
+                                handler);
                         break;
                     }
                 }
 
                 // try collator if necessary ...
                 if (proxyNode == null
-                    && !SLCollatorSupport
-                                         .isCollatorStrengthIdentical(clazz)) {
+                        && !SLCollatorSupport
+                        .isCollatorStrengthIdentical(clazz)) {
                     pChildNodes = pNode.getNodes();
                     final Collator collator = SLCollatorSupport
-                                                               .getNodeCollator(clazz);
+                            .getNodeCollator(clazz);
                     for (final SLPersistentNode pChildNode : pChildNodes) {
                         // if collator filter succeeds ...
                         final String currentDecodedName = SLCommonSupport
-                                                                         .getUserNodeName(pChildNode);
+                                .getUserNodeName(pChildNode);
                         if (collator.compare(name, currentDecodedName) == 0) {
                             final Class<? extends SLNode> nodeType = getNodeType(pChildNode);
                             // if classes are of same hierarchy ...
                             if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
                                 // gets the less generic type ...
                                 final Class<? extends T> lessGenericNodeType = this
-                                                                                   .getLessGenericNodeType(clazz, nodeType);
+                                        .getLessGenericNodeType(clazz, nodeType);
                                 final SLNode node = new SLNodeImpl(
-                                                                   getContext(), this, pChildNode,
-                                                                   eventPoster);
+                                        getContext(), this, pChildNode,
+                                        eventPoster);
                                 final InvocationHandler handler = new SLNodeInvocationHandler(
-                                                                                              node);
+                                        node);
                                 proxyNode = ProxyUtil.createProxy(
-                                                                  lessGenericNodeType, handler);
+                                        lessGenericNodeType, handler);
                                 break;
                             }
                         }
@@ -564,67 +580,67 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 return proxyNode;
             } catch (final Exception e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to get node.", e);
+                        "Error on attempt to get node.", e);
             }
         }
     }
 
     public <T extends SLNode> NeedsSyncronizationSet<T> getChildNodes(
-                                                                       final Class<T> clazz ) {
+            final Class<T> clazz) {
         synchronized (lock) {
             try {
                 final NeedsSyncronizationSet<T> childNodes = LockedCollections
-                                                                              .createSetWithLock(this, new HashSet<T>());
+                        .createSetWithLock(this, new HashSet<T>());
                 final Collection<SLPersistentNode> persistentChildNodes = pNode
-                                                                               .getNodes();
+                        .getNodes();
                 for (final SLPersistentNode pChildNode : persistentChildNodes) {
                     final Class<? extends SLNode> nodeType = getNodeType(pChildNode);
                     if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
                         // gets the less generic type ...
                         final Class<T> lessGenericNodeType = this
-                                                                 .getLessGenericNodeType(clazz, nodeType);
+                                .getLessGenericNodeType(clazz, nodeType);
                         final SLNode node = new SLNodeImpl(getContext(), this,
-                                                           pChildNode, eventPoster);
+                                pChildNode, eventPoster);
                         final InvocationHandler handler = new SLNodeInvocationHandler(
-                                                                                      node);
+                                node);
                         final T childNodeProxy = ProxyUtil.createProxy(
-                                                                       lessGenericNodeType, handler);
+                                lessGenericNodeType, handler);
                         childNodes.add(childNodeProxy);
                     }
                 }
                 return childNodes;
             } catch (final Exception e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to get node.", e);
+                        "Error on attempt to get node.", e);
             }
         }
     }
 
     /**
      * Gets the child nodes.
-     * 
+     *
      * @param pattern the pattern
      * @return the child nodes
      * @throws SLException the SL exception
      */
-    private NeedsSyncronizationSet<SLNode> getChildNodes( final String pattern )
-        throws SLException {
+    private NeedsSyncronizationSet<SLNode> getChildNodes(final String pattern)
+            throws SLException {
         synchronized (lock) {
             final SLGraphFactory factory = AbstractFactory
-                                                          .getDefaultInstance(SLGraphFactory.class);
+                    .getDefaultInstance(SLGraphFactory.class);
             final NeedsSyncronizationSet<SLNode> childNodes = LockedCollections
-                                                                               .createSetWithLock(this, new HashSet<SLNode>());
+                    .createSetWithLock(this, new HashSet<SLNode>());
             final Collection<SLPersistentNode> persistentChildNodes = pattern == null ? pNode
-                                                                                             .getNodes()
-                : pNode.getNodes(pattern);
+                    .getNodes()
+                    : pNode.getNodes(pattern);
             for (final SLPersistentNode persistentChildNode : persistentChildNodes) {
                 final SLNode childNode = factory.createNode(getContext(), this,
-                                                            persistentChildNode, eventPoster);
+                        persistentChildNode, eventPoster);
                 final SLNodeInvocationHandler handler = new SLNodeInvocationHandler(
-                                                                                    childNode);
+                        childNode);
                 final Class<? extends SLNode> nodeType = getNodeType(persistentChildNode);
                 final SLNode childNodeProxy = ProxyUtil.createProxy(nodeType,
-                                                                    handler);
+                        handler);
                 childNodes.add(childNodeProxy);
             }
             return childNodes;
@@ -640,26 +656,26 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
     /**
      * Gets the hierarchy child node.
-     * 
-     * @param clazz the clazz
+     *
+     * @param clazz       the clazz
      * @param decodedName the decoded name
      * @param encodedName the encoded name
      * @return the hierarchy child node
      * @throws SLException the SL exception
      */
     private SLPersistentNode getHierarchyChildNode(
-                                                    final Class<? extends SLNode> clazz,
-                                                    final String decodedName,
-                                                    final String encodedName,
-                                                    final Class<? extends SLNode> clazzToGetCollator )
-        throws SLException {
+            final Class<? extends SLNode> clazz,
+            final String decodedName,
+            final String encodedName,
+            final Class<? extends SLNode> clazzToGetCollator)
+            throws SLException {
 
         synchronized (lock) {
             SLPersistentNode pChildNode = null;
             final String nodeName = encodedName == null ? decodedName
-                : encodedName;
+                    : encodedName;
             final Collection<SLPersistentNode> pChildNodes = pNode
-                                                                  .getNodes(nodeName);
+                    .getNodes(nodeName);
             for (final SLPersistentNode current : pChildNodes) {
                 final Class<? extends SLNode> nodeType = getNodeType(current);
                 if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
@@ -669,13 +685,13 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
             }
 
             if (pChildNode == null
-                && !SLCollatorSupport
-                                     .isCollatorStrengthIdentical(clazzToGetCollator)) {
+                    && !SLCollatorSupport
+                    .isCollatorStrengthIdentical(clazzToGetCollator)) {
                 final Collator collator = SLCollatorSupport
-                                                           .getNodeCollator(clazzToGetCollator);
+                        .getNodeCollator(clazzToGetCollator);
                 for (final SLPersistentNode current : pNode.getNodes()) {
                     final String currentDecodedName = SLCommonSupport
-                                                                     .getUserNodeName(current);
+                            .getUserNodeName(current);
                     if (collator.compare(decodedName, currentDecodedName) == 0) {
                         final Class<? extends SLNode> nodeType = getNodeType(current);
                         if (nodeTypesOfSameHierarchy(clazz, nodeType)) {
@@ -698,43 +714,43 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
             return pNode.getID();
         } catch (final SLPersistentTreeSessionException e) {
             throw new SLRuntimeException(
-                                         "Error on attempt to retrieve the node ID.", e);
+                    "Error on attempt to retrieve the node ID.", e);
         }
     }
 
     /**
      * Gets the less generic node type.
-     * 
+     *
      * @param type1 the type1
      * @param type2 the type2
      * @return the less generic node type
      */
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private <T extends SLNode> Class<T> getLessGenericNodeType(
-                                                                final Class<T> type1,
-                                                                final Class<? extends SLNode> type2 ) {
-        return (Class<T>)(type1.isAssignableFrom(type2) ? type2 : type1);
+            final Class<T> type1,
+            final Class<? extends SLNode> type2) {
+        return (Class<T>) (type1.isAssignableFrom(type2) ? type2 : type1);
     }
 
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLineReference> getLineReferences() {
+    public NeedsSyncronizationCollection<SLLineReference> getLineReferences(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
         synchronized (lock) {
-            return LockedCollections.createCollectionWithLock(this, new ArrayList<SLLineReference>(SimplePersistSupport.findNodesByProperties(pNode.getSession().getLineReferenceRootPath(), pNode.getSession().getJCRSession(), SLLineReference.class, LazyType.EAGER, Arrays.of("nodeId"), Arrays.of(getID()))));
+            return LockedCollections.createCollectionWithLock(this, ImmutableList.copyOf(simplePersist.findByProperties(createLineReferenceRootNode(simplePersist), SLLineReference.class, Arrays.of("nodeId"), Arrays.of(getID())).iterator()));
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLineReference> getLineReferences(
-                                                                             final String artifactId ) {
+    public NeedsSyncronizationCollection<SLLineReference> getLineReferences(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
+                                                                            final String artifactId) {
         if (artifactId == null) {
             return null;
         }
         synchronized (lock) {
-            return LockedCollections.createCollectionWithLock(this, new HashSet<SLLineReference>(SimplePersistSupport.findNodesByProperties(pNode.getSession().getLineReferenceRootPath(), pNode.getSession().getJCRSession(), SLLineReference.class, LazyType.EAGER, Arrays.of("nodeId", "artifactId"), Arrays.of(getID(), artifactId))));
+            return LockedCollections.createCollectionWithLock(this, ImmutableList.copyOf(simplePersist.findByProperties(createLineReferenceRootNode(simplePersist), SLLineReference.class, Arrays.of("nodeId", "artifactId"), Arrays.of(getID(), artifactId)).iterator()));
         }
     }
 
@@ -754,12 +770,12 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
             try {
                 if (metaType == null) {
                     metaType = getSession().getMetadata().getMetaNodeType(
-                                                                           getTypeName());
+                            getTypeName());
                 }
                 return metaType;
             } catch (final Exception e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node meta type.", e);
+                        "Error on attempt to retrieve node meta type.", e);
             }
         }
     }
@@ -771,12 +787,12 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
         synchronized (lock) {
             try {
                 final String decodedName = SLCommonSupport
-                                                          .getInternalPropertyAsString(pNode,
-                                                                                       SLConsts.PROPERTY_NAME_DECODED_NAME);
+                        .getInternalPropertyAsString(pNode,
+                                SLConsts.PROPERTY_NAME_DECODED_NAME);
                 return decodedName == null ? pNode.getName() : decodedName;
             } catch (final SLPersistentTreeSessionException e) {
                 throw new SLRuntimeException(
-                                             "Error on attempt to retrieve the node name.", e);
+                        "Error on attempt to retrieve the node name.", e);
             }
         }
     }
@@ -784,8 +800,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T getNode( final Class<T> clazz,
-                                         final String name ) {
+    public <T extends SLNode> T getNode(final Class<T> clazz,
+                                        final String name) {
         synchronized (lock) {
             return this.getChildNode(clazz, name);
         }
@@ -794,9 +810,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T getNode( final Class<T> clazz,
-                                         final String name,
-                                         final SLEncoder encoder ) {
+    public <T extends SLNode> T getNode(final Class<T> clazz,
+                                        final String name,
+                                        final SLEncoder encoder) {
         synchronized (lock) {
             return this.getChildNode(clazz, name, encoder);
         }
@@ -805,7 +821,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public SLNode getNode( final String name ) {
+    public SLNode getNode(final String name) {
         synchronized (lock) {
             return this.getChildNode(SLNode.class, name);
         }
@@ -817,22 +833,22 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     public NeedsSyncronizationSet<SLNode> getNodes() {
         synchronized (lock) {
             try {
-                return getChildNodes((String)null);
+                return getChildNodes((String) null);
             } catch (final SLException e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve child nodes.", e);
+                        "Error on attempt to retrieve child nodes.", e);
             }
         }
     }
 
     /**
      * Gets the node type.
-     * 
+     *
      * @param pNode the node
      * @return the node type
      */
-    @SuppressWarnings( "unchecked" )
-    private Class<? extends SLNode> getNodeType( final SLPersistentNode pNode ) {
+    @SuppressWarnings("unchecked")
+    private Class<? extends SLNode> getNodeType(final SLPersistentNode pNode) {
         synchronized (lock) {
             try {
                 Class<? extends SLNode> type = SLNode.class;
@@ -840,8 +856,8 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 final SLPersistentProperty<String> typeNameProp = SLCommonSupport.getProperty(pNode, String.class, propName);
                 if (typeNameProp != null) {
                     try {
-                        type = (Class<? extends SLNode>)Class.forName(typeNameProp
-                                                                                  .getValue());
+                        type = (Class<? extends SLNode>) Class.forName(typeNameProp
+                                .getValue());
                     } catch (ClassNotFoundException e) {
                     }
                 }
@@ -874,26 +890,26 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
             try {
                 final Class<? extends SLNode> nodeType = getNodeType(pNode);
                 final SLGraphFactory factory = AbstractFactory
-                                                              .getDefaultInstance(SLGraphFactory.class);
+                        .getDefaultInstance(SLGraphFactory.class);
                 final NeedsSyncronizationSet<SLNodeProperty<Serializable>> properties = LockedCollections
-                                                                                                         .createSetWithLock(this,
-                                                                                                                            new HashSet<SLNodeProperty<Serializable>>());
+                        .createSetWithLock(this,
+                                new HashSet<SLNodeProperty<Serializable>>());
                 final Set<SLPersistentProperty<Serializable>> persistentProperties = pNode
-                                                                                          .getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
+                        .getProperties(SLConsts.PROPERTY_PREFIX_USER + ".*");
                 for (final SLPersistentProperty<Serializable> persistentProperty : persistentProperties) {
                     if (persistentProperty.getName().lastIndexOf('.') == SLConsts.PROPERTY_PREFIX_USER.length()) {
                         final SLNode nodeProxy = ProxyUtil.createNodeProxy(
-                                                                           nodeType, this);
+                                nodeType, this);
                         final SLNodeProperty<Serializable> property = factory
-                                                                             .createProperty(nodeProxy, persistentProperty,
-                                                                                             eventPoster);
+                                .createProperty(nodeProxy, persistentProperty,
+                                        eventPoster);
                         properties.add(property);
                     }
                 }
                 return properties;
             } catch (final SLException e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node properties.", e);
+                        "Error on attempt to retrieve node properties.", e);
             }
         }
     }
@@ -902,9 +918,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public <V extends Serializable> SLNodeProperty<V> getProperty(
-                                                                   final Class<V> clazz,
-                                                                   final String name )
-        throws SLPropertyNotFoundException,
+            final Class<V> clazz,
+            final String name)
+            throws SLPropertyNotFoundException,
             SLPropertyTypeInvalidException {
         synchronized (lock) {
             return this.getProperty(clazz, name, null);
@@ -915,10 +931,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public <V extends Serializable> SLNodeProperty<V> getProperty(
-                                                                   final Class<V> clazz,
-                                                                   final String name,
-                                                                   final Collator collator )
-        throws SLPropertyNotFoundException,
+            final Class<V> clazz,
+            final String name,
+            final Collator collator)
+            throws SLPropertyNotFoundException,
             SLPropertyTypeInvalidException {
         synchronized (lock) {
 
@@ -927,9 +943,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
             try {
 
                 final String propName = SLCommonSupport
-                                                       .toUserPropertyName(name);
+                        .toUserPropertyName(name);
                 SLPersistentProperty<V> pProperty = SLCommonSupport
-                                                                   .getProperty(pNode, clazz, propName);
+                        .getProperty(pNode, clazz, propName);
                 final Class<? extends SLNode> nodeType = getNodeType(pNode);
 
                 // if property not found find collator if its strength is not
@@ -937,17 +953,17 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 if (pProperty == null) {
                     if (nodeType != null) {
                         final Set<SLPersistentProperty<Serializable>> pProperties = pNode
-                                                                                         .getProperties(SLConsts.PROPERTY_PREFIX_USER
-                                                                                                        + ".*");
+                                .getProperties(SLConsts.PROPERTY_PREFIX_USER
+                                        + ".*");
                         for (final SLPersistentProperty<Serializable> current : pProperties) {
                             final String currentName = SLCommonSupport
-                                                                      .toSimplePropertyName(current.getName());
+                                    .toSimplePropertyName(current.getName());
                             final Collator currentCollator = collator == null ? SLCollatorSupport
-                                                                                                 .getPropertyCollator(nodeType, currentName)
-                                : collator;
+                                    .getPropertyCollator(nodeType, currentName)
+                                    : collator;
                             if (currentCollator.compare(name, currentName) == 0) {
                                 pProperty = pNode.getProperty(clazz, current
-                                                                            .getName());
+                                        .getName());
                                 break;
                             }
                         }
@@ -956,17 +972,17 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
                 if (pProperty != null) {
                     final SLGraphFactory factory = AbstractFactory
-                                                                  .getDefaultInstance(SLGraphFactory.class);
+                            .getDefaultInstance(SLGraphFactory.class);
                     final SLNode nodeProxy = ProxyUtil.createNodeProxy(
-                                                                       nodeType, this);
+                            nodeType, this);
                     property = factory.createProperty(nodeProxy, pProperty,
-                                                      eventPoster);
+                            eventPoster);
                 }
             } catch (final SLInvalidPersistentPropertyTypeException e) {
                 throw new SLPropertyTypeInvalidException(e);
             } catch (final SLException e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node property.", e);
+                        "Error on attempt to retrieve node property.", e);
             }
 
             if (property == null) {
@@ -979,11 +995,11 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public String getPropertyValueAsString( final String name ) throws SLPropertyNotFoundException {
+    public String getPropertyValueAsString(final String name) throws SLPropertyNotFoundException {
         synchronized (lock) {
             try {
                 final SLNodeProperty<Serializable> prop = this.getProperty(
-                                                                           Serializable.class, name);
+                        Serializable.class, name);
                 final Serializable val = prop != null ? prop.getValue() : null;
                 return val != null ? val.toString() : null;
             } catch (final Exception e) {
@@ -1002,18 +1018,18 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public SLTreeLineReference getTreeLineReferences() {
+    public SLTreeLineReference getTreeLineReferences(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
         synchronized (lock) {
-            return new SLTreeLineReferenceImpl(getID(), getLineReferences());
+            return new SLTreeLineReferenceImpl(getID(), getLineReferences(simplePersist));
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public SLTreeLineReference getTreeLineReferences( final String artifactId ) {
+    public SLTreeLineReference getTreeLineReferences(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist, final String artifactId) {
         synchronized (lock) {
-            return new SLTreeLineReferenceImpl(getID(), getLineReferences(artifactId));
+            return new SLTreeLineReferenceImpl(getID(), getLineReferences(simplePersist, artifactId));
         }
     }
 
@@ -1024,10 +1040,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
         synchronized (lock) {
             try {
                 return SLCommonSupport.getInternalPropertyAsString(pNode,
-                                                                   SLConsts.PROPERTY_NAME_TYPE);
+                        SLConsts.PROPERTY_NAME_TYPE);
             } catch (final SLPersistentTreeSessionException e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node type name.", e);
+                        "Error on attempt to retrieve node type name.", e);
             }
         }
     }
@@ -1043,13 +1059,13 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
     /**
      * Checks for privileges.
-     * 
+     *
      * @param element the element
-     * @param action the action
+     * @param action  the action
      * @return true, if successful
      */
-    private boolean hasPrivileges( final GraphElement element,
-                                   final Action action ) {
+    private boolean hasPrivileges(final GraphElement element,
+                                  final Action action) {
         synchronized (lock) {
             final EnforcementContext enforcementContext = new EnforcementContext();
             enforcementContext.setAttribute("user", getSession().getUser());
@@ -1059,7 +1075,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
             try {
                 final EnforcementResponse response = getSession()
-                                                                 .getPolicyEnforcement().checkAccess(enforcementContext);
+                        .getPolicyEnforcement().checkAccess(enforcementContext);
                 if (response.equals(EnforcementResponse.GRANTED)) {
                     return true;
                 }
@@ -1073,14 +1089,14 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
     /**
      * Node types of same hierarchy.
-     * 
+     *
      * @param type1 the type1
      * @param type2 the type2
      * @return true, if successful
      */
     private boolean nodeTypesOfSameHierarchy(
-                                              final Class<? extends SLNode> type1,
-                                              final Class<? extends SLNode> type2 ) {
+            final Class<? extends SLNode> type1,
+            final Class<? extends SLNode> type2) {
 
         return type1.isAssignableFrom(type2) || type2.isAssignableFrom(type1);
     }
@@ -1094,7 +1110,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
 
                 if (!hasPrivileges(GraphElement.NODE, Action.DELETE)) {
                     throw new SLInvalidCredentialException(
-                                                           "User does not have privilegies to delete nodes.");
+                            "User does not have privilegies to delete nodes.");
                 }
 
                 final Collection<SLNode> nodes2RemoveLinks = new ArrayList<SLNode>();
@@ -1105,7 +1121,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 }
                 for (final SLNode current : nodes2RemoveLinks) {
                     final Collection<SLLink> links = getSession().getLinks(
-                                                                           current, null);
+                            current, null);
                     for (final SLLink link : links) {
                         link.remove();
                     }
@@ -1113,7 +1129,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 pNode.remove();
             } catch (final SLException e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to remove node.", e);
+                        "Error on attempt to remove node.", e);
             }
         }
     }
@@ -1122,9 +1138,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public <V extends Serializable> SLNodeProperty<V> setProperty(
-                                                                   final Class<V> clazz,
-                                                                   final String name,
-                                                                   final V value ) {
+            final Class<V> clazz,
+            final String name,
+            final V value) {
         synchronized (lock) {
             return this.setProperty(clazz, VisibilityLevel.PUBLIC, name, value);
         }
@@ -1134,31 +1150,31 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * {@inheritDoc}
      */
     public <V extends Serializable> SLNodeProperty<V> setProperty(
-                                                                   final Class<V> clazz,
-                                                                   final VisibilityLevel visibility,
-                                                                   final String name,
-                                                                   final V value ) {
+            final Class<V> clazz,
+            final VisibilityLevel visibility,
+            final String name,
+            final V value) {
         synchronized (lock) {
             try {
                 final String propName = SLCommonSupport
-                                                       .toUserPropertyName(name);
+                        .toUserPropertyName(name);
                 final SLPersistentProperty<V> pProperty = pNode.setProperty(
-                                                                            clazz, propName, value);
+                        clazz, propName, value);
                 final SLGraphFactory factory = AbstractFactory
-                                                              .getDefaultInstance(SLGraphFactory.class);
+                        .getDefaultInstance(SLGraphFactory.class);
                 final Class<? extends SLNode> nodeType = getNodeType(pNode);
                 final SLNode nodeProxy = ProxyUtil.createNodeProxy(nodeType,
-                                                                   this);
+                        this);
                 final SLNodeProperty<V> property = factory.createProperty(
-                                                                          nodeProxy, pProperty, eventPoster);
+                        nodeProxy, pProperty, eventPoster);
                 final SLNodePropertyEvent event = new SLNodePropertySetEvent(
-                                                                             property, pProperty, name);
+                        property, pProperty, name);
                 event.setVisibility(visibility);
                 eventPoster.post(event);
                 return property;
             } catch (final SLException e) {
                 throw new SLGraphSessionException(
-                                                  "Error on attempt to set property.", e);
+                        "Error on attempt to set property.", e);
             }
         }
     }

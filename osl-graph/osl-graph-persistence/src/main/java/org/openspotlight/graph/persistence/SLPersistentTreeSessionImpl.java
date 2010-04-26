@@ -291,10 +291,4 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
         return jcrSession;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getLineReferenceRootPath() {
-        return SharedConstants.DEFAULT_JCR_ROOT_NAME + "/" + repositoryName + "/" + SharedConstants.DEFAULT_JCR_LINE_REFENCE;
-    }
 }

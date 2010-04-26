@@ -55,6 +55,7 @@ import static org.openspotlight.graph.SLLink.DIRECTION_UNI_REVERSAL;
 import static org.openspotlight.graph.SLPersistenceMode.NORMAL;
 import static org.openspotlight.graph.SLPersistenceMode.TRANSIENT;
 import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -65,8 +66,12 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
@@ -110,9 +115,54 @@ import org.openspotlight.graph.test.domain.node.JavaInnerClassNode;
 import org.openspotlight.graph.test.domain.node.JavaMethodNode;
 import org.openspotlight.graph.test.domain.node.JavaPackageNodePrivate;
 import org.openspotlight.graph.test.domain.node.TransientNode;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisServerDetail;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
 public abstract class BaseGraphTest {
+
+    private enum ExampleRedisConfig implements JRedisServerDetail{
+        INSTANCE("localhost",6379,1,null);
+
+        private ExampleRedisConfig(String serverName, int serverPort, int db, String password) {
+            this.serverName = serverName;
+            this.serverPort = serverPort;
+            this.db = db;
+            this.password = password;
+        }
+
+        private final String serverName;
+
+        private final int serverPort;
+
+        private final int db;
+
+        private final String password;
+
+        public String getServerName() {
+            return serverName;
+        }
+
+        public int getServerPort() {
+            return serverPort;
+        }
+
+        public int getDb() {
+            return db;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+    }
+
     /** The graph. */
     protected static SLGraph           graph;
     /** The session. */
@@ -128,6 +178,21 @@ public abstract class BaseGraphTest {
     private SLLink                     linkBA;
     /** The link both. */
     private SLLink                     linkBoth;
+
+
+    private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+
+    @BeforeClass
+    public static void setup() throws  Exception {
+        ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
+                .put(SLPartition.GRAPH, ExampleRedisConfig.INSTANCE).build();
+
+
+        Injector injector = Guice.createInjector(new SimplePersistModule(),
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,mappedServerConfig,repositoryPath("repository")));
+
+        simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.GRAPH);
+    }
 
     /**
      * After test.
@@ -1787,10 +1852,10 @@ public abstract class BaseGraphTest {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
-        final SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
-        final SLLineReference lineRef2 = javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
+        final SLLineReference lineRef1 = javaClassNode1.addLineReference(simplePersist,8, 17, 26, 44, "Hello World!", "1", "1");
+        final SLLineReference lineRef2 = javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
 
-        final Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences();
+        final Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences(simplePersist);
         Assert.assertNotNull(lineRefs);
         Assert.assertEquals(lineRefs.size(), 2);
 
@@ -1824,10 +1889,10 @@ public abstract class BaseGraphTest {
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final String artifactId = "targetId";
 
-        final SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", artifactId, "1");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
-        javaClassNode1.addLineReference(4, 8, 15, 16, "Hello Again!", "3", "1");
-        final Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences(artifactId);
+        final SLLineReference lineRef1 = javaClassNode1.addLineReference(simplePersist,8, 17, 26, 44, "Hello World!", artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(simplePersist,4, 8, 15, 16, "Hello Again!", "3", "1");
+        final Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences(simplePersist,artifactId);
         Assert.assertNotNull(lineRefs);
         Assert.assertEquals(lineRefs.size(), 1);
 
@@ -2365,17 +2430,17 @@ public abstract class BaseGraphTest {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
-        javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(9, 16, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "2");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(simplePersist,8, 17, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist,9, 16, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, "New Hello!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, "New Hello!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "2");
+        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
 
-        final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences();
+        final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences(simplePersist);
         Assert.assertEquals(treeLineRefs.getArtifacts().size(), 3);
 
         for (final SLTreeLineReference.SLArtifactLineReference artifactLine : treeLineRefs.getArtifacts()) {
@@ -2409,17 +2474,17 @@ public abstract class BaseGraphTest {
 
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
-        javaClassNode1.addLineReference(8, 17, 26, 44, statement, artifactId, "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, statement, artifactId, "1");
-        javaClassNode1.addLineReference(9, 16, 26, 44, "Hello World 2!", artifactId, "1");
-        javaClassNode1.addLineReference(22, 16, 26, 44, "Hello World 3!", artifactId, "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, statement, "1", "1");
-        javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
-        javaClassNode1.addLineReference(71, 80, 35, 53, statement, "2", "1");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "2");
-        javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(simplePersist,8, 17, 26, 44, statement, artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, statement, artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist,9, 16, 26, 44, "Hello World 2!", artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 44, "Hello World 3!", artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, statement, "1", "1");
+        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, "New Hello!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, statement, "2", "1");
+        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "2");
+        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
 
-        final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences(artifactId);
+        final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences(simplePersist,artifactId);
         Assert.assertEquals(treeLineRefs.getArtifacts().size(), 1);
 
         for (final SLTreeLineReference.SLArtifactLineReference artifactLine : treeLineRefs.getArtifacts()) {
