@@ -406,14 +406,15 @@ public class SLGraphSessionImpl implements SLGraphSession {
 
                 final SLPersistentNode contextsPersistentNode = SLCommonSupport
                                                                                .getContextsPersistentNode(treeSession);
-                if (contextsPersistentNode.getNode(id) == null) {
-                    final SLPersistentNode contextRootPersistentNode = contextsPersistentNode
-                                                                                             .addNode("" + id);
-                    return new SLContextImpl(this, contextRootPersistentNode,
-                                             eventPoster);
-                }
-                return getContext(id);
 
+                SLPersistentNode contextRootPersistentNode = contextsPersistentNode.getNode(id);
+                if (contextRootPersistentNode == null) {
+                    contextRootPersistentNode = contextsPersistentNode.addNode(id);
+                    final String propName = SLCommonSupport.toUserPropertyName(SLConsts.PROPERTY_CAPTION_NAME);
+                    contextRootPersistentNode.setProperty(String.class, propName, id);
+
+                }
+                return new SLContextImpl(this, contextRootPersistentNode, eventPoster);
             } catch (final SLPersistentTreeSessionException e) {
                 Exceptions.catchAndLog(e);
                 throw new SLGraphSessionException(
@@ -565,22 +566,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      */
     public SLContext getContext( final String id ) {
         synchronized (lock) {
-            try {
-                SLContext context = null;
-                final SLPersistentNode contextsPersistentNode = SLCommonSupport
-                                                                               .getContextsPersistentNode(treeSession);
-                final SLPersistentNode contextRootPersistentNode = contextsPersistentNode
-                                                                                         .getNode(id);
-                if (contextRootPersistentNode != null) {
-                    context = new SLContextImpl(this,
-                                                contextRootPersistentNode, eventPoster);
-                }
-                return context;
-            } catch (final SLPersistentTreeSessionException e) {
-                Exceptions.catchAndLog(e);
-                throw new SLGraphSessionException(
-                                                  "Error on attempt retrieve context node.", e);
-            }
+            return createContext(id);
         }
     }
 

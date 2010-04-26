@@ -193,7 +193,7 @@ public abstract class DatabaseStreamTest {
                 }
             }
             failMessages.add(format("Type {0} was not found in any of strings: {1}", //$NON-NLS-1$
-                                    typeToAssert, loadedArtifacts));
+            typeToAssert, loadedArtifacts));
         }
         if (!failMessages.isEmpty()) {
             fail(failMessages.toString());

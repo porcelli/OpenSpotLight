@@ -70,7 +70,7 @@ public class DnaFileSystemArtifactFinder extends DnaArtifactFinder {
                                         final ArtifactSource source ) {
         repositorySource2.usingClass(FileSystemSource.class).setProperty("workspaceRootPath", source.getInitialLookup()).setProperty( //$NON-NLS-1$ 
         "creatingWorkspacesAllowed", true).setProperty(//$NON-NLS-1$
-                                                       "defaultWorkspaceName", "."); //$NON-NLS-1$          
+        "defaultWorkspaceName", "."); //$NON-NLS-1$          
 
     }
 

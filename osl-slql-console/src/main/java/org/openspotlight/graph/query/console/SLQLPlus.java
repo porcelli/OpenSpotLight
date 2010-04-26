@@ -242,23 +242,28 @@ public class SLQLPlus {
 
             final ConsoleState state = new ConsoleState(loginState.getK2());
             String input;
-            //TODO handle exceptions here
             while ((input = reader.readLine(getPrompt())) != null) {
-                state.setInput(input.trim());
-                boolean inputAccepted = false;
-                for (final Command activeCommand : commands) {
-                    if (activeCommand.accept(state)) {
-                        inputAccepted = true;
-                        activeCommand.execute(reader, out, state);
+                try {
+                    state.setInput(input.trim());
+                    boolean inputAccepted = false;
+                    for (final Command activeCommand : commands) {
+                        if (activeCommand.accept(state)) {
+                            inputAccepted = true;
+                            activeCommand.execute(reader, out, state);
+                            break;
+                        }
+                    }
+                    if (!inputAccepted && state.getInput().length() > 0) {
+                        out.println(Messages.getString("SLQLPlus.2")); //$NON-NLS-1$
+                        state.clearBuffer();
+                        out.flush();
+                    } else if (state.quitApplication()) {
                         break;
                     }
-                }
-                if (!inputAccepted && state.getInput().length() > 0) {
-                    out.println(Messages.getString("SLQLPlus.2")); //$NON-NLS-1$
-                    state.clearBuffer();
-                    out.flush();
-                } else if (state.quitApplication()) {
-                    break;
+                } catch (Exception ex) {
+                    out.print("ERROR: ");
+                    out.print(ex.getMessage());
+                    out.println(".");
                 }
             }
             loginState.getK2().close();

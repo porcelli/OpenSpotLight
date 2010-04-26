@@ -67,7 +67,6 @@ import java.util.TreeSet;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
@@ -1285,18 +1284,18 @@ public abstract class BaseGraphTest {
      * Test get meta node properties.
      */
     @Test
-    @Ignore
     public void testGetMetaNodeProperties() throws SLMetaNodeTypeNotFoundException {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         javaClassNode1.setClassName("HelloWorld");
         javaClassNode1.setModifier(JavaClassNode.MODIFIER_PUBLIC);
         javaClassNode1.setCreationTime(new Date());
+        javaClassNode1.setProperty(String.class, "newProperty", "someãCc");
 
         final SLMetadata metadata = session.getMetadata();
         final SLMetaNodeType metaNode = metadata.getMetaNodeType(JavaClassNode.class);
         final Collection<SLMetaNodeProperty> metaProperties = metaNode.getMetaProperties();
-        Assert.assertEquals(metaProperties.size(), 3);
+        Assert.assertEquals(metaProperties.size(), 5);
 
         for (final SLMetaNodeProperty metaProperty : metaProperties) {
             Assert.assertNotNull(metaProperty.getName());
@@ -1306,6 +1305,10 @@ public abstract class BaseGraphTest {
                 Assert.assertEquals(metaProperty.getType(), Long.class);
             } else if (metaProperty.getName().equals("creationTime")) {
                 Assert.assertEquals(metaProperty.getType(), Date.class);
+            } else if (metaProperty.getName().equals("caption")) {
+                Assert.assertEquals(metaProperty.getType(), String.class);
+            } else if (metaProperty.getName().equals("newProperty")) {
+                Assert.assertEquals(metaProperty.getType(), String.class);
             } else {
                 Assert.fail();
             }
@@ -1313,6 +1316,7 @@ public abstract class BaseGraphTest {
 
         for (SLNodeProperty<Serializable> activeProperty : javaClassNode1.getProperties()) {
             SLMetaNodeProperty metaProperty = session.getMetadata().getMetaNodeType(JavaClassNode.class).getMetaProperty(activeProperty.getName());
+            //            System.out.println(activeProperty.getName() + ":" + activeProperty.getValueAsString() + " -> " + metaProperty);
             Assert.assertNotNull("Property " + activeProperty.getName() + " not found on metadata registry.", metaProperty);
         }
     }
@@ -1792,17 +1796,17 @@ public abstract class BaseGraphTest {
 
         for (final SLLineReference lineRef : lineRefs) {
             if (lineRef.getArtifactId().equals("1")) {
-                Assert.assertEquals(lineRef1.getStartLine(), new Integer(8));
-                Assert.assertEquals(lineRef1.getEndLine(), new Integer(17));
-                Assert.assertEquals(lineRef1.getStartColumn(), new Integer(26));
-                Assert.assertEquals(lineRef1.getEndColumn(), new Integer(44));
+                Assert.assertEquals(lineRef1.getStartLine(), 8);
+                Assert.assertEquals(lineRef1.getEndLine(), 17);
+                Assert.assertEquals(lineRef1.getStartColumn(), 26);
+                Assert.assertEquals(lineRef1.getEndColumn(), 44);
                 Assert.assertEquals(lineRef1.getStatement(), "Hello World!");
                 Assert.assertEquals(lineRef1.getArtifactVersion(), "1");
             } else if (lineRef.getArtifactId().equals("2")) {
-                Assert.assertEquals(lineRef2.getStartLine(), new Integer(71));
-                Assert.assertEquals(lineRef2.getEndLine(), new Integer(80));
-                Assert.assertEquals(lineRef2.getStartColumn(), new Integer(35));
-                Assert.assertEquals(lineRef2.getEndColumn(), new Integer(53));
+                Assert.assertEquals(lineRef2.getStartLine(), 71);
+                Assert.assertEquals(lineRef2.getEndLine(), 80);
+                Assert.assertEquals(lineRef2.getStartColumn(), 35);
+                Assert.assertEquals(lineRef2.getEndColumn(), 53);
                 Assert.assertEquals(lineRef2.getStatement(), "Bye World!");
                 Assert.assertEquals(lineRef2.getArtifactVersion(), "1");
             } else {
@@ -1829,10 +1833,10 @@ public abstract class BaseGraphTest {
 
         for (final SLLineReference lineRef : lineRefs) {
             if (lineRef.getArtifactId().equals(artifactId)) {
-                Assert.assertEquals(lineRef1.getStartLine(), new Integer(8));
-                Assert.assertEquals(lineRef1.getEndLine(), new Integer(17));
-                Assert.assertEquals(lineRef1.getStartColumn(), new Integer(26));
-                Assert.assertEquals(lineRef1.getEndColumn(), new Integer(44));
+                Assert.assertEquals(lineRef1.getStartLine(), 8);
+                Assert.assertEquals(lineRef1.getEndLine(), 17);
+                Assert.assertEquals(lineRef1.getStartColumn(), 26);
+                Assert.assertEquals(lineRef1.getEndColumn(), 44);
                 Assert.assertEquals(lineRef1.getStatement(), "Hello World!");
                 Assert.assertEquals(lineRef1.getArtifactVersion(), "1");
             } else {
@@ -2481,4 +2485,30 @@ public abstract class BaseGraphTest {
 
         Assert.assertFalse(javaClassNode1.getID().equals(javaClassNode2.getID()));
     }
+
+    /**
+     * Test typed on different contexts.
+     */
+    @Test
+    public void testContextAndNodeCaption() throws SLGraphException {
+        // add new node ...
+        SLContext myNewContext = session.createContext("MyNewContext");
+
+        Assert.assertEquals(myNewContext.getCaption(), "MyNewContext");
+        Assert.assertEquals(myNewContext.getRootNode().getCaption(), "MyNewContext");
+
+        myNewContext.setCaption("newContextCaption");
+        Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
+        Assert.assertEquals(myNewContext.getRootNode().getCaption(), "newContextCaption");
+
+        session.save();
+        session.close();
+        session = openSession();
+
+        myNewContext = session.getContext("newContextCaption");
+        Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
+        Assert.assertEquals(myNewContext.getRootNode().getCaption(), "newContextCaption");
+
+    }
+
 }

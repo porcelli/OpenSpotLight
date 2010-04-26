@@ -49,7 +49,6 @@
 package org.openspotlight.graph.test.domain.node;
 
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLProperty;
 
 /**
  * The Interface JavaTypeMethod.
@@ -57,20 +56,5 @@ import org.openspotlight.graph.annotation.SLProperty;
  * @author Vitor Hugo Chagas
  */
 public interface JavaTypeMethod extends SLNode {
-
-    /**
-     * Gets the caption.
-     * 
-     * @return the caption
-     */
-    @SLProperty
-    public String getCaption();
-
-    /**
-     * Sets the caption.
-     * 
-     * @param caption the new caption
-     */
-    public void setCaption( String caption );
 
 }

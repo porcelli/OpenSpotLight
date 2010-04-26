@@ -49,7 +49,6 @@
 package org.openspotlight.graph.test.domain.link;
 
 import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.test.domain.node.JavaElementNode;
 
 /**
@@ -60,18 +59,4 @@ import org.openspotlight.graph.test.domain.node.JavaElementNode;
 @SLDescription( "Java Package" )
 public interface JavaPackageNode extends JavaElementNode {
 
-    /**
-     * Gets the caption.
-     * 
-     * @return the caption
-     */
-    @SLProperty
-    public String getCaption();
-
-    /**
-     * Sets the caption.
-     * 
-     * @param caption the new caption
-     */
-    public void setCaption( String caption );
 }

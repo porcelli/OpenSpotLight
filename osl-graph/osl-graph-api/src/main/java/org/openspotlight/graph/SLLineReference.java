@@ -48,120 +48,125 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.annotation.SLProperty;
-import org.openspotlight.graph.annotation.SLVisibility;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
 /**
  * The Interface SLLineReference.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLVisibility( VisibilityLevel.INTERNAL )
-public interface SLLineReference extends SLNode {
+public final class SLLineReference implements SimpleNodeType {
 
-    /**
-     * Gets the start line.
-     * 
-     * @return the start line
-     */
-    @SLProperty
-    public Integer getStartLine();
+    private String nodeId;
+    private int    startLine;
+    private int    endLine;
+    private int    startColumn;
+    private int    endColumn;
+    private String statement;
+    private String artifactId;
+    private String artifactVersion;
 
-    /**
-     * Sets the start line.
-     * 
-     * @param startLine the new start line
-     */
-    public void setStartLine( Integer startLine );
+    @KeyProperty
+    public String getNodeId() {
+        return nodeId;
+    }
 
-    /**
-     * Gets the end line.
-     * 
-     * @return the end line
-     */
-    @SLProperty
-    public Integer getEndLine();
+    public void setNodeId( String nodeId ) {
+        this.nodeId = nodeId;
+    }
 
-    /**
-     * Sets the end line.
-     * 
-     * @param endLine the new end line
-     */
-    public void setEndLine( Integer endLine );
+    @KeyProperty
+    public int getStartLine() {
+        return startLine;
+    }
 
-    /**
-     * Gets the start column.
-     * 
-     * @return the start column
-     */
-    @SLProperty
-    public Integer getStartColumn();
+    public void setStartLine( int startLine ) {
+        this.startLine = startLine;
+    }
 
-    /**
-     * Sets the start column.
-     * 
-     * @param startColumn the new start column
-     */
-    public void setStartColumn( Integer startColumn );
+    @KeyProperty
+    public int getEndLine() {
+        return endLine;
+    }
 
-    /**
-     * Gets the end column.
-     * 
-     * @return the end column
-     */
-    @SLProperty
-    public Integer getEndColumn();
+    public void setEndLine( int endLine ) {
+        this.endLine = endLine;
+    }
 
-    /**
-     * Sets the end column.
-     * 
-     * @param endColumn the new end column
-     */
-    public void setEndColumn( Integer endColumn );
+    @KeyProperty
+    public int getStartColumn() {
+        return startColumn;
+    }
 
-    /**
-     * Gets the statement.
-     * 
-     * @return the statement
-     */
-    @SLProperty
-    public String getStatement();
+    public void setStartColumn( int startColumn ) {
+        this.startColumn = startColumn;
+    }
 
-    /**
-     * Sets the statement.
-     * 
-     * @param statement the new statement
-     */
-    public void setStatement( String statement );
+    @KeyProperty
+    public int getEndColumn() {
+        return endColumn;
+    }
 
-    /**
-     * Gets the artifact id.
-     * 
-     * @return the artifact id
-     */
-    @SLProperty
-    public String getArtifactId();
+    public void setEndColumn( int endColumn ) {
+        this.endColumn = endColumn;
+    }
 
-    /**
-     * Sets the artifact id.
-     * 
-     * @param artifactId the new artifact id
-     */
-    public void setArtifactId( String artifactId );
+    @KeyProperty
+    public String getStatement() {
+        return statement;
+    }
 
-    /**
-     * Gets the artifact version.
-     * 
-     * @return the artifact version
-     */
-    @SLProperty
-    public String getArtifactVersion();
+    public void setStatement( String statement ) {
+        this.statement = statement;
+    }
 
-    /**
-     * Sets the artifact version.
-     * 
-     * @param artifactVersion the new artifact version
-     */
-    public void setArtifactVersion( String artifactVersion );
+    @KeyProperty
+    public String getArtifactId() {
+        return artifactId;
+    }
+
+    public void setArtifactId( String artifactId ) {
+        this.artifactId = artifactId;
+    }
+
+    @KeyProperty
+    public String getArtifactVersion() {
+        return artifactVersion;
+    }
+
+    public void setArtifactVersion( String artifactVersion ) {
+        this.artifactVersion = artifactVersion;
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SLLineReference that = (SLLineReference)o;
+
+        if (endColumn != that.endColumn) return false;
+        if (endLine != that.endLine) return false;
+        if (startColumn != that.startColumn) return false;
+        if (startLine != that.startLine) return false;
+        if (artifactId != null ? !artifactId.equals(that.artifactId) : that.artifactId != null) return false;
+        if (artifactVersion != null ? !artifactVersion.equals(that.artifactVersion) : that.artifactVersion != null)
+            return false;
+        if (statement != null ? !statement.equals(that.statement) : that.statement != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = startLine;
+        result = 31 * result + endLine;
+        result = 31 * result + startColumn;
+        result = 31 * result + endColumn;
+        result = 31 * result + (statement != null ? statement.hashCode() : 0);
+        result = 31 * result + (artifactId != null ? artifactId.hashCode() : 0);
+        result = 31 * result + (artifactVersion != null ? artifactVersion.hashCode() : 0);
+        return result;
+    }
 }

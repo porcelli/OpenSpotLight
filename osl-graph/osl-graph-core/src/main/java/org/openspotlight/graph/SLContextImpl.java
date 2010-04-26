@@ -95,6 +95,20 @@ public class SLContextImpl implements SLContext {
         return rootNode.getName();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public String getCaption() {
+        return rootNode.getCaption();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void setCaption( String caption ) {
+        rootNode.setCaption(caption);
+    }
+
     public Lock getLockObject() {
         return lock;
     }
