@@ -66,10 +66,11 @@ import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
-import org.openspotlight.log.DetailedLoggerFactory;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.domain.SLPartition;
 
 /**
  * This class is an {@link ExecutionContext} which initialize all resources in a lazy way, and also close it in a lazy way also.
@@ -77,6 +78,9 @@ import org.openspotlight.security.idm.User;
  * @author feu
  */
 public class DefaultExecutionContext implements ExecutionContext, LockContainer {
+
+    private final SimplePersistFactory simplePersistFactory;
+    private final DetailedLoggerProvider detailedLoggerProvider;
 
     private final class LazyConfigurationManagerProvider extends
             AtomicLazyResource<ConfigurationManager> {
@@ -88,8 +92,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
         @Override
         protected ConfigurationManager createReference() {
             return ConfigurationManagerFactoryImpl
-                    .createMutableUsingSession(JcrConnectionProvider
-                            .createFromData(descriptor).openSession());
+                    .createMutableUsingSession(simplePersistFactory.createSimplePersist(SLPartition.FEDERATION));
         }
     }
 
@@ -102,7 +105,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
         @Override
         protected DetailedLogger createReference() {
-            return logFactory.createNewLogger();
+            return detailedLoggerProvider.get();
         }
     }
 
@@ -143,8 +146,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
         @Override
         protected PersistentArtifactManager createReference() {
-            return new PersistentArtifactManagerImpl(JcrConnectionProvider
-                    .createFromData(descriptor).openSession(), repository);
+            return new PersistentArtifactManagerImpl(repository, simplePersistFactory);
         }
     }
 
@@ -186,20 +188,20 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
     private final AtomicLazyResource<DetailedLogger> lazyDetailedLoggerReference = new LazyDetailedLoggerProvider(
             this);
 
-    private final DetailedLoggerFactory logFactory;
 
     DefaultExecutionContext(
             final String username, final String password,
             final JcrConnectionDescriptor descriptor,
             final DisposingListener<DefaultExecutionContext> listener,
-            Repository repository) {
+            Repository repository, SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider) {
         this.username = username;
         this.password = password;
         this.descriptor = descriptor;
+        this.simplePersistFactory = simplePersistFactory;
+        this.detailedLoggerProvider = detailedLoggerProvider;
         this.repositoryName = repository.getName();
         this.repository = repository;
         this.listener = listener;
-        logFactory = new DetailedLoggerProvider(descriptor);
     }
 
     public boolean artifactFinderSupportsThisType(

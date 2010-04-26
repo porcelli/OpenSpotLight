@@ -141,7 +141,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
             STStorageSession session = injector.getInstance(STStorageSession.class);
 
             SimplePersistFactory factory = injector.getInstance(SimplePersistFactory.class);
-            simplePersist = factory.createSimplePersist(session, SLPartition.SECURITY);
+            simplePersist = factory.createSimplePersist(SLPartition.SECURITY);
 
 
         } catch (final Exception e) {

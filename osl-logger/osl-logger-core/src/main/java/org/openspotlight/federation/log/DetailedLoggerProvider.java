@@ -97,7 +97,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
     @Override
     protected DetailedLogger createInstance() {
         SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = simplePersistFactory
-                .createSimplePersist(sessionProvider.get(), partition);
+                .createSimplePersist(partition);
         return new DetailedLoggerImpl(simplePersist);
     }
 
@@ -157,7 +157,6 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
          * Instantiates a new log entry.
          *
          * @param errorCode       the error code
-         * @param date            the date
          * @param type            the type
          * @param message         the message
          * @param detailedMessage the detailed message

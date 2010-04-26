@@ -52,18 +52,26 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.support.SimplePersistFactory;
 
 public class DefaultExecutionContextFactory implements ExecutionContextFactory,
         DisposingListener<DefaultExecutionContext> {
 
-    public static ExecutionContextFactory createFactory() {
-        return new DefaultExecutionContextFactory();
+    private final SimplePersistFactory simplePersistFactory;
+    private final DetailedLoggerProvider detailedLoggerProvider;
+
+    public static ExecutionContextFactory createFactory(final SimplePersistFactory simplePersistFactory,
+        final DetailedLoggerProvider detailedLoggerProvider) {
+        return new DefaultExecutionContextFactory(detailedLoggerProvider, simplePersistFactory);
     }
 
     private final CopyOnWriteArrayList<DefaultExecutionContext> openedContexts = new CopyOnWriteArrayList<DefaultExecutionContext>();
 
-    private DefaultExecutionContextFactory() {
+    private DefaultExecutionContextFactory(DetailedLoggerProvider detailedLoggerProvider, SimplePersistFactory simplePersistFactory) {
+        this.detailedLoggerProvider = detailedLoggerProvider;
+        this.simplePersistFactory = simplePersistFactory;
     }
 
     public void closeResources() {
@@ -77,7 +85,7 @@ public class DefaultExecutionContextFactory implements ExecutionContextFactory,
                                                     final JcrConnectionDescriptor descriptor,
                                                     final Repository repository ) {
         final DefaultExecutionContext newContext = new DefaultExecutionContext(
-                                                                               username, password, descriptor, this, repository);
+                                                                               username, password, descriptor, this, repository, simplePersistFactory, detailedLoggerProvider);
         openedContexts.add(newContext);
         return newContext;
     }
