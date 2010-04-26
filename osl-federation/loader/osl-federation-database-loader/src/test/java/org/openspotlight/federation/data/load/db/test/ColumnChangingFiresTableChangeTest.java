@@ -52,12 +52,17 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.sql.Connection;
 import java.util.Set;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
@@ -68,8 +73,14 @@ import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 /**
  * During a column changing, its table needs to be marked as changed also. This test is to assert this behavior.
@@ -104,8 +115,15 @@ public class ColumnChangingFiresTableChangeTest {
         GlobalSettings globalSettings = new GlobalSettings();
         globalSettings.getLoaderRegistry().add(
                                                DatabaseCustomArtifactFinder.class);
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
-                                                                                              DefaultJcrDescriptor.TEMP_DESCRIPTOR, dbBundle.getRepository());
+
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(injector.getInstance(SimplePersistFactory.class), dbBundle.getRepository());
 
         ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings,
                                                         dbBundle, provider);

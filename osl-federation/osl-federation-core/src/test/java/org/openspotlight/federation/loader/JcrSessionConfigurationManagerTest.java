@@ -53,7 +53,6 @@ import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.junit.*;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.federation.context.ExampleRedisConfig;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerModule;
@@ -68,6 +67,7 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import javax.jcr.Session;
 import java.util.Set;
@@ -91,7 +91,7 @@ public class JcrSessionConfigurationManagerTest extends
                 .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         Injector injector = Guice.createInjector(
                 new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.mappedServerConfig, repositoryPath("repository")),
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
                 new SimplePersistModule(),
                 new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule());

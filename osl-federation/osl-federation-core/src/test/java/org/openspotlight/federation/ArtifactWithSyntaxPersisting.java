@@ -52,7 +52,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Test;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.federation.context.ExampleRedisConfig;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -65,6 +64,7 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -142,7 +142,7 @@ public class ArtifactWithSyntaxPersisting {
 
         Injector injector = Guice.createInjector(
                 new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.mappedServerConfig, repositoryPath("repository")),
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
                 new SimplePersistModule(),
                 new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule());

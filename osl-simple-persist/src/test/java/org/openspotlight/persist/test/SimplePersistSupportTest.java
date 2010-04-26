@@ -66,6 +66,7 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -85,40 +86,10 @@ public class SimplePersistSupportTest {
     private STStorageSession session;
 
     public SimplePersistSupportTest() {
-        autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath")));
+        autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repositoryPath")));
     }
 
-    private enum JRedisServerConfigExample implements JRedisServerDetail {
-        DEFAULT("localhost", 6379, 0);
-
-        private JRedisServerConfigExample(String serverName, int serverPort, int db) {
-            this.serverName = serverName;
-            this.serverPort = serverPort;
-            this.db = db;
-        }
-
-        private final String serverName;
-
-        private final int db;
-
-        public int getDb() {
-            return db;
-        }
-
-        public String getPassword() {
-            return null;
-        }
-
-        private final int serverPort;
-
-        public String getServerName() {
-            return serverName;
-        }
-
-        public int getServerPort() {
-            return serverPort;
-        }
-    }
 
     private enum ExamplePartition implements STPartition {
 
@@ -135,12 +106,6 @@ public class SimplePersistSupportTest {
         }
     }
 
-    final Map<STPartition, JRedisServerDetail> mappedServerConfig;
-
-    {
-        mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
-                .put(ExamplePartition.DEFAULT, JRedisServerConfigExample.DEFAULT).build();
-    }
 
     final Injector autoFlushInjector;
 

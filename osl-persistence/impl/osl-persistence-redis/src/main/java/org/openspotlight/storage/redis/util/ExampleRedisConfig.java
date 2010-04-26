@@ -1,29 +1,35 @@
-package org.openspotlight.federation.context;
+package org.openspotlight.storage.redis.util;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Ignore;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 
-
-@Ignore
+/**
+ * Created by User: feu - Date: Apr 26, 2010 - Time: 2:48:17 PM
+ */
 public enum ExampleRedisConfig implements JRedisServerDetail {
 
-    INSTANCE("localhost", 6379, 1, null);
+    EXAMPLE("localhost", 6379, 1, null);
 
 
-    public static final ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
-            .put(SLPartition.GRAPH, ExampleRedisConfig.INSTANCE)
-            .put(SLPartition.FEDERATION, ExampleRedisConfig.INSTANCE)
-            .put(SLPartition.LOG, ExampleRedisConfig.INSTANCE).build();
+    private final ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig;
 
+    public ImmutableMap<STPartition, JRedisServerDetail> getMappedServerConfig() {
+        return mappedServerConfig;
+    }
 
     private ExampleRedisConfig(String serverName, int serverPort, int db, String password) {
         this.serverName = serverName;
         this.serverPort = serverPort;
         this.db = db;
         this.password = password;
+
+        ImmutableMap.Builder<STPartition, JRedisServerDetail> builder = ImmutableMap.<STPartition, JRedisServerDetail>builder();
+        for (SLPartition p : SLPartition.values()) {
+            builder.put(p, this);
+        }
+        this.mappedServerConfig = builder.build();
     }
 
     private final String serverName;

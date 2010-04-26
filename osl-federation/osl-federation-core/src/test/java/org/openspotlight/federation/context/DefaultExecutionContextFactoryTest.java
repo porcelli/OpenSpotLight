@@ -71,6 +71,7 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
@@ -87,7 +88,7 @@ public class DefaultExecutionContextFactoryTest {
     public static void setup() throws Exception{
         Injector injector = Guice.createInjector(
                 new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.mappedServerConfig,repositoryPath("repository")),
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),repositoryPath("repository")),
                 new SimplePersistModule(),
                 new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule());

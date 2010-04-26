@@ -125,43 +125,9 @@ import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 public abstract class BaseGraphTest {
-
-    private enum ExampleRedisConfig implements JRedisServerDetail{
-        INSTANCE("localhost",6379,1,null);
-
-        private ExampleRedisConfig(String serverName, int serverPort, int db, String password) {
-            this.serverName = serverName;
-            this.serverPort = serverPort;
-            this.db = db;
-            this.password = password;
-        }
-
-        private final String serverName;
-
-        private final int serverPort;
-
-        private final int db;
-
-        private final String password;
-
-        public String getServerName() {
-            return serverName;
-        }
-
-        public int getServerPort() {
-            return serverPort;
-        }
-
-        public int getDb() {
-            return db;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-    }
 
     /** The graph. */
     protected static SLGraph           graph;
@@ -184,12 +150,11 @@ public abstract class BaseGraphTest {
 
     @BeforeClass
     public static void setup() throws  Exception {
-        ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
-                .put(SLPartition.GRAPH, ExampleRedisConfig.INSTANCE).build();
 
 
         Injector injector = Guice.createInjector(new SimplePersistModule(),
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,mappedServerConfig,repositoryPath("repository")));
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExampleRedisConfig.EXAMPLE.getMappedServerConfig()
+                        ,repositoryPath("repository")));
 
         simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.GRAPH);
     }

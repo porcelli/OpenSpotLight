@@ -48,50 +48,62 @@
  */
 package org.openspotlight.federation.finder.test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
+import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;
+import org.openspotlight.federation.log.DetailedLoggerModule;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.jcr.provider.SessionWithLock;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.Set;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
-import java.util.Set;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
-import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;
-import org.openspotlight.federation.util.test.ExampleModule;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.jcr.provider.SessionWithLock;
-import org.openspotlight.persist.support.SimplePersistFactory;
-
 public class JcrPersistentArtifactManagerTest {
-    /** The provider. */
-    private static JcrConnectionProvider        provider;
+    /**
+     * The provider.
+     */
+    private static JcrConnectionProvider provider;
 
-    private static ArtifactSource               artifactSource;
+    private static ArtifactSource artifactSource;
 
-    private static Repository                   repository;
+    private static Repository repository;
 
     private static PersistentArtifactManagerImpl persistenArtifactManager;
 
     /**
      * Setup.
-     * 
+     *
      * @throws Exception the exception
      */
     @BeforeClass
     public static void setup() throws Exception {
         provider = JcrConnectionProvider
-                                        .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        Injector injector = Guice.createInjector(new ExampleModule(repositoryPath(repository.getName())));
+                .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
 
         final SessionWithLock session = provider.openSession();
         artifactSource = new ArtifactSource();
@@ -102,7 +114,7 @@ public class JcrPersistentArtifactManagerTest {
         artifactSource.setRepository(repository);
         final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
         final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(
-                                                                          StringArtifact.class, artifactSource, null);
+                StringArtifact.class, artifactSource, null);
         persistenArtifactManager = new PersistentArtifactManagerImpl(repository,
                 injector.getInstance(SimplePersistFactory.class));
         for (StringArtifact artifact : artifacts)
@@ -119,8 +131,8 @@ public class JcrPersistentArtifactManagerTest {
     @Test
     public void shouldFindArtifacts() throws Exception {
         final StringArtifact sa = persistenArtifactManager.findByPath(
-                                                                      StringArtifact.class,
-                                                                      "/test/resources/artifacts/included/folder/file_included2");
+                StringArtifact.class,
+                "/test/resources/artifacts/included/folder/file_included2");
         assertThat(sa, is(notNullValue()));
         assertThat(sa.getContent(), is(notNullValue()));
 
@@ -129,7 +141,7 @@ public class JcrPersistentArtifactManagerTest {
     @Test
     public void shouldListArtifactNames() throws Exception {
         final Set<String> artifacts = persistenArtifactManager
-                                                              .getInternalMethods().retrieveNames(StringArtifact.class, null);
+                .getInternalMethods().retrieveNames(StringArtifact.class, null);
 
         assertThat(artifacts, is(notNullValue()));
         assertThat(artifacts.size(), is(not(0)));
@@ -141,8 +153,8 @@ public class JcrPersistentArtifactManagerTest {
     @Test
     public void shouldListArtifacts() throws Exception {
         final Set<StringArtifact> artifacts = persistenArtifactManager
-                                                                      .listByPath(StringArtifact.class,
-                                                                                  "/main/java/org/openspotlight/federation");
+                .listByPath(StringArtifact.class,
+                        "/main/java/org/openspotlight/federation");
 
         assertThat(artifacts, is(notNullValue()));
         assertThat(artifacts.size(), is(not(0)));

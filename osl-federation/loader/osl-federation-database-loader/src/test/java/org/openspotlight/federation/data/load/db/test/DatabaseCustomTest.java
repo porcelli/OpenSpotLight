@@ -55,13 +55,17 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.sql.Connection;
 import java.util.Set;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
@@ -70,9 +74,16 @@ import org.openspotlight.federation.domain.artifact.db.RoutineType;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.Constraints;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 @SuppressWarnings( "all" )
 public class DatabaseCustomTest {
@@ -99,8 +110,16 @@ public class DatabaseCustomTest {
         bundle
                 .setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         finder = new DatabaseCustomArtifactFinder();
-        persistentManagerProvider = new PersistentArtifactManagerProviderImpl(
-                                                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR, bundle.getRepository());
+
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(injector.getInstance(SimplePersistFactory.class), bundle.getRepository());
+        
     }
 
     @Test

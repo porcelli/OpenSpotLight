@@ -82,6 +82,7 @@ import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisSTStorageSessionProvider;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -127,37 +128,6 @@ public class DetailedLoggerTest {
     private static AuthenticatedUser user;
 
 
-    private enum JRedisServerConfigExample implements JRedisServerDetail {
-        DEFAULT("localhost", 6379, 0);
-
-        private JRedisServerConfigExample(String serverName, int serverPort, int db) {
-            this.serverName = serverName;
-            this.serverPort = serverPort;
-            this.db = db;
-        }
-
-        private final String serverName;
-
-        private final int db;
-
-        public int getDb() {
-            return db;
-        }
-
-        public String getPassword() {
-            return null;
-        }
-
-        private final int serverPort;
-
-        public String getServerName() {
-            return serverName;
-        }
-
-        public int getServerPort() {
-            return serverPort;
-        }
-    }
 
 
     private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
@@ -166,9 +136,8 @@ public class DetailedLoggerTest {
     @BeforeClass
     public static void setupJcr() throws Exception {
 
-        ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
-                .put(SLPartition.LOG, JRedisServerConfigExample.DEFAULT).build();
-        Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath")));
+        Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repositoryPath")));
         autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.LOG).flushall();
         graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class)
                 .createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);

@@ -49,11 +49,14 @@
 package org.openspotlight.bundle.db.processor;
 
 import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Random;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
@@ -69,6 +72,7 @@ import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
@@ -80,6 +84,7 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
@@ -88,6 +93,10 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 public class DbTableArtifactBundleProcessorTest {
 
@@ -180,7 +189,16 @@ public class DbTableArtifactBundleProcessorTest {
 
         data = createRepositoryData();
 
-        contextFactory = DefaultExecutionContextFactory.createFactory();
+
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
+
+        contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ExecutionContext context = contextFactory.createExecutionContext(
                                                                                "username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,

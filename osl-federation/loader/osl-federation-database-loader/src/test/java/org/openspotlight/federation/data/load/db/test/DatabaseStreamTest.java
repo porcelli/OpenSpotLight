@@ -55,6 +55,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -66,8 +67,11 @@ import java.sql.Connection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.Artifact;
@@ -77,14 +81,20 @@ import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
 import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This test is intended to be used to test scripts to retrieve stream artifacts for a given {@link DatabaseType}. Most of the
+ * This test is intended to be used to test scripts to retrieve stream artifacts for a given {@link }. Most of the
  * environments used to run <code>mvn clean install</code> would not have all the database types. But there's a need to have a
- * test for each type on the source code. On this cases, the tests will be annotated with {@link Ignore} annotation.
+ * test for each type on the source code. On this cases, the tests will be annotated with {@link } annotation.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
@@ -173,8 +183,15 @@ public abstract class DatabaseStreamTest {
             conn.close();
         }
 
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
-                                                                                              DefaultJcrDescriptor.TEMP_DESCRIPTOR, bundle.getRepository());
+
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(injector.getInstance(SimplePersistFactory.class), bundle.getRepository());
 
         ArtifactLoaderManager.INSTANCE.refreshResources(configuration, bundle,
                                                         provider);

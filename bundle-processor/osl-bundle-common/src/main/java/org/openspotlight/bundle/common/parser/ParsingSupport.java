@@ -50,13 +50,26 @@ package org.openspotlight.bundle.common.parser;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 /**
  * A supporter class for parsing related actions.
  * 
  * @author porcelli
  */
-public abstract class ParsingSupport {
+public class ParsingSupport {
+
+    private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+
+
+    public ParsingSupport (SimplePersistFactory simplePersistFactory){
+        this.simplePersist = simplePersistFactory.createSimplePersist(SLPartition.LINE_REFERENCE);
+    }
+
 
     /**
      * Creates the line reference.
@@ -65,7 +78,7 @@ public abstract class ParsingSupport {
      * @param statement the statement
      * @param nodes the nodes
      */
-    public static void createLineReference( final SLLineInfo lineInfo,
+    public void createLineReference( final SLLineInfo lineInfo,
                                             final String statement,
                                             final SLNode... nodes ) {
         try {
@@ -76,7 +89,8 @@ public abstract class ParsingSupport {
                 for (final SLNode node : nodes) {
                     if (node != null) {
                         try {
-                            node.addLineReference(lineInfo.getStartLine(),
+                            node.addLineReference(simplePersist,
+                                                  lineInfo.getStartLine(),
                                                   lineInfo.getEndLine(),
                                                   lineInfo.getStartCharPositionInLine(),
                                                   lineInfo.getEndCharPositionInLine(),

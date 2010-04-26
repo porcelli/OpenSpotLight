@@ -77,6 +77,7 @@ import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
@@ -155,46 +156,11 @@ public class SLIdentityStoreImplTest {
             new SLIdStoreTestContext());
 
 
-    private enum JRedisServerConfigExample implements JRedisServerDetail {
-        DEFAULT("localhost", 6379, 0);
-
-        private JRedisServerConfigExample(String serverName, int serverPort, int db) {
-            this.serverName = serverName;
-            this.serverPort = serverPort;
-            this.db = db;
-        }
-
-        private final String serverName;
-
-        private final int db;
-
-        public int getDb() {
-            return db;
-        }
-
-        public String getPassword() {
-            return null;
-        }
-
-        private final int serverPort;
-
-        public String getServerName() {
-            return serverName;
-        }
-
-        public int getServerPort() {
-            return serverPort;
-        }
-    }
-
-
     @Before
     public void clearAllData() throws Exception {
 
-        ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
-                .put(SLPartition.SECURITY, JRedisServerConfigExample.DEFAULT).build();
         Injector autoFlushInjector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath")) {
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repositoryPath")) {
 
                     @Override
                     protected void configure() {
