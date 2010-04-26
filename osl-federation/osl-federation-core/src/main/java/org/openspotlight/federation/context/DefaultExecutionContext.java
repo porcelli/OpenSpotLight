@@ -284,6 +284,10 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
         return repositoryPath;
     }
 
+    public SimplePersistFactory getSimplePersistFactory() {
+        return simplePersistFactory;
+    }
+
     public PersistentArtifactManager getPersistentArtifactManager() {
         return lazyJcrPersistentArtifactManagerProvider.get();
     }

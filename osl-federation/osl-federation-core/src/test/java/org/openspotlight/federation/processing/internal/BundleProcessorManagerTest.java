@@ -52,6 +52,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
@@ -61,10 +63,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.context.SingleGraphSessionExecutionContextFactory;
+import org.openspotlight.federation.context.*;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.BundleSource;
@@ -80,6 +79,7 @@ import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
@@ -88,6 +88,12 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class BundleProcessorManagerTest {
 
@@ -124,6 +130,14 @@ public class BundleProcessorManagerTest {
     public void shouldProcessMappedArtifactsUsingJcrStreamArtifacts()
             throws Exception {
         ExampleBundleProcessor.allStatus.clear();
+
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.mappedServerConfig, repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new SingleGraphSessionExecutionContextFactoryModule());
+
 
         final ArtifactSource source = new ArtifactSource();
         final String initialRawPath = Files
@@ -165,13 +179,11 @@ public class BundleProcessorManagerTest {
         bundleSource.setBundleProcessorType(bundleType);
         bundleSource.setRelative("/sources/java/myProject");
         bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
-        PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
-                                                                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
+        final ExecutionContextFactory contextFactory = injector.getInstance(ExecutionContextFactory.class);
+        PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(injector.getInstance(SimplePersistFactory.class), repository);
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,
                                                         provider);
 
-        final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
-                                                                                     .createFactory();
         final ExecutionContext context = contextFactory.createExecutionContext(
                                                                                "username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                                                                                repository);
@@ -182,8 +194,7 @@ public class BundleProcessorManagerTest {
         final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
                                                                                    .executeBundles("username", "password",
                                                                                                    DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                                   SingleGraphSessionExecutionContextFactory
-                                                                                                                                            .createFactory(), settings, group);
+                                                                                                   contextFactory, settings, group);
         Assert.assertThat(ExampleBundleProcessor.allStatus
                                                           .contains(LastProcessStatus.ERROR), Is.is(false));
         Assert.assertThat(ExampleBundleProcessor.allStatus

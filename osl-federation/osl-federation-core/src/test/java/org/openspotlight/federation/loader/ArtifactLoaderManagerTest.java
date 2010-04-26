@@ -48,16 +48,14 @@
  */
 package org.openspotlight.federation.loader;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.federation.context.ExampleRedisConfig;
+import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
@@ -66,19 +64,40 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class ArtifactLoaderManagerTest {
 
     @Test
     public void shouldLoad() throws Exception {
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.mappedServerConfig, repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
+
         final GlobalSettings settings = new GlobalSettings();
         settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
         settings.setDefaultSleepingIntervalInMilliseconds(500);
         final String initialRawPath = Files.getNormalizedFileName(new File(
-                                                                           "."));
+                "."));
         final String initial = initialRawPath.substring(0, initialRawPath
-                                                                         .lastIndexOf('/'));
+                .lastIndexOf('/'));
         final String finalStr = initialRawPath.substring(initial.length());
         final ArtifactSource source = new ArtifactSource();
         final Repository repository = new Repository();
@@ -97,22 +116,23 @@ public class ArtifactLoaderManagerTest {
         source.setBinary(false);
         source.setInitialLookup(initial);
         source.setName("sourceName");
+        ExecutionContext ctx = injector.getInstance(ExecutionContextFactory.class).createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
         PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
-                                                                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
+                ctx.getSimplePersistFactory(), repository);
 
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,
-                                                        provider);
+                provider);
         Set<StringArtifact> artifacts = provider.get().listByPath(
-                                                                  StringArtifact.class, null);
+                StringArtifact.class, null);
         provider.closeResources();
         boolean hasAny = false;
 
         for (final Artifact a : artifacts) {
             assertThat(a, is(notNullValue()));
             assertThat(a.getArtifactCompleteName().startsWith(
-                                                              mapping.getTo() + "/"), is(true));
+                    mapping.getTo() + "/"), is(true));
             assertThat(a.getArtifactCompleteName().contains(
-                                                            mapping.getFrom() + "/"), is(false));
+                    mapping.getFrom() + "/"), is(false));
             hasAny = true;
         }
         assertThat(hasAny, is(true));

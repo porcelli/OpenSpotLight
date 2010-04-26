@@ -77,7 +77,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class responsible to load artifacts. It has a public method
- * {@link ArtifactLoaderManager#refreshResources(GlobalSettings, ArtifactSource, PersistentArtifactManager, boolean)} . Please
  * read its javadoc.
  * 
  * @author feu
@@ -248,7 +247,6 @@ public enum ArtifactLoaderManager {
      * 
      * @param settings
      * @param source
-     * @param persistentArtifactManager
      */
     public void refreshResources( final GlobalSettings settings,
                                   final ArtifactSource source,
@@ -291,7 +289,6 @@ public enum ArtifactLoaderManager {
      * 
      * @param settings
      * @param source
-     * @param manager
      * @return
      * @throws Exception
      */

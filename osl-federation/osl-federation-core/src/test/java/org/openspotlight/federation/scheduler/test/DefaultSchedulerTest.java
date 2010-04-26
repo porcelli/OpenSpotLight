@@ -54,22 +54,29 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.*;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class DefaultSchedulerTest {
 
@@ -119,6 +126,13 @@ public class DefaultSchedulerTest {
 
     @BeforeClass
     public static void setupScheduler() {
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.mappedServerConfig, repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
         final ArtifactSource source = new ArtifactSource();
         final String initialRawPath = Files
                                            .getNormalizedFileName(new File(".."));
@@ -146,8 +160,7 @@ public class DefaultSchedulerTest {
         group.setRepository(repository);
         group.setType("types");
         repository.getGroups().add(group);
-        scheduler.initializeSettings(DefaultExecutionContextFactory
-                                                                   .createFactory(), "user", "password",
+        scheduler.initializeSettings(injector.getInstance(ExecutionContextFactory.class), "user", "password",
                                      DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         scheduler.refreshJobs(settings, repositories);
         scheduler.startScheduler();

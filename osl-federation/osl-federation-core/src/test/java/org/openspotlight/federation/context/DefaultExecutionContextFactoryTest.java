@@ -74,56 +74,20 @@ import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
+
 public class DefaultExecutionContextFactoryTest {
 
     private ExecutionContext              context;
 
     private static ExecutionContextFactory factory;
 
-    private static ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
-                    .put(SLPartition.GRAPH, ExampleRedisConfig.INSTANCE).build();
 
-
-    private enum ExampleRedisConfig implements JRedisServerDetail {
-        INSTANCE("localhost",6379,1,null);
-
-        private ExampleRedisConfig(String serverName, int serverPort, int db, String password) {
-            this.serverName = serverName;
-            this.serverPort = serverPort;
-            this.db = db;
-            this.password = password;
-        }
-
-        private final String serverName;
-
-        private final int serverPort;
-
-        private final int db;
-
-        private final String password;
-
-        public String getServerName() {
-            return serverName;
-        }
-
-        public int getServerPort() {
-            return serverPort;
-        }
-
-        public int getDb() {
-            return db;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-    }
 
     @BeforeClass
     public static void setup() throws Exception{
         Injector injector = Guice.createInjector(
                 new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        mappedServerConfig,repositoryPath("repository")),
+                        ExampleRedisConfig.mappedServerConfig,repositoryPath("repository")),
                 new SimplePersistModule(),
                 new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule());

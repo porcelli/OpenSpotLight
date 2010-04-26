@@ -51,16 +51,20 @@ package org.openspotlight.federation;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Test;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.federation.context.ExampleRedisConfig;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
-import org.openspotlight.federation.util.test.ExampleModule;
+import org.openspotlight.federation.log.DetailedLoggerModule;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -136,9 +140,16 @@ public class ArtifactWithSyntaxPersisting {
     public void shouldPersistLotsOfStuff() throws Exception {
         final Set<StringArtifact> lotsOfStuff = createLotsOfStuff();
 
-        Injector injector = Guice.createInjector(new ExampleModule(repositoryPath("sampleRepository")));
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.mappedServerConfig, repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
         STStorageSession session = injector.getProvider(STStorageSession.class).get();
-        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(session, SLPartition.FEDERATION);
+        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.
+                getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.FEDERATION);
 
         int count = 0;
         final long start = System.currentTimeMillis();

@@ -48,30 +48,29 @@
  */
 package org.openspotlight.federation.loader;
 
-import java.util.Set;
-
-import javax.jcr.Session;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.federation.context.ExampleRedisConfig;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
-import org.openspotlight.federation.util.test.ExampleModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+
+import javax.jcr.Session;
+import java.util.Set;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
@@ -89,8 +88,13 @@ public class JcrSessionConfigurationManagerTest extends
     @BeforeClass
     public static void setupJcrRepo() throws Exception {
         provider = JcrConnectionProvider
-                                        .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        injector = Guice.createInjector(new ExampleModule(repositoryPath("newRepository")));
+                .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.mappedServerConfig, repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
         simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.FEDERATION);
     }
 
@@ -107,7 +111,7 @@ public class JcrSessionConfigurationManagerTest extends
     @Override
     protected ConfigurationManager createNewConfigurationManager() {
         return ConfigurationManagerFactoryImpl
-                                                    .createMutableUsingSession(simplePersist);
+                .createMutableUsingSession(simplePersist);
     }
 
     @Before
@@ -134,7 +138,7 @@ public class JcrSessionConfigurationManagerTest extends
         manager1.saveRepository(repository);
 
         final GroupDifferences differences = GroupSupport.getDifferences(
-                                                                         simplePersist, repository.getName());
+                simplePersist, repository.getName());
         final Set<String> added = differences.getAddedGroups();
 
         Assert.assertThat(added.contains("newRepository/new"), Is.is(true));

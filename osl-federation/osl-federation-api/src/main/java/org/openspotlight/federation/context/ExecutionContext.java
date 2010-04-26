@@ -87,4 +87,6 @@ public interface ExecutionContext extends Disposable {
     public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist(STPartition partition);
 
     public STRepositoryPath getRepositoryPath();
+
+    public SimplePersistFactory getSimplePersistFactory();
 }
