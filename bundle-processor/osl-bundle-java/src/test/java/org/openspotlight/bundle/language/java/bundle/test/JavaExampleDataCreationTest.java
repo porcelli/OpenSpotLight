@@ -54,6 +54,8 @@ import java.io.FileOutputStream;
 
 import javax.jcr.Node;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
@@ -62,6 +64,7 @@ import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.BundleProcessorType;
@@ -70,6 +73,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
@@ -79,6 +83,12 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 @Ignore
 public class JavaExampleDataCreationTest {
@@ -119,8 +129,16 @@ public class JavaExampleDataCreationTest {
         includedSource.setName("classpath");
         includedSource
                       .setInitialLookup("./src/test/resources/stringArtifacts/exampleFiles");
-        includedFilesContextFactory = DefaultExecutionContextFactory
-                                                                    .createFactory();
+
+Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
+
+        includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         settings = new GlobalSettings();
         settings.setDefaultSleepingIntervalInMilliseconds(1000);

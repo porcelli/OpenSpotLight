@@ -89,6 +89,9 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,10 +306,10 @@ public class JavaBinaryProcessor implements
     }
 
     public static String discoverContextName( final StreamArtifact artifact,
-                                              Session artifactSession )
+                                              SimplePersistCapable<STNodeEntry, STStorageSession> artifactSimplePersist )
         throws IOException, SLException {
 
-        InputStream is = artifact.getContent().get(artifactSession);
+        InputStream is = artifact.getContent().get(artifactSimplePersist);
         if (is.markSupported()) {
             is.reset();
         }
@@ -374,11 +377,11 @@ public class JavaBinaryProcessor implements
             logger.debug(" starting to process artifact " + artifact);
         }
         try {
-            Session artifactSession = (Session)context.getPersistentArtifactManager().getPersistentEngine();
+            SimplePersistCapable<STNodeEntry, STStorageSession> artifactSimplePersist = context.getPersistentArtifactManager().getSimplePersist();
             final CompiledTypesExtractor extractor = new CompiledTypesExtractor();
             final List<TypeDefinition> types = extractor.getJavaTypes(artifact
-                                                                              .getContent().get(artifactSession), artifact.getArtifactCompleteName());
-            final String uniqueContextName = discoverContextName(artifact, artifactSession);
+                                                                              .getContent().get(artifactSimplePersist), artifact.getArtifactCompleteName());
+            final String uniqueContextName = discoverContextName(artifact, artifactSimplePersist);
             artifact.setUniqueContextName(uniqueContextName);
             final SLContext slContext = context.getGraphSession()
                                                .createContext(uniqueContextName);

@@ -100,8 +100,6 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
         final String classpahtEntries = currentContext.getBundleProperties()
                                                       .get(JavaConstants.JAR_CLASSPATH);
         final Set<String> contexts = new LinkedHashSet<String>();
-        Session artifactSession = (Session)context
-                                                  .getPersistentArtifactManager().getPersistentEngine();
         if (classpahtEntries != null) {
             final String[] entries = classpahtEntries
                                                      .split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
@@ -116,7 +114,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
                 String ctxName = artifact.getUniqueContextName();
                 if (ctxName == null) {
                     ctxName = JavaBinaryProcessor.discoverContextName(artifact,
-                                                                      artifactSession);
+                                                                      context.getPersistentArtifactManager().getSimplePersist());
                     if (logger.isDebugEnabled()) {
                         logger.debug("context unique name for "
                                      + artifact.getArtifactCompleteName() + " = "

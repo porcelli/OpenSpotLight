@@ -48,6 +48,8 @@
  */
 package org.openspotlight.bundle.language.java.bundle.test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
@@ -59,6 +61,7 @@ import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhas
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.BundleProcessorType;
@@ -67,6 +70,7 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
@@ -74,6 +78,12 @@ import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class JavaStringChangesTest {
 
@@ -93,29 +103,34 @@ public class JavaStringChangesTest {
         final Repository repo = new Repository();
         repo.setName("name");
         repo.setActive(true);
+
+Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+        
         final ArtifactSource includedSource = new ArtifactSource();
         includedSource.setRepository(repo);
         includedSource.setName("classpath");
         includedSource
                       .setInitialLookup("./src/test/resources/stringArtifacts/new_file");
-        includedFilesContextFactory = DefaultExecutionContextFactory
-                                                                    .createFactory();
+        includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ArtifactSource changedSource = new ArtifactSource();
         changedSource.setRepository(repo);
         changedSource.setName("classpath");
         changedSource
                      .setInitialLookup("./src/test/resources/stringArtifacts/changed_file");
-        changedFilesContextFactory = DefaultExecutionContextFactory
-                                                                   .createFactory();
+        changedFilesContextFactory = includedFilesContextFactory;
 
         final ArtifactSource removedSource = new ArtifactSource();
         removedSource.setRepository(repo);
         removedSource.setName("classpath");
         removedSource
                      .setInitialLookup("./src/test/resources/stringArtifacts/removed_file");
-        removedFilesContextFactory = DefaultExecutionContextFactory
-                                                                   .createFactory();
+        removedFilesContextFactory = includedFilesContextFactory;
         settings = new GlobalSettings();
         settings.setDefaultSleepingIntervalInMilliseconds(1000);
         GlobalSettingsSupport.initializeScheduleMap(settings);

@@ -50,9 +50,12 @@
 package org.openspotlight.bundle.language.java.bundle.test;
 
 import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.util.Set;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.After;
@@ -64,6 +67,7 @@ import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
@@ -75,10 +79,15 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 public class JavaBinaryProcessorTest {
 
@@ -159,10 +168,16 @@ public class JavaBinaryProcessorTest {
         JcrConnectionProvider.createFromData(
                                              DefaultJcrDescriptor.TEMP_DESCRIPTOR)
                              .closeRepositoryAndCleanResources();
+        Injector injector = Guice.createInjector(
+                        new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                        new SimplePersistModule(),
+                        new DetailedLoggerModule(),
+                        new DefaultExecutionContextFactoryModule());
 
         data = createRepositoryData();
 
-        contextFactory = DefaultExecutionContextFactory.createFactory();
+        contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ExecutionContext context = contextFactory.createExecutionContext(
                                                                                "username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,

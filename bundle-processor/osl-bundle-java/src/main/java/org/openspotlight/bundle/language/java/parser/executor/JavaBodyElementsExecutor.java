@@ -62,6 +62,7 @@ import java.util.Stack;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
+import org.openspotlight.bundle.common.parser.ParsingSupport;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.metamodel.link.DataComparison;
 import org.openspotlight.bundle.language.java.metamodel.link.DataParameter;
@@ -108,6 +109,12 @@ public class JavaBodyElementsExecutor {
     }
 
     private final boolean                                           quiet                 = true;
+
+    public ParsingSupport getParsingSupport() {
+        return parsingSupport;
+    }
+
+    private final ParsingSupport parsingSupport;
 
     private final Logger                                            logger                = LoggerFactory.getLogger(getClass());
 
@@ -162,9 +169,10 @@ public class JavaBodyElementsExecutor {
     private final List<SLContext>                                   contexts;
 
     public JavaBodyElementsExecutor(
-                                     final JavaExecutorSupport support,
-                                     final Set<String> contextNamesInOrder ) throws Exception {
+            final JavaExecutorSupport support,
+            final Set<String> contextNamesInOrder, ParsingSupport parsingSupport) throws Exception {
         this.support = support;
+        this.parsingSupport = parsingSupport;
         final List<SLContext> tmpContexts = new ArrayList<SLContext>(
                                                                      contextNamesInOrder.size());
         for (final String s : contextNamesInOrder) {

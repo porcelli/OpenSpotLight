@@ -54,6 +54,7 @@ import java.util.List;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
+import org.openspotlight.bundle.common.parser.ParsingSupport;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.AnottatedBy;
@@ -96,12 +97,23 @@ import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQueryApi;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JavaPublicElementsTreeExecutor {
 
     private final Logger              logger                         = LoggerFactory.getLogger(getClass());
+
+    public ParsingSupport getParsingSupport() {
+        return parsingSupport;
+    }
+
+    private final ParsingSupport parsingSupport;
 
     private JavaPackage               currentPackage;
     private final String              artifactVersion;
@@ -111,12 +123,15 @@ public class JavaPublicElementsTreeExecutor {
     private final JavaExecutorSupport support;
 
     private final boolean             quiet                          = false;
+    private SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-    public JavaPublicElementsTreeExecutor(
-                                           final JavaExecutorSupport support,
-                                           final String artifactVersion ) throws Exception {
+    public JavaPublicElementsTreeExecutor(SimplePersistFactory factory,
+                                          final JavaExecutorSupport support,
+                                          final String artifactVersion, ParsingSupport parsingSupport) throws Exception {
         super();
         this.support = support;
+        this.parsingSupport = parsingSupport;
+        simplePersist = factory.createSimplePersist(SLPartition.LINE_REFERENCE);
         completeArtifactName = support.completeArtifactName;
         this.artifactVersion = artifactVersion;
 
@@ -150,7 +165,7 @@ public class JavaPublicElementsTreeExecutor {
                                       + typed.getEndCharOffset(), typed.getEndCharOffset() > 0
                                                                   && typed.getEndCharOffset() >= typed.getStartCharOffset());
             Assertions.checkNotEmpty("text", typed.getText());
-            node.addLineReference(typed.getLine(), typed.getLine(), typed
+            node.addLineReference(simplePersist,typed.getLine(), typed.getLine(), typed
                                                                          .getStartCharOffset(), typed.getEndCharOffset(), typed
                                                                                                                                .getText(), completeArtifactName, artifactVersion);
             typed.setNode(node);

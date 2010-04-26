@@ -51,6 +51,7 @@ package org.openspotlight.bundle.language.java.bundle;
 import java.util.Set;
 
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.openspotlight.bundle.common.parser.ParsingSupport;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.parser.JavaBodyElements;
 import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
@@ -93,7 +94,7 @@ public class JavaBodyElementsPhase implements
                                                                 .getTransientProperties().get(JavaConstants.USING_CONTEXTS);
         stream.reset();
         final JavaBodyElements elements = new JavaBodyElements(stream);
-        elements.setExecutor(new JavaBodyElementsExecutor(support, contexts));
+        elements.setExecutor(new JavaBodyElementsExecutor(support, contexts, new ParsingSupport(context.getSimplePersistFactory())));
         elements.compilationUnit();
         return LastProcessStatus.PROCESSED;
     }

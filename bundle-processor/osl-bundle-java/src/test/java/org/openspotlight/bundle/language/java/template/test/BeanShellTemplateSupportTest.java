@@ -53,6 +53,8 @@ import java.io.FileInputStream;
 import java.io.StringReader;
 import java.util.List;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.Assert;
@@ -64,13 +66,21 @@ import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.bundle.language.java.template.BeanShellTemplateSupport;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 
 import bsh.Interpreter;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class BeanShellTemplateSupportTest {
 
@@ -96,8 +106,14 @@ public class BeanShellTemplateSupportTest {
         Assert.assertThat(beanShellScript, Is.is(IsNull.notNullValue()));
         Assert.assertThat(Strings.isEmpty(beanShellScript), Is.is(false));
         final Interpreter interpreter = new Interpreter();
-        final ExecutionContextFactory contextFactory = DefaultExecutionContextFactory
-                                                                                     .createFactory();
+        Injector injector = Guice.createInjector(
+                        new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                        new SimplePersistModule(),
+                        new DetailedLoggerModule(),
+                        new DefaultExecutionContextFactoryModule());
+
+        final ExecutionContextFactory contextFactory = injector.getInstance(ExecutionContextFactory.class);
         final ExecutionContext context = contextFactory.createExecutionContext(
                                                                                "user", "pass", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                                                                                repository);

@@ -48,9 +48,8 @@
  */
 package org.openspotlight.bundle.language.java.bundle.test;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
@@ -63,26 +62,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
-import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
+import org.openspotlight.bundle.language.java.bundle.*;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
+import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
@@ -91,38 +83,47 @@ import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+
 public class JavaBodyElementsPhaseTest {
 
-    public static void main( final String... args ) throws Exception {
+    public static void main(final String... args) throws Exception {
         final JavaBodyElementsPhaseTest test = new JavaBodyElementsPhaseTest();
 
         try {
             final javax.jcr.Repository repository = JcrConnectionProvider
-                                                                         .createFromData(descriptor).getRepository();
+                    .createFromData(descriptor).getRepository();
 
             final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
             final RemoteRepository remote = saFactory
-                                                     .getRemoteRepository(repository);
+                    .getRemoteRepository(repository);
 
             final Registry registry = LocateRegistry
-                                                    .createRegistry(Registry.REGISTRY_PORT);
+                    .createRegistry(Registry.REGISTRY_PORT);
             registry.bind("jackrabbit.repository", remote);
 
             RemoteGraphSessionServer server = null;
             try {
                 server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
-                    public boolean canConnect( final String userName,
-                                               final String password,
-                                               final String clientHost ) {
+                    public boolean canConnect(final String userName,
+                                              final String password,
+                                              final String clientHost) {
                         return true;
                     }
 
-                    public boolean equals( final Object o ) {
+                    public boolean equals(final Object o) {
                         return this.getClass().equals(o.getClass());
                     }
                 }, 7070, 60 * 1000 * 10L, descriptor);
@@ -142,7 +143,7 @@ public class JavaBodyElementsPhaseTest {
                 e.printStackTrace();
             }
             System.err
-                      .println("Server is still waiting connections on port 7070");
+                    .println("Server is still waiting connections on port 7070");
             while (true) {
                 Thread.sleep(5000);
             }
@@ -152,22 +153,22 @@ public class JavaBodyElementsPhaseTest {
         }
     }
 
-    private ExecutionContextFactory              includedFilesContextFactory;
+    private ExecutionContextFactory includedFilesContextFactory;
 
-    private GlobalSettings                       settings;
-    private final Logger                         logger     = LoggerFactory.getLogger(getClass());
+    private GlobalSettings settings;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Group                                group;
+    private Group group;
 
-    private final String                         username   = "username";
+    private final String username = "username";
 
-    private final String                         password   = "password";
+    private final String password = "password";
     private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 
     @After
     public void closeResources() {
-        final RepositoryImpl repo = (RepositoryImpl)JcrConnectionProvider
-                                                                         .createFromData(descriptor).getRepository();
+        final RepositoryImpl repo = (RepositoryImpl) JcrConnectionProvider
+                .createFromData(descriptor).getRepository();
         repo.shutdown();
     }
 
@@ -175,7 +176,7 @@ public class JavaBodyElementsPhaseTest {
     public void setupResources() throws Exception {
         logger.info("starting test");
         JcrConnectionProvider.createFromData(descriptor)
-                             .closeRepositoryAndCleanResources();
+                .closeRepositoryAndCleanResources();
         final Repository repo = new Repository();
         repo.setName("OSL");
         repo.setActive(true);
@@ -183,9 +184,17 @@ public class JavaBodyElementsPhaseTest {
         includedSource.setRepository(repo);
         includedSource.setName("junit");
         includedSource
-                      .setInitialLookup("src/test/resources/stringArtifacts/junit-4.3.1");
-        includedFilesContextFactory = DefaultExecutionContextFactory
-                                                                    .createFactory();
+                .setInitialLookup("src/test/resources/stringArtifacts/junit-4.3.1");
+
+        Injector injector = Guice.createInjector(
+                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                new SimplePersistModule(),
+                new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
+
+
+        includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         settings = new GlobalSettings();
         settings.setDefaultSleepingIntervalInMilliseconds(1000);
@@ -211,15 +220,15 @@ public class JavaBodyElementsPhaseTest {
 
         final BundleProcessorType commonProcessor = new BundleProcessorType();
         commonProcessor.getBundleProperties().put(JavaConstants.JAR_CLASSPATH,
-                                                  "/lib/luni-few-classes.jar");
+                "/lib/luni-few-classes.jar");
         commonProcessor.setActive(true);
         commonProcessor.setName("common-sources");
         commonProcessor.setGroup(group);
         commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
         commonProcessor.getArtifactPhases().add(
-                                                JavaLexerAndParserTypesPhase.class);
+                JavaLexerAndParserTypesPhase.class);
         commonProcessor.getArtifactPhases().add(
-                                                JavaParserPublicElementsPhase.class);
+                JavaParserPublicElementsPhase.class);
         commonProcessor.getArtifactPhases().add(JavaBodyElementsPhase.class);
         group.getBundleTypes().add(commonProcessor);
 
@@ -229,8 +238,8 @@ public class JavaBodyElementsPhaseTest {
         bundleSource.setRelative("/src/");
         bundleSource.getIncludeds().add("/src/**/*.java");
         final ExecutionContext ctx = includedFilesContextFactory
-                                                                .createExecutionContext(username, password, descriptor, group
-                                                                                                                             .getRootRepository());
+                .createExecutionContext(username, password, descriptor, group
+                        .getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
         ctx.closeResources();
@@ -240,21 +249,21 @@ public class JavaBodyElementsPhaseTest {
     public void shouldResoulveExpectedTokens() throws Exception {
         logger.info("about to execute bundle");
         final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
-                                                                                   .executeBundles(username, password, descriptor,
-                                                                                                   includedFilesContextFactory, settings, group);
+                .executeBundles(username, password, descriptor,
+                        includedFilesContextFactory, settings, group);
         logger.info("bundle executed");
         Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 
         final ExecutionContext context = includedFilesContextFactory
-                                                                    .createExecutionContext(username, password, descriptor, group
-                                                                                                                                 .getRootRepository());
+                .createExecutionContext(username, password, descriptor, group
+                        .getRootRepository());
         final SLContext ctx = context.getGraphSession().getContext(
-                                                                   SLConsts.DEFAULT_GROUP_CONTEXT);
+                SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode = ctx.getRootNode().getNode(
-                                                           group.getUniqueName());
+                group.getUniqueName());
 
         final SLNode defaultPackageNode = groupNode
-                                                   .getNode(JavaConstants.DEFAULT_PACKAGE);
+                .getNode(JavaConstants.DEFAULT_PACKAGE);
         final SLNode classNode = defaultPackageNode.getNode("ExampleClass");
         Assert.assertThat(classNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(classNode, Is.is(JavaTypeClass.class));
@@ -264,34 +273,34 @@ public class JavaBodyElementsPhaseTest {
 
         final SLNode examplePackageNode = groupNode.getNode("example.pack");
         final SLNode anotherClassNode = examplePackageNode
-                                                          .getNode("AnotherExampleClass");
+                .getNode("AnotherExampleClass");
         Assert.assertThat(anotherClassNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(anotherClassNode, Is.is(JavaTypeClass.class));
         final SLNode anotherInnerClassNode = anotherClassNode
-                                                             .getNode("InnerClass");
+                .getNode("InnerClass");
         Assert.assertThat(anotherInnerClassNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(anotherInnerClassNode, Is.is(JavaTypeClass.class));
         final SLNode anotherEnumNode = examplePackageNode
-                                                         .getNode("AnotherExampleEnum");
+                .getNode("AnotherExampleEnum");
         Assert.assertThat(anotherEnumNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(anotherEnumNode, Is.is(JavaTypeEnum.class));
         final SLNode exampleSubPackageNode = groupNode
-                                                      .getNode("example.pack.subpack");
+                .getNode("example.pack.subpack");
         final SLNode classOnConcrete = exampleSubPackageNode
-                                                            .getNode("ClassWithLotsOfStuff");
+                .getNode("ClassWithLotsOfStuff");
         Assert.assertThat(classOnConcrete, Is.is(IsNull.notNullValue()));
         Assert.assertThat(classOnConcrete, Is.is(JavaTypeClass.class));
 
         final AbstractTypeBind link = context.getGraphSession().getLinks(
-                                                                         AbstractTypeBind.class, classOnConcrete, null).iterator()
-                                             .next();
+                AbstractTypeBind.class, classOnConcrete, null).iterator()
+                .next();
         final SLNode classOnAbstract = link.getTarget();
         System.err.println(" abstract " + classOnAbstract.getID());
         System.err.println(" concrete " + classOnConcrete.getID());
         System.err.println(" abstract " + classOnAbstract.getContext().getID());
         System.err.println(" concrete " + classOnConcrete.getContext().getID());
         final SLNode doSomethingMethodNode = classOnConcrete
-                                                            .getNode("doSomething()");
+                .getNode("doSomething()");
 
         final NeedsSyncronizationSet<SLNode> nodes = classOnAbstract.getNodes();
         for (final SLNode n : nodes) {

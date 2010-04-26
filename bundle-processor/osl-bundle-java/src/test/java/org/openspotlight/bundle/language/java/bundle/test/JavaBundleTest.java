@@ -48,6 +48,8 @@
  */
 package org.openspotlight.bundle.language.java.bundle.test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Ignore;
 import org.openspotlight.bundle.common.AbstractTestServerClass;
 import org.openspotlight.bundle.language.java.JavaConstants;
@@ -58,6 +60,7 @@ import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhas
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
@@ -67,11 +70,18 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 @Ignore
 public class JavaBundleTest extends AbstractTestServerClass {
@@ -93,7 +103,14 @@ public class JavaBundleTest extends AbstractTestServerClass {
         final Repository repo = new Repository();
         repo.setName("name");
         repo.setActive(true);
-        contextFactory = DefaultExecutionContextFactory.createFactory();
+        Injector injector = Guice.createInjector(
+                        new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                        new SimplePersistModule(),
+                        new DetailedLoggerModule(),
+                        new DefaultExecutionContextFactoryModule());
+
+        contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ArtifactSource artifactSource = new ArtifactSource();
         repo.getArtifactSources().add(artifactSource);
