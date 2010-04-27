@@ -50,7 +50,9 @@ package org.openspotlight.federation.finder.test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.jredis.JRedis;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
@@ -66,6 +68,8 @@ import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -88,6 +92,7 @@ public class JcrPersistentArtifactManagerTest {
     private static Repository repository;
 
     private static PersistentArtifactManagerImpl persistenArtifactManager;
+    private static JRedis jredis;
 
     /**
      * Setup.
@@ -104,6 +109,7 @@ public class JcrPersistentArtifactManagerTest {
                 new SimplePersistModule(),
                 new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule());
+        jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
 
         final SessionWithLock session = provider.openSession();
         artifactSource = new ArtifactSource();
@@ -121,6 +127,11 @@ public class JcrPersistentArtifactManagerTest {
             persistenArtifactManager.addTransient(artifact);
         persistenArtifactManager.saveTransientData();
 
+    }
+
+    @Before
+    public void cleanRedis() throws Exception {
+         jredis.flushall(); 
     }
 
     @AfterClass

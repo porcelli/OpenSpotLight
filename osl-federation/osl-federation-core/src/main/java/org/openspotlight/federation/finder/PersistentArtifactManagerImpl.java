@@ -172,8 +172,7 @@ public class PersistentArtifactManagerImpl extends
                     .withProperty(propertyName).containsString(initialPath)
                     .buildCriteria().andFind(simplePersist.getCurrentSession());
         } else {
-            foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName)
-                    .buildCriteria().andFind(simplePersist.getCurrentSession());
+            foundNodes = simplePersist.getPartitionMethods().findNamed(nodeName);
 
         }
         Set<String> names = newHashSet();
