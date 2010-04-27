@@ -132,7 +132,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
     /** The Constant SEPARATOR. */
     final static String                          SEPARATOR         = "/";
 
-    private AddOnlyConcurrentMap<String, Object> transientMap;
+    private transient AddOnlyConcurrentMap<String, Object> transientMap;
 
     private String                               repositoryName;
 

@@ -85,7 +85,6 @@ public class JcrPersistentArtifactManagerTest {
     /**
      * The provider.
      */
-    private static JcrConnectionProvider provider;
 
     private static ArtifactSource artifactSource;
 
@@ -101,17 +100,15 @@ public class JcrPersistentArtifactManagerTest {
      */
     @BeforeClass
     public static void setup() throws Exception {
-        provider = JcrConnectionProvider
-                .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         Injector injector = Guice.createInjector(
                 new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("name")),
                 new SimplePersistModule(),
                 new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule());
         jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
-
-        final SessionWithLock session = provider.openSession();
+        jredis.flushall();
+        
         artifactSource = new ArtifactSource();
         artifactSource.setName("classpath");
         artifactSource.setInitialLookup("./src");
@@ -129,10 +126,6 @@ public class JcrPersistentArtifactManagerTest {
 
     }
 
-    @Before
-    public void cleanRedis() throws Exception {
-         jredis.flushall(); 
-    }
 
     @AfterClass
     public static void closeResources() {

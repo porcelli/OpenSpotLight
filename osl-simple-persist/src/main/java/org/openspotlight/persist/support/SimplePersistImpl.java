@@ -145,9 +145,18 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 Object value = property.getMetadata().getTransient();
                 if (value instanceof InputStream) {
                     nodeEntry.getVerifiedOperations().setInputStreamProperty(currentSession, propertyName, (InputStream) value);
+                } else if (value instanceof Set) {
+                    nodeEntry.getVerifiedOperations().setSerializedPojoProperty(currentSession, propertyName,
+                            (Class<? super Serializable>) property.getMetadata().getPropertyType(), (Serializable) beforeSerializeSet((Set<? extends Serializable>) value, null));
+                } else if (value instanceof List) {
+                    nodeEntry.getVerifiedOperations().setSerializedPojoProperty(currentSession, propertyName,
+                            (Class<? super Serializable>) property.getMetadata().getPropertyType(), (Serializable) beforeSerializeList((List<? extends Serializable>) value, null));
+                } else if (value instanceof Map) {
+                    nodeEntry.getVerifiedOperations().setSerializedPojoProperty(currentSession, propertyName,
+                            (Class<? super Serializable>) property.getMetadata().getPropertyType(), (Serializable) beforeSerializeMap((Map<? extends Serializable, ? extends Serializable>) value, null));
                 } else {//Serializable
                     nodeEntry.getVerifiedOperations().setSerializedPojoProperty(currentSession, propertyName,
-                            (Class<? super Serializable>) property.getMetadata().getPropertyType(), (Serializable) value);
+                            (Class<? super Serializable>) property.getMetadata().getPropertyType(), beforeSerializeSerializable((Serializable) value));
                 }
                 nodeEntry.getVerifiedOperations().setSimpleProperty(currentSession, format(SHA1_PROPERTY_NAME, propertyName), String.class, property.getMetadata().getSha1());
                 property.getMetadata().markAsSaved();
@@ -276,7 +285,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             builder.withKey(NODE_PROPERTY_NAME, String.class, propertyName);
         }
         STNodeEntry newNode = builder.andCreate();
-        newNode.getVerifiedOperations().setSimpleProperty(currentSession, NODE_ENTRY_TYPE, String.class, name);
+        newNode.getVerifiedOperations().setSimpleProperty(currentSession, NODE_ENTRY_TYPE, String.class, internalGetNodeType(descriptors.bean));
         return newNode;
     }
 
@@ -305,7 +314,16 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return this.<T>internalGetNodeName((Class<T>) bean.getClass());
     }
 
+    private <T> String internalGetNodeType(T bean) {
+        return this.<T>internalGetNodeType((Class<T>) bean.getClass());
+    }
+
     private <T> String internalGetNodeName(Class<T> beanType) {
+        Name annotation = beanType.getAnnotation(Name.class);
+        return annotation!=null?annotation.value():beanType.getName();
+    }
+
+    private <T> String internalGetNodeType(Class<T> beanType) {
         return beanType.getName();
     }
 
@@ -354,7 +372,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     private Class<?> findClassFromNode(STNodeEntry nodeEntry) throws Exception {
-        return forName(nodeEntry.getNodeEntryName());
+        return forName(nodeEntry.getProperty(currentSession, NODE_ENTRY_TYPE).getValueAs(currentSession,String.class));
     }
 
     private void fillBeanLazyProperties(STNodeEntry cached, Object bean, List<PropertyDescriptor> lazyPropertiesDescriptors) throws Exception {
@@ -524,52 +542,82 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
 
     private Set<? extends Serializable> beforeSerializeSet(Set<? extends Serializable> value, Method readMethod) throws Exception {
-        Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodDescription
-                = unwrapCollectionFromMethodReturn(readMethod);
+        if (readMethod != null) {
+            Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodDescription
+                    = unwrapCollectionFromMethodReturn(readMethod);
 
-        if (StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType())) {
+            if (StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType())) {
+                Set<Serializable> newCollection = newHashSet();
+                for (Serializable o : value) {
+                    newCollection.add(beforeSerializeSerializable(o));
+                }
+                return newCollection;
+            }
+            return value;
+        } else {
             Set<Serializable> newCollection = newHashSet();
             for (Serializable o : value) {
                 newCollection.add(beforeSerializeSerializable(o));
             }
             return newCollection;
         }
-        return value;
 
     }
 
     private List<? extends Serializable> beforeSerializeList(List<? extends Serializable> value, Method readMethod) throws Exception {
-        Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodDescription
-                = unwrapCollectionFromMethodReturn(readMethod);
+        if (readMethod != null) {
 
-        if (StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType())) {
+            Reflection.UnwrappedCollectionTypeFromMethodReturn<Object> methodDescription
+                    = unwrapCollectionFromMethodReturn(readMethod);
+
+            if (StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType())) {
+                List<Serializable> newCollection = newLinkedList();
+                for (Serializable o : value) {
+                    newCollection.add(beforeSerializeSerializable(o));
+                }
+                return newCollection;
+            }
+            return value;
+        } else {
             List<Serializable> newCollection = newLinkedList();
             for (Serializable o : value) {
                 newCollection.add(beforeSerializeSerializable(o));
             }
             return newCollection;
         }
-        return value;
 
     }
 
     private Map<? extends Serializable, ? extends Serializable> beforeSerializeMap(Map<? extends Serializable, ? extends Serializable> value, Method readMethod) throws Exception {
-        Reflection.UnwrappedMapTypeFromMethodReturn<Object, Object> methodDescription = unwrapMapFromMethodReturn(readMethod);
+        if (readMethod != null) {
+            Reflection.UnwrappedMapTypeFromMethodReturn<Object, Object> methodDescription = unwrapMapFromMethodReturn(readMethod);
 
-        if (StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType().getK2())) {
+            if (StreamPropertyWithParent.class.isAssignableFrom(methodDescription.getItemType().getK2())) {
+                Map<Serializable, Serializable> newMap = newHashMap();
+                for (Map.Entry<? extends Serializable, ? extends Serializable> entry : value.entrySet()) {
+                    newMap.put(entry.getKey(), beforeSerializeSerializable(entry.getValue()));
+                }
+                return newMap;
+            }
+            return value;
+        } else {
             Map<Serializable, Serializable> newMap = newHashMap();
             for (Map.Entry<? extends Serializable, ? extends Serializable> entry : value.entrySet()) {
                 newMap.put(entry.getKey(), beforeSerializeSerializable(entry.getValue()));
             }
             return newMap;
+
         }
-        return value;
     }
 
     private Serializable beforeSerializeSerializable(Serializable value) {
         if (value instanceof StreamPropertyWithParent) {
+            StreamPropertyWithParent typedValue = (StreamPropertyWithParent) value;
+
+            SimpleNodeType oldParent = typedValue.getParent();
+            typedValue.setParent(null);
             StreamPropertyWithParent newValue = (StreamPropertyWithParent) SerializationUtils.clone(value);
-            newValue.setParent(null);
+            typedValue.setParent(oldParent);
             return newValue;
         }
         return value;
@@ -586,7 +634,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
 
             STStorageSession.STCriteriaBuilder builder = currentSession.withPartition(currentPartition).createCriteria()
-                    .withProperty(NODE_ENTRY_TYPE).equals(String.class, internalGetNodeName(beanType));
+                    .withProperty(NODE_ENTRY_TYPE).equals(String.class, internalGetNodeType(beanType));
             Object dummyInstance = beanType.newInstance();
             for (int i = 0, size = propertyNames.length; i < size; i++) {
 
@@ -717,7 +765,9 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             for (PropertyDescriptor descriptor : getPropertyDescriptors(beanType)) {
                 if (descriptor.getName().equals("class")) continue;//Object#getClass
                 Method readMethod = descriptor.getReadMethod();
-                if (readMethod.isAnnotationPresent(TransientProperty.class)) continue;
+                if (readMethod.isAnnotationPresent(TransientProperty.class)) {
+                    continue;
+                }
                 Class<?> returnType = readMethod.getReturnType();
                 if (readMethod.isAnnotationPresent(ParentProperty.class)) {
                     Object value = bean != null ? readMethod.invoke(bean) : null;
