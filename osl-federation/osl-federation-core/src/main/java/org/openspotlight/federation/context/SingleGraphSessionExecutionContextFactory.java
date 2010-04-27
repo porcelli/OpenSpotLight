@@ -48,6 +48,7 @@
  */
 package org.openspotlight.federation.context;
 
+import com.google.inject.Inject;
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
@@ -79,6 +80,7 @@ public class SingleGraphSessionExecutionContextFactory implements
 
     private final DetailedLoggerProvider detailedLoggerProvider;
 
+    @Inject
     public SingleGraphSessionExecutionContextFactory(SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider) {
         this.simplePersistFactory = simplePersistFactory;
         this.detailedLoggerProvider = detailedLoggerProvider;

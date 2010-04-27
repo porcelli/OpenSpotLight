@@ -51,6 +51,7 @@ package org.openspotlight.federation.loader;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
+import org.jredis.JRedis;
 import org.junit.*;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.Group;
@@ -66,6 +67,7 @@ import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -85,6 +87,7 @@ public class JcrSessionConfigurationManagerTest extends
     private static Injector injector;
     private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
+    private static JRedis jredis;
     @BeforeClass
     public static void setupJcrRepo() throws Exception {
         provider = JcrConnectionProvider
@@ -96,9 +99,15 @@ public class JcrSessionConfigurationManagerTest extends
                 new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule());
         simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.FEDERATION);
+        jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
     }
 
     private Session session;
+
+    @Before
+    public void clean() throws Exception {
+        jredis.flushall();
+    }
 
     @After
     public void closeSession() throws Exception {
@@ -106,6 +115,7 @@ public class JcrSessionConfigurationManagerTest extends
             session.logout();
             session = null;
         }
+
     }
 
     @Override

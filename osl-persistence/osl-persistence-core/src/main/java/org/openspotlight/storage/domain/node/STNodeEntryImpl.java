@@ -69,6 +69,7 @@ import java.util.WeakHashMap;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
 
 
 public class STNodeEntryImpl implements STNodeEntry {
@@ -277,9 +278,11 @@ public class STNodeEntryImpl implements STNodeEntry {
             this.parent = parent;
         }
 
-        public <T extends Serializable> STProperty setSimpleProperty(STStorageSession session, String name, Class<? super T> propertyType, T value) {
+        public <T extends Serializable> STProperty setSimpleProperty(STStorageSession session, String name, Class<? super T> rawPropertyType, T value) {
             STProperty currentProperty = parent.getProperty(session, name);
+            Class<?> propertyType = findClassWithoutPrimitives(rawPropertyType);
             if (currentProperty != null) {
+
                 validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SIMPLE,propertyType,null,null);
             } else {
                 currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SIMPLE, propertyType);

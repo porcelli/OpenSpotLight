@@ -16,6 +16,7 @@ public class SimplePersistFactoryImpl implements SimplePersistFactory{
 
     private final Provider<STStorageSession> sessionProvider;
 
+    @Inject
     public SimplePersistFactoryImpl(Provider<STStorageSession> sessionProvider) {
         this.sessionProvider = sessionProvider;
     }

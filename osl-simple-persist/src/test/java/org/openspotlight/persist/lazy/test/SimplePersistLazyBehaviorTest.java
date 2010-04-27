@@ -9,6 +9,7 @@ import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
@@ -25,20 +26,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class SimplePersistLazyBehaviorTest {
 
-    private enum ExamplePartition implements STPartition {
 
-        DEFAULT("default");
-
-        private final String partitionName;
-
-        public String getPartitionName() {
-            return partitionName;
-        }
-
-        ExamplePartition(String partitionName) {
-            this.partitionName = partitionName;
-        }
-    }
 
 
     final Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
@@ -50,9 +38,9 @@ public class SimplePersistLazyBehaviorTest {
     @Before
     public void cleanPreviousData() throws Exception {
         JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
-        autoFlushFactory.getFrom(ExamplePartition.DEFAULT).flushall();
+        autoFlushFactory.getFrom(SLPartition.GRAPH).flushall();
         this.session = autoFlushInjector.getInstance(STStorageSession.class);
-        this.simplePersist = new SimplePersistImpl(session, ExamplePartition.DEFAULT);
+        this.simplePersist = new SimplePersistImpl(session, SLPartition.GRAPH);
     }
 
 

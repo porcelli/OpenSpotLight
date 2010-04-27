@@ -50,6 +50,7 @@ package org.openspotlight.federation.context;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.google.inject.Inject;
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
@@ -65,7 +66,8 @@ public class DefaultExecutionContextFactory implements ExecutionContextFactory,
 
     private final CopyOnWriteArrayList<DefaultExecutionContext> openedContexts = new CopyOnWriteArrayList<DefaultExecutionContext>();
 
-    private DefaultExecutionContextFactory(DetailedLoggerProvider detailedLoggerProvider, SimplePersistFactory simplePersistFactory) {
+    @Inject
+    public DefaultExecutionContextFactory(DetailedLoggerProvider detailedLoggerProvider, SimplePersistFactory simplePersistFactory) {
         this.detailedLoggerProvider = detailedLoggerProvider;
         this.simplePersistFactory = simplePersistFactory;
     }
