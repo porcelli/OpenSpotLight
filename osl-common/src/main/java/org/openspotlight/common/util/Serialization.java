@@ -82,8 +82,7 @@ public class Serialization {
      * @throws SLException
      */
     @SuppressWarnings( "unchecked" )
-    public static <E extends Serializable> E readFromBase64( final String string )
-            throws SLException {
+    public static <E extends Serializable> E readFromBase64( final String string ) throws SLException {
         checkNotNull("string", string); //$NON-NLS-1$
         try {
             final byte[] base64encoded = string.getBytes();
@@ -104,8 +103,7 @@ public class Serialization {
      * @throws SLException
      */
     @SuppressWarnings( "unchecked" )
-    public static <E extends Serializable> E readFromBytes( final byte[] bytes )
-            throws SLException {
+    public static <E extends Serializable> E readFromBytes( final byte[] bytes ) throws SLException {
         checkNotNull("bytes", bytes);//$NON-NLS-1$
         try {
             final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
@@ -125,8 +123,7 @@ public class Serialization {
      * @throws SLException
      */
     @SuppressWarnings( "unchecked" )
-    public static <E extends Serializable> E readFromInputStream(
-                                                                  final InputStream inputStream ) throws SLException {
+    public static <E extends Serializable> E readFromInputStream( final InputStream inputStream ) throws SLException {
         checkNotNull("inputStream", inputStream);//$NON-NLS-1$
         try {
             final ObjectInputStream ois = new ObjectInputStream(inputStream);
@@ -146,8 +143,7 @@ public class Serialization {
      * @return a base64 string
      * @throws SLException
      */
-    public static <E extends Serializable> String serializeToBase64(
-                                                                     final E object ) throws SLException {
+    public static <E extends Serializable> String serializeToBase64( final E object ) throws SLException {
         checkNotNull("object", object);//$NON-NLS-1$
         try {
             final byte[] resultAsByte = serializeToBytes(object);
@@ -167,8 +163,7 @@ public class Serialization {
      * @return a byte array
      * @throws SLException
      */
-    public static <E extends Serializable> byte[] serializeToBytes(
-                                                                    final E object ) throws SLException {
+    public static <E extends Serializable> byte[] serializeToBytes( final E object ) throws SLException {
         checkNotNull("object", object);//$NON-NLS-1$
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -188,8 +183,7 @@ public class Serialization {
      * @param outputStream
      * @throws SLException
      */
-    public static <E extends Serializable> void serializeToOutputStream(
-                                                                         final E object,
+    public static <E extends Serializable> void serializeToOutputStream( final E object,
                                                                          final OutputStream outputStream ) throws SLException {
         checkNotNull("object", object);//$NON-NLS-1$
         checkNotNull("outputStream", outputStream);//$NON-NLS-1$
@@ -207,8 +201,7 @@ public class Serialization {
      * Should not be instantiated
      */
     private Serialization() {
-        logAndThrow(new IllegalStateException(Messages
-                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

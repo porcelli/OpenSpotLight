@@ -227,11 +227,12 @@ public class ExampleRemoteServerWithData {
          * @throws IOException Signals that an I/O exception has occurred.
          * @throws ClassNotFoundException the class not found exception
          */
-        public void populateGraph()
-            throws SLException, IOException, ClassNotFoundException, IdentityException {
+        public void populateGraph() throws SLException, IOException, ClassNotFoundException, IdentityException {
             final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
-            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+                                                                                                                              simpleUser,
+                                                                                                                              "password");
 
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
@@ -265,7 +266,7 @@ public class ExampleRemoteServerWithData {
 
                 count = 0;
                 for (final Class<?> clazz : classes) {
-                    //              context = session.createContext("queryTest2");
+                    // context = session.createContext("queryTest2");
                     root = context.getRootNode();
                     final JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
                     session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);

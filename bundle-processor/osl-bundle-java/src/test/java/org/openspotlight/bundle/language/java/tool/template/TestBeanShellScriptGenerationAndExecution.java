@@ -70,8 +70,8 @@ public class TestBeanShellScriptGenerationAndExecution {
         task.addXmlFiles(xmls);
         task.setOutputDirectory("./target/test-data/TestBeanShellScriptGenerationAndExecution/output/");
         task.execute();
-        //        assertThat(new File(linkDir).exists(), is(true));
-        //        assertThat(new File(linkDir).list().length, is(not(0)));
+        // assertThat(new File(linkDir).exists(), is(true));
+        // assertThat(new File(linkDir).list().length, is(not(0)));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class TestBeanShellScriptGenerationAndExecution {
         task.addXmlFiles(xmls);
         task.setOutputDirectory("./target/test-data/TestBeanShellScriptGenerationAndExecution/output/");
         task.execute();
-        //        assertThat(new File(linkDir).exists(), is(true));
-        //        assertThat(new File(linkDir).list().length, is(not(0)));
+        // assertThat(new File(linkDir).exists(), is(true));
+        // assertThat(new File(linkDir).list().length, is(not(0)));
     }
 }

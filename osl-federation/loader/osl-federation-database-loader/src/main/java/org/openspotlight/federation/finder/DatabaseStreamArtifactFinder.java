@@ -67,15 +67,12 @@ import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 
-public class DatabaseStreamArtifactFinder extends
-        AbstractDatabaseArtifactFinder {
+public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder {
 
     @Override
-    protected <A extends Artifact> boolean internalAccept(
-                                                           ArtifactSource source,
+    protected <A extends Artifact> boolean internalAccept( ArtifactSource source,
                                                            Class<A> type ) throws Exception {
-        return source instanceof DbArtifactSource
-                && availableTypes.contains(type);
+        return source instanceof DbArtifactSource && availableTypes.contains(type);
     }
 
     @Override
@@ -99,14 +96,13 @@ public class DatabaseStreamArtifactFinder extends
             final String name = tok.nextToken();
             final ScriptType scriptType = ScriptType.valueOf(typeAsString);
             final DatabaseType databaseType = artifactSource.getType();
-            final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE
-                                                                                                   .getScript(databaseType, scriptType);
+            final DatabaseMetadataScript scriptDescription = DatabaseMetadataScriptManager.INSTANCE.getScript(databaseType,
+                                                                                                              scriptType);
             if (scriptDescription == null) {
                 return null;
             }
 
-            final Class<? extends DatabaseStreamHandler> streamHandlerType = scriptDescription
-                                                                                              .getStreamHandlerClass();
+            final Class<? extends DatabaseStreamHandler> streamHandlerType = scriptDescription.getStreamHandlerClass();
             final DatabaseStreamHandler streamHandler;
             if (streamHandlerType != null) {
                 streamHandler = streamHandlerType.newInstance();
@@ -116,12 +112,10 @@ public class DatabaseStreamArtifactFinder extends
             byte[] content;
             switch (scriptDescription.getPreferedType()) {
                 case SQL:
-                    content = loadFromSql(catalog, schema, name, scriptDescription,
-                                          streamHandler, conn);
+                    content = loadFromSql(catalog, schema, name, scriptDescription, streamHandler, conn);
                     break;
                 case TEMPLATE:
-                    content = loadFromTemplate(catalog, schema, name,
-                                               scriptDescription, streamHandler, conn);
+                    content = loadFromTemplate(catalog, schema, name, scriptDescription, streamHandler, conn);
                     break;
                 default:
                     content = null;
@@ -131,13 +125,11 @@ public class DatabaseStreamArtifactFinder extends
                 if (scriptDescription.isTryAgainIfNoResult()) {
                     switch (scriptDescription.getPreferedType()) {
                         case SQL:
-                            content = loadFromTemplate(catalog, schema, name,
-                                                       scriptDescription, streamHandler, conn);
+                            content = loadFromTemplate(catalog, schema, name, scriptDescription, streamHandler, conn);
 
                             break;
                         case TEMPLATE:
-                            content = loadFromSql(catalog, schema, name,
-                                                  scriptDescription, streamHandler, conn);
+                            content = loadFromSql(catalog, schema, name, scriptDescription, streamHandler, conn);
                             break;
 
                     }
@@ -148,12 +140,10 @@ public class DatabaseStreamArtifactFinder extends
             }
 
             if (streamHandler != null) {
-                content = streamHandler.afterStreamProcessing(schema,
-                                                              scriptType, catalog, name, content, conn);
+                content = streamHandler.afterStreamProcessing(schema, scriptType, catalog, name, content, conn);
             }
             final String contentAsString = new String(content);
-            final StringArtifact sa = Artifact.createArtifact(
-                                                              StringArtifact.class, path, ChangeType.INCLUDED);
+            final StringArtifact sa = Artifact.createArtifact(StringArtifact.class, path, ChangeType.INCLUDED);
             sa.getContent().setTransient(contentAsString);
             @SuppressWarnings( "unchecked" )
             A a = (A)sa;
@@ -162,18 +152,15 @@ public class DatabaseStreamArtifactFinder extends
     }
 
     @SuppressWarnings( "unchecked" )
-    private final Set<Class<? extends Artifact>> availableTypes = SLCollections
-                                                                               .<Class<? extends Artifact>>setOf(StringArtifact.class);
+    private final Set<Class<? extends Artifact>> availableTypes = SLCollections.<Class<? extends Artifact>>setOf(StringArtifact.class);
 
     @Override
-    protected Set<Class<? extends Artifact>> internalGetAvailableTypes()
-            throws Exception {
+    protected Set<Class<? extends Artifact>> internalGetAvailableTypes() throws Exception {
         return availableTypes;
     }
 
     @Override
-    protected boolean internalIsTypeSupported( Class<? extends Artifact> type )
-            throws Exception {
+    protected boolean internalIsTypeSupported( Class<? extends Artifact> type ) throws Exception {
         return StringArtifact.class.equals(type);
     }
 

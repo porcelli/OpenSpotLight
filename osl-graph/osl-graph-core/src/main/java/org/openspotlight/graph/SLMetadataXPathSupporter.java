@@ -70,7 +70,8 @@ public class SLMetadataXPathSupporter {
                                                     final BooleanOperator booleanOp,
                                                     final List<String> values ) {
 
-        if ((logicOp == LogicOperator.LIKE_CONTAINS || logicOp == LogicOperator.LIKE_BEGINS_WITH || logicOp == LogicOperator.LIKE_ENDS_WITH) && (property2Find == null || property2Find == MetaNodeTypeProperty.NAME)) {
+        if ((logicOp == LogicOperator.LIKE_CONTAINS || logicOp == LogicOperator.LIKE_BEGINS_WITH || logicOp == LogicOperator.LIKE_ENDS_WITH)
+            && (property2Find == null || property2Find == MetaNodeTypeProperty.NAME)) {
             Exceptions.logAndThrow(new IllegalArgumentException(
                                                                 "Cannot search meta node types by name using any 'Like' operator."));
         }
@@ -85,12 +86,9 @@ public class SLMetadataXPathSupporter {
             statement.append("/*");
         }
         if (visibility != null) {
-            final String propName = SLCommonSupport
-                                                   .toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
+            final String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
             isRestrictionOpened = true;
-            StringBuilderUtil.append(statement, "[(",
-                                     propName, "='", visibility.toString(),
-                                     "') ");
+            StringBuilderUtil.append(statement, "[(", propName, "='", visibility.toString(), "') ");
         }
 
         if (values != null) {
@@ -111,8 +109,7 @@ public class SLMetadataXPathSupporter {
             }
             if (logicOp == null || logicOp == LogicOperator.EQUALS) {
                 for (int i = 0; i < values.size(); i++) {
-                    StringBuilderUtil.append(statement, propName, "='", values.get(i),
-                                             '\'');
+                    StringBuilderUtil.append(statement, propName, "='", values.get(i), '\'');
                     if ((i + 1) != values.size()) {
                         StringBuilderUtil.append(statement, booleanOperator);
                     } else {
@@ -150,7 +147,6 @@ public class SLMetadataXPathSupporter {
      * Should not be instantiated.
      */
     private SLMetadataXPathSupporter() {
-        logAndThrow(new IllegalStateException(Messages
-                                                      .getString("invalidConstructor")));
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor")));
     }
 }

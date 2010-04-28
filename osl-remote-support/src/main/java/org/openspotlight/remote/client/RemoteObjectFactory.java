@@ -163,8 +163,11 @@ public class RemoteObjectFactory {
             return this.remoteReference;
         }
 
-        /* (non-Javadoc)
-         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
+        /*
+         * (non-Javadoc)
+         * 
+         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
+         * java.lang.reflect.Method, java.lang.Object[])
          */
         @SuppressWarnings( "unchecked" )
         public Object invoke( final Object proxy,
@@ -204,7 +207,9 @@ public class RemoteObjectFactory {
                                 if (Proxy.isProxyClass(o.getClass())) {
                                     final InvocationHandler invocationHandlerForTest = Proxy.getInvocationHandler(o);
                                     if (invocationHandlerForTest instanceof RemoteReferenceHandler<?>) {
-                                        //here, it *needs* to wrap only the references before sending it to the server
+                                        // here, it *needs* to wrap only the
+                                        // references before sending it to the
+                                        // server
                                         final Collection<Object> newCollection = SLCollections.createNewCollection(
                                                                                                                    collection.getClass(),
                                                                                                                    collection.size());
@@ -238,7 +243,9 @@ public class RemoteObjectFactory {
                                 if (Proxy.isProxyClass(o.getClass())) {
                                     final InvocationHandler invocationHandlerForTest = Proxy.getInvocationHandler(o);
                                     if (invocationHandlerForTest instanceof RemoteReferenceHandler<?>) {
-                                        //here, it *needs* to wrap only the references before sending it to the server
+                                        // here, it *needs* to wrap only the
+                                        // references before sending it to the
+                                        // server
                                         final Map<Object, Object> newMap = new HashMap<Object, Object>();
                                         for (final Entry<Object, Object> item : map.entrySet()) {
                                             if (item.getValue() != null) {

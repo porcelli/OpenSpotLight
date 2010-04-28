@@ -87,7 +87,9 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
     /** The hash code. */
     private volatile transient int   hashCode;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals( final Object o ) {
@@ -95,8 +97,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
             return false;
         }
         final ArtifactSourceMapping that = (ArtifactSourceMapping)o;
-        final boolean result = Equals.eachEquality(Arrays.of(to, source, from), Arrays.andOf(that.to, that.source,
-                                                                                             that.from));
+        final boolean result = Equals.eachEquality(Arrays.of(to, source, from), Arrays.andOf(that.to, that.source, that.from));
         return result;
     }
 
@@ -147,7 +148,9 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
         return to;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {

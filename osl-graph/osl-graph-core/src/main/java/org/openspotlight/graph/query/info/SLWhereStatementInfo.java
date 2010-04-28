@@ -133,7 +133,9 @@ public class SLWhereStatementInfo {
         this.selectStatementInfo = selectStatementInfo;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override

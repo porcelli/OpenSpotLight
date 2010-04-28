@@ -55,50 +55,50 @@ import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class ListItemObj implements SimpleNodeType, Comparable<ListItemObj> {
-	private String uuid;
+    private String uuid;
 
-	private String name;
+    private String name;
 
-	private int value;
+    private int    value;
 
-	public boolean equals(final Object o) {
-		if (o == this) {
-			return true;
-		}
-		if (!(o instanceof ListItemObj)) {
-			return false;
-		}
-		final ListItemObj that = (ListItemObj) o;
-		return Equals.eachEquality(Arrays.of(value), Arrays.andOf(that.value));
-	}
+    public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ListItemObj)) {
+            return false;
+        }
+        final ListItemObj that = (ListItemObj)o;
+        return Equals.eachEquality(Arrays.of(value), Arrays.andOf(that.value));
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	@SetUniqueIdOnThisProperty
-	public String getUuid() {
-		return uuid;
-	}
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
+    }
 
-	@KeyProperty
-	public int getValue() {
-		return value;
-	}
+    @KeyProperty
+    public int getValue() {
+        return value;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	public void setUuid(final String uuid) {
-		this.uuid = uuid;
-	}
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
+    }
 
-	public void setValue(final int value) {
-		this.value = value;
-	}
+    public void setValue( final int value ) {
+        this.value = value;
+    }
 
-    public int compareTo(ListItemObj o) {
-        return this.value<o.value ? -1 : (this.value==o.value ? 0 : 1);
+    public int compareTo( ListItemObj o ) {
+        return this.value < o.value ? -1 : (this.value == o.value ? 0 : 1);
     }
 }

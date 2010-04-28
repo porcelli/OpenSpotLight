@@ -26,13 +26,12 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class SimplePersistLazyBehaviorTest {
 
+    final Injector                                      autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
+                                                                                                                         STStorageSession.STFlushMode.AUTO,
+                                                                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                                                                         repositoryPath("repository")));
 
-
-
-    final Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-            ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")));
-
-    STStorageSession session;
+    STStorageSession                                    session;
     SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
     @Before
@@ -43,23 +42,18 @@ public class SimplePersistLazyBehaviorTest {
         this.simplePersist = new SimplePersistImpl(session, SLPartition.GRAPH);
     }
 
-
     @Test
     public void shouldLoadSavedValue() throws Exception {
-
 
         ClassWithLazyProperty bean = new ClassWithLazyProperty();
         bean.setTest("test");
 
-        bean.getBigPojoProperty().setTransient(
-                new SerializablePojoProperty());
+        bean.getBigPojoProperty().setTransient(new SerializablePojoProperty());
         bean.getBigPojoProperty().get(simplePersist).setAnotherProperty("test");
-        assertThat(bean.getBigPojoProperty().getMetadata().getTransient(),
-                is(notNullValue()));
-        final STNodeEntry node = simplePersist.convertBeanToNode( bean);
+        assertThat(bean.getBigPojoProperty().getMetadata().getTransient(), is(notNullValue()));
+        final STNodeEntry node = simplePersist.convertBeanToNode(bean);
         bean = simplePersist.convertNodeToBean(node);
-        assertThat(bean.getBigPojoProperty().get(simplePersist),
-                is(notNullValue()));
+        assertThat(bean.getBigPojoProperty().get(simplePersist), is(notNullValue()));
 
     }
 
@@ -67,13 +61,11 @@ public class SimplePersistLazyBehaviorTest {
     public void shouldLooseWeakValue() throws Exception {
         final ClassWithLazyProperty bean = new ClassWithLazyProperty();
         bean.setTest("test");
-        bean.getBigPojoProperty().getMetadata().setCached(
-                new SerializablePojoProperty());
-        bean.getBigPojoProperty().get( null).setAnotherProperty("test");
+        bean.getBigPojoProperty().getMetadata().setCached(new SerializablePojoProperty());
+        bean.getBigPojoProperty().get(null).setAnotherProperty("test");
         assertThat(bean.getBigPojoProperty().get(null), is(notNullValue()));
         System.gc();
-        assertThat(bean.getBigPojoProperty().getMetadata().getTransient(),
-                is(nullValue()));
+        assertThat(bean.getBigPojoProperty().getMetadata().getTransient(), is(nullValue()));
 
     }
 
@@ -82,17 +74,14 @@ public class SimplePersistLazyBehaviorTest {
         ClassWithLazyProperty bean = new ClassWithLazyProperty();
         bean.setTest("test");
 
-        bean.getBigPojoProperty().setTransient(
-                new SerializablePojoProperty());
+        bean.getBigPojoProperty().setTransient(new SerializablePojoProperty());
         bean.getBigPojoProperty().get(simplePersist).setAnotherProperty("test");
-        assertThat(bean.getBigPojoProperty().getMetadata().getTransient(),
-                is(notNullValue()));
+        assertThat(bean.getBigPojoProperty().getMetadata().getTransient(), is(notNullValue()));
         final STNodeEntry node = simplePersist.convertBeanToNode(bean);
 
         bean = simplePersist.convertNodeToBean(node);
-        assertThat(bean.getBigPojoProperty().getMetadata().getCached( simplePersist), is(notNullValue()));
-        assertThat(bean.getBigPojoProperty().getMetadata().getTransient(),
-                is(nullValue()));
+        assertThat(bean.getBigPojoProperty().getMetadata().getCached(simplePersist), is(notNullValue()));
+        assertThat(bean.getBigPojoProperty().getMetadata().getTransient(), is(nullValue()));
     }
 
 }

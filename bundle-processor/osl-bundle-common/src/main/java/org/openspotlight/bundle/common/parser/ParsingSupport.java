@@ -65,11 +65,10 @@ public class ParsingSupport {
 
     private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-
-    public ParsingSupport (SimplePersistFactory simplePersistFactory){
+    public ParsingSupport(
+                           SimplePersistFactory simplePersistFactory ) {
         this.simplePersist = simplePersistFactory.createSimplePersist(SLPartition.LINE_REFERENCE);
     }
-
 
     /**
      * Creates the line reference.
@@ -79,8 +78,8 @@ public class ParsingSupport {
      * @param nodes the nodes
      */
     public void createLineReference( final SLLineInfo lineInfo,
-                                            final String statement,
-                                            final SLNode... nodes ) {
+                                     final String statement,
+                                     final SLNode... nodes ) {
         try {
             if (lineInfo == null || lineInfo.getArtifact() == null) {
                 return;
@@ -89,13 +88,9 @@ public class ParsingSupport {
                 for (final SLNode node : nodes) {
                     if (node != null) {
                         try {
-                            node.addLineReference(simplePersist,
-                                                  lineInfo.getStartLine(),
-                                                  lineInfo.getEndLine(),
-                                                  lineInfo.getStartCharPositionInLine(),
-                                                  lineInfo.getEndCharPositionInLine(),
-                                                  statement,
-                                                  lineInfo.getArtifact().getSourceName(),
+                            node.addLineReference(simplePersist, lineInfo.getStartLine(), lineInfo.getEndLine(),
+                                                  lineInfo.getStartCharPositionInLine(), lineInfo.getEndCharPositionInLine(),
+                                                  statement, lineInfo.getArtifact().getSourceName(),
                                                   lineInfo.getArtifact().getVersion());
                         } catch (final Exception e) {
                             Exceptions.catchAndLog(e);

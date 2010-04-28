@@ -164,8 +164,7 @@ public class Conversion {
                     if (type.equals(Class.class) && value instanceof String) {
                         String newValue = (String)value;
                         if (newValue.startsWith("class ")) {
-                            newValue = Strings.removeBegginingFrom("class ",
-                                                                         newValue);
+                            newValue = Strings.removeBegginingFrom("class ", newValue);
                         }
                         return Class.forName(newValue);
                     }
@@ -189,11 +188,9 @@ public class Conversion {
      */
     @SuppressWarnings( "unchecked" )
     public static <E> E convert( final Object rawValue,
-                                 final Class<E> targetType )
-        throws SLException {
+                                 final Class<E> targetType ) throws SLException {
         Assertions.checkNotNull("targetType", targetType); //$NON-NLS-1$
-        Assertions
-                  .checkCondition(
+        Assertions.checkCondition(
                                   "validTargetType:" + targetType.getName(), Conversion.CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
         if (rawValue == null) {
             return null;
@@ -212,9 +209,8 @@ public class Conversion {
                         }
                     }
                 }
-                throw new IllegalStateException(MessageFormat.format(
-                                                                     "Invalid enum constant:{0} for type {1}",
-                                                                     rawValueAsString, targetType));
+                throw new IllegalStateException(MessageFormat.format("Invalid enum constant:{0} for type {1}", rawValueAsString,
+                                                                     targetType));
             }
             final Converter converter = Conversion.CONVERTERS.get(targetType);
             final E converted = (E)converter.convert(targetType, rawValue);
@@ -232,7 +228,6 @@ public class Conversion {
      * Should not be instantiated
      */
     private Conversion() {
-        Exceptions.logAndThrow(new IllegalStateException(Messages
-                                                                 .getString("invalidConstructor"))); //$NON-NLS-1$
+        Exceptions.logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

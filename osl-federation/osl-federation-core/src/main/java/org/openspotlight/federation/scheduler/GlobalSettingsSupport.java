@@ -56,10 +56,8 @@ import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 public class GlobalSettingsSupport {
 
     public static void initializeScheduleMap( final GlobalSettings settings ) {
-        settings.getSchedulableCommandMap().put(Group.class,
-                                                GroupSchedulable.class);
-        settings.getSchedulableCommandMap().put(ArtifactSource.class,
-                                                ArtifactSourceSchedulable.class);
+        settings.getSchedulableCommandMap().put(Group.class, GroupSchedulable.class);
+        settings.getSchedulableCommandMap().put(ArtifactSource.class, ArtifactSourceSchedulable.class);
         settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
     }
 

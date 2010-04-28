@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SLPersistentNodeImpl implements SLPersistentNode {
 
-    //    private static AtomicInteger          nodeCount           = new AtomicInteger();
+    // private static AtomicInteger nodeCount = new AtomicInteger();
     /** The session. */
     private final SLPersistentTreeSession session;
 
@@ -106,8 +106,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
      * @throws RepositoryException
      */
     public SLPersistentNodeImpl(
-                                 final SLPersistentTreeSession session,
-                                 final SLPersistentNode parent, final Node jcrNode,
+                                 final SLPersistentTreeSession session, final SLPersistentNode parent, final Node jcrNode,
                                  final SLPersistentEventPoster eventPoster ) {
         this.session = session;
         this.parent = parent;
@@ -119,29 +118,25 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public SLPersistentNode addNode( final String name )
-        throws SLPersistentTreeSessionException {
+    public SLPersistentNode addNode( final String name ) throws SLPersistentTreeSessionException {
         synchronized (lock) {
 
             SLPersistentNode persistentNode = null;
             try {
-                //                nodeCount.incrementAndGet();
-                //                if (nodeCount.get() >= MAX_NODES_IN_MEMORY) {
-                //                    getSession().save();
-                //                    nodeCount.set(0);
-                //                }
+                // nodeCount.incrementAndGet();
+                // if (nodeCount.get() >= MAX_NODES_IN_MEMORY) {
+                // getSession().save();
+                // nodeCount.set(0);
+                // }
                 final Node jcrChildNode;
                 jcrChildNode = jcrNode.addNode(name);
                 jcrChildNode.addMixin("mix:referenceable");
-                persistentNode = new SLPersistentNodeImpl(session, this,
-                                                          jcrChildNode, eventPoster);
-                eventPoster.post(new SLPersistentNodeEvent(
-                                                           SLPersistentNodeEvent.TYPE_NODE_ADDED, persistentNode));
+                persistentNode = new SLPersistentNodeImpl(session, this, jcrChildNode, eventPoster);
+                eventPoster.post(new SLPersistentNodeEvent(SLPersistentNodeEvent.TYPE_NODE_ADDED, persistentNode));
 
             } catch (final RepositoryException e) {
                 Exceptions.catchAndLog(e);
-                throw new SLPersistentTreeSessionException(
-                                                           "Couldn't add persistent node " + name, e);
+                throw new SLPersistentTreeSessionException("Couldn't add persistent node " + name, e);
             }
             return persistentNode;
         }
@@ -172,9 +167,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
             try {
                 return jcrNode.getUUID();
             } catch (final RepositoryException e) {
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to retrieve the persistent node ID.",
-                                                           e);
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve the persistent node ID.", e);
             }
         }
     }
@@ -194,9 +187,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
             try {
                 return jcrNode.getName();
             } catch (final RepositoryException e) {
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to retrieve the persistent node name.",
-                                                           e);
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve the persistent node name.", e);
             }
         }
     }
@@ -204,20 +195,17 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public SLPersistentNode getNode( final String name )
-        throws SLPersistentTreeSessionException {
+    public SLPersistentNode getNode( final String name ) throws SLPersistentTreeSessionException {
         SLPersistentNode childPersistentNode = null;
         synchronized (lock) {
             try {
                 final Node jcrChildNode;
                 jcrChildNode = jcrNode.getNode(name);
-                childPersistentNode = new SLPersistentNodeImpl(session, this,
-                                                               jcrChildNode, eventPoster);
+                childPersistentNode = new SLPersistentNodeImpl(session, this, jcrChildNode, eventPoster);
             } catch (final PathNotFoundException e) {
             } catch (final RepositoryException e) {
                 Exceptions.catchAndLog(e);
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to retrieve persistent node.", e);
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve persistent node.", e);
             }
             return childPersistentNode;
         }
@@ -226,25 +214,21 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationSet<SLPersistentNode> getNodes()
-        throws SLPersistentTreeSessionException {
+    public NeedsSyncronizationSet<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationSet<SLPersistentNode> persistentNodes = LockedCollections
-                                                                                                  .createSetWithLock(this,
+                final NeedsSyncronizationSet<SLPersistentNode> persistentNodes = LockedCollections.createSetWithLock(
+                                                                                                                     this,
                                                                                                                      new HashSet<SLPersistentNode>());
                 final NodeIterator iter = jcrNode.getNodes();
                 while (iter.hasNext()) {
                     final Node childNode = iter.nextNode();
-                    final SLPersistentNode childPersistentNode = new SLPersistentNodeImpl(
-                                                                                          session, this, childNode, eventPoster);
+                    final SLPersistentNode childPersistentNode = new SLPersistentNodeImpl(session, this, childNode, eventPoster);
                     persistentNodes.add(childPersistentNode);
                 }
                 return persistentNodes;
             } catch (final RepositoryException e) {
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to retrieve persistent child nodes.",
-                                                           e);
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve persistent child nodes.", e);
             }
         }
     }
@@ -252,23 +236,20 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLPersistentNode> getNodes(
-                                                                     final String name ) throws SLPersistentTreeSessionException {
+    public NeedsSyncronizationCollection<SLPersistentNode> getNodes( final String name ) throws SLPersistentTreeSessionException {
         synchronized (lock) {
-            final NeedsSyncronizationCollection<SLPersistentNode> pNodes = LockedCollections
-                                                                                            .createCollectionWithLock(this,
+            final NeedsSyncronizationCollection<SLPersistentNode> pNodes = LockedCollections.createCollectionWithLock(
+                                                                                                                      this,
                                                                                                                       new ArrayList<SLPersistentNode>());
             try {
                 final NodeIterator nodeIter = jcrNode.getNodes(name);
                 while (nodeIter.hasNext()) {
                     final Node childNode = nodeIter.nextNode();
-                    final SLPersistentNode pNode = new SLPersistentNodeImpl(
-                                                                            session, this, childNode, eventPoster);
+                    final SLPersistentNode pNode = new SLPersistentNodeImpl(session, this, childNode, eventPoster);
                     pNodes.add(pNode);
                 }
             } catch (final RepositoryException e) {
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to retrieve persistent nodes.", e);
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve persistent nodes.", e);
             }
             return pNodes;
         }
@@ -289,8 +270,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
             try {
                 return jcrNode.getPath();
             } catch (final RepositoryException e) {
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to retrieve persistent node path.", e);
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve persistent node path.", e);
             }
         }
     }
@@ -298,28 +278,27 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties(
-                                                                                     final String pattern )
+    public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties( final String pattern )
         throws SLPersistentTreeSessionException {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationSet<SLPersistentProperty<Serializable>> persistentProperties = LockedCollections
-                                                                                                                         .createSetWithLock(
+                final NeedsSyncronizationSet<SLPersistentProperty<Serializable>> persistentProperties = LockedCollections.createSetWithLock(
                                                                                                                                             this,
                                                                                                                                             new HashSet<SLPersistentProperty<Serializable>>());
                 final PropertyIterator iter = jcrNode.getProperties(pattern);
                 while (iter.hasNext()) {
                     final Property jcrProperty = iter.nextProperty();
                     final SLPersistentProperty<Serializable> persistentProperty = new SLPersistentPropertyImpl<Serializable>(
-                                                                                                                             this, Serializable.class, jcrProperty, true,
+                                                                                                                             this,
+                                                                                                                             Serializable.class,
+                                                                                                                             jcrProperty,
+                                                                                                                             true,
                                                                                                                              eventPoster);
                     persistentProperties.add(persistentProperty);
                 }
                 return persistentProperties;
             } catch (final Exception e) {
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to retrieve persistent node properties.",
-                                                           e);
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve persistent node properties.", e);
             }
         }
     }
@@ -327,24 +306,19 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public <V extends Serializable> SLPersistentProperty<V> getProperty(
-                                                                         final Class<V> clazz,
+    public <V extends Serializable> SLPersistentProperty<V> getProperty( final Class<V> clazz,
                                                                          final String name )
-        throws SLPersistentPropertyNotFoundException,
-        SLPersistentTreeSessionException {
+        throws SLPersistentPropertyNotFoundException, SLPersistentTreeSessionException {
         synchronized (lock) {
             SLPersistentProperty<V> persistentProperty = null;
             try {
                 final Property jcrProperty = jcrNode.getProperty(name);
-                persistentProperty = new SLPersistentPropertyImpl<V>(this,
-                                                                     clazz, jcrProperty, true, eventPoster);
+                persistentProperty = new SLPersistentPropertyImpl<V>(this, clazz, jcrProperty, true, eventPoster);
             } catch (final PathNotFoundException e) {
                 throw new SLPersistentPropertyNotFoundException(name);
             } catch (final RepositoryException e) {
                 Exceptions.catchAndLog(e);
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to retrieve persistent property "
-                                                           + name, e);
+                throw new SLPersistentTreeSessionException("Error on attempt to retrieve persistent property " + name, e);
             }
             return persistentProperty;
         }
@@ -367,11 +341,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
                     logger.debug("Removed " + getName());
                 }
                 jcrNode.remove();
-                eventPoster.post(new SLPersistentNodeEvent(
-                                                           SLPersistentNodeEvent.TYPE_NODE_REMOVED, this));
+                eventPoster.post(new SLPersistentNodeEvent(SLPersistentNodeEvent.TYPE_NODE_REMOVED, this));
             } catch (final RepositoryException e) {
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to remove persistent node.", e);
+                throw new SLPersistentTreeSessionException("Error on attempt to remove persistent node.", e);
             }
         }
     }
@@ -385,8 +357,7 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
                 // jcrNode.save();
             } catch (final Exception e) {
                 Exceptions.catchAndLog(e);
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to save persistent node.", e);
+                throw new SLPersistentTreeSessionException("Error on attempt to save persistent node.", e);
             }
         }
     }
@@ -394,11 +365,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public <V extends Serializable> SLPersistentProperty<V> setProperty(
-                                                                         final Class<V> clazz,
+    public <V extends Serializable> SLPersistentProperty<V> setProperty( final Class<V> clazz,
                                                                          final String name,
-                                                                         final V value )
-        throws SLPersistentTreeSessionException {
+                                                                         final V value ) throws SLPersistentTreeSessionException {
         synchronized (lock) {
             SLPersistentProperty<V> persistentProperty = null;
             try {
@@ -406,24 +375,18 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
                 Property jcrProperty;
                 final Session session = jcrNode.getSession();
                 if (value.getClass().isArray()) {
-                    final Value[] jcrValues = JCRUtil.createValues(session,
-                                                                   value);
+                    final Value[] jcrValues = JCRUtil.createValues(session, value);
                     jcrProperty = jcrNode.setProperty(name, jcrValues);
                 } else {
                     final Value jcrValue = JCRUtil.createValue(session, value);
                     jcrProperty = jcrNode.setProperty(name, jcrValue);
                 }
 
-                persistentProperty = new SLPersistentPropertyImpl<V>(this,
-                                                                     clazz, jcrProperty, false, eventPoster);
-                eventPoster.post(new SLPersistentPropertyEvent(
-                                                               SLPersistentPropertyEvent.TYPE_PROPERTY_SET,
-                                                               persistentProperty));
+                persistentProperty = new SLPersistentPropertyImpl<V>(this, clazz, jcrProperty, false, eventPoster);
+                eventPoster.post(new SLPersistentPropertyEvent(SLPersistentPropertyEvent.TYPE_PROPERTY_SET, persistentProperty));
             } catch (final Exception e) {
                 Exceptions.catchAndLog(e);
-                throw new SLPersistentTreeSessionException(
-                                                           "Error on attempt to set persistent property " + name,
-                                                           e);
+                throw new SLPersistentTreeSessionException("Error on attempt to set persistent property " + name, e);
             }
             return persistentProperty;
         }

@@ -71,8 +71,7 @@ import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
-public class FileSystemOriginArtifactLoader extends
-        AbstractOriginArtifactLoader {
+public class FileSystemOriginArtifactLoader extends AbstractOriginArtifactLoader {
 
     @Override
     protected void internalCloseResources() {
@@ -85,8 +84,7 @@ public class FileSystemOriginArtifactLoader extends
                                                          ArtifactSource source,
                                                          String rawPath ) {
         Assertions.checkNotEmpty("rawPath", rawPath);
-        Assertions.checkCondition("validTypeAndConfig", (type
-                                                             .equals(StringArtifact.class) && !source.isBinary())
+        Assertions.checkCondition("validTypeAndConfig", (type.equals(StringArtifact.class) && !source.isBinary())
                                                         || (type.equals(StreamArtifact.class) && source.isBinary()));
         try {
 
@@ -103,8 +101,7 @@ public class FileSystemOriginArtifactLoader extends
             }
             if (StringArtifact.class.equals(type)) {
                 final FileInputStream resource = new FileInputStream(file);
-                final BufferedReader reader = new BufferedReader(
-                                                                 new InputStreamReader(resource));
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
                 final StringBuilder buffer = new StringBuilder();
                 String line = null;
                 while ((line = reader.readLine()) != null) {
@@ -112,18 +109,15 @@ public class FileSystemOriginArtifactLoader extends
                     buffer.append('\n');
                 }
                 final String content = buffer.toString();
-                final StringArtifact artifact = Artifact.createArtifact(
-                                                                        StringArtifact.class, "/" + path, ChangeType.INCLUDED);
+                final StringArtifact artifact = Artifact.createArtifact(StringArtifact.class, "/" + path, ChangeType.INCLUDED);
                 artifact.getContent().setTransient(content);
                 return (A)artifact;
             } else {// StreamArtifact
                 final FileInputStream resource = new FileInputStream(file);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 IOUtils.copy(resource, baos);
-                final StreamArtifact artifact = Artifact.createArtifact(
-                                                                        StreamArtifact.class, "/" + path, ChangeType.INCLUDED);
-                artifact.getContent().setTransient(
-                                                   new ByteArrayInputStream(baos.toByteArray()));
+                final StreamArtifact artifact = Artifact.createArtifact(StreamArtifact.class, "/" + path, ChangeType.INCLUDED);
+                artifact.getContent().setTransient(new ByteArrayInputStream(baos.toByteArray()));
                 return (A)artifact;
             }
         } catch (final Exception e) {
@@ -132,8 +126,8 @@ public class FileSystemOriginArtifactLoader extends
     }
 
     @SuppressWarnings( "unchecked" )
-    private static final Set<Class<? extends Artifact>> availableTypes = SLCollections
-                                                                                      .<Class<? extends Artifact>>setOf(StringArtifact.class,
+    private static final Set<Class<? extends Artifact>> availableTypes = SLCollections.<Class<? extends Artifact>>setOf(
+                                                                                                                        StringArtifact.class,
                                                                                                                         StreamArtifact.class);
 
     @Override
@@ -142,8 +136,7 @@ public class FileSystemOriginArtifactLoader extends
     }
 
     @Override
-    protected <A extends Artifact> boolean internalIsMaybeChanged(
-                                                                   ArtifactSource source,
+    protected <A extends Artifact> boolean internalIsMaybeChanged( ArtifactSource source,
                                                                    String artifactName,
                                                                    A oldOne ) {
         String[] pathInfo = fixPathInformation(source, artifactName);
@@ -168,8 +161,7 @@ public class FileSystemOriginArtifactLoader extends
     }
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(
-                                                                              Class<A> type,
+    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames( Class<A> type,
                                                                               ArtifactSource artifactSource,
                                                                               String initialPath ) {
         try {
@@ -177,27 +169,22 @@ public class FileSystemOriginArtifactLoader extends
 
             String initialLookup = artifactSource.getInitialLookup();
             if (initialLookup.endsWith("/")) {
-                initialLookup = initialLookup.substring(0, initialLookup
-                                                                        .length() - 1);
+                initialLookup = initialLookup.substring(0, initialLookup.length() - 1);
             }
             String newPath = rawPath;
             if (newPath.startsWith("/")) {
                 newPath = newPath.substring(1);
             }
-            final String location = MessageFormat.format("{0}/{1}",
-                                                         artifactSource.getInitialLookup(), newPath);
+            final String location = MessageFormat.format("{0}/{1}", artifactSource.getInitialLookup(), newPath);
 
-            final String pathToRemove = Files.getNormalizedFileName(new File(
-                                                                             artifactSource.getInitialLookup()));
+            final String pathToRemove = Files.getNormalizedFileName(new File(artifactSource.getInitialLookup()));
 
-            final Set<String> pathList = Files.listFileNamesFrom(location,
-                                                                 false);
+            final Set<String> pathList = Files.listFileNamesFrom(location, false);
 
             final Set<String> result = new HashSet<String>();
             for (final String p : pathList) {
                 if (new File(p).isFile()) {
-                    final String correctRelativePath = Strings
-                                                              .removeBegginingFrom(pathToRemove, p);
+                    final String correctRelativePath = Strings.removeBegginingFrom(pathToRemove, p);
                     result.add(correctRelativePath);
                 }
             }
@@ -209,27 +196,20 @@ public class FileSystemOriginArtifactLoader extends
 
     private String[] fixPathInformation( ArtifactSource source,
                                          String rawPath ) {
-        final String path = rawPath.startsWith("/") ? Strings
-                                                             .removeBegginingFrom("/", rawPath) : rawPath;
-        final String location = MessageFormat.format("{0}/{1}", source
-                                                                      .getInitialLookup(), path);
+        final String path = rawPath.startsWith("/") ? Strings.removeBegginingFrom("/", rawPath) : rawPath;
+        final String location = MessageFormat.format("{0}/{1}", source.getInitialLookup(), path);
 
         return new String[] {path, location};
     }
 
     @Override
-    protected <A extends Artifact> boolean internalAccept(
-                                                           ArtifactSource source,
+    protected <A extends Artifact> boolean internalAccept( ArtifactSource source,
                                                            Class<A> type ) {
-        if (!availableTypes.contains(type))
-            return false;
+        if (!availableTypes.contains(type)) return false;
         File f = new File(source.getInitialLookup());
-        if (!f.exists() || !f.isDirectory())
-            return false;
-        if (type.equals(StringArtifact.class) && !source.isBinary())
-            return true;
-        if (type.equals(StreamArtifact.class) && source.isBinary())
-            return true;
+        if (!f.exists() || !f.isDirectory()) return false;
+        if (type.equals(StringArtifact.class) && !source.isBinary()) return true;
+        if (type.equals(StreamArtifact.class) && source.isBinary()) return true;
         return false;
     }
 

@@ -63,18 +63,13 @@ public class MainClass {
 
     public static void main( final String... args ) throws Exception {
         final long start = System.currentTimeMillis();
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.DEFAULT_DESCRIPTOR).openSession();
-        final javax.jcr.Repository repository = JcrConnectionProvider
-                                                                     .createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR)
-                                                                     .getRepository();
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR).openSession();
+        final javax.jcr.Repository repository = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR).getRepository();
 
         final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
-        final RemoteRepository remote = saFactory
-                                                 .getRemoteRepository(repository);
+        final RemoteRepository remote = saFactory.getRemoteRepository(repository);
 
-        final Registry registry = LocateRegistry
-                                                .createRegistry(Registry.REGISTRY_PORT);
+        final Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
         registry.bind("jackrabbit.repository", remote);
         final long end = System.currentTimeMillis();
         System.err.println("started in about " + (int)(end - start) / 1000);

@@ -121,7 +121,9 @@ public class SLWhereByNodeTypeInfo {
         this.selectByNodeTypeInfo = selectByNodeTypeInfo;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -214,7 +216,9 @@ public class SLWhereByNodeTypeInfo {
             this.typeStatementInfo = whereStatementInfo;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#hashCode()
          */
         @Override
@@ -372,7 +376,9 @@ public class SLWhereByNodeTypeInfo {
                 this.opened = opened;
             }
 
-            /* (non-Javadoc)
+            /*
+             * (non-Javadoc)
+             * 
              * @see java.lang.Object#toString()
              */
             @Override
@@ -658,7 +664,9 @@ public class SLWhereByNodeTypeInfo {
                     this.typeInfo = typeInfo;
                 }
 
-                /* (non-Javadoc)
+                /*
+                 * (non-Javadoc)
+                 * 
                  * @see java.lang.Object#toString()
                  */
                 @Override
@@ -668,7 +676,8 @@ public class SLWhereByNodeTypeInfo {
                     boolean subTypes = typeInfo.isSubTypes();
 
                     StringBuilder buffer = new StringBuilder();
-                    appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
+                    appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""),
+                                    ' ');
                     appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
                     appendIfNotNull(buffer, propertyName, "property \"", propertyName, "\" ");
                     if (linkTypeName != null) {

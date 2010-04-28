@@ -80,8 +80,7 @@ public interface SLPersistentTreeSession extends LockContainer {
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     public SLPersistentQuery createQuery( String statement,
-                                          int type )
-            throws SLPersistentTreeSessionException;
+                                          int type ) throws SLPersistentTreeSessionException;
 
     /**
      * Gets the node by id.
@@ -91,9 +90,7 @@ public interface SLPersistentTreeSession extends LockContainer {
      * @throws SLPersistentNodeNotFoundException the SL persistent node not found exception
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public SLPersistentNode getNodeByID( String id )
-            throws SLPersistentNodeNotFoundException,
-            SLPersistentTreeSessionException;
+    public SLPersistentNode getNodeByID( String id ) throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException;
 
     /**
      * Gets the node by path.
@@ -102,8 +99,7 @@ public interface SLPersistentTreeSession extends LockContainer {
      * @return the node by path
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public SLPersistentNode getNodeByPath( String path )
-            throws SLPersistentTreeSessionException;
+    public SLPersistentNode getNodeByPath( String path ) throws SLPersistentTreeSessionException;
 
     /**
      * Gets the root node.
@@ -111,8 +107,7 @@ public interface SLPersistentTreeSession extends LockContainer {
      * @return the root node
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public SLPersistentNode getRootNode()
-            throws SLPersistentTreeSessionException;
+    public SLPersistentNode getRootNode() throws SLPersistentTreeSessionException;
 
     /**
      * Gets the XPath root path.
@@ -135,6 +130,5 @@ public interface SLPersistentTreeSession extends LockContainer {
      */
     @Deprecated
     public Session getJCRSession();
-
 
 }

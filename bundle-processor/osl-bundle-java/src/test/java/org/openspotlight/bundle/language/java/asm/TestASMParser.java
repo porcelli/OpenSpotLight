@@ -177,132 +177,141 @@ public class TestASMParser {
     }
 
     //
-    //    @Test
-    //    public void testDataType2() {
-    //        String type = "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/Integer;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(3, typeList.size());
-    //        assertEquals(true, typeList.contains("java/lang/String"));
-    //        assertEquals(true, typeList.contains("java/lang/Integer"));
-    //        assertEquals(true, typeList.contains("java/util/HashMap"));
-    //    }
+    // @Test
+    // public void testDataType2() {
+    // String type =
+    // "Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/Integer;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(3, typeList.size());
+    // assertEquals(true, typeList.contains("java/lang/String"));
+    // assertEquals(true, typeList.contains("java/lang/Integer"));
+    // assertEquals(true, typeList.contains("java/util/HashMap"));
+    // }
     //
-    //    @Test
-    //    public void testDataType3() {
-    //        String type = "Z";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(0, typeList.size());
-    //    }
+    // @Test
+    // public void testDataType3() {
+    // String type = "Z";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(0, typeList.size());
+    // }
     //
-    //    @Test
-    //    public void testDataType4() {
-    //        String type = "Ljava/util/List<[Ljava/util/List<Ljava/lang/String;>;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(2, typeList.size());
-    //        assertEquals(true, typeList.contains("java/util/List"));
-    //        assertEquals(true, typeList.contains("java/lang/String"));
-    //    }
+    // @Test
+    // public void testDataType4() {
+    // String type = "Ljava/util/List<[Ljava/util/List<Ljava/lang/String;>;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(2, typeList.size());
+    // assertEquals(true, typeList.contains("java/util/List"));
+    // assertEquals(true, typeList.contains("java/lang/String"));
+    // }
     //
-    //    @Test
-    //    public void testDataType5() {
-    //        String type = "Ljava/util/List<Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/Integer;>;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(4, typeList.size());
-    //        assertEquals(true, typeList.contains("java/util/List"));
-    //        assertEquals(true, typeList.contains("java/lang/String"));
-    //        assertEquals(true, typeList.contains("java/util/HashMap"));
-    //        assertEquals(true, typeList.contains("java/lang/Integer"));
-    //    }
+    // @Test
+    // public void testDataType5() {
+    // String type =
+    // "Ljava/util/List<Ljava/util/HashMap<Ljava/lang/String;Ljava/lang/Integer;>;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(4, typeList.size());
+    // assertEquals(true, typeList.contains("java/util/List"));
+    // assertEquals(true, typeList.contains("java/lang/String"));
+    // assertEquals(true, typeList.contains("java/util/HashMap"));
+    // assertEquals(true, typeList.contains("java/lang/Integer"));
+    // }
     //
-    //    @Test
-    //    public void testDataType6() {
-    //        String type = "Ljava/util/List<+Ljava/lang/Number;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(2, typeList.size());
-    //        assertEquals(true, typeList.contains("java/util/List"));
-    //        assertEquals(true, typeList.contains("java/lang/Number"));
-    //    }
+    // @Test
+    // public void testDataType6() {
+    // String type = "Ljava/util/List<+Ljava/lang/Number;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(2, typeList.size());
+    // assertEquals(true, typeList.contains("java/util/List"));
+    // assertEquals(true, typeList.contains("java/lang/Number"));
+    // }
     //
-    //    @Test
-    //    public void testDataType7() {
-    //        String type = "Ljava/util/List<*>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(1, typeList.size());
-    //        assertEquals(true, typeList.contains("java/util/List"));
-    //    }
+    // @Test
+    // public void testDataType7() {
+    // String type = "Ljava/util/List<*>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(1, typeList.size());
+    // assertEquals(true, typeList.contains("java/util/List"));
+    // }
     //
-    //    @Test
-    //    public void testDataType8() {
-    //        String type = "Ljava/util/List<-Ljava/lang/Number;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(2, typeList.size());
-    //        assertEquals(true, typeList.contains("java/util/List"));
-    //        assertEquals(true, typeList.contains("java/lang/Number"));
-    //    }
+    // @Test
+    // public void testDataType8() {
+    // String type = "Ljava/util/List<-Ljava/lang/Number;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(2, typeList.size());
+    // assertEquals(true, typeList.contains("java/util/List"));
+    // assertEquals(true, typeList.contains("java/lang/Number"));
+    // }
     //
-    //    @Test
-    //    public void testDataType9() {
-    //        String type = "Ljava/util/HashMap<TK;TV;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(1, typeList.size());
-    //        assertEquals(true, typeList.contains("java/util/HashMap"));
-    //    }
+    // @Test
+    // public void testDataType9() {
+    // String type = "Ljava/util/HashMap<TK;TV;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(1, typeList.size());
+    // assertEquals(true, typeList.contains("java/util/HashMap"));
+    // }
     //
-    //    @Test
-    //    public void testDataType10() {
-    //        String type = "Ljava/lang/Class<+TT;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(1, typeList.size());
-    //        assertEquals(true, typeList.contains("java/lang/Class"));
-    //    }
+    // @Test
+    // public void testDataType10() {
+    // String type = "Ljava/lang/Class<+TT;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(1, typeList.size());
+    // assertEquals(true, typeList.contains("java/lang/Class"));
+    // }
     //
-    //    @Test
-    //    public void testDataType11() {
-    //        String type = "Ljava/lang/Class<-TS;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(1, typeList.size());
-    //        assertEquals(true, typeList.contains("java/lang/Class"));
-    //        assertEquals("S", types.get(0).getGeneric().getTypes().get(0).getDataType());
-    //    }
+    // @Test
+    // public void testDataType11() {
+    // String type = "Ljava/lang/Class<-TS;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(1, typeList.size());
+    // assertEquals(true, typeList.contains("java/lang/Class"));
+    // assertEquals("S",
+    // types.get(0).getGeneric().getTypes().get(0).getDataType());
+    // }
     //
-    //    @Test
-    //    public void testDataType12() {
-    //        String type = "Lcom/google/common/collect/StandardMultimap<TK;TV;>.WrappedCollection<Ljava/lang/Class;>.Test;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<DataType> types = extract.types();
-    //        Set<String> typeList = types.get(0).getObjectTypes();
-    //        assertEquals(4, typeList.size());
-    //        assertEquals(true, typeList.contains("com/google/common/collect/StandardMultimap"));
-    //        assertEquals(true, typeList.contains("com/google/common/collect/StandardMultimap$WrappedCollection"));
-    //        assertEquals(true, typeList.contains("java/lang/Class"));
-    //        assertEquals(true, typeList.contains("com/google/common/collect/StandardMultimap$WrappedCollection$Test"));
-    //    }
+    // @Test
+    // public void testDataType12() {
+    // String type =
+    // "Lcom/google/common/collect/StandardMultimap<TK;TV;>.WrappedCollection<Ljava/lang/Class;>.Test;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<DataType> types = extract.types();
+    // Set<String> typeList = types.get(0).getObjectTypes();
+    // assertEquals(4, typeList.size());
+    // assertEquals(true,
+    // typeList.contains("com/google/common/collect/StandardMultimap"));
+    // assertEquals(true,
+    // typeList.contains("com/google/common/collect/StandardMultimap$WrappedCollection"));
+    // assertEquals(true, typeList.contains("java/lang/Class"));
+    // assertEquals(true,
+    // typeList.contains("com/google/common/collect/StandardMultimap$WrappedCollection$Test"));
+    // }
     //
-    //    @Test
-    //    public void testDataType13() {
-    //        String type = "Lcom/google/common/collect/StandardMultimap<TK;TV;>.WrappedCollection<Ljava/lang/Class;>.Test<Ljava/lang/String;>;";
-    //        ASMTypeParser extract = new ASMTypeParser(type);
-    //        List<Type> types = extract.types();
-    //        assertEquals("com/google/common/collect/StandardMultimap$WrappedCollection$Test", ((SLType)types.get(0)).toStringASM());
-    //    }
+    // @Test
+    // public void testDataType13() {
+    // String type =
+    // "Lcom/google/common/collect/StandardMultimap<TK;TV;>.WrappedCollection<Ljava/lang/Class;>.Test<Ljava/lang/String;>;";
+    // ASMTypeParser extract = new ASMTypeParser(type);
+    // List<Type> types = extract.types();
+    // assertEquals("com/google/common/collect/StandardMultimap$WrappedCollection$Test",
+    // ((SLType)types.get(0)).toStringASM());
+    // }
 }

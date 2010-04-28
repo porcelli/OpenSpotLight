@@ -180,7 +180,8 @@ public class TestModelGeneratedProperties {
 
         parameterizedType = new ParameterizedTypeReference(typeReferences, simpleType);
         Assert.assertEquals("Test2<? extends org.openspotlight.Test, java.lang.String>", parameterizedType.getName());
-        Assert.assertEquals("org.openspotlight.Test2<? extends org.openspotlight.Test, java.lang.String>", parameterizedType.getFullName());
+        Assert.assertEquals("org.openspotlight.Test2<? extends org.openspotlight.Test, java.lang.String>",
+                            parameterizedType.getFullName());
 
     }
 

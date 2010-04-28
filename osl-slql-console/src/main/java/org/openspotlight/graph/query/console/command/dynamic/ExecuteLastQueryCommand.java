@@ -129,7 +129,8 @@ public class ExecuteLastQueryCommand extends QueryCommand {
      */
     public boolean accept( ConsoleState state ) {
         Assertions.checkNotNull("state", state);
-        if (state.getActiveCommand() == null && state.getInput().trim().equals("/") || state.getActiveCommand() == null && state.getInput().trim().startsWith("/ > ")) {
+        if (state.getActiveCommand() == null && state.getInput().trim().equals("/") || state.getActiveCommand() == null
+            && state.getInput().trim().startsWith("/ > ")) {
             return true;
         }
         return false;

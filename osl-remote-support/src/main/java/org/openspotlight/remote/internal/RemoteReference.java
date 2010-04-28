@@ -123,18 +123,15 @@ public class RemoteReference<T> implements Serializable {
      */
     @SuppressWarnings( "unchecked" )
     public RemoteReference(
-                            final Class<T> remoteType,
-                            final Class<?>[] interfaces, final String remoteReferenceId,
+                            final Class<T> remoteType, final Class<?>[] interfaces, final String remoteReferenceId,
                             final UserToken userToken ) {
         checkNotEmpty("remoteReferenceId", remoteReferenceId);
         checkNotNull("userToken", userToken);
         this.remoteType = remoteType;
         this.remoteReferenceId = remoteReferenceId;
         this.userToken = userToken;
-        this.interfaces = Arrays.unionOf(interfaces, ObjectMethods.class,
-                                         remoteType);
-        this.hashcode = hashOf(this.remoteType, this.remoteReferenceId,
-                               this.userToken);
+        this.interfaces = Arrays.unionOf(interfaces, ObjectMethods.class, remoteType);
+        this.hashcode = hashOf(this.remoteType, this.remoteReferenceId, this.userToken);
     }
 
     /*
@@ -151,9 +148,9 @@ public class RemoteReference<T> implements Serializable {
             return false;
         }
         final RemoteReference<?> that = (RemoteReference<?>)obj;
-        return eachEquality(of(this.remoteType, this.remoteReferenceId,
-                               this.userToken), andOf(that.remoteType, that.remoteReferenceId,
-                                                      that.userToken));
+        return eachEquality(of(this.remoteType, this.remoteReferenceId, this.userToken), andOf(that.remoteType,
+                                                                                               that.remoteReferenceId,
+                                                                                               that.userToken));
     }
 
     /**

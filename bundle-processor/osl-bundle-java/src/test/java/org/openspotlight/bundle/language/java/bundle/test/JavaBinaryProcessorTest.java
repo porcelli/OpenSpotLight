@@ -98,8 +98,7 @@ public class JavaBinaryProcessorTest {
         public final ArtifactSource artifactSource;
 
         public RepositoryData(
-                               final GlobalSettings settings,
-                               final Repository repository, final Group group,
+                               final GlobalSettings settings, final Repository repository, final Group group,
                                final ArtifactSource artifactSource ) {
             this.settings = settings;
             this.repository = repository;
@@ -165,35 +164,28 @@ public class JavaBinaryProcessorTest {
     public static void setupResources() throws Exception {
         delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
 
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                             .closeRepositoryAndCleanResources();
-        Injector injector = Guice.createInjector(
-                        new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                        new SimplePersistModule(),
-                        new DetailedLoggerModule(),
-                        new DefaultExecutionContextFactoryModule());
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
         data = createRepositoryData();
 
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
-        final ExecutionContext context = contextFactory.createExecutionContext(
-                                                                               "username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+        final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
+                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                                                                                data.repository);
 
-        context.getDefaultConfigurationManager().saveGlobalSettings(
-                                                                    data.settings);
-        context.getDefaultConfigurationManager()
-                .saveRepository(data.repository);
+        context.getDefaultConfigurationManager().saveGlobalSettings(data.settings);
+        context.getDefaultConfigurationManager().saveRepository(data.repository);
         context.closeResources();
 
         scheduler = DefaultScheduler.INSTANCE;
-        scheduler.initializeSettings(contextFactory, "user", "password",
-                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        scheduler.refreshJobs(data.settings, SLCollections
-                                                          .setOf(data.repository));
+        scheduler.initializeSettings(contextFactory, "user", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        scheduler.refreshJobs(data.settings, SLCollections.setOf(data.repository));
         scheduler.startScheduler();
 
     }
@@ -212,20 +204,15 @@ public class JavaBinaryProcessorTest {
     public void shouldProcessJarFile() throws Exception {
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext context = contextFactory.createExecutionContext(
-                                                                               "", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        Set<String> list = context.getPersistentArtifactManager()
-                                  .getInternalMethods().retrieveNames(StreamArtifact.class, null);
+        final ExecutionContext context = contextFactory.createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                               data.repository);
+        Set<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StreamArtifact.class, null);
         for (String s : list)
             System.err.println(s);
-        final StreamArtifact jarArtifact = context
-                                                  .getPersistentArtifactManager().findByPath(
-                                                                                             StreamArtifact.class,
+        final StreamArtifact jarArtifact = context.getPersistentArtifactManager().findByPath(StreamArtifact.class,
                                                                                              "/jars/resources/dynamo-file-gen-1.0.1.jar");
-        Assert.assertThat(jarArtifact.getLastProcessStatus(), Is
-                                                                .is(LastProcessStatus.PROCESSED));
-        Assert.assertThat(jarArtifact.getUniqueContextName(), Is.is(IsNull
-                                                                          .notNullValue()));
+        Assert.assertThat(jarArtifact.getLastProcessStatus(), Is.is(LastProcessStatus.PROCESSED));
+        Assert.assertThat(jarArtifact.getUniqueContextName(), Is.is(IsNull.notNullValue()));
     }
 
 }

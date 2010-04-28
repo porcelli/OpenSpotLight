@@ -66,8 +66,7 @@ import org.openspotlight.task.ExecutorInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractOriginArtifactLoader implements
-        OriginArtifactLoader {
+public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoader {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -75,8 +74,7 @@ public abstract class AbstractOriginArtifactLoader implements
 
     private final LoaderInternalMethods internalMethods = new LoaderInternalMethodsImpl();
 
-    private final class LoaderInternalMethodsImpl implements
-            LoaderInternalMethods {
+    private final class LoaderInternalMethodsImpl implements LoaderInternalMethods {
 
         public final Set<Class<? extends Artifact>> getAvailableTypes() {
             try {
@@ -86,8 +84,7 @@ public abstract class AbstractOriginArtifactLoader implements
             }
         }
 
-        public final <A extends Artifact> boolean isMaybeChanged(
-                                                                  ArtifactSource source,
+        public final <A extends Artifact> boolean isMaybeChanged( ArtifactSource source,
                                                                   String artifactName,
                                                                   A oldOne ) {
             try {
@@ -105,18 +102,14 @@ public abstract class AbstractOriginArtifactLoader implements
             }
         }
 
-        public final <A extends Artifact> Set<String> retrieveOriginalNames(
-                                                                             Class<A> type,
+        public final <A extends Artifact> Set<String> retrieveOriginalNames( Class<A> type,
                                                                              ArtifactSource source,
                                                                              String initialPath ) {
             try {
-                Set<String> result = internalRetrieveOriginalNames(type,
-                                                                   source, initialPath);
+                Set<String> result = internalRetrieveOriginalNames(type, source, initialPath);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("returned "
-                                 + Strings.bigCollectionsToString(result) + " for ("
-                                 + type.getSimpleName() + ", " + source.getName()
-                                 + ", " + initialPath + ")");
+                    logger.debug("returned " + Strings.bigCollectionsToString(result) + " for (" + type.getSimpleName() + ", "
+                                 + source.getName() + ", " + initialPath + ")");
                 }
                 return result;
             } catch (Exception e) {
@@ -139,12 +132,9 @@ public abstract class AbstractOriginArtifactLoader implements
                                                     ArtifactSource source,
                                                     String path ) {
         try {
-            A result = fillSomeData(type, source, internalFindByPath(type,
-                                                                     source, path));
+            A result = fillSomeData(type, source, internalFindByPath(type, source, path));
             if (logger.isDebugEnabled()) {
-                logger.debug("returned " + result + " for ("
-                             + type.getSimpleName() + ", " + source.getName() + ", "
-                             + path + ")");
+                logger.debug("returned " + result + " for (" + type.getSimpleName() + ", " + source.getName() + ", " + path + ")");
             }
             return result;
         } catch (Exception e) {
@@ -157,8 +147,7 @@ public abstract class AbstractOriginArtifactLoader implements
                                                             A relativeTo,
                                                             String path ) {
         try {
-            return fillSomeData(type, source, internalFindByRelativePath(type,
-                                                                         source, relativeTo, path));
+            return fillSomeData(type, source, internalFindByRelativePath(type, source, relativeTo, path));
         } catch (Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
@@ -172,8 +161,7 @@ public abstract class AbstractOriginArtifactLoader implements
                                                          ArtifactSource source,
                                                          String path ) {
         try {
-            return fillSomeData(type, source, internalListByPath(type, source,
-                                                                 path));
+            return fillSomeData(type, source, internalListByPath(type, source, path));
         } catch (Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
@@ -191,18 +179,15 @@ public abstract class AbstractOriginArtifactLoader implements
                                                                  ArtifactSource source,
                                                                  A relativeTo,
                                                                  String path ) throws Exception {
-        final String newPath = PathElement.createRelativePath(
-                                                              relativeTo.getParent(), path).getCompletePath();
+        final String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
         return internalFindByPath(type, source, newPath);
 
     }
 
-    protected <A extends Artifact> Set<A> internalListByPath(
-                                                              final Class<A> type,
+    protected <A extends Artifact> Set<A> internalListByPath( final Class<A> type,
                                                               final ArtifactSource source,
                                                               final String initialPath ) throws Exception {
-        Set<String> paths = getInternalMethods().retrieveOriginalNames(type,
-                                                                       source, initialPath);
+        Set<String> paths = getInternalMethods().retrieveOriginalNames(type, source, initialPath);
         Set<A> result = new HashSet<A>();
         if (isMultithreaded()) {
             List<Callable<A>> tasks = new ArrayList<Callable<A>>();
@@ -214,8 +199,7 @@ public abstract class AbstractOriginArtifactLoader implements
                 };
                 tasks.add(callable);
             }
-            List<Future<A>> futures = ExecutorInstance.INSTANCE
-                                                               .invokeAll(tasks);
+            List<Future<A>> futures = ExecutorInstance.INSTANCE.invokeAll(tasks);
             for (Future<A> f : futures)
                 result.add(f.get());
         } else {
@@ -224,9 +208,8 @@ public abstract class AbstractOriginArtifactLoader implements
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("returned " + Strings.bigCollectionsToString(result)
-                         + " for (" + type.getSimpleName() + ", " + source.getName()
-                         + ", " + initialPath + ")");
+            logger.debug("returned " + Strings.bigCollectionsToString(result) + " for (" + type.getSimpleName() + ", "
+                         + source.getName() + ", " + initialPath + ")");
         }
 
         return result;
@@ -235,38 +218,30 @@ public abstract class AbstractOriginArtifactLoader implements
     private <A extends Artifact> A fillSomeData( Class<A> type,
                                                  ArtifactSource source,
                                                  A artifact ) {
-        if (artifact != null)
-            artifact.setRepositoryName(source.getRepository().getName());
+        if (artifact != null) artifact.setRepositoryName(source.getRepository().getName());
         return artifact;
     }
 
     private <A extends Artifact> Set<A> fillSomeData( Class<A> type,
                                                       ArtifactSource source,
                                                       Set<A> artifacts ) {
-        if (artifacts == null)
-            return Collections.emptySet();
+        if (artifacts == null) return Collections.emptySet();
         for (A artifact : artifacts)
             artifact.setRepositoryName(source.getRepository().getName());
         return artifacts;
     }
 
-    protected abstract <A extends Artifact> boolean internalIsMaybeChanged(
-                                                                            ArtifactSource source,
+    protected abstract <A extends Artifact> boolean internalIsMaybeChanged( ArtifactSource source,
                                                                             String artifactName,
-                                                                            A oldOne )
-            throws Exception;
+                                                                            A oldOne ) throws Exception;
 
-    protected abstract Set<Class<? extends Artifact>> internalGetAvailableTypes()
-            throws Exception;
+    protected abstract Set<Class<? extends Artifact>> internalGetAvailableTypes() throws Exception;
 
-    protected abstract boolean internalIsTypeSupported(
-                                                        Class<? extends Artifact> type ) throws Exception;
+    protected abstract boolean internalIsTypeSupported( Class<? extends Artifact> type ) throws Exception;
 
-    protected abstract <A extends Artifact> Set<String> internalRetrieveOriginalNames(
-                                                                                       Class<A> type,
+    protected abstract <A extends Artifact> Set<String> internalRetrieveOriginalNames( Class<A> type,
                                                                                        ArtifactSource source,
-                                                                                       String initialPath )
-            throws Exception;
+                                                                                       String initialPath ) throws Exception;
 
     protected abstract <A extends Artifact> A internalFindByPath( Class<A> type,
                                                                   ArtifactSource source,
@@ -274,8 +249,7 @@ public abstract class AbstractOriginArtifactLoader implements
 
     protected abstract void internalCloseResources() throws Exception;
 
-    protected abstract <A extends Artifact> boolean internalAccept(
-                                                                    ArtifactSource source,
+    protected abstract <A extends Artifact> boolean internalAccept( ArtifactSource source,
                                                                     Class<A> type ) throws Exception;
 
 }

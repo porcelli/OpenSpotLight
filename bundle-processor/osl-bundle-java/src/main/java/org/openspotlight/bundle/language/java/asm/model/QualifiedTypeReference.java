@@ -109,14 +109,19 @@ public class QualifiedTypeReference implements TypeReference {
         this.type = type;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
      */
     public String getFullName() {
         return type.getFullName() + "." + typeName;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getName()
      */
     public String getName() {

@@ -66,9 +66,8 @@ public class BundleContextThreadInjector implements RunnableListener {
     private final JcrConnectionDescriptor descriptor;
 
     public BundleContextThreadInjector(
-                                        final ExecutionContextFactory factory,
-                                        final Repository[] repositories, final String username,
-                                        final String password, final JcrConnectionDescriptor descriptor ) {
+                                        final ExecutionContextFactory factory, final Repository[] repositories,
+                                        final String username, final String password, final JcrConnectionDescriptor descriptor ) {
         this.factory = factory;
         this.repositories = repositories;
         this.descriptor = descriptor;
@@ -84,8 +83,7 @@ public class BundleContextThreadInjector implements RunnableListener {
                                    final RunnableWithException r ) {
         if (r instanceof RunnableWithBundleContext) {
             final RunnableWithBundleContext runnable = (RunnableWithBundleContext)r;
-            final ExecutionContext ctx = (ExecutionContext)threadLocalMap
-                                                                         .get(runnable.getRepositoryName());
+            final ExecutionContext ctx = (ExecutionContext)threadLocalMap.get(runnable.getRepositoryName());
             runnable.setBundleContext(ctx);
         }
 
@@ -93,17 +91,14 @@ public class BundleContextThreadInjector implements RunnableListener {
 
     public void beforeSetupWorker( final Map<String, Object> threadLocalMap ) {
         for (final Repository repository : repositories) {
-            threadLocalMap.put(repository.getName(), factory
-                                                            .createExecutionContext(username, password, descriptor,
-                                                                                    repository));
+            threadLocalMap.put(repository.getName(), factory.createExecutionContext(username, password, descriptor, repository));
         }
 
     }
 
     public void beforeShutdownWorker( final Map<String, Object> threadLocalMap ) {
         for (final Repository repository : repositories) {
-            final ExecutionContext execCtx = (ExecutionContext)threadLocalMap
-                                                                             .get(repository.getName());
+            final ExecutionContext execCtx = (ExecutionContext)threadLocalMap.get(repository.getName());
             execCtx.closeResources();
         }
     }

@@ -50,8 +50,7 @@ package org.openspotlight.persist.test;
 
 import org.openspotlight.persist.internal.StreamPropertyWithParent;
 
-public class ObjectThatDoesntImplementSimpleNodeType implements
-        StreamPropertyWithParent<RootObj> {
+public class ObjectThatDoesntImplementSimpleNodeType implements StreamPropertyWithParent<RootObj> {
 
     /**
 	 * 

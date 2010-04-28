@@ -94,8 +94,7 @@ public interface ConfigurationManager {
      * @param globalSettings the global settings
      * @throws ConfigurationException the configuration exception
      */
-    void saveGlobalSettings( GlobalSettings globalSettings )
-            throws ConfigurationException;
+    void saveGlobalSettings( GlobalSettings globalSettings ) throws ConfigurationException;
 
     /**
      * Saves the group on a persistent layer marking the current configuration as a saved configuration.

@@ -120,7 +120,9 @@ public class SLWhereByLinkCountInfo {
         this.selectByLinkCountInfo = selectByLinkCountInfo;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -213,7 +215,9 @@ public class SLWhereByLinkCountInfo {
             this.typeStatementInfo = whereStatementInfo;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#hashCode()
          */
         @Override
@@ -368,7 +372,9 @@ public class SLWhereByLinkCountInfo {
                 this.opened = opened;
             }
 
-            /* (non-Javadoc)
+            /*
+             * (non-Javadoc)
+             * 
              * @see java.lang.Object#toString()
              */
             @Override
@@ -627,7 +633,9 @@ public class SLWhereByLinkCountInfo {
                     this.typeInfo = typeInfo;
                 }
 
-                /* (non-Javadoc)
+                /*
+                 * (non-Javadoc)
+                 * 
                  * @see java.lang.Object#toString()
                  */
                 @Override
@@ -637,7 +645,8 @@ public class SLWhereByLinkCountInfo {
                     boolean subTypes = typeInfo.isSubTypes();
 
                     StringBuilder buffer = new StringBuilder();
-                    appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
+                    appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""),
+                                    ' ');
                     appendIfNotNull(buffer, relationalOperator, '"', typeName, (subTypes ? ".*" : ""), "\" ");
                     appendIfNotNull(buffer, linkTypeName, "link \"", linkTypeName, " (", side.symbol(), ')', "\" ");
                     appendIfNotNull(buffer, relationalOperator, (relationalNotOperator ? "!" : ""), relationalOperator);

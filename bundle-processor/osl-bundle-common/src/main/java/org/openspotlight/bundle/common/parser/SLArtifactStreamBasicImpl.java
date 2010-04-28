@@ -54,23 +54,20 @@ import java.io.StringReader;
 
 import org.antlr.runtime.ANTLRStringStream;
 
-public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements
-    SLArtifactStream {
+public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements SLArtifactStream {
 
     private final int    lineCount;
     private final String version;
 
     public SLArtifactStreamBasicImpl(
-                                      final String fedaratedArtifactPath,
-                                      final String artifactContent,
-                                      final String version ) throws IOException {
+                                      final String fedaratedArtifactPath, final String artifactContent, final String version )
+        throws IOException {
         this.name = fedaratedArtifactPath;
         this.data = artifactContent.toCharArray();
         this.version = version;
         n = artifactContent.length();
         int count = 0;
-        final BufferedReader reader = new BufferedReader(new StringReader(
-                                                                          artifactContent));
+        final BufferedReader reader = new BufferedReader(new StringReader(artifactContent));
         while (reader.readLine() != null) {
             count++;
         }

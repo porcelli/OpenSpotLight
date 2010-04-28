@@ -10,7 +10,7 @@ import org.openspotlight.storage.redis.guice.JRedisServerDetail;
  */
 public enum ExampleRedisConfig implements JRedisServerDetail {
 
-    EXAMPLE("localhost", 6379, 1, null);
+    EXAMPLE("localhost", 6379, 0, null);
 
 
     private final ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig;

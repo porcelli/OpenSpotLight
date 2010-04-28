@@ -116,22 +116,17 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      * @param propertyMethodDefinitionOrderName property name that defines the order of method parameter definition
      */
     public MethodResolver(
-                           final AbstractTypeResolver<T> typeResolver,
-                           final SLGraphSession graphSession,
-                           final Class<? extends SLNode> methodSuperType,
-                           final Class<? extends SLLink> typeMethodLink,
-                           final Class<? extends SLLink> methodParameterDefinitionLink,
-                           final String propertySimpleMethodName,
+                           final AbstractTypeResolver<T> typeResolver, final SLGraphSession graphSession,
+                           final Class<? extends SLNode> methodSuperType, final Class<? extends SLLink> typeMethodLink,
+                           final Class<? extends SLLink> methodParameterDefinitionLink, final String propertySimpleMethodName,
                            final String propertyMethodDefinitionOrderName ) {
         checkNotNull("typeResolver", typeResolver);
         checkNotNull("graphSession", graphSession);
         checkNotNull("methodSuperType", methodSuperType);
         checkNotNull("typeMethodLink", typeMethodLink);
-        checkNotNull("methodParameterDefinitionLink",
-                     methodParameterDefinitionLink);
+        checkNotNull("methodParameterDefinitionLink", methodParameterDefinitionLink);
         checkNotEmpty("propertySimpleMethodName", propertySimpleMethodName);
-        checkNotEmpty("propertyMethodDefinitionOrderName",
-                      propertyMethodDefinitionOrderName);
+        checkNotEmpty("propertyMethodDefinitionOrderName", propertyMethodDefinitionOrderName);
 
         this.typeResolver = typeResolver;
         this.graphSession = graphSession;
@@ -159,8 +154,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
                                                 final String methodName,
                                                 final List<T> paramTypes,
                                                 final XM foundMethod ) {
-        final String cachedId = this.getUniqueId(type, methodName,
-                                                 paramTypes);
+        final String cachedId = this.getUniqueId(type, methodName, paramTypes);
         this.cache.put(cachedId, foundMethod.getID());
         return foundMethod;
     }
@@ -187,8 +181,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
                 throw new SLBundleException();
             }
 
-            final Iterator<Entry<XM, T[]>> methodIterator = possibleMethods
-                                                                           .entrySet().iterator();
+            final Iterator<Entry<XM, T[]>> methodIterator = possibleMethods.entrySet().iterator();
             final Entry<XM, T[]> firstMethod = methodIterator.next();
             if (!methodIterator.hasNext()) {
                 return firstMethod.getKey();
@@ -200,9 +193,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
                 final T firstMethodParam = firstMethod.getValue()[i];
                 final T secondMethodParam = secondMethod.getValue()[i];
 
-                final BestTypeMatch bestTypeResult = this.typeResolver
-                                                                      .bestMatch(activeParam, firstMethodParam,
-                                                                                 secondMethodParam);
+                final BestTypeMatch bestTypeResult = this.typeResolver.bestMatch(activeParam, firstMethodParam, secondMethodParam);
 
                 if (bestTypeResult == BestTypeMatch.T1) {
                     methods.remove(secondMethod.getKey());
@@ -259,7 +250,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      */
     public <XM extends M> XM getMethod( final T type,
                                         final String methodName )
-            throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
         return this.<XM>getMethod(type, methodName, null);
     }
 
@@ -293,48 +284,43 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
             paramSize = paramTypes.size();
         }
 
-        final XM chachedMethod = this.<XM>getCachedData(type, methodName,
-                                                        paramTypes);
+        final XM chachedMethod = this.<XM>getCachedData(type, methodName, paramTypes);
 
         if (chachedMethod != null) {
             return chachedMethod;
         }
 
-        final List<T> typeHierarchy = this.typeResolver.getAllParents(type,
-                                                                      ResultOrder.DESC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final List<T> typeHierarchy = this.typeResolver.getAllParents(type, ResultOrder.DESC,
+                                                                      IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
         final SLQueryApi query = this.graphSession.createQueryApi();
 
-        query.select().type(this.methodSuperType.getName()).subTypes().comma()
-                .byLink(this.typeMethodLink.getName()).b().selectEnd().select()
-                .type(this.methodSuperType.getName()).subTypes().selectEnd()
-                .where().type(this.methodSuperType.getName()).subTypes().each()
-                .link(this.methodParameterDefinitionLink.getName()).a().count()
-                .equalsTo().value(paramSize).and().each().property(
-                                                                   this.propertySimpleMethodName).equalsTo().value(
-                                                                                                                   methodName).typeEnd().whereEnd();
+        query.select().type(this.methodSuperType.getName()).subTypes().comma().byLink(this.typeMethodLink.getName()).b().selectEnd().select().type(
+                                                                                                                                                   this.methodSuperType.getName()).subTypes().selectEnd().where().type(
+                                                                                                                                                                                                                       this.methodSuperType.getName()).subTypes().each().link(
+                                                                                                                                                                                                                                                                              this.methodParameterDefinitionLink.getName()).a().count().equalsTo().value(
+                                                                                                                                                                                                                                                                                                                                                         paramSize).and().each().property(
+                                                                                                                                                                                                                                                                                                                                                                                          this.propertySimpleMethodName).equalsTo().value(
+                                                                                                                                                                                                                                                                                                                                                                                                                                          methodName).typeEnd().whereEnd();
 
         for (final T activeType : typeHierarchy) {
             final List<T> inputType = new LinkedList<T>();
             inputType.add(activeType);
 
-            final SLQueryResult result = query
-                                              .execute((Collection<SLNode>)inputType);
+            final SLQueryResult result = query.execute((Collection<SLNode>)inputType);
 
             // FIXME: where cast bug fixed..: REMOVE THIS!
             final List<XM> validMethods = new LinkedList<XM>();
             for (final SLNode activeMethod : result.getNodes()) {
                 try {
-                    validMethods.add((XM)this.graphSession
-                                                          .getNodeByID(activeMethod.getID()));
+                    validMethods.add((XM)this.graphSession.getNodeByID(activeMethod.getID()));
                 } catch (SLNodeNotFoundException e) {
                     throw new SLBundleException("", e);
                 }
             }
 
             if (paramSize == 0 && validMethods.size() > 0) {
-                return this.cacheFoundMethod(type, methodName, paramTypes,
-                                             validMethods.get(0));
+                return this.cacheFoundMethod(type, methodName, paramTypes, validMethods.get(0));
 
             }
 
@@ -344,17 +330,13 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
             for (final XM activeMethod : validMethods) {
                 final T[] orderedParams = (T[])new SLNode[paramSize];
 
-                final Collection<? extends SLLink> links = this.graphSession
-                                                                            .getUnidirectionalLinksBySource(
+                final Collection<? extends SLLink> links = this.graphSession.getUnidirectionalLinksBySource(
                                                                                                             this.methodParameterDefinitionLink,
                                                                                                             activeMethod);
 
                 for (final SLLink methodParameterDefinition : links) {
                     try {
-                        orderedParams[methodParameterDefinition.getProperty(
-                                                                            Integer.class,
-                                                                            this.propertyMethodDefinitionOrderName).getValue()] = (T)methodParameterDefinition
-                                                                                                                                                              .getTarget();
+                        orderedParams[methodParameterDefinition.getProperty(Integer.class, this.propertyMethodDefinitionOrderName).getValue()] = (T)methodParameterDefinition.getTarget();
                     } catch (SLPropertyNotFoundException e) {
                         throw new SLBundleException("Property Method Definition Order not found.", e);
                     }
@@ -364,8 +346,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
                 boolean isValidMethod = true;
                 for (int i = 0; i < orderedParams.length; i++) {
                     final T activeParamType = orderedParams[i];
-                    if (!this.typeResolver.isTypeOf(paramTypes.get(i),
-                                                    activeParamType)) {
+                    if (!this.typeResolver.isTypeOf(paramTypes.get(i), activeParamType)) {
                         isValidMethod = false;
                         break;
                     }
@@ -375,13 +356,11 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
                 }
             }
             if (possibleMethods.size() == 1) {
-                return this.cacheFoundMethod(type, methodName, paramTypes,
-                                             possibleMethods.entrySet().iterator().next().getKey());
+                return this.cacheFoundMethod(type, methodName, paramTypes, possibleMethods.entrySet().iterator().next().getKey());
             }
 
             if (possibleMethods.size() > 0) {
-                return this.cacheFoundMethod(type, methodName, paramTypes, this
-                                                                               .getBestMatch(possibleMethods, paramTypes));
+                return this.cacheFoundMethod(type, methodName, paramTypes, this.getBestMatch(possibleMethods, paramTypes));
             }
         }
 
@@ -424,8 +403,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      */
     private boolean isContreteType( final List<T> types ) {
         for (final T t : types) {
-            if (!(this.typeResolver.isConcreteType(t) || this.typeResolver
-                                                                          .isPrimitiveType(t))) {
+            if (!(this.typeResolver.isConcreteType(t) || this.typeResolver.isPrimitiveType(t))) {
                 return false;
             }
         }

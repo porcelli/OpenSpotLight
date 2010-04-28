@@ -48,25 +48,6 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
-import static java.text.MessageFormat.format;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Connection;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Before;
@@ -77,24 +58,41 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.DatabaseStreamArtifactFinder;
-import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
+import java.sql.Connection;
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.text.MessageFormat.format;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+
 /**
- * This test is intended to be used to test scripts to retrieve stream artifacts for a given {@link }. Most of the
- * environments used to run <code>mvn clean install</code> would not have all the database types. But there's a need to have a
- * test for each type on the source code. On this cases, the tests will be annotated with {@link } annotation.
+ * This test is intended to be used to test scripts to retrieve stream artifacts for a given {@link }. Most of the environments
+ * used to run <code>mvn clean install</code> would not have all the database types. But there's a need to have a test for each
+ * type on the source code. On this cases, the tests will be annotated with {@link } annotation.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
@@ -134,7 +132,9 @@ public abstract class DatabaseStreamTest {
      */
     protected void resetDatabase( final Connection conn ) throws Exception {
         //
-    };
+    }
+
+    ;
 
     /**
      * This test method will load all artifacts from the configuration and assert if all artifacts of the {@link #typesToAssert()}
@@ -144,15 +144,13 @@ public abstract class DatabaseStreamTest {
      */
     @Test
     public void shouldLoadAllValidTypes() throws Exception {
+
         if (this instanceof RunWhenDatabaseVendorTestsIsActive) {
             if ("true".equals(System.getProperty("runDatabaseVendorTests"))) {
                 validateAllTypes();
             } else {
-                logger
-                        .warn(format(
-                                     "Ignoring test {0} because system property {1} isn't set to true.",
-                                     this.getClass().getSimpleName(),
-                                     "runDatabaseVendorTests"));
+                logger.warn(format("Ignoring test {0} because system property {1} isn't set to true.",
+                                   this.getClass().getSimpleName(), "runDatabaseVendorTests"));
             }
         } else {
             validateAllTypes();
@@ -174,8 +172,7 @@ public abstract class DatabaseStreamTest {
         }
         final GlobalSettings configuration = new GlobalSettings();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
-        configuration.getLoaderRegistry().add(
-                                              DatabaseStreamArtifactFinder.class);
+        configuration.getLoaderRegistry().add(DatabaseStreamArtifactFinder.class);
 
         conn = createConnection(bundle);
         resetDatabase(conn);
@@ -183,53 +180,49 @@ public abstract class DatabaseStreamTest {
             conn.close();
         }
 
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
 
-        Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
+        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(
+                                                                                                                                                 SLPartition.FEDERATION);
 
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(injector.getInstance(SimplePersistFactory.class), bundle.getRepository());
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
+                                                                                               injector.getInstance(SimplePersistFactory.class),
+                                                                                               bundle.getRepository());
 
-        ArtifactLoaderManager.INSTANCE.refreshResources(configuration, bundle,
-                                                        provider);
+        ArtifactLoaderManager.INSTANCE.refreshResources(configuration, bundle, provider);
 
-        Set<StringArtifact> loadedArtifacts = provider.get().listByPath(
-                                                                        StringArtifact.class, null);
+        Set<StringArtifact> loadedArtifacts = provider.get().listByPath(StringArtifact.class, null);
         final Set<String> failMessages = new HashSet<String>();
         lookingTypes: for (final ScriptType typeToAssert : typesToAssert()) {
             for (final Artifact artifact : loadedArtifacts) {
                 final StringArtifact streamArtifact = (StringArtifact)artifact;
-                final String relativeName = streamArtifact
-                                                          .getArtifactCompleteName();
+                final String relativeName = streamArtifact.getArtifactCompleteName();
                 if (relativeName.contains(typeToAssert.name())) {
                     assertThat(streamArtifact.getContent(), is(notNullValue()));
                     continue lookingTypes;
                 }
             }
             failMessages.add(format("Type {0} was not found in any of strings: {1}", //$NON-NLS-1$
-            typeToAssert, loadedArtifacts));
+                                    typeToAssert, loadedArtifacts));
         }
         if (!failMessages.isEmpty()) {
             fail(failMessages.toString());
         }
         for (final Artifact artifact : loadedArtifacts) {
             final StringArtifact streamArtifact = (StringArtifact)artifact;
-            final String name = "./target/test-data/"
-                                + this.getClass().getSimpleName()
-                                + "/"
-                                + streamArtifact.getArtifactCompleteName().replaceAll(" ",
-                                                                                      "");// DB2 has
+            final String name = "./target/test-data/" + this.getClass().getSimpleName() + "/"
+                                + streamArtifact.getArtifactCompleteName().replaceAll(" ", "");// DB2 has
             // some
             // spaces
             final String dirName = name.substring(0, name.lastIndexOf('/'));
             new File(dirName).mkdirs();
-            final OutputStream fos = new BufferedOutputStream(
-                                                              new FileOutputStream(name + ".sql"));
-            final InputStream is = new ByteArrayInputStream(streamArtifact
-                                                                          .getContent().get(null).getBytes());
+            final OutputStream fos = new BufferedOutputStream(new FileOutputStream(name + ".sql"));
+            final InputStream is = new ByteArrayInputStream(streamArtifact.getContent().get(simplePersist).getBytes());
             while (true) {
                 final int data = is.read();
                 if (data == -1) {

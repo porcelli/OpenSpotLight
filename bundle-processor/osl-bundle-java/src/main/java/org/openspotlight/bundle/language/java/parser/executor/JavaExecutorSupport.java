@@ -97,25 +97,18 @@ public class JavaExecutorSupport {
     final String                  completeArtifactName;
 
     public JavaExecutorSupport(
-                                final SLNode currentContext,
-                                final SLGraphSession session, final String completeArtifactName )
+                                final SLNode currentContext, final SLGraphSession session, final String completeArtifactName )
         throws Exception {
         this.currentContext = currentContext;
-        abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT)
-                                 .getRootNode();
+        abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
         this.session = session;
         this.completeArtifactName = completeArtifactName;
-        currentContextFinder = new ByPropertyFinder(completeArtifactName,
-                                                    session, currentContext);
-        abstractContextFinder = new ByPropertyFinder(completeArtifactName,
-                                                     session, abstractContext);
+        currentContextFinder = new ByPropertyFinder(completeArtifactName, session, currentContext);
+        abstractContextFinder = new ByPropertyFinder(completeArtifactName, session, abstractContext);
         if (logger.isDebugEnabled()) {
-            logger.debug(completeArtifactName + ": " + "creating "
-                         + getClass().getSimpleName() + " with "
-                         + currentContext.getContext().getID() + ":"
-                         + currentContext.getName() + "/"
-                         + abstractContext.getContext().getID() + ":"
-                         + abstractContext.getName());
+            logger.debug(completeArtifactName + ": " + "creating " + getClass().getSimpleName() + " with "
+                         + currentContext.getContext().getID() + ":" + currentContext.getName() + "/"
+                         + abstractContext.getContext().getID() + ":" + abstractContext.getName());
         }
     }
 
@@ -124,10 +117,8 @@ public class JavaExecutorSupport {
                                                            final WhatContext whatContext ) throws Exception {
         if (!(source instanceof JavaPackage || source instanceof JavaType)) {
             if (logger.isDebugEnabled()) {
-                logger.debug("returning source node for "
-                             + source.getClass().getInterfaces()[0].getSimpleName()
-                             + " " + source.getName() + " within " + whatContext
-                             + " due to its type "
+                logger.debug("returning source node for " + source.getClass().getInterfaces()[0].getSimpleName() + " "
+                             + source.getName() + " within " + whatContext + " due to its type "
                              + source.getClass().getInterfaces()[0].getSimpleName());
             }
             return (W)source;
@@ -144,8 +135,7 @@ public class JavaExecutorSupport {
                 targetContext = currentContext.getContext();
                 break;
             default:
-                throw Exceptions.logAndReturn(new IllegalStateException(
-                                                                        "Wrong number of elements on internal enum WhatContext"));
+                throw Exceptions.logAndReturn(new IllegalStateException("Wrong number of elements on internal enum WhatContext"));
         }
         if (cached != null) {
             return (W)cached;
@@ -153,24 +143,20 @@ public class JavaExecutorSupport {
         if (source.getContext().equals(targetContext)) {
             if (logger.isDebugEnabled()) {
                 logger.debug("returning the same source for equivalent node "
-                             + source.getClass().getInterfaces()[0].getSimpleName()
-                             + " " + source.getName() + " within " + whatContext
-                             + " due to its context");
+                             + source.getClass().getInterfaces()[0].getSimpleName() + " " + source.getName() + " within "
+                             + whatContext + " due to its context");
             }
             return (W)source;
         }
 
-        NeedsSyncronizationCollection<AbstractTypeBind> links = session
-                                                                       .getLinks(AbstractTypeBind.class, source, null);
+        NeedsSyncronizationCollection<AbstractTypeBind> links = session.getLinks(AbstractTypeBind.class, source, null);
         if (links.size() == 0) {
             links = session.getLinks(AbstractTypeBind.class, null, source);
         }
         if (links.size() == 0) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Didn't find equivalent node for "
-                             + source.getClass().getInterfaces()[0].getSimpleName()
-                             + " " + source.getName() + " within " + whatContext
-                             + " due to link mess");
+                logger.debug("Didn't find equivalent node for " + source.getClass().getInterfaces()[0].getSimpleName() + " "
+                             + source.getName() + " within " + whatContext + " due to link mess");
             }
 
             return null;
@@ -184,8 +170,7 @@ public class JavaExecutorSupport {
                 } else if (source.equals(link.getTarget())) {
                     tmpFound = (W)link.getSource();
                 }
-                if (tmpFound != null
-                        && tmpFound.getContext().equals(targetContext)) {
+                if (tmpFound != null && tmpFound.getContext().equals(targetContext)) {
                     found = tmpFound;
                     break;
                 }
@@ -193,9 +178,8 @@ public class JavaExecutorSupport {
         }
         if (found == null) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Didn't find equivalent node for "
-                             + source.getClass().getInterfaces()[0].getSimpleName()
-                             + " " + source.getName() + " within " + whatContext);
+                logger.debug("Didn't find equivalent node for " + source.getClass().getInterfaces()[0].getSimpleName() + " "
+                             + source.getName() + " within " + whatContext);
             }
             return null;
         }
@@ -208,8 +192,7 @@ public class JavaExecutorSupport {
                 putOnBothCaches(found, source);
                 break;
             default:
-                throw Exceptions.logAndReturn(new IllegalStateException(
-                                                                        "Wrong number of elements on internal enum WhatContext"));
+                throw Exceptions.logAndReturn(new IllegalStateException("Wrong number of elements on internal enum WhatContext"));
         }
         return found;
 
@@ -238,18 +221,15 @@ public class JavaExecutorSupport {
             }
 
             for (final String possibleName : possibleNames) {
-                final JavaType javaType = finder.findByProperty(JavaType.class,
-                                                                "qualifiedName", possibleName);
+                final JavaType javaType = finder.findByProperty(JavaType.class, "qualifiedName", possibleName);
                 if (javaType != null) {
                     importedNodeCache.put(javaType.getSimpleName(), javaType);
-                    importedNodeCache
-                                     .put(javaType.getQualifiedName(), javaType);
+                    importedNodeCache.put(javaType.getQualifiedName(), javaType);
                     return javaType;
                 }
             }
             if (logger.isDebugEnabled()) {
-                logger.info(completeArtifactName
-                            + ": any node was found for type " + string);
+                logger.info(completeArtifactName + ": any node was found for type " + string);
             }
             return null;
         } catch (final Exception e) {
@@ -263,8 +243,7 @@ public class JavaExecutorSupport {
 
     JavaType findPrimitiveType( final String string ) {
         try {
-            final JavaTypePrimitive primitive = abstractContext.addNode(
-                                                                        JavaTypePrimitive.class, string);
+            final JavaTypePrimitive primitive = abstractContext.addNode(JavaTypePrimitive.class, string);
             return primitive;
         } catch (final Exception e) {
             if (quiet) {

@@ -59,8 +59,7 @@ import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 
-public class DbTableArtifactProcessor implements
-        BundleProcessorArtifactPhase<TableArtifact> {
+public class DbTableArtifactProcessor implements BundleProcessorArtifactPhase<TableArtifact> {
 
     public void beforeProcessArtifact( final TableArtifact artifact,
                                        final CurrentProcessorContext currentContext,
@@ -82,12 +81,9 @@ public class DbTableArtifactProcessor implements
     public LastProcessStatus processArtifact( final TableArtifact artifact,
                                               final CurrentProcessorContext currentContext,
                                               final ExecutionContext context ) throws Exception {
-        final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-                                                                     .createByType(artifact.getDatabaseType());
-        final TableVo data = createTableData(wrappedType, artifact,
-                                             currentContext, context);
-        createColumns(wrappedType, artifact, context, data.databaseContextNode,
-                      data.database, data.table, data.abstractTable);
+        final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE.createByType(artifact.getDatabaseType());
+        final TableVo data = createTableData(wrappedType, artifact, currentContext, context);
+        createColumns(wrappedType, artifact, context, data.databaseContextNode, data.database, data.table, data.abstractTable);
         return LastProcessStatus.PROCESSED;
     }
 

@@ -142,9 +142,7 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
         try {
             if (link != null && logger.isDebugEnabled()) {
 
-                logger.debug(" about to remove link "
-                             + Arrays.toString(link.getClass().getInterfaces())
-                             + " " + link.getID());
+                logger.debug(" about to remove link " + Arrays.toString(link.getClass().getInterfaces()) + " " + link.getID());
             }
         } catch (final Exception e) {
             Exceptions.catchAndLog(e);
@@ -154,9 +152,8 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
     private void logNodeRemoval( final SLNode node ) {
         try {
             if (node != null && logger.isDebugEnabled()) {
-                logger.debug(" about to remove node "
-                             + Arrays.toString(node.getClass().getInterfaces())
-                             + " " + node.getName() + " " + node.getID());
+                logger.debug(" about to remove node " + Arrays.toString(node.getClass().getInterfaces()) + " " + node.getName()
+                             + " " + node.getID());
             }
         } catch (final Exception e) {
             Exceptions.catchAndLog(e);
@@ -172,17 +169,13 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
 
             final SLGraphSession session = event.getSession();
             final SLNode node = event.getNode();
-            final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = event
-                                                                                      .getLinkTypesForLinkDeletion();
-            final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion = event
-                                                                                            .getLinkTypesForLinkedNodesDeletion();
+            final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = event.getLinkTypesForLinkDeletion();
+            final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion = event.getLinkTypesForLinkedNodesDeletion();
 
             if (linkTypesForLinkDeletion != null) {
                 // mark for deletion links that have the added node as side ...
                 for (final Class<? extends SLLink> linkType : linkTypesForLinkDeletion) {
-                    final Collection<? extends SLLink> links = session
-                                                                      .getLinks(linkType, node, null,
-                                                                                SLLink.DIRECTION_ANY);
+                    final Collection<? extends SLLink> links = session.getLinks(linkType, node, null, SLLink.DIRECTION_ANY);
                     linksForDeletion.addAll(links);
                 }
             }
@@ -190,8 +183,7 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
             if (linkTypesForLinkedNodeDeletion != null) {
                 // mark for deletion all the nodes linked to this node ...
                 for (final Class<? extends SLLink> linkType : linkTypesForLinkedNodeDeletion) {
-                    final Collection<SLNode> nodes = session.getNodesByLink(
-                                                                            linkType, node);
+                    final Collection<SLNode> nodes = session.getNodesByLink(linkType, node);
                     nodesForDeletion.addAll(nodes);
                 }
             }

@@ -89,15 +89,11 @@ public class DuplicateTest {
     @Before
     public void setup() throws AbstractFactoryException, SLGraphException, IdentityException {
 
-        final SecurityFactory securityFactory = AbstractFactory
-                                                               .getDefaultInstance(SecurityFactory.class);
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(
-                                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-                                                                                                        "password");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
-        final SLGraphFactory factory = AbstractFactory
-                                                      .getDefaultInstance(SLGraphFactory.class);
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
@@ -107,8 +103,7 @@ public class DuplicateTest {
         final SLNode rootNode = session.createContext("tmpXX").getRootNode();
 
         final JavaClass javaClass = rootNode.addNode(JavaClass.class, "test");
-        final JavaPackage javaPackage = rootNode.addNode(JavaPackage.class,
-                                                         "test");
+        final JavaPackage javaPackage = rootNode.addNode(JavaPackage.class, "test");
 
         final List<SLNode> nodes = new ArrayList<SLNode>();
         nodes.add(javaClass);
@@ -118,20 +113,16 @@ public class DuplicateTest {
         session.cleanCache();
         final NeedsSyncronizationSet<SLNode> foundNodes = rootNode.getNodes();
         for (final SLNode n : foundNodes) {
-            System.err.println(n.getName() + " "
-                               + n.getClass().getInterfaces()[0].getSimpleName());
+            System.err.println(n.getName() + " " + n.getClass().getInterfaces()[0].getSimpleName());
         }
         assertThat(foundNodes.size(), is(1));
 
-        assertThat(session.getNodeByID(javaPackage.getID()).getID(),
-                   is(javaPackage.getID()));
+        assertThat(session.getNodeByID(javaPackage.getID()).getID(), is(javaPackage.getID()));
 
-        final NeedsSyncronizationSet<JavaClass> classChildren = rootNode
-                                                                        .getChildNodes(JavaClass.class);
+        final NeedsSyncronizationSet<JavaClass> classChildren = rootNode.getChildNodes(JavaClass.class);
         assertThat(classChildren.size(), is(0));
 
-        final NeedsSyncronizationSet<JavaPackage> allChildren = rootNode
-                                                                        .getChildNodes(JavaPackage.class);
+        final NeedsSyncronizationSet<JavaPackage> allChildren = rootNode.getChildNodes(JavaPackage.class);
         assertThat(allChildren.size(), is(1));
 
     }
@@ -166,10 +157,9 @@ public class DuplicateTest {
         final SLQueryApi query = session.createQueryApi();
         query
 
-        .select().type(JavaType.class.getName()).subTypes().selectEnd().where()
-                .type(JavaType.class.getName()).subTypes().each().property(
-                                                                           "caption").equalsTo().value("someName").typeEnd()
-                .whereEnd();
+        .select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                          "caption").equalsTo().value(
+                                                                                                                                                                      "someName").typeEnd().whereEnd();
 
         final SLQueryResult result = query.execute();
         // aqui o map possui uma lista de nodes para cada id de contexto.
@@ -212,16 +202,15 @@ public class DuplicateTest {
         assertThat(n1_, is(n3_));
 
         n3_.setCaption("someName");
-        //		session.save();
+        // session.save();
         session.close();
         session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         final SLQueryApi query = session.createQueryApi();
         query
 
-        .select().type(JavaType.class.getName()).subTypes().selectEnd().where()
-                .type(JavaType.class.getName()).subTypes().each().property(
-                                                                           "caption").equalsTo().value("someName").typeEnd()
-                .whereEnd();
+        .select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                          "caption").equalsTo().value(
+                                                                                                                                                                      "someName").typeEnd().whereEnd();
 
         final SLQueryResult result = query.execute();
         // aqui o map possui uma lista de nodes para cada id de contexto.

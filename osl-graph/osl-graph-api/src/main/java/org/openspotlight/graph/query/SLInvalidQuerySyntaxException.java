@@ -76,8 +76,7 @@ public class SLInvalidQuerySyntaxException extends SLGraphException {
      * @see java.lang.Exception#Exception(String message, Throwable cause)
      */
     public SLInvalidQuerySyntaxException(
-                                          final String message,
-                                          final Throwable cause ) {
+                                          final String message, final Throwable cause ) {
         super(message);
     }
 
@@ -100,11 +99,7 @@ public class SLInvalidQuerySyntaxException extends SLGraphException {
      * @param cause exception cause
      */
     public SLInvalidQuerySyntaxException(
-                                          String errorCode,
-                                          String message,
-                                          int lineNumber,
-                                          int column,
-                                          int offset,
+                                          String errorCode, String message, int lineNumber, int column, int offset,
                                           Throwable cause ) {
         super(message, cause);
         this.errorCode = errorCode;

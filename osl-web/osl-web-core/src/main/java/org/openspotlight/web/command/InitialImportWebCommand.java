@@ -70,18 +70,13 @@ public class InitialImportWebCommand implements WebCommand {
                            final Map<String, String> parameters ) throws WebException {
         try {
             final String forceReloadString = parameters.get("forceReload");
-            final boolean forceReload = forceReloadString == null ? false
-                    : Boolean.valueOf(forceReloadString);
-            final boolean reloaded = ConfigurationSupport
-                                                         .initializeConfiguration(forceReload, context
-                                                                                                      .getDefaultConfigurationManager());
-            return "{message:'" + (reloaded ? "was" : "was not")
-                    + " reloaded'}";
+            final boolean forceReload = forceReloadString == null ? false : Boolean.valueOf(forceReloadString);
+            final boolean reloaded = ConfigurationSupport.initializeConfiguration(forceReload,
+                                                                                  context.getDefaultConfigurationManager());
+            return "{message:'" + (reloaded ? "was" : "was not") + " reloaded'}";
         } catch (final Exception e) {
             catchAndLog(e);
-            throw new MessageWebException(
-                                          "There's something wrong during the initial data import: "
-                                          + e.getMessage());
+            throw new MessageWebException("There's something wrong during the initial data import: " + e.getMessage());
         }
     }
 

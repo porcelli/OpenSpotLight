@@ -72,8 +72,8 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
     }
 
     public SLGraphQueryStackBehaviorTest(
-                                          final SLGraphSession sessionParam,
-                                          final SortMode sortModeParam, final boolean printInfoParam ) {
+                                          final SLGraphSession sessionParam, final SortMode sortModeParam,
+                                          final boolean printInfoParam ) {
         session = sessionParam;
         sortMode = sortModeParam;
         printInfo = printInfoParam;
@@ -81,15 +81,13 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
     }
 
     @Test
-    public void testVerifyWhereInStack() throws SLQueryException,
-            SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
+    public void testVerifyWhereInStack() throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
 
         final SLQueryApi query2Input = session.createQueryApi();
 
-        query2Input.select().type(JavaPackage.class.getName()).selectEnd()
-                   .where().type(JavaPackage.class.getName()).each().property(
-                                                                              "caption").equalsTo().value("java.util").typeEnd()
-                   .whereEnd();
+        query2Input.select().type(JavaPackage.class.getName()).selectEnd().where().type(JavaPackage.class.getName()).each().property(
+                                                                                                                                     "caption").equalsTo().value(
+                                                                                                                                                                 "java.util").typeEnd().whereEnd();
 
         final SLQueryResult inputResult = query2Input.execute(sortMode, true);
         final NodeWrapper[] inputWrappers = wrapNodes(inputResult.getNodes());
@@ -97,10 +95,7 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
         new AssertResult() {
             public void execute() {
                 assertThat(inputWrappers.length, is(1));
-                assertThat(new NodeWrapper(
-                                           JavaPackage.class
-                                                            .getName(), "queryTest", "java.util"),
-                           is(inputWrappers[0]));
+                assertThat(new NodeWrapper(JavaPackage.class.getName(), "queryTest", "java.util"), is(inputWrappers[0]));
             }
         }.execute();
 
@@ -109,28 +104,19 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
 
         final SLQueryApi query = session.createQueryApi();
 
-        query.select().type(JavaInterface.class.getName()).comma().byLink(
-                                                                          PackageContainsType.class.getName()).b().selectEnd().select()
-                .allTypes().selectEnd().where().type(JavaType.class.getName())
-                .subTypes().each().property("caption").contains().value("Map")
-                .typeEnd().whereEnd();
+        query.select().type(JavaInterface.class.getName()).comma().byLink(PackageContainsType.class.getName()).b().selectEnd().select().allTypes().selectEnd().where().type(
+                                                                                                                                                                            JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                                                                                                 "caption").contains().value(
+                                                                                                                                                                                                                                                             "Map").typeEnd().whereEnd();
 
-        final SLQueryResult initialData = query.execute(inputResult.getNodes(),
-                                                        sortMode, printInfo);
+        final SLQueryResult initialData = query.execute(inputResult.getNodes(), sortMode, printInfo);
         final NodeWrapper[] wrappers = wrapNodes(initialData.getNodes());
 
         new AssertResult() {
             public void execute() {
                 assertThat(wrappers.length, is(2));
-                assertThat(new NodeWrapper(
-                                           JavaInterface.class
-                                                              .getName(), "java.util", "java.util.Map"),
-                           isOneOf(wrappers));
-                assertThat(
-                           new NodeWrapper(
-                                           JavaInterface.class
-                                                              .getName(), "java.util",
-                                           "java.util.SortedMap"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
             }
         }.execute();
 
@@ -138,15 +124,13 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
     }
 
     @Test
-    public void testVerifyWhereInStack2() throws SLQueryException,
-            SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
+    public void testVerifyWhereInStack2() throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
 
         final SLQueryApi query2Input = session.createQueryApi();
 
-        query2Input.select().type(JavaPackage.class.getName()).selectEnd()
-                   .where().type(JavaPackage.class.getName()).each().property(
-                                                                              "caption").equalsTo().value("java.util").typeEnd()
-                   .whereEnd();
+        query2Input.select().type(JavaPackage.class.getName()).selectEnd().where().type(JavaPackage.class.getName()).each().property(
+                                                                                                                                     "caption").equalsTo().value(
+                                                                                                                                                                 "java.util").typeEnd().whereEnd();
 
         final SLQueryResult inputResult = query2Input.execute(sortMode, true);
         final NodeWrapper[] inputWrappers = wrapNodes(inputResult.getNodes());
@@ -157,21 +141,15 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
         new AssertResult() {
             public void execute() {
                 assertThat(inputWrappers.length, is(1));
-                assertThat(new NodeWrapper(
-                                           JavaPackage.class
-                                                            .getName(), "queryTest", "java.util"),
-                           is(inputWrappers[0]));
+                assertThat(new NodeWrapper(JavaPackage.class.getName(), "queryTest", "java.util"), is(inputWrappers[0]));
             }
         }.execute();
 
         final SLQueryApi query = session.createQueryApi();
 
-        query.select().type(JavaInterface.class.getName()).comma().byLink(
-                                                                          PackageContainsType.class.getName()).b().selectEnd().select()
-                .allTypes().selectEnd();
+        query.select().type(JavaInterface.class.getName()).comma().byLink(PackageContainsType.class.getName()).b().selectEnd().select().allTypes().selectEnd();
 
-        final SLQueryResult initialData = query.execute(inputResult.getNodes(),
-                                                        sortMode, printInfo);
+        final SLQueryResult initialData = query.execute(inputResult.getNodes(), sortMode, printInfo);
         final NodeWrapper[] wrappers = wrapNodes(initialData.getNodes());
 
         printResult(initialData.getNodes());
@@ -184,11 +162,9 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
 
         final SLQueryApi query2Compare = session.createQueryApi();
 
-        query2Compare.select().type(JavaInterface.class.getName()).selectEnd()
-                     .select().allTypes().selectEnd();
+        query2Compare.select().type(JavaInterface.class.getName()).selectEnd().select().allTypes().selectEnd();
 
-        final SLQueryResult resultData = query2Compare.execute(sortMode,
-                                                               printInfo);
+        final SLQueryResult resultData = query2Compare.execute(sortMode, printInfo);
         final NodeWrapper[] wrappers2 = wrapNodes(resultData.getNodes());
 
         printResult(resultData.getNodes());
@@ -203,8 +179,7 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
     }
 
     @Test
-    public void testVerifyWhereInStack3() throws SLQueryException,
-            SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
+    public void testVerifyWhereInStack3() throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
 
         final SLQueryApi query1 = session.createQueryApi();
 
@@ -214,13 +189,11 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
 
         final SLQueryApi query2 = session.createQueryApi();
 
-        query2.select().type(JavaInterface.class.getName()).selectEnd()
-                .select().allTypes().selectEnd();
+        query2.select().type(JavaInterface.class.getName()).selectEnd().select().allTypes().selectEnd();
 
         final SLQueryResult resultData2 = query2.execute(sortMode, printInfo);
 
-        assertThat(resultData2.getNodes().size(), is(resultData.getNodes()
-                                                               .size()));
+        assertThat(resultData2.getNodes().size(), is(resultData.getNodes().size()));
     }
 
 }

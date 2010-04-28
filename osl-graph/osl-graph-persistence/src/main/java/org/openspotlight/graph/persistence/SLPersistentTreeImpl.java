@@ -83,13 +83,10 @@ public class SLPersistentTreeImpl implements SLPersistentTree {
      * 
      * @see org.openspotlight.graph.persistence.SLPersistentTree#openSession()
      */
-    public SLPersistentTreeSession openSession( final String repositoryName )
-            throws SLPersistentTreeException {
-        final JcrConnectionProvider provider = JcrConnectionProvider
-                                                                    .createFromData(this.descriptor);
+    public SLPersistentTreeSession openSession( final String repositoryName ) throws SLPersistentTreeException {
+        final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(this.descriptor);
         final SessionWithLock session = provider.openSession();
-        final SLPersistentTreeSession newSession = new SLPersistentTreeSessionImpl(
-                                                                                   session, repositoryName);
+        final SLPersistentTreeSession newSession = new SLPersistentTreeSessionImpl(session, repositoryName);
         this.sessions.add(newSession);
         return newSession;
     }

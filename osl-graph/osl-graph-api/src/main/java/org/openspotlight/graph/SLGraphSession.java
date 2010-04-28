@@ -130,8 +130,7 @@ public interface SLGraphSession extends LockContainer {
      * @throws SLInvalidQuerySyntaxException invalid syntax
      * @return the sL query
      */
-    public SLQueryText createQueryText( String slqlInput )
-        throws SLInvalidQuerySyntaxException;
+    public SLQueryText createQueryText( String slqlInput ) throws SLInvalidQuerySyntaxException;
 
     /**
      * Gets the bidirectional links.
@@ -141,8 +140,7 @@ public interface SLGraphSession extends LockContainer {
      * @param side2 the side2
      * @return the bidirectional links
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinks(
-                                                                                      Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinks( Class<L> linkClass,
                                                                                       SLNode side1,
                                                                                       SLNode side2 );
 
@@ -153,8 +151,7 @@ public interface SLGraphSession extends LockContainer {
      * @param side2 the side2
      * @return the bidirectional links
      */
-    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinks(
-                                                                        SLNode side1,
+    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinks( SLNode side1,
                                                                         SLNode side2 );
 
     /**
@@ -164,8 +161,7 @@ public interface SLGraphSession extends LockContainer {
      * @param side the side
      * @return the bidirectional links by side
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinksBySide(
-                                                                                            Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinksBySide( Class<L> linkClass,
                                                                                             SLNode side );
 
     /**
@@ -174,8 +170,7 @@ public interface SLGraphSession extends LockContainer {
      * @param side the side
      * @return the bidirectional links by side
      */
-    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinksBySide(
-                                                                              SLNode side );
+    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinksBySide( SLNode side );
 
     /**
      * Gets the context.
@@ -207,8 +202,7 @@ public interface SLGraphSession extends LockContainer {
      * @param target the target
      * @return the links
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks(
-                                                                         Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks( Class<L> linkClass,
                                                                          SLNode source,
                                                                          SLNode target );
 
@@ -221,8 +215,7 @@ public interface SLGraphSession extends LockContainer {
      * @param directionType the direction type
      * @return the links
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks(
-                                                                         Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks( Class<L> linkClass,
                                                                          SLNode source,
                                                                          SLNode target,
                                                                          int directionType );
@@ -271,8 +264,7 @@ public interface SLGraphSession extends LockContainer {
      * @param linkClass the link class
      * @return the nodes by link
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(
-                                                                 Class<? extends SLLink> linkClass );
+    public NeedsSyncronizationCollection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass );
 
     /**
      * Gets the nodes by link.
@@ -281,8 +273,7 @@ public interface SLGraphSession extends LockContainer {
      * @param node the node
      * @return the nodes by link
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(
-                                                                 Class<? extends SLLink> linkClass,
+    public NeedsSyncronizationCollection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass,
                                                                  SLNode node );
 
     /**
@@ -294,8 +285,7 @@ public interface SLGraphSession extends LockContainer {
      * @param returnSubTypes the return sub types
      * @return the nodes by link
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(
-                                                                               Class<? extends SLLink> linkClass,
+    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( Class<? extends SLLink> linkClass,
                                                                                SLNode node,
                                                                                Class<N> nodeClass,
                                                                                boolean returnSubTypes );
@@ -310,8 +300,7 @@ public interface SLGraphSession extends LockContainer {
      * @param direction the direction
      * @return the nodes by link
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(
-                                                                               Class<? extends SLLink> linkClass,
+    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( Class<? extends SLLink> linkClass,
                                                                                SLNode node,
                                                                                Class<N> nodeClass,
                                                                                boolean returnSubTypes,
@@ -325,8 +314,7 @@ public interface SLGraphSession extends LockContainer {
      * @param direction the direction
      * @return the nodes by link
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(
-                                                                 Class<? extends SLLink> linkClass,
+    public NeedsSyncronizationCollection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass,
                                                                  SLNode node,
                                                                  int direction );
 
@@ -346,8 +334,7 @@ public interface SLGraphSession extends LockContainer {
      * @param returnSubTypes the return sub types
      * @return the nodes by link
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(
-                                                                               SLNode node,
+    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( SLNode node,
                                                                                Class<N> nodeClass,
                                                                                boolean returnSubTypes );
 
@@ -360,8 +347,7 @@ public interface SLGraphSession extends LockContainer {
      * @param direction the direction
      * @return the nodes by link
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(
-                                                                               SLNode node,
+    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( SLNode node,
                                                                                Class<N> nodeClass,
                                                                                boolean returnSubTypes,
                                                                                int direction );
@@ -382,8 +368,7 @@ public interface SLGraphSession extends LockContainer {
      * @param predicate the predicate
      * @return the nodes by predicate
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByPredicate(
-                                                                      SLNodePredicate predicate );
+    public NeedsSyncronizationCollection<SLNode> getNodesByPredicate( SLNodePredicate predicate );
 
     /**
      * Gets the policy enforcement.
@@ -400,8 +385,7 @@ public interface SLGraphSession extends LockContainer {
      * @param target the target
      * @return the unidirectional links
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinks(
-                                                                                       Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinks( Class<L> linkClass,
                                                                                        SLNode source,
                                                                                        SLNode target );
 
@@ -412,8 +396,7 @@ public interface SLGraphSession extends LockContainer {
      * @param target the target
      * @return the unidirectional links
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinks(
-                                                                         SLNode source,
+    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinks( SLNode source,
                                                                          SLNode target );
 
     /**
@@ -423,8 +406,7 @@ public interface SLGraphSession extends LockContainer {
      * @param source the source
      * @return the unidirectional links by source
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksBySource(
-                                                                                               Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksBySource( Class<L> linkClass,
                                                                                                SLNode source );
 
     /**
@@ -433,8 +415,7 @@ public interface SLGraphSession extends LockContainer {
      * @param source the source
      * @return the unidirectional links by source
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksBySource(
-                                                                                 SLNode source );
+    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksBySource( SLNode source );
 
     /**
      * Gets the unidirectional links by target.
@@ -443,8 +424,7 @@ public interface SLGraphSession extends LockContainer {
      * @param target the target
      * @return the unidirectional links by target
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksByTarget(
-                                                                                               Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksByTarget( Class<L> linkClass,
                                                                                                SLNode target );
 
     /**
@@ -453,8 +433,7 @@ public interface SLGraphSession extends LockContainer {
      * @param target the target
      * @return the unidirectional links by target
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksByTarget(
-                                                                                 SLNode target );
+    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksByTarget( SLNode target );
 
     /**
      * Gets the user.

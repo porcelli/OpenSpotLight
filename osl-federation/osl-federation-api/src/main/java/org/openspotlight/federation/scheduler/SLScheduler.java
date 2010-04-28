@@ -62,8 +62,7 @@ public interface SLScheduler {
                                                          String password,
                                                          final T... schedulable );
 
-    public <T extends Schedulable> void fireSchedulableInBackground(
-                                                                     String username,
+    public <T extends Schedulable> void fireSchedulableInBackground( String username,
                                                                      String password,
                                                                      final T... schedulable );
 

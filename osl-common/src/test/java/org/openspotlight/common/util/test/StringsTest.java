@@ -69,8 +69,8 @@ public class StringsTest {
 
     @Test
     public void shouldConcatenatePathElements() {
-        assertThat(Strings.concatPaths("test/", "/test", "test/", "te/st",
-                                       "/test", null, "lala"), is("test/test/test/te/st/test/lala"));
+        assertThat(Strings.concatPaths("test/", "/test", "test/", "te/st", "/test", null, "lala"),
+                   is("test/test/test/te/st/test/lala"));
         assertThat(Strings.concatPaths("test"), is("test"));
     }
 

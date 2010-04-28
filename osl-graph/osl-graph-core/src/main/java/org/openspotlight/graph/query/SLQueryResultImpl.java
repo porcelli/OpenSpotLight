@@ -76,13 +76,11 @@ public class SLQueryResultImpl implements SLQueryResult {
      * @param nodes the nodes
      */
     public SLQueryResultImpl(
-                              final LockContainer parent,
-                              final List<SLNode> nodes, final String queryId ) {
+                              final LockContainer parent, final List<SLNode> nodes, final String queryId ) {
         lockObject = parent.getLockObject();
         this.queryId = queryId;
         if (nodes == null) {
-            this.nodes = LockedCollections.createListWithLock(this,
-                                                              new ArrayList<SLNode>(0));
+            this.nodes = LockedCollections.createListWithLock(this, new ArrayList<SLNode>(0));
         } else {
             this.nodes = LockedCollections.createListWithLock(this, nodes);
         }
@@ -94,16 +92,13 @@ public class SLQueryResultImpl implements SLQueryResult {
      * @param nodes the nodes
      */
     public SLQueryResultImpl(
-                              final LockContainer parent, final SLNode[] nodes,
-                              final String queryId ) {
+                              final LockContainer parent, final SLNode[] nodes, final String queryId ) {
         lockObject = parent.getLockObject();
         this.queryId = queryId;
         if (nodes == null) {
-            this.nodes = LockedCollections.createListWithLock(this,
-                                                              new ArrayList<SLNode>(0));
+            this.nodes = LockedCollections.createListWithLock(this, new ArrayList<SLNode>(0));
         } else {
-            this.nodes = LockedCollections.createListWithLock(this,
-                                                              new ArrayList<SLNode>(nodes.length));
+            this.nodes = LockedCollections.createListWithLock(this, new ArrayList<SLNode>(nodes.length));
             for (final SLNode slNode : nodes) {
                 this.nodes.add(slNode);
             }

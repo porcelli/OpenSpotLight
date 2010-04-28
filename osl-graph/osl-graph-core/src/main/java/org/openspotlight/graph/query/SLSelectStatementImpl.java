@@ -310,7 +310,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
 
-            //this.orderBy = new SLOrderByStatementImpl();
+            // this.orderBy = new SLOrderByStatementImpl();
         }
 
         /**

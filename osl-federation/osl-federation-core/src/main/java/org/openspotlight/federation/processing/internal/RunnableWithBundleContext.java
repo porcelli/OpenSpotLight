@@ -51,8 +51,7 @@ package org.openspotlight.federation.processing.internal;
 import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.federation.context.ExecutionContext;
 
-public abstract class RunnableWithBundleContext implements
-        RunnableWithException {
+public abstract class RunnableWithBundleContext implements RunnableWithException {
     private final String     repositoryName;
 
     private boolean          error;

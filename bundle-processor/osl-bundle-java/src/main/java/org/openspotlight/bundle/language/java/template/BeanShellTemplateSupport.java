@@ -100,8 +100,7 @@ public class BeanShellTemplateSupport {
      * @param scannedTypes
      * @return
      */
-    public static String createBeanShellScriptToImpotJar(
-                                                          final List<TypeDefinition> scannedTypes ) {
+    public static String createBeanShellScriptToImpotJar( final List<TypeDefinition> scannedTypes ) {
         try {
             final InputSource source = createXml(scannedTypes);
             final Template temp = cfg.getTemplate("jar-import-script-base.ftl");
@@ -128,13 +127,11 @@ public class BeanShellTemplateSupport {
      * @return
      * @throws IOException
      */
-    private static InputSource createXml( final List<TypeDefinition> scannedTypes )
-            throws IOException {
+    private static InputSource createXml( final List<TypeDefinition> scannedTypes ) throws IOException {
         final TypeDefinitionSet wrapper = new TypeDefinitionSet();
         wrapper.setTypes(scannedTypes);
         final XStream xstream = new XStream();
-        xstream.aliasPackage("",
-                             "org.openspotlight.bundle.language.java.asm.model");
+        xstream.aliasPackage("", "org.openspotlight.bundle.language.java.asm.model");
         xstream.alias("List", LinkedList.class);
 
         xstream.registerConverter(new JavaBeanConverter(xstream.getMapper()) {
@@ -150,8 +147,7 @@ public class BeanShellTemplateSupport {
         outputStream.close();
 
         final byte[] contentAsBytes = outputStream.toByteArray();
-        final InputSource source = new InputSource(new ByteArrayInputStream(
-                                                                            contentAsBytes));
+        final InputSource source = new InputSource(new ByteArrayInputStream(contentAsBytes));
         return source;
     }
 

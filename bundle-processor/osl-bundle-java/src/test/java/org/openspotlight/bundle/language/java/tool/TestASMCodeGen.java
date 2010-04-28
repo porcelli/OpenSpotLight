@@ -65,7 +65,7 @@ public class TestASMCodeGen {
         final FileSet jreFileSet = new FileSet();
         jreFileSet.setDir(new File("."));
         jreFileSet.setIncludes("**/java-util-only.jar");
-        //        jreFileSet.setIncludes("**/*.class");
+        // jreFileSet.setIncludes("**/*.class");
         task.addCompiledArtifacts(jreFileSet);
         task.setContextName("JRE-util");
         task.setContextVersion("1.5");

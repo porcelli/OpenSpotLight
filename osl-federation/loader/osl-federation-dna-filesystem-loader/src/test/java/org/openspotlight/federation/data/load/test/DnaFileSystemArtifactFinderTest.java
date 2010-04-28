@@ -80,10 +80,7 @@ public class DnaFileSystemArtifactFinderTest {
         artifactSource.setRepository(repository);
         final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
 
-        final StringArtifact sa = finder
-                                        .findByPath(
-                                                    StringArtifact.class,
-                                                    artifactSource,
+        final StringArtifact sa = finder.findByPath(StringArtifact.class, artifactSource,
                                                     "osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java");
 
         assertThat(sa, is(notNullValue()));
@@ -103,9 +100,8 @@ public class DnaFileSystemArtifactFinderTest {
         artifactSource.setName("Dna FileSystem");
         final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
 
-        final Set<String> names = finder.getInternalMethods()
-                                        .retrieveOriginalNames(StringArtifact.class, artifactSource,
-                                                               "osl-federation-dna-filesystem-loader");
+        final Set<String> names = finder.getInternalMethods().retrieveOriginalNames(StringArtifact.class, artifactSource,
+                                                                                    "osl-federation-dna-filesystem-loader");
         assertThat(names.size(), is(not(0)));
         finder.closeResources();
     }

@@ -68,8 +68,7 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.federation.processing.SaveBehavior;
 import org.openspotlight.graph.SLNode;
 
-public class DbArtifactGlobalProcessor implements
-        BundleProcessorGlobalPhase<DatabaseCustomArtifact> {
+public class DbArtifactGlobalProcessor implements BundleProcessorGlobalPhase<DatabaseCustomArtifact> {
 
     public void didFinishProcessing( final ArtifactChanges<Artifact> changes,
                                      final ExecutionContext context,
@@ -79,63 +78,50 @@ public class DbArtifactGlobalProcessor implements
 
     @SuppressWarnings( "unchecked" )
     public Set<Class<? extends DatabaseCustomArtifact>> getArtifactTypes() {
-        return SLCollections.setOf(TableArtifact.class,
-                                   ForeignKeyConstraintArtifact.class,
-                                   PrimaryKeyConstraintArtifact.class);
+        return SLCollections.setOf(TableArtifact.class, ForeignKeyConstraintArtifact.class, PrimaryKeyConstraintArtifact.class);
     }
 
     public SaveBehavior getSaveBehavior() {
         return SaveBehavior.PER_ARTIFACT;
     }
 
-    public void selectArtifactsToBeProcessed(
-                                              final CurrentProcessorContext currentContext,
+    public void selectArtifactsToBeProcessed( final CurrentProcessorContext currentContext,
                                               final ExecutionContext context,
                                               final ArtifactChanges<Artifact> changes,
-                                              final ArtifactsToBeProcessed<Artifact> toBeReturned )
-            throws Exception {
+                                              final ArtifactsToBeProcessed<Artifact> toBeReturned ) throws Exception {
         for (final Artifact artifact : changes.getExcludedArtifacts()) {
             if (artifact instanceof TableArtifact) {
                 final TableArtifact tableArtifact = (TableArtifact)artifact;
-                final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-                                                                             .createByType(tableArtifact.getDatabaseType());
-                final ParentVo parent = createTableParentNodes(wrappedType,
-                                                               tableArtifact, currentContext, context);
-                final SLNode tableNode = parent.parent.getNode(tableArtifact
-                                                                            .getTableName());
+                final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE.createByType(tableArtifact.getDatabaseType());
+                final ParentVo parent = createTableParentNodes(wrappedType, tableArtifact, currentContext, context);
+                final SLNode tableNode = parent.parent.getNode(tableArtifact.getTableName());
                 if (tableNode != null) {
                     tableNode.remove();
                 }
             } else if (artifact instanceof PrimaryKeyConstraintArtifact) {
                 final PrimaryKeyConstraintArtifact constraintArtifact = (PrimaryKeyConstraintArtifact)artifact;
-                final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-                                                                             .createByType(constraintArtifact.getDatabaseType());
-                final ParentVo parent = createTableParentNodes(wrappedType,
-                                                               currentContext, context, constraintArtifact
-                                                                                                          .getServerName(), constraintArtifact
-                                                                                                                                              .getDatabaseName(), constraintArtifact
-                                                                                                                                                                                    .getSchemaName(), constraintArtifact
-                                                                                                                                                                                                                        .getCatalogName());
+                final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE.createByType(constraintArtifact.getDatabaseType());
+                final ParentVo parent = createTableParentNodes(wrappedType, currentContext, context,
+                                                               constraintArtifact.getServerName(),
+                                                               constraintArtifact.getDatabaseName(),
+                                                               constraintArtifact.getSchemaName(),
+                                                               constraintArtifact.getCatalogName());
 
-                final SLNode constraintNode = parent.parent
-                                                           .getNode(constraintArtifact.getConstraintName());
+                final SLNode constraintNode = parent.parent.getNode(constraintArtifact.getConstraintName());
                 if (constraintNode != null) {
                     constraintNode.remove();
                 }
 
             } else if (artifact instanceof ForeignKeyConstraintArtifact) {
                 final ForeignKeyConstraintArtifact constraintArtifact = (ForeignKeyConstraintArtifact)artifact;
-                final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-                                                                             .createByType(constraintArtifact.getDatabaseType());
-                final ParentVo parent = createTableParentNodes(wrappedType,
-                                                               currentContext, context, constraintArtifact
-                                                                                                          .getServerName(), constraintArtifact
-                                                                                                                                              .getDatabaseName(), constraintArtifact
-                                                                                                                                                                                    .getFromSchemaName(), constraintArtifact
-                                                                                                                                                                                                                            .getFromCatalogName());
+                final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE.createByType(constraintArtifact.getDatabaseType());
+                final ParentVo parent = createTableParentNodes(wrappedType, currentContext, context,
+                                                               constraintArtifact.getServerName(),
+                                                               constraintArtifact.getDatabaseName(),
+                                                               constraintArtifact.getFromSchemaName(),
+                                                               constraintArtifact.getFromCatalogName());
 
-                final SLNode constraintNode = parent.database
-                                                             .getNode(constraintArtifact.getConstraintName());
+                final SLNode constraintNode = parent.database.getNode(constraintArtifact.getConstraintName());
                 if (constraintNode != null) {
                     constraintNode.remove();
                 }

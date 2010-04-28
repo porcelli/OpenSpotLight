@@ -64,9 +64,8 @@ public enum JavaLiteralType {
 
     FLOAT("float", "[+-]?(\\d+)?([.])?(\\d+)?((e|E)\\d+)?[fF]"),
 
-    DOUBLE(
-            "double",
-            "[+-]?(((\\d+)?([.])?(\\d+)?((e|E)\\d+)?[dD])|((\\d+)?[.](\\d+)?((e|E)\\d+)?)|((\\d+)?[.]?(\\d+)?(e|E)(\\d+)?))"),
+    DOUBLE("double",
+           "[+-]?(((\\d+)?([.])?(\\d+)?((e|E)\\d+)?[dD])|((\\d+)?[.](\\d+)?((e|E)\\d+)?)|((\\d+)?[.]?(\\d+)?(e|E)(\\d+)?))"),
 
     STRING("java.lang.String", "^[\"](.*)[\"]$");
 
@@ -78,8 +77,7 @@ public enum JavaLiteralType {
             }
         }
         if (matched.size() > 1) {
-            throw Exceptions.logAndReturn(new IllegalStateException("matched "
-                                                                    + matched + " types for literal " + literal));
+            throw Exceptions.logAndReturn(new IllegalStateException("matched " + matched + " types for literal " + literal));
         }
         if (matched.size() == 0) {
             return null;

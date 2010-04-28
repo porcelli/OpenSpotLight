@@ -165,8 +165,7 @@ public class Repository implements SimpleNodeType, Serializable {
         this.artifactSources = artifactSources;
     }
 
-    public void setGroupListeners(
-                                   final List<Class<? extends GroupListener>> groupListeners ) {
+    public void setGroupListeners( final List<Class<? extends GroupListener>> groupListeners ) {
         this.groupListeners = groupListeners;
     }
 

@@ -73,8 +73,7 @@ public class XPathTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        XPathTest.provider = JcrConnectionProvider
-                                                  .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        XPathTest.provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         XPathTest.provider.openRepository();
         XPathTest.session = XPathTest.provider.openSession();
 
@@ -85,8 +84,7 @@ public class XPathTest {
         final Node rootNode = XPathTest.session.getRootNode();
         rootNode.addNode("abc");
         XPathTest.session.save();
-        final QueryResult result = XPathTest.session.getWorkspace()
-                                                    .getQueryManager().createQuery("abc", Query.XPATH).execute();
+        final QueryResult result = XPathTest.session.getWorkspace().getQueryManager().createQuery("abc", Query.XPATH).execute();
         Assert.assertThat(result.getNodes().hasNext(), Is.is(true));
 
     }
@@ -99,8 +97,9 @@ public class XPathTest {
         rootNode.addNode("abc3").setProperty("Teste", "testX");
         rootNode.addNode("abc4").setProperty("Teste", "test");
         XPathTest.session.save();
-        final QueryResult result = XPathTest.session.getWorkspace()
-                                                    .getQueryManager().createQuery("//element(*)[jcr:contains(.,'test')]", Query.XPATH).execute();
+        final QueryResult result = XPathTest.session.getWorkspace().getQueryManager().createQuery(
+                                                                                                  "//element(*)[jcr:contains(.,'test')]",
+                                                                                                  Query.XPATH).execute();
         Assert.assertThat(result.getNodes().getSize(), Is.is(3L));
     }
 

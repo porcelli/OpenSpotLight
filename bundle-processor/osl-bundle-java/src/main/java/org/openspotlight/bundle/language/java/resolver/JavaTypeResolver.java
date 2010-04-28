@@ -124,13 +124,11 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
          * @{inheritDoc
          */
         @Override
-        protected SLQueryResult executeWithThisString( final String s )
-                throws Exception {
+        protected SLQueryResult executeWithThisString( final String s ) throws Exception {
             final SLQueryApi query = getSession().createQueryApi();
-            query.select().type(JavaType.class.getName()).subTypes()
-                    .selectEnd().where().type(JavaType.class.getName())
-                    .subTypes().each().property("qualifiedName").equalsTo()
-                    .value(s).typeEnd().whereEnd();
+            query.select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                   "qualifiedName").equalsTo().value(
+                                                                                                                                                                                     s).typeEnd().whereEnd();
             final SLQueryResult result = query.execute();
             return result;
 
@@ -163,8 +161,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
          * @return the sL query result
          * @throws Exception the exception
          */
-        protected abstract SLQueryResult executeWithThisString( String s )
-                throws Exception;
+        protected abstract SLQueryResult executeWithThisString( String s ) throws Exception;
 
         /**
          * Gets the new string.
@@ -182,23 +179,20 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
          * @return the preffered type
          * @throws Exception the exception
          */
-        private SLNode getPrefferedType( final SLQueryResult result )
-                throws Exception {
+        private SLNode getPrefferedType( final SLQueryResult result ) throws Exception {
             final Map<String, List<SLNode>> resultMap = new HashMap<String, List<SLNode>>();
             for (final SLContext ctx : getOrderedActiveContexts()) {
                 resultMap.put(ctx.getID(), new ArrayList<SLNode>());
             }
             for (final SLNode n : result.getNodes()) {
-                final List<SLNode> resultList = resultMap.get(n.getContext()
-                                                               .getID());
+                final List<SLNode> resultList = resultMap.get(n.getContext().getID());
                 if (resultList != null) {
                     resultList.add(n);
                     if (resultList.size() > 1) {
                         logAndThrow(new IllegalStateException(
                                                               format(
                                                                      "Two nodes of the same type and name on the same context: node {0} (parent {2}) inside context {1}",
-                                                                     n.getName(), n.getContext().getID(), n
-                                                                                                           .getParent().getName())));
+                                                                     n.getName(), n.getContext().getID(), n.getParent().getName())));
                     }
                 }
             }
@@ -227,8 +221,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     /**
      * The Class ComplexTypeFinderQueryExecutor .
      */
-    private class TypesFromTheSamePackageQueryExecutor extends
-            DolarReplacerQueryExecutor {
+    private class TypesFromTheSamePackageQueryExecutor extends DolarReplacerQueryExecutor {
 
         /** The all types from same packages. */
         private final Collection<SLNode> allTypesFromSamePackages;
@@ -240,8 +233,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
          * @param allTypesFromSamePackages the all types from same packages
          */
         public TypesFromTheSamePackageQueryExecutor(
-                                                     final String typeToSolve,
-                                                     final Collection<SLNode> allTypesFromSamePackages ) {
+                                                     final String typeToSolve, final Collection<SLNode> allTypesFromSamePackages ) {
             super(typeToSolve);
             this.allTypesFromSamePackages = allTypesFromSamePackages;
         }
@@ -255,17 +247,13 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
          * @{inheritDoc
          */
         @Override
-        public SLQueryResult executeWithThisString( final String s )
-                throws Exception {
-            final SLQueryApi justTheTargetTypeQuery = getSession()
-                                                                  .createQueryApi();
-            justTheTargetTypeQuery.select().type(JavaType.class.getName())
-                                  .subTypes().selectEnd().where().type(
-                                                                       JavaType.class.getName()).subTypes().each()
-                                  .property("simpleName").equalsTo().value(s).typeEnd()
-                                  .whereEnd();
-            final SLQueryResult result = justTheTargetTypeQuery
-                                                               .execute(allTypesFromSamePackages);
+        public SLQueryResult executeWithThisString( final String s ) throws Exception {
+            final SLQueryApi justTheTargetTypeQuery = getSession().createQueryApi();
+            justTheTargetTypeQuery.select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(
+                                                                                                               JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                                    "simpleName").equalsTo().value(
+                                                                                                                                                                                                   s).typeEnd().whereEnd();
+            final SLQueryResult result = justTheTargetTypeQuery.execute(allTypesFromSamePackages);
             return result;
         }
 
@@ -299,10 +287,8 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      */
     static {
         JavaTypeResolver.implementationInheritanceLinks.add(Extends.class);
-        JavaTypeResolver.implementationInheritanceLinks
-                                                       .add(ImplicitExtends.class);
-        JavaTypeResolver.implementationInheritanceLinks
-                                                       .add(AbstractTypeBind.class);
+        JavaTypeResolver.implementationInheritanceLinks.add(ImplicitExtends.class);
+        JavaTypeResolver.implementationInheritanceLinks.add(AbstractTypeBind.class);
         JavaTypeResolver.interfaceInheritanceLinks.add(AbstractTypeBind.class);
         JavaTypeResolver.interfaceInheritanceLinks.add(Implements.class);
         JavaTypeResolver.interfaceInheritanceLinks.add(InterfaceExtends.class);
@@ -324,16 +310,18 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @return the java type resolver
      */
     @SuppressWarnings( {"cast", "boxing"} )
-    public static JavaTypeResolver createNewCached(
-                                                    final SLContext abstractContext,
+    public static JavaTypeResolver createNewCached( final SLContext abstractContext,
                                                     final List<SLContext> orderedActiveContexts,
                                                     final boolean enableBoxing,
                                                     final SLGraphSession session ) {
-        final JavaTypeResolver cached = (JavaTypeResolver)InvocationCacheFactory
-                                                                                .createIntoCached(JavaTypeResolver.class, new Class<?>[] {
-                                                                                    SLContext.class, List.class, boolean.class,
-                                                                                    SLGraphSession.class}, new Object[] {abstractContext,
-                                                                                    orderedActiveContexts, enableBoxing, session});
+        final JavaTypeResolver cached = (JavaTypeResolver)InvocationCacheFactory.createIntoCached(JavaTypeResolver.class,
+                                                                                                  new Class<?>[] {
+                                                                                                      SLContext.class,
+                                                                                                      List.class, boolean.class,
+                                                                                                      SLGraphSession.class},
+                                                                                                  new Object[] {abstractContext,
+                                                                                                      orderedActiveContexts,
+                                                                                                      enableBoxing, session});
         return cached;
     }
 
@@ -348,13 +336,11 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @return the java type resolver
      */
     @Deprecated
-    public static TypeResolver<JavaType> createNewUncachedAndSlow(
-                                                                   final SLContext abstractContext,
+    public static TypeResolver<JavaType> createNewUncachedAndSlow( final SLContext abstractContext,
                                                                    final List<SLContext> orderedActiveContexts,
                                                                    final boolean enableBoxing,
                                                                    final SLGraphSession session ) {
-        return new JavaTypeResolver(abstractContext, orderedActiveContexts,
-                                    enableBoxing, session);
+        return new JavaTypeResolver(abstractContext, orderedActiveContexts, enableBoxing, session);
     }
 
     /**
@@ -367,13 +353,10 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @param session the session
      */
     protected JavaTypeResolver(
-                                final SLContext abstractContext,
-                                final List<SLContext> orderedActiveContexts,
+                                final SLContext abstractContext, final List<SLContext> orderedActiveContexts,
                                 final boolean enableBoxing, final SLGraphSession session ) {
-        super(implementationInheritanceLinks, interfaceInheritanceLinks,
-                primitiveHierarchyLinks, abstractContext,
-                orderedActiveContexts, primitiveTypes, concreteTypes,
-                enableBoxing, session);
+        super(implementationInheritanceLinks, interfaceInheritanceLinks, primitiveHierarchyLinks, abstractContext,
+              orderedActiveContexts, primitiveTypes, concreteTypes, enableBoxing, session);
 
         allKindsOfInheritanceLinks.add(AbstractTypeBind.class);
         allKindsOfInheritanceLinks.add(Extends.class);
@@ -386,8 +369,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
             allKindsOfInheritanceLinks.add(AutoboxedBy.class);
             allKindsOfInheritanceLinks.add(Autoboxes.class);
         }
-        final List<Class<? extends SLLink>> reversed = new ArrayList<Class<? extends SLLink>>(
-                                                                                              allKindsOfInheritanceLinks);
+        final List<Class<? extends SLLink>> reversed = new ArrayList<Class<? extends SLLink>>(allKindsOfInheritanceLinks);
         reverse(reversed);
         allKindsOfInheritanceLinksReversed.addAll(reversed);
 
@@ -424,10 +406,10 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                 if (t2Primitive && !t1Primitive) {
                     return BestTypeMatch.T2;
                 }
-                final Collection<ImplicitPrimitiveCast> linksT1 = getSession()
-                                                                              .getLinks(ImplicitPrimitiveCast.class, t1, reference);
-                final Collection<ImplicitPrimitiveCast> linksT2 = getSession()
-                                                                              .getLinks(ImplicitPrimitiveCast.class, t2, reference);
+                final Collection<ImplicitPrimitiveCast> linksT1 = getSession().getLinks(ImplicitPrimitiveCast.class, t1,
+                                                                                        reference);
+                final Collection<ImplicitPrimitiveCast> linksT2 = getSession().getLinks(ImplicitPrimitiveCast.class, t2,
+                                                                                        reference);
                 if (linksT1.size() != linksT2.size()) {
                     if (linksT1.size() > linksT2.size()) {
                         return BestTypeMatch.T1;
@@ -435,10 +417,8 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                     return BestTypeMatch.T2;
                 }
                 if (linksT1.size() > 0) {
-                    final ImplicitPrimitiveCast linkT1 = linksT1.iterator()
-                                                                .next();
-                    final ImplicitPrimitiveCast linkT2 = linksT2.iterator()
-                                                                .next();
+                    final ImplicitPrimitiveCast linkT1 = linksT1.iterator().next();
+                    final ImplicitPrimitiveCast linkT2 = linksT2.iterator().next();
                     if (linkT1.getDistance() < linkT2.getDistance()) {
                         return BestTypeMatch.T1;
                     } else if (linkT1.getDistance() > linkT2.getDistance()) {
@@ -460,13 +440,10 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                 return BestTypeMatch.SAME;
             }
 
-            final int referenceParentsCount = this.countConcreteParents(
-                                                                        reference,
+            final int referenceParentsCount = this.countConcreteParents(reference,
                                                                         IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
-            final int t1ParentsCount = this.countConcreteParents(t1,
-                                                                 IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
-            final int t2ParentsCount = this.countConcreteParents(t2,
-                                                                 IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+            final int t1ParentsCount = this.countConcreteParents(t1, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+            final int t2ParentsCount = this.countConcreteParents(t2, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
             final int x = referenceParentsCount - t1ParentsCount;
             final int y = referenceParentsCount - t2ParentsCount;
@@ -494,8 +471,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     @Override
     public <T extends JavaType> int countAllChildren( final T activeType,
                                                       final IncludedResult includedResult ) throws InternalJavaFinderError {
-        return this.getAllChildren(activeType, ResultOrder.ASC, includedResult)
-                   .size();
+        return this.getAllChildren(activeType, ResultOrder.ASC, includedResult).size();
     }
 
     /*
@@ -510,8 +486,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     @Override
     public <T extends JavaType> int countAllParents( final T activeType,
                                                      final IncludedResult includedResult ) throws InternalJavaFinderError {
-        return this.getAllParents(activeType, ResultOrder.ASC, includedResult)
-                   .size();
+        return this.getAllParents(activeType, ResultOrder.ASC, includedResult).size();
     }
 
     /*
@@ -526,8 +501,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     @Override
     public <T extends JavaType> int countConcreteChildren( final T activeType,
                                                            final IncludedResult includedResult ) throws InternalJavaFinderError {
-        return this.getConcreteChildren(activeType, ResultOrder.ASC,
-                                        includedResult).size();
+        return this.getConcreteChildren(activeType, ResultOrder.ASC, includedResult).size();
     }
 
     /*
@@ -542,8 +516,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     @Override
     public <T extends JavaType> int countConcreteParents( final T activeType,
                                                           final IncludedResult includedResult ) throws InternalJavaFinderError {
-        return this.getConcreteParents(activeType, ResultOrder.ASC,
-                                       includedResult).size();
+        return this.getConcreteParents(activeType, ResultOrder.ASC, includedResult).size();
     }
 
     /*
@@ -558,8 +531,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     @Override
     public <T extends JavaType> int countInterfaceChildren( final T activeType,
                                                             final IncludedResult includedResult ) throws InternalJavaFinderError {
-        return this.getInterfaceChildren(activeType, ResultOrder.ASC,
-                                         includedResult).size();
+        return this.getInterfaceChildren(activeType, ResultOrder.ASC, includedResult).size();
     }
 
     /*
@@ -574,8 +546,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     @Override
     public <T extends JavaType> int countInterfaceParents( final T activeType,
                                                            final IncludedResult includedResult ) throws InternalJavaFinderError {
-        return this.getInterfaceParents(activeType, ResultOrder.ASC,
-                                        includedResult).size();
+        return this.getInterfaceParents(activeType, ResultOrder.ASC, includedResult).size();
     }
 
     /*
@@ -590,13 +561,11 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * .dap.language.java.resolver.TypeResolver.IncludedResult)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getAllChildren(
-                                                                     final A activeType,
+    public <T extends JavaType, A extends T> List<T> getAllChildren( final A activeType,
                                                                      final ResultOrder order,
                                                                      final IncludedResult includedResult )
         throws InternalJavaFinderError {
-        return this.getAllChildrenByAllLinkTypes(activeType, order,
-                                                 JavaType.class, includedResult, Recursive.FULLY_RECURSIVE);
+        return this.getAllChildrenByAllLinkTypes(activeType, order, JavaType.class, includedResult, Recursive.FULLY_RECURSIVE);
     }
 
     /**
@@ -610,13 +579,12 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @return the all children by all link types
      * @throws InternalJavaFinderError the internal java finder error
      */
-    protected <T extends JavaType, A extends JavaType> List<T> getAllChildrenByAllLinkTypes(
-                                                                                             final A activeType,
+    protected <T extends JavaType, A extends JavaType> List<T> getAllChildrenByAllLinkTypes( final A activeType,
                                                                                              final ResultOrder order,
                                                                                              final Class<? extends JavaType> typeToFilter,
                                                                                              final IncludedResult includedResult,
                                                                                              final Recursive recursive )
-            throws InternalJavaFinderError {
+        throws InternalJavaFinderError {
         try {
 
             final Set<SLNode> resultSet = new LinkedHashSet<SLNode>();
@@ -631,14 +599,9 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                     deltasFromEachType.put(linkType, new ArrayList<SLNode>());
                 }
                 for (final Class<? extends SLLink> linkType : allKindsOfInheritanceLinksReversed) {
-                    final SLQueryApi inheritanceTreeQuery = getSession()
-                                                                        .createQueryApi();
-                    inheritanceTreeQuery.select()
-                                        .type(JavaType.class.getName()).subTypes().comma()
-                                        .byLink(linkType.getName()).a().selectEnd();
-                    final Collection<SLNode> resultFromQuery = inheritanceTreeQuery
-                                                                                   .execute(new ArrayList<SLNode>(resultSet))
-                                                                                   .getNodes();
+                    final SLQueryApi inheritanceTreeQuery = getSession().createQueryApi();
+                    inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).a().selectEnd();
+                    final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(new ArrayList<SLNode>(resultSet)).getNodes();
                     for (final SLNode possibleDelta : resultFromQuery) {
                         if (!resultSet.contains(possibleDelta)) {
                             deltasFromEachType.get(linkType).add(possibleDelta);
@@ -652,8 +615,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                             if (resultFromQuery.size() > 0) {
                                 boolean changed = false;
                                 for (final SLNode t : resultFromQuery) {
-                                    if (typeToFilter.isAssignableFrom(forName(t
-                                                                               .getTypeName()))) {
+                                    if (typeToFilter.isAssignableFrom(forName(t.getTypeName()))) {
                                         changed = true;
                                         resultSet.add(t);
                                     }
@@ -668,8 +630,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                     }
                 }
                 for (final Class<? extends SLLink> linkType : allKindsOfInheritanceLinksReversed) {
-                    final List<SLNode> deltas = deltasFromEachType
-                                                                  .get(linkType);
+                    final List<SLNode> deltas = deltasFromEachType.get(linkType);
                     // fixing the node order
                     resultSet.removeAll(deltas);
                     resultSet.addAll(deltas);
@@ -680,16 +641,14 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 
             for (final SLNode n : resultSet) {
                 if (n.getContext().getID().equals(ABSTRACT_CONTEXT)) {
-                    if (!JavaTypePrimitive.class.isAssignableFrom(forName(n
-                                                                           .getTypeName()))) {
+                    if (!JavaTypePrimitive.class.isAssignableFrom(forName(n.getTypeName()))) {
                         continue;
                     }
                 }
                 if (!getOrderedActiveContexts().contains(n.getContext())) {
                     continue;
                 }
-                if (typeToFilter.isAssignableFrom(forName(n.getTypeName()))
-                        || n.equals(activeType)) {
+                if (typeToFilter.isAssignableFrom(forName(n.getTypeName())) || n.equals(activeType)) {
                     @SuppressWarnings( "unchecked" )
                     final T typed = (T)this.getTypedNode(n);
                     typedInheritedTypes.add(typed);
@@ -729,13 +688,11 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * .dap.language.java.resolver.TypeResolver.IncludedResult)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getAllParents(
-                                                                    final A activeType,
+    public <T extends JavaType, A extends T> List<T> getAllParents( final A activeType,
                                                                     final ResultOrder order,
                                                                     final IncludedResult includedResult )
         throws InternalJavaFinderError {
-        return this.getParentsByLinkTypes(activeType, order,
-                                          allKindsOfInheritanceLinks, includedResult,
+        return this.getParentsByLinkTypes(activeType, order, allKindsOfInheritanceLinks, includedResult,
                                           Recursive.FULLY_RECURSIVE);
     }
 
@@ -751,13 +708,12 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * .dap.language.java.resolver.TypeResolver.IncludedResult)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getConcreteChildren(
-                                                                          final A activeType,
+    public <T extends JavaType, A extends T> List<T> getConcreteChildren( final A activeType,
                                                                           final ResultOrder order,
                                                                           final IncludedResult includedResult )
         throws InternalJavaFinderError {
-        return this.getAllChildrenByAllLinkTypes(activeType, order,
-                                                 JavaTypeClass.class, includedResult, Recursive.FULLY_RECURSIVE);
+        return this.getAllChildrenByAllLinkTypes(activeType, order, JavaTypeClass.class, includedResult,
+                                                 Recursive.FULLY_RECURSIVE);
     }
 
     /*
@@ -772,13 +728,11 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * .dap.language.java.resolver.TypeResolver.IncludedResult)
      */
     @Override
-    public <T extends JavaType, A extends JavaType> List<T> getConcreteParents(
-                                                                                final A activeType,
+    public <T extends JavaType, A extends JavaType> List<T> getConcreteParents( final A activeType,
                                                                                 final ResultOrder order,
                                                                                 final IncludedResult includedResult )
         throws InternalJavaFinderError {
-        return this.getParentsByLinkTypes(activeType, order,
-                                          implementationInheritanceLinks, includedResult,
+        return this.getParentsByLinkTypes(activeType, order, implementationInheritanceLinks, includedResult,
                                           Recursive.FULLY_RECURSIVE);
     }
 
@@ -790,11 +744,9 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #getDirectConcreteChildren(org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getDirectConcreteChildren(
-                                                                                final A activeType )
+    public <T extends JavaType, A extends T> List<T> getDirectConcreteChildren( final A activeType )
         throws InternalJavaFinderError {
-        return this.getAllChildrenByAllLinkTypes(activeType, ResultOrder.DESC,
-                                                 JavaTypeClass.class,
+        return this.getAllChildrenByAllLinkTypes(activeType, ResultOrder.DESC, JavaTypeClass.class,
                                                  IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT,
                                                  Recursive.ONLY_DIRECT_PARENTS);
     }
@@ -807,13 +759,10 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #getDirectConcreteParents(org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getDirectConcreteParents(
-                                                                               final A activeType )
+    public <T extends JavaType, A extends T> List<T> getDirectConcreteParents( final A activeType )
         throws InternalJavaFinderError {
-        return this.getParentsByLinkTypes(activeType, ResultOrder.DESC,
-                                          implementationInheritanceLinks,
-                                          IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT,
-                                          Recursive.ONLY_DIRECT_PARENTS);
+        return this.getParentsByLinkTypes(activeType, ResultOrder.DESC, implementationInheritanceLinks,
+                                          IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT, Recursive.ONLY_DIRECT_PARENTS);
     }
 
     /*
@@ -824,12 +773,10 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #getDirectInterfaceChildren(org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getDirectInterfaceChildren(
-                                                                                 final A activeType )
+    public <T extends JavaType, A extends T> List<T> getDirectInterfaceChildren( final A activeType )
         throws InternalJavaFinderError {
 
-        return this.getAllChildrenByAllLinkTypes(activeType, ResultOrder.DESC,
-                                                 JavaTypeInterface.class,
+        return this.getAllChildrenByAllLinkTypes(activeType, ResultOrder.DESC, JavaTypeInterface.class,
                                                  IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT,
                                                  Recursive.ONLY_DIRECT_PARENTS);
     }
@@ -842,16 +789,14 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #getDirectInterfaceParents(org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getDirectInterfaceParents(
-                                                                                final A activeType )
+    public <T extends JavaType, A extends T> List<T> getDirectInterfaceParents( final A activeType )
         throws InternalJavaFinderError {
 
-        final List<T> superTypes = this.getConcreteParents(activeType,
-                                                           ResultOrder.ASC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final List<T> superTypes = this.getConcreteParents(activeType, ResultOrder.ASC,
+                                                           IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         final List<T> result = new ArrayList<T>();
         for (final T n : superTypes) {
-            final List<T> currentResult = this.getParentsByLinkTypes(n,
-                                                                     ResultOrder.DESC, interfaceInheritanceLinks,
+            final List<T> currentResult = this.getParentsByLinkTypes(n, ResultOrder.DESC, interfaceInheritanceLinks,
                                                                      IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT,
                                                                      Recursive.ONLY_DIRECT_PARENTS);
             if (currentResult.size() > 0) {
@@ -874,13 +819,11 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * .dap.language.java.resolver.TypeResolver.IncludedResult)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getInterfaceChildren(
-                                                                           final A activeType,
+    public <T extends JavaType, A extends T> List<T> getInterfaceChildren( final A activeType,
                                                                            final ResultOrder order,
                                                                            final IncludedResult includedResult )
         throws InternalJavaFinderError {
-        return this.getAllChildrenByAllLinkTypes(activeType, order,
-                                                 JavaTypeInterface.class, includedResult,
+        return this.getAllChildrenByAllLinkTypes(activeType, order, JavaTypeInterface.class, includedResult,
                                                  Recursive.FULLY_RECURSIVE);
     }
 
@@ -896,19 +839,16 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * .dap.language.java.resolver.TypeResolver.IncludedResult)
      */
     @Override
-    public <T extends JavaType, A extends T> List<T> getInterfaceParents(
-                                                                          final A activeType,
+    public <T extends JavaType, A extends T> List<T> getInterfaceParents( final A activeType,
                                                                           final ResultOrder order,
                                                                           final IncludedResult includedResult )
         throws InternalJavaFinderError {
-        final List<T> superTypes = this.getConcreteParents(activeType,
-                                                           ResultOrder.ASC, includedResult);
+        final List<T> superTypes = this.getConcreteParents(activeType, ResultOrder.ASC, includedResult);
 
         final Set<T> result = new LinkedHashSet<T>();
 
         for (final T n : superTypes) {
-            final List<T> currentResult = this.getParentsByLinkTypes(n,
-                                                                     ResultOrder.ASC, interfaceInheritanceLinks,
+            final List<T> currentResult = this.getParentsByLinkTypes(n, ResultOrder.ASC, interfaceInheritanceLinks,
                                                                      IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT,
                                                                      Recursive.FULLY_RECURSIVE);
             result.addAll(currentResult);
@@ -951,17 +891,15 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @return the parents by link types
      * @throws InternalJavaFinderError the internal java finder error
      */
-    protected <T extends JavaType, A extends JavaType> List<T> getParentsByLinkTypes(
-                                                                                      final A activeType,
+    protected <T extends JavaType, A extends JavaType> List<T> getParentsByLinkTypes( final A activeType,
                                                                                       final ResultOrder order,
                                                                                       final Class<? extends SLLink> linkType,
                                                                                       final IncludedResult includedResult,
                                                                                       final Recursive recursive )
-            throws InternalJavaFinderError {
+        throws InternalJavaFinderError {
         final HashSet<Class<? extends SLLink>> links = new HashSet<Class<? extends SLLink>>();
         links.add(linkType);
-        return this.getParentsByLinkTypes(activeType, order, links,
-                                          includedResult, recursive);
+        return this.getParentsByLinkTypes(activeType, order, links, includedResult, recursive);
 
     }
 
@@ -976,13 +914,12 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @return the parents by link types
      * @throws InternalJavaFinderError the internal java finder error
      */
-    protected <T extends JavaType, A extends JavaType> List<T> getParentsByLinkTypes(
-                                                                                      final A activeType,
+    protected <T extends JavaType, A extends JavaType> List<T> getParentsByLinkTypes( final A activeType,
                                                                                       final ResultOrder order,
                                                                                       final Set<Class<? extends SLLink>> linkTypes,
                                                                                       final IncludedResult includedResult,
                                                                                       final Recursive recursive )
-            throws InternalJavaFinderError {
+        throws InternalJavaFinderError {
         try {
 
             final Set<SLNode> resultSet = new LinkedHashSet<SLNode>();
@@ -997,14 +934,9 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                     deltasFromEachType.put(linkType, new ArrayList<SLNode>());
                 }
                 for (final Class<? extends SLLink> linkType : linkTypes) {
-                    final SLQueryApi inheritanceTreeQuery = getSession()
-                                                                        .createQueryApi();
-                    inheritanceTreeQuery.select()
-                                        .type(JavaType.class.getName()).subTypes().comma()
-                                        .byLink(linkType.getName()).b().selectEnd();
-                    final Collection<SLNode> resultFromQuery = inheritanceTreeQuery
-                                                                                   .execute(new ArrayList<SLNode>(resultSet))
-                                                                                   .getNodes();
+                    final SLQueryApi inheritanceTreeQuery = getSession().createQueryApi();
+                    inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd();
+                    final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(new ArrayList<SLNode>(resultSet)).getNodes();
                     for (final SLNode possibleDelta : resultFromQuery) {
                         if (!resultSet.contains(possibleDelta)) {
                             deltasFromEachType.get(linkType).add(possibleDelta);
@@ -1025,20 +957,17 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                     }
                 }
                 for (final Class<? extends SLLink> linkType : linkTypes) {
-                    final List<SLNode> deltas = deltasFromEachType
-                                                                  .get(linkType);
+                    final List<SLNode> deltas = deltasFromEachType.get(linkType);
                     // fixing the node order
                     resultSet.removeAll(deltas);
                     resultSet.addAll(deltas);
                 }
                 actualSize = resultSet.size();
             }
-            final ArrayList<T> typedInheritedTypes = new ArrayList<T>(resultSet
-                                                                               .size());
+            final ArrayList<T> typedInheritedTypes = new ArrayList<T>(resultSet.size());
 
             for (final SLNode n : resultSet) {
-                if (n.getContext().getID().equals(ABSTRACT_CONTEXT)
-                        || !getOrderedActiveContexts().contains(n.getContext())) {
+                if (n.getContext().getID().equals(ABSTRACT_CONTEXT) || !getOrderedActiveContexts().contains(n.getContext())) {
                     continue;
                 }
                 @SuppressWarnings( "unchecked" )
@@ -1073,8 +1002,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #getPrimitiveFor(org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType, A extends JavaType> T getPrimitiveFor(
-                                                                       final A wrappedType ) throws InternalJavaFinderError {
+    public <T extends JavaType, A extends JavaType> T getPrimitiveFor( final A wrappedType ) throws InternalJavaFinderError {
         return this.<T, A>getUniqueResult(wrappedType, Autoboxes.class);
     }
 
@@ -1087,11 +1015,9 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      */
     @SuppressWarnings( "unchecked" )
     @Override
-    public <T extends JavaType> T getType( final String typeToSolve )
-            throws InternalJavaFinderError {
+    public <T extends JavaType> T getType( final String typeToSolve ) throws InternalJavaFinderError {
         try {
-            final SLNode slNode = new ByNameTypeFinder(typeToSolve)
-                                                                   .getTypeByAllPossibleNames();
+            final SLNode slNode = new ByNameTypeFinder(typeToSolve).getTypeByAllPossibleNames();
             if (slNode == null) {
                 throw logAndReturn(new InternalJavaFinderError());
             }
@@ -1113,49 +1039,33 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      */
     @SuppressWarnings( "unchecked" )
     @Override
-    public <T extends JavaType, A extends T> T getType(
-                                                        final String typeToSolve,
+    public <T extends JavaType, A extends T> T getType( final String typeToSolve,
                                                         final A activeType,
                                                         final List<? extends JavaType> parametrizedTypes )
-            throws InternalJavaFinderError {
+        throws InternalJavaFinderError {
         try {
             final List<SLNode> inheritedTypes = new LinkedList<SLNode>();
             inheritedTypes.add(activeType);
             for (final Class<? extends SLLink> linkType : JavaTypeResolver.implementationInheritanceLinks) {
-                final SLQueryApi inheritanceTreeQuery = getSession()
-                                                                    .createQueryApi();
-                inheritanceTreeQuery.select().type(JavaType.class.getName())
-                                    .subTypes().comma().byLink(linkType.getName()).b()
-                                    .selectEnd().keepResult().executeXTimes();
-                final Collection<SLNode> resultFromQuery = inheritanceTreeQuery
-                                                                               .execute(inheritedTypes).getNodes();
+                final SLQueryApi inheritanceTreeQuery = getSession().createQueryApi();
+                inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd().keepResult().executeXTimes();
+                final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(inheritedTypes).getNodes();
                 inheritedTypes.addAll(resultFromQuery);
             }
             for (final Class<? extends SLLink> linkType : JavaTypeResolver.interfaceInheritanceLinks) {
-                final SLQueryApi inheritanceTreeQuery = getSession()
-                                                                    .createQueryApi();
-                inheritanceTreeQuery.select().type(JavaType.class.getName())
-                                    .subTypes().comma().byLink(linkType.getName()).b()
-                                    .selectEnd().keepResult().executeXTimes();
-                final Collection<SLNode> resultFromQuery = inheritanceTreeQuery
-                                                                               .execute(inheritedTypes).getNodes();
+                final SLQueryApi inheritanceTreeQuery = getSession().createQueryApi();
+                inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd().keepResult().executeXTimes();
+                final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(inheritedTypes).getNodes();
                 inheritedTypes.addAll(resultFromQuery);
             }
 
-            final SLQueryApi allTypesFromSamePackagesQuery = getSession()
-                                                                         .createQueryApi();
-            allTypesFromSamePackagesQuery.select().type(
-                                                        JavaPackage.class.getName()).comma().byLink(
-                                                                                                    PackageType.class.getName()).a().selectEnd();
-            allTypesFromSamePackagesQuery.select().type(
-                                                        JavaType.class.getName()).subTypes().comma().byLink(
+            final SLQueryApi allTypesFromSamePackagesQuery = getSession().createQueryApi();
+            allTypesFromSamePackagesQuery.select().type(JavaPackage.class.getName()).comma().byLink(PackageType.class.getName()).a().selectEnd();
+            allTypesFromSamePackagesQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(
                                                                                                             PackageType.class.getName()).b().selectEnd();
-            final Collection<SLNode> allTypesFromSamePackages = allTypesFromSamePackagesQuery
-                                                                                             .execute(inheritedTypes).getNodes();
+            final Collection<SLNode> allTypesFromSamePackages = allTypesFromSamePackagesQuery.execute(inheritedTypes).getNodes();
 
-            final SLNode slNode = new TypesFromTheSamePackageQueryExecutor(
-                                                                           typeToSolve, allTypesFromSamePackages)
-                                                                                                                 .getTypeByAllPossibleNames();
+            final SLNode slNode = new TypesFromTheSamePackageQueryExecutor(typeToSolve, allTypesFromSamePackages).getTypeByAllPossibleNames();
             if (slNode == null) {
                 throw logAndReturn(new InternalJavaFinderError());
             }
@@ -1175,8 +1085,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @{inheritDoc
      */
 
-    private <T extends JavaType> T getTypedNode( final SLNode slNode )
-            throws Exception {
+    private <T extends JavaType> T getTypedNode( final SLNode slNode ) throws Exception {
         @SuppressWarnings( "unchecked" )
         final T typedNode = (T)getSession().getNodeByID(slNode.getID());
         return typedNode;
@@ -1191,20 +1100,15 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * @throws InternalJavaFinderError the internal java finder error
      */
     @SuppressWarnings( "unchecked" )
-    private <T extends JavaType, A extends JavaType> T getUniqueResult(
-                                                                        final A type,
+    private <T extends JavaType, A extends JavaType> T getUniqueResult( final A type,
                                                                         final Class<? extends SLLink> linkType )
-            throws InternalJavaFinderError {
+        throws InternalJavaFinderError {
         try {
             final ArrayList<SLNode> initial = new ArrayList<SLNode>();
             initial.add(type);
-            final SLQueryApi inheritanceTreeQuery = getSession()
-                                                                .createQueryApi();
-            inheritanceTreeQuery.select().type(JavaType.class.getName())
-                                .subTypes().comma().byLink(linkType.getName()).b()
-                                .selectEnd();
-            final Collection<SLNode> resultFromQuery = inheritanceTreeQuery
-                                                                           .execute(initial).getNodes();
+            final SLQueryApi inheritanceTreeQuery = getSession().createQueryApi();
+            inheritanceTreeQuery.select().type(JavaType.class.getName()).subTypes().comma().byLink(linkType.getName()).b().selectEnd();
+            final Collection<SLNode> resultFromQuery = inheritanceTreeQuery.execute(initial).getNodes();
             if (resultFromQuery.size() > 0) {
                 return (T)this.getTypedNode(resultFromQuery.iterator().next());
             }
@@ -1222,8 +1126,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #getWrapperFor(org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType, A extends JavaType> T getWrapperFor(
-                                                                     final A primitiveType ) throws InternalJavaFinderError {
+    public <T extends JavaType, A extends JavaType> T getWrapperFor( final A primitiveType ) throws InternalJavaFinderError {
         return this.<T, A>getUniqueResult(primitiveType, AutoboxedBy.class);
 
     }
@@ -1236,8 +1139,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #isConcreteType(org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType> boolean isConcreteType( final T type )
-            throws InternalJavaFinderError {
+    public <T extends JavaType> boolean isConcreteType( final T type ) throws InternalJavaFinderError {
         try {
             final String typeName = type.getTypeName();
             return JavaTypeClass.class.isAssignableFrom(forName(typeName));
@@ -1254,11 +1156,9 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #isPrimitiveType(org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType> boolean isPrimitiveType( final T type )
-            throws InternalJavaFinderError {
+    public <T extends JavaType> boolean isPrimitiveType( final T type ) throws InternalJavaFinderError {
         try {
-            return JavaTypePrimitive.class.isAssignableFrom(forName(type
-                                                                        .getTypeName()));
+            return JavaTypePrimitive.class.isAssignableFrom(forName(type.getTypeName()));
         } catch (final Exception e) {
             throw logAndReturnNew(e, InternalJavaFinderError.class);
         }
@@ -1272,13 +1172,10 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      * #isTypeOf(org.openspotlight.graph.SLNode, org.openspotlight.graph.SLNode)
      */
     @Override
-    public <T extends JavaType, A extends JavaType> boolean isTypeOf(
-                                                                      final T implementation,
-                                                                      final A superType )
-            throws InternalJavaFinderError {
+    public <T extends JavaType, A extends JavaType> boolean isTypeOf( final T implementation,
+                                                                      final A superType ) throws InternalJavaFinderError {
         try {
-            final List<JavaType> children = this.<JavaType, A>getAllChildren(
-                                                                             superType, ResultOrder.ASC,
+            final List<JavaType> children = this.<JavaType, A>getAllChildren(superType, ResultOrder.ASC,
                                                                              IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
             final boolean result = children.contains(implementation);
@@ -1286,9 +1183,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
             if (result) {
                 if (this.isPrimitiveType(implementation)) {
                     if (this.isConcreteType(superType)) {
-                        final Collection<Autoboxes> links = getSession()
-                                                                        .getLinks(Autoboxes.class, superType,
-                                                                                  implementation);
+                        final Collection<Autoboxes> links = getSession().getLinks(Autoboxes.class, superType, implementation);
                         if (links.size() == 0) {
                             return false;
                         }

@@ -7,14 +7,14 @@ import com.google.inject.Injector;
  */
 public enum StaticInjector {
     INSTANCE;
-    
+
     private Injector injector;
 
     public Injector getInjector() {
         return injector;
     }
 
-    public void setInjector(Injector injector) {
+    public void setInjector( Injector injector ) {
         this.injector = injector;
     }
 }

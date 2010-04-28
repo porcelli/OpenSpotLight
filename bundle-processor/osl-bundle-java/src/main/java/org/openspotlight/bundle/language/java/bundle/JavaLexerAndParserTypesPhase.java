@@ -70,8 +70,7 @@ import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JavaLexerAndParserTypesPhase implements
-        BundleProcessorArtifactPhase<StringArtifact> {
+public class JavaLexerAndParserTypesPhase implements BundleProcessorArtifactPhase<StringArtifact> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -100,36 +99,33 @@ public class JavaLexerAndParserTypesPhase implements
         }
         try {
 
-            final SLNode contextNode = currentContext
-                                                     .getNodeForUniqueBundleConfig();
+            final SLNode contextNode = currentContext.getNodeForUniqueBundleConfig();
 
             final SLArtifactStream stream = new SLArtifactStreamBasicImpl(
                                                                           artifact.getArtifactCompleteName(),
-                    artifact.getContent().get(
-                            context.getPersistentArtifactManager().getSimplePersist()), artifact.getVersion());
+                                                                          artifact.getContent().get(
+                                                                                                    context.getPersistentArtifactManager().getSimplePersist()),
+                                                                          artifact.getVersion());
             final JavaLexer lexer = new JavaLexer(stream);
             final SourceLineInfoAggregator sourceLine = new SourceLineInfoAggregator();
-            final JavaLexerExecutor lexerExecutor = new JavaLexerExecutor(context.getSimplePersistFactory(),
-                                                                          artifact, sourceLine);
+            final JavaLexerExecutor lexerExecutor = new JavaLexerExecutor(context.getSimplePersistFactory(), artifact, sourceLine);
             lexer.setLexerExecutor(lexerExecutor);
-            final CommonTokenStream commonTokenStream = new CommonTokenStream(
-                                                                              lexer);
+            final CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
             commonTokenStream.getTokens();
             final JavaParser parser = new JavaParser(commonTokenStream);
             parser.setTreeAdaptor(new SLCommonTreeAdaptor());
 
-            final JavaParserNodeHelper helper = new JavaParserNodeHelper(
-                                                                         contextNode, context.getGraphSession());
-            final JavaParserExecutor parserExecutor = new JavaParserExecutor(
-                                                                             sourceLine, helper);
+            final JavaParserNodeHelper helper = new JavaParserNodeHelper(contextNode, context.getGraphSession());
+            final JavaParserExecutor parserExecutor = new JavaParserExecutor(sourceLine, helper);
             parser.setParserExecutor(parserExecutor);
             final Tree tree = (Tree)parser.compilationUnit().getTree();
-            final JavaTransientDto dto = JavaTransientDto.fromParser()
-                                                         .withStream(stream).withLexer(lexer).withSourceline(
-                                                                                                             sourceLine).withLexerExecutor(lexerExecutor)
-                                                         .withCommonTokenStream(commonTokenStream)
-                                                         .withParser(parser).withParserExecutor(parserExecutor)
-                                                         .withTree(tree).create();
+            final JavaTransientDto dto = JavaTransientDto.fromParser().withStream(stream).withLexer(lexer).withSourceline(
+                                                                                                                          sourceLine).withLexerExecutor(
+                                                                                                                                                        lexerExecutor).withCommonTokenStream(
+                                                                                                                                                                                             commonTokenStream).withParser(
+                                                                                                                                                                                                                           parser).withParserExecutor(
+                                                                                                                                                                                                                                                      parserExecutor).withTree(
+                                                                                                                                                                                                                                                                               tree).create();
             artifact.getTransientMap().put("DTO-Parser", dto);
 
             return LastProcessStatus.PROCESSED;

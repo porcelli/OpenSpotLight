@@ -60,8 +60,7 @@ public interface TaskExecBuilder {
 
     public TaskExecBuilder withReadableDescription( String readableDescription );
 
-    public TaskExecBuilder withReadableDescriptionAndUniqueId(
-                                                               String readableDescriptionAndUniqueId );
+    public TaskExecBuilder withReadableDescriptionAndUniqueId( String readableDescriptionAndUniqueId );
 
     public TaskExecBuilder withRunnable( RunnableWithException r );
 

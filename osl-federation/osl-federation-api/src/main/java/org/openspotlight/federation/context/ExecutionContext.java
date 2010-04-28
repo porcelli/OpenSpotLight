@@ -84,7 +84,7 @@ public interface ExecutionContext extends Disposable {
 
     public String getUserName();
 
-    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist(STPartition partition);
+    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist( STPartition partition );
 
     public STRepositoryPath getRepositoryPath();
 

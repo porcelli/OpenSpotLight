@@ -116,11 +116,10 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @param e original exception
      * @return SLInvalidQuerySyntaxException filled.
      */
-    public SLInvalidQuerySyntaxException createSLQueryLanguageException(
-                                                                         RecognitionException e ) {
+    public SLInvalidQuerySyntaxException createSLQueryLanguageException( RecognitionException e ) {
         List<String> codeAndMessage = createErrorMessage(e);
-        return new SLInvalidQuerySyntaxException(codeAndMessage.get(1),
-                                                 codeAndMessage.get(0), e.line, e.charPositionInLine, e.index, e);
+        return new SLInvalidQuerySyntaxException(codeAndMessage.get(1), codeAndMessage.get(0), e.line, e.charPositionInLine,
+                                                 e.index, e);
     }
 
     /**
@@ -138,8 +137,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @return the SL invalid query syntax exception
      */
     public SLInvalidQuerySyntaxException createInvalidExecutingException() {
-        return new SLInvalidQuerySyntaxException("ERR 108",
-                                                 "invalid use of executing times", -1, -1, -1, null);
+        return new SLInvalidQuerySyntaxException("ERR 108", "invalid use of executing times", -1, -1, -1, null);
     }
 
     /**
@@ -148,8 +146,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @return the SL invalid query syntax exception
      */
     public SLInvalidQuerySyntaxException createInvalidDoubleStarException() {
-        return new SLInvalidQuerySyntaxException("ERR 109",
-                                                 "invalid use of double star (**)", -1, -1, -1, null);
+        return new SLInvalidQuerySyntaxException("ERR 109", "invalid use of double star (**)", -1, -1, -1, null);
     }
 
     /**
@@ -158,8 +155,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @return the SL invalid query syntax exception
      */
     public SLInvalidQuerySyntaxException createDuplicatedDefineMessageException() {
-        return new SLInvalidQuerySyntaxException("ERR 110",
-                                                 "invalid use of double star (**)", -1, -1, -1, null);
+        return new SLInvalidQuerySyntaxException("ERR 110", "invalid use of double star (**)", -1, -1, -1, null);
     }
 
     /**
@@ -168,8 +164,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @return the SL invalid query syntax exception
      */
     public SLInvalidQuerySyntaxException createDuplicatedDefineDomainException() {
-        return new SLInvalidQuerySyntaxException("ERR 111",
-                                                 "invalid use of double star (**)", -1, -1, -1, null);
+        return new SLInvalidQuerySyntaxException("ERR 111", "invalid use of double star (**)", -1, -1, -1, null);
     }
 
     /**
@@ -178,8 +173,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @return the SL invalid query syntax exception
      */
     public SLInvalidQuerySyntaxException createDefineTargetWithoutByLinkException() {
-        return new SLInvalidQuerySyntaxException("ERR 112",
-                                                 "invalid use of double star (**)", -1, -1, -1, null);
+        return new SLInvalidQuerySyntaxException("ERR 112", "invalid use of double star (**)", -1, -1, -1, null);
     }
 
     /**
@@ -188,8 +182,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @return the SL invalid query syntax exception
      */
     public SLInvalidQuerySyntaxException createByLinkWithoutDefineTargetException() {
-        return new SLInvalidQuerySyntaxException("ERR 113",
-                                                 "invalid use of double star (**)", -1, -1, -1, null);
+        return new SLInvalidQuerySyntaxException("ERR 113", "invalid use of double star (**)", -1, -1, -1, null);
     }
 
     /**
@@ -198,8 +191,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @return the SL invalid query syntax exception
      */
     public SLInvalidQuerySyntaxException createCannotUseWhereWithByLInkException() {
-        return new SLInvalidQuerySyntaxException("ERR 114",
-                                                 "invalid use of double star (**)", -1, -1, -1, null);
+        return new SLInvalidQuerySyntaxException("ERR 114", "invalid use of double star (**)", -1, -1, -1, null);
     }
 
     /**
@@ -208,8 +200,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
      * @return the SL invalid query syntax exception
      */
     public SLInvalidQuerySyntaxException createDefineTargetWithByLinkException() {
-        return new SLInvalidQuerySyntaxException("ERR 115",
-                                                 "invalid use of by link in define target", -1, -1, -1, null);
+        return new SLInvalidQuerySyntaxException("ERR 115", "invalid use of by link in define target", -1, -1, -1, null);
     }
 
     /**
@@ -223,81 +214,58 @@ public class SLInvalidQuerySyntaxExceptionFactory {
         String message = "";
         if (e instanceof MismatchedTokenException) {
             MismatchedTokenException mte = (MismatchedTokenException)e;
-            if (tokenNames != null && mte.expecting >= 0
-                && mte.expecting < tokenNames.length) {
-                message = String
-                                .format(
-                                        SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_TOKEN_MESSAGE_COMPLETE,
-                                        e.line, e.charPositionInLine,
-                                        getBetterToken(e.token),
-                                        getBetterToken(mte.expecting));
+            if (tokenNames != null && mte.expecting >= 0 && mte.expecting < tokenNames.length) {
+                message = String.format(SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_TOKEN_MESSAGE_COMPLETE, e.line,
+                                        e.charPositionInLine, getBetterToken(e.token), getBetterToken(mte.expecting));
                 codeAndMessage.add(message);
                 codeAndMessage.add("ERR 101");
             } else {
-                message = String
-                                .format(
-                                        SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_TOKEN_MESSAGE_PART,
-                                        e.line, e.charPositionInLine,
-                                        getBetterToken(e.token));
+                message = String.format(SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_TOKEN_MESSAGE_PART, e.line,
+                                        e.charPositionInLine, getBetterToken(e.token));
                 codeAndMessage.add(message);
                 codeAndMessage.add("ERR 101");
             }
         } else if (e instanceof MismatchedTreeNodeException) {
             MismatchedTreeNodeException mtne = (MismatchedTreeNodeException)e;
             if (mtne.expecting >= 0 && mtne.expecting < tokenNames.length) {
-                message = String
-                                .format(
-                                        SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_TREE_NODE_MESSAGE_COMPLETE,
-                                        e.line, e.charPositionInLine,
-                                        getBetterToken(e.token),
-                                        getBetterToken(mtne.expecting));
+                message = String.format(SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_TREE_NODE_MESSAGE_COMPLETE, e.line,
+                                        e.charPositionInLine, getBetterToken(e.token), getBetterToken(mtne.expecting));
                 codeAndMessage.add(message);
                 codeAndMessage.add("ERR 102");
             } else {
-                message = String
-                                .format(
-                                        SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_TREE_NODE_MESSAGE_PART,
-                                        e.line, e.charPositionInLine,
-                                        getBetterToken(e.token));
+                message = String.format(SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_TREE_NODE_MESSAGE_PART, e.line,
+                                        e.charPositionInLine, getBetterToken(e.token));
                 codeAndMessage.add(message);
                 codeAndMessage.add("ERR 102");
             }
         } else if (e instanceof NoViableAltException) {
             // NoViableAltException nvae = (NoViableAltException) e;
-            message = String.format(
-                                    SLInvalidQuerySyntaxExceptionFactory.NO_VIABLE_ALT_MESSAGE,
-                                    e.line, e.charPositionInLine, getBetterToken(e.token));
+            message = String.format(SLInvalidQuerySyntaxExceptionFactory.NO_VIABLE_ALT_MESSAGE, e.line, e.charPositionInLine,
+                                    getBetterToken(e.token));
             codeAndMessage.add(message);
             codeAndMessage.add("ERR 103");
         } else if (e instanceof EarlyExitException) {
             // EarlyExitException eee = (EarlyExitException) e;
-            message = String.format(
-                                    SLInvalidQuerySyntaxExceptionFactory.EARLY_EXIT_MESSAGE, e.line,
-                                    e.charPositionInLine, getBetterToken(e.token));
+            message = String.format(SLInvalidQuerySyntaxExceptionFactory.EARLY_EXIT_MESSAGE, e.line, e.charPositionInLine,
+                                    getBetterToken(e.token));
             codeAndMessage.add(message);
             codeAndMessage.add("ERR 104");
         } else if (e instanceof MismatchedSetException) {
             MismatchedSetException mse = (MismatchedSetException)e;
-            message = String.format(
-                                    SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_SET_MESSAGE,
-                                    e.line, e.charPositionInLine, getBetterToken(e.token),
-                                    mse.expecting);
+            message = String.format(SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_SET_MESSAGE, e.line, e.charPositionInLine,
+                                    getBetterToken(e.token), mse.expecting);
             codeAndMessage.add(message);
             codeAndMessage.add("ERR 105");
         } else if (e instanceof MismatchedNotSetException) {
             MismatchedNotSetException mse = (MismatchedNotSetException)e;
-            message = String.format(
-                                    SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_NOT_SET_MESSAGE,
-                                    e.line, e.charPositionInLine, getBetterToken(e.token),
-                                    mse.expecting);
+            message = String.format(SLInvalidQuerySyntaxExceptionFactory.MISMATCHED_NOT_SET_MESSAGE, e.line,
+                                    e.charPositionInLine, getBetterToken(e.token), mse.expecting);
             codeAndMessage.add(message);
             codeAndMessage.add("ERR 106");
         } else if (e instanceof FailedPredicateException) {
             FailedPredicateException fpe = (FailedPredicateException)e;
-            message = String.format(
-                                    SLInvalidQuerySyntaxExceptionFactory.FAILED_PREDICATE_MESSAGE,
-                                    e.line, e.charPositionInLine, fpe.ruleName,
-                                    fpe.predicateText);
+            message = String.format(SLInvalidQuerySyntaxExceptionFactory.FAILED_PREDICATE_MESSAGE, e.line, e.charPositionInLine,
+                                    fpe.ruleName, fpe.predicateText);
             codeAndMessage.add(message);
             codeAndMessage.add("ERR 107");
         }
@@ -385,8 +353,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
             case SLQLLexer.EOF:
                 return "<eof>";
             default:
-                return tokenType > tokenNames.length ? "unknown"
-                    : tokenNames[tokenType];
+                return tokenType > tokenNames.length ? "unknown" : tokenNames[tokenType];
         }
     }
 }

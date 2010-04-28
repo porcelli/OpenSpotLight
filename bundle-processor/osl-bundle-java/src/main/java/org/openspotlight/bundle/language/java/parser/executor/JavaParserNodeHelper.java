@@ -78,25 +78,19 @@ public class JavaParserNodeHelper {
     private final Logger         logger = LoggerFactory.getLogger(getClass());
 
     public JavaParserNodeHelper(
-                                 final SLNode currentContext,
-                                 final SLGraphSession session ) {
+                                 final SLNode currentContext, final SLGraphSession session ) {
         Assertions.checkNotNull("currentContext", currentContext);
         Assertions.checkNotNull("session", session);
         try {
             this.currentContext = currentContext;
-            abstractContext = session.createContext(
-                                                    JavaParserExecutor.ABSTRACT_CONTEXT).getRootNode();
+            abstractContext = session.createContext(JavaParserExecutor.ABSTRACT_CONTEXT).getRootNode();
             this.session = session;
             Assertions.checkNotNull("abstractContext", abstractContext);
             if (logger.isDebugEnabled()) {
-                logger.debug("using abstract context:"
-                             + abstractContext.getContext().getID() + ":"
-                             + abstractContext.getName());
+                logger.debug("using abstract context:" + abstractContext.getContext().getID() + ":" + abstractContext.getName());
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("using current context:"
-                             + currentContext.getContext().getID() + ":"
-                             + currentContext.getName());
+                logger.debug("using current context:" + currentContext.getContext().getID() + ":" + currentContext.getName());
             }
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -108,8 +102,7 @@ public class JavaParserNodeHelper {
     }
 
     // <SLNodeOnAbstractContext,SLNodeOnCurrentContext>
-    private <T extends JavaType> Pair<SLNode, SLNode> createJavaType(
-                                                                      final Class<T> type,
+    private <T extends JavaType> Pair<SLNode, SLNode> createJavaType( final Class<T> type,
                                                                       final Pair<SLNode, SLNode> parent,
                                                                       final String typeName ) {
         Assertions.checkNotEmpty("typeName", typeName);
@@ -128,16 +121,14 @@ public class JavaParserNodeHelper {
                 qualifiedNamePrefix.append(parentAsJavaType.getQualifiedName());
             }
             qualifiedNamePrefix.append('.');
-            final JavaType abstractNode = parent.getK1().addNode(
-                                                                 JavaType.class, typeName);
+            final JavaType abstractNode = parent.getK1().addNode(JavaType.class, typeName);
             final T concreteNode = parent.getK2().addNode(type, typeName);
-            session.addLink(AbstractTypeBind.class, abstractNode, concreteNode,
-                            false);
+            session.addLink(AbstractTypeBind.class, abstractNode, concreteNode, false);
             final Class<? extends SLLink> linkType;
-            final String qualifiedName = Strings.tryToRemoveBegginingFrom(
-                                                                          JavaConstants.DEFAULT_PACKAGE,
+            final String qualifiedName = Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE,
                                                                           qualifiedNamePrefix.toString() + typeName).replaceAll(
-                                                                                                                                "[$]", ".");
+                                                                                                                                "[$]",
+                                                                                                                                ".");
             if (parent.getK1() instanceof JavaPackage) {
                 linkType = PackageType.class;
             } else {
@@ -150,8 +141,7 @@ public class JavaParserNodeHelper {
 
             session.addLink(linkType, parent.getK2(), concreteNode, false);
             if (logger.isDebugEnabled()) {
-                logger.debug("adding node " + concreteNode.getName()
-                             + " on parent " + parent.getK1().getName()
+                logger.debug("adding node " + concreteNode.getName() + " on parent " + parent.getK1().getName()
                              + " with complete name " + qualifiedName);
             }
 
@@ -161,26 +151,22 @@ public class JavaParserNodeHelper {
         }
     }
 
-    public Pair<SLNode, SLNode> createJavaTypeAnnotation(
-                                                          final Pair<SLNode, SLNode> parent,
+    public Pair<SLNode, SLNode> createJavaTypeAnnotation( final Pair<SLNode, SLNode> parent,
                                                           final String annotationName ) {
         return createJavaType(JavaTypeAnnotation.class, parent, annotationName);
     }
 
-    public Pair<SLNode, SLNode> createJavaTypeClass(
-                                                     final Pair<SLNode, SLNode> parent,
+    public Pair<SLNode, SLNode> createJavaTypeClass( final Pair<SLNode, SLNode> parent,
                                                      final String className ) {
         return createJavaType(JavaTypeClass.class, parent, className);
     }
 
-    public Pair<SLNode, SLNode> createJavaTypeEnum(
-                                                    final Pair<SLNode, SLNode> parent,
+    public Pair<SLNode, SLNode> createJavaTypeEnum( final Pair<SLNode, SLNode> parent,
                                                     final String enumName ) {
         return createJavaType(JavaTypeEnum.class, parent, enumName);
     }
 
-    public Pair<SLNode, SLNode> createJavaTypeInterface(
-                                                         final Pair<SLNode, SLNode> parent,
+    public Pair<SLNode, SLNode> createJavaTypeInterface( final Pair<SLNode, SLNode> parent,
                                                          final String interfaceName ) {
         return createJavaType(JavaTypeInterface.class, parent, interfaceName);
     }
@@ -189,12 +175,9 @@ public class JavaParserNodeHelper {
     private Pair<SLNode, SLNode> createPackage( final String packageName ) {
         try {
             Assertions.checkNotEmpty("packageName", packageName);
-            final JavaPackage abstractNode = abstractContext.addNode(
-                                                                     JavaPackage.class, packageName);
-            final JavaPackage concreteNode = currentContext.addNode(
-                                                                    JavaPackage.class, packageName);
-            session.addLink(AbstractTypeBind.class, abstractNode, concreteNode,
-                            false);
+            final JavaPackage abstractNode = abstractContext.addNode(JavaPackage.class, packageName);
+            final JavaPackage concreteNode = currentContext.addNode(JavaPackage.class, packageName);
+            session.addLink(AbstractTypeBind.class, abstractNode, concreteNode, false);
             if (logger.isDebugEnabled()) {
                 logger.debug("adding node " + concreteNode.getName());
             }

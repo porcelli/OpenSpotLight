@@ -113,9 +113,7 @@ class PLinkNodeWrapper {
             final PLinkNodeWrapper linkNodeWrapper = (PLinkNodeWrapper)obj;
             return getId().equals(linkNodeWrapper.getId());
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException(
-                                         "Error on attempt to verify persistent link node wrapper equality.",
-                                         e);
+            throw new SLRuntimeException("Error on attempt to verify persistent link node wrapper equality.", e);
         }
     }
 
@@ -128,8 +126,7 @@ class PLinkNodeWrapper {
 
     public Integer getLinkTypeHash() throws SLPersistentTreeSessionException {
         if (linkTypeHash == null) {
-            linkTypeHash = SLCommonSupport.getInternalPropertyAsInteger(
-                                                                        pLinkNode, SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
+            linkTypeHash = SLCommonSupport.getInternalPropertyAsInteger(pLinkNode, SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
         }
         return linkTypeHash;
     }
@@ -140,16 +137,14 @@ class PLinkNodeWrapper {
 
     public String getSourceID() throws SLPersistentTreeSessionException {
         if (sourceID == null) {
-            sourceID = SLCommonSupport.getInternalPropertyAsString(pLinkNode,
-                                                                   SLConsts.PROPERTY_NAME_SOURCE_ID);
+            sourceID = SLCommonSupport.getInternalPropertyAsString(pLinkNode, SLConsts.PROPERTY_NAME_SOURCE_ID);
         }
         return sourceID;
     }
 
     public String getTargetID() throws SLPersistentTreeSessionException {
         if (targetID == null) {
-            targetID = SLCommonSupport.getInternalPropertyAsString(pLinkNode,
-                                                                   SLConsts.PROPERTY_NAME_TARGET_ID);
+            targetID = SLCommonSupport.getInternalPropertyAsString(pLinkNode, SLConsts.PROPERTY_NAME_TARGET_ID);
         }
         return targetID;
     }
@@ -159,9 +154,7 @@ class PLinkNodeWrapper {
         try {
             return getId().hashCode();
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException(
-                                         "Error on attempt to calculate persistent link node wrapper hash code.",
-                                         e);
+            throw new SLRuntimeException("Error on attempt to calculate persistent link node wrapper hash code.", e);
         }
     }
 
@@ -213,9 +206,7 @@ class PNodeWrapper {
             final PNodeWrapper nodeWrapper = (PNodeWrapper)obj;
             return getID().equals(nodeWrapper.getID());
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException(
-                                         "Error on attempt to verify persistent node wrapper equality.",
-                                         e);
+            throw new SLRuntimeException("Error on attempt to verify persistent node wrapper equality.", e);
         }
     }
 
@@ -228,8 +219,7 @@ class PNodeWrapper {
 
     public String getName() throws SLPersistentTreeSessionException {
         if (name == null) {
-            name = SLCommonSupport.getInternalPropertyAsString(pNode,
-                                                               SLConsts.PROPERTY_NAME_DECODED_NAME);
+            name = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
         }
         return name;
     }
@@ -237,8 +227,7 @@ class PNodeWrapper {
     public String getParentName() throws SLPersistentTreeSessionException {
         if (parentName == null) {
             final SLPersistentNode pParentNode = pNode.getParent();
-            parentName = SLCommonSupport.getInternalPropertyAsString(
-                                                                     pParentNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
+            parentName = SLCommonSupport.getInternalPropertyAsString(pParentNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
         }
         return parentName;
     }
@@ -255,12 +244,10 @@ class PNodeWrapper {
     }
 
     @SuppressWarnings( "unchecked" )
-    public Comparable<Serializable> getPropertyValue( final String name )
-            throws SLPersistentTreeSessionException {
+    public Comparable<Serializable> getPropertyValue( final String name ) throws SLPersistentTreeSessionException {
         Comparable<Serializable> comparableValue = propertyValueMap.get(name);
         if (comparableValue == null) {
-            final Serializable value = SLCommonSupport
-                                                      .getUserPropertyAsSerializable(pNode, name);
+            final Serializable value = SLCommonSupport.getUserPropertyAsSerializable(pNode, name);
             if (value instanceof Comparable) {
                 comparableValue = (Comparable<Serializable>)value;
             }
@@ -273,8 +260,7 @@ class PNodeWrapper {
 
     public String getTypeName() throws SLPersistentTreeSessionException {
         if (typeName == null) {
-            typeName = SLCommonSupport.getInternalPropertyAsString(pNode,
-                                                                   SLConsts.PROPERTY_NAME_TYPE);
+            typeName = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
         }
         return typeName;
     }
@@ -284,9 +270,7 @@ class PNodeWrapper {
         try {
             return getID().hashCode();
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException(
-                                         "Error on attempt to calculate persistent node wrapper hash code.",
-                                         e);
+            throw new SLRuntimeException("Error on attempt to calculate persistent node wrapper hash code.", e);
         }
     }
 
@@ -317,11 +301,9 @@ class PNodeWrapper {
     @Override
     public String toString() {
         try {
-            return SLCommonSupport.getInternalPropertyAsString(pNode,
-                                                               SLConsts.PROPERTY_NAME_DECODED_NAME);
+            return SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException("Error on attempt to string "
-                                         + this.getClass().getName());
+            throw new SLRuntimeException("Error on attempt to string " + this.getClass().getName());
         }
     }
 }
@@ -357,16 +339,14 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param treeSession the tree session
      */
     public SLQueryApiImpl(
-                           final SLGraphSession session,
-                           final SLPersistentTreeSession treeSession, final SLQueryCache cache ) {
+                           final SLGraphSession session, final SLPersistentTreeSession treeSession, final SLQueryCache cache ) {
         super(session, treeSession);
         metadata = session.getMetadata();
         this.cache = cache;
         lock = session.getLockObject();
     }
 
-    private Collection<PNodeWrapper> applyLimitOffset(
-                                                       final Collection<PNodeWrapper> input,
+    private Collection<PNodeWrapper> applyLimitOffset( final Collection<PNodeWrapper> input,
                                                        final Integer limit,
                                                        final Integer offset ) {
         if (limit == null) {
@@ -401,17 +381,14 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                                   final boolean showSLQL,
                                   final Integer limit,
                                   final Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
 
             validateSelects();
 
             try {
 
-                final String queryId = cache.buildQueryId(selects,
-                                                          collatorStrength, inputNodesIDs, sortMode, limit,
-                                                          offset);
+                final String queryId = cache.buildQueryId(selects, collatorStrength, inputNodesIDs, sortMode, limit, offset);
 
                 final SLQueryResult queryResult = cache.getCache(queryId);
                 if (queryResult != null) {
@@ -426,26 +403,20 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                 commandDO.setMetadata(metadata);
                 commandDO.setTreeSession(treeSession);
 
-                final Set<PNodeWrapper> wrappers = SLQuerySupport
-                                                                 .getNodeWrappers(treeSession, inputNodesIDs);
+                final Set<PNodeWrapper> wrappers = SLQuerySupport.getNodeWrappers(treeSession, inputNodesIDs);
                 commandDO.setPreviousNodeWrappers(wrappers);
 
                 final SLSelectStatementInfo lastSelectInfo = getLastSelect();
-                resultNodeWrappers = getResultCollection(lastSelectInfo,
-                                                         sortMode);
+                resultNodeWrappers = getResultCollection(lastSelectInfo, sortMode);
 
                 for (final SLSelect select : selects) {
                     Collection<PNodeWrapper> selectNodeWrappers = null;
-                    final SLSelectStatementInfo selectStatementInfo = SLQuerySupport
-                                                                                    .getSelectStatementInfo(select);
-                    final Integer xTimes = selectStatementInfo.getXTimes() == null ? 1
-                            : selectStatementInfo.getXTimes();
-                    final SLSelectAbstractCommand command = SLSelectAbstractCommand
-                                                                                   .getCommand(select, selectStatementInfo, commandDO);
-                    commandDO.setCollatorStrength(this
-                                                      .getCollatorStrength(selectStatementInfo));
-                    resultSelectNodeWrappers = getResultCollection(
-                                                                   selectStatementInfo, sortMode);
+                    final SLSelectStatementInfo selectStatementInfo = SLQuerySupport.getSelectStatementInfo(select);
+                    final Integer xTimes = selectStatementInfo.getXTimes() == null ? 1 : selectStatementInfo.getXTimes();
+                    final SLSelectAbstractCommand command = SLSelectAbstractCommand.getCommand(select, selectStatementInfo,
+                                                                                               commandDO);
+                    commandDO.setCollatorStrength(this.getCollatorStrength(selectStatementInfo));
+                    resultSelectNodeWrappers = getResultCollection(selectStatementInfo, sortMode);
 
                     if (xTimes == SLSelectInfo.INDEFINITE) {
                         print(showSLQL, selectStatementInfo);
@@ -453,8 +424,7 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                             command.execute();
                             selectNodeWrappers = commandDO.getNodeWrappers();
                             resultSelectNodeWrappers.addAll(selectNodeWrappers);
-                            commandDO
-                                     .setPreviousNodeWrappers(selectNodeWrappers);
+                            commandDO.setPreviousNodeWrappers(selectNodeWrappers);
                         } while (!selectNodeWrappers.isEmpty());
                     } else {
                         print(showSLQL, selectStatementInfo);
@@ -468,15 +438,12 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                                 break;
                             }
                             resultSelectNodeWrappers.addAll(selectNodeWrappers);
-                            commandDO
-                                     .setPreviousNodeWrappers(selectNodeWrappers);
+                            commandDO.setPreviousNodeWrappers(selectNodeWrappers);
                         }
                     }
 
-                    resultSelectNodeWrappers = applyLimitOffset(
-                                                                resultSelectNodeWrappers, selectStatementInfo
-                                                                                                             .getLimit(), selectStatementInfo
-                                                                                                                                             .getOffset());
+                    resultSelectNodeWrappers = applyLimitOffset(resultSelectNodeWrappers, selectStatementInfo.getLimit(),
+                                                                selectStatementInfo.getOffset());
 
                     if (selectStatementInfo.isKeepResult()) {
                         resultNodeWrappers.addAll(resultSelectNodeWrappers);
@@ -487,15 +454,13 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                     resultNodeWrappers.addAll(resultSelectNodeWrappers);
                 }
 
-                resultNodeWrappers = applyLimitOffset(resultNodeWrappers,
-                                                      limit, offset);
+                resultNodeWrappers = applyLimitOffset(resultNodeWrappers, limit, offset);
 
                 cache.add2Cache(queryId, resultNodeWrappers);
 
                 return cache.getCache(queryId);
             } catch (final SLException e) {
-                throw new SLQueryException(
-                                           "Error on attempt to execute query.", e);
+                throw new SLQueryException("Error on attempt to execute query.", e);
             }
         }
     }
@@ -515,11 +480,8 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectStatementInfo the select statement info
      * @return the collator strength
      */
-    private int getCollatorStrength(
-                                     final SLSelectStatementInfo selectStatementInfo ) {
-        return selectStatementInfo.getCollatorStrength() == null ? this
-                                                                       .getCollatorStrength() : selectStatementInfo
-                                                                                                                   .getCollatorStrength();
+    private int getCollatorStrength( final SLSelectStatementInfo selectStatementInfo ) {
+        return selectStatementInfo.getCollatorStrength() == null ? this.getCollatorStrength() : selectStatementInfo.getCollatorStrength();
     }
 
     /**
@@ -529,8 +491,7 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      */
     private SLSelectStatementInfo getLastSelect() {
         if (!selects.isEmpty()) {
-            return SLQuerySupport.getSelectStatementInfo(selects.get(selects
-                                                                            .size() - 1));
+            return SLQuerySupport.getSelectStatementInfo(selects.get(selects.size() - 1));
         }
         return null;
     }
@@ -554,20 +515,21 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
         final Collection<SLMetaNodeType> metaNodeTypes = new ArrayList<SLMetaNodeType>();
 
         if (name.equals(SLNode.class.getName())) {
-            for (final SLMetaNodeType metaNodeType : metadata
-                                                             .getMetaNodesTypes()) {
+            for (final SLMetaNodeType metaNodeType : metadata.getMetaNodesTypes()) {
                 metaNodeTypes.add(metaNodeType);
                 metaNodeTypes.addAll(metaNodeType.getSubMetaNodeTypes());
             }
         } else {
-            SLMetaNodeType metaNodeType = metadata
-                                                  .getMetaNodeTypeByDescription(name);
+            SLMetaNodeType metaNodeType = metadata.getMetaNodeTypeByDescription(name);
             if (metaNodeType == null) {
                 metaNodeType = metadata.getMetaNodeType(name);
             }
             metaNodeTypes.add(metaNodeType);
             if (subTypes) {
-                final Collection<SLMetaNodeType> subMetaNodeTypes = metaNodeType.searchSubMetaNodeTypes(SLRecursiveMode.RECURSIVE, null, null, null, null, null);
+                final Collection<SLMetaNodeType> subMetaNodeTypes = metaNodeType.searchSubMetaNodeTypes(
+                                                                                                        SLRecursiveMode.RECURSIVE,
+                                                                                                        null, null, null, null,
+                                                                                                        null);
                 for (final SLMetaNodeType subMetaNodeType : subMetaNodeTypes) {
                     metaNodeTypes.add(subMetaNodeType);
                 }
@@ -583,8 +545,7 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param orderByStatementInfo the order by statement info
      * @return the order by p node wrapper comparator
      */
-    private Comparator<PNodeWrapper> getOrderByPNodeWrapperComparator(
-                                                                       final SLOrderByStatementInfo orderByStatementInfo ) {
+    private Comparator<PNodeWrapper> getOrderByPNodeWrapperComparator( final SLOrderByStatementInfo orderByStatementInfo ) {
         return new Comparator<PNodeWrapper>() {
             public int compare( final PNodeWrapper nodeWrapper1,
                                 final PNodeWrapper nodeWrapper2 ) {
@@ -597,49 +558,37 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                         if (nodeWrapper1.getID().equals(nodeWrapper2.getID())) {
                             return 0;
                         } else {
-                            final List<SLOrderByTypeInfo> typeInfoList = orderByStatementInfo
-                                                                                             .getOrderByTypeInfoList();
-                            final SLOrderByTypeInfo typeInfo = typeInfoList
-                                                                           .get(index1);
-                            final String propertyName = index1 < typeInfoList
-                                                                             .size() ? typeInfo.getPropertyName() : null;
-                            Comparable<Serializable> value1 = nodeWrapper1
-                                                                          .getPropertyValue(propertyName);
-                            Comparable<Serializable> value2 = nodeWrapper2
-                                                                          .getPropertyValue(propertyName);
+                            final List<SLOrderByTypeInfo> typeInfoList = orderByStatementInfo.getOrderByTypeInfoList();
+                            final SLOrderByTypeInfo typeInfo = typeInfoList.get(index1);
+                            final String propertyName = index1 < typeInfoList.size() ? typeInfo.getPropertyName() : null;
+                            Comparable<Serializable> value1 = nodeWrapper1.getPropertyValue(propertyName);
+                            Comparable<Serializable> value2 = nodeWrapper2.getPropertyValue(propertyName);
                             if (propertyName != null) {
-                                value1 = nodeWrapper1
-                                                     .getPropertyValue(propertyName);
-                                value2 = nodeWrapper2
-                                                     .getPropertyValue(propertyName);
+                                value1 = nodeWrapper1.getPropertyValue(propertyName);
+                                value2 = nodeWrapper2.getPropertyValue(propertyName);
                             }
                             int compareValue;
                             if (value1 == null && value2 == null) {
-                                compareValue = nodeWrapper1.getPath()
-                                                           .compareTo(nodeWrapper2.getPath());
+                                compareValue = nodeWrapper1.getPath().compareTo(nodeWrapper2.getPath());
                             } else if (value1 == null && value2 != null) {
                                 compareValue = 1;
                             } else if (value1 != null && value2 == null) {
                                 compareValue = -1;
                             } else {
-                                compareValue = value1
-                                                     .compareTo((Serializable)value2);
+                                compareValue = value1.compareTo((Serializable)value2);
                             }
-                            return normalizeCompareValue(compareValue, typeInfo
-                                                                               .getOrderType());
+                            return normalizeCompareValue(compareValue, typeInfo.getOrderType());
                         }
                     } else {
                         return index1.compareTo(index2);
                     }
                 } catch (final SLException e) {
-                    throw new SLRuntimeException(
-                                                 "Error on attempt on order by comparator.", e);
+                    throw new SLRuntimeException("Error on attempt on order by comparator.", e);
                 }
             }
 
             private int getTypeIndex( final String typeName ) {
-                final List<SLOrderByTypeInfo> typeInfoList = orderByStatementInfo
-                                                                                 .getOrderByTypeInfoList();
+                final List<SLOrderByTypeInfo> typeInfoList = orderByStatementInfo.getOrderByTypeInfoList();
                 for (int i = 0; i < typeInfoList.size(); i++) {
                     final SLOrderByTypeInfo typeInfo = typeInfoList.get(i);
                     if (this.isInstanceOf(typeName, typeInfo.getTypeName())) {
@@ -652,11 +601,9 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
             private boolean isInstanceOf( final String subTypeName,
                                           final SLMetaNodeType metaNodeType ) {
                 boolean status = false;
-                final SLMetaNodeType subMetaNodeType = metaNodeType
-                                                                   .getSubMetaNodeType(subTypeName);
+                final SLMetaNodeType subMetaNodeType = metaNodeType.getSubMetaNodeType(subTypeName);
                 if (subMetaNodeType == null) {
-                    final Collection<SLMetaNodeType> subMetaNodeTypes = metaNodeType
-                                                                                    .getSubMetaNodeTypes();
+                    final Collection<SLMetaNodeType> subMetaNodeTypes = metaNodeType.getSubMetaNodeTypes();
                     for (final SLMetaNodeType current : subMetaNodeTypes) {
                         status = this.isInstanceOf(subTypeName, current);
                         if (status) {
@@ -674,14 +621,12 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                 try {
                     boolean status = subTypeName.equals(typeName);
                     if (!status) {
-                        final SLMetaNodeType metaNodeType = metadata
-                                                                    .getMetaNodeType(typeName);
+                        final SLMetaNodeType metaNodeType = metadata.getMetaNodeType(typeName);
                         status = this.isInstanceOf(subTypeName, metaNodeType);
                     }
                     return status;
                 } catch (SLMetaNodeTypeNotFoundException ex) {
-                    throw new SLGraphRuntimeException(
-                                                      "Error on attempt to check instanceof node type.", ex);
+                    throw new SLGraphRuntimeException("Error on attempt to check instanceof node type.", ex);
                 }
             }
 
@@ -702,34 +647,25 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
             public int compare( final PNodeWrapper nodeWrapper1,
                                 final PNodeWrapper nodeWrapper2 ) {
                 try {
-                    if (nodeWrapper1.getTypeName().equals(
-                                                          nodeWrapper2.getTypeName())) {
-                        if (nodeWrapper1.getName().equals(
-                                                          nodeWrapper2.getName())) {
-                            return nodeWrapper1.getParentName().compareTo(
-                                                                          nodeWrapper2.getParentName());
+                    if (nodeWrapper1.getTypeName().equals(nodeWrapper2.getTypeName())) {
+                        if (nodeWrapper1.getName().equals(nodeWrapper2.getName())) {
+                            return nodeWrapper1.getParentName().compareTo(nodeWrapper2.getParentName());
                         } else {
-                            return nodeWrapper1.getName().compareTo(
-                                                                    nodeWrapper2.getName());
+                            return nodeWrapper1.getName().compareTo(nodeWrapper2.getName());
                         }
                     } else {
-                        return nodeWrapper1.getTypeName().compareTo(
-                                                                    nodeWrapper2.getTypeName());
+                        return nodeWrapper1.getTypeName().compareTo(nodeWrapper2.getTypeName());
                     }
                 } catch (final SLPersistentTreeSessionException e) {
-                    throw new SLRuntimeException(
-                                                 "Error on attempt to execute persistent node wrapper comparator.",
-                                                 e);
+                    throw new SLRuntimeException("Error on attempt to execute persistent node wrapper comparator.", e);
                 }
             }
         };
     }
 
-    private Collection<PNodeWrapper> getResultCollection(
-                                                          final SLSelectStatementInfo selectStatementInfo,
+    private Collection<PNodeWrapper> getResultCollection( final SLSelectStatementInfo selectStatementInfo,
                                                           final SortMode sortMode ) {
-        final SLOrderByStatementInfo orderByStatementInfo = selectStatementInfo
-                                                                               .getOrderByStatementInfo();
+        final SLOrderByStatementInfo orderByStatementInfo = selectStatementInfo.getOrderByStatementInfo();
         if (orderByStatementInfo == null) {
             if (sortMode.equals(SortMode.SORTED)) {
                 final Comparator<PNodeWrapper> comparator = getPNodeWrapperComparator();
@@ -765,40 +701,33 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * 
      * @param selectInfo the select info
      */
-    private void normalizeSelectStatementInfo(
-                                               final SLSelectStatementInfo selectInfo ) throws SLMetaNodeTypeNotFoundException {
+    private void normalizeSelectStatementInfo( final SLSelectStatementInfo selectInfo ) throws SLMetaNodeTypeNotFoundException {
 
         final Set<SLSelectTypeInfo> selectTypeInfoSet = new HashSet<SLSelectTypeInfo>();
         if (selectInfo.getAllTypes() != null) {
             if (selectInfo.getAllTypes().isOnWhere()) {
-                final List<SLWhereTypeInfo> whereTypeInfoList = selectInfo
-                                                                          .getWhereStatementInfo().getWhereTypeInfoList();
+                final List<SLWhereTypeInfo> whereTypeInfoList = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
                 for (final SLWhereTypeInfo whereTypeInfo : whereTypeInfoList) {
-                    final Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(
-                                                                                      whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+                    final Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(whereTypeInfo.getName(),
+                                                                                      whereTypeInfo.isSubTypes());
                     for (final SLMetaNodeType metaNodeType : metaNodeTypes) {
-                        final SLSelectTypeInfo selectTypeInfo = new SLSelectTypeInfo(
-                                                                                     selectInfo, metaNodeType.getTypeName());
+                        final SLSelectTypeInfo selectTypeInfo = new SLSelectTypeInfo(selectInfo, metaNodeType.getTypeName());
                         selectTypeInfoSet.add(selectTypeInfo);
                     }
                 }
             } else {
-                final Collection<SLMetaNodeType> metaNodeTypes = metadata
-                                                                         .getMetaNodesTypes(SLRecursiveMode.RECURSIVE);
+                final Collection<SLMetaNodeType> metaNodeTypes = metadata.getMetaNodesTypes(SLRecursiveMode.RECURSIVE);
                 for (final SLMetaNodeType metaNodeType : metaNodeTypes) {
-                    final SLSelectTypeInfo selectTypeInfo = new SLSelectTypeInfo(
-                                                                                 selectInfo, metaNodeType.getTypeName());
+                    final SLSelectTypeInfo selectTypeInfo = new SLSelectTypeInfo(selectInfo, metaNodeType.getTypeName());
                     selectTypeInfoSet.add(selectTypeInfo);
                 }
             }
         } else {
-            for (final SLSelectTypeInfo selectTypeInfo : selectInfo
-                                                                   .getTypeInfoList()) {
-                final Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(
-                                                                                  selectTypeInfo.getName(), selectTypeInfo.isSubTypes());
+            for (final SLSelectTypeInfo selectTypeInfo : selectInfo.getTypeInfoList()) {
+                final Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(selectTypeInfo.getName(),
+                                                                                  selectTypeInfo.isSubTypes());
                 for (final SLMetaNodeType metaNodeType : metaNodeTypes) {
-                    final SLSelectTypeInfo current = new SLSelectTypeInfo(
-                                                                          selectInfo, metaNodeType.getTypeName());
+                    final SLSelectTypeInfo current = new SLSelectTypeInfo(selectInfo, metaNodeType.getTypeName());
                     selectTypeInfoSet.add(current);
                 }
             }
@@ -806,18 +735,15 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
         selectInfo.getTypeInfoList().clear();
         selectInfo.getTypeInfoList().addAll(selectTypeInfoSet);
 
-        final SLWhereStatementInfo whereInfo = selectInfo
-                                                         .getWhereStatementInfo();
+        final SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
 
         if (whereInfo != null) {
             final Set<SLWhereTypeInfo> whereTypeInfoSet = new HashSet<SLWhereTypeInfo>();
-            for (final SLWhereTypeInfo whereTypeInfo : whereInfo
-                                                                .getWhereTypeInfoList()) {
-                final Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(
-                                                                                  whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+            for (final SLWhereTypeInfo whereTypeInfo : whereInfo.getWhereTypeInfoList()) {
+                final Collection<SLMetaNodeType> metaNodeTypes = getMetaNodeTypes(whereTypeInfo.getName(),
+                                                                                  whereTypeInfo.isSubTypes());
                 for (final SLMetaNodeType metaNodeType : metaNodeTypes) {
-                    final SLWhereTypeInfo current = SerializationUtil
-                                                                     .clone(whereTypeInfo);
+                    final SLWhereTypeInfo current = SerializationUtil.clone(whereTypeInfo);
                     current.setName(metaNodeType.getTypeName());
                     current.setSubTypes(false);
                     whereTypeInfoSet.add(current);
@@ -900,18 +826,15 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectInfo the select info
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      */
-    private void validateAllTypes( final SLSelectStatementInfo selectInfo )
-            throws SLInvalidQueryElementException {
+    private void validateAllTypes( final SLSelectStatementInfo selectInfo ) throws SLInvalidQueryElementException {
         if (selectInfo.getAllTypes() != null) {
             if (!selectInfo.getTypeInfoList().isEmpty()) {
                 throw new SLInvalidQueryElementException(
                                                          "When all types (*) or all types on where (**) are used, no type can be specifically used on select clause.");
             }
-            final SLWhereStatementInfo whereInfo = selectInfo
-                                                             .getWhereStatementInfo();
+            final SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
             if (whereInfo != null) {
-                if (selectInfo.getAllTypes().isOnWhere()
-                        && whereInfo.getWhereTypeInfoList().isEmpty()) {
+                if (selectInfo.getAllTypes().isOnWhere() && whereInfo.getWhereTypeInfoList().isEmpty()) {
                     throw new SLInvalidQueryElementException(
                                                              "When all types on where (**)  is used, at least on type filter on where clause must be used.");
                 }
@@ -925,19 +848,13 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectInfo the select info
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      */
-    private void validateLinkTypesOnWhere( final SLSelectStatementInfo selectInfo )
-            throws SLInvalidQueryElementException {
-        final SLWhereStatementInfo whereInfo = selectInfo
-                                                         .getWhereStatementInfo();
+    private void validateLinkTypesOnWhere( final SLSelectStatementInfo selectInfo ) throws SLInvalidQueryElementException {
+        final SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
         if (whereInfo != null) {
-            final Set<SLSelectByLinkInfo> byLinkInfoSet = new HashSet<SLSelectByLinkInfo>(
-                                                                                          selectInfo.getByLinkInfoList());
-            for (final SLWhereLinkTypeInfo whereLinkTypeInfo : whereInfo
-                                                                        .getWhereLinkTypeInfoList()) {
-                if (!byLinkInfoSet.contains(new SLSelectByLinkInfo(
-                                                                   whereLinkTypeInfo.getName()))) {
-                    throw new SLInvalidQueryElementException(
-                                                             "Link type not present in select by link clause: "
+            final Set<SLSelectByLinkInfo> byLinkInfoSet = new HashSet<SLSelectByLinkInfo>(selectInfo.getByLinkInfoList());
+            for (final SLWhereLinkTypeInfo whereLinkTypeInfo : whereInfo.getWhereLinkTypeInfoList()) {
+                if (!byLinkInfoSet.contains(new SLSelectByLinkInfo(whereLinkTypeInfo.getName()))) {
+                    throw new SLInvalidQueryElementException("Link type not present in select by link clause: "
                                                              + whereLinkTypeInfo.getName());
                 }
             }
@@ -950,24 +867,20 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param linkTypeStatementInfo the link type statement info
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private void validateLinkTypeStatementInfo(
-                                                final SLLinkTypeStatementInfo linkTypeStatementInfo )
-            throws SLInvalidQuerySyntaxException {
+    private void validateLinkTypeStatementInfo( final SLLinkTypeStatementInfo linkTypeStatementInfo )
+        throws SLInvalidQuerySyntaxException {
         if (linkTypeStatementInfo == null) {
             return;
         }
         if (!linkTypeStatementInfo.isClosed()) {
-            final SLInvalidQuerySyntaxException e = new SLInvalidQuerySyntaxException(
-                                                                                      "bracket must be closed.");
+            final SLInvalidQuerySyntaxException e = new SLInvalidQuerySyntaxException("bracket must be closed.");
             e.setStackTrace(linkTypeStatementInfo.getOpenBraceStackTrace());
             throw e;
         }
-        final List<SLLinkTypeConditionInfo> conditionInfoList = linkTypeStatementInfo
-                                                                                     .getConditionInfoList();
+        final List<SLLinkTypeConditionInfo> conditionInfoList = linkTypeStatementInfo.getConditionInfoList();
         for (final SLLinkTypeConditionInfo conditionInfo : conditionInfoList) {
             if (conditionInfo.getInnerStatementInfo() != null) {
-                validateLinkTypeStatementInfo(conditionInfo
-                                                           .getInnerStatementInfo());
+                validateLinkTypeStatementInfo(conditionInfo.getInnerStatementInfo());
             }
         }
     }
@@ -978,20 +891,13 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectInfo the select info
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      */
-    private void validateNodeTypesOnWhere( final SLSelectStatementInfo selectInfo )
-            throws SLInvalidQueryElementException {
-        final SLWhereStatementInfo whereInfo = selectInfo
-                                                         .getWhereStatementInfo();
+    private void validateNodeTypesOnWhere( final SLSelectStatementInfo selectInfo ) throws SLInvalidQueryElementException {
+        final SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
         if (whereInfo != null) {
-            final Set<SLSelectTypeInfo> selectTypeInfoSet = new HashSet<SLSelectTypeInfo>(
-                                                                                          selectInfo.getTypeInfoList());
-            for (final SLWhereTypeInfo whereTypeInfo : whereInfo
-                                                                .getWhereTypeInfoList()) {
-                if (!selectTypeInfoSet.contains(new SLSelectTypeInfo(
-                                                                     whereTypeInfo.getName()))) {
-                    throw new SLInvalidQueryElementException(
-                                                             "Node type not present in select clause: "
-                                                             + whereTypeInfo.getName());
+            final Set<SLSelectTypeInfo> selectTypeInfoSet = new HashSet<SLSelectTypeInfo>(selectInfo.getTypeInfoList());
+            for (final SLWhereTypeInfo whereTypeInfo : whereInfo.getWhereTypeInfoList()) {
+                if (!selectTypeInfoSet.contains(new SLSelectTypeInfo(whereTypeInfo.getName()))) {
+                    throw new SLInvalidQueryElementException("Node type not present in select clause: " + whereTypeInfo.getName());
                 }
             }
         }
@@ -1004,12 +910,10 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    private void validateSelects() throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+    private void validateSelects() throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         try {
             for (final SLSelect select : selects) {
-                final SLSelectStatementInfo selectStatementInfo = SLQuerySupport
-                                                                                .getSelectStatementInfo(select);
+                final SLSelectStatementInfo selectStatementInfo = SLQuerySupport.getSelectStatementInfo(select);
                 validateSelectStatementInfoBeforeNormalization(selectStatementInfo);
                 normalizeSelectStatementInfo(selectStatementInfo);
                 validateSelectStatementInfoAfterNormalization(selectStatementInfo);
@@ -1017,11 +921,9 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
         } catch (final SLInvalidQueryElementException e) {
             throw e;
         } catch (final SLGraphSessionException e) {
-            throw new SLQueryException(
-                                       "Error on attempt to validate query.", e);
+            throw new SLQueryException("Error on attempt to validate query.", e);
         } catch (SLMetaNodeTypeNotFoundException e) {
-            throw new SLQueryException(
-                                       "Error on attempt to validate query.", e);
+            throw new SLQueryException("Error on attempt to validate query.", e);
         }
     }
 
@@ -1031,9 +933,8 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectInfo the select info
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      */
-    private void validateSelectStatementInfoAfterNormalization(
-                                                                final SLSelectStatementInfo selectInfo )
-            throws SLInvalidQueryElementException {
+    private void validateSelectStatementInfoAfterNormalization( final SLSelectStatementInfo selectInfo )
+        throws SLInvalidQueryElementException {
         validateLinkTypesOnWhere(selectInfo);
     }
 
@@ -1043,9 +944,8 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectInfo the select info
      * @throws SLInvalidQuerySyntaxException
      */
-    private void validateSelectStatementInfoBeforeNormalization(
-                                                                 final SLSelectStatementInfo selectInfo )
-            throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
+    private void validateSelectStatementInfoBeforeNormalization( final SLSelectStatementInfo selectInfo )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
         validateSelectType(selectInfo);
         validateAllTypes(selectInfo);
         validateTypesExsistence(selectInfo);
@@ -1058,10 +958,8 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectInfo the select info
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      */
-    private void validateSelectType( final SLSelectStatementInfo selectInfo )
-            throws SLInvalidQueryElementException {
-        final SLWhereStatementInfo whereInfo = selectInfo
-                                                         .getWhereStatementInfo();
+    private void validateSelectType( final SLSelectStatementInfo selectInfo ) throws SLInvalidQueryElementException {
+        final SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
         if (whereInfo != null) {
             if (selectInfo.getByLinkInfoList().isEmpty()) {
                 if (!whereInfo.getWhereLinkTypeInfoList().isEmpty()) {
@@ -1083,25 +981,17 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectInfo the select info
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      */
-    private void validateTypesExsistence( final SLSelectStatementInfo selectInfo )
-            throws SLInvalidQueryElementException {
-        for (final SLSelectTypeInfo selectTypeInfo : selectInfo
-                                                               .getTypeInfoList()) {
+    private void validateTypesExsistence( final SLSelectStatementInfo selectInfo ) throws SLInvalidQueryElementException {
+        for (final SLSelectTypeInfo selectTypeInfo : selectInfo.getTypeInfoList()) {
             if (!nodeTypeExists(selectTypeInfo.getName())) {
-                throw new SLInvalidQueryElementException(
-                                                         "Node type on select clause not found: "
-                                                         + selectTypeInfo.getName());
+                throw new SLInvalidQueryElementException("Node type on select clause not found: " + selectTypeInfo.getName());
             }
         }
-        final SLWhereStatementInfo whereInfo = selectInfo
-                                                         .getWhereStatementInfo();
+        final SLWhereStatementInfo whereInfo = selectInfo.getWhereStatementInfo();
         if (whereInfo != null) {
-            for (final SLWhereTypeInfo whereTypeInfo : whereInfo
-                                                                .getWhereTypeInfoList()) {
+            for (final SLWhereTypeInfo whereTypeInfo : whereInfo.getWhereTypeInfoList()) {
                 if (!nodeTypeExists(whereTypeInfo.getName())) {
-                    throw new SLInvalidQueryElementException(
-                                                             "Node type on where clause not found: "
-                                                             + whereTypeInfo.getName());
+                    throw new SLInvalidQueryElementException("Node type on where clause not found: " + whereTypeInfo.getName());
                 }
             }
         }
@@ -1113,24 +1003,19 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param typeStatementInfo the type statement info
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private void validateTypeStatementInfo(
-                                            final SLTypeStatementInfo typeStatementInfo )
-            throws SLInvalidQuerySyntaxException {
+    private void validateTypeStatementInfo( final SLTypeStatementInfo typeStatementInfo ) throws SLInvalidQuerySyntaxException {
         if (typeStatementInfo == null) {
             return;
         }
         if (!typeStatementInfo.isClosed()) {
-            final SLInvalidQuerySyntaxException e = new SLInvalidQuerySyntaxException(
-                                                                                      "bracket must be closed.");
-            final StackTraceElement[] st = typeStatementInfo
-                                                            .getOpenBraceStackTrace();
+            final SLInvalidQuerySyntaxException e = new SLInvalidQuerySyntaxException("bracket must be closed.");
+            final StackTraceElement[] st = typeStatementInfo.getOpenBraceStackTrace();
             if (st != null) {
                 e.setStackTrace(st);
             }
             throw e;
         }
-        final List<SLTypeConditionInfo> conditionInfoList = typeStatementInfo
-                                                                             .getConditionInfoList();
+        final List<SLTypeConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
         for (final SLTypeConditionInfo conditionInfo : conditionInfoList) {
             if (conditionInfo.getInnerStatementInfo() != null) {
                 validateTypeStatementInfo(conditionInfo.getInnerStatementInfo());
@@ -1144,19 +1029,14 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param selectInfo the select info
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private void validateWhereStatements( final SLSelectStatementInfo selectInfo )
-            throws SLInvalidQuerySyntaxException {
-        final SLWhereStatementInfo whereStatementInfo = selectInfo
-                                                                  .getWhereStatementInfo();
+    private void validateWhereStatements( final SLSelectStatementInfo selectInfo ) throws SLInvalidQuerySyntaxException {
+        final SLWhereStatementInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
         if (whereStatementInfo != null) {
-            for (final SLWhereTypeInfo whereTypeInfo : whereStatementInfo
-                                                                         .getWhereTypeInfoList()) {
+            for (final SLWhereTypeInfo whereTypeInfo : whereStatementInfo.getWhereTypeInfoList()) {
                 validateTypeStatementInfo(whereTypeInfo.getTypeStatementInfo());
             }
-            for (final SLWhereLinkTypeInfo whereTypeInfo : whereStatementInfo
-                                                                             .getWhereLinkTypeInfoList()) {
-                validateLinkTypeStatementInfo(whereTypeInfo
-                                                           .getLinkTypeStatementInfo());
+            for (final SLWhereLinkTypeInfo whereTypeInfo : whereStatementInfo.getWhereLinkTypeInfoList()) {
+                validateLinkTypeStatementInfo(whereTypeInfo.getLinkTypeStatementInfo());
             }
         }
     }

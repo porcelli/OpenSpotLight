@@ -54,8 +54,7 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 
-public class JavaTreePhase implements
-        BundleProcessorArtifactPhase<StringArtifact> {
+public class JavaTreePhase implements BundleProcessorArtifactPhase<StringArtifact> {
 
     public void beforeProcessArtifact( final StringArtifact artifact,
                                        final CurrentProcessorContext currentContext,

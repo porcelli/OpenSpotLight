@@ -57,8 +57,7 @@ public final class SLNodePropertyRemovedEvent extends SLNodePropertyEvent {
 
     public SLNodePropertyRemovedEvent(
                                        final SLNodeProperty<? extends Serializable> property,
-                                       final SLPersistentProperty<? extends Serializable> pProperty,
-                                       final String propertyName ) {
+                                       final SLPersistentProperty<? extends Serializable> pProperty, final String propertyName ) {
         super(property, pProperty, propertyName);
     }
 

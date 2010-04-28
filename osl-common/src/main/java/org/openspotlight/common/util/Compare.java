@@ -146,8 +146,7 @@ public class Compare {
         if (thisObject.equals(thatObject)) {
             return 0;
         }
-        if ((thisObject instanceof Comparable<?>)
-                && (thatObject instanceof Comparable<?>)) {
+        if ((thisObject instanceof Comparable<?>) && (thatObject instanceof Comparable<?>)) {
             return ((Comparable<T>)thisObject).compareTo(thatObject);
         } else {
             return npeSafeCompare(thisObject.toString(), thatObject.toString());
@@ -158,7 +157,6 @@ public class Compare {
      * Should not be instantiated
      */
     private Compare() {
-        logAndThrow(new IllegalStateException(Messages
-                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

@@ -61,8 +61,7 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JavaParserPublicElementsPhase implements
-        BundleProcessorArtifactPhase<StringArtifact> {
+public class JavaParserPublicElementsPhase implements BundleProcessorArtifactPhase<StringArtifact> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public void beforeProcessArtifact( final StringArtifact artifact,
@@ -90,22 +89,18 @@ public class JavaParserPublicElementsPhase implements
         }
         try {
 
-            JavaTransientDto dto = (JavaTransientDto)artifact
-                                                             .getTransientMap().get("DTO-Parser");
-            final CommonTreeNodeStream treeNodes = new CommonTreeNodeStream(
-                                                                            dto.tree);
-            final JavaPublicElementsTree walker = new JavaPublicElementsTree(
-                                                                             treeNodes);
+            JavaTransientDto dto = (JavaTransientDto)artifact.getTransientMap().get("DTO-Parser");
+            final CommonTreeNodeStream treeNodes = new CommonTreeNodeStream(dto.tree);
+            final JavaPublicElementsTree walker = new JavaPublicElementsTree(treeNodes);
             treeNodes.setTokenStream(dto.commonTokenStream);
-            final JavaExecutorSupport support = new JavaExecutorSupport(
-                                                                        currentContext.getNodeForUniqueBundleConfig(), context
-                                                                                                                              .getGraphSession(), artifact
-                                                                                                                                                          .getArtifactCompleteName());
-            walker.setExecutor(new JavaPublicElementsTreeExecutor(context.getSimplePersistFactory(),
-                    support,artifact.getVersion(), new ParsingSupport(context.getSimplePersistFactory())));
+            final JavaExecutorSupport support = new JavaExecutorSupport(currentContext.getNodeForUniqueBundleConfig(),
+                                                                        context.getGraphSession(),
+                                                                        artifact.getArtifactCompleteName());
+            walker.setExecutor(new JavaPublicElementsTreeExecutor(context.getSimplePersistFactory(), support,
+                                                                  artifact.getVersion(),
+                                                                  new ParsingSupport(context.getSimplePersistFactory())));
             walker.compilationUnit();
-            dto = JavaTransientDto.fromTree(dto).withTreeNodeStream(treeNodes)
-                                  .withWalker(walker).withExecutorSupport(support).create();
+            dto = JavaTransientDto.fromTree(dto).withTreeNodeStream(treeNodes).withWalker(walker).withExecutorSupport(support).create();
             artifact.getTransientMap().put("DTO-PublicElementsTree", dto);
 
             return LastProcessStatus.PROCESSED;

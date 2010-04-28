@@ -73,17 +73,18 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 
     private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(this);
 
-    private final STNodeEntry rootNode;
+    private final STNodeEntry                   rootNode;
 
     @Inject
-    public SLIdentityStoreSessionImpl(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
+    public SLIdentityStoreSessionImpl(
+                                       SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
         this.simplePersist = simplePersist;
-        this.rootNode = simplePersist.getCurrentSession()
-                .withPartition(simplePersist.getCurrentPartition()).createNewSimpleNode("security");
+        this.rootNode = simplePersist.getCurrentSession().withPartition(simplePersist.getCurrentPartition()).createNewSimpleNode(
+                                                                                                                                 "security");
         this.simplePersist.getCurrentSession().flushTransient();
     }
 
-    public void addNode(final SimpleNodeType node) throws Exception {
+    public void addNode( final SimpleNodeType node ) throws Exception {
         simplePersist.convertBeanToNode(this.rootNode, node);
         this.simplePersist.getCurrentSession().flushTransient();
     }
@@ -97,7 +98,6 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 
     public void commitTransaction() {
     }
-
 
     public Object getSessionContext() throws IdentityException {
         return this.context;
@@ -115,9 +115,8 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
         return false;
     }
 
-    public void remove(final SimpleNodeType bean) throws Exception {
-        final STNodeEntry asNode = simplePersist.convertBeanToNode(
-                this.rootNode, bean);
+    public void remove( final SimpleNodeType bean ) throws Exception {
+        final STNodeEntry asNode = simplePersist.convertBeanToNode(this.rootNode, bean);
         simplePersist.getCurrentSession().removeNode(asNode);
         simplePersist.getCurrentSession().flushTransient();
 

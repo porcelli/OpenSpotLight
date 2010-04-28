@@ -89,7 +89,9 @@ public class PrimitiveTypeReference implements TypeReference {
         /** The VOID type. */
         VOID;
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Enum#toString()
          */
         public String toString() {
@@ -128,14 +130,19 @@ public class PrimitiveTypeReference implements TypeReference {
         this.type = type;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
      */
     public String getFullName() {
         return getName();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getName()
      */
     public String getName() {

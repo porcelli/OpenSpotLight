@@ -70,8 +70,7 @@ import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EachArtifactTask<T extends Artifact> extends
-        RunnableWithBundleContext {
+public class EachArtifactTask<T extends Artifact> extends RunnableWithBundleContext {
 
     private static final Object                   SAVE_LOCK = new Object();
     private final boolean                         first;
@@ -83,8 +82,7 @@ public class EachArtifactTask<T extends Artifact> extends
     private final Logger                          logger    = LoggerFactory.getLogger(getClass());
 
     public EachArtifactTask(
-                             final boolean first, final String repositoryName,
-                             final T artifact, final SaveBehavior saveBehavior,
+                             final boolean first, final String repositoryName, final T artifact, final SaveBehavior saveBehavior,
                              final BundleProcessorArtifactPhase<T> bundleProcessor,
                              final CurrentProcessorContextImpl currentContextImpl ) {
         super(repositoryName);
@@ -97,26 +95,19 @@ public class EachArtifactTask<T extends Artifact> extends
 
     public void doIt() throws Exception {
 
-        if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact
-                                                                            .getLastProcessStatus())
-                || LastProcessStatus.EXCEPTION_DURRING_PROCESS
-                                                              .equals(this.artifact.getLastProcessStatus())) {
-            logger.info("ignoring " + this.artifact
-                        + " due to its last process status: "
-                        + this.artifact.getLastProcessStatus());
+        if (LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact.getLastProcessStatus())
+            || LastProcessStatus.EXCEPTION_DURRING_PROCESS.equals(this.artifact.getLastProcessStatus())) {
+            logger.info("ignoring " + this.artifact + " due to its last process status: " + this.artifact.getLastProcessStatus());
             return;
         }
-        this.bundleProcessor.beforeProcessArtifact(this.artifact,
-                                                   this.currentContextImpl, getBundleContext());
+        this.bundleProcessor.beforeProcessArtifact(this.artifact, this.currentContextImpl, getBundleContext());
         LastProcessStatus result = null;
         try {
             if (first && this.artifact instanceof ArtifactWithSyntaxInformation) {
                 final ArtifactWithSyntaxInformation artifactWithInfo = (ArtifactWithSyntaxInformation)this.artifact;
-                artifactWithInfo.getSyntaxInformationSet().setTransient(
-                                                                        new HashSet<SyntaxInformation>());
+                artifactWithInfo.getSyntaxInformationSet().setTransient(new HashSet<SyntaxInformation>());
             }
-            result = this.bundleProcessor.processArtifact(this.artifact,
-                                                          this.currentContextImpl, getBundleContext());
+            result = this.bundleProcessor.processArtifact(this.artifact, this.currentContextImpl, getBundleContext());
             if (SaveBehavior.PER_ARTIFACT.equals(this.saveBehavior)) {
                 getBundleContext().getGraphSession().save();
             } else {
@@ -129,19 +120,16 @@ public class EachArtifactTask<T extends Artifact> extends
                                                getBundleContext().getUser(),
                                                LogEventType.ERROR,
                                                "Error during artifact processing on bundle processor "
-                                               + this.bundleProcessor.getClass().getName(),
-                                               this.artifact);
+                                               + this.bundleProcessor.getClass().getName(), this.artifact);
             throw e;
         } finally {
             this.artifact.setLastProcessStatus(result);
             this.artifact.setLastProcessedDate(new Date());
-            final PersistentArtifactManager manager = getBundleContext()
-                                                                        .getPersistentArtifactManager();
+            final PersistentArtifactManager manager = getBundleContext().getPersistentArtifactManager();
             Exception ex = null;
             try {
                 synchronized (SAVE_LOCK) {
-                    if (ChangeType.EXCLUDED.equals(this.artifact
-                                                                .getChangeType())) {
+                    if (ChangeType.EXCLUDED.equals(this.artifact.getChangeType())) {
                         manager.markAsRemoved(this.artifact);
                     } else {
                         manager.addTransient(this.artifact);
@@ -153,8 +141,7 @@ public class EachArtifactTask<T extends Artifact> extends
                 Exceptions.catchAndLog(e);
                 ex = e;
             }
-            this.bundleProcessor.didFinishToProcessArtifact(this.artifact,
-                                                            result, this.currentContextImpl, getBundleContext());
+            this.bundleProcessor.didFinishToProcessArtifact(this.artifact, result, this.currentContextImpl, getBundleContext());
             if (ex != null) {
                 throw ex;
             }
@@ -170,8 +157,7 @@ public class EachArtifactTask<T extends Artifact> extends
         super.setBundleContext(bundleContext);
         SLContext groupContext;
         try {
-            groupContext = bundleContext.getGraphSession().createContext(
-                                                                         SLConsts.DEFAULT_GROUP_CONTEXT);
+            groupContext = bundleContext.getGraphSession().createContext(SLConsts.DEFAULT_GROUP_CONTEXT);
             this.currentContextImpl.setGroupContext(groupContext);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

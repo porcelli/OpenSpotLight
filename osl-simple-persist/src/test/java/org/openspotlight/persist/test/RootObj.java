@@ -79,8 +79,7 @@ public class RootObj implements SimpleNodeType, Serializable {
         return uuid;
     }
 
-    public void setObjectThatDoesntImplementSimpleNodeType(
-                                                            final ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType ) {
+    public void setObjectThatDoesntImplementSimpleNodeType( final ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType ) {
         this.objectThatDoesntImplementSimpleNodeType = objectThatDoesntImplementSimpleNodeType;
     }
 

@@ -57,8 +57,7 @@ import org.openspotlight.common.concurrent.LockContainer;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLPersistentProperty<V extends Serializable> extends
-        LockContainer {
+public interface SLPersistentProperty<V extends Serializable> extends LockContainer {
 
     /**
      * Gets the name.

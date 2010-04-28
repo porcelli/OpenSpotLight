@@ -89,13 +89,11 @@ public class CoreServlet extends HttpServlet {
          */
         public CommandLoader() {
             try {
-                final InputStream inputStream = ClassPathResource
-                                                                 .getResourceFromClassPath("actions.properties");
+                final InputStream inputStream = ClassPathResource.getResourceFromClassPath("actions.properties");
                 properties = new Properties();
                 properties.load(inputStream);
             } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                                                 ConfigurationException.class);
+                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
             }
         }
 
@@ -108,8 +106,7 @@ public class CoreServlet extends HttpServlet {
         public synchronized WebCommand loadCommand( final String actionName ) {
             try {
                 String newActionName = actionName;
-                String className = actionName != null ? properties
-                                                                  .getProperty(actionName) : null;
+                String className = actionName != null ? properties.getProperty(actionName) : null;
                 if (className == null) {
                     newActionName = "invalidAction";
                 }
@@ -117,15 +114,13 @@ public class CoreServlet extends HttpServlet {
                 if (loaded == null) {
                     className = properties.getProperty(newActionName);
                     @SuppressWarnings( "unchecked" )
-                    final Class<? extends WebCommand> commandClass = (Class<? extends WebCommand>)Class
-                                                                                                       .forName(className);
+                    final Class<? extends WebCommand> commandClass = (Class<? extends WebCommand>)Class.forName(className);
                     loaded = commandClass.newInstance();
                     commandCache.put(newActionName, loaded);
                 }
                 return loaded;
             } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                                                 ConfigurationException.class);
+                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
 
             }
         }
@@ -147,8 +142,7 @@ public class CoreServlet extends HttpServlet {
                              final HttpServletResponse resp ) {
         ExecutionContext context = null;
         try {
-            context = WebExecutionContextFactory.INSTANCE
-                                                         .createExecutionContext(getServletContext(), req);
+            context = WebExecutionContextFactory.INSTANCE.createExecutionContext(getServletContext(), req);
             final String action = req.getParameter("action");
             final WebCommand command = loader.loadCommand(action);
             final Map<String, String> parameters = new TreeMap<String, String>();
@@ -180,8 +174,7 @@ public class CoreServlet extends HttpServlet {
      */
     @Override
     protected void doGet( final HttpServletRequest req,
-                          final HttpServletResponse resp ) throws ServletException,
-            IOException {
+                          final HttpServletResponse resp ) throws ServletException, IOException {
         doAction(req, resp);
     }
 
@@ -190,8 +183,7 @@ public class CoreServlet extends HttpServlet {
      */
     @Override
     protected void doPost( final HttpServletRequest req,
-                           final HttpServletResponse resp ) throws ServletException,
-            IOException {
+                           final HttpServletResponse resp ) throws ServletException, IOException {
         doAction(req, resp);
     }
 

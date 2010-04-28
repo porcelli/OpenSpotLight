@@ -49,7 +49,7 @@
 package org.openspotlight.bundle.language.java.asm.model;
 
 /**
- * Model class that reprents a Field Declaration inside a {@link TypeDefinition}.
+ * Model class that reprents a Field Declaration inside a {@link TypeDefinition} .
  * 
  * @author porcelli
  */

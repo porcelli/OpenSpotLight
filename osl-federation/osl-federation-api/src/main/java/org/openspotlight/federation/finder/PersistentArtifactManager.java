@@ -92,8 +92,7 @@ public interface PersistentArtifactManager extends Disposable {
          * @param type
          * @return
          */
-        public <A extends Artifact> Set<String> retrieveOriginalNames(
-                                                                       ArtifactSource source,
+        public <A extends Artifact> Set<String> retrieveOriginalNames( ArtifactSource source,
                                                                        Class<A> type,
                                                                        String initialPath );
 
@@ -128,8 +127,7 @@ public interface PersistentArtifactManager extends Disposable {
          * @param originName
          * @return
          */
-        public <A extends Artifact> Set<A> listByOriginalNames(
-                                                                ArtifactSource source,
+        public <A extends Artifact> Set<A> listByOriginalNames( ArtifactSource source,
                                                                 Class<A> type,
                                                                 String originName );
 
@@ -178,9 +176,8 @@ public interface PersistentArtifactManager extends Disposable {
      */
     public void saveTransientData();
 
-
     public STStorageSession getSession();
 
-    public SimplePersistCapable<STNodeEntry,STStorageSession> getSimplePersist();
+    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist();
 
 }

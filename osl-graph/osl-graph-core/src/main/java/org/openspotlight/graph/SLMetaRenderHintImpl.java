@@ -77,8 +77,7 @@ public class SLMetaRenderHintImpl implements SLMetaRenderHint {
      * @param property the property
      */
     SLMetaRenderHintImpl(
-                          final SLMetaNodeType metaNode,
-                          final SLPersistentProperty<Serializable> property ) {
+                          final SLMetaNodeType metaNode, final SLPersistentProperty<Serializable> property ) {
         this.metaNode = metaNode;
         this.property = property;
         lock = property.getLockObject();
@@ -111,8 +110,7 @@ public class SLMetaRenderHintImpl implements SLMetaRenderHint {
             try {
                 return SLCommonSupport.toSimplePropertyName(property.getName());
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve render hint name.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve render hint name.", e);
             }
         }
     }
@@ -124,8 +122,7 @@ public class SLMetaRenderHintImpl implements SLMetaRenderHint {
         try {
             return property.getValue().toString();
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to retrieve render hint value.", e);
+            throw new SLGraphSessionException("Error on attempt to retrieve render hint value.", e);
         }
     }
 

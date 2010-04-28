@@ -60,8 +60,7 @@ import java.util.ResourceBundle;
 public class Messages {
     private static final String         BUNDLE_NAME     = "org.openspotlight.federation.data.load.messages"; //$NON-NLS-1$
 
-    private static final ResourceBundle Resource_BUNDLE = ResourceBundle
-                                                                        .getBundle(BUNDLE_NAME);
+    private static final ResourceBundle Resource_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     /**
      * @param key

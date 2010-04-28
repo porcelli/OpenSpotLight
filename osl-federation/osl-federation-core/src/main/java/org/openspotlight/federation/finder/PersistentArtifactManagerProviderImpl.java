@@ -51,23 +51,21 @@ package org.openspotlight.federation.finder;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistFactory;
 
-public class PersistentArtifactManagerProviderImpl extends
-        PersistentArtifactManagerProvider {
+public class PersistentArtifactManagerProviderImpl extends PersistentArtifactManagerProvider {
 
-    private static class PersistentArtifactManagerItemFactoryImpl implements
-            ItemFactory<PersistentArtifactManager> {
+    private static class PersistentArtifactManagerItemFactoryImpl implements ItemFactory<PersistentArtifactManager> {
 
-        private final Repository repository;
+        private final Repository           repository;
         private final SimplePersistFactory simplePersistFactory;
 
-        private PersistentArtifactManagerItemFactoryImpl(Repository repository, SimplePersistFactory simplePersistFactory) {
+        private PersistentArtifactManagerItemFactoryImpl(
+                                                          Repository repository, SimplePersistFactory simplePersistFactory ) {
             this.repository = repository;
             this.simplePersistFactory = simplePersistFactory;
         }
 
         public PersistentArtifactManager createNew() {
-            PersistentArtifactManagerImpl manager = new PersistentArtifactManagerImpl(
-                    repository, simplePersistFactory);
+            PersistentArtifactManagerImpl manager = new PersistentArtifactManagerImpl(repository, simplePersistFactory);
             return manager;
         }
 
@@ -78,9 +76,8 @@ public class PersistentArtifactManagerProviderImpl extends
     }
 
     public PersistentArtifactManagerProviderImpl(
-            SimplePersistFactory simplePersistFactory, Repository repository) {
-        super(new PersistentArtifactManagerItemFactoryImpl(repository,
-                simplePersistFactory));
+                                                  SimplePersistFactory simplePersistFactory, Repository repository ) {
+        super(new PersistentArtifactManagerItemFactoryImpl(repository, simplePersistFactory));
     }
 
 }

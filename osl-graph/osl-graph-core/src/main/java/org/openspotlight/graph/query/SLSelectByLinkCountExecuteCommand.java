@@ -157,7 +157,8 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
     private Set<SLWhereTypeInfo> getWhereTypeInfoSet() throws SLMetaNodeTypeNotFoundException {
         Set<SLWhereTypeInfo> set = new HashSet<SLWhereTypeInfo>();
         for (SLWhereTypeInfo whereTypeInfo : selectInfo.getWhereStatementInfo().getWhereTypeInfoList()) {
-            List<String> typeNames = SLQuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+            List<String> typeNames = SLQuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(),
+                                                                          whereTypeInfo.isSubTypes());
             for (String typeName : typeNames) {
                 SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
                 typeInfo.setTypeStatementInfo(whereTypeInfo.getTypeStatementInfo());
@@ -176,7 +177,8 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
      */
     private List<PNodeWrapper> getPNodeWrappersOfType( String name ) throws SLPersistentTreeSessionException {
         List<PNodeWrapper> pNodeWrappers = new ArrayList<PNodeWrapper>();
-        SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/contexts//*");
+        SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
+                                                                               + "/contexts//*");
         Statement rootStatement = statementBuilder.getRootStatement();
         String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
         rootStatement.condition().leftOperand(typePropName).operator(EQUAL).rightOperand(name);
@@ -257,13 +259,16 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
                     Map<String, Integer> numberOcurrencesMap = createNodeOccurencesMap(inputNodeWrappers);
                     map.put(conditionInfo, numberOcurrencesMap);
 
-                    SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/links/*//*");
+                    SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(
+                                                                                           commandDO.getTreeSession().getXPathRootPath()
+                                                                                           + "/links/*//*");
                     Statement rootStatement = statementBuilder.getRootStatement();
 
                     SLSideType side = conditionInfo.getSide();
                     String linkTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
                     String idPropName = toInternalPropertyName(side.equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_ID : SLConsts.PROPERTY_NAME_TARGET_ID);
-                    rootStatement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(conditionInfo.getLinkTypeName().hashCode());
+                    rootStatement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(
+                                                                                                             conditionInfo.getLinkTypeName().hashCode());
 
                     Statement statement = rootStatement.operator(AND).openBracket();
                     for (int j = 0; j < inputNodeWrappers.size(); j++) {

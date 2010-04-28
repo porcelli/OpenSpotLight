@@ -120,7 +120,9 @@ public class SLWhereByLinkTypeInfo {
         this.selectByLinkTypeInfo = selectByLinkTypeInfo;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -342,7 +344,9 @@ public class SLWhereByLinkTypeInfo {
                 this.opened = opened;
             }
 
-            /* (non-Javadoc)
+            /*
+             * (non-Javadoc)
+             * 
              * @see java.lang.Object#toString()
              */
             @Override
@@ -622,7 +626,9 @@ public class SLWhereByLinkTypeInfo {
                     this.typeInfo = typeInfo;
                 }
 
-                /* (non-Javadoc)
+                /*
+                 * (non-Javadoc)
+                 * 
                  * @see java.lang.Object#toString()
                  */
                 @Override
@@ -631,7 +637,8 @@ public class SLWhereByLinkTypeInfo {
                     String typeName = typeInfo.getName();
 
                     StringBuilder buffer = new StringBuilder();
-                    appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""), ' ');
+                    appendIfNotNull(buffer, conditionalOperator, conditionalOperator, (conditionalNotOperator ? " NOT " : ""),
+                                    ' ');
                     appendIfNotNull(buffer, relationalOperator, '"', typeName, "\" ");
                     appendIfNotNull(buffer, propertyName, "property \"", propertyName, "\" ");
                     appendIfNotNull(buffer, linkTypeName, "link \"", linkTypeName, "\" ");

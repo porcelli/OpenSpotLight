@@ -103,8 +103,7 @@ public class AssertionsTest {
         try {
             checkNotNull("notNullable", null); //$NON-NLS-1$
         } catch (final IllegalArgumentException e) {
-            assertThat(e.getMessage(),
-                       is("Parameter named notNullable should be not null!")); //$NON-NLS-1$
+            assertThat(e.getMessage(), is("Parameter named notNullable should be not null!")); //$NON-NLS-1$
         }
     }
 

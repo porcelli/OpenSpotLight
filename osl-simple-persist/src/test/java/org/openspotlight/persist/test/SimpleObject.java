@@ -51,7 +51,7 @@ package org.openspotlight.persist.test;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-public class SimpleObject implements SimpleNodeType , Comparable<SimpleObject>{
+public class SimpleObject implements SimpleNodeType, Comparable<SimpleObject> {
 
     private int id;
 
@@ -64,7 +64,7 @@ public class SimpleObject implements SimpleNodeType , Comparable<SimpleObject>{
         this.id = id;
     }
 
-    public int compareTo(SimpleObject o) {
-        return this.id<o.id ? -1 : (this.id==o.id ? 0 : 1);
+    public int compareTo( SimpleObject o ) {
+        return this.id < o.id ? -1 : (this.id == o.id ? 0 : 1);
     }
 }

@@ -58,8 +58,7 @@ import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 @Name( "database" )
-public class TableArtifact extends DatabaseCustomArtifact implements
-    SimpleNodeType, Serializable {
+public class TableArtifact extends DatabaseCustomArtifact implements SimpleNodeType, Serializable {
     private static final long serialVersionUID = -4527063248944852023L;
 
     private String            tableName;

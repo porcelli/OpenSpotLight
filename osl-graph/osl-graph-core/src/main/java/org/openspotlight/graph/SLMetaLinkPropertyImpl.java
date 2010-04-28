@@ -80,8 +80,7 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
      * @param pProperty the property
      */
     public SLMetaLinkPropertyImpl(
-                                   final SLMetaLinkImpl metaLink,
-                                   final SLPersistentProperty<Serializable> pProperty ) {
+                                   final SLMetaLinkImpl metaLink, final SLPersistentProperty<Serializable> pProperty ) {
         this.metaLink = metaLink;
         this.pProperty = pProperty;
         lock = pProperty.getLockObject();
@@ -115,12 +114,9 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
         synchronized (lock) {
 
             try {
-                return SLCommonSupport
-                                      .toSimplePropertyName(pProperty.getName());
+                return SLCommonSupport.toSimplePropertyName(pProperty.getName());
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta link property name.",
-                                                  e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta link property name.", e);
             }
         }
     }
@@ -132,12 +128,9 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
     public Class<? extends Serializable> getType() {
         synchronized (lock) {
             try {
-                return (Class<? extends Serializable>)Class
-                                                           .forName((String)pProperty.getValue());
+                return (Class<? extends Serializable>)Class.forName((String)pProperty.getValue());
             } catch (final Exception e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta link property type.",
-                                                  e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta link property type.", e);
             }
         }
     }
@@ -148,17 +141,15 @@ public class SLMetaLinkPropertyImpl implements SLMetaLinkProperty {
     public VisibilityLevel getVisibility() {
         try {
             if (visibility == null) {
-                final String propName = SLCommonSupport
-                                                       .toInternalPropertyName(pProperty.getName() + "." + SLConsts.PROPERTY_NAME_VISIBILITY);
+                final String propName = SLCommonSupport.toInternalPropertyName(pProperty.getName() + "."
+                                                                               + SLConsts.PROPERTY_NAME_VISIBILITY);
 
                 SLPersistentProperty<String> visibilityProperty = metaLink.getNode().getProperty(String.class, propName);
                 visibility = visibilityProperty == null ? VisibilityLevel.PUBLIC : VisibilityLevel.valueOf(visibilityProperty.getValue());
             }
             return visibility;
         } catch (SLPersistentTreeSessionException e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to retrieve meta property visibility.",
-                                              e);
+            throw new SLGraphSessionException("Error on attempt to retrieve meta property visibility.", e);
         }
     }
 }

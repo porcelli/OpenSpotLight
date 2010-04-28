@@ -82,17 +82,13 @@ public class PostgresRoutineStreamHandler implements DatabaseStreamHandler {
                                     final String catalog,
                                     final String name,
                                     final StringTemplate template,
-                                    final Connection connection )
-            throws Exception {
+                                    final Connection connection ) throws Exception {
 
-        final ResultSet parameterResultSet = connection.getMetaData()
-                                                       .getProcedureColumns(catalog, schema, name, "*");
+        final ResultSet parameterResultSet = connection.getMetaData().getProcedureColumns(catalog, schema, name, "*");
         try {
             while (parameterResultSet.next()) {
-                final String column = parameterResultSet
-                                                        .getString("COLUMN_NAME");
-                final String typeName = parameterResultSet
-                                                          .getString("TYPE_NAME");
+                final String column = parameterResultSet.getString("COLUMN_NAME");
+                final String typeName = parameterResultSet.getString("TYPE_NAME");
                 final int columnType = parameterResultSet.getInt("COLUMN_TYPE");
                 String inOutType;
                 String returnTypeString;
@@ -115,8 +111,7 @@ public class PostgresRoutineStreamHandler implements DatabaseStreamHandler {
                         inOutType = "' '";
                         break;
                 }
-                template.setAttribute("parameter.{column,type,inOut}", column,
-                                      typeName, inOutType);
+                template.setAttribute("parameter.{column,type,inOut}", column, typeName, inOutType);
             }
         } finally {
             if (parameterResultSet != null) {

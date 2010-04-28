@@ -50,8 +50,7 @@ package org.openspotlight.persist.lazy.test;
 
 import org.openspotlight.persist.internal.StreamPropertyWithParent;
 
-public class SerializablePojoProperty implements
-    StreamPropertyWithParent<ClassWithLazyProperty> {
+public class SerializablePojoProperty implements StreamPropertyWithParent<ClassWithLazyProperty> {
 
     /**
 	 * 

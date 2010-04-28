@@ -57,15 +57,11 @@ public class CompleteSourceLineInfo extends SimpleSourceLineInfo {
     private double whitespacePercentage;
 
     public void calculate() {
-        final double commentDensity = getMeaningfulCommentLines().doubleValue()
-                                      / getLogicalLinesOfCode().doubleValue() * 100;
+        final double commentDensity = getMeaningfulCommentLines().doubleValue() / getLogicalLinesOfCode().doubleValue() * 100;
         setCommentDensity(commentDensity);
-        final double codePercentage = getLogicalLinesOfCode().doubleValue()
-                                      / getLogicalLines().doubleValue() * 100;
+        final double codePercentage = getLogicalLinesOfCode().doubleValue() / getLogicalLines().doubleValue() * 100;
         setCodePercentage(codePercentage);
-        final double whitespacePercentage = getLogicalLinesOfWhitespace()
-                                                                         .doubleValue()
-                                            / getLogicalLines().doubleValue() * 100;
+        final double whitespacePercentage = getLogicalLinesOfWhitespace().doubleValue() / getLogicalLines().doubleValue() * 100;
         setWhitespacePercentage(whitespacePercentage);
     }
 

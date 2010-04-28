@@ -83,7 +83,9 @@ public class BundleSource implements SimpleNodeType, Serializable {
     /** The hash code. */
     private volatile transient int        hashCode;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals( final Object o ) {
@@ -134,7 +136,9 @@ public class BundleSource implements SimpleNodeType, Serializable {
         return relative;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {

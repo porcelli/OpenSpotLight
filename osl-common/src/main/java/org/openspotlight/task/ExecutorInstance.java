@@ -68,8 +68,7 @@ public enum ExecutorInstance {
     public <T> List<Future<T>> invokeAll( Collection<Callable<T>> itemsToExecute ) {
         try {
             int threads = 2 * Runtime.getRuntime().availableProcessors();
-            GossipExecutor executor = GossipExecutor.newFixedThreadPool(
-                                                                        threads, "temporary-pool-" + UUID.randomUUID().toString());
+            GossipExecutor executor = GossipExecutor.newFixedThreadPool(threads, "temporary-pool-" + UUID.randomUUID().toString());
             List<Future<T>> future;
             future = executor.invokeAll(itemsToExecute);
             executor.shutdown();

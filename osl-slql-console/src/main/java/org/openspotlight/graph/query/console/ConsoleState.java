@@ -68,7 +68,9 @@ public class ConsoleState {
     /** The StringBuilder that holds the buffer. */
     private StringBuilder  sb                   = new StringBuilder();
 
-    /** The additional properties that should be displayed during query output result. */
+    /**
+     * The additional properties that should be displayed during query output result.
+     */
     private Set<String>    additionalProperties = new HashSet<String>();
 
     /** The active command. */

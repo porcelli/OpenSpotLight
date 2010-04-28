@@ -57,17 +57,17 @@ import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.support.SimplePersistFactory;
 
-public class DefaultExecutionContextFactory implements ExecutionContextFactory,
-        DisposingListener<DefaultExecutionContext> {
+public class DefaultExecutionContextFactory implements ExecutionContextFactory, DisposingListener<DefaultExecutionContext> {
 
-    private final SimplePersistFactory simplePersistFactory;
-    private final DetailedLoggerProvider detailedLoggerProvider;
-
+    private final SimplePersistFactory                          simplePersistFactory;
+    private final DetailedLoggerProvider                        detailedLoggerProvider;
 
     private final CopyOnWriteArrayList<DefaultExecutionContext> openedContexts = new CopyOnWriteArrayList<DefaultExecutionContext>();
 
     @Inject
-    public DefaultExecutionContextFactory(DetailedLoggerProvider detailedLoggerProvider, SimplePersistFactory simplePersistFactory) {
+    public DefaultExecutionContextFactory(
+                                           DetailedLoggerProvider detailedLoggerProvider,
+                                           SimplePersistFactory simplePersistFactory ) {
         this.detailedLoggerProvider = detailedLoggerProvider;
         this.simplePersistFactory = simplePersistFactory;
     }
@@ -82,8 +82,8 @@ public class DefaultExecutionContextFactory implements ExecutionContextFactory,
                                                     final String password,
                                                     final JcrConnectionDescriptor descriptor,
                                                     final Repository repository ) {
-        final DefaultExecutionContext newContext = new DefaultExecutionContext(
-                                                                               username, password, descriptor, this, repository, simplePersistFactory, detailedLoggerProvider);
+        final DefaultExecutionContext newContext = new DefaultExecutionContext(username, password, descriptor, this, repository,
+                                                                               simplePersistFactory, detailedLoggerProvider);
         openedContexts.add(newContext);
         return newContext;
     }

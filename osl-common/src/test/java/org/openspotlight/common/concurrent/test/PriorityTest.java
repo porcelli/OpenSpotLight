@@ -72,8 +72,7 @@ public class PriorityTest {
 
         assertThat(createPriority(2).compareTo(createPriority(1, 1)), is(1));
         assertThat(createPriority(1, 1).compareTo(createPriority(2)), is(-1));
-        assertThat(createPriority(1, 1, 1).compareTo(createPriority(1, 1, 1)),
-                   is(0));
+        assertThat(createPriority(1, 1, 1).compareTo(createPriority(1, 1, 1)), is(0));
 
         assertThat(createPriority(1, 2).compareTo(createPriority(1, 1)), is(1));
         assertThat(createPriority(1, 1).compareTo(createPriority(1, 2)), is(-1));
@@ -95,8 +94,7 @@ public class PriorityTest {
 
         assertThat(createPriority(2).equals(createPriority(1, 1)), is(false));
         assertThat(createPriority(1, 1).equals(createPriority(2)), is(false));
-        assertThat(createPriority(1, 1, 1).equals(createPriority(1, 1, 1)),
-                   is(true));
+        assertThat(createPriority(1, 1, 1).equals(createPriority(1, 1, 1)), is(true));
 
         assertThat(createPriority(1, 2).equals(createPriority(1, 1)), is(false));
         assertThat(createPriority(1, 1).equals(createPriority(1, 2)), is(false));
@@ -104,42 +102,24 @@ public class PriorityTest {
 
     @Test
     public void shouldDoHashCode() throws Exception {
-        assertThat(
-                   createPriority(2).hashCode() == createPriority(1).hashCode(),
-                   is(false));
-        assertThat(
-                   createPriority(1).hashCode() == createPriority(2).hashCode(),
-                   is(false));
-        assertThat(
-                   createPriority(1).hashCode() == createPriority(1).hashCode(),
-                   is(true));
+        assertThat(createPriority(2).hashCode() == createPriority(1).hashCode(), is(false));
+        assertThat(createPriority(1).hashCode() == createPriority(2).hashCode(), is(false));
+        assertThat(createPriority(1).hashCode() == createPriority(1).hashCode(), is(true));
 
-        assertThat(createPriority(2, 1).hashCode() == createPriority(1)
-                                                                       .hashCode(), is(false));
-        assertThat(createPriority(1).hashCode() == createPriority(2, 1)
-                                                                       .hashCode(), is(false));
-        assertThat(createPriority(1, 1).hashCode() == createPriority(1, 1)
-                                                                          .hashCode(), is(true));
+        assertThat(createPriority(2, 1).hashCode() == createPriority(1).hashCode(), is(false));
+        assertThat(createPriority(1).hashCode() == createPriority(2, 1).hashCode(), is(false));
+        assertThat(createPriority(1, 1).hashCode() == createPriority(1, 1).hashCode(), is(true));
 
-        assertThat(createPriority(2, 1).hashCode() == createPriority(1, 1)
-                                                                          .hashCode(), is(false));
-        assertThat(createPriority(1, 1).hashCode() == createPriority(2, 1)
-                                                                          .hashCode(), is(false));
-        assertThat(createPriority(1, 1).hashCode() == createPriority(1, 1)
-                                                                          .hashCode(), is(true));
+        assertThat(createPriority(2, 1).hashCode() == createPriority(1, 1).hashCode(), is(false));
+        assertThat(createPriority(1, 1).hashCode() == createPriority(2, 1).hashCode(), is(false));
+        assertThat(createPriority(1, 1).hashCode() == createPriority(1, 1).hashCode(), is(true));
 
-        assertThat(createPriority(2).hashCode() == createPriority(1, 1)
-                                                                       .hashCode(), is(false));
-        assertThat(createPriority(1, 1).hashCode() == createPriority(2)
-                                                                       .hashCode(), is(false));
-        assertThat(
-                   createPriority(1, 1, 1).hashCode() == createPriority(1, 1, 1)
-                                                                                .hashCode(), is(true));
+        assertThat(createPriority(2).hashCode() == createPriority(1, 1).hashCode(), is(false));
+        assertThat(createPriority(1, 1).hashCode() == createPriority(2).hashCode(), is(false));
+        assertThat(createPriority(1, 1, 1).hashCode() == createPriority(1, 1, 1).hashCode(), is(true));
 
-        assertThat(createPriority(1, 2).hashCode() == createPriority(1, 1)
-                                                                          .hashCode(), is(false));
-        assertThat(createPriority(1, 1).hashCode() == createPriority(1, 2)
-                                                                          .hashCode(), is(false));
+        assertThat(createPriority(1, 2).hashCode() == createPriority(1, 1).hashCode(), is(false));
+        assertThat(createPriority(1, 1).hashCode() == createPriority(1, 2).hashCode(), is(false));
     }
 
     @Test( expected = IllegalStateException.class )

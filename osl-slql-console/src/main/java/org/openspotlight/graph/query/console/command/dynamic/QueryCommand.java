@@ -101,7 +101,7 @@ public class QueryCommand implements DynamicCommand {
             } else {
                 lastQuery = state.getInput();
             }
-            //execute query here
+            // execute query here
             executeQuery(reader, out, state, lastQuery, outputFileName);
             state.setLastQuery(lastQuery);
             state.clearBuffer();
@@ -174,8 +174,9 @@ public class QueryCommand implements DynamicCommand {
     protected String generateOutput( Collection<SLNode> nodes,
                                      Collection<String> additionalProperties ) {
         StringBuilder buffer = new StringBuilder();
-        //Header
-        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1), "\n");
+        // Header
+        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1),
+                                 "\n");
         StringBuilderUtil.append(buffer, "|", StringUtils.center("type name", COLUMN_SIZE + 2), "|");
         StringBuilderUtil.append(buffer, StringUtils.center("name", COLUMN_SIZE + 2), "|");
         StringBuilderUtil.append(buffer, StringUtils.center("parent name", COLUMN_SIZE + 2), "|");
@@ -183,7 +184,8 @@ public class QueryCommand implements DynamicCommand {
             StringBuilderUtil.append(buffer, StringUtils.center(property, COLUMN_SIZE + 2), "|");
         }
         StringBuilderUtil.append(buffer, "\n");
-        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1), "\n");
+        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1),
+                                 "\n");
         if (!nodes.isEmpty()) {
             for (SLNode node : nodes) {
                 List<String> output = new LinkedList<String>();

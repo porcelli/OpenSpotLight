@@ -79,8 +79,7 @@ public abstract class AbstractSLQuery implements LockContainer {
      * @param treeSession the tree session
      */
     public AbstractSLQuery(
-                            final SLGraphSession session,
-                            final SLPersistentTreeSession treeSession ) {
+                            final SLGraphSession session, final SLPersistentTreeSession treeSession ) {
         lock = session.getLockObject();
         this.session = session;
         this.treeSession = treeSession;
@@ -94,11 +93,9 @@ public abstract class AbstractSLQuery implements LockContainer {
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute() throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+    public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute((String[])null, SortMode.NOT_SORTED, false,
-                                null, null);
+            return this.execute((String[])null, SortMode.NOT_SORTED, false, null, null);
         }
     }
 
@@ -112,11 +109,9 @@ public abstract class AbstractSLQuery implements LockContainer {
      * @throws SLQueryException the SL query exception
      */
     public SLQueryResult execute( final Collection<SLNode> inputNodes )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute(SLQuerySupport.getNodeIDs(inputNodes),
-                                SortMode.NOT_SORTED, false, null, null);
+            return this.execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, null, null);
         }
     }
 
@@ -134,11 +129,9 @@ public abstract class AbstractSLQuery implements LockContainer {
     public SLQueryResult execute( final Collection<SLNode> inputNodes,
                                   final Integer limit,
                                   final Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute(SLQuerySupport.getNodeIDs(inputNodes),
-                                SortMode.NOT_SORTED, false, limit, offset);
+            return this.execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, limit, offset);
         }
     }
 
@@ -156,11 +149,9 @@ public abstract class AbstractSLQuery implements LockContainer {
     public SLQueryResult execute( final Collection<SLNode> inputNodes,
                                   final SortMode sortMode,
                                   final boolean showSLQL )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute(SLQuerySupport.getNodeIDs(inputNodes),
-                                SortMode.NOT_SORTED, false, null, null);
+            return this.execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, null, null);
         }
     }
 
@@ -182,11 +173,9 @@ public abstract class AbstractSLQuery implements LockContainer {
                                   final boolean showSLQL,
                                   final Integer limit,
                                   final Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute(SLQuerySupport.getNodeIDs(inputNodes),
-                                SortMode.NOT_SORTED, false, limit, offset);
+            return this.execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, limit, offset);
         }
     }
 
@@ -202,11 +191,9 @@ public abstract class AbstractSLQuery implements LockContainer {
      */
     public SLQueryResult execute( final Integer limit,
                                   final Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute((String[])null, SortMode.NOT_SORTED, false,
-                                limit, offset);
+            return this.execute((String[])null, SortMode.NOT_SORTED, false, limit, offset);
         }
     }
 
@@ -222,11 +209,9 @@ public abstract class AbstractSLQuery implements LockContainer {
      */
     public SLQueryResult execute( final SortMode sortMode,
                                   final boolean showSLQL )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this
-                       .execute((String[])null, sortMode, showSLQL, null, null);
+            return this.execute((String[])null, sortMode, showSLQL, null, null);
         }
     }
 
@@ -246,11 +231,9 @@ public abstract class AbstractSLQuery implements LockContainer {
                                   final boolean showSLQL,
                                   final Integer limit,
                                   final Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute((String[])null, sortMode, showSLQL, limit,
-                                offset);
+            return this.execute((String[])null, sortMode, showSLQL, limit, offset);
         }
     }
 
@@ -264,11 +247,9 @@ public abstract class AbstractSLQuery implements LockContainer {
      * @throws SLQueryException the SL query exception
      */
     public SLQueryResult execute( final String[] inputNodesIDs )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute(inputNodesIDs, SortMode.NOT_SORTED, false,
-                                null, null);
+            return this.execute(inputNodesIDs, SortMode.NOT_SORTED, false, null, null);
         }
     }
 
@@ -286,11 +267,9 @@ public abstract class AbstractSLQuery implements LockContainer {
     public SLQueryResult execute( final String[] inputNodesIDs,
                                   final Integer limit,
                                   final Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute(inputNodesIDs, SortMode.NOT_SORTED, false,
-                                limit, offset);
+            return this.execute(inputNodesIDs, SortMode.NOT_SORTED, false, limit, offset);
         }
     }
 
@@ -308,11 +287,9 @@ public abstract class AbstractSLQuery implements LockContainer {
     public SLQueryResult execute( final String[] inputNodesIDs,
                                   final SortMode sortMode,
                                   final boolean showSLQL )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException {
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
-            return this.execute(inputNodesIDs, SortMode.NOT_SORTED, false,
-                                null, null);
+            return this.execute(inputNodesIDs, SortMode.NOT_SORTED, false, null, null);
         }
     }
 
@@ -321,7 +298,6 @@ public abstract class AbstractSLQuery implements LockContainer {
                                            boolean showSLQL,
                                            Integer limit,
                                            Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
 }

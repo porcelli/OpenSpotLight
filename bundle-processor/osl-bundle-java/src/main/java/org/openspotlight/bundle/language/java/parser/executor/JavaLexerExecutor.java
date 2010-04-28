@@ -63,11 +63,11 @@ public final class JavaLexerExecutor {
 
     private final SourceLineInfoAggregator      sourceLineAggregator;
 
-    public JavaLexerExecutor(SimplePersistFactory simplePersistFactory,
-                              final ArtifactWithSyntaxInformation javaArtifact,
-                              final SourceLineInfoAggregator sourceLineAggregator) {
+    public JavaLexerExecutor(
+                              SimplePersistFactory simplePersistFactory, final ArtifactWithSyntaxInformation javaArtifact,
+                              final SourceLineInfoAggregator sourceLineAggregator ) {
         this.javaArtifact = javaArtifact;
-        syntaxAggregator = new SyntaxInformationAggregator(simplePersistFactory,this.javaArtifact);
+        syntaxAggregator = new SyntaxInformationAggregator(simplePersistFactory, this.javaArtifact);
         this.sourceLineAggregator = sourceLineAggregator;
     }
 

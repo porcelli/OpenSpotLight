@@ -74,8 +74,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLTransientObjectListener extends
-        SLAbstractGraphSessionEventListener {
+public class SLTransientObjectListener extends SLAbstractGraphSessionEventListener {
 
     /** The transient links. */
     private final NeedsSyncronizationSet<SLLink> transientLinks;
@@ -91,10 +90,8 @@ public class SLTransientObjectListener extends
     public SLTransientObjectListener(
                                       final LockContainer parent ) {
         super(parent);
-        transientLinks = LockedCollections.createSetWithLock(parent,
-                                                             new HashSet<SLLink>());
-        transientNodes = LockedCollections.createSetWithLock(parent,
-                                                             new HashSet<SLNode>());
+        transientLinks = LockedCollections.createSetWithLock(parent, new HashSet<SLLink>());
+        transientNodes = LockedCollections.createSetWithLock(parent, new HashSet<SLNode>());
     }
 
     /**
@@ -106,18 +103,15 @@ public class SLTransientObjectListener extends
             for (final SLLink link : transientLinks) {
                 link.remove();
                 if (logger.isDebugEnabled()) {
-                    logger.debug(" about to remove "
-                                 + Arrays.toString(link.getClass().getInterfaces())
-                                 + " " + link.getID());
+                    logger.debug(" about to remove " + Arrays.toString(link.getClass().getInterfaces()) + " " + link.getID());
                 }
             }
             transientLinks.clear();
             for (final SLNode node : transientNodes) {
                 node.remove();
                 if (logger.isDebugEnabled()) {
-                    logger.debug(" about to remove "
-                                 + Arrays.toString(node.getClass().getInterfaces())
-                                 + " " + node.getName() + " " + node.getID());
+                    logger.debug(" about to remove " + Arrays.toString(node.getClass().getInterfaces()) + " " + node.getName()
+                                 + " " + node.getID());
                 }
             }
             transientNodes.clear();
@@ -133,8 +127,7 @@ public class SLTransientObjectListener extends
     @SuppressWarnings( "unchecked" )
     private boolean hasTransientAnnotation( final Object object ) {
         synchronized (lock) {
-            return object.getClass().getInterfaces()[0]
-                                                       .getAnnotation(SLTransient.class) != null;
+            return object.getClass().getInterfaces()[0].getAnnotation(SLTransient.class) != null;
         }
     }
 

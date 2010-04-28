@@ -253,7 +253,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
                  SLSelectFacade selectFacade, SLSelectByNodeTypeInfo selectInfo ) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
-            //this.orderBy = new SLOrderByStatementImpl();
+            // this.orderBy = new SLOrderByStatementImpl();
         }
 
         /**

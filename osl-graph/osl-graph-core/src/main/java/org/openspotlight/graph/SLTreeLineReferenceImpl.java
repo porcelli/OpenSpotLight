@@ -72,19 +72,21 @@ public class SLTreeLineReferenceImpl implements SLTreeLineReference {
      * @param lineReferences the line references
      */
     public SLTreeLineReferenceImpl(
-                                    String id,
-                                    Collection<SLLineReference> lineReferences ) {
+                                    String id, Collection<SLLineReference> lineReferences ) {
 
         if (lineReferences != null && lineReferences.size() > 0) {
             this.id = id;
             for (SLLineReference lineReference : lineReferences) {
                 String artifactKey = lineReference.getArtifactId() + "|" + lineReference.getArtifactVersion();
                 if (!artifacts.containsKey(artifactKey)) {
-                    SLArtifactLineReference artifactLineRef = new SLArtifactLineReferenceImpl(lineReference.getArtifactVersion(), lineReference.getArtifactId());
+                    SLArtifactLineReference artifactLineRef = new SLArtifactLineReferenceImpl(lineReference.getArtifactVersion(),
+                                                                                              lineReference.getArtifactId());
                     artifacts.put(artifactKey, artifactLineRef);
                 }
                 SLArtifactLineReference artifactLineRef = artifacts.get(artifactKey);
-                artifactLineRef.addStatement(lineReference.getStatement(), lineReference.getStartLine(), lineReference.getEndLine(), lineReference.getStartColumn(), lineReference.getEndColumn());
+                artifactLineRef.addStatement(lineReference.getStatement(), lineReference.getStartLine(),
+                                             lineReference.getEndLine(), lineReference.getStartColumn(),
+                                             lineReference.getEndColumn());
             }
         }
     }

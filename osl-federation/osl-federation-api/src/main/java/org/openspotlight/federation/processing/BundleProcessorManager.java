@@ -65,8 +65,7 @@ public interface BundleProcessorManager {
                                                  final JcrConnectionDescriptor descriptor,
                                                  ExecutionContextFactory contextFactory,
                                                  final GlobalSettings settings,
-                                                 final Group... groups )
-            throws Exception;
+                                                 final Group... groups ) throws Exception;
 
     public void executeBundlesInBackground( final String username,
                                             final String password,

@@ -68,8 +68,7 @@ public class SerializableBean implements Serializable {
             return false;
         }
         final SerializableBean that = (SerializableBean)o;
-        return Equals.eachEquality(testString, that.testString)
-                && Equals.eachEquality(testBuffer, that.testBuffer);
+        return Equals.eachEquality(testString, that.testString) && Equals.eachEquality(testBuffer, that.testBuffer);
     }
 
 }

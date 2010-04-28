@@ -65,26 +65,25 @@ import org.openspotlight.remote.annotation.DisposeMethod;
  */
 public interface SLLink extends Comparable<SLLink>, LockContainer {
     /** The Constant SIDE_SOURCE. */
-    public static final int SIDE_SOURCE            = 4;                                                    // 100
+    public static final int SIDE_SOURCE            = 4;                                                                         // 100
 
     /** The Constant SIDE_TARGET. */
-    public static final int SIDE_TARGET            = 2;                                                    // 010
+    public static final int SIDE_TARGET            = 2;                                                                         // 010
 
     /** The Constant SIDE_BOTH. */
-    public static final int SIDE_BOTH              = SLLink.SIDE_SOURCE | SLLink.SIDE_TARGET;              // 001
+    public static final int SIDE_BOTH              = SLLink.SIDE_SOURCE | SLLink.SIDE_TARGET;                                   // 001
 
     /** The Constant DIRECTION_UNI. */
-    public static final int DIRECTION_UNI          = 4;                                                    // 100
+    public static final int DIRECTION_UNI          = 4;                                                                         // 100
 
     /** The Constant DIRECTION_UNI_REVERSAL. */
-    public static final int DIRECTION_UNI_REVERSAL = 2;                                                    // 010
+    public static final int DIRECTION_UNI_REVERSAL = 2;                                                                         // 010
 
     /** The Constant DIRECTION_BI. */
-    public static final int DIRECTION_BI           = 1;                                                    // 001
+    public static final int DIRECTION_BI           = 1;                                                                         // 001
 
     /** The Constant DIRECTION_ANY. */
-    public static final int DIRECTION_ANY          = SLLink.DIRECTION_UNI
-                                                     | SLLink.DIRECTION_UNI_REVERSAL | SLLink.DIRECTION_BI;
+    public static final int DIRECTION_ANY          = SLLink.DIRECTION_UNI | SLLink.DIRECTION_UNI_REVERSAL | SLLink.DIRECTION_BI;
 
     /**
      * Gets the iD.
@@ -131,11 +130,9 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
      * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL link property not found exception
      * @throws org.openspotlight.graph.exception.SLPropertyTypeInvalidException the SL invalid link property type exception
      */
-    public <V extends Serializable> SLLinkProperty<V> getProperty(
-                                                                   Class<V> clazz,
+    public <V extends Serializable> SLLinkProperty<V> getProperty( Class<V> clazz,
                                                                    String name )
-            throws SLPropertyNotFoundException,
-            SLPropertyTypeInvalidException;
+        throws SLPropertyNotFoundException, SLPropertyTypeInvalidException;
 
     /**
      * Gets the property.
@@ -147,11 +144,10 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
      * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL link property not found exception
      * @throws org.openspotlight.graph.exception.SLPropertyTypeInvalidException the SL invalid link property type exception
      */
-    public <V extends Serializable> SLLinkProperty<V> getProperty(
-                                                                   Class<V> clazz,
+    public <V extends Serializable> SLLinkProperty<V> getProperty( Class<V> clazz,
                                                                    String name,
                                                                    Collator collator )
-            throws SLPropertyNotFoundException, SLPropertyTypeInvalidException;
+        throws SLPropertyNotFoundException, SLPropertyTypeInvalidException;
 
     /**
      * Gets the property value as string.
@@ -160,8 +156,7 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
      * @return the property value as string
      * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL link property not found exception
      */
-    public String getPropertyValueAsString( String name )
-            throws SLPropertyNotFoundException;
+    public String getPropertyValueAsString( String name ) throws SLPropertyNotFoundException;
 
     /**
      * Gets the session.
@@ -213,13 +208,11 @@ public interface SLLink extends Comparable<SLLink>, LockContainer {
      * @return the sL link property< v>
      */
     @Deprecated
-    public <V extends Serializable> SLLinkProperty<V> setProperty(
-                                                                   Class<V> clazz,
+    public <V extends Serializable> SLLinkProperty<V> setProperty( Class<V> clazz,
                                                                    String name,
                                                                    V value );
 
-    public <V extends Serializable> SLLinkProperty<V> setProperty(
-                                                                   Class<V> clazz,
+    public <V extends Serializable> SLLinkProperty<V> setProperty( Class<V> clazz,
                                                                    VisibilityLevel visibility,
                                                                    String name,
                                                                    V value );

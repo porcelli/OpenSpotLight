@@ -67,7 +67,6 @@ import java.util.Map;
  * @author feu
  * @param <E>
  */
-public interface NeedsSyncronizationMap<K, V> extends Map<K, V>,
-        LockContainer {
+public interface NeedsSyncronizationMap<K, V> extends Map<K, V>, LockContainer {
 
 }

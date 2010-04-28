@@ -57,14 +57,11 @@ import javax.jcr.SimpleCredentials;
 public enum DefaultJcrDescriptor implements JcrConnectionDescriptor {
 
     /** The TEM p_ descriptor. */
-    TEMP_DESCRIPTOR("TEMP_DIR/osl-temp-repository", new SimpleCredentials(
-                                                                          "username", "password".toCharArray()),
-                    JcrType.JACKRABBIT,
-                    "temp-repository.xml", true),
+    TEMP_DESCRIPTOR("TEMP_DIR/osl-temp-repository", new SimpleCredentials("username", "password".toCharArray()),
+                    JcrType.JACKRABBIT, "temp-repository.xml", true),
 
     /** The DEFAUL t_ descriptor. */
-    DEFAULT_DESCRIPTOR("/osl/repository", new SimpleCredentials("username",
-                                                                "password".toCharArray()), JcrType.JACKRABBIT,
+    DEFAULT_DESCRIPTOR("/osl/repository", new SimpleCredentials("username", "password".toCharArray()), JcrType.JACKRABBIT,
                        "postgres-repository.xml", false);
 
     /** The configuration directory. */
@@ -90,8 +87,7 @@ public enum DefaultJcrDescriptor implements JcrConnectionDescriptor {
      * @param xmlClasspathLocation the xml classpath location
      */
     private DefaultJcrDescriptor(
-                                  final String configurationDirectory,
-                                  final Credentials credentials, final JcrType jcrType,
+                                  final String configurationDirectory, final Credentials credentials, final JcrType jcrType,
                                   final String xmlClasspathLocation, final boolean temporary ) {
         String newConfigurationDir = configurationDirectory;
         if (configurationDirectory.contains("TEMP_DIR")) {
@@ -100,8 +96,7 @@ public enum DefaultJcrDescriptor implements JcrConnectionDescriptor {
             if (tempDir.endsWith("/")) {
                 tempDir = tempDir.substring(0, tempDir.length() - 1);
             }
-            newConfigurationDir = configurationDirectory.replaceAll("TEMP_DIR",
-                                                                    tempDir);
+            newConfigurationDir = configurationDirectory.replaceAll("TEMP_DIR", tempDir);
         }
 
         this.configurationDirectory = newConfigurationDir;

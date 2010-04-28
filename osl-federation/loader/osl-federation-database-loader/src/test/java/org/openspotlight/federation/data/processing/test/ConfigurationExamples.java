@@ -64,8 +64,7 @@ import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 @SuppressWarnings( "all" )
 public class ConfigurationExamples {
 
-    private static Repository createDatabaseRepository(
-                                                        final String repositoryName,
+    private static Repository createDatabaseRepository( final String repositoryName,
                                                         final String groupName,
                                                         final String sourceName,
                                                         final String user,
@@ -114,44 +113,34 @@ public class ConfigurationExamples {
     }
 
     public static Repository createDb2Configuration() {
-        return createDatabaseRepository("db2 Repository", "db2 Group",
-                                        "db2 Connection", "db2admin", "db2admin", DatabaseType.DB2,
-                                        "jdbc:db2://localhost:50000/SAMPLE",
-                                        "com.ibm.db2.jcc.DB2Driver");
+        return createDatabaseRepository("db2 Repository", "db2 Group", "db2 Connection", "db2admin", "db2admin",
+                                        DatabaseType.DB2, "jdbc:db2://localhost:50000/SAMPLE", "com.ibm.db2.jcc.DB2Driver");
     }
 
     public static Repository createH2DbConfiguration( final String dirName ) {
-        return createDatabaseRepository("H2 Repository", "h2 Group",
-                                        "H2 Connection", "sa", null, DatabaseType.H2,
-                                        "jdbc:h2:./target/test-data/" + dirName + "/h2/db",
-                                        "org.h2.Driver");
+        return createDatabaseRepository("H2 Repository", "h2 Group", "H2 Connection", "sa", null, DatabaseType.H2,
+                                        "jdbc:h2:./target/test-data/" + dirName + "/h2/db", "org.h2.Driver");
     }
 
     public static Repository createMySqlDbConfiguration() {
-        return createDatabaseRepository("mysql Repository", "mysql Group",
-                                        "mysql Connection", "root", null, DatabaseType.MY_SQL,
+        return createDatabaseRepository("mysql Repository", "mysql Group", "mysql Connection", "root", null, DatabaseType.MY_SQL,
                                         "jdbc:mysql://localhost:3306/test", "com.mysql.jdbc.Driver");
     }
 
     public static Repository createOracleOciDbConfiguration() {
-        return createDatabaseRepository("oracle Repository", "oracle Group",
-                                        "oracle Connection", "HR", "pass", DatabaseType.ORACLE,
-                                        "jdbc:oracle:oci8:@orcl", "oracle.jdbc.driver.OracleDriver");
+        return createDatabaseRepository("oracle Repository", "oracle Group", "oracle Connection", "HR", "pass",
+                                        DatabaseType.ORACLE, "jdbc:oracle:oci8:@orcl", "oracle.jdbc.driver.OracleDriver");
     }
 
     public static Repository createPostgresqlConfiguration() {
-        return createDatabaseRepository("postgresql Repository",
-                                        "postgresql Group", "postgresql Connection", "postgres",
-                                        "postgres", DatabaseType.POSTGRES,
-                                        "jdbc:postgresql://localhost:5432/osl?charSet=UTF8",
+        return createDatabaseRepository("postgresql Repository", "postgresql Group", "postgresql Connection", "postgres",
+                                        "postgres", DatabaseType.POSTGRES, "jdbc:postgresql://localhost:5432/osl?charSet=UTF8",
                                         "org.postgresql.Driver");
     }
 
     public static Repository createSqlServerDbConfiguration() {
-        return createDatabaseRepository("sqlserver Repository",
-                                        "sqlserver Group", "sqlserver Connection", "sa", null,
-                                        DatabaseType.SQL_SERVER,
-                                        "jdbc:jtds:sqlserver://localhost:49385",
+        return createDatabaseRepository("sqlserver Repository", "sqlserver Group", "sqlserver Connection", "sa", null,
+                                        DatabaseType.SQL_SERVER, "jdbc:jtds:sqlserver://localhost:49385",
                                         "net.sourceforge.jtds.jdbc.Driver");
     }
 

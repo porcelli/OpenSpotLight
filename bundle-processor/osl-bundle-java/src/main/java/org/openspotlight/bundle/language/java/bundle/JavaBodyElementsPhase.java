@@ -62,8 +62,7 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 
-public class JavaBodyElementsPhase implements
-        BundleProcessorArtifactPhase<StringArtifact> {
+public class JavaBodyElementsPhase implements BundleProcessorArtifactPhase<StringArtifact> {
 
     public void beforeProcessArtifact( final StringArtifact artifact,
                                        final CurrentProcessorContext currentContext,
@@ -85,16 +84,15 @@ public class JavaBodyElementsPhase implements
     public LastProcessStatus processArtifact( final StringArtifact artifact,
                                               final CurrentProcessorContext currentContext,
                                               final ExecutionContext context ) throws Exception {
-        final JavaTransientDto dto = (JavaTransientDto)artifact
-                                                               .getTransientMap().get("DTO-PublicElementsTree");
+        final JavaTransientDto dto = (JavaTransientDto)artifact.getTransientMap().get("DTO-PublicElementsTree");
         final JavaExecutorSupport support = dto.support;
         final CommonTreeNodeStream stream = dto.treeNodes;
         @SuppressWarnings( "unchecked" )
-        final Set<String> contexts = (Set<String>)currentContext
-                                                                .getTransientProperties().get(JavaConstants.USING_CONTEXTS);
+        final Set<String> contexts = (Set<String>)currentContext.getTransientProperties().get(JavaConstants.USING_CONTEXTS);
         stream.reset();
         final JavaBodyElements elements = new JavaBodyElements(stream);
-        elements.setExecutor(new JavaBodyElementsExecutor(support, contexts, new ParsingSupport(context.getSimplePersistFactory())));
+        elements.setExecutor(new JavaBodyElementsExecutor(support, contexts,
+                                                          new ParsingSupport(context.getSimplePersistFactory())));
         elements.compilationUnit();
         return LastProcessStatus.PROCESSED;
     }

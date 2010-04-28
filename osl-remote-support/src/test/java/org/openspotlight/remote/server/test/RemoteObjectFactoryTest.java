@@ -342,5 +342,6 @@ public class RemoteObjectFactoryTest {
 
     }
 
-    //FIXME test collections with null return and so on. Needs to return null on remote and see if it works
+    // FIXME test collections with null return and so on. Needs to return null
+    // on remote and see if it works
 }

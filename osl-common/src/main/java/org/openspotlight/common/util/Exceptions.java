@@ -61,8 +61,7 @@ public class Exceptions {
     /**
      * internal sl4j logger.
      */
-    private static final Logger logger = LoggerFactory
-                                                      .getLogger(Exceptions.class);
+    private static final Logger logger = LoggerFactory.getLogger(Exceptions.class);
 
     /**
      * Just catch and log the exception.
@@ -160,8 +159,7 @@ public class Exceptions {
      * @return a new exception wich type is the same as passed on parameter
      */
     @SuppressWarnings( "unchecked" )
-    public static <E extends Exception> E logAndReturnNew(
-                                                           final Exception baseException,
+    public static <E extends Exception> E logAndReturnNew( final Exception baseException,
                                                            final Class<E> newExceptionClass ) {
         logger.error(baseException.getMessage(), baseException);
         if (baseException.getClass().equals(newExceptionClass)) {
@@ -169,8 +167,7 @@ public class Exceptions {
         }
         E newException;
         try {
-            newException = newExceptionClass.getDeclaredConstructor(
-                                                                    Throwable.class).newInstance(baseException);
+            newException = newExceptionClass.getDeclaredConstructor(Throwable.class).newInstance(baseException);
         } catch (final Exception e) {
             logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
             throw new RuntimeException(e);
@@ -201,8 +198,7 @@ public class Exceptions {
         logger.error(message, baseException);
         E newException;
         try {
-            newException = newExceptionClass.getDeclaredConstructor(
-                                                                    String.class, Throwable.class).newInstance(message,
+            newException = newExceptionClass.getDeclaredConstructor(String.class, Throwable.class).newInstance(message,
                                                                                                                baseException);
         } catch (final Exception e) {
             logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
@@ -226,8 +222,7 @@ public class Exceptions {
      * @param exception
      * @throws E
      */
-    public static <E extends Throwable> void logAndThrow( final E exception )
-            throws E {
+    public static <E extends Throwable> void logAndThrow( final E exception ) throws E {
         logger.error(exception.getMessage(), exception);
         throw exception;
     }
@@ -249,18 +244,15 @@ public class Exceptions {
      * @throws E the new exception
      */
     @SuppressWarnings( "unchecked" )
-    public static <E extends Exception> void logAndThrowNew(
-                                                             final Exception baseException,
-                                                             final Class<E> newExceptionClass )
-            throws E {
+    public static <E extends Exception> void logAndThrowNew( final Exception baseException,
+                                                             final Class<E> newExceptionClass ) throws E {
         logger.error(baseException.getMessage(), baseException);
         if (baseException.getClass().equals(newExceptionClass)) {
             throw (E)baseException;
         }
         E newException;
         try {
-            newException = newExceptionClass.getDeclaredConstructor(
-                                                                    Throwable.class).newInstance(baseException);
+            newException = newExceptionClass.getDeclaredConstructor(Throwable.class).newInstance(baseException);
         } catch (final Exception e) {
             logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
             throw new RuntimeException(e);
@@ -285,15 +277,13 @@ public class Exceptions {
      * @param newExceptionClass that has a constructor to wrap the original exception
      * @throws E the new exception
      */
-    public static <E extends Exception> void logAndThrowNew(
-                                                             final String message,
+    public static <E extends Exception> void logAndThrowNew( final String message,
                                                              final Exception baseException,
                                                              final Class<E> newExceptionClass ) throws E {
         logger.error(message, baseException);
         E newException;
         try {
-            newException = newExceptionClass.getDeclaredConstructor(
-                                                                    String.class, Throwable.class).newInstance(message,
+            newException = newExceptionClass.getDeclaredConstructor(String.class, Throwable.class).newInstance(message,
                                                                                                                baseException);
         } catch (final Exception e) {
             logger.error(Messages.getString("Exceptions.internalError"), e);//$NON-NLS-1$
@@ -306,8 +296,7 @@ public class Exceptions {
      * Should not be instantiated
      */
     private Exceptions() {
-        throw new IllegalStateException(Messages
-                                                .getString("invalidConstructor")); //$NON-NLS-1$
+        throw new IllegalStateException(Messages.getString("invalidConstructor")); //$NON-NLS-1$
     }
 
 }

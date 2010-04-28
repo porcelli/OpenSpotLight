@@ -106,52 +106,46 @@ public class DetailedLoggerTest {
             return "CustomErrorCode:errorCode";
         }
 
-        public void setDescription(final String s) {
+        public void setDescription( final String s ) {
 
         }
 
-        public void setErrorCode(final String s) {
+        public void setErrorCode( final String s ) {
 
         }
 
     }
 
-    private static DetailedLoggerProvider loggerProvider;
+    private static DetailedLoggerProvider                              loggerProvider;
 
+    private SLGraphSession                                             graphSession;
 
-    private SLGraphSession graphSession;
+    private static JcrConnectionProvider                               provider;
 
-    private static JcrConnectionProvider provider;
+    private static SLGraph                                             graph;
 
-    private static SLGraph graph;
-
-    private static AuthenticatedUser user;
-
-
-
+    private static AuthenticatedUser                                   user;
 
     private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
-
 
     @BeforeClass
     public static void setupJcr() throws Exception {
 
-        Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repositoryPath")));
+        Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
+                                                                                  STStorageSession.STFlushMode.AUTO,
+                                                                                  ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                                  repositoryPath("repositoryPath")));
         autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.LOG).flushall();
-        graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class)
-                .createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        SimplePersistFactory simplePersistFactory = new SimplePersistFactoryImpl(autoFlushInjector.getProvider(STStorageSession.class));
+        graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        SimplePersistFactory simplePersistFactory = new SimplePersistFactoryImpl(
+                                                                                 autoFlushInjector.getProvider(STStorageSession.class));
 
         simplePersist = simplePersistFactory.createSimplePersist(SLPartition.LOG);
-        loggerProvider = new DetailedLoggerProvider(simplePersistFactory, autoFlushInjector.getInstance(JRedisSTStorageSessionProvider.class));
-        final SecurityFactory securityFactory = AbstractFactory
-                .getDefaultInstance(SecurityFactory.class);
+        loggerProvider = new DetailedLoggerProvider(simplePersistFactory,
+                                                    autoFlushInjector.getInstance(JRedisSTStorageSessionProvider.class));
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(
-                DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-                "password");
-
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
     }
 
@@ -175,21 +169,17 @@ public class DetailedLoggerTest {
     @Test
     public void shouldLogSomeStuff() throws Exception {
 
-        graphSession = graph.openSession(user,"tempRepo");
-        logger =loggerProvider.get();
-        final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(
-                StringArtifact.class, "a/b/c/d", ChangeType.INCLUDED);
-        final SLNode node = graphSession.createContext("ctx").getRootNode()
-                .addNode("node1");
+        graphSession = graph.openSession(user, "tempRepo");
+        logger = loggerProvider.get();
+        final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(StringArtifact.class, "a/b/c/d",
+                                                                               ChangeType.INCLUDED);
+        final SLNode node = graphSession.createContext("ctx").getRootNode().addNode("node1");
         final SLNode node2 = node.addNode("node2");
         final SLNode node3 = node2.addNode("node3");
-        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(),
-                "firstEntry", node3, artifact);
+        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "firstEntry", node3, artifact);
 
-        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(),
-                "secondEntry", artifact);
-        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(),
-                "thirdEntry", node3);
+        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "secondEntry", artifact);
+        logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "thirdEntry", node3);
 
         final Iterable<DetailedLoggerProvider.LogEntry> foundEntries = simplePersist.findAll(DetailedLoggerProvider.LogEntry.class);
 

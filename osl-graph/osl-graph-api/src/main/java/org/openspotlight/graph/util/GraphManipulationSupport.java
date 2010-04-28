@@ -55,8 +55,7 @@ import org.openspotlight.graph.SLLink;
 
 public class GraphManipulationSupport {
 
-    public static Collection<Class<? extends SLLink>> links(
-                                                             final Class<? extends SLLink>... linkTypes ) {
+    public static Collection<Class<? extends SLLink>> links( final Class<? extends SLLink>... linkTypes ) {
         return Arrays.asList(linkTypes);
     }
 

@@ -73,17 +73,14 @@ public enum WebExecutionContextFactory {
 
     public ExecutionContext createExecutionContext( final ServletContext ctx,
                                                     final HttpServletRequest request ) {
-        final String repositoryName = OslServletDataSupport
-                                                           .getCurrentRepository(ctx, request);
+        final String repositoryName = OslServletDataSupport.getCurrentRepository(ctx, request);
         Repository repo = new Repository();
         repo.setActive(true);
         repo.setName(repositoryName);
-        final JcrConnectionDescriptor descriptor = OslServletDataSupport
-                                                                        .getJcrDescriptor(ctx, request);
+        final JcrConnectionDescriptor descriptor = OslServletDataSupport.getJcrDescriptor(ctx, request);
         final String password = OslServletDataSupport.getPassword(ctx, request);
         final String username = OslServletDataSupport.getUserName(ctx, request);
-        final ExecutionContext newContext = factory.createExecutionContext(
-                                                                           username, password, descriptor, repo);
+        final ExecutionContext newContext = factory.createExecutionContext(username, password, descriptor, repo);
         return newContext;
     }
 

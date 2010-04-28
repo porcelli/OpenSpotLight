@@ -70,17 +70,14 @@ public class ListRepositoryNamesWebCommand implements WebCommand {
     public String execute( final ExecutionContext context,
                            final Map<String, String> parameters ) throws WebException {
         try {
-            final Set<String> repositryNames = context
-                                                      .getDefaultConfigurationManager().getAllRepositoryNames();
+            final Set<String> repositryNames = context.getDefaultConfigurationManager().getAllRepositoryNames();
             final MultipleMessage messages = new MultipleMessage();
             messages.setMessages(repositryNames);
             final JSONObject json = JSONObject.fromObject(messages);
             return json.toString();
         } catch (final Exception e) {
             Exceptions.catchAndLog(e);
-            throw new MessageWebException(
-                                          "There's something wrong during the initial data import: "
-                                          + e.getMessage());
+            throw new MessageWebException("There's something wrong during the initial data import: " + e.getMessage());
         }
     }
 }

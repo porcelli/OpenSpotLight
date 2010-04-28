@@ -64,8 +64,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
     private static final long                    serialVersionUID     = -3359480990669655877L;
 
     /** The syntax information set. */
-    private LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory
-                                                                                            .create(Set.class,this);
+    private LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory.create(Set.class, this);
 
     public ArtifactWithSyntaxInformation() {
         super();
@@ -85,9 +84,8 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
                                       final int columnStart,
                                       final int columnEnd,
                                       final SyntaxInformationType type,
-                                      final SimplePersistCapable<STNodeEntry,STStorageSession> simplePersist  ) {
-        final SyntaxInformation syntaxInformation = new SyntaxInformation(this,
-                                                                          lineStart, lineEnd, columnStart, columnEnd, type);
+                                      final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+        final SyntaxInformation syntaxInformation = new SyntaxInformation(this, lineStart, lineEnd, columnStart, columnEnd, type);
         getUnwrappedSyntaxInformation(simplePersist).add(syntaxInformation);
     }
 
@@ -96,11 +94,10 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
     }
 
     @TransientProperty
-    public Set<SyntaxInformation> getUnwrappedSyntaxInformation( final SimplePersistCapable<STNodeEntry,STStorageSession> simplePersist ) {
+    public Set<SyntaxInformation> getUnwrappedSyntaxInformation( final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
         try {
             syntaxInformationSet.getMetadata().getLock().lock();
-            Set<SyntaxInformation> currentSet = syntaxInformationSet
-                                                                    .get(simplePersist);
+            Set<SyntaxInformation> currentSet = syntaxInformationSet.get(simplePersist);
             if (currentSet == null) {
                 currentSet = new HashSet<SyntaxInformation>();
                 syntaxInformationSet.setTransient(currentSet);
@@ -126,7 +123,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
                                          final int columnStart,
                                          final int columnEnd,
                                          final SyntaxInformationType type,
-                                         final SimplePersistCapable<STNodeEntry,STStorageSession> simplePersist ) {
+                                         final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
         final SyntaxInformation syntaxInformation = new SyntaxInformation();
         syntaxInformation.setColumnEnd(columnEnd);
         syntaxInformation.setColumnStart(columnStart);
@@ -137,8 +134,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
         getUnwrappedSyntaxInformation(simplePersist).remove(syntaxInformation);
     }
 
-    public void setSyntaxInformationSet(
-                                         final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet ) {
+    public void setSyntaxInformationSet( final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet ) {
         this.syntaxInformationSet = syntaxInformationSet;
     }
 

@@ -203,8 +203,7 @@ public final class DatabaseMetadataScript {
      */
     public synchronized Map<ColumnsNamesForMetadataSelect, String> getColumnAliasMap() {
         if (columnAliasMap == null) {
-            columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(
-                                                                                ColumnsNamesForMetadataSelect.class);
+            columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(ColumnsNamesForMetadataSelect.class);
         }
         if (immutable) {
             return unmodifiableMap(columnAliasMap);
@@ -317,8 +316,7 @@ public final class DatabaseMetadataScript {
      * 
      * @param columnAliasMap the column alias map
      */
-    public void setColumnAliasMap(
-                                   final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap ) {
+    public void setColumnAliasMap( final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap ) {
         if (immutable) {
             throw new UnsupportedOperationException();
         }
@@ -388,8 +386,7 @@ public final class DatabaseMetadataScript {
      * 
      * @param nameHandlerClass the new name handler class
      */
-    public void setNameHandlerClass(
-                                     final Class<? extends DatabaseArtifactNameHandler> nameHandlerClass ) {
+    public void setNameHandlerClass( final Class<? extends DatabaseArtifactNameHandler> nameHandlerClass ) {
         if (immutable) {
             throw new UnsupportedOperationException();
         }
@@ -422,8 +419,7 @@ public final class DatabaseMetadataScript {
      * 
      * @param streamHandlerClass the new stream handler class
      */
-    public void setStreamHandlerClass(
-                                       final Class<? extends DatabaseStreamHandler> streamHandlerClass ) {
+    public void setStreamHandlerClass( final Class<? extends DatabaseStreamHandler> streamHandlerClass ) {
         if (immutable) {
             throw new UnsupportedOperationException();
         }

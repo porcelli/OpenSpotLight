@@ -142,7 +142,9 @@ public class SLSelectByLinkTypeInfo extends SLSelectInfo {
         this.whereByLinkTypeInfo = whereStatementInfo;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
      */
     @Override
@@ -269,7 +271,9 @@ public class SLSelectByLinkTypeInfo extends SLSelectInfo {
             this.comma = comma;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override

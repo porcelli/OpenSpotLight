@@ -76,11 +76,9 @@ public enum DefaultBundleProcessorManager implements BundleProcessorManager {
                                                  final JcrConnectionDescriptor descriptor,
                                                  final ExecutionContextFactory contextFactory,
                                                  final GlobalSettings settings,
-                                                 final Group... groups )
-            throws Exception {
-        final GlobalExecutionStatus result = new BundleProcessorExecution(
-                                                                          username, password, descriptor, contextFactory, settings,
-                                                                          groups).execute();
+                                                 final Group... groups ) throws Exception {
+        final GlobalExecutionStatus result = new BundleProcessorExecution(username, password, descriptor, contextFactory,
+                                                                          settings, groups).execute();
         return result;
     }
 
@@ -93,9 +91,7 @@ public enum DefaultBundleProcessorManager implements BundleProcessorManager {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    new BundleProcessorExecution(username, password,
-                                                 descriptor, contextFactory, settings, groups)
-                                                                                              .execute();
+                    new BundleProcessorExecution(username, password, descriptor, contextFactory, settings, groups).execute();
 
                 } catch (final Exception e) {
                     Exceptions.catchAndLog(e);

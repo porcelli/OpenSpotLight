@@ -82,23 +82,21 @@ public class DnaSvnUsingJcrWithProgramaticConfigurationTest {
         final String svnRepositorySource = "svnRepositorySource";
         final String repositoryName = "svnRepository";
         final JcrConfiguration configuration = new JcrConfiguration();
-        configuration
-                     .repositorySource(svnRepositorySource)
-                     .usingClass(SVNRepositorySource.class)
-                     .setProperty("password", "")
-                     .setProperty("username", "anonymous")
-                     .setProperty("repositoryRootURL", "http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$
-                     "creatingWorkspacesAllowed", true);
+        configuration.repositorySource(svnRepositorySource).usingClass(SVNRepositorySource.class).setProperty("password", "").setProperty(
+                                                                                                                                          "username",
+                                                                                                                                          "anonymous").setProperty(
+                                                                                                                                                                   "repositoryRootURL", "http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                                                                                                                                                                               "creatingWorkspacesAllowed",
+                                                                                                                                                                                                                                                               true);
 
         configuration.repository(repositoryName).setSource(svnRepositorySource);
         configuration.save();
         this.engine = configuration.build();
         this.engine.start();
 
-        this.session = this.engine.getRepository(repositoryName)
-                                  .login(
-                                         new SecurityContextCredentials(
-                                                                        DefaultSecurityContext.READ_ONLY));
+        this.session = this.engine.getRepository(repositoryName).login(
+                                                                       new SecurityContextCredentials(
+                                                                                                      DefaultSecurityContext.READ_ONLY));
 
     }
 
@@ -119,7 +117,6 @@ public class DnaSvnUsingJcrWithProgramaticConfigurationTest {
         while (nodeIterator.hasNext()) {
             System.out.println(nodeIterator.nextNode());
         }
-        assertThat(this.session.getRootNode().getNode("hamcrest-core"),
-                   is(notNullValue()));
+        assertThat(this.session.getRootNode().getNode("hamcrest-core"), is(notNullValue()));
     }
 }

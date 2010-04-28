@@ -99,8 +99,7 @@ public class PatternMatcher {
          */
         public FilterResult(
                              final MutableType type ) {
-            this(new HashSet<String>(), new HashSet<String>(),
-                    new HashSet<String>(), new HashSet<String>(), type);
+            this(new HashSet<String>(), new HashSet<String>(), new HashSet<String>(), new HashSet<String>(), type);
         }
 
         /**
@@ -112,11 +111,9 @@ public class PatternMatcher {
          * @param ignoredNames the ignored names
          */
         public FilterResult(
-                             final Set<String> allNames,
-                             final Set<String> includedNames,
-                             final Set<String> excludedNames, final Set<String> ignoredNames ) {
-            this(allNames, includedNames, excludedNames, ignoredNames,
-                    MutableType.IMMUTABLE);
+                             final Set<String> allNames, final Set<String> includedNames, final Set<String> excludedNames,
+                             final Set<String> ignoredNames ) {
+            this(allNames, includedNames, excludedNames, ignoredNames, MutableType.IMMUTABLE);
         }
 
         /**
@@ -129,9 +126,7 @@ public class PatternMatcher {
          * @param type the type
          */
         public FilterResult(
-                             final Set<String> allNames,
-                             final Set<String> includedNames,
-                             final Set<String> excludedNames,
+                             final Set<String> allNames, final Set<String> includedNames, final Set<String> excludedNames,
                              final Set<String> ignoredNames, final MutableType type ) {
             if (MutableType.IMMUTABLE.equals(type)) {
                 this.allNames = unmodifiableSet(allNames);
@@ -184,8 +179,7 @@ public class PatternMatcher {
 
     }
 
-    private static final Logger logger = LoggerFactory
-                                                      .getLogger(PatternMatcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(PatternMatcher.class);
 
     /**
      * Filter the names using the Apache Ant expression syntax (and also the {@link SelectorUtils} class.
@@ -210,16 +204,14 @@ public class PatternMatcher {
 
         for (final String included : includedPatterns) {
             for (final String nameToFilter : namesToFilter) {
-                if (match(Strings.concatPaths(rootPattern, included),
-                          nameToFilter, caseSensitive)) {
+                if (match(Strings.concatPaths(rootPattern, included), nameToFilter, caseSensitive)) {
                     includedNames.add(nameToFilter);
                 }
             }
         }
         for (final String excluded : excludedPatterns) {
             for (final String nameToFilter : namesToFilter) {
-                if (match(Strings.concatPaths(rootPattern, excluded),
-                          nameToFilter, caseSensitive)) {
+                if (match(Strings.concatPaths(rootPattern, excluded), nameToFilter, caseSensitive)) {
                     excludedNames.add(nameToFilter);
                     includedNames.remove(nameToFilter);
                 }
@@ -230,21 +222,15 @@ public class PatternMatcher {
         ignoredNames.removeAll(excludedNames);
 
         if (logger.isDebugEnabled()) {
-            final String prefix = "root " + rootPattern
-                                  + "with parameters included="
-                                  + includedPatterns.toString() + " and excluded="
-                                  + excludedPatterns;
-            logger.debug(prefix + " filtering names "
-                         + namesToFilter.toString());
-            logger.debug(prefix + " accepting names "
-                         + includedNames.toString());
+            final String prefix = "root " + rootPattern + "with parameters included=" + includedPatterns.toString()
+                                  + " and excluded=" + excludedPatterns;
+            logger.debug(prefix + " filtering names " + namesToFilter.toString());
+            logger.debug(prefix + " accepting names " + includedNames.toString());
             logger.debug(prefix + " Ignoring names " + ignoredNames.toString());
-            logger.debug(prefix + " Excluding names "
-                         + excludedNames.toString());
+            logger.debug(prefix + " Excluding names " + excludedNames.toString());
         }
 
-        final FilterResult result = new FilterResult(namesToFilter,
-                                                     includedNames, excludedNames, ignoredNames);
+        final FilterResult result = new FilterResult(namesToFilter, includedNames, excludedNames, ignoredNames);
         return result;
     }
 
@@ -255,8 +241,7 @@ public class PatternMatcher {
      * @param patternToMatch the pattern to match
      * @return true if nameToMatch matches patternToMatch
      */
-    public static boolean isMatchingWithoutCaseSentitiveness(
-                                                              final String nameToMatch,
+    public static boolean isMatchingWithoutCaseSentitiveness( final String nameToMatch,
                                                               final String patternToMatch ) {
         return match(patternToMatch, nameToMatch, false);
     }
@@ -265,8 +250,7 @@ public class PatternMatcher {
      * Should not be instantiated.
      */
     private PatternMatcher() {
-        logAndThrow(new IllegalStateException(Messages
-                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

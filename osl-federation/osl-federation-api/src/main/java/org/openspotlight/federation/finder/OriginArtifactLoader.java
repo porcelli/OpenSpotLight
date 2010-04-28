@@ -73,8 +73,7 @@ public interface OriginArtifactLoader extends Disposable {
          * @param artifactSource the artifact source
          * @return the set< string>
          */
-        public <A extends Artifact> Set<String> retrieveOriginalNames(
-                                                                       Class<A> type,
+        public <A extends Artifact> Set<String> retrieveOriginalNames( Class<A> type,
                                                                        ArtifactSource source,
                                                                        String initialPath );
 
@@ -90,8 +89,7 @@ public interface OriginArtifactLoader extends Disposable {
          * @param oldOne
          * @return
          */
-        public <A extends Artifact> boolean isMaybeChanged(
-                                                            ArtifactSource source,
+        public <A extends Artifact> boolean isMaybeChanged( ArtifactSource source,
                                                             String artifactName,
                                                             A oldOne );
 

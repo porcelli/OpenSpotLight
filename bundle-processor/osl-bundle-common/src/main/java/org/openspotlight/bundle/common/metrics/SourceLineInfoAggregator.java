@@ -95,8 +95,8 @@ public class SourceLineInfoAggregator {
         final CompleteSourceLineInfo codeAreaSourceLineInfo = new CompleteSourceLineInfo();
 
         final SimpleSourceLineInfo lastLineInfo = getSimpleLineSourceInfo(
-                                                                          ((SLCommonToken)tokenInput.get(0)).getInputStream()
-                                                                                                            .getSourceName(), 0, Integer.MAX_VALUE);
+                                                                          ((SLCommonToken)tokenInput.get(0)).getInputStream().getSourceName(),
+                                                                          0, Integer.MAX_VALUE);
         codeAreaSourceLineInfo.add(lastLineInfo);
         codeAreaSourceLineInfo.calculate();
 
@@ -112,8 +112,7 @@ public class SourceLineInfoAggregator {
         int startLine = previosToken.getLine();
         for (int i = startIndex; i < endIndex; i++) {
             final SLCommonToken token = (SLCommonToken)tokenInput.get(i);
-            if (!token.getInputStream().getSourceName().equals(
-                                                               previosToken.getInputStream().getSourceName())) {
+            if (!token.getInputStream().getSourceName().equals(previosToken.getInputStream().getSourceName())) {
                 final SimpleSourceLineInfo activeLineInfo = getSimpleLineSourceInfo(
                                                                                     previosToken.getInputStream().getSourceName(),
                                                                                     startLine, previosToken.getLine());
@@ -122,9 +121,8 @@ public class SourceLineInfoAggregator {
             }
             previosToken = token;
         }
-        final SimpleSourceLineInfo lastLineInfo = getSimpleLineSourceInfo(
-                                                                          previosToken.getInputStream().getSourceName(), startLine,
-                                                                          previosToken.getLine());
+        final SimpleSourceLineInfo lastLineInfo = getSimpleLineSourceInfo(previosToken.getInputStream().getSourceName(),
+                                                                          startLine, previosToken.getLine());
         codeAreaSourceLineInfo.add(lastLineInfo);
         codeAreaSourceLineInfo.calculate();
         codeArea.put(area, codeAreaSourceLineInfo);
@@ -133,8 +131,7 @@ public class SourceLineInfoAggregator {
     public void addContinuationLine( final SLArtifactStream input,
                                      final int lineNumber ) {
         setupSource(input);
-        final List<Integer> lineContinuationList = continuationLines.get(input
-                                                                              .getSourceName());
+        final List<Integer> lineContinuationList = continuationLines.get(input.getSourceName());
         lineContinuationList.add(lineNumber);
     }
 
@@ -149,8 +146,7 @@ public class SourceLineInfoAggregator {
         return null;
     }
 
-    private SimpleSourceLineInfo getSimpleLineSourceInfo(
-                                                          final String sourceName,
+    private SimpleSourceLineInfo getSimpleLineSourceInfo( final String sourceName,
                                                           int lineStart,
                                                           int lineEnd ) {
         final SimpleSourceLineInfo info = new SimpleSourceLineInfo();
@@ -166,10 +162,8 @@ public class SourceLineInfoAggregator {
         Integer codeCount = 0;
         Integer emptyCount = 0;
         int fullCommenCount = 0;
-        for (final Entry<Integer, LineState> activeState : lineMap.get(
-                                                                       sourceName).entrySet()) {
-            if (activeState.getKey() >= lineStart
-                    && activeState.getKey() <= lineEnd) {
+        for (final Entry<Integer, LineState> activeState : lineMap.get(sourceName).entrySet()) {
+            if (activeState.getKey() >= lineStart && activeState.getKey() <= lineEnd) {
                 switch (activeState.getValue()) {
                     case HIDDEN:
                         hiddenCount++;
@@ -181,32 +175,26 @@ public class SourceLineInfoAggregator {
                         codeCount++;
                         break;
                     case NONE:
-                        if (!lineCommentMap.get(sourceName).containsKey(
-                                                                        activeState.getKey())) {
+                        if (!lineCommentMap.get(sourceName).containsKey(activeState.getKey())) {
                             emptyCount++;
                         }
                         break;
                     case EMPTY:
-                        if (!lineCommentMap.get(sourceName).containsKey(
-                                                                        activeState.getKey())) {
+                        if (!lineCommentMap.get(sourceName).containsKey(activeState.getKey())) {
                             emptyCount++;
                         }
                         break;
                 }
-                if ((activeState.getValue().equals(LineState.EMPTY)
-                        || activeState.getValue().equals(LineState.HIDDEN) || activeState
-                                                                                         .getValue().equals(LineState.NONE))
-                        && lineCommentMap.get(sourceName).containsKey(
-                                                                      activeState.getKey())) {
+                if ((activeState.getValue().equals(LineState.EMPTY) || activeState.getValue().equals(LineState.HIDDEN) || activeState.getValue().equals(
+                                                                                                                                                        LineState.NONE))
+                    && lineCommentMap.get(sourceName).containsKey(activeState.getKey())) {
                     fullCommenCount++;
                 }
             }
         }
         Integer meaningfulCount = 0;
-        for (final Entry<Integer, CommentState> activeComment : lineCommentMap
-                                                                              .get(sourceName).entrySet()) {
-            if (activeComment.getKey() >= lineStart
-                    && activeComment.getKey() <= lineEnd) {
+        for (final Entry<Integer, CommentState> activeComment : lineCommentMap.get(sourceName).entrySet()) {
+            if (activeComment.getKey() >= lineStart && activeComment.getKey() <= lineEnd) {
                 switch (activeComment.getValue()) {
                     case MEANINGFUL:
                         meaningfulCount++;
@@ -243,8 +231,7 @@ public class SourceLineInfoAggregator {
 
     public CompleteSourceLineInfo getSourceLineInfo( final String sourceName ) {
         final CompleteSourceLineInfo result = new CompleteSourceLineInfo();
-        final SimpleSourceLineInfo sourceInfo = getSimpleLineSourceInfo(
-                                                                        sourceName, 0, lines.get(sourceName));
+        final SimpleSourceLineInfo sourceInfo = getSimpleLineSourceInfo(sourceName, 0, lines.get(sourceName));
         result.add(sourceInfo);
         result.calculate();
         return result;
@@ -257,22 +244,19 @@ public class SourceLineInfoAggregator {
     public void setCode( final SLArtifactStream input,
                          final int line ) {
         setupSource(input);
-        final Map<Integer, LineState> lineMapSource = lineMap.get(input
-                                                                       .getSourceName());
+        final Map<Integer, LineState> lineMapSource = lineMap.get(input.getSourceName());
         lineMapSource.put(line, LineState.STATEMENT);
     }
 
     public void setCode( final TokenStream tokenInput,
                          final int startIndex,
                          final int endIndex ) {
-        final SLCommonToken previosToken = (SLCommonToken)tokenInput
-                                                                    .get(startIndex);
+        final SLCommonToken previosToken = (SLCommonToken)tokenInput.get(startIndex);
         setLineCode(previosToken, LineState.STATEMENT);
         for (int i = startIndex; i <= endIndex; i++) {
             final SLCommonToken token = (SLCommonToken)tokenInput.get(i);
             if (token.getChannel() != Token.HIDDEN_CHANNEL) {
-                if (token.getInputStream().getSourceName().equals(
-                                                                  previosToken.getInputStream().getSourceName())) {
+                if (token.getInputStream().getSourceName().equals(previosToken.getInputStream().getSourceName())) {
                     if (token.getLine() != previosToken.getLine()) {
                         setLineCode(token, LineState.STATEMENT_CONTINUATION);
                     }
@@ -292,11 +276,9 @@ public class SourceLineInfoAggregator {
         for (final String activeLine : text) {
             final Matcher matcher = pattern.matcher(activeLine);
             if (matcher.find()) {
-                setLineComment(input.getSourceName(), lineStart + cont,
-                               CommentState.MEANINGFUL);
+                setLineComment(input.getSourceName(), lineStart + cont, CommentState.MEANINGFUL);
             } else {
-                setLineComment(input.getSourceName(), lineStart + cont,
-                               CommentState.SIMPLE);
+                setLineComment(input.getSourceName(), lineStart + cont, CommentState.SIMPLE);
             }
             cont++;
         }
@@ -322,23 +304,20 @@ public class SourceLineInfoAggregator {
                                final int endIndex ) {
         for (int i = startIndex; i < endIndex; i++) {
             final SLCommonToken token = (SLCommonToken)tokenInput.get(i);
-            setHiddenCode(token.getInputStream().getSourceName(), token
-                                                                       .getLine());
+            setHiddenCode(token.getInputStream().getSourceName(), token.getLine());
         }
     }
 
     private void setLineCode( final SLCommonToken token,
                               final LineState state ) {
-        final Map<Integer, LineState> lineMapSource = lineMap.get(token
-                                                                       .getInputStream().getSourceName());
+        final Map<Integer, LineState> lineMapSource = lineMap.get(token.getInputStream().getSourceName());
         lineMapSource.put(token.getLine(), state);
     }
 
     private void setLineComment( final String sourceName,
                                  final int line,
                                  final CommentState state ) {
-        final Map<Integer, CommentState> commentStateMap = lineCommentMap
-                                                                         .get(sourceName);
+        final Map<Integer, CommentState> commentStateMap = lineCommentMap.get(sourceName);
         commentStateMap.put(line, state);
     }
 
@@ -363,10 +342,8 @@ public class SourceLineInfoAggregator {
             }
             lineMap.put(source.getSourceName(), sourceLineMap);
             lines.put(source.getSourceName(), source.getPhysicalLineCount());
-            lineCommentMap.put(source.getSourceName(),
-                               new TreeMap<Integer, CommentState>());
-            continuationLines.put(source.getSourceName(),
-                                  new LinkedList<Integer>());
+            lineCommentMap.put(source.getSourceName(), new TreeMap<Integer, CommentState>());
+            continuationLines.put(source.getSourceName(), new LinkedList<Integer>());
         }
     }
 

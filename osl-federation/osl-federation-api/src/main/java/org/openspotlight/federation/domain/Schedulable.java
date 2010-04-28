@@ -79,8 +79,7 @@ public interface Schedulable extends SimpleNodeType {
         public String getRepositoryNameBeforeExecution( S schedulable );
     }
 
-    public static interface SchedulableCommandWithContextFactory<S extends Schedulable>
-            extends SchedulableCommand<S> {
+    public static interface SchedulableCommandWithContextFactory<S extends Schedulable> extends SchedulableCommand<S> {
         public void setContextFactoryBeforeExecution( GlobalSettings settings,
                                                       JcrConnectionDescriptor descriptor,
                                                       String username,

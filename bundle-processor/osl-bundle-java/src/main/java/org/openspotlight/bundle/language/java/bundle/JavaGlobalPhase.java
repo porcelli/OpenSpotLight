@@ -82,8 +82,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 
     @SuppressWarnings( "unchecked" )
     public Set<Class<? extends Artifact>> getArtifactTypes() {
-        return SLCollections.<Class<? extends Artifact>>setOf(
-                                                              StreamArtifact.class, StringArtifact.class);
+        return SLCollections.<Class<? extends Artifact>>setOf(StreamArtifact.class, StringArtifact.class);
     }
 
     public SaveBehavior getSaveBehavior() {
@@ -91,45 +90,34 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
     }
 
     @SuppressWarnings( "unchecked" )
-    public void selectArtifactsToBeProcessed(
-                                              final CurrentProcessorContext currentContext,
+    public void selectArtifactsToBeProcessed( final CurrentProcessorContext currentContext,
                                               final ExecutionContext context,
                                               final ArtifactChanges<Artifact> changes,
-                                              final ArtifactsToBeProcessed<Artifact> toBeReturned )
-            throws Exception {
-        final String classpahtEntries = currentContext.getBundleProperties()
-                                                      .get(JavaConstants.JAR_CLASSPATH);
+                                              final ArtifactsToBeProcessed<Artifact> toBeReturned ) throws Exception {
+        final String classpahtEntries = currentContext.getBundleProperties().get(JavaConstants.JAR_CLASSPATH);
         final Set<String> contexts = new LinkedHashSet<String>();
         if (classpahtEntries != null) {
-            final String[] entries = classpahtEntries
-                                                     .split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
+            final String[] entries = classpahtEntries.split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
             for (final String entry : entries) {
-                final StreamArtifact artifact = context
-                                                       .getPersistentArtifactManager().findByPath(
-                                                                                                  StreamArtifact.class, entry);
+                final StreamArtifact artifact = context.getPersistentArtifactManager().findByPath(StreamArtifact.class, entry);
                 Assertions.checkNotNull("artifact:" + entry, artifact);
-                Assertions.checkCondition("artifactNameEndsWithJar:"
-                                          + artifact.getArtifactCompleteName(), artifact
-                                                                                        .getArtifactCompleteName().endsWith(".jar"));
+                Assertions.checkCondition("artifactNameEndsWithJar:" + artifact.getArtifactCompleteName(),
+                                          artifact.getArtifactCompleteName().endsWith(".jar"));
                 String ctxName = artifact.getUniqueContextName();
                 if (ctxName == null) {
                     ctxName = JavaBinaryProcessor.discoverContextName(artifact,
                                                                       context.getPersistentArtifactManager().getSimplePersist());
                     if (logger.isDebugEnabled()) {
-                        logger.debug("context unique name for "
-                                     + artifact.getArtifactCompleteName() + " = "
-                                     + ctxName);
+                        logger.debug("context unique name for " + artifact.getArtifactCompleteName() + " = " + ctxName);
                     }
                 }
                 Assertions.checkNotEmpty("ctxName", ctxName);
                 contexts.add(ctxName);
             }
         }
-        final String contextsEntries = currentContext.getBundleProperties()
-                                                     .get(JavaConstants.CONTEXT_CLASSPATH_ENTRY);
+        final String contextsEntries = currentContext.getBundleProperties().get(JavaConstants.CONTEXT_CLASSPATH_ENTRY);
         if (contextsEntries != null) {
-            final String[] entries = contextsEntries
-                                                    .split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
+            final String[] entries = contextsEntries.split(JavaConstants.CLASSPATH_SEPARATOR_REGEXP);
             for (final String entry : entries) {
                 contexts.add(entry);
             }
@@ -142,18 +130,15 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
 
         synchronized (currentContext.getTransientProperties()) {
 
-            if (currentContext.getTransientProperties().containsKey(
-                                                                    JavaConstants.USING_CONTEXTS)) {
-                final Set<String> existent = (Set<String>)currentContext
-                                                                        .getTransientProperties().get(
+            if (currentContext.getTransientProperties().containsKey(JavaConstants.USING_CONTEXTS)) {
+                final Set<String> existent = (Set<String>)currentContext.getTransientProperties().get(
                                                                                                       JavaConstants.USING_CONTEXTS);
                 existent.addAll(contexts);
                 if (logger.isDebugEnabled()) {
                     logger.debug("current contexts: " + existent);
                 }
             } else {
-                currentContext.getTransientProperties().put(
-                                                            JavaConstants.USING_CONTEXTS, contexts);
+                currentContext.getTransientProperties().put(JavaConstants.USING_CONTEXTS, contexts);
                 if (logger.isDebugEnabled()) {
                     logger.debug("adding contexts: " + contexts);
                 }

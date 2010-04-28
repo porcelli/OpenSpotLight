@@ -78,25 +78,20 @@ public class ImediateArtifactLoadingWebCommand implements WebCommand {
     public String execute( final ExecutionContext context,
                            final Map<String, String> parameters ) throws WebException {
         try {
-            final Set<Repository> allRepositories = context
-                                                           .getDefaultConfigurationManager().getAllRepositories();
+            final Set<Repository> allRepositories = context.getDefaultConfigurationManager().getAllRepositories();
             final RepositorySet repositorySet = new RepositorySet();
             repositorySet.setRepositories(allRepositories);
             final SLScheduler scheduler = DefaultScheduler.INSTANCE;
             final Set<ArtifactSource> sources = new HashSet<ArtifactSource>();
-            SimpleNodeTypeVisitorSupport.acceptVisitorOn(ArtifactSource.class,
-                                                         repositorySet,
+            SimpleNodeTypeVisitorSupport.acceptVisitorOn(ArtifactSource.class, repositorySet,
                                                          new AggregateVisitor<ArtifactSource>(sources));
-            scheduler.fireSchedulable(context.getUserName(), context
-                                                                    .getPassword(), sources.toArray(new ArtifactSource[0]));
+            scheduler.fireSchedulable(context.getUserName(), context.getPassword(), sources.toArray(new ArtifactSource[0]));
             final Message message = new Message();
             message.setMessage("execution fired");
             return JSONObject.fromObject(message).toString();
         } catch (final Exception e) {
             Exceptions.catchAndLog(e);
-            throw new MessageWebException(
-                                          "There's something wrong during the firing action: "
-                                          + e.getMessage());
+            throw new MessageWebException("There's something wrong during the firing action: " + e.getMessage());
         }
 
     }

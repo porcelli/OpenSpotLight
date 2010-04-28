@@ -111,7 +111,7 @@ public final class TimeOutFactory {
                     try {
                         Thread.sleep(TimeOutCacheInvocationHandler.this.intervalInMilliseconds / 2);
                     } catch (final InterruptedException e) {
-                        //ok, nothing to do here
+                        // ok, nothing to do here
                     }
                 }
 

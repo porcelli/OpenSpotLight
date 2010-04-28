@@ -90,8 +90,7 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
 
         public void graphClosed( final SLGraph desc ) {
             JcrConnectionDescriptor data = null;
-            for (final Entry<JcrConnectionDescriptor, SLGraph> entry : cache
-                                                                            .entrySet()) {
+            for (final Entry<JcrConnectionDescriptor, SLGraph> entry : cache.entrySet()) {
                 if (entry.getValue().equals(desc)) {
                     data = entry.getKey();
                     break;
@@ -111,31 +110,22 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
     private final Map<JcrConnectionDescriptor, SLGraph> cache = new ConcurrentHashMap<JcrConnectionDescriptor, SLGraph>();
 
     @Override
-    public synchronized SLGraph createGraph(
-                                             final JcrConnectionDescriptor descriptor ) {
+    public synchronized SLGraph createGraph( final JcrConnectionDescriptor descriptor ) {
         SLGraph cached = cache.get(descriptor);
         if (cached == null) {
             try {
-                final SecurityFactory securityFactory = AbstractFactory
-                                                                       .getDefaultInstance(SecurityFactory.class);
-                final SLPersistentTreeFactory factory = AbstractFactory
-                                                                       .getDefaultInstance(SLPersistentTreeFactory.class);
-                final JcrConnectionProvider provider = JcrConnectionProvider
-                                                                            .createFromData(descriptor);
+                final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+                final SLPersistentTreeFactory factory = AbstractFactory.getDefaultInstance(SLPersistentTreeFactory.class);
+                final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
                 provider.openRepository();
 
-                final SLPersistentTree tree = factory
-                                                     .createPersistentTree(descriptor);
-                final SystemUser systemUser = securityFactory
-                                                             .createSystemUser();
-                final IdentityManager identityManager = securityFactory
-                                                                       .createIdentityManager(descriptor);
-                final PolicyEnforcement graphPolicyEnforcement = securityFactory
-                                                                                .createGraphPolicyEnforcement(descriptor);
+                final SLPersistentTree tree = factory.createPersistentTree(descriptor);
+                final SystemUser systemUser = securityFactory.createSystemUser();
+                final IdentityManager identityManager = securityFactory.createIdentityManager(descriptor);
+                final PolicyEnforcement graphPolicyEnforcement = securityFactory.createGraphPolicyEnforcement(descriptor);
 
-                cached = new SLGraphImpl(tree,
-                                         new SLGraphClosingListenerImpl(), identityManager,
-                                         graphPolicyEnforcement, systemUser);
+                cached = new SLGraphImpl(tree, new SLGraphClosingListenerImpl(), identityManager, graphPolicyEnforcement,
+                                         systemUser);
                 cache.put(descriptor, cached);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
@@ -154,8 +144,7 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
      * @return the sL graph session
      */
     @Override
-    SLGraphSession createGraphSession(
-                                       final SLPersistentTreeSession treeSession,
+    SLGraphSession createGraphSession( final SLPersistentTreeSession treeSession,
                                        final PolicyEnforcement policyEnforcement,
                                        final AuthenticatedUser user ) {
         Assertions.checkNotNull("treeSession", treeSession);
@@ -189,8 +178,7 @@ public class SLGraphFactoryImpl extends SLGraphFactory {
      * @return the sL node property< v>
      */
     @Override
-    <V extends Serializable> SLNodeProperty<V> createProperty(
-                                                               final SLNode node,
+    <V extends Serializable> SLNodeProperty<V> createProperty( final SLNode node,
                                                                final SLPersistentProperty<V> persistentProperty,
                                                                final SLGraphSessionEventPoster eventPoster ) {
         return new SLNodePropertyImpl<V>(node, persistentProperty, eventPoster);

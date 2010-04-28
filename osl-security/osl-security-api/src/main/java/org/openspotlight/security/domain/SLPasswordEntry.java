@@ -73,12 +73,10 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
     public static SLPasswordEntry create( final IdentityObject identityObject,
                                           final IdentityObjectCredential credential ) {
         final SLPasswordEntry entry = new SLPasswordEntry();
-        entry.setCredentialClass((Class<? extends Credential>)credential
-                                                                        .getClass());
+        entry.setCredentialClass((Class<? extends Credential>)credential.getClass());
         final IdentityObjectCredentialType type = credential.getType();
         if (type != null) {
-            entry.setCredentialTypeClass((Class<? extends CredentialType>)type
-                                                                              .getClass());
+            entry.setCredentialTypeClass((Class<? extends CredentialType>)type.getClass());
             entry.setCredentialTypeName(type.getName());
         }
         entry.setUserId(identityObject.getId());
@@ -88,17 +86,14 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
             entry.setPasswordValue(passwordCredential.getValue());
         } else if (credential instanceof BinaryCredential) {
             final BinaryCredential binaryCredential = (BinaryCredential)credential;
-            final byte[] rawValue = binaryCredential.getValue() != null ? binaryCredential
-                                                                                          .getValue()
-                    : new byte[0];
+            final byte[] rawValue = binaryCredential.getValue() != null ? binaryCredential.getValue() : new byte[0];
             final List<Byte> autoboxed = new ArrayList<Byte>();
             for (final byte b : rawValue) {
                 autoboxed.add(b);
             }
             entry.setAutoboxedBinaryValue(autoboxed);
         } else {
-            throw Exceptions.logAndReturn(new IllegalArgumentException(
-                                                                       "invalid credential type"));
+            throw Exceptions.logAndReturn(new IllegalArgumentException("invalid credential type"));
         }
         return entry;
     }
@@ -119,14 +114,12 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
 
     public Credential asCredential() {
         if (PasswordCredential.class.equals(this.credentialClass)) {
-            final PasswordCredential credential = new PasswordCredential(
-                                                                         this.passwordValue);
+            final PasswordCredential credential = new PasswordCredential(this.passwordValue);
             return credential;
         } else if (BinaryCredential.class.equals(this.credentialClass)) {
 
             final List<Byte> autoboxed = this.getAutoboxedBinaryValue();
-            final byte[] raw = new byte[autoboxed == null ? 0 : autoboxed
-                                                                         .size()];
+            final byte[] raw = new byte[autoboxed == null ? 0 : autoboxed.size()];
             for (int i = 0, size = raw.length; i < size; i++) {
                 raw[i] = autoboxed.get(i);
             }
@@ -134,8 +127,7 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
             final BinaryCredential credential = new BinaryCredential(raw);
             return credential;
         } else {
-            throw Exceptions.logAndReturn(new IllegalArgumentException(
-                                                                       "invalid credential type"));
+            throw Exceptions.logAndReturn(new IllegalArgumentException("invalid credential type"));
         }
     }
 
@@ -175,18 +167,14 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
             if (identityObject.getId().equals(this.userId)) {
 
                 if (PasswordCredential.class.equals(this.credentialClass)) {
-                    final PasswordCredential thisCredential = (PasswordCredential)this
-                                                                                      .asCredential();
+                    final PasswordCredential thisCredential = (PasswordCredential)this.asCredential();
                     final PasswordCredential thatCredential = (PasswordCredential)credential;
-                    return thisCredential.getEncodedValue().equals(
-                                                                   thatCredential.getEncodedValue());
+                    return thisCredential.getEncodedValue().equals(thatCredential.getEncodedValue());
                 }
                 if (BinaryCredential.class.equals(this.credentialClass)) {
-                    final BinaryCredential thisCredential = (BinaryCredential)this
-                                                                                  .asCredential();
+                    final BinaryCredential thisCredential = (BinaryCredential)this.asCredential();
                     final BinaryCredential thatCredential = (BinaryCredential)credential;
-                    return Arrays.equals(thisCredential.getValue(),
-                                         thatCredential.getValue());
+                    return Arrays.equals(thisCredential.getValue(), thatCredential.getValue());
                 }
             }
         }
@@ -198,13 +186,11 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
         this.autoboxedBinaryValue = autoboxedBinaryValue;
     }
 
-    public void setCredentialClass(
-                                    final Class<? extends Credential> credentialClass ) {
+    public void setCredentialClass( final Class<? extends Credential> credentialClass ) {
         this.credentialClass = credentialClass;
     }
 
-    public void setCredentialTypeClass(
-                                        final Class<? extends CredentialType> credentialTypeClass ) {
+    public void setCredentialTypeClass( final Class<? extends CredentialType> credentialTypeClass ) {
         this.credentialTypeClass = credentialTypeClass;
     }
 

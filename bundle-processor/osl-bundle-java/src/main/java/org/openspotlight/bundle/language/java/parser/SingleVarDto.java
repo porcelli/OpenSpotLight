@@ -57,8 +57,7 @@ public class SingleVarDto {
     public final SLCommonTree identifierTreeElement;
 
     public SingleVarDto(
-                         final CommonTree typeTreeElement,
-                         final CommonTree identifierTreeElement ) {
+                         final CommonTree typeTreeElement, final CommonTree identifierTreeElement ) {
         this.typeTreeElement = (SLCommonTree)typeTreeElement;
         this.identifierTreeElement = (SLCommonTree)identifierTreeElement;
     }

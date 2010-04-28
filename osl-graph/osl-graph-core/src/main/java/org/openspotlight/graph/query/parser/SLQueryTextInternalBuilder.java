@@ -121,20 +121,18 @@ public class SLQueryTextInternalBuilder {
      * @return the sL query text internal
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    public SLQueryTextInternal build( final String slqlText )
-        throws SLInvalidQuerySyntaxException {
+    public SLQueryTextInternal build( final String slqlText ) throws SLInvalidQuerySyntaxException {
         final SLQueryTextInternalInfo queryInfo = buildQueryInfo(slqlText);
 
         SLQueryTextInternal target = null;
         if (queryInfo.hasTarget()) {
-            target = buildTargetQuery(queryInfo.getTargetUniqueId(), queryInfo
-                                                                              .getDefineTargetContent(), queryInfo.getStringsConstant());
+            target = buildTargetQuery(queryInfo.getTargetUniqueId(), queryInfo.getDefineTargetContent(),
+                                      queryInfo.getStringsConstant());
         }
 
         final Set<SLQLVariable> variables = buildVariableCollection(queryInfo);
 
-        return buildQuery(queryInfo.getId(), variables, queryInfo
-                                                                 .getOutputModelName(), queryInfo.getStringsConstant(), target,
+        return buildQuery(queryInfo.getId(), variables, queryInfo.getOutputModelName(), queryInfo.getStringsConstant(), target,
                           queryInfo.getContent());
     }
 
@@ -155,8 +153,7 @@ public class SLQueryTextInternalBuilder {
                                             final String outputModelName,
                                             final Map<Integer, String> stringConstants,
                                             final SLQueryTextInternal target,
-                                            final String executeContent )
-        throws SLInvalidQuerySyntaxException {
+                                            final String executeContent ) throws SLInvalidQuerySyntaxException {
         try {
             final String className = getClassName(id);
 
@@ -165,14 +162,11 @@ public class SLQueryTextInternalBuilder {
             }
 
             @SuppressWarnings( "unchecked" )
-            final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil
-                                                                                                                      .getClass(className);
+            final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil.getClass(className);
 
             Constructor<AbstractSLQueryTextInternal> constr;
-            constr = queryResult.getConstructor(String.class, Set.class,
-                                                String.class, SLQueryTextInternal.class, Map.class);
-            return constr.newInstance(id, variables, outputModelName, target,
-                                      stringConstants);
+            constr = queryResult.getConstructor(String.class, Set.class, String.class, SLQueryTextInternal.class, Map.class);
+            return constr.newInstance(id, variables, outputModelName, target, stringConstants);
 
         } catch (final Exception e) {
             throw new SLInvalidQuerySyntaxException(e);
@@ -205,18 +199,13 @@ public class SLQueryTextInternalBuilder {
      * @return the sL query text internal info
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private SLQueryTextInternalInfo buildQueryInfo( final String slqlText )
-        throws SLInvalidQuerySyntaxException {
+    private SLQueryTextInternalInfo buildQueryInfo( final String slqlText ) throws SLInvalidQuerySyntaxException {
         try {
-            final InputStream stream = ClassPathResource
-                                                        .getResourceFromClassPath(this.getClass(),
-                                                                                  "SLQLTemplate.stg");
+            final InputStream stream = ClassPathResource.getResourceFromClassPath(this.getClass(), "SLQLTemplate.stg");
             final Reader reader = new InputStreamReader(stream);
-            final StringTemplateGroup templates = new StringTemplateGroup(
-                                                                          reader);
+            final StringTemplateGroup templates = new StringTemplateGroup(reader);
             reader.close();
-            final CaseInsensitiveStringStream inputStream = new CaseInsensitiveStringStream(
-                                                                                            slqlText);
+            final CaseInsensitiveStringStream inputStream = new CaseInsensitiveStringStream(slqlText);
             final SLQLLexer lex = new SLQLLexer(inputStream);
             final CommonTokenStream tokens = new CommonTokenStream(lex);
 
@@ -227,17 +216,14 @@ public class SLQueryTextInternalBuilder {
             }
             final CommonTree result = (CommonTree)parser.compilationUnit().tree;
 
-            final String uniqueId = Sha1.getSha1SignatureEncodedAsHexa(result
-                                                                             .toStringTree().toLowerCase());
+            final String uniqueId = Sha1.getSha1SignatureEncodedAsHexa(result.toStringTree().toLowerCase());
 
             String targetUniqueId = null;
             if (parser.getDefineTargetTreeResult() != null) {
-                targetUniqueId = Sha1.getSha1SignatureEncodedAsHexa(parser
-                                                                          .getDefineTargetTreeResult());
+                targetUniqueId = Sha1.getSha1SignatureEncodedAsHexa(parser.getDefineTargetTreeResult());
             }
 
-            final CommonTreeNodeStream treeNodes = new CommonTreeNodeStream(
-                                                                            result);
+            final CommonTreeNodeStream treeNodes = new CommonTreeNodeStream(result);
 
             final SLQLWalker walker = new SLQLWalker(treeNodes);
             walker.setTemplateLib(templates);
@@ -273,14 +259,11 @@ public class SLQueryTextInternalBuilder {
             }
 
             @SuppressWarnings( "unchecked" )
-            final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil
-                                                                                                                      .getClass(className);
+            final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil.getClass(className);
 
             Constructor<AbstractSLQueryTextInternal> constr;
-            constr = queryResult.getConstructor(String.class, Set.class,
-                                                String.class, SLQueryTextInternal.class, Map.class);
-            return constr.newInstance(targetUniqueId, null, null, null,
-                                      stringConstants);
+            constr = queryResult.getConstructor(String.class, Set.class, String.class, SLQueryTextInternal.class, Map.class);
+            return constr.newInstance(targetUniqueId, null, null, null, stringConstants);
 
         } catch (final Exception e) {
             throw new SLInvalidQuerySyntaxException(e);
@@ -293,22 +276,25 @@ public class SLQueryTextInternalBuilder {
      * @param queryInfo the query info
      * @return the set< slql variable>
      */
-    private Set<SLQLVariable> buildVariableCollection(
-                                                       final SLQueryTextInternalInfo queryInfo ) {
+    private Set<SLQLVariable> buildVariableCollection( final SLQueryTextInternalInfo queryInfo ) {
         final Set<SLQLVariable> result = new HashSet<SLQLVariable>();
 
-        final Collection<SLQLVariable> tempBoolVars = getVariablesByDataType(
-                                                                             SLQLVariableDataType.BOOLEAN, queryInfo.getBoolVariables(),
-                                                                             queryInfo.getMessageVariables(), queryInfo.getDomainVariables());
-        final Collection<SLQLVariable> tempIntVars = getVariablesByDataType(
-                                                                            SLQLVariableDataType.INTEGER, queryInfo.getIntVariables(),
-                                                                            queryInfo.getMessageVariables(), queryInfo.getDomainVariables());
-        final Collection<SLQLVariable> tempDecVars = getVariablesByDataType(
-                                                                            SLQLVariableDataType.DECIMAL, queryInfo.getDecVariables(),
-                                                                            queryInfo.getMessageVariables(), queryInfo.getDomainVariables());
-        final Collection<SLQLVariable> tempStringVars = getVariablesByDataType(
-                                                                               SLQLVariableDataType.STRING, queryInfo.getStringVariables(),
-                                                                               queryInfo.getMessageVariables(), queryInfo.getDomainVariables());
+        final Collection<SLQLVariable> tempBoolVars = getVariablesByDataType(SLQLVariableDataType.BOOLEAN,
+                                                                             queryInfo.getBoolVariables(),
+                                                                             queryInfo.getMessageVariables(),
+                                                                             queryInfo.getDomainVariables());
+        final Collection<SLQLVariable> tempIntVars = getVariablesByDataType(SLQLVariableDataType.INTEGER,
+                                                                            queryInfo.getIntVariables(),
+                                                                            queryInfo.getMessageVariables(),
+                                                                            queryInfo.getDomainVariables());
+        final Collection<SLQLVariable> tempDecVars = getVariablesByDataType(SLQLVariableDataType.DECIMAL,
+                                                                            queryInfo.getDecVariables(),
+                                                                            queryInfo.getMessageVariables(),
+                                                                            queryInfo.getDomainVariables());
+        final Collection<SLQLVariable> tempStringVars = getVariablesByDataType(SLQLVariableDataType.STRING,
+                                                                               queryInfo.getStringVariables(),
+                                                                               queryInfo.getMessageVariables(),
+                                                                               queryInfo.getDomainVariables());
 
         result.addAll(tempBoolVars);
         result.addAll(tempIntVars);
@@ -330,59 +316,46 @@ public class SLQueryTextInternalBuilder {
         try {
 
             final ClassPool pool = ClassPool.getDefault();
-            pool.appendClassPath(new LoaderClassPath(
-                                                     AbstractSLQueryTextInternal.class.getClassLoader()));
-            final CtClass superClass = pool
-                                           .get(AbstractSLQueryTextInternal.class.getName());
+            pool.appendClassPath(new LoaderClassPath(AbstractSLQueryTextInternal.class.getClassLoader()));
+            final CtClass superClass = pool.get(AbstractSLQueryTextInternal.class.getName());
             final CtClass clas = pool.makeClass(className, superClass);
 
             if (CONSTRUCTOR_ARGS == null) {
-                for (final Constructor<?> constructor : AbstractSLQueryTextInternal.class
-                                                                                         .getConstructors()) {
+                for (final Constructor<?> constructor : AbstractSLQueryTextInternal.class.getConstructors()) {
                     if (constructor.getParameterTypes().length > 0) {
-                        CONSTRUCTOR_ARGS = new CtClass[constructor
-                                                                  .getParameterTypes().length];
-                        CONSTRUCTOR_THROWS = new CtClass[constructor
-                                                                    .getExceptionTypes().length];
+                        CONSTRUCTOR_ARGS = new CtClass[constructor.getParameterTypes().length];
+                        CONSTRUCTOR_THROWS = new CtClass[constructor.getExceptionTypes().length];
                         for (int i = 0; i < constructor.getParameterTypes().length; i++) {
-                            CONSTRUCTOR_ARGS[i] = pool.get(constructor
-                                                                      .getParameterTypes()[i].getName());
+                            CONSTRUCTOR_ARGS[i] = pool.get(constructor.getParameterTypes()[i].getName());
                         }
                         for (int i = 0; i < constructor.getExceptionTypes().length; i++) {
-                            CONSTRUCTOR_THROWS[i] = pool.get(constructor
-                                                                        .getExceptionTypes()[i].getName());
+                            CONSTRUCTOR_THROWS[i] = pool.get(constructor.getExceptionTypes()[i].getName());
                         }
                         break;
                     }
                 }
 
-                for (final Method method : AbstractSLQueryTextInternal.class
-                                                                            .getMethods()) {
+                for (final Method method : AbstractSLQueryTextInternal.class.getMethods()) {
                     if (method.getName().equals("execute")) {
                         EXECUTE_ARGS = new CtClass[method.getParameterTypes().length];
                         EXECUTE_THROWS = new CtClass[method.getExceptionTypes().length];
                         for (int i = 0; i < method.getParameterTypes().length; i++) {
-                            EXECUTE_ARGS[i] = pool.get(method
-                                                             .getParameterTypes()[i].getName());
+                            EXECUTE_ARGS[i] = pool.get(method.getParameterTypes()[i].getName());
                         }
                         for (int i = 0; i < method.getExceptionTypes().length; i++) {
-                            EXECUTE_THROWS[i] = pool.get(method
-                                                               .getExceptionTypes()[i].getName());
+                            EXECUTE_THROWS[i] = pool.get(method.getExceptionTypes()[i].getName());
                         }
-                        EXECUTE_RETURN_TYPE = pool.get(method.getReturnType()
-                                                             .getName());
+                        EXECUTE_RETURN_TYPE = pool.get(method.getReturnType().getName());
                         break;
                     }
                 }
             }
 
-            final CtConstructor newConstructor = CtNewConstructor.make(
-                                                                       CONSTRUCTOR_ARGS, CONSTRUCTOR_THROWS, clas);
+            final CtConstructor newConstructor = CtNewConstructor.make(CONSTRUCTOR_ARGS, CONSTRUCTOR_THROWS, clas);
             clas.addConstructor(newConstructor);
 
-            final CtMethod newMethod = CtNewMethod.make(EXECUTE_RETURN_TYPE,
-                                                        "execute", EXECUTE_ARGS, EXECUTE_THROWS, executeContent,
-                                                        clas);
+            final CtMethod newMethod = CtNewMethod.make(EXECUTE_RETURN_TYPE, "execute", EXECUTE_ARGS, EXECUTE_THROWS,
+                                                        executeContent, clas);
             clas.addMethod(newMethod);
 
             clas.toClass(SLQueryTextInternalBuilder.class.getClassLoader(),
@@ -411,13 +384,11 @@ public class SLQueryTextInternalBuilder {
      * @param domainVariables the domain variables
      * @return the variables by data type
      */
-    private Collection<SLQLVariable> getVariablesByDataType(
-                                                             final SLQLVariableDataType dataType,
+    private Collection<SLQLVariable> getVariablesByDataType( final SLQLVariableDataType dataType,
                                                              final Collection<String> variables,
                                                              final Map<String, String> messageVariables,
                                                              final Map<String, Set<Serializable>> domainVariables ) {
-        final Set<SLQLVariable> result = new HashSet<SLQLVariable>(variables
-                                                                            .size());
+        final Set<SLQLVariable> result = new HashSet<SLQLVariable>(variables.size());
         for (final String activeVariableName : variables) {
             SLQLVariable variable = null;
             switch (dataType) {
@@ -436,13 +407,10 @@ public class SLQueryTextInternalBuilder {
             }
 
             if (messageVariables.containsKey(activeVariableName)) {
-                variable.setDisplayMessage(messageVariables
-                                                           .get(activeVariableName));
+                variable.setDisplayMessage(messageVariables.get(activeVariableName));
             }
-            if (dataType != SLQLVariableDataType.BOOLEAN
-                && domainVariables.containsKey(activeVariableName)) {
-                variable.addAllDomainValue(domainVariables
-                                                          .get(activeVariableName));
+            if (dataType != SLQLVariableDataType.BOOLEAN && domainVariables.containsKey(activeVariableName)) {
+                variable.addAllDomainValue(domainVariables.get(activeVariableName));
             }
             result.add(variable);
         }

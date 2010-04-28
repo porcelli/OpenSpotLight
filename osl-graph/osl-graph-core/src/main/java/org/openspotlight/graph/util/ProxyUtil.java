@@ -77,8 +77,7 @@ public class ProxyUtil {
                                                         final SLLink link ) {
         synchronized (link.getLockObject()) {
             final InvocationHandler handler = new SLLinkInvocationHandler(link);
-            return linkType.cast(Proxy.newProxyInstance(linkType
-                                                                .getClassLoader(), new Class<?>[] {linkType}, handler));
+            return linkType.cast(Proxy.newProxyInstance(linkType.getClassLoader(), new Class<?>[] {linkType}, handler));
         }
     }
 
@@ -99,11 +98,8 @@ public class ProxyUtil {
             if (node instanceof Proxy) {
                 proxyNode = nodeType.cast(node);
             } else {
-                final InvocationHandler handler = new SLNodeInvocationHandler(
-                                                                              node);
-                proxyNode = nodeType.cast(Proxy
-                                               .newProxyInstance(nodeType.getClassLoader(),
-                                                                 new Class<?>[] {nodeType}, handler));
+                final InvocationHandler handler = new SLNodeInvocationHandler(node);
+                proxyNode = nodeType.cast(Proxy.newProxyInstance(nodeType.getClassLoader(), new Class<?>[] {nodeType}, handler));
             }
             return proxyNode;
         }
@@ -117,8 +113,7 @@ public class ProxyUtil {
      */
     public static SLNode createNodeProxy( final SLNode node ) {
         synchronized (node.getLockObject()) {
-            final Class<? extends SLNode> nodeType = SLCommonSupport
-                                                                    .getNodeType(node);
+            final Class<? extends SLNode> nodeType = SLCommonSupport.getNodeType(node);
             return createNodeProxy(nodeType, node);
         }
     }
@@ -132,8 +127,7 @@ public class ProxyUtil {
      */
     public static <T> T createProxy( final Class<T> iClass,
                                      final InvocationHandler handler ) {
-        return iClass.cast(Proxy.newProxyInstance(iClass.getClassLoader(),
-                                                  new Class<?>[] {iClass}, handler));
+        return iClass.cast(Proxy.newProxyInstance(iClass.getClassLoader(), new Class<?>[] {iClass}, handler));
     }
 
     /**
@@ -146,8 +140,7 @@ public class ProxyUtil {
     public static <T> T createProxy( final Class<T> iClass,
                                      final Object target ) {
         final InvocationHandler handler = new SimpleInvocationHandler(target);
-        return iClass.cast(Proxy.newProxyInstance(iClass.getClassLoader(),
-                                                  new Class<?>[] {iClass}, handler));
+        return iClass.cast(Proxy.newProxyInstance(iClass.getClassLoader(), new Class<?>[] {iClass}, handler));
     }
 
     /**
@@ -157,8 +150,7 @@ public class ProxyUtil {
      * @return the link from proxy
      */
     public static SLLink getLinkFromProxy( final Object proxy ) {
-        final SLLinkInvocationHandler handler = (SLLinkInvocationHandler)Proxy
-                                                                              .getInvocationHandler(proxy);
+        final SLLinkInvocationHandler handler = (SLLinkInvocationHandler)Proxy.getInvocationHandler(proxy);
         return handler.getLink();
     }
 
@@ -169,8 +161,7 @@ public class ProxyUtil {
      * @return the node from proxy
      */
     public static SLNode getNodeFromProxy( final Object proxy ) {
-        final SLNodeInvocationHandler handler = (SLNodeInvocationHandler)Proxy
-                                                                              .getInvocationHandler(proxy);
+        final SLNodeInvocationHandler handler = (SLNodeInvocationHandler)Proxy.getInvocationHandler(proxy);
         return handler.getNode();
     }
 }

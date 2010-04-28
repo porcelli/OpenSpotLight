@@ -86,8 +86,7 @@ import org.openspotlight.security.idm.User;
 public class SLGraphQueryLinkCountTest {
 
     /** The Constant LOGGER. */
-    static final Logger              LOGGER = Logger
-                                                    .getLogger(SLGraphQueryLinkCountTest.class);
+    static final Logger              LOGGER = Logger.getLogger(SLGraphQueryLinkCountTest.class);
 
     /** The graph. */
     private static SLGraph           graph;
@@ -128,18 +127,14 @@ public class SLGraphQueryLinkCountTest {
     public static void quickGraphPopulation() {
         try {
 
-            JcrConnectionProvider.createFromData(
-                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+            JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
-            final SecurityFactory securityFactory = AbstractFactory
-                                                                   .getDefaultInstance(SecurityFactory.class);
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
-            user = securityFactory.createIdentityManager(
-                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                                                                                                            simpleUser, "password");
+            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
+                                                                                                            "password");
 
-            final SLGraphFactory factory = AbstractFactory
-                                                          .getDefaultInstance(SLGraphFactory.class);
+            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
             final SLContext context = session.createContext("linkCountTest");
@@ -147,30 +142,19 @@ public class SLGraphQueryLinkCountTest {
             final Set<Class<?>> types = getIFaceTypeSet();
             for (final Class<?> type : types) {
                 final Method[] methods = type.getDeclaredMethods();
-                LOGGER
-                      .info(type.getName() + ": " + methods.length
-                            + " methods");
-                final JavaInterface javaInteface = root.addNode(
-                                                                JavaInterface.class, type.getName());
-                javaInteface.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", type
-                                                                                              .getName());
+                LOGGER.info(type.getName() + ": " + methods.length + " methods");
+                final JavaInterface javaInteface = root.addNode(JavaInterface.class, type.getName());
+                javaInteface.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", type.getName());
                 for (final Method method : methods) {
-                    final JavaTypeMethod javaMethod = javaInteface.addNode(
-                                                                           JavaTypeMethod.class, method.getName());
-                    javaMethod.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", method
-                                                                                                  .getName());
-                    session.addLink(TypeContainsMethod.class, javaInteface,
-                                    javaMethod, false);
+                    final JavaTypeMethod javaMethod = javaInteface.addNode(JavaTypeMethod.class, method.getName());
+                    javaMethod.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", method.getName());
+                    session.addLink(TypeContainsMethod.class, javaInteface, javaMethod, false);
                     final Class<?>[] paramTypes = method.getParameterTypes();
-                    LOGGER.info("\t\t" + method.getName() + ": "
-                                + paramTypes.length + " params");
+                    LOGGER.info("\t\t" + method.getName() + ": " + paramTypes.length + " params");
                     for (final Class<?> paramType : paramTypes) {
-                        final MethodParam methodParam = javaMethod.addNode(
-                                                                           MethodParam.class, paramType.getName());
-                        methodParam.setProperty(String.class, VisibilityLevel.PUBLIC, "caption",
-                                                paramType.getName());
-                        session.addLink(MethodContainsParam.class, javaMethod,
-                                        methodParam, false);
+                        final MethodParam methodParam = javaMethod.addNode(MethodParam.class, paramType.getName());
+                        methodParam.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", paramType.getName());
+                        session.addLink(MethodContainsParam.class, javaMethod, methodParam, false);
                     }
                 }
             }
@@ -189,16 +173,13 @@ public class SLGraphQueryLinkCountTest {
      * @return the string
      * @throws SLInvalidQuerySyntaxException
      */
-    private String findIFaceID( final Class<?> type )
-            throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
+    private String findIFaceID( final Class<?> type ) throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
         final SLQueryApi query = session.createQueryApi();
-        query.select().allTypes().onWhere().selectEnd().where().type(
-                                                                     JavaInterface.class.getName()).each().property("caption")
-             .equalsTo().value(type.getName()).typeEnd().whereEnd();
+        query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
+                                                                                                                                                type.getName()).typeEnd().whereEnd();
         final SLQueryResult result = query.execute();
         final Collection<SLNode> nodes = result.getNodes();
-        return nodes.size() > 0 ? result.getNodes().iterator().next().getID()
-            : null;
+        return nodes.size() > 0 ? result.getNodes().iterator().next().getID() : null;
     }
 
     /**
@@ -216,13 +197,13 @@ public class SLGraphQueryLinkCountTest {
 
             final SLQueryApi query = session.createQueryApi();
 
-            query.select().type(JavaTypeMethod.class.getName()).byLink(
-                                                                       TypeContainsMethod.class.getName()).b().selectEnd()
-                 .select().type(JavaTypeMethod.class.getName()).selectEnd()
-                 .where().type(JavaTypeMethod.class.getName()).each()
-                 .property("caption").contains().value("All").and().each()
-                 .link(MethodContainsParam.class.getName()).a().count()
-                 .equalsTo().value(1).typeEnd().whereEnd();
+            query.select().type(JavaTypeMethod.class.getName()).byLink(TypeContainsMethod.class.getName()).b().selectEnd().select().type(
+                                                                                                                                         JavaTypeMethod.class.getName()).selectEnd().where().type(
+                                                                                                                                                                                                  JavaTypeMethod.class.getName()).each().property(
+                                                                                                                                                                                                                                                  "caption").contains().value(
+                                                                                                                                                                                                                                                                              "All").and().each().link(
+                                                                                                                                                                                                                                                                                                       MethodContainsParam.class.getName()).a().count().equalsTo().value(
+                                                                                                                                                                                                                                                                                                                                                                         1).typeEnd().whereEnd();
 
             final SLQueryResult result = query.execute(new String[] {id});
             final Collection<SLNode> nodes = result.getNodes();
@@ -243,12 +224,11 @@ public class SLGraphQueryLinkCountTest {
             final String id = findIFaceID(java.util.Map.class);
             final SLQueryApi query = session.createQueryApi();
 
-            query.select().type(JavaTypeMethod.class.getName()).byLink(
-                                                                       TypeContainsMethod.class.getName()).b().selectEnd()
-                 .select().type(JavaTypeMethod.class.getName()).selectEnd()
-                 .where().type(JavaTypeMethod.class.getName()).each().link(
-                                                                           MethodContainsParam.class.getName()).a().count()
-                 .equalsTo().value(0).typeEnd().whereEnd();
+            query.select().type(JavaTypeMethod.class.getName()).byLink(TypeContainsMethod.class.getName()).b().selectEnd().select().type(
+                                                                                                                                         JavaTypeMethod.class.getName()).selectEnd().where().type(
+                                                                                                                                                                                                  JavaTypeMethod.class.getName()).each().link(
+                                                                                                                                                                                                                                              MethodContainsParam.class.getName()).a().count().equalsTo().value(
+                                                                                                                                                                                                                                                                                                                0).typeEnd().whereEnd();
 
             final SLQueryResult result = query.execute(new String[] {id});
             final Collection<SLNode> nodes = result.getNodes();

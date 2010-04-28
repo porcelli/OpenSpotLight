@@ -57,8 +57,7 @@ import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArt
 /**
  * The Class SqlServerFunctionFilterNameHandler is used to filter function names.
  */
-public class SqlServerFunctionFilterNameHandler implements
-        DatabaseArtifactNameHandler {
+public class SqlServerFunctionFilterNameHandler implements DatabaseArtifactNameHandler {
 
     public String fixName( final String oldName ) {
         if (oldName.indexOf(';') == -1) {
@@ -74,8 +73,7 @@ public class SqlServerFunctionFilterNameHandler implements
     public boolean shouldIncludeName( final String artifactName,
                                       final ScriptType type,
                                       final ResultSet resultSet ) throws Exception {
-        final boolean isFunction = resultSet.getString("PROCEDURE_NAME")
-                                            .endsWith(";0");
+        final boolean isFunction = resultSet.getString("PROCEDURE_NAME").endsWith(";0");
         if (isFunction) {
             return true;
         }

@@ -60,8 +60,7 @@ import org.openspotlight.common.concurrent.LockContainer;
  * 
  * @see SLAbstractGraphSessionEventListener
  */
-public abstract class SLAbstractGraphSessionEventListener implements
-        SLGraphSessionEventListener {
+public abstract class SLAbstractGraphSessionEventListener implements SLGraphSessionEventListener {
 
     protected Lock lock;
 

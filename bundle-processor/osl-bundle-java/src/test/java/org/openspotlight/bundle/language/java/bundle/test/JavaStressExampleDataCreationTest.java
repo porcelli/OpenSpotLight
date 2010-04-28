@@ -107,8 +107,7 @@ public class JavaStressExampleDataCreationTest {
         } catch (final AssertionError e) {
             e.printStackTrace();
         } finally {
-            JcrConnectionProvider.createFromData(descriptor)
-                                 .closeRepositoryAndCleanResources();
+            JcrConnectionProvider.createFromData(descriptor).closeRepositoryAndCleanResources();
 
         }
 
@@ -126,8 +125,7 @@ public class JavaStressExampleDataCreationTest {
     Logger                                       logger     = LoggerFactory.getLogger(getClass());
 
     public void setupResourcesAndCreateData() throws Exception {
-        JcrConnectionProvider.createFromData(descriptor)
-                             .closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(descriptor).closeRepositoryAndCleanResources();
         new RemoteGraphSessionServer(new UserAuthenticator() {
 
             public boolean canConnect( final String userName,
@@ -148,14 +146,12 @@ public class JavaStressExampleDataCreationTest {
         final ArtifactSource includedSource = new ArtifactSource();
         includedSource.setRepository(repo);
         includedSource.setName("classpath");
-        includedSource
-                      .setInitialLookup("./src/test/resources/stringArtifacts/stressData");
-        Injector injector = Guice.createInjector(
-                        new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                        new SimplePersistModule(),
-                        new DetailedLoggerModule(),
-                        new DefaultExecutionContextFactoryModule());
+        includedSource.setInitialLookup("./src/test/resources/stringArtifacts/stressData");
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
         includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
@@ -181,43 +177,35 @@ public class JavaStressExampleDataCreationTest {
         bundleJarSource.setBundleProcessorType(jarProcessor);
         bundleJarSource.setRelative("jar/");
         bundleJarSource.getIncludeds().add("**/*.jar");
-        ExecutionContext ctx = includedFilesContextFactory
-                                                          .createExecutionContext(username, password, descriptor,
+        ExecutionContext ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
                                                                                   group.getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
-        final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
-                                                                                   .executeBundles(username, password, descriptor,
-                                                                                                   includedFilesContextFactory, settings, group);
+        final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password,
+                                                                                                   descriptor,
+                                                                                                   includedFilesContextFactory,
+                                                                                                   settings, group);
         Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
-        ctx = includedFilesContextFactory.createExecutionContext(username,
-                                                                 password, descriptor, group.getRootRepository());
-        final SLNode ctxRoot = ctx.getGraphSession().getContext(
-                                                                JavaConstants.ABSTRACT_CONTEXT).getRootNode();
-        final SLNode objectNode = ctxRoot.getNode("java.lang")
-                                         .getNode("Object");
+        ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor, group.getRootRepository());
+        final SLNode ctxRoot = ctx.getGraphSession().getContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
+        final SLNode objectNode = ctxRoot.getNode("java.lang").getNode("Object");
         Assert.assertThat(objectNode, Is.is(IsNull.notNullValue()));
 
-        final SessionWithLock session = ctx.getDefaultConnectionProvider()
-                                           .openSession();
-        final Node node = session.getRootNode().getNode(
-                                                        SLConsts.DEFAULT_JCR_ROOT_NAME);
+        final SessionWithLock session = ctx.getDefaultConnectionProvider().openSession();
+        final Node node = session.getRootNode().getNode(SLConsts.DEFAULT_JCR_ROOT_NAME);
         new File("target/test-data/").mkdirs();
         final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
                                                                                    new FileOutputStream(
                                                                                                         "target/test-data/exported-stress-data.xml"));
-        session.exportSystemView(node.getPath(), bufferedOutputStream, false,
-                                 false);
+        session.exportSystemView(node.getPath(), bufferedOutputStream, false, false);
         bufferedOutputStream.flush();
         bufferedOutputStream.close();
 
-        final NodeIterator contexts = node.getNodes("name/contexts").nextNode()
-                                          .getNodes();
+        final NodeIterator contexts = node.getNodes("name/contexts").nextNode().getNodes();
 
         while (contexts.hasNext()) {
             final Node ctxNode = contexts.nextNode();
-            final BufferedOutputStream o = new BufferedOutputStream(
-                                                                    new FileOutputStream("target/test-data/exported-"
+            final BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream("target/test-data/exported-"
                                                                                          + ctxNode.getName() + ".xml"));
             logger.debug("exported-" + ctxNode.getName() + ".xml");
             session.exportSystemView(node.getPath(), o, false, false);
@@ -226,8 +214,7 @@ public class JavaStressExampleDataCreationTest {
 
         }
 
-        System.err
-                  .println("Done test! Server is still waiting connections on port 7070");
+        System.err.println("Done test! Server is still waiting connections on port 7070");
         while (true) {
             Thread.sleep(5000);
         }

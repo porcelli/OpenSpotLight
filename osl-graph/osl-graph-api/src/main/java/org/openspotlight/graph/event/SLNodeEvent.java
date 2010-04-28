@@ -88,9 +88,7 @@ public abstract class SLNodeEvent extends SLGraphSessionEvent {
      * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
      */
     public SLNodeEvent(
-                        final SLNode node,
-                        final SLPersistentNode pNode,
-                        final SLPersistenceMode persistentMode,
+                        final SLNode node, final SLPersistentNode pNode, final SLPersistenceMode persistentMode,
                         final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                         final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion ) {
         super(node.getSession());

@@ -80,58 +80,55 @@ import java.util.*;
 @Singleton
 public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLogger> {
 
-
     @Inject
-    public DetailedLoggerProvider(SimplePersistFactory simplePersistFactory, Provider<STStorageSession> sessionProvider) {
+    public DetailedLoggerProvider(
+                                   SimplePersistFactory simplePersistFactory, Provider<STStorageSession> sessionProvider ) {
         this.simplePersistFactory = simplePersistFactory;
         this.sessionProvider = sessionProvider;
     }
 
-    private final SimplePersistFactory simplePersistFactory;
+    private final SimplePersistFactory       simplePersistFactory;
 
     private final Provider<STStorageSession> sessionProvider;
 
-    private final STPartition partition = SLPartition.LOG;
-
+    private final STPartition                partition = SLPartition.LOG;
 
     @Override
     protected DetailedLogger createInstance() {
-        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = simplePersistFactory
-                .createSimplePersist(partition);
+        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = simplePersistFactory.createSimplePersist(partition);
         return new DetailedLoggerImpl(simplePersist);
     }
-
 
     /**
      * The Class LogEntry is used to represent a new log entry.
      */
-    @Name("log_entry")
+    @Name( "log_entry" )
     public static class LogEntry implements SimpleNodeType, Serializable {
 
         /**
          *
          */
-        private static final long serialVersionUID = -1429744150741798679L;
+        private static final long             serialVersionUID = -1429744150741798679L;
 
         /**
          * The error code.
          */
-        private ErrorCode errorCode;
+        private ErrorCode                     errorCode;
 
         /**
          * The type.
          */
-        private LogEventType type;
+        private LogEventType                  type;
 
         /**
          * The message.
          */
-        private String message;
+        private String                        message;
 
         /**
          * The detailed message.
          */
-        private String detailedMessage;
+        private String                        detailedMessage;
 
         /**
          * The nodes.
@@ -141,32 +138,30 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
         /**
          * The date.
          */
-        private Date date;
+        private Date                          date;
 
-        private long timestamp;
+        private long                          timestamp;
 
         /**
          * The hash code.
          */
-        private int hashCode;
+        private int                           hashCode;
 
         public LogEntry() {
         }
 
         /**
          * Instantiates a new log entry.
-         *
-         * @param errorCode       the error code
-         * @param type            the type
-         * @param message         the message
+         * 
+         * @param errorCode the error code
+         * @param type the type
+         * @param message the message
          * @param detailedMessage the detailed message
-         * @param nodes           the nodes
+         * @param nodes the nodes
          */
         LogEntry(
-                final ErrorCode errorCode, final long timestamp,
-                final LogEventType type, final String message,
-                final String detailedMessage,
-                final List<LoggedObjectInformation> nodes) {
+                  final ErrorCode errorCode, final long timestamp, final LogEventType type, final String message,
+                  final String detailedMessage, final List<LoggedObjectInformation> nodes ) {
             this.errorCode = errorCode;
             this.type = type;
             this.message = message;
@@ -174,9 +169,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
             this.nodes = Collections.unmodifiableList(nodes);
             this.timestamp = timestamp;
             this.date = new Date(timestamp);
-            hashCode = HashCodes
-                    .hashOf(this.type, this.message, this.detailedMessage,
-                            this.nodes, this.date, this.errorCode);
+            hashCode = HashCodes.hashOf(this.type, this.message, this.detailedMessage, this.nodes, this.date, this.errorCode);
         }
 
         /*
@@ -186,23 +179,22 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
          */
 
         @Override
-        public boolean equals(final Object obj) {
+        public boolean equals( final Object obj ) {
             if (obj == this) {
                 return true;
             }
             if (!(obj instanceof LogEntry)) {
                 return false;
             }
-            final LogEntry that = (LogEntry) obj;
-            return Equals.eachEquality(Arrays.of(type, message,
-                    detailedMessage, nodes, date, errorCode), Arrays.andOf(
-                    that.type, that.message, that.detailedMessage, that.nodes,
-                    that.date, that.errorCode));
+            final LogEntry that = (LogEntry)obj;
+            return Equals.eachEquality(Arrays.of(type, message, detailedMessage, nodes, date, errorCode),
+                                       Arrays.andOf(that.type, that.message, that.detailedMessage, that.nodes, that.date,
+                                                    that.errorCode));
         }
 
         /**
          * Gets the date.
-         *
+         * 
          * @return the date
          */
         public Date getDate() {
@@ -214,13 +206,13 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
             return timestamp;
         }
 
-        public void setTimestamp(long timestamp) {
+        public void setTimestamp( long timestamp ) {
             this.timestamp = timestamp;
         }
 
         /**
          * Gets the detailed message.
-         *
+         * 
          * @return the detailed message
          */
         public String getDetailedMessage() {
@@ -233,7 +225,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the message.
-         *
+         * 
          * @return the message
          */
         public String getMessage() {
@@ -242,7 +234,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the nodes.
-         *
+         * 
          * @return the nodes
          */
         public List<LoggedObjectInformation> getNodes() {
@@ -251,7 +243,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the type.
-         *
+         * 
          * @return the type
          */
         @KeyProperty
@@ -270,27 +262,27 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
             return hashCode;
         }
 
-        public void setDate(final Date date) {
+        public void setDate( final Date date ) {
             this.date = date;
         }
 
-        public void setDetailedMessage(final String detailedMessage) {
+        public void setDetailedMessage( final String detailedMessage ) {
             this.detailedMessage = detailedMessage;
         }
 
-        public void setErrorCode(final ErrorCode errorCode) {
+        public void setErrorCode( final ErrorCode errorCode ) {
             this.errorCode = errorCode;
         }
 
-        public void setMessage(final String message) {
+        public void setMessage( final String message ) {
             this.message = message;
         }
 
-        public void setNodes(final List<LoggedObjectInformation> nodes) {
+        public void setNodes( final List<LoggedObjectInformation> nodes ) {
             this.nodes = nodes;
         }
 
-        public void setType(final LogEventType type) {
+        public void setType( final LogEventType type ) {
             this.type = type;
         }
 
@@ -299,17 +291,15 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
     /**
      * The Class LoggedObjectInformation is used to represent objects related to a given log.
      */
-    @Name("logged_object_information")
-    public static class LoggedObjectInformation implements SimpleNodeType,
-            Serializable {
+    @Name( "logged_object_information" )
+    public static class LoggedObjectInformation implements SimpleNodeType, Serializable {
 
         /**
          *
          */
         private static final long serialVersionUID = 2812040814742711306L;
 
-        private static List<LogableObject> getHierarchyFrom(
-                final LogableObject o) {
+        private static List<LogableObject> getHierarchyFrom( final LogableObject o ) {
             final List<LogableObject> result = new LinkedList<LogableObject>();
             result.add(o);
             LogableObject parent = LoggedObjectInformation.getParent(o);
@@ -322,19 +312,17 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the hierarchy from.
-         *
+         * 
          * @param anotherNodes the another nodes
          * @return the hierarchy from
          */
-        public static List<LoggedObjectInformation> getHierarchyFrom(
-                final LogableObject... anotherNodes) {
+        public static List<LoggedObjectInformation> getHierarchyFrom( final LogableObject... anotherNodes ) {
             final List<LogableObject> nodes = new LinkedList<LogableObject>();
             for (final LogableObject o : anotherNodes) {
                 nodes.addAll(LoggedObjectInformation.getHierarchyFrom(o));
             }
             Collections.reverse(nodes);
-            final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(
-                    nodes.size());
+            final List<LoggedObjectInformation> result = new ArrayList<LoggedObjectInformation>(nodes.size());
             for (int i = 0, size = nodes.size(); i < size; i++) {
                 result.add(new LoggedObjectInformation(i, nodes.get(i)));
             }
@@ -343,13 +331,13 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the parent.
-         *
+         * 
          * @param o the o
          * @return the parent
          */
-        private static LogableObject getParent(final LogableObject o) {
+        private static LogableObject getParent( final LogableObject o ) {
             if (o instanceof SLNode) {
-                final SLNode node = (SLNode) o;
+                final SLNode node = (SLNode)o;
                 return node.getParent();
             } else {
                 return null;// other types have the path information. Now the
@@ -357,7 +345,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
             }
         }
 
-        private int order;
+        private int    order;
 
         /**
          * The unique id.
@@ -379,51 +367,48 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Instantiates a new logged object information.
-         *
-         * @param order  the order
+         * 
+         * @param order the order
          * @param object the object
          */
         LoggedObjectInformation(
-                final int order, final LogableObject object) {
+                                 final int order, final LogableObject object ) {
             this.order = order;
             if (object instanceof SLNode) {
-                final SLNode node = (SLNode) object;
-                uniqueId = node.getID().replaceAll("\n","").replaceAll("\t","").replaceAll(" ","");
+                final SLNode node = (SLNode)object;
+                uniqueId = node.getID().replaceAll("\n", "").replaceAll("\t", "").replaceAll(" ", "");
 
                 friendlyDescription = node.toString();
                 typeName = node.getClass().getInterfaces()[0].getName();
             } else if (object instanceof ArtifactSource) {
-                final ArtifactSource node = (ArtifactSource) object;
+                final ArtifactSource node = (ArtifactSource)object;
                 friendlyDescription = node.getName();
                 typeName = node.getClass().getName();
                 uniqueId = null;
             } else if (object instanceof Artifact) {
-                final Artifact node = (Artifact) object;
+                final Artifact node = (Artifact)object;
                 friendlyDescription = node.getArtifactCompleteName();
                 typeName = node.getClass().getName();
                 uniqueId = null;
             } else {
                 throw Exceptions.logAndReturn(new IllegalArgumentException());
             }
-            Assertions
-                    .checkNotEmpty("friendlyDescription", friendlyDescription);
+            Assertions.checkNotEmpty("friendlyDescription", friendlyDescription);
             Assertions.checkNotEmpty("className", typeName);
         }
 
         /**
          * Instantiates a new logged object information.
-         *
-         * @param order               the order
-         * @param uniqueId            the unique id
-         * @param className           the class name
+         * 
+         * @param order the order
+         * @param uniqueId the unique id
+         * @param className the class name
          * @param friendlyDescription the friendly description
          */
         LoggedObjectInformation(
-                final int order, final String uniqueId,
-                final String className, final String friendlyDescription) {
+                                 final int order, final String uniqueId, final String className, final String friendlyDescription ) {
             Assertions.checkNotEmpty("uniqueId", uniqueId);
-            Assertions
-                    .checkNotEmpty("friendlyDescription", friendlyDescription);
+            Assertions.checkNotEmpty("friendlyDescription", friendlyDescription);
             Assertions.checkNotEmpty("className", className);
             this.order = order;
             this.uniqueId = uniqueId;
@@ -438,7 +423,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the friendly description.
-         *
+         * 
          * @return the friendly description
          */
         public String getFriendlyDescription() {
@@ -447,7 +432,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the order.
-         *
+         * 
          * @return the order
          */
         @KeyProperty
@@ -457,7 +442,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the type name.
-         *
+         * 
          * @return the type name
          */
         @KeyProperty
@@ -467,7 +452,7 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
 
         /**
          * Gets the unique id.
-         *
+         * 
          * @return the unique id
          */
         @KeyProperty
@@ -475,23 +460,23 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
             return uniqueId;
         }
 
-        public void setClassName(final String className) {
+        public void setClassName( final String className ) {
             typeName = className;
         }
 
-        public void setFriendlyDescription(final String friendlyDescription) {
+        public void setFriendlyDescription( final String friendlyDescription ) {
             this.friendlyDescription = friendlyDescription;
         }
 
-        public void setOrder(final int order) {
+        public void setOrder( final int order ) {
             this.order = order;
         }
 
-        public void setTypeName(final String typeName) {
+        public void setTypeName( final String typeName ) {
             this.typeName = typeName;
         }
 
-        public void setUniqueId(final String uniqueId) {
+        public void setUniqueId( final String uniqueId ) {
             this.uniqueId = uniqueId;
         }
 
@@ -500,6 +485,5 @@ public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLo
     public void closeResources() {
 
     }
-
 
 }

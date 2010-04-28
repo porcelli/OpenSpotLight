@@ -85,8 +85,7 @@ public class SLQueryCacheImpl implements SLQueryCache {
      * @param session the session
      */
     public SLQueryCacheImpl(
-                             final SLPersistentTreeSession treeSession,
-                             final SLGraphSession session ) {
+                             final SLPersistentTreeSession treeSession, final SLGraphSession session ) {
         this.treeSession = treeSession;
         this.session = session;
     }
@@ -97,13 +96,11 @@ public class SLQueryCacheImpl implements SLQueryCache {
     public void add2Cache( final String queryId,
                            final Collection<PNodeWrapper> nodes )
         throws SLPersistentTreeSessionException, SLNodeNotFoundException {
-        final SLPersistentNode pcacheRootNode = SLCommonSupport
-                                                               .getQueryCacheNode(treeSession);
+        final SLPersistentNode pcacheRootNode = SLCommonSupport.getQueryCacheNode(treeSession);
         final SLPersistentNode queryCache = pcacheRootNode.addNode(queryId);
         int i = 0;
         for (final PNodeWrapper pNodeWrapper : nodes) {
-            final SLPersistentNode refNode = queryCache.addNode(pNodeWrapper
-                                                                            .getID());
+            final SLPersistentNode refNode = queryCache.addNode(pNodeWrapper.getID());
             refNode.setProperty(Integer.class, "order", i);
             i++;
         }
@@ -117,8 +114,7 @@ public class SLQueryCacheImpl implements SLQueryCache {
                                 final String[] inputNodesIDs,
                                 final SortMode sortMode,
                                 final Integer limit,
-                                final Integer offset )
-        throws SLException {
+                                final Integer offset ) throws SLException {
         final StringBuilder sb = new StringBuilder();
         sb.append("select:[");
         for (final SLSelect activeSelect : selects) {
@@ -152,10 +148,8 @@ public class SLQueryCacheImpl implements SLQueryCache {
     /**
      * {@inheritDoc}
      */
-    public SLQueryResultImpl getCache( final String queryId )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException {
-        final SLPersistentNode pcacheRootNode = SLCommonSupport
-                                                               .getQueryCacheNode(treeSession);
+    public SLQueryResultImpl getCache( final String queryId ) throws SLPersistentTreeSessionException, SLNodeNotFoundException {
+        final SLPersistentNode pcacheRootNode = SLCommonSupport.getQueryCacheNode(treeSession);
         SLPersistentNode queryCache;
         try {
             queryCache = pcacheRootNode.getNode(queryId);
@@ -163,10 +157,8 @@ public class SLQueryCacheImpl implements SLQueryCache {
                 final SLNode[] nodes = new SLNode[queryCache.getNodes().size()];
                 for (final SLPersistentNode activeId : queryCache.getNodes()) {
                     final SLNode node = session.getNodeByID(activeId.getName());
-                    final SLNode nodeProxy = ProxyUtil.createNodeProxy(
-                                                                       SLNode.class, node);
-                    nodes[activeId.getProperty(Integer.class, "order")
-                                  .getValue()] = nodeProxy;
+                    final SLNode nodeProxy = ProxyUtil.createNodeProxy(SLNode.class, node);
+                    nodes[activeId.getProperty(Integer.class, "order").getValue()] = nodeProxy;
                 }
                 return new SLQueryResultImpl(treeSession, nodes, queryId);
             }
@@ -179,7 +171,6 @@ public class SLQueryCacheImpl implements SLQueryCache {
      * {@inheritDoc}
      */
     public void flush() throws SLPersistentTreeSessionException {
-        SLCommonSupport
-                       .getQueryCacheNode(treeSession).remove();
+        SLCommonSupport.getQueryCacheNode(treeSession).remove();
     }
 }

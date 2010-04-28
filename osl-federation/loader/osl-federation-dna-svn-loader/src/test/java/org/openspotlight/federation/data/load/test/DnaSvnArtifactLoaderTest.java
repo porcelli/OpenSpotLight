@@ -77,8 +77,7 @@ public class DnaSvnArtifactLoaderTest {
         final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
         bundle.setActive(true);
         bundle.setName("DNA SVN");
-        bundle
-                .setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
+        bundle.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
         bundle.setUserName("feuteston");
         bundle.setPassword("jakadeed");
         final Repository repository = new Repository();
@@ -86,8 +85,7 @@ public class DnaSvnArtifactLoaderTest {
         bundle.setRepository(repository);
 
         final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
-        final StringArtifact sa = finder.findByPath(StringArtifact.class,
-                                                    bundle, "source/osl/pom.xml");
+        final StringArtifact sa = finder.findByPath(StringArtifact.class, bundle, "source/osl/pom.xml");
 
         assertThat(sa, is(notNullValue()));
         assertThat(sa.getContent(), is(notNullValue()));
@@ -103,18 +101,15 @@ public class DnaSvnArtifactLoaderTest {
         final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
         bundle.setActive(true);
         bundle.setName("DNA SVN");
-        bundle
-                .setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
+        bundle.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
         bundle.setUserName("feuteston");
         bundle.setPassword("jakadeed");
         final Repository repository = new Repository();
         repository.setName("repository");
         bundle.setRepository(repository);
         final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
-        final Set<String> allNames = finder
-                                           .getInternalMethods()
-                                           .retrieveOriginalNames(StringArtifact.class, bundle,
-                                                                  "source/osl/osl-common/src/main/java/org/openspotlight/common/");
+        final Set<String> allNames = finder.getInternalMethods().retrieveOriginalNames(StringArtifact.class, bundle,
+                                                                                       "source/osl/osl-common/src/main/java/org/openspotlight/common/");
         assertThat(allNames.size(), is(not(0)));
 
         finder.closeResources();

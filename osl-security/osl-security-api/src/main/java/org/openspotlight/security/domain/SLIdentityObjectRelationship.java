@@ -57,8 +57,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
-public class SLIdentityObjectRelationship implements SimpleNodeType,
-        Serializable, IdentityObjectRelationship {
+public class SLIdentityObjectRelationship implements SimpleNodeType, Serializable, IdentityObjectRelationship {
 
     private static final long                serialVersionUID = 4264443925216883621L;
 
@@ -150,11 +149,9 @@ public class SLIdentityObjectRelationship implements SimpleNodeType,
         this.typeAsString = typeAsString;
     }
 
-    public void setTypedRelationshipType(
-                                          final SLIdentityObjectRelationshipType typedRelationshipType ) {
+    public void setTypedRelationshipType( final SLIdentityObjectRelationshipType typedRelationshipType ) {
         this.typedRelationshipType = typedRelationshipType;
-        this.typeAsString = typedRelationshipType == null ? null
-                : typedRelationshipType.getName();
+        this.typeAsString = typedRelationshipType == null ? null : typedRelationshipType.getName();
     }
 
 }

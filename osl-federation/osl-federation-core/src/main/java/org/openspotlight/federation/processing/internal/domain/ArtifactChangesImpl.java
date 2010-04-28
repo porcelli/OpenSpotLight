@@ -58,8 +58,7 @@ import org.openspotlight.federation.processing.ArtifactChanges;
 /**
  * The Class ArtifactChangesImpl.
  */
-public class ArtifactChangesImpl<T extends Artifact> implements
-        ArtifactChanges<T> {
+public class ArtifactChangesImpl<T extends Artifact> implements ArtifactChanges<T> {
 
     /** The changed artifacts. */
     private Set<T> changedArtifacts    = new LinkedHashSet<T>();
@@ -150,7 +149,6 @@ public class ArtifactChangesImpl<T extends Artifact> implements
      * @param notChangedArtifacts the new not changed artifacts
      */
     public void setNotChangedArtifacts( final Set<T> notChangedArtifacts ) {
-        this.notChangedArtifacts = Collections
-                                              .unmodifiableSet(notChangedArtifacts);
+        this.notChangedArtifacts = Collections.unmodifiableSet(notChangedArtifacts);
     }
 }

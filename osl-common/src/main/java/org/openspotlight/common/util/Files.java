@@ -195,8 +195,7 @@ public class Files {
         checkNotEmpty("basePath", basePath); //$NON-NLS-1$
         final File basePathAsFile = new File(basePath);
         if (!silent) {
-            checkCondition(
-                           "basePathExists:" + basePath, basePathAsFile.exists()); //$NON-NLS-1$
+            checkCondition("basePathExists:" + basePath, basePathAsFile.exists()); //$NON-NLS-1$
             checkCondition("basePathIsDirectory", basePathAsFile.isDirectory()); //$NON-NLS-1$
         }
         try {
@@ -220,8 +219,7 @@ public class Files {
      * @return the stream content as bytes
      * @throws SLException the SL exception
      */
-    public static byte[] readBytesFromStream( final InputStream inputStream )
-            throws SLException {
+    public static byte[] readBytesFromStream( final InputStream inputStream ) throws SLException {
         checkNotNull("inputStream", inputStream); //$NON-NLS-1$
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -242,8 +240,7 @@ public class Files {
      * @return collection of string lines.
      * @throws SLException
      */
-    public static Collection<String> readLines( final InputStream inputStream )
-            throws SLException {
+    public static Collection<String> readLines( final InputStream inputStream ) throws SLException {
         checkNotNull("inputStream", inputStream);
         final Collection<String> lines = new ArrayList<String>();
         final FileReader fileReader = null;
@@ -274,8 +271,7 @@ public class Files {
      * Should not be instantiated.
      */
     private Files() {
-        throw new IllegalStateException(Messages
-                                                .getString("invalidConstructor")); //$NON-NLS-1$
+        throw new IllegalStateException(Messages.getString("invalidConstructor")); //$NON-NLS-1$
     }
 
 }

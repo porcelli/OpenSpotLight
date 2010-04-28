@@ -84,7 +84,7 @@ public interface SLQueryTextInternal extends Serializable {
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset )
-            throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException;
+        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException;
 
     /**
      * Gets the unique id.

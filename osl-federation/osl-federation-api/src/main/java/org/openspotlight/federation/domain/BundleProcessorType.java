@@ -112,9 +112,8 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
             return false;
         }
         final BundleProcessorType that = (BundleProcessorType)o;
-        final boolean result = Equals.eachEquality(Arrays.of(group,
-                                                             globalPhase, name), Arrays.andOf(that.group, that.globalPhase,
-                                                                                              that.name));
+        final boolean result = Equals.eachEquality(Arrays.of(group, globalPhase, name), Arrays.andOf(that.group,
+                                                                                                     that.globalPhase, that.name));
         return result;
     }
 
@@ -197,8 +196,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
         this.active = active;
     }
 
-    public void setArtifactPhases(
-                                   final List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases ) {
+    public void setArtifactPhases( final List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases ) {
         this.artifactPhases = artifactPhases;
     }
 
@@ -206,8 +204,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
         this.bundleProperties = bundleProperties;
     }
 
-    public void setGlobalPhase(
-                                final Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase ) {
+    public void setGlobalPhase( final Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase ) {
         this.globalPhase = globalPhase;
     }
 

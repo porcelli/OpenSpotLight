@@ -112,32 +112,25 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
 
             try {
                 final Collection<SLMetaLink> metaLinks = new ArrayList<SLMetaLink>();
-                final Collection<SLPersistentNode> typePairNodes = pNode
-                                                                        .getNodes();
+                final Collection<SLPersistentNode> typePairNodes = pNode.getNodes();
 
                 for (final SLPersistentNode typePairNode : typePairNodes) {
 
-                    final SLPersistentProperty<String> aClassNameProp = typePairNode
-                                                                                    .getProperty(String.class,
+                    final SLPersistentProperty<String> aClassNameProp = typePairNode.getProperty(
+                                                                                                 String.class,
                                                                                                  SLConsts.PROPERTY_NAME_A_CLASS_NAME);
-                    final SLPersistentProperty<String> bClassNameProp = typePairNode
-                                                                                    .getProperty(String.class,
+                    final SLPersistentProperty<String> bClassNameProp = typePairNode.getProperty(
+                                                                                                 String.class,
                                                                                                  SLConsts.PROPERTY_NAME_B_CLASS_NAME);
 
-                    final Class<? extends SLNode> aType = (Class<? extends SLNode>)Class
-                                                                                        .forName(aClassNameProp.getValue());
-                    final Class<? extends SLNode> bType = (Class<? extends SLNode>)Class
-                                                                                        .forName(bClassNameProp.getValue());
+                    final Class<? extends SLNode> aType = (Class<? extends SLNode>)Class.forName(aClassNameProp.getValue());
+                    final Class<? extends SLNode> bType = (Class<? extends SLNode>)Class.forName(bClassNameProp.getValue());
 
-                    final Collection<SLPersistentNode> linkNodes = typePairNode
-                                                                               .getNodes();
+                    final Collection<SLPersistentNode> linkNodes = typePairNode.getNodes();
 
                     for (final SLPersistentNode linkNode : linkNodes) {
 
-                        final int direction = linkNode
-                                                      .getProperty(Integer.class,
-                                                                   SLConsts.PROPERTY_NAME_DIRECTION)
-                                                      .getValue();
+                        final int direction = linkNode.getProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION).getValue();
 
                         boolean bidirectional = false;
                         Class<? extends SLNode> sourceType = null;
@@ -162,17 +155,15 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
                             sideTypes.add(targetType);
                         }
 
-                        final SLMetaLink metaLink = new SLMetaLinkImpl(
-                                                                       linkNode, this, sourceType, targetType,
-                                                                       sideTypes, bidirectional, this);
+                        final SLMetaLink metaLink = new SLMetaLinkImpl(linkNode, this, sourceType, targetType, sideTypes,
+                                                                       bidirectional, this);
                         metaLinks.add(metaLink);
                     }
                 }
 
                 return metaLinks;
             } catch (final Exception e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta links.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta links.", e);
             }
         }
     }
@@ -180,8 +171,7 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
     /**
      * {@inheritDoc}
      */
-    public Collection<SLMetaLink> getMetaLinks(
-                                                final Class<? extends SLNode> sourceType,
+    public Collection<SLMetaLink> getMetaLinks( final Class<? extends SLNode> sourceType,
                                                 final Class<? extends SLNode> targetType,
                                                 final Boolean bidirectional ) {
         synchronized (lock) {
@@ -201,26 +191,20 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
             boolean remove = false;
             final SLMetaLink metaLink = iter.next();
             if (bidirectional != null && !bidirectional) {
-                if (sourceType != null
-                    && !sourceType.equals(metaLink.getSourceType().getName())) {
+                if (sourceType != null && !sourceType.equals(metaLink.getSourceType().getName())) {
                     remove = true;
                 }
-                if (!remove && targetType != null
-                    && !targetType.equals(metaLink.getTargetType().getName())) {
+                if (!remove && targetType != null && !targetType.equals(metaLink.getTargetType().getName())) {
                     remove = true;
                 }
             } else {
                 if (sourceType != null) {
-                    remove = sourceType.equals(metaLink.getSideTypes().get(
-                                                                           0).getName())
-                             || sourceType.equals(metaLink.getSideTypes()
-                                                          .get(1).getName());
+                    remove = sourceType.equals(metaLink.getSideTypes().get(0).getName())
+                             || sourceType.equals(metaLink.getSideTypes().get(1).getName());
                 }
                 if (!remove && targetType != null) {
-                    remove = targetType.equals(metaLink.getSideTypes().get(
-                                                                           0).getName())
-                             || targetType.equals(metaLink.getSideTypes()
-                                                          .get(1).getName());
+                    remove = targetType.equals(metaLink.getSideTypes().get(0).getName())
+                             || targetType.equals(metaLink.getSideTypes().get(1).getName());
                 }
             }
             if (remove) {
@@ -239,11 +223,9 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
 
             if (linkType == null) {
                 try {
-                    linkType = (Class<? extends SLLink>)Class.forName(pNode
-                                                                           .getName());
+                    linkType = (Class<? extends SLLink>)Class.forName(pNode.getName());
                 } catch (final Exception e) {
-                    throw new SLGraphSessionException(
-                                                      "Error on attempt to retrieve link type.", e);
+                    throw new SLGraphSessionException("Error on attempt to retrieve link type.", e);
                 }
             }
             return linkType;

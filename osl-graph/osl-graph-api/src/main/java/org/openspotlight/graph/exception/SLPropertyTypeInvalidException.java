@@ -104,9 +104,8 @@ public class SLPropertyTypeInvalidException extends SLGraphRuntimeException {
                                       Class<?> invalidType,
                                       Class<?>... allowedTypes ) {
         StringBuilder message = new StringBuilder();
-        message.append("Value of property ")
-                .append(name).append(" cannot be retrieved as ")
-                .append(invalidType.getName()).append(". ");
+        message.append("Value of property ").append(name).append(" cannot be retrieved as ").append(invalidType.getName()).append(
+                                                                                                                                  ". ");
         for (int i = 0; i < allowedTypes.length; i++) {
             if (i > 0) message.append(", ");
             message.append(allowedTypes[i].getName());

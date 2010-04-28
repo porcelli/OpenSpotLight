@@ -130,31 +130,30 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 public abstract class BaseGraphTest {
 
     /** The graph. */
-    protected static SLGraph           graph;
+    protected static SLGraph                                           graph;
     /** The session. */
-    protected static SLGraphSession    session;
-    protected static AuthenticatedUser user;
+    protected static SLGraphSession                                    session;
+    protected static AuthenticatedUser                                 user;
     /** The java class node. */
-    private JavaClassNode              javaClassNode;
+    private JavaClassNode                                              javaClassNode;
     /** The java method node. */
-    private JavaMethodNode             javaMethodNode;
+    private JavaMethodNode                                             javaMethodNode;
     /** The link ab. */
-    private SLLink                     linkAB;
+    private SLLink                                                     linkAB;
     /** The link ba. */
-    private SLLink                     linkBA;
+    private SLLink                                                     linkBA;
     /** The link both. */
-    private SLLink                     linkBoth;
-
+    private SLLink                                                     linkBoth;
 
     private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
     @BeforeClass
-    public static void setup() throws  Exception {
-
+    public static void setup() throws Exception {
 
         Injector injector = Guice.createInjector(new SimplePersistModule(),
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExampleRedisConfig.EXAMPLE.getMappedServerConfig()
-                        ,repositoryPath("repository")));
+                                                 new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")));
 
         simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.GRAPH);
     }
@@ -764,8 +763,8 @@ public abstract class BaseGraphTest {
 
         // set new property ...
         final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<SerializableBean> prop1 = root.setProperty(SerializableBean.class, SLVisibility.VisibilityLevel.PUBLIC,
-                                                                        "prop", bean);
+        final SLNodeProperty<SerializableBean> prop1 = root.setProperty(SerializableBean.class,
+                                                                        SLVisibility.VisibilityLevel.PUBLIC, "prop", bean);
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
         final SerializableBean val1 = prop1.getValue();
@@ -978,10 +977,9 @@ public abstract class BaseGraphTest {
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-        final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
-                                                      true);
-        final SLLink multipleLinkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
-                                                        javaMethodNode1, true);
+        final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, true);
+        final SLLink multipleLinkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1,
+                                                        true);
         session.save();
 
         Collection<SLLink> links = null;
@@ -1007,10 +1005,9 @@ public abstract class BaseGraphTest {
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-        final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
-                                                      true);
-        final SLLink multipleLinkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1,
-                                                        javaMethodNode1, true);
+        final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, true);
+        final SLLink multipleLinkBoth = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1,
+                                                        true);
         session.save();
 
         Collection<SLLink> links = null;
@@ -1042,12 +1039,9 @@ public abstract class BaseGraphTest {
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-        final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
-                                                    false);
-        final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
-                                                    false);
-        final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
-                                                      true);
+        final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+        final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, false);
+        final SLLink simpleLinkBoth = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, true);
 
         Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
 
@@ -1123,11 +1117,9 @@ public abstract class BaseGraphTest {
         simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_BI);
         assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-        simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI
-                                                                                                  | DIRECTION_BI);
+        simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI | DIRECTION_BI);
         assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-        simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI
-                                                                                                  | DIRECTION_BI);
+        simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaClassNode1, DIRECTION_UNI | DIRECTION_BI);
         assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
 
         simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaClassNode1, null, DIRECTION_UNI_REVERSAL
@@ -1163,11 +1155,9 @@ public abstract class BaseGraphTest {
         simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_BI);
         assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-        simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI
-                                                                                                   | DIRECTION_BI);
+        simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI | DIRECTION_BI);
         assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-        simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI
-                                                                                                   | DIRECTION_BI);
+        simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, null, DIRECTION_UNI | DIRECTION_BI);
         assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
 
         simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class, null, javaMethodNode1, DIRECTION_UNI_REVERSAL
@@ -1345,8 +1335,10 @@ public abstract class BaseGraphTest {
         }
 
         for (SLNodeProperty<Serializable> activeProperty : javaClassNode1.getProperties()) {
-            SLMetaNodeProperty metaProperty = session.getMetadata().getMetaNodeType(JavaClassNode.class).getMetaProperty(activeProperty.getName());
-            //            System.out.println(activeProperty.getName() + ":" + activeProperty.getValueAsString() + " -> " + metaProperty);
+            SLMetaNodeProperty metaProperty = session.getMetadata().getMetaNodeType(JavaClassNode.class).getMetaProperty(
+                                                                                                                         activeProperty.getName());
+            // System.out.println(activeProperty.getName() + ":" +
+            // activeProperty.getValueAsString() + " -> " + metaProperty);
             Assert.assertNotNull("Property " + activeProperty.getName() + " not found on metadata registry.", metaProperty);
         }
     }
@@ -1656,10 +1648,8 @@ public abstract class BaseGraphTest {
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-        final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
-                                                    false);
-        final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
-                                                    false);
+        final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+        final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, false);
         final SLLink multipleLinkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1,
                                                       false);
         final SLLink multipleLinkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1, javaClassNode1,
@@ -1696,10 +1686,8 @@ public abstract class BaseGraphTest {
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-        final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
-                                                    false);
-        final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
-                                                    false);
+        final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+        final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, false);
         final SLLink multipleLinkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1,
                                                       false);
         final SLLink multipleLinkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1, javaClassNode1,
@@ -1735,10 +1723,8 @@ public abstract class BaseGraphTest {
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-        final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1,
-                                                    false);
-        final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1,
-                                                    false);
+        final SLLink simpleLinkAB = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1, javaMethodNode1, false);
+        final SLLink simpleLinkBA = session.addLink(JavaClassJavaMethodSimpleLink.class, javaMethodNode1, javaClassNode1, false);
         final SLLink multipleLinkAB = session.addLink(JavaClassJavaMethodMultipleLink.class, javaClassNode1, javaMethodNode1,
                                                       false);
         final SLLink multipleLinkBA = session.addLink(JavaClassJavaMethodMultipleLink.class, javaMethodNode1, javaClassNode1,
@@ -1817,8 +1803,8 @@ public abstract class BaseGraphTest {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
-        final SLLineReference lineRef1 = javaClassNode1.addLineReference(simplePersist,8, 17, 26, 44, "Hello World!", "1", "1");
-        final SLLineReference lineRef2 = javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
+        final SLLineReference lineRef1 = javaClassNode1.addLineReference(simplePersist, 8, 17, 26, 44, "Hello World!", "1", "1");
+        final SLLineReference lineRef2 = javaClassNode1.addLineReference(simplePersist, 71, 80, 35, 53, "Bye World!", "2", "1");
 
         final Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences(simplePersist);
         Assert.assertNotNull(lineRefs);
@@ -1854,10 +1840,11 @@ public abstract class BaseGraphTest {
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
         final String artifactId = "targetId";
 
-        final SLLineReference lineRef1 = javaClassNode1.addLineReference(simplePersist,8, 17, 26, 44, "Hello World!", artifactId, "1");
-        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
-        javaClassNode1.addLineReference(simplePersist,4, 8, 15, 16, "Hello Again!", "3", "1");
-        final Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences(simplePersist,artifactId);
+        final SLLineReference lineRef1 = javaClassNode1.addLineReference(simplePersist, 8, 17, 26, 44, "Hello World!",
+                                                                         artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist, 71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(simplePersist, 4, 8, 15, 16, "Hello Again!", "3", "1");
+        final Collection<SLLineReference> lineRefs = javaClassNode1.getLineReferences(simplePersist, artifactId);
         Assert.assertNotNull(lineRefs);
         Assert.assertEquals(lineRefs.size(), 1);
 
@@ -2395,15 +2382,15 @@ public abstract class BaseGraphTest {
         final SLNode root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
-        javaClassNode1.addLineReference(simplePersist,8, 17, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(simplePersist,9, 16, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 44, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, "Hello World!", "1", "1");
-        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, "New Hello!", "1", "1");
-        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, "New Hello!", "1", "1");
-        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
-        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "2");
-        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(simplePersist, 8, 17, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist, 9, 16, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist, 22, 16, 26, 44, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist, 22, 16, 26, 32, "Hello World!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist, 22, 16, 26, 32, "New Hello!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist, 22, 16, 26, 32, "New Hello!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist, 71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(simplePersist, 71, 80, 35, 53, "Bye World!", "2", "2");
+        javaClassNode1.addLineReference(simplePersist, 71, 80, 35, 53, "Bye World!", "2", "1");
 
         final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences(simplePersist);
         Assert.assertEquals(treeLineRefs.getArtifacts().size(), 3);
@@ -2439,17 +2426,17 @@ public abstract class BaseGraphTest {
 
         final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
 
-        javaClassNode1.addLineReference(simplePersist,8, 17, 26, 44, statement, artifactId, "1");
-        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, statement, artifactId, "1");
-        javaClassNode1.addLineReference(simplePersist,9, 16, 26, 44, "Hello World 2!", artifactId, "1");
-        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 44, "Hello World 3!", artifactId, "1");
-        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, statement, "1", "1");
-        javaClassNode1.addLineReference(simplePersist,22, 16, 26, 32, "New Hello!", "1", "1");
-        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, statement, "2", "1");
-        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "2");
-        javaClassNode1.addLineReference(simplePersist,71, 80, 35, 53, "Bye World!", "2", "1");
+        javaClassNode1.addLineReference(simplePersist, 8, 17, 26, 44, statement, artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist, 22, 16, 26, 32, statement, artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist, 9, 16, 26, 44, "Hello World 2!", artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist, 22, 16, 26, 44, "Hello World 3!", artifactId, "1");
+        javaClassNode1.addLineReference(simplePersist, 22, 16, 26, 32, statement, "1", "1");
+        javaClassNode1.addLineReference(simplePersist, 22, 16, 26, 32, "New Hello!", "1", "1");
+        javaClassNode1.addLineReference(simplePersist, 71, 80, 35, 53, statement, "2", "1");
+        javaClassNode1.addLineReference(simplePersist, 71, 80, 35, 53, "Bye World!", "2", "2");
+        javaClassNode1.addLineReference(simplePersist, 71, 80, 35, 53, "Bye World!", "2", "1");
 
-        final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences(simplePersist,artifactId);
+        final SLTreeLineReference treeLineRefs = javaClassNode1.getTreeLineReferences(simplePersist, artifactId);
         Assert.assertEquals(treeLineRefs.getArtifacts().size(), 1);
 
         for (final SLTreeLineReference.SLArtifactLineReference artifactLine : treeLineRefs.getArtifacts()) {

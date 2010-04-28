@@ -106,10 +106,8 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
             if (currentGroup != null && groupContext != null) {
                 currentNodeGroup = getNodeForGroup(currentGroup);
             } else {
-                Exceptions.logAndReturn(new IllegalStateException(
-                                                                  "currentGroup=" + currentGroup + " / "
-                                                                  + "groupContext=" + groupContext
-                                                                  + " - anyone can't be null"));
+                Exceptions.logAndReturn(new IllegalStateException("currentGroup=" + currentGroup + " / " + "groupContext="
+                                                                  + groupContext + " - anyone can't be null"));
             }
         }
         return currentNodeGroup;
@@ -135,20 +133,17 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
                     if (currentGroup != null && groupContext != null) {
                         final SLGraphSession sess = groupContext.getSession();
                         sess.save();
-                        final SLContext context = sess
-                                                      .createContext(bundleProcessor.getUniqueName()
-                                                                                    .replaceAll("([ ]|[/]|[.])", "-"));
+                        final SLContext context = sess.createContext(bundleProcessor.getUniqueName().replaceAll("([ ]|[/]|[.])",
+                                                                                                                "-"));
                         sess.save();
                         nodeForUniqueBundleConfig = context.getRootNode();
                     } else {
-                        Exceptions.logAndReturn(new IllegalStateException(
-                                                                          "currentGroup=" + currentGroup + " / "
+                        Exceptions.logAndReturn(new IllegalStateException("currentGroup=" + currentGroup + " / "
                                                                           + "groupContext=" + groupContext
                                                                           + " - anyone can't be null"));
                     }
                 } catch (final Exception e) {
-                    throw Exceptions.logAndReturnNew(e,
-                                                     SLRuntimeException.class);
+                    throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
                 }
 
             }

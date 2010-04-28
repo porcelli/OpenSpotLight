@@ -101,17 +101,12 @@ public abstract class AbstractMethodResolutionTest {
      * @throws AbstractFactoryException the abstract factory exception
      */
     @BeforeClass
-    public static void init() throws AbstractFactoryException,
-            IdentityException {
-        final SecurityFactory securityFactory = AbstractFactory
-                                                               .getDefaultInstance(SecurityFactory.class);
+    public static void init() throws AbstractFactoryException, IdentityException {
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(
-                                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-                                                                                                        "password");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
-        final SLGraphFactory factory = AbstractFactory
-                                                      .getDefaultInstance(SLGraphFactory.class);
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
     }
 
@@ -136,19 +131,15 @@ public abstract class AbstractMethodResolutionTest {
                                                        final String simpleMethodName,
                                                        final String fullMethodName,
                                                        final boolean isConstructor,
-                                                       final SLNode... methodParameters )
-            throws Exception {
+                                                       final SLNode... methodParameters ) throws Exception {
 
-        final JavaMethod method = helper.createMethod(type, fullMethodName,
-                                                      simpleMethodName, isConstructor, Opcodes.ACC_PUBLIC);
+        final JavaMethod method = helper.createMethod(type, fullMethodName, simpleMethodName, isConstructor, Opcodes.ACC_PUBLIC);
 
         if (methodParameters != null) {
             int position = -1;
             for (final SLNode activeParameterType : methodParameters) {
                 position++;
-                final SLLink link = graphSession.addLink(
-                                                         MethodParameterDefinition.class, method,
-                                                         activeParameterType, false);
+                final SLLink link = graphSession.addLink(MethodParameterDefinition.class, method, activeParameterType, false);
                 link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "Order", position);
             }
         }
@@ -161,8 +152,7 @@ public abstract class AbstractMethodResolutionTest {
                                                        final String fullMethodName,
                                                        final SLNode... methodParameters ) throws Exception {
 
-        return this.createMethod(type, simpleMethodName, fullMethodName, false,
-                                 methodParameters);
+        return this.createMethod(type, simpleMethodName, fullMethodName, false, methodParameters);
     }
 
     protected Pair<JavaType, JavaMethod> createMethod( final String packageName,
@@ -170,19 +160,16 @@ public abstract class AbstractMethodResolutionTest {
                                                        final String simpleMethodName,
                                                        final String fullMethodName ) throws Exception {
 
-        return this.createMethod(packageName, typeName, simpleMethodName,
-                                 fullMethodName, false, (SLNode[])null);
+        return this.createMethod(packageName, typeName, simpleMethodName, fullMethodName, false, (SLNode[])null);
     }
 
     protected Pair<JavaType, JavaMethod> createMethod( final String packageName,
                                                        final String typeName,
                                                        final String simpleMethodName,
                                                        final String fullMethodName,
-                                                       final boolean isConstructor )
-            throws Exception {
+                                                       final boolean isConstructor ) throws Exception {
 
-        return this.createMethod(packageName, typeName, simpleMethodName,
-                                 fullMethodName, isConstructor, (SLNode[])null);
+        return this.createMethod(packageName, typeName, simpleMethodName, fullMethodName, isConstructor, (SLNode[])null);
     }
 
     protected Pair<JavaType, JavaMethod> createMethod( final String packageName,
@@ -192,28 +179,22 @@ public abstract class AbstractMethodResolutionTest {
                                                        final boolean isConstructor,
                                                        final SLNode... methodParameters ) throws Exception {
 
-        final JavaType type = helper.addTypeOnCurrentContext(
-                                                             JavaTypeClass.class, packageName, typeName, Opcodes.ACC_PUBLIC);
+        final JavaType type = helper.addTypeOnCurrentContext(JavaTypeClass.class, packageName, typeName, Opcodes.ACC_PUBLIC);
 
-        return this.createMethod(type, simpleMethodName, fullMethodName,
-                                 isConstructor, methodParameters);
+        return this.createMethod(type, simpleMethodName, fullMethodName, isConstructor, methodParameters);
     }
 
     protected Pair<JavaType, JavaMethod> createMethod( final String packageName,
                                                        final String typeName,
                                                        final String simpleMethodName,
                                                        final String fullMethodName,
-                                                       final SLNode... methodParameters )
-            throws Exception {
+                                                       final SLNode... methodParameters ) throws Exception {
 
-        return this.createMethod(packageName, typeName, simpleMethodName,
-                                 fullMethodName, false, methodParameters);
+        return this.createMethod(packageName, typeName, simpleMethodName, fullMethodName, false, methodParameters);
     }
 
-    protected JavaTypePrimitive createPrimitiveType( final String type )
-            throws Exception {
-        return helper.addTypeOnCurrentContext(JavaTypePrimitive.class, "",
-                                              type, Opcodes.ACC_PUBLIC);
+    protected JavaTypePrimitive createPrimitiveType( final String type ) throws Exception {
+        return helper.addTypeOnCurrentContext(JavaTypePrimitive.class, "", type, Opcodes.ACC_PUBLIC);
     }
 
     protected JavaType createType( final String packageName,
@@ -221,17 +202,13 @@ public abstract class AbstractMethodResolutionTest {
                                    final JavaType extendedType,
                                    final boolean isImplicit ) throws Exception {
 
-        final JavaType newType = helper
-                                       .addTypeOnCurrentContext(JavaTypeClass.class, packageName,
-                                                                className, Opcodes.ACC_PUBLIC);
+        final JavaType newType = helper.addTypeOnCurrentContext(JavaTypeClass.class, packageName, className, Opcodes.ACC_PUBLIC);
 
         if (extendedType != null) {
             if (isImplicit) {
-                graphSession.addLink(ImplicitExtends.class, newType,
-                                     extendedType, false);
+                graphSession.addLink(ImplicitExtends.class, newType, extendedType, false);
             } else {
-                graphSession.addLink(Extends.class, newType, extendedType,
-                                     false);
+                graphSession.addLink(Extends.class, newType, extendedType, false);
             }
         }
 
@@ -242,20 +219,16 @@ public abstract class AbstractMethodResolutionTest {
                                                 final String className,
                                                 final SLNode parent,
                                                 final JavaType extendedType,
-                                                final boolean isImplicit )
-            throws Exception {
+                                                final boolean isImplicit ) throws Exception {
 
-        final JavaType newType = helper.addTypeOnCurrentContext(
-                                                                JavaTypeParameterized.class, packageName, className,
+        final JavaType newType = helper.addTypeOnCurrentContext(JavaTypeParameterized.class, packageName, className,
                                                                 Opcodes.ACC_PUBLIC, parent);
 
         if (extendedType != null) {
             if (isImplicit) {
-                graphSession.addLink(ImplicitExtends.class, newType,
-                                     extendedType, false);
+                graphSession.addLink(ImplicitExtends.class, newType, extendedType, false);
             } else {
-                graphSession.addLink(Extends.class, newType, extendedType,
-                                     false);
+                graphSession.addLink(Extends.class, newType, extendedType, false);
             }
         }
 
@@ -264,8 +237,7 @@ public abstract class AbstractMethodResolutionTest {
 
     protected JavaType getAbstractType( final String packageName,
                                         final String className ) {
-        final JavaPackage abstractPackage = abstractContex.getRootNode()
-                                                          .getNode(JavaPackage.class, packageName);
+        final JavaPackage abstractPackage = abstractContex.getRootNode().getNode(JavaPackage.class, packageName);
         if (abstractPackage != null) {
             return abstractPackage.getNode(JavaType.class, className);
         }
@@ -275,8 +247,7 @@ public abstract class AbstractMethodResolutionTest {
     @Before
     public void setupGraphSession() throws Exception {
 
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
         // FIXME this == null should be removed -> NOT I CAN'T OPEN ONE SESSION
         // PER METHOD EXECUTION!!
@@ -286,8 +257,7 @@ public abstract class AbstractMethodResolutionTest {
 
         abstractContex = graphSession.getContext(JavaConstants.ABSTRACT_CONTEXT);
         if (abstractContex == null) {
-            abstractContex = graphSession
-                                         .createContext(JavaConstants.ABSTRACT_CONTEXT);
+            abstractContex = graphSession.createContext(JavaConstants.ABSTRACT_CONTEXT);
         }
 
         if (graphSession.getContext("test") == null) {
@@ -297,18 +267,15 @@ public abstract class AbstractMethodResolutionTest {
         final SLContext testCtx = graphSession.getContext("test");
         final List<SLContext> contexts = new ArrayList<SLContext>();
         contexts.add(testCtx);
-        final SLNode currentContextRootNode = graphSession.getContext("test")
-                                                          .getRootNode();
+        final SLNode currentContextRootNode = graphSession.getContext("test").getRootNode();
         final SLNode abstractContextRootNode = abstractContex.getRootNode();
-        helper = new JavaGraphNodeSupport(graphSession, currentContextRootNode,
-                                          abstractContextRootNode);
+        helper = new JavaGraphNodeSupport(graphSession, currentContextRootNode, abstractContextRootNode);
         helper.setupJavaTypesOnCurrentContext();
-        final JavaTypeResolver typeResolver = new JavaTypeResolver(
-                                                                   abstractContex, contexts, true, graphSession);
+        final JavaTypeResolver typeResolver = new JavaTypeResolver(abstractContex, contexts, true, graphSession);
 
-        methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver,
-                                                                  graphSession, JavaMethod.class, TypeDeclares.class,
-                                                                  MethodParameterDefinition.class, "simpleName", "Order");
+        methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver, graphSession, JavaMethod.class,
+                                                                  TypeDeclares.class, MethodParameterDefinition.class,
+                                                                  "simpleName", "Order");
 
     }
 
@@ -316,18 +283,15 @@ public abstract class AbstractMethodResolutionTest {
         final SLContext testCtx = graphSession.getContext("test");
         final List<SLContext> contexts = new ArrayList<SLContext>();
         contexts.add(testCtx);
-        final SLNode currentContextRootNode = graphSession.getContext("test")
-                                                          .getRootNode();
+        final SLNode currentContextRootNode = graphSession.getContext("test").getRootNode();
         final SLNode abstractContextRootNode = abstractContex.getRootNode();
-        helper = new JavaGraphNodeSupport(graphSession, currentContextRootNode,
-                                          abstractContextRootNode);
+        helper = new JavaGraphNodeSupport(graphSession, currentContextRootNode, abstractContextRootNode);
         helper.setupJavaTypesOnCurrentContext();
-        final JavaTypeResolver typeResolver = new JavaTypeResolver(
-                                                                   abstractContex, contexts, false, graphSession);
+        final JavaTypeResolver typeResolver = new JavaTypeResolver(abstractContex, contexts, false, graphSession);
 
-        methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver,
-                                                                  graphSession, JavaMethod.class, TypeDeclares.class,
-                                                                  MethodParameterDefinition.class, "simpleName", "Order");
+        methodResolver = new MethodResolver<JavaType, JavaMethod>(typeResolver, graphSession, JavaMethod.class,
+                                                                  TypeDeclares.class, MethodParameterDefinition.class,
+                                                                  "simpleName", "Order");
 
     }
 

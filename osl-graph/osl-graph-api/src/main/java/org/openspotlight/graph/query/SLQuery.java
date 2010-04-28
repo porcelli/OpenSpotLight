@@ -82,8 +82,7 @@ public interface SLQuery extends LockContainer {
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute() throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+    public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -95,8 +94,7 @@ public interface SLQuery extends LockContainer {
      * @throws SLQueryException the SL query exception
      */
     public SLQueryResult execute( Collection<SLNode> inputNodes )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -111,8 +109,8 @@ public interface SLQuery extends LockContainer {
      */
     public SLQueryResult execute( Collection<SLNode> inputNodes,
                                   Integer limit,
-                                  Integer offset ) throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -128,8 +126,7 @@ public interface SLQuery extends LockContainer {
     public SLQueryResult execute( Collection<SLNode> inputNodes,
                                   SortMode sortMode,
                                   boolean showSLQL )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -149,8 +146,7 @@ public interface SLQuery extends LockContainer {
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -164,8 +160,7 @@ public interface SLQuery extends LockContainer {
      */
     public SLQueryResult execute( Integer limit,
                                   Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -179,8 +174,7 @@ public interface SLQuery extends LockContainer {
      */
     public SLQueryResult execute( SortMode sortMode,
                                   boolean showSLQL )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -198,8 +192,7 @@ public interface SLQuery extends LockContainer {
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -211,8 +204,7 @@ public interface SLQuery extends LockContainer {
      * @throws SLQueryException the SL query exception
      */
     public SLQueryResult execute( String[] inputNodesIDs )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -227,8 +219,8 @@ public interface SLQuery extends LockContainer {
      */
     public SLQueryResult execute( String[] inputNodesIDs,
                                   Integer limit,
-                                  Integer offset ) throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -243,8 +235,8 @@ public interface SLQuery extends LockContainer {
      */
     public SLQueryResult execute( String[] inputNodesIDs,
                                   SortMode sortMode,
-                                  boolean showSLQL ) throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+                                  boolean showSLQL )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
      * Execute.
@@ -264,7 +256,6 @@ public interface SLQuery extends LockContainer {
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset )
-            throws SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException, SLQueryException;
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
 }

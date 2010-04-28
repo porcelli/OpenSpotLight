@@ -68,8 +68,7 @@ public class ArtifactFinderSupport {
      * @param newOnes the new ones
      * @return the set< t>
      */
-    public static <T extends Artifact> Set<T> applyDifferenceOnExistents(
-                                                                          final Set<T> existents,
+    public static <T extends Artifact> Set<T> applyDifferenceOnExistents( final Set<T> existents,
                                                                           final Set<T> newOnes,
                                                                           final Session session ) {
         final Set<T> result = new HashSet<T>();
@@ -79,9 +78,7 @@ public class ArtifactFinderSupport {
                 final T newOne = findTheEquivalent(existent, newOnes);
                 delta.remove(newOne);
                 if (newOne != null) {
-                    final ChangeType defaultChangeType = newOne.contentEquals(
-                                                               existent) ? ChangeType.NOT_CHANGED
-                                    : ChangeType.CHANGED;
+                    final ChangeType defaultChangeType = newOne.contentEquals(existent) ? ChangeType.NOT_CHANGED : ChangeType.CHANGED;
                     switch (existent.getChangeType()) {
                         case INCLUDED:
                             if (!ChangeType.EXCLUDED.equals(newOne.getChangeType())) {
@@ -96,10 +93,8 @@ public class ArtifactFinderSupport {
                         default:
                             newOne.setChangeType(defaultChangeType);
                     }
-                    final boolean bothIncludedAndExcluded = ChangeType.INCLUDED
-                                                                               .equals(existent.getChangeType())
-                                                            && ChangeType.EXCLUDED.equals(newOne
-                                                                                                .getChangeType());
+                    final boolean bothIncludedAndExcluded = ChangeType.INCLUDED.equals(existent.getChangeType())
+                                                            && ChangeType.EXCLUDED.equals(newOne.getChangeType());
                     if (!bothIncludedAndExcluded) {
                         result.add(newOne);
                     }
@@ -128,8 +123,7 @@ public class ArtifactFinderSupport {
     public static <T extends Artifact> T findTheEquivalent( final T artifact,
                                                             final Set<T> setWithEquivalent ) {
         for (final T equivalent : setWithEquivalent) {
-            if (equivalent.getArtifactCompleteName().equals(
-                                                            artifact.getArtifactCompleteName())) {
+            if (equivalent.getArtifactCompleteName().equals(artifact.getArtifactCompleteName())) {
                 return equivalent;
             }
         }
@@ -142,8 +136,7 @@ public class ArtifactFinderSupport {
      * 
      * @param existents the existents
      */
-    public static <T extends Artifact> void freezeChangesAfterBundleProcessing(
-                                                                                final Set<T> existents ) {
+    public static <T extends Artifact> void freezeChangesAfterBundleProcessing( final Set<T> existents ) {
         final Set<T> toBeRemoved = new HashSet<T>();
         for (final T t : existents) {
             if (ChangeType.EXCLUDED.equals(t.getChangeType())) {

@@ -79,8 +79,7 @@ public abstract class JcrConnectionProvider {
     /**
      * The Class JackRabbitConnectionProvider is a {@link JcrConnectionProvider} based on Jack Rabbit.
      */
-    private static class JackRabbitConnectionProvider extends
-        JcrConnectionProvider {
+    private static class JackRabbitConnectionProvider extends JcrConnectionProvider {
 
         /** The repository. */
         private Repository                                       repository;
@@ -88,8 +87,7 @@ public abstract class JcrConnectionProvider {
         /** The repository closed. */
         private boolean                                          repositoryClosed = true;
 
-        private static final AtomicInteger                       sessionIdFactory = new AtomicInteger(
-                                                                                                      0);
+        private static final AtomicInteger                       sessionIdFactory = new AtomicInteger(0);
 
         private static final CopyOnWriteArraySet<SessionWrapper> openSessions     = new CopyOnWriteArraySet<SessionWrapper>();
 
@@ -131,8 +129,7 @@ public abstract class JcrConnectionProvider {
                 try {
                     Files.delete(getData().getConfigurationDirectory());
                 } catch (final SLException e) {
-                    throw Exceptions.logAndReturnNew(e,
-                                                     SLRuntimeException.class);
+                    throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 
                 }
             }
@@ -152,23 +149,19 @@ public abstract class JcrConnectionProvider {
                         try {
                             Files.delete(getData().getConfigurationDirectory());
                         } catch (final SLException e) {
-                            throw Exceptions.logAndReturnNew(e,
-                                                             SLRuntimeException.class);
+                            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 
                         }
                     }
 
                     final RepositoryConfig config = RepositoryConfig.create(
-                                                                            ClassPathResource
-                                                                                             .getResourceFromClassPath(getData()
-                                                                                                                                .getXmlClasspathLocation()),
+                                                                            ClassPathResource.getResourceFromClassPath(getData().getXmlClasspathLocation()),
                                                                             getData().getConfigurationDirectory());
 
                     repository = RepositoryImpl.create(config);
                     repositoryClosed = false;
                 } catch (final Exception e) {
-                    throw Exceptions.logAndReturnNew(e,
-                                                     ConfigurationException.class);
+                    throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
                 }
             }
 
@@ -191,26 +184,21 @@ public abstract class JcrConnectionProvider {
         public SessionWithLock openSession() {
             try {
                 openRepository();
-                final Session newSession = repository.login(getData()
-                                                                     .getCredentials());
-                final int sessionId = JackRabbitConnectionProvider.sessionIdFactory
-                                                                                   .getAndIncrement();
-                final SessionWrapper wrappedSession = new SessionWrapper(
-                                                                         newSession, sessionId, new SessionClosingListener() {
+                final Session newSession = repository.login(getData().getCredentials());
+                final int sessionId = JackRabbitConnectionProvider.sessionIdFactory.getAndIncrement();
+                final SessionWrapper wrappedSession = new SessionWrapper(newSession, sessionId, new SessionClosingListener() {
 
-                                                                             public void sessionClosed( final int id,
-                                                                                                        final SessionWrapper wrapper,
-                                                                                                        final Session session ) {
-                                                                                 JackRabbitConnectionProvider.openSessions
-                                                                                                                          .remove(wrapper);
+                    public void sessionClosed( final int id,
+                                               final SessionWrapper wrapper,
+                                               final Session session ) {
+                        JackRabbitConnectionProvider.openSessions.remove(wrapper);
 
-                                                                             }
-                                                                         });
+                    }
+                });
                 JackRabbitConnectionProvider.openSessions.add(wrappedSession);
                 return wrappedSession;
             } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                                                 ConfigurationException.class);
+                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
             }
         }
 
@@ -231,8 +219,7 @@ public abstract class JcrConnectionProvider {
      * @param data the data
      * @return the jcr connection provider
      */
-    public static synchronized JcrConnectionProvider createFromData(
-                                                                     final JcrConnectionDescriptor data ) {
+    public static synchronized JcrConnectionProvider createFromData( final JcrConnectionDescriptor data ) {
         JcrConnectionProvider provider = JcrConnectionProvider.cache.get(data);
         if (provider == null) {
             switch (data.getJcrType()) {
@@ -240,8 +227,7 @@ public abstract class JcrConnectionProvider {
                     provider = new JackRabbitConnectionProvider(data);
                     break;
                 default:
-                    throw Exceptions.logAndReturn(new IllegalStateException(
-                                                                            "Invalid jcr type"));
+                    throw Exceptions.logAndReturn(new IllegalStateException("Invalid jcr type"));
             }
             JcrConnectionProvider.cache.put(data, provider);
         }

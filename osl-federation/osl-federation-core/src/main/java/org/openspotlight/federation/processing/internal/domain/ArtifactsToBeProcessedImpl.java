@@ -57,8 +57,7 @@ import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
 /**
  * The Class ArtifactsToBeProcessedImpl.
  */
-public class ArtifactsToBeProcessedImpl<T extends Artifact> implements
-        ArtifactsToBeProcessed<T> {
+public class ArtifactsToBeProcessedImpl<T extends Artifact> implements ArtifactsToBeProcessed<T> {
 
     /** The artifacts already processed. */
     private Set<T> artifactsAlreadyProcessed = new LinkedHashSet<T>();
@@ -92,8 +91,7 @@ public class ArtifactsToBeProcessedImpl<T extends Artifact> implements
      * @seeorg.openspotlight.federation.processing.BundleProcessor.
      * ArtifactsToBeProcessed#setArtifactsAlreadyProcessed(java.util.Set)
      */
-    public void setArtifactsAlreadyProcessed(
-                                              final Set<T> artifactsAlreadyProcessed ) {
+    public void setArtifactsAlreadyProcessed( final Set<T> artifactsAlreadyProcessed ) {
         this.artifactsAlreadyProcessed = artifactsAlreadyProcessed;
     }
 

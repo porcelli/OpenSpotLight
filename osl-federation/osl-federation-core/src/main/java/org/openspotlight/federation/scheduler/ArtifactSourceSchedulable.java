@@ -61,8 +61,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The Class ArtifactSourceSchedulable.
  */
-public class ArtifactSourceSchedulable implements
-        SchedulableCommand<ArtifactSource> {
+public class ArtifactSourceSchedulable implements SchedulableCommand<ArtifactSource> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -70,18 +69,14 @@ public class ArtifactSourceSchedulable implements
                          final ExecutionContext ctx,
                          final ArtifactSource schedulable ) {
         if (logger.isDebugEnabled()) {
-            logger.debug(" >>>> Executing artifact loadgin from source"
-                         + schedulable.toUniqueJobString());
+            logger.debug(" >>>> Executing artifact loadgin from source" + schedulable.toUniqueJobString());
         }
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
-                                                                                                 ctx.getSimplePersistFactory(), schedulable
-                                                                                                                                                          .getRepository());
-        ArtifactLoaderManager.INSTANCE.refreshResources(settings, schedulable,
-                                                        provider);
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
+                                                                                               schedulable.getRepository());
+        ArtifactLoaderManager.INSTANCE.refreshResources(settings, schedulable, provider);
     }
 
-    public String getRepositoryNameBeforeExecution(
-                                                    final ArtifactSource schedulable ) {
+    public String getRepositoryNameBeforeExecution( final ArtifactSource schedulable ) {
         return schedulable.getRepository().getName();
     }
 

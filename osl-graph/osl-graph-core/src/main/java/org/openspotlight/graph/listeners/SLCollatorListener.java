@@ -85,40 +85,26 @@ public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
             try {
                 if (event.isString()) {
                     final String name = event.getPropertyName();
-                    final String primaryKeyPropName = SLCollatorSupport
-                                                                       .getCollatorKeyPropName(name, Collator.PRIMARY);
-                    final String secondaryKeyPropName = SLCollatorSupport
-                                                                         .getCollatorKeyPropName(name, Collator.SECONDARY);
-                    final String tertiaryKeyPropName = SLCollatorSupport
-                                                                        .getCollatorKeyPropName(name, Collator.TERTIARY);
-                    final String primaryDescriptionPropName = SLCollatorSupport
-                                                                               .getCollatorDescriptionPropName(name,
+                    final String primaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.PRIMARY);
+                    final String secondaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.SECONDARY);
+                    final String tertiaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.TERTIARY);
+                    final String primaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name,
                                                                                                                Collator.PRIMARY);
-                    final String secondaryDescriptionPropName = SLCollatorSupport
-                                                                                 .getCollatorDescriptionPropName(name,
+                    final String secondaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(
+                                                                                                                 name,
                                                                                                                  Collator.SECONDARY);
-                    final String tertiaryDescriptionPropName = SLCollatorSupport
-                                                                                .getCollatorDescriptionPropName(name,
+                    final String tertiaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name,
                                                                                                                 Collator.TERTIARY);
                     final SLPersistentNode pNode = event.getPNode();
-                    pNode.getProperty(String.class, primaryKeyPropName)
-                            .remove();
-                    pNode.getProperty(String.class, secondaryKeyPropName)
-                            .remove();
-                    pNode.getProperty(String.class, tertiaryKeyPropName)
-                            .remove();
-                    pNode.getProperty(String.class, primaryDescriptionPropName)
-                            .remove();
-                    pNode.getProperty(String.class,
-                                      secondaryDescriptionPropName).remove();
-                    pNode
-                            .getProperty(String.class,
-                                         tertiaryDescriptionPropName).remove();
+                    pNode.getProperty(String.class, primaryKeyPropName).remove();
+                    pNode.getProperty(String.class, secondaryKeyPropName).remove();
+                    pNode.getProperty(String.class, tertiaryKeyPropName).remove();
+                    pNode.getProperty(String.class, primaryDescriptionPropName).remove();
+                    pNode.getProperty(String.class, secondaryDescriptionPropName).remove();
+                    pNode.getProperty(String.class, tertiaryDescriptionPropName).remove();
                 }
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to remove callation property data.",
-                                                  e);
+                throw new SLGraphSessionException("Error on attempt to remove callation property data.", e);
             }
         }
     }
@@ -130,63 +116,42 @@ public class SLCollatorListener extends SLAbstractGraphSessionEventListener {
     public void nodePropertySet( final SLNodePropertySetEvent event ) {
         synchronized (lock) {
             try {
-                final SLPersistentProperty<? extends Serializable> pProperty = event
-                                                                                    .getPersistentProperty();
+                final SLPersistentProperty<? extends Serializable> pProperty = event.getPersistentProperty();
                 if (pProperty.getValue() instanceof String) {
-                    final String name = SLCommonSupport
-                                                       .toSimplePropertyName(pProperty.getName());
+                    final String name = SLCommonSupport.toSimplePropertyName(pProperty.getName());
                     final String value = pProperty.getValue().toString();
 
-                    final String primaryKey = SLCollatorSupport.getCollatorKey(
-                                                                               Collator.PRIMARY, value);
-                    final String secondaryKey = SLCollatorSupport
-                                                                 .getCollatorKey(Collator.SECONDARY, value);
-                    final String tertiaryKey = SLCollatorSupport
-                                                                .getCollatorKey(Collator.TERTIARY, value);
+                    final String primaryKey = SLCollatorSupport.getCollatorKey(Collator.PRIMARY, value);
+                    final String secondaryKey = SLCollatorSupport.getCollatorKey(Collator.SECONDARY, value);
+                    final String tertiaryKey = SLCollatorSupport.getCollatorKey(Collator.TERTIARY, value);
 
-                    final String primaryDescription = SLCollatorSupport
-                                                                       .getCollatorDescription(Collator.PRIMARY, value);
-                    final String secondaryDescription = SLCollatorSupport
-                                                                         .getCollatorDescription(Collator.SECONDARY, value);
-                    final String tertiaryDescription = SLCollatorSupport
-                                                                        .getCollatorDescription(Collator.TERTIARY, value);
+                    final String primaryDescription = SLCollatorSupport.getCollatorDescription(Collator.PRIMARY, value);
+                    final String secondaryDescription = SLCollatorSupport.getCollatorDescription(Collator.SECONDARY, value);
+                    final String tertiaryDescription = SLCollatorSupport.getCollatorDescription(Collator.TERTIARY, value);
 
-                    final String primaryKeyPropName = SLCollatorSupport
-                                                                       .getCollatorKeyPropName(name, Collator.PRIMARY);
-                    final String secondaryKeyPropName = SLCollatorSupport
-                                                                         .getCollatorKeyPropName(name, Collator.SECONDARY);
-                    final String tertiaryKeyPropName = SLCollatorSupport
-                                                                        .getCollatorKeyPropName(name, Collator.TERTIARY);
+                    final String primaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.PRIMARY);
+                    final String secondaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.SECONDARY);
+                    final String tertiaryKeyPropName = SLCollatorSupport.getCollatorKeyPropName(name, Collator.TERTIARY);
 
-                    final String primaryDescriptionPropName = SLCollatorSupport
-                                                                               .getCollatorDescriptionPropName(name,
+                    final String primaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name,
                                                                                                                Collator.PRIMARY);
-                    final String secondaryDescriptionPropName = SLCollatorSupport
-                                                                                 .getCollatorDescriptionPropName(name,
+                    final String secondaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(
+                                                                                                                 name,
                                                                                                                  Collator.SECONDARY);
-                    final String tertiaryDescriptionPropName = SLCollatorSupport
-                                                                                .getCollatorDescriptionPropName(name,
+                    final String tertiaryDescriptionPropName = SLCollatorSupport.getCollatorDescriptionPropName(name,
                                                                                                                 Collator.TERTIARY);
 
                     final SLPersistentNode pNode = pProperty.getNode();
-                    pNode.setProperty(String.class, primaryKeyPropName,
-                                      primaryKey);
-                    pNode.setProperty(String.class, secondaryKeyPropName,
-                                      secondaryKey);
-                    pNode.setProperty(String.class, tertiaryKeyPropName,
-                                      tertiaryKey);
+                    pNode.setProperty(String.class, primaryKeyPropName, primaryKey);
+                    pNode.setProperty(String.class, secondaryKeyPropName, secondaryKey);
+                    pNode.setProperty(String.class, tertiaryKeyPropName, tertiaryKey);
 
-                    pNode.setProperty(String.class, primaryDescriptionPropName,
-                                      primaryDescription);
-                    pNode.setProperty(String.class,
-                                      secondaryDescriptionPropName, secondaryDescription);
-                    pNode.setProperty(String.class,
-                                      tertiaryDescriptionPropName, tertiaryDescription);
+                    pNode.setProperty(String.class, primaryDescriptionPropName, primaryDescription);
+                    pNode.setProperty(String.class, secondaryDescriptionPropName, secondaryDescription);
+                    pNode.setProperty(String.class, tertiaryDescriptionPropName, tertiaryDescription);
                 }
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to update callation property data.",
-                                                  e);
+                throw new SLGraphSessionException("Error on attempt to update callation property data.", e);
             }
         }
     }

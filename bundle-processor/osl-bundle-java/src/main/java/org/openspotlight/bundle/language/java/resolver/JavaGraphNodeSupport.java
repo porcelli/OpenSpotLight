@@ -96,10 +96,8 @@ import org.slf4j.LoggerFactory;
 
 public class JavaGraphNodeSupport {
 
-    private static int findNumberOfParanetersByItsName(
-                                                        final String methodFullName ) {
-        final String methodParameterPiece = methodFullName
-                                                          .substring(methodFullName.indexOf("(") + 1);
+    private static int findNumberOfParanetersByItsName( final String methodFullName ) {
+        final String methodParameterPiece = methodFullName.substring(methodFullName.indexOf("(") + 1);
         int numberOfParameters;
         if (methodParameterPiece.startsWith(")")) {
             numberOfParameters = 0;
@@ -132,8 +130,7 @@ public class JavaGraphNodeSupport {
     /** The nodes from abstract context. */
     private final Map<String, JavaType> nodesFromAbstractContext = new TreeMap<String, JavaType>();
 
-    private final Logger                logger                   = LoggerFactory
-                                                                                .getLogger(JavaGraphNodeSupport.class);
+    private final Logger                logger                   = LoggerFactory.getLogger(JavaGraphNodeSupport.class);
 
     /**
      * Instantiates a new java graph node support. The abstractContextRootNode will store all implicit relationships and also all
@@ -148,14 +145,13 @@ public class JavaGraphNodeSupport {
      * @param abstractContextRootNode the abstract context root node
      */
     public JavaGraphNodeSupport(
-                                 final SLGraphSession session,
-                                 final SLNode currentContextRootNode,
+                                 final SLGraphSession session, final SLNode currentContextRootNode,
                                  final SLNode abstractContextRootNode ) {
         checkNotNull("session", session);
         checkNotNull("currentContextRootNode", currentContextRootNode);
         checkNotNull("abstractContextRootNode", abstractContextRootNode);
-        checkCondition("correctAbstractContext", JavaConstants.ABSTRACT_CONTEXT
-                                                                               .equals(abstractContextRootNode.getContext().getID()));
+        checkCondition("correctAbstractContext",
+                       JavaConstants.ABSTRACT_CONTEXT.equals(abstractContextRootNode.getContext().getID()));
         this.session = session;
         this.currentContextRootNode = currentContextRootNode;
         this.abstractContextRootNode = abstractContextRootNode;
@@ -175,16 +171,13 @@ public class JavaGraphNodeSupport {
                                  final String superPackageName,
                                  final String superTypeName ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding extends on " + packageName + "_" + typeName
-                         + " with super " + superPackageName + "_" + superTypeName);
+            logger.debug(" adding extends on " + packageName + "_" + typeName + " with super " + superPackageName + "_"
+                         + superTypeName);
         }
 
-        final JavaType newType = this.addTypeOnAbstractContext(JavaType.class,
-                                                               packageName, typeName);
-        final JavaType newSuperType = this.addTypeOnAbstractContext(
-                                                                    JavaType.class, superPackageName, superTypeName);
-        final Class<? extends SLLink> linkClass = newType instanceof JavaTypeInterface ? InterfaceExtends.class
-                : Extends.class;
+        final JavaType newType = this.addTypeOnAbstractContext(JavaType.class, packageName, typeName);
+        final JavaType newSuperType = this.addTypeOnAbstractContext(JavaType.class, superPackageName, superTypeName);
+        final Class<? extends SLLink> linkClass = newType instanceof JavaTypeInterface ? InterfaceExtends.class : Extends.class;
         session.addLink(linkClass, newType, newSuperType, false);
     }
 
@@ -202,17 +195,13 @@ public class JavaGraphNodeSupport {
                                     final String superPackageName,
                                     final String superTypeName ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding implements on " + packageName + "_"
-                         + typeName + " with super " + superPackageName + "_"
+            logger.debug(" adding implements on " + packageName + "_" + typeName + " with super " + superPackageName + "_"
                          + superTypeName);
         }
 
-        final JavaType newType = this.addTypeOnAbstractContext(JavaType.class,
-                                                               packageName, typeName);
-        final JavaType newSuperType = this.addTypeOnAbstractContext(
-                                                                    JavaType.class, superPackageName, superTypeName);
-        final Class<? extends SLLink> linkClass = newType instanceof JavaTypeInterface ? InterfaceExtends.class
-                : Implements.class;
+        final JavaType newType = this.addTypeOnAbstractContext(JavaType.class, packageName, typeName);
+        final JavaType newSuperType = this.addTypeOnAbstractContext(JavaType.class, superPackageName, superTypeName);
+        final Class<? extends SLLink> linkClass = newType instanceof JavaTypeInterface ? InterfaceExtends.class : Implements.class;
         session.addLink(linkClass, newType, newSuperType, false);
 
     }
@@ -220,12 +209,9 @@ public class JavaGraphNodeSupport {
     private void addImplicitPrimitiveCast( final String typeName,
                                            final String superTypeName,
                                            final int distance ) throws Exception {
-        final JavaType type = this.addTypeOnCurrentContext(
-                                                           JavaTypePrimitive.class, "", typeName, Opcodes.ACC_PUBLIC);
-        final JavaType superType = this.addTypeOnCurrentContext(
-                                                                JavaTypePrimitive.class, "", superTypeName, Opcodes.ACC_PUBLIC);
-        final ImplicitPrimitiveCast link = session.addLink(
-                                                           ImplicitPrimitiveCast.class, type, superType, false);
+        final JavaType type = this.addTypeOnCurrentContext(JavaTypePrimitive.class, "", typeName, Opcodes.ACC_PUBLIC);
+        final JavaType superType = this.addTypeOnCurrentContext(JavaTypePrimitive.class, "", superTypeName, Opcodes.ACC_PUBLIC);
+        final ImplicitPrimitiveCast link = session.addLink(ImplicitPrimitiveCast.class, type, superType, false);
         link.setDistance(distance);
     }
 
@@ -239,15 +225,12 @@ public class JavaGraphNodeSupport {
      */
     public void addThrowsOnMethod( final JavaMethod method,
                                    final String exceptionPackage,
-                                   final String exceptionName )
-            throws Exception {
+                                   final String exceptionName ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding throws " + exceptionPackage + "_"
-                         + exceptionName + " with super " + method.getName());
+            logger.debug(" adding throws " + exceptionPackage + "_" + exceptionName + " with super " + method.getName());
         }
 
-        final JavaType newExceptionType = this.addTypeOnAbstractContext(
-                                                                        JavaType.class, exceptionPackage, exceptionName);
+        final JavaType newExceptionType = this.addTypeOnAbstractContext(JavaType.class, exceptionPackage, exceptionName);
         session.addLink(MethodThrows.class, method, newExceptionType, false);
 
     }
@@ -263,44 +246,35 @@ public class JavaGraphNodeSupport {
      * @throws Exception the exception
      */
     @SuppressWarnings( "unchecked" )
-    public <T extends JavaType> T addTypeOnAbstractContext(
-                                                            final Class<T> nodeType,
+    public <T extends JavaType> T addTypeOnAbstractContext( final Class<T> nodeType,
                                                             final String packageName,
                                                             final String nodeName ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding type on abstract context " + packageName
-                         + "_" + nodeName);
+            logger.debug(" adding type on abstract context " + packageName + "_" + nodeName);
         }
 
-        if (usingCache
-                && nodesFromThisContext.containsKey(packageName + nodeName)) {
+        if (usingCache && nodesFromThisContext.containsKey(packageName + nodeName)) {
             return (T)nodesFromThisContext.get(packageName + nodeName);
         }
-        if (usingCache
-                && nodesFromAbstractContext.containsKey(packageName + nodeName)) {
+        if (usingCache && nodesFromAbstractContext.containsKey(packageName + nodeName)) {
             return (T)nodesFromAbstractContext.get(packageName + nodeName);
         }
 
         if (JavaTypePrimitive.class.equals(nodeType)) {
-            final T newType = abstractContextRootNode.addNode(nodeType,
-                                                              nodeName);
+            final T newType = abstractContextRootNode.addNode(nodeType, nodeName);
             newType.setSimpleName(nodeName);
             newType.setQualifiedName(nodeName);
             return newType;
         }
-        final JavaPackage newPackage = abstractContextRootNode.addNode(
-                                                                       JavaPackage.class, packageName);
+        final JavaPackage newPackage = abstractContextRootNode.addNode(JavaPackage.class, packageName);
         final T newType = newPackage.addNode(nodeType, nodeName);
         newType.setSimpleName(nodeName);
-        newType.setQualifiedName(Strings.tryToRemoveBegginingFrom(
-                                                                  JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
-                                                                                                       + nodeName.replaceAll("[$]", ".")));
+        newType.setQualifiedName(Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE + ".",
+                                                                  packageName + "." + nodeName.replaceAll("[$]", ".")));
         session.addLink(PackageType.class, newPackage, newType, false);
         nodesFromAbstractContext.put(packageName + nodeName, newType);
         if (logger.isInfoEnabled()) {
-            logger.info("abstract ctx - added class "
-                        + nodeType.getSimpleName() + " " + packageName + "."
-                        + nodeName);
+            logger.info("abstract ctx - added class " + nodeType.getSimpleName() + " " + packageName + "." + nodeName);
         }
 
         return newType;
@@ -317,13 +291,11 @@ public class JavaGraphNodeSupport {
      * @return the t
      * @throws Exception the exception
      */
-    public <T extends JavaType> T addTypeOnCurrentContext(
-                                                           final Class<T> nodeType,
+    public <T extends JavaType> T addTypeOnCurrentContext( final Class<T> nodeType,
                                                            final String packageName,
                                                            final String nodeName,
                                                            final int access ) throws Exception {
-        return addTypeOnCurrentContext(nodeType, packageName, nodeName, access,
-                                       null);
+        return addTypeOnCurrentContext(nodeType, packageName, nodeName, access, null);
     }
 
     /**
@@ -339,32 +311,26 @@ public class JavaGraphNodeSupport {
      * @throws Exception the exception
      */
     @SuppressWarnings( "unchecked" )
-    public <T extends JavaType> T addTypeOnCurrentContext(
-                                                           final Class<T> nodeType,
+    public <T extends JavaType> T addTypeOnCurrentContext( final Class<T> nodeType,
                                                            final String packageName,
                                                            final String nodeName,
                                                            final int access,
-                                                           final SLNode parentType )
-            throws Exception {
+                                                           final SLNode parentType ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding type on current context " + packageName + "_"
-                         + nodeName + " with parent "
+            logger.debug(" adding type on current context " + packageName + "_" + nodeName + " with parent "
                          + (parentType != null ? parentType.getName() : "null"));
         }
 
-        if (usingCache
-                && nodesFromThisContext.containsKey(packageName + nodeName)) {
+        if (usingCache && nodesFromThisContext.containsKey(packageName + nodeName)) {
             return (T)nodesFromThisContext.get(packageName + nodeName);
         }
         if (JavaTypePrimitive.class.equals(nodeType)) {
-            final T newType = abstractContextRootNode.addNode(nodeType,
-                                                              nodeName);
+            final T newType = abstractContextRootNode.addNode(nodeType, nodeName);
             newType.setSimpleName(nodeName);
             newType.setQualifiedName(nodeName);
             return newType;
         }
-        final JavaPackage newPackage = currentContextRootNode.addNode(
-                                                                      JavaPackage.class, packageName);
+        final JavaPackage newPackage = currentContextRootNode.addNode(JavaPackage.class, packageName);
         T newType = null;
 
         if (parentType != null) {
@@ -374,9 +340,8 @@ public class JavaGraphNodeSupport {
         }
 
         newType.setSimpleName(nodeName);
-        newType.setQualifiedName(Strings.tryToRemoveBegginingFrom(
-                                                                  JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
-                                                                                                       + nodeName.replaceAll("[$]", ".")));
+        newType.setQualifiedName(Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE + ".",
+                                                                  packageName + "." + nodeName.replaceAll("[$]", ".")));
         session.addLink(PackageType.class, newPackage, newType, false);
         final boolean isPublic = (access & Opcodes.ACC_PUBLIC) != 0;
         final boolean isPrivate = (access & Opcodes.ACC_PRIVATE) != 0;
@@ -389,23 +354,17 @@ public class JavaGraphNodeSupport {
         newType.setFinal(isFinal);
         newType.setProtected(isProtected);
 
-        final JavaPackage newAbstractPackage = abstractContextRootNode.addNode(
-                                                                               JavaPackage.class, packageName);
-        final JavaType newAbstractType = newAbstractPackage.addNode(
-                                                                    JavaType.class, nodeName);
-        newAbstractType.setQualifiedName(Strings.tryToRemoveBegginingFrom(
-                                                                          JavaConstants.DEFAULT_PACKAGE + ".", packageName + "."
-                                                                                                               + nodeName.replaceAll("[$]", ".")));
+        final JavaPackage newAbstractPackage = abstractContextRootNode.addNode(JavaPackage.class, packageName);
+        final JavaType newAbstractType = newAbstractPackage.addNode(JavaType.class, nodeName);
+        newAbstractType.setQualifiedName(Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE + ".",
+                                                                          packageName + "." + nodeName.replaceAll("[$]", ".")));
         newAbstractType.setSimpleName(nodeName);
 
         session.addLink(PackageType.class, newPackage, newType, false);
-        session
-                .addLink(AbstractTypeBind.class, newAbstractType, newType,
-                         false);
+        session.addLink(AbstractTypeBind.class, newAbstractType, newType, false);
         nodesFromThisContext.put(packageName + nodeName, newType);
         if (logger.isInfoEnabled()) {
-            logger.info("added class " + nodeType.getSimpleName() + " "
-                        + packageName + "." + nodeName);
+            logger.info("added class " + nodeType.getSimpleName() + " " + packageName + "." + nodeName);
         }
         return newType;
     }
@@ -433,15 +392,12 @@ public class JavaGraphNodeSupport {
                                       final boolean array,
                                       final int arrayDimensions ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding field " + fieldPackage + "_" + fieldTypeName
-                         + " with name " + fieldName + " on parent "
+            logger.debug(" adding field " + fieldPackage + "_" + fieldTypeName + " with name " + fieldName + " on parent "
                          + (newType != null ? newType.getName() : "null"));
         }
 
-        final JavaDataField field = newType.addNode(JavaDataField.class,
-                                                    fieldName);
-        final JavaType fieldTypeAdded = this.addTypeOnAbstractContext(
-                                                                      fieldType, fieldPackage, fieldTypeName);
+        final JavaDataField field = newType.addNode(JavaDataField.class, fieldName);
+        final JavaType fieldTypeAdded = this.addTypeOnAbstractContext(fieldType, fieldPackage, fieldTypeName);
         insertFieldData(field, fieldTypeAdded, access, array, arrayDimensions);
         return field;
     }
@@ -464,14 +420,12 @@ public class JavaGraphNodeSupport {
                                     final boolean constructor,
                                     final int access ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding method " + methodFullName + " on parent "
-                         + (newType != null ? newType.getName() : "null"));
+            logger.debug(" adding method " + methodFullName + " on parent " + (newType != null ? newType.getName() : "null"));
         }
 
         JavaMethod method;
         if (constructor) {
-            method = newType.addNode(JavaMethodConstructor.class,
-                                     methodFullName);
+            method = newType.addNode(JavaMethodConstructor.class, methodFullName);
         } else {
             method = newType.addNode(JavaMethodMethod.class, methodFullName);
         }
@@ -503,16 +457,12 @@ public class JavaGraphNodeSupport {
                                        final boolean array,
                                        final int arrayDimensions ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding method parameter " + parameterPackage + "_"
-                         + parameterType + " with order " + parameterOrder
-                         + " with parent "
-                         + (method != null ? method.getName() : "null"));
+            logger.debug(" adding method parameter " + parameterPackage + "_" + parameterType + " with order " + parameterOrder
+                         + " with parent " + (method != null ? method.getName() : "null"));
         }
 
-        final JavaType methodParameterType = this.addTypeOnAbstractContext(
-                                                                           parameterType, parameterPackage, parameterTypeName);
-        final MethodParameterDefinition methodParametersTypeLink = session
-                                                                          .addLink(MethodParameterDefinition.class, method,
+        final JavaType methodParameterType = this.addTypeOnAbstractContext(parameterType, parameterPackage, parameterTypeName);
+        final MethodParameterDefinition methodParametersTypeLink = session.addLink(MethodParameterDefinition.class, method,
                                                                                    methodParameterType, false);
         methodParametersTypeLink.setOrder(parameterOrder);
         methodParametersTypeLink.setArray(array);
@@ -537,14 +487,11 @@ public class JavaGraphNodeSupport {
                                         final boolean array,
                                         final int arrayDimension ) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(" adding return  " + returnPackageName + "_"
-                         + returnTypeName + " on metohd  "
+            logger.debug(" adding return  " + returnPackageName + "_" + returnTypeName + " on metohd  "
                          + (method != null ? method.getName() : "null"));
         }
-        final JavaType methodReturnType = this.addTypeOnAbstractContext(
-                                                                        returnType, returnPackageName, returnTypeName);
-        final MethodReturns methodReturnsType = session.addLink(
-                                                                MethodReturns.class, method, methodReturnType, false);
+        final JavaType methodReturnType = this.addTypeOnAbstractContext(returnType, returnPackageName, returnTypeName);
+        final MethodReturns methodReturnsType = session.addLink(MethodReturns.class, method, methodReturnType, false);
         methodReturnsType.setArray(array);
         methodReturnsType.setArrayDimension(arrayDimension);
     }
@@ -564,8 +511,7 @@ public class JavaGraphNodeSupport {
                                   final int access,
                                   final boolean isArray,
                                   final int dimension ) throws Exception {
-        final DataType fieldTypeLink = session.addLink(DataType.class, field,
-                                                       fieldType, false);
+        final DataType fieldTypeLink = session.addLink(DataType.class, field, fieldType, false);
         fieldTypeLink.setArray(isArray);
         fieldTypeLink.setArrayDimension(dimension);
         final boolean isFieldPublic = (access & Opcodes.ACC_PUBLIC) != 0;
@@ -664,13 +610,10 @@ public class JavaGraphNodeSupport {
 
     private void setupWrapperAndPrimitive( final String primitiveName,
                                            final String wrapperPackage,
-                                           final String wrapperClass )
-            throws Exception {
-        final JavaType wrapper = this.addTypeOnCurrentContext(
-                                                              JavaTypeClass.class, wrapperPackage, wrapperClass,
+                                           final String wrapperClass ) throws Exception {
+        final JavaType wrapper = this.addTypeOnCurrentContext(JavaTypeClass.class, wrapperPackage, wrapperClass,
                                                               Opcodes.ACC_PUBLIC);
-        final JavaType primitive = this.addTypeOnAbstractContext(
-                                                                 JavaTypePrimitive.class, "", primitiveName);
+        final JavaType primitive = this.addTypeOnAbstractContext(JavaTypePrimitive.class, "", primitiveName);
         session.addLink(Autoboxes.class, wrapper, primitive, false);
         session.addLink(AutoboxedBy.class, primitive, wrapper, false);
     }

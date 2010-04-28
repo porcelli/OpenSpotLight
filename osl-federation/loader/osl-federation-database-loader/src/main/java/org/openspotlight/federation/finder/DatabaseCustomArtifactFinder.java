@@ -85,15 +85,12 @@ import org.openspotlight.federation.domain.artifact.db.RoutineType;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 
-public class DatabaseCustomArtifactFinder extends
-        AbstractDatabaseArtifactFinder {
+public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder {
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(
-                                                                              Class<A> type,
+    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames( Class<A> type,
                                                                               ArtifactSource source,
-                                                                              String initialPath )
-            throws Exception {
+                                                                              String initialPath ) throws Exception {
         String pathToMatch;
         if (Strings.isEmpty(initialPath)) {
             pathToMatch = "*";
@@ -118,8 +115,7 @@ public class DatabaseCustomArtifactFinder extends
         final Set<String> artifactNames = new HashSet<String>();
         final DbArtifactSource dbBundle = (DbArtifactSource)source;
         final Map<String, DatabaseCustomArtifact> result = getResultFrom(dbBundle);
-        for (final Map.Entry<String, DatabaseCustomArtifact> entry : result
-                                                                           .entrySet()) {
+        for (final Map.Entry<String, DatabaseCustomArtifact> entry : result.entrySet()) {
             if (isMatchingWithoutCaseSentitiveness(entry.getKey(), pathToMatch)) {
                 artifactNames.add(entry.getKey());
             }
@@ -135,14 +131,14 @@ public class DatabaseCustomArtifactFinder extends
 
     protected static class DatabaseCustomArtifactInternalLoader {
 
-        public Map<String, DatabaseCustomArtifact> loadDatabaseMetadata(
-                                                                         final DatabaseMetaData metadata )
+        public Map<String, DatabaseCustomArtifact> loadDatabaseMetadata( final DatabaseMetaData metadata )
             throws ConfigurationException {
             try {
                 final Map<String, DatabaseCustomArtifact> tableMetadata = loadTableMetadata(metadata);
                 final Map<String, RoutineArtifact> routineMetadata = loadRoutineMetadata(metadata);
                 final Map<String, DatabaseCustomArtifact> result = new HashMap<String, DatabaseCustomArtifact>(
-                                                                                                               tableMetadata.size() + routineMetadata.size());
+                                                                                                               tableMetadata.size()
+                                                                                                               + routineMetadata.size());
                 result.putAll(tableMetadata);
                 result.putAll(routineMetadata);
                 return result;
@@ -152,12 +148,10 @@ public class DatabaseCustomArtifactFinder extends
         }
 
         @SuppressWarnings( "boxing" )
-        private Map<String, RoutineArtifact> loadRoutineMetadata(
-                                                                  final DatabaseMetaData metadata ) throws SQLException {
+        private Map<String, RoutineArtifact> loadRoutineMetadata( final DatabaseMetaData metadata ) throws SQLException {
 
             final ResultSet rs = metadata.getProcedures(null, null, null);
-            final Map<String, RoutineArtifact> result = new HashMap<String, RoutineArtifact>(
-                                                                                             rs.getFetchSize());
+            final Map<String, RoutineArtifact> result = new HashMap<String, RoutineArtifact>(rs.getFetchSize());
             while (rs.next()) {
                 final String catalog = rs.getString("PROCEDURE_CAT"); //$NON-NLS-1$
                 final String schema = rs.getString("PROCEDURE_SCHEM"); //$NON-NLS-1$
@@ -167,25 +161,22 @@ public class DatabaseCustomArtifactFinder extends
                 String description;
                 if (catalog != null) {
                     description = MessageFormat.format("/{0}/{1}/{2}/{3}", //$NON-NLS-1$
-                    schema, typeAsEnum, catalog, name);
+                                                       schema, typeAsEnum, catalog, name);
                 } else {
                     description = MessageFormat.format("/{0}/{1}/{2}", //$NON-NLS-1$
-                    schema, typeAsEnum, name);
+                                                       schema, typeAsEnum, name);
 
                 }
 
-                final RoutineArtifact newMetadata = Artifact
-                                                            .createArtifact(RoutineArtifact.class, description,
+                final RoutineArtifact newMetadata = Artifact.createArtifact(RoutineArtifact.class, description,
                                                                             ChangeType.INCLUDED);
                 newMetadata.setCatalogName(catalog);
                 newMetadata.setSchemaName(schema);
                 newMetadata.setArtifactName(name);
                 newMetadata.setType(typeAsEnum);
-                final ResultSet columnsRs = metadata.getProcedureColumns(
-                                                                         catalog, schema, name, null);
+                final ResultSet columnsRs = metadata.getProcedureColumns(catalog, schema, name, null);
                 while (columnsRs.next()) {
-                    final String columnName = columnsRs
-                                                       .getString("COLUMN_NAME"); //$NON-NLS-1$
+                    final String columnName = columnsRs.getString("COLUMN_NAME"); //$NON-NLS-1$
                     final int columnType = columnsRs.getInt("DATA_TYPE"); //$NON-NLS-1$
                     final int routineType = columnsRs.getInt("COLUMN_TYPE"); //$NON-NLS-1$
                     final int length = columnsRs.getInt("LENGTH"); //$NON-NLS-1$
@@ -196,11 +187,9 @@ public class DatabaseCustomArtifactFinder extends
                     parameter.setRoutine(newMetadata);
                     parameter.setColumnSize(length);
                     parameter.setType(ColumnType.getTypeByInt(columnType));
-                    parameter.setNullable(NullableSqlType
-                                                         .getNullableByInt(nullable));
+                    parameter.setNullable(NullableSqlType.getNullableByInt(nullable));
                     parameter.setDecimalSize(scale);
-                    parameter.setParameterType(RoutineParameterType
-                                                                   .getTypeByInt(routineType));
+                    parameter.setParameterType(RoutineParameterType.getTypeByInt(routineType));
                     newMetadata.getParameters().add(parameter);
                 }
 
@@ -211,8 +200,7 @@ public class DatabaseCustomArtifactFinder extends
         }
 
         @SuppressWarnings( "boxing" )
-        private Map<String, DatabaseCustomArtifact> loadTableMetadata(
-                                                                       final DatabaseMetaData metadata ) throws SQLException {
+        private Map<String, DatabaseCustomArtifact> loadTableMetadata( final DatabaseMetaData metadata ) throws SQLException {
             final ResultSet tableRs = metadata.getTables(null, null, null, of("TABLE", "VIEW")); //$NON-NLS-1$//$NON-NLS-2$
 
             final Map<String, DatabaseCustomArtifact> tableMetadata = new HashMap<String, DatabaseCustomArtifact>();
@@ -225,36 +213,30 @@ public class DatabaseCustomArtifactFinder extends
                 String description;
                 if (catalog != null) {
                     description = MessageFormat.format("/{0}/{1}/{2}/{3}", //$NON-NLS-1$
-                    schema, catalog, tableType, tableName);
+                                                       schema, catalog, tableType, tableName);
                 } else {
                     description = MessageFormat.format("/{0}/{1}/{2}", //$NON-NLS-1$
-                    schema, tableType, tableName);
+                                                       schema, tableType, tableName);
 
                 }
 
                 TableArtifact desc = null;
 
-                if (tableMetadata.containsKey(description)
-                        && !description.startsWith(Constraints.FOREIGN_KEY
-                                                                          .toString())
-                        && !description.startsWith(Constraints.PRIMARY_KEY
-                                                                          .toString())) {
+                if (tableMetadata.containsKey(description) && !description.startsWith(Constraints.FOREIGN_KEY.toString())
+                    && !description.startsWith(Constraints.PRIMARY_KEY.toString())) {
                     desc = (TableArtifact)tableMetadata.get(description);
                 } else {
                     if ("VIEW".equals(tableType)) { //$NON-NLS-1$
-                        desc = Artifact.createArtifact(ViewArtifact.class,
-                                                       description, ChangeType.INCLUDED);
+                        desc = Artifact.createArtifact(ViewArtifact.class, description, ChangeType.INCLUDED);
                     } else {
-                        desc = Artifact.createArtifact(TableArtifact.class,
-                                                       description, ChangeType.INCLUDED);
+                        desc = Artifact.createArtifact(TableArtifact.class, description, ChangeType.INCLUDED);
                     }
                 }
                 desc.setSchemaName(schema);
                 desc.setCatalogName(catalog);
                 desc.setTableName(tableName);
                 final Map<String, Set<String>> pkMap = new HashMap<String, Set<String>>();
-                final ResultSet pkRs = metadata.getPrimaryKeys(catalog, schema,
-                                                               tableName);
+                final ResultSet pkRs = metadata.getPrimaryKeys(catalog, schema, tableName);
                 while (pkRs.next()) {
                     final String pkColumn = pkRs.getString("COLUMN_NAME");
                     final String pkName = pkRs.getString("PK_NAME");
@@ -266,8 +248,7 @@ public class DatabaseCustomArtifactFinder extends
                     set.add(pkName);
                 }
 
-                final ResultSet fkRs = metadata.getExportedKeys(catalog,
-                                                                schema, tableName);
+                final ResultSet fkRs = metadata.getExportedKeys(catalog, schema, tableName);
                 while (fkRs.next()) {
                     final String fkName = fkRs.getString("FK_NAME");
                     final String thatCatalog = fkRs.getString("FKTABLE_CAT");
@@ -279,10 +260,8 @@ public class DatabaseCustomArtifactFinder extends
                     final String fromTable = fkRs.getString("PKTABLE_NAME");
                     final String fromColumn = fkRs.getString("PKCOLUMN_NAME");
 
-                    final String keyArtifactName = MessageFormat.format(
-                                                                        "/{0}/{1}", Constraints.FOREIGN_KEY, fkName);
-                    final ForeignKeyConstraintArtifact fk = Artifact
-                                                                    .createArtifact(ForeignKeyConstraintArtifact.class,
+                    final String keyArtifactName = MessageFormat.format("/{0}/{1}", Constraints.FOREIGN_KEY, fkName);
+                    final ForeignKeyConstraintArtifact fk = Artifact.createArtifact(ForeignKeyConstraintArtifact.class,
                                                                                     keyArtifactName, ChangeType.INCLUDED);
                     fk.setToCatalogName(thatCatalog);
                     fk.setToColumnName(thatColumn);
@@ -296,19 +275,15 @@ public class DatabaseCustomArtifactFinder extends
                     tableMetadata.put(keyArtifactName, fk);
                 }
 
-                final ResultSet columnRs = metadata.getColumns(catalog, schema,
-                                                               tableName, null);
+                final ResultSet columnRs = metadata.getColumns(catalog, schema, tableName, null);
 
                 while (columnRs.next()) {
 
                     final String columnName = columnRs.getString("COLUMN_NAME"); //$NON-NLS-1$
-                    final ColumnType type = ColumnType.getTypeByInt(columnRs
-                                                                            .getInt("DATA_TYPE")); //$NON-NLS-1$
-                    final NullableSqlType nullable = NullableSqlType
-                                                                    .getNullableByInt(columnRs.getInt("NULLABLE")); //$NON-NLS-1$
+                    final ColumnType type = ColumnType.getTypeByInt(columnRs.getInt("DATA_TYPE")); //$NON-NLS-1$
+                    final NullableSqlType nullable = NullableSqlType.getNullableByInt(columnRs.getInt("NULLABLE")); //$NON-NLS-1$
                     final Integer columnSize = columnRs.getInt("COLUMN_SIZE"); //$NON-NLS-1$
-                    final Integer decimalSize = columnRs
-                                                        .getInt("DECIMAL_DIGITS"); //$NON-NLS-1$
+                    final Integer decimalSize = columnRs.getInt("DECIMAL_DIGITS"); //$NON-NLS-1$
 
                     Column column = new Column();
                     column.setTable(desc);
@@ -324,18 +299,13 @@ public class DatabaseCustomArtifactFinder extends
                     final Set<String> pks = pkMap.get(columnName);
                     if (pks != null) {
                         for (final String pkName : pks) {
-                            final String pkArtifactName = MessageFormat
-                                                                       .format("/{0}/{1}",
-                                                                               Constraints.PRIMARY_KEY, pkName);
-                            final PrimaryKeyConstraintArtifact pk = Artifact
-                                                                            .createArtifact(
-                                                                                            PrimaryKeyConstraintArtifact.class,
+                            final String pkArtifactName = MessageFormat.format("/{0}/{1}", Constraints.PRIMARY_KEY, pkName);
+                            final PrimaryKeyConstraintArtifact pk = Artifact.createArtifact(PrimaryKeyConstraintArtifact.class,
                                                                                             pkArtifactName, ChangeType.INCLUDED);
                             pk.setConstraintName(pkName);
                             pk.setColumnName(column.getName());
                             pk.setTableName(column.getTable().getTableName());
-                            pk.setCatalogName(column.getTable()
-                                                    .getCatalogName());
+                            pk.setCatalogName(column.getTable().getCatalogName());
                             pk.setSchemaName(column.getTable().getSchemaName());
                             tableMetadata.put(pkArtifactName, pk);
                         }
@@ -362,13 +332,10 @@ public class DatabaseCustomArtifactFinder extends
         resultCache.clear();
     }
 
-    private synchronized Map<String, DatabaseCustomArtifact> getResultFrom(
-                                                                            final DbArtifactSource source ) throws Exception {
-        Assertions.checkNotEmpty("source.databaseName", source
-                                                              .getDatabaseName());
+    private synchronized Map<String, DatabaseCustomArtifact> getResultFrom( final DbArtifactSource source ) throws Exception {
+        Assertions.checkNotEmpty("source.databaseName", source.getDatabaseName());
         Assertions.checkNotEmpty("source.serverName", source.getServerName());
-        Assertions.checkNotEmpty("source.initialLookup", source
-                                                               .getInitialLookup());
+        Assertions.checkNotEmpty("source.initialLookup", source.getInitialLookup());
 
         Map<String, DatabaseCustomArtifact> result = resultCache.get(source);
         if (result == null) {
@@ -401,30 +368,27 @@ public class DatabaseCustomArtifactFinder extends
     }
 
     @Override
-    protected Set<Class<? extends Artifact>> internalGetAvailableTypes()
-            throws Exception {
+    protected Set<Class<? extends Artifact>> internalGetAvailableTypes() throws Exception {
         return availableTypes;
     }
 
     @SuppressWarnings( "unchecked" )
-    private final Set<Class<? extends Artifact>> availableTypes = SLCollections
-                                                                               .<Class<? extends Artifact>>setOf(
+    private final Set<Class<? extends Artifact>> availableTypes = SLCollections.<Class<? extends Artifact>>setOf(
                                                                                                                  ForeignKeyConstraintArtifact.class,
-                                                                                                                 PrimaryKeyConstraintArtifact.class, TableArtifact.class,
-                                                                                                                 ViewArtifact.class, ConstraintArtifact.class,
+                                                                                                                 PrimaryKeyConstraintArtifact.class,
+                                                                                                                 TableArtifact.class,
+                                                                                                                 ViewArtifact.class,
+                                                                                                                 ConstraintArtifact.class,
                                                                                                                  DatabaseCustomArtifact.class);
 
     @Override
-    protected <A extends Artifact> boolean internalAccept(
-                                                           ArtifactSource source,
+    protected <A extends Artifact> boolean internalAccept( ArtifactSource source,
                                                            Class<A> type ) throws Exception {
-        return source instanceof DbArtifactSource
-                && this.availableTypes.contains(type);
+        return source instanceof DbArtifactSource && this.availableTypes.contains(type);
     }
 
     @Override
-    protected boolean internalIsTypeSupported( Class<? extends Artifact> type )
-            throws Exception {
+    protected boolean internalIsTypeSupported( Class<? extends Artifact> type ) throws Exception {
         return DatabaseCustomArtifact.class.isAssignableFrom(type);
     }
 

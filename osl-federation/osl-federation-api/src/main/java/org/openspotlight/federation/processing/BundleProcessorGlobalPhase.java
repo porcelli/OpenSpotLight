@@ -87,8 +87,7 @@ public interface BundleProcessorGlobalPhase<T extends Artifact> {
      * @param currentContext the current context
      * @return the artifacts to be processed< t>
      */
-    public void selectArtifactsToBeProcessed(
-                                              CurrentProcessorContext currentContext,
+    public void selectArtifactsToBeProcessed( CurrentProcessorContext currentContext,
                                               ExecutionContext context,
                                               ArtifactChanges<Artifact> changes,
 

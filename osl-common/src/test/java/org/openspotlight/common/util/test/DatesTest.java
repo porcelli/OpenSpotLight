@@ -81,8 +81,7 @@ public class DatesTest {
 
     @Test
     public void shouldGetTheDateTimeWhenStringIsValid() {
-        assertThat(
-                   dateTimeFromString("2008-12-01 12:22:33"), is(notNullValue())); //$NON-NLS-1$
+        assertThat(dateTimeFromString("2008-12-01 12:22:33"), is(notNullValue())); //$NON-NLS-1$
     }
 
     @Test

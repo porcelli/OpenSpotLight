@@ -76,31 +76,26 @@ public class MultipleGraphSessionsTest {
 
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
-        final SLGraphFactory factory = AbstractFactory
-                                                      .getDefaultInstance(SLGraphFactory.class);
-        MultipleGraphSessionsTest.graph = factory
-                                                 .createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+        MultipleGraphSessionsTest.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
-        final SecurityFactory securityFactory = AbstractFactory
-                                                               .getDefaultInstance(SecurityFactory.class);
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        MultipleGraphSessionsTest.user = securityFactory.createIdentityManager(
-                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
+        MultipleGraphSessionsTest.user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+                                                                                                                                  simpleUser,
                                                                                                                                   "password");
     }
 
     @Ignore
-    //FIXME test this again
+    // FIXME test this again
     @Test
-    public void testMultipleSessions() throws AbstractFactoryException,
-            Exception {
-        final SLGraphSession session = MultipleGraphSessionsTest.graph
-                                                                      .openSession(MultipleGraphSessionsTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
-        final SLGraphSession session2 = MultipleGraphSessionsTest.graph
-                                                                       .openSession(MultipleGraphSessionsTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
+    public void testMultipleSessions() throws AbstractFactoryException, Exception {
+        final SLGraphSession session = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
+                                                                                   SLConsts.DEFAULT_REPOSITORY_NAME);
+        final SLGraphSession session2 = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
+                                                                                    SLConsts.DEFAULT_REPOSITORY_NAME);
 
-        final SLNode abstractTestNode = session.createContext("abstractTest")
-                                               .getRootNode();
+        final SLNode abstractTestNode = session.createContext("abstractTest").getRootNode();
         final SLNode node1 = abstractTestNode.addNode("teste!");
         final SLNode testRootNode = session.createContext("test").getRootNode();
         final SLNode node2 = testRootNode.addNode("teste!");
@@ -112,11 +107,9 @@ public class MultipleGraphSessionsTest {
 
         session.close();
 
-        final SLNode abstractTestNode2 = session2.createContext("abstractTest")
-                                                 .getRootNode();
+        final SLNode abstractTestNode2 = session2.createContext("abstractTest").getRootNode();
         final SLNode node3 = abstractTestNode2.addNode("teste!");
-        final SLNode testRootNode2 = session2.createContext("test")
-                                             .getRootNode();
+        final SLNode testRootNode2 = session2.createContext("test").getRootNode();
         final SLNode node4 = testRootNode2.addNode("teste!");
 
         Assert.assertEquals(false, node3.getID().equals(node4.getID()));
@@ -134,28 +127,23 @@ public class MultipleGraphSessionsTest {
     }
 
     @Test
-    public void testOpenCloseSessions() throws AbstractFactoryException,
-            SLGraphException {
-        MultipleGraphSessionsTest.session = MultipleGraphSessionsTest.graph
-                                                                           .openSession(MultipleGraphSessionsTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
+    public void testOpenCloseSessions() throws AbstractFactoryException, SLGraphException {
+        MultipleGraphSessionsTest.session = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
+                                                                                        SLConsts.DEFAULT_REPOSITORY_NAME);
 
-        SLNode abstractTestNode = MultipleGraphSessionsTest.session
-                                                                   .createContext("abstractTest").getRootNode();
+        SLNode abstractTestNode = MultipleGraphSessionsTest.session.createContext("abstractTest").getRootNode();
         SLNode node1 = abstractTestNode.addNode("teste!");
-        SLNode testRootNode = MultipleGraphSessionsTest.session.createContext(
-                                                                              "test").getRootNode();
+        SLNode testRootNode = MultipleGraphSessionsTest.session.createContext("test").getRootNode();
         SLNode node2 = testRootNode.addNode("teste!");
 
         Assert.assertEquals(false, node1.getID().equals(node2.getID()));
         MultipleGraphSessionsTest.session.close();
-        MultipleGraphSessionsTest.session = MultipleGraphSessionsTest.graph
-                                                                           .openSession(MultipleGraphSessionsTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
+        MultipleGraphSessionsTest.session = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
+                                                                                        SLConsts.DEFAULT_REPOSITORY_NAME);
 
-        abstractTestNode = MultipleGraphSessionsTest.session.createContext(
-                                                                           "abstractTest").getRootNode();
+        abstractTestNode = MultipleGraphSessionsTest.session.createContext("abstractTest").getRootNode();
         node1 = abstractTestNode.addNode("teste!");
-        testRootNode = MultipleGraphSessionsTest.session.createContext("test")
-                                                        .getRootNode();
+        testRootNode = MultipleGraphSessionsTest.session.createContext("test").getRootNode();
         node2 = testRootNode.addNode("teste!");
 
         Assert.assertEquals(false, node1.getID().equals(node2.getID()));

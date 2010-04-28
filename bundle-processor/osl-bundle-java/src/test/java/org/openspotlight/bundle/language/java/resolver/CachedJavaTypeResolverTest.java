@@ -147,11 +147,11 @@ public class CachedJavaTypeResolverTest extends JavaTypeResolverTest {
                                                                               IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         final long end2 = System.currentTimeMillis();
         final long diff2 = end2 - start2;
-        //faster
+        // faster
         assertThat(diff2 < diff1, is(true));
-        //same instance
+        // same instance
         assertThat(type1 == type2, is(true));
-        //same instance
+        // same instance
         assertThat(result1 == result2, is(true));
     }
 

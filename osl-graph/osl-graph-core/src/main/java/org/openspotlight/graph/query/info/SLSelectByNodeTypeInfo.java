@@ -140,7 +140,9 @@ public class SLSelectByNodeTypeInfo extends SLSelectInfo {
         this.whereStatementInfo = whereStatementInfo;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
      */
     @Override
@@ -256,7 +258,9 @@ public class SLSelectByNodeTypeInfo extends SLSelectInfo {
             this.comma = comma;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#equals(java.lang.Object)
          */
         @Override

@@ -87,7 +87,6 @@ public interface BundleProcessorArtifactPhase<T extends Artifact> {
      */
     public LastProcessStatus processArtifact( T artifact,
                                               CurrentProcessorContext currentContext,
-                                              ExecutionContext context )
-            throws Exception;
+                                              ExecutionContext context ) throws Exception;
 
 }

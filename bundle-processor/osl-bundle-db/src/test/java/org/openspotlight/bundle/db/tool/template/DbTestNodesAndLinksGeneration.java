@@ -72,8 +72,7 @@ public class DbTestNodesAndLinksGeneration {
         xmls.setDir(new File("src/test/resources/data/sourcecode/"));
         xmls.setIncludes("*.xml");
         task.addXmlFiles(xmls);
-        task
-                .setOutputDirectory("./target/test-data/DbTestNodesAndLinksGeneration/output/");
+        task.setOutputDirectory("./target/test-data/DbTestNodesAndLinksGeneration/output/");
         task.execute();
         final String linkDir = "target/test-data/DbTestNodesAndLinksGeneration/output/bundle-processor/osl-db-bundle/src/main/java/org/openspotlight/bundle/db/metamodel/link";
         assertThat(new File(linkDir).exists(), is(true));

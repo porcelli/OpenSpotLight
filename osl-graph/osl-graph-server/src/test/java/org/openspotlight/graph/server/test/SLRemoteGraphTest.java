@@ -79,9 +79,7 @@ public class SLRemoteGraphTest extends BaseGraphTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                             .closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
         server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
@@ -106,12 +104,9 @@ public class SLRemoteGraphTest extends BaseGraphTest {
      */
     @Before
     public void beforeTest() throws Exception {
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                             .closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
         if (session == null) {
-            session = client.createRemoteGraphSession(userName, pass,
-                                                      SLConsts.DEFAULT_REPOSITORY_NAME);
+            session = client.createRemoteGraphSession(userName, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
         }
     }
 
@@ -121,24 +116,23 @@ public class SLRemoteGraphTest extends BaseGraphTest {
             session.clear();
         }
         server.removeAllObjectsFromServer();
-        client = new RemoteGraphSessionFactory(
-                                               new RemoteGraphFactoryConnectionData() {
+        client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
 
-                                                   public String getHost() {
-                                                       return "localhost";
-                                                   }
+            public String getHost() {
+                return "localhost";
+            }
 
-                                                   public String getPassword() {
-                                                       return "***";
-                                                   }
+            public String getPassword() {
+                return "***";
+            }
 
-                                                   public int getPort() {
-                                                       return 7070;
-                                                   }
+            public int getPort() {
+                return 7070;
+            }
 
-                                                   public String getUserName() {
-                                                       return "***";
-                                                   }
-                                               });
+            public String getUserName() {
+                return "***";
+            }
+        });
     }
 }

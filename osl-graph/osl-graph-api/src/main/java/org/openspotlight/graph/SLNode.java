@@ -69,8 +69,7 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLNode extends Comparable<SLNode>, LogableObject,
-        LockContainer {
+public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer {
 
     /**
      * Adds the line reference.
@@ -251,8 +250,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * @param clazz the clazz
      * @return the child node
      */
-    public <T extends SLNode> NeedsSyncronizationSet<T> getChildNodes(
-                                                                       Class<T> clazz );
+    public <T extends SLNode> NeedsSyncronizationSet<T> getChildNodes( Class<T> clazz );
 
     /**
      * Gets the context.
@@ -273,7 +271,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * 
      * @return the line references
      */
-    public NeedsSyncronizationCollection<SLLineReference> getLineReferences(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist);
+    public NeedsSyncronizationCollection<SLLineReference> getLineReferences( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist );
 
     /**
      * Gets the line references for a specific artifactId.
@@ -281,7 +279,8 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * @param artifactId the artifact id
      * @return the line references
      */
-    public NeedsSyncronizationCollection<SLLineReference> getLineReferences(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist, String artifactId );
+    public NeedsSyncronizationCollection<SLLineReference> getLineReferences( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
+                                                                             String artifactId );
 
     /**
      * Gets the meta type.
@@ -357,11 +356,9 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL node property not found exception
      * @throws org.openspotlight.graph.exception.SLPropertyTypeInvalidException the SL invalid node property type exception
      */
-    public <V extends Serializable> SLNodeProperty<V> getProperty(
-                                                                   Class<V> clazz,
+    public <V extends Serializable> SLNodeProperty<V> getProperty( Class<V> clazz,
                                                                    String name )
-            throws SLPropertyNotFoundException,
-            SLPropertyTypeInvalidException;
+        throws SLPropertyNotFoundException, SLPropertyTypeInvalidException;
 
     /**
      * Gets the property.
@@ -373,12 +370,10 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL node property not found exception
      * @throws org.openspotlight.graph.exception.SLPropertyTypeInvalidException the SL invalid node property type exception
      */
-    public <V extends Serializable> SLNodeProperty<V> getProperty(
-                                                                   Class<V> clazz,
+    public <V extends Serializable> SLNodeProperty<V> getProperty( Class<V> clazz,
                                                                    String name,
                                                                    Collator collator )
-            throws SLPropertyNotFoundException,
-            SLPropertyTypeInvalidException;
+        throws SLPropertyNotFoundException, SLPropertyTypeInvalidException;
 
     /**
      * Gets the property value as string.
@@ -401,7 +396,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * 
      * @return the tree line references
      */
-    public SLTreeLineReference getTreeLineReferences(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist);
+    public SLTreeLineReference getTreeLineReferences( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist );
 
     /**
      * Gets line references in tree format for a specific artifact.
@@ -409,7 +404,8 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * @param artifactId the artifact id
      * @return the tree line references
      */
-    public SLTreeLineReference getTreeLineReferences(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist, String artifactId );
+    public SLTreeLineReference getTreeLineReferences( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
+                                                      String artifactId );
 
     /**
      * Gets the type name.
@@ -432,8 +428,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * @param value the value
      * @return the sL node property< v>
      */
-    public <V extends Serializable> SLNodeProperty<V> setProperty(
-                                                                   Class<V> clazz,
+    public <V extends Serializable> SLNodeProperty<V> setProperty( Class<V> clazz,
                                                                    String name,
                                                                    V value );
 
@@ -447,10 +442,8 @@ public interface SLNode extends Comparable<SLNode>, LogableObject,
      * @return the sL node property< v>
      * @throws SLPropertyTypeInvalidException the SL graph session exception
      */
-    public <V extends Serializable> SLNodeProperty<V> setProperty(
-                                                                   Class<V> clazz,
+    public <V extends Serializable> SLNodeProperty<V> setProperty( Class<V> clazz,
                                                                    VisibilityLevel visibility,
                                                                    String name,
-                                                                   V value )
-            throws SLPropertyTypeInvalidException;
+                                                                   V value ) throws SLPropertyTypeInvalidException;
 }

@@ -69,8 +69,7 @@ public class SLInvocationHandlerSupport {
      * @return the property name
      */
     static String getPropertyName( final Method method ) {
-        return method.getName().substring(3, 4).toLowerCase().concat(
-                                                                     method.getName().substring(4));
+        return method.getName().substring(3, 4).toLowerCase().concat(method.getName().substring(4));
     }
 
     /**
@@ -106,21 +105,16 @@ public class SLInvocationHandlerSupport {
                              final Method method ) {
         try {
             boolean status = false;
-            if (method.getName().startsWith("get")
-                    && !method.getReturnType().equals(void.class)
-                    && method.getParameterTypes().length == 0) {
-                final SLProperty propertyAnnotation = method
-                                                            .getAnnotation(SLProperty.class);
+            if (method.getName().startsWith("get") && !method.getReturnType().equals(void.class)
+                && method.getParameterTypes().length == 0) {
+                final SLProperty propertyAnnotation = method.getAnnotation(SLProperty.class);
                 if (propertyAnnotation == null) {
                     try {
-                        final String setterName = "set".concat(method.getName()
-                                                                     .substring(3));
+                        final String setterName = "set".concat(method.getName().substring(3));
                         final Class<?> iFace = proxy.getClass().getInterfaces()[0];
-                        final Method setterMethod = iFace.getMethod(setterName,
-                                                                    new Class<?>[] {method.getReturnType()});
+                        final Method setterMethod = iFace.getMethod(setterName, new Class<?>[] {method.getReturnType()});
                         status = setterMethod.getAnnotation(SLProperty.class) != null
-                                 && setterMethod.getReturnType().equals(
-                                                                        void.class);
+                                 && setterMethod.getReturnType().equals(void.class);
                     } catch (final NoSuchMethodException e) {
                     }
                 } else {
@@ -129,8 +123,7 @@ public class SLInvocationHandlerSupport {
             }
             return status;
         } catch (final Exception e) {
-            throw new SLRuntimeException(
-                                         "Error on attempt to verify if method is getter.", e);
+            throw new SLRuntimeException("Error on attempt to verify if method is getter.", e);
         }
     }
 
@@ -145,21 +138,16 @@ public class SLInvocationHandlerSupport {
                              final Method method ) {
         try {
             boolean status = false;
-            if (method.getName().startsWith("set")
-                    && method.getReturnType().equals(void.class)
-                    && method.getParameterTypes().length == 1) {
-                final SLProperty propertyAnnotation = method
-                                                            .getAnnotation(SLProperty.class);
+            if (method.getName().startsWith("set") && method.getReturnType().equals(void.class)
+                && method.getParameterTypes().length == 1) {
+                final SLProperty propertyAnnotation = method.getAnnotation(SLProperty.class);
                 if (propertyAnnotation == null) {
                     try {
-                        final String getterName = "get".concat(method.getName()
-                                                                     .substring(3));
+                        final String getterName = "get".concat(method.getName().substring(3));
                         final Class<?> iFace = proxy.getClass().getInterfaces()[0];
-                        final Method getterMethod = iFace.getMethod(getterName,
-                                                                    new Class<?>[] {});
+                        final Method getterMethod = iFace.getMethod(getterName, new Class<?>[] {});
                         status = getterMethod.getAnnotation(SLProperty.class) != null
-                                 && getterMethod.getReturnType().equals(
-                                                                        method.getParameterTypes()[0]);
+                                 && getterMethod.getReturnType().equals(method.getParameterTypes()[0]);
                     } catch (final NoSuchMethodException e) {
                     }
                 } else {
@@ -168,8 +156,7 @@ public class SLInvocationHandlerSupport {
             }
             return status;
         } catch (final Exception e) {
-            throw new SLRuntimeException(
-                                         "Error on attempt to verify if method is setter.", e);
+            throw new SLRuntimeException("Error on attempt to verify if method is setter.", e);
         }
     }
 

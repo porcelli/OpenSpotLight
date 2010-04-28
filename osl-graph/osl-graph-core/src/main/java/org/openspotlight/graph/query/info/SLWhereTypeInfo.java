@@ -144,7 +144,9 @@ public class SLWhereTypeInfo implements Serializable {
         this.typeStatementInfo = whereStatementInfo;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -306,7 +308,9 @@ public class SLWhereTypeInfo implements Serializable {
             this.opened = opened;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#toString()
          */
         @Override
@@ -589,7 +593,9 @@ public class SLWhereTypeInfo implements Serializable {
                 this.typeInfo = typeInfo;
             }
 
-            /* (non-Javadoc)
+            /*
+             * (non-Javadoc)
+             * 
              * @see java.lang.Object#toString()
              */
             @Override

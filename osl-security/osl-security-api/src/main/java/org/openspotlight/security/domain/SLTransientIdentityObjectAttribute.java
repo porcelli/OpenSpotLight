@@ -55,8 +55,7 @@ import java.util.Set;
 import org.jboss.identity.idm.spi.model.IdentityObjectAttribute;
 import org.openspotlight.common.util.Assertions;
 
-public class SLTransientIdentityObjectAttribute implements
-        IdentityObjectAttribute {
+public class SLTransientIdentityObjectAttribute implements IdentityObjectAttribute {
 
     private Set<String> values = new HashSet<String>();
 

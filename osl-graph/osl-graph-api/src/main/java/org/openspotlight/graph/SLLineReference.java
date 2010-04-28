@@ -151,8 +151,7 @@ public final class SLLineReference implements SimpleNodeType {
         if (startColumn != that.startColumn) return false;
         if (startLine != that.startLine) return false;
         if (artifactId != null ? !artifactId.equals(that.artifactId) : that.artifactId != null) return false;
-        if (artifactVersion != null ? !artifactVersion.equals(that.artifactVersion) : that.artifactVersion != null)
-            return false;
+        if (artifactVersion != null ? !artifactVersion.equals(that.artifactVersion) : that.artifactVersion != null) return false;
         if (statement != null ? !statement.equals(that.statement) : that.statement != null) return false;
 
         return true;

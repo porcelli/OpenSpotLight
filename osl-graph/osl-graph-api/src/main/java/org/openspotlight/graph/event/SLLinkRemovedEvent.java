@@ -60,9 +60,7 @@ public final class SLLinkRemovedEvent extends SLLinkEvent {
     }
 
     public SLLinkRemovedEvent(
-                               final SLLink link,
-                               final SLPersistentNode linkNode,
-                               final SLPersistenceMode persistenceMode ) {
+                               final SLLink link, final SLPersistentNode linkNode, final SLPersistenceMode persistenceMode ) {
         super(link, linkNode, persistenceMode);
     }
 

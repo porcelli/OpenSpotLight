@@ -70,9 +70,7 @@ import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
  */
 
 @SLDescription( "Java Class" )
-@SLRenderHints( {
-    @SLRenderHint( name = "format", value = "cube" ),
-    @SLRenderHint( name = "foreground", value = "gold" )} )
+@SLRenderHints( {@SLRenderHint( name = "format", value = "cube" ), @SLRenderHint( name = "foreground", value = "gold" )} )
 @SLVisibility( VisibilityLevel.INTERNAL )
 public interface JavaClassNodeInternal extends SLNode {
 
@@ -88,7 +86,7 @@ public interface JavaClassNodeInternal extends SLNode {
     /** The Constant MODIFIER_DEFAULT. */
     public static final Integer MODIFIER_DEFAULT   = 4;
 
-    //@SLProperty(collatorLevel=IDENTICAL)
+    // @SLProperty(collatorLevel=IDENTICAL)
     /**
      * Gets the class name.
      * 

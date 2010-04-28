@@ -76,8 +76,7 @@ public class DatabaseSupport {
         if (dbBundle.getUser() == null) {
             connection = getConnection(dbBundle.getInitialLookup());
         } else {
-            connection = getConnection(dbBundle.getInitialLookup(), dbBundle
-                                                                            .getUser(), dbBundle.getPassword());
+            connection = getConnection(dbBundle.getInitialLookup(), dbBundle.getUser(), dbBundle.getPassword());
         }
         return connection;
     }

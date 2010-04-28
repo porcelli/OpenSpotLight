@@ -73,8 +73,7 @@ public class LevelTwoObj implements SimpleNodeType {
             return false;
         }
         final LevelTwoObj that = (LevelTwoObj)o;
-        return Equals.eachEquality(Arrays.of(parentObj, key), Arrays.andOf(
-                                                                           that.parentObj, that.key));
+        return Equals.eachEquality(Arrays.of(parentObj, key), Arrays.andOf(that.parentObj, that.key));
     }
 
     @KeyProperty

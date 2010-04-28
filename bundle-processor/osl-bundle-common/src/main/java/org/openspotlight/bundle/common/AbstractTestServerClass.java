@@ -71,12 +71,10 @@ import org.openspotlight.remote.server.UserAuthenticator;
 
 public abstract class AbstractTestServerClass {
 
-    protected abstract void doWork( JcrConnectionProvider provider )
-        throws Exception;
+    protected abstract void doWork( JcrConnectionProvider provider ) throws Exception;
 
     public void doWorkAndExposeServers() {
-        final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(
-                                                                    getDescriptor());
+        final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(getDescriptor());
         provider.closeRepositoryAndCleanResources();
         final Repository repository = provider.openRepository();
         try {
@@ -91,20 +89,15 @@ public abstract class AbstractTestServerClass {
 
     private void exportDataOnXml( final JcrConnectionProvider provider ) {
         try {
-            final SessionWithLock session = provider
-                                                    .openSession();
-            final Node node = session.getRootNode().getNode(
-                                                            SLConsts.DEFAULT_JCR_ROOT_NAME);
+            final SessionWithLock session = provider.openSession();
+            final Node node = session.getRootNode().getNode(SLConsts.DEFAULT_JCR_ROOT_NAME);
             final String exportedFileName = getExportedFileName();
             if (exportedFileName != null) {
                 if (exportedFileName.contains("/")) {
-                    new File(exportedFileName.substring(0, exportedFileName
-                                                                           .lastIndexOf("/"))).mkdirs();
+                    new File(exportedFileName.substring(0, exportedFileName.lastIndexOf("/"))).mkdirs();
                 }
-                final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
-                                                                                           new FileOutputStream(exportedFileName));
-                session.exportSystemView(node.getPath(), bufferedOutputStream, false,
-                                         false);
+                final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(exportedFileName));
+                session.exportSystemView(node.getPath(), bufferedOutputStream, false, false);
                 bufferedOutputStream.flush();
                 bufferedOutputStream.close();
             }
@@ -150,11 +143,9 @@ public abstract class AbstractTestServerClass {
     protected final void exposeJcrOnRmi( final Repository repository ) {
         try {
             final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
-            final RemoteRepository remote = saFactory
-                                                     .getRemoteRepository(repository);
+            final RemoteRepository remote = saFactory.getRemoteRepository(repository);
 
-            final Registry registry = LocateRegistry
-                                                    .createRegistry(Registry.REGISTRY_PORT);
+            final Registry registry = LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
             registry.bind("jackrabbit.repository", remote);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

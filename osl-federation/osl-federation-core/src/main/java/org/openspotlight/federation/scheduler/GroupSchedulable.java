@@ -64,8 +64,7 @@ import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GroupSchedulable implements
-    SchedulableCommandWithContextFactory<Group> {
+public class GroupSchedulable implements SchedulableCommandWithContextFactory<Group> {
 
     private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
 
@@ -75,22 +74,19 @@ public class GroupSchedulable implements
             return groupsWithBundles;
         }
 
-        public void visitBean(Group bean) {
-                    if (bean.getBundleTypes().size() != 0) {
+        public void visitBean( Group bean ) {
+            if (bean.getBundleTypes().size() != 0) {
                 groupsWithBundles.add(bean);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("adding group " + bean + " because it has "
-                                 + bean.getBundleTypes().size() + "  bundles");
+                    logger.debug("adding group " + bean + " because it has " + bean.getBundleTypes().size() + "  bundles");
                 }
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("ignoring group " + bean
-                                 + " because it has no bundles");
+                    logger.debug("ignoring group " + bean + " because it has no bundles");
                 }
 
             }
         }
-
 
     }
 
@@ -101,26 +97,19 @@ public class GroupSchedulable implements
     private String                  password;
     private GlobalSettings          settings;
 
-    private static final Logger     logger = LoggerFactory
-                                                          .getLogger(GroupSchedulable.class);
+    private static final Logger     logger = LoggerFactory.getLogger(GroupSchedulable.class);
 
     @SuppressWarnings( "unchecked" )
     public void execute( final GlobalSettings settigns,
                          final ExecutionContext ctx,
-                         final Group schedulable )
-        throws Exception {
+                         final Group schedulable ) throws Exception {
         final GroupVisitor visitor = new GroupVisitor();
-        SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, schedulable,
-                                                     visitor, TransientProperty.class);
-        final Group[] groupsToExecute = visitor.getGroupsWithBundles().toArray(
-                                                                               new Group[0]);
+        SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, schedulable, visitor, TransientProperty.class);
+        final Group[] groupsToExecute = visitor.getGroupsWithBundles().toArray(new Group[0]);
         if (logger.isDebugEnabled()) {
-            logger.debug("about to execute bundles "
-                         + visitor.getGroupsWithBundles() + " found inside group "
-                         + schedulable);
+            logger.debug("about to execute bundles " + visitor.getGroupsWithBundles() + " found inside group " + schedulable);
         }
-        DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
-                                                              password, descriptor, factory, settings, groupsToExecute);
+        DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password, descriptor, factory, settings, groupsToExecute);
 
     }
 

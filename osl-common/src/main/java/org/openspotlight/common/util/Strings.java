@@ -58,35 +58,30 @@ import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Helper class with convenient String methods.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Strings {
 
-    public static boolean containsNonPrintable(String s) {
+    public static boolean containsNonPrintable( String s ) {
         for (char c : s.toCharArray()) {
             if (!isPrintableChar(c)) return true;
         }
         return false;
     }
 
-
-    public static boolean isPrintableChar(char c) {
+    public static boolean isPrintableChar( char c ) {
         Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
-        return (!Character.isISOControl(c)) &&
-                c != KeyEvent.CHAR_UNDEFINED &&
-                block != null &&
-                block != Character.UnicodeBlock.SPECIALS;
+        return (!Character.isISOControl(c)) && c != KeyEvent.CHAR_UNDEFINED && block != null
+               && block != Character.UnicodeBlock.SPECIALS;
     }
 
-    public static <T> String bigCollectionsToString(Collection<T> col) {
-        if (col == null)
-            return "[<null collection>]";
+    public static <T> String bigCollectionsToString( Collection<T> col ) {
+        if (col == null) return "[<null collection>]";
         Iterator<T> it = col.iterator();
         T first = null, second = null, third = null;
         int size = col.size();
-        if (size == 0)
-            return "[<empty collection>]";
+        if (size == 0) return "[<empty collection>]";
 
         if (size >= 1) {
             first = it.next();
@@ -104,12 +99,11 @@ public class Strings {
         if (size == 3) {
             return "[" + first + ", " + second + ", " + third + "]";
         }
-        return "[" + first + ", " + second + ", " + third + "... + " + size
-                + " items]";
+        return "[" + first + ", " + second + ", " + third + "... + " + size + " items]";
 
     }
 
-    public static String concatPaths(final String... paths) {
+    public static String concatPaths( final String... paths ) {
         if (paths == null) {
             return null;
         }
@@ -141,11 +135,11 @@ public class Strings {
 
     /**
      * Converts the first character to lower case.
-     *
+     * 
      * @param toBeCorrected the to be corrected
      * @return a string that starts with lower case
      */
-    public static String firstLetterToLowerCase(final String toBeCorrected) {
+    public static String firstLetterToLowerCase( final String toBeCorrected ) {
         checkNotNull("toBeCorrected", toBeCorrected);//$NON-NLS-1$
         if (toBeCorrected.length() == 0) {
             return toBeCorrected;
@@ -153,18 +147,17 @@ public class Strings {
         if (toBeCorrected.length() == 1) {
             return toBeCorrected.toLowerCase();
         }
-        final String newString = toBeCorrected.substring(0, 1).toLowerCase()
-                + toBeCorrected.substring(1);
+        final String newString = toBeCorrected.substring(0, 1).toLowerCase() + toBeCorrected.substring(1);
         return newString;
     }
 
     /**
      * Converts the first character to upper case.
-     *
+     * 
      * @param toBeCorrected the to be corrected
      * @return a string that starts with capital letter
      */
-    public static String firstLetterToUpperCase(final String toBeCorrected) {
+    public static String firstLetterToUpperCase( final String toBeCorrected ) {
         checkNotNull("toBeCorrected", toBeCorrected);//$NON-NLS-1$
         if (toBeCorrected.length() == 0) {
             return toBeCorrected;
@@ -172,53 +165,52 @@ public class Strings {
         if (toBeCorrected.length() == 1) {
             return toBeCorrected.toUpperCase();
         }
-        final String newString = toBeCorrected.substring(0, 1).toUpperCase()
-                + toBeCorrected.substring(1);
+        final String newString = toBeCorrected.substring(0, 1).toUpperCase() + toBeCorrected.substring(1);
         return newString;
     }
 
-    public static boolean isEmpty(final String s) {
+    public static boolean isEmpty( final String s ) {
         return s == null || s.trim().length() == 0;
     }
 
     /**
      * Quote.
-     *
+     * 
      * @param value the value
      * @return the string
      */
-    public static String quote(final Object value) {
+    public static String quote( final Object value ) {
         return value instanceof String ? "'" + value + "'" : "" + value;
     }
 
     /**
      * removes an starting string for a bigger string that starts with it.
-     *
-     * @param beginning     the beginning
+     * 
+     * @param beginning the beginning
      * @param toBeCorrected the to be corrected
      * @return the string without the beggining
      */
-    public static String removeBegginingFrom(final String beginning,
-                                             final String toBeCorrected) {
+    public static String removeBegginingFrom( final String beginning,
+                                              final String toBeCorrected ) {
         checkNotEmpty("beginning", beginning);//$NON-NLS-1$
         checkNotEmpty("toBeCorrected", toBeCorrected);//$NON-NLS-1$
         checkCondition("startsWithBeginning", toBeCorrected//$NON-NLS-1$
-                .startsWith(beginning));
+        .startsWith(beginning));
         return toBeCorrected.substring(beginning.length());
     }
 
     /**
      * It looks for the string toBeReplaced inside the string toChange from the last character to the first. When found the string
      * toBeReplaced it replaces with the string replacement.
-     *
+     * 
      * @param toChange
      * @param toBeReplaced
      * @param replacement
      * @return a new string
      */
-    public static String replaceLast(final String toChange,
-                                     final String toBeReplaced,
-                                     final String replacement) {
+    public static String replaceLast( final String toChange,
+                                      final String toBeReplaced,
+                                      final String replacement ) {
         checkNotEmpty("toChange", toChange);//$NON-NLS-1$
         checkNotEmpty("toBeReplaced", toBeReplaced);//$NON-NLS-1$
         checkNotNull("replacement", replacement);//$NON-NLS-1$
@@ -226,15 +218,12 @@ public class Strings {
             return toChange;
         }
 
-        final String newString = toChange.substring(0, toChange
-                .lastIndexOf(toBeReplaced))
-                + replacement
-                + toChange.substring(toBeReplaced.length()
-                + toChange.lastIndexOf(toBeReplaced));
+        final String newString = toChange.substring(0, toChange.lastIndexOf(toBeReplaced)) + replacement
+                                 + toChange.substring(toBeReplaced.length() + toChange.lastIndexOf(toBeReplaced));
         return newString;
     }
 
-    public static String rootPath(final String paths) {
+    public static String rootPath( final String paths ) {
         if (paths.startsWith("/")) {
             return paths;
         }
@@ -243,13 +232,13 @@ public class Strings {
 
     /**
      * removes an starting string for a bigger string that starts with it.
-     *
-     * @param beginning     the beginning
+     * 
+     * @param beginning the beginning
      * @param toBeCorrected the to be corrected
      * @return the string without the beggining
      */
-    public static String tryToRemoveBegginingFrom(final String beginning,
-                                                  final String toBeCorrected) {
+    public static String tryToRemoveBegginingFrom( final String beginning,
+                                                   final String toBeCorrected ) {
         checkNotEmpty("beginning", beginning);//$NON-NLS-1$
         checkNotEmpty("toBeCorrected", toBeCorrected);//$NON-NLS-1$
         if (toBeCorrected.startsWith(beginning)) {
@@ -263,7 +252,6 @@ public class Strings {
      * Should not be instantiated.
      */
     private Strings() {
-        logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

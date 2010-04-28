@@ -87,12 +87,10 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
 
     @Override
     protected void internalCloseResources() throws Exception {
-        for (final Map.Entry<ArtifactSource, JcrEngine> entry : mappingEngines
-                                                                              .entrySet()) {
+        for (final Map.Entry<ArtifactSource, JcrEngine> entry : mappingEngines.entrySet()) {
             entry.getValue().shutdown();
         }
-        for (final Map.Entry<ArtifactSource, Session> entry : mappingSessions
-                                                                             .entrySet()) {
+        for (final Map.Entry<ArtifactSource, Session> entry : mappingSessions.entrySet()) {
             entry.getValue().logout();
         }
     }
@@ -108,8 +106,7 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
             path = rawPath;
         }
 
-        final Node node = getSessionForSource(source).getRootNode().getNode(
-                                                                            path);
+        final Node node = getSessionForSource(source).getRootNode().getNode(path);
 
         final Node content = node.getNode("jcr:content"); //$NON-NLS-1$
         final Value value = content.getProperty("jcr:data").getValue();//$NON-NLS-1$
@@ -120,8 +117,7 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
         while ((available = is.read()) != -1) {
             baos.write(available);
         }
-        final StringArtifact artifact = Artifact.createArtifact(
-                                                                StringArtifact.class, path, ChangeType.INCLUDED);
+        final StringArtifact artifact = Artifact.createArtifact(StringArtifact.class, path, ChangeType.INCLUDED);
         artifact.getContent().setTransient(new String(baos.toByteArray()));
         @SuppressWarnings( "unchecked" )
         A typed = (A)artifact;
@@ -129,42 +125,34 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
     }
 
     @Override
-    protected Set<Class<? extends Artifact>> internalGetAvailableTypes()
-            throws Exception {
+    protected Set<Class<? extends Artifact>> internalGetAvailableTypes() throws Exception {
         return acceptableTypes;
     }
 
     @SuppressWarnings( "unchecked" )
-    private Set<Class<? extends Artifact>> acceptableTypes = SLCollections
-                                                                          .<Class<? extends Artifact>>setOf(StreamArtifact.class);
+    private Set<Class<? extends Artifact>> acceptableTypes = SLCollections.<Class<? extends Artifact>>setOf(StreamArtifact.class);
 
     @Override
-    protected <A extends Artifact> boolean internalIsMaybeChanged(
-                                                                   ArtifactSource source,
+    protected <A extends Artifact> boolean internalIsMaybeChanged( ArtifactSource source,
                                                                    String artifactName,
-                                                                   A oldOne )
-            throws Exception {
+                                                                   A oldOne ) throws Exception {
         // TODO implement the logic needed to compare if the origin file is
         // changed or not
         return true;
     }
 
     @Override
-    protected boolean internalIsTypeSupported( Class<? extends Artifact> type )
-            throws Exception {
+    protected boolean internalIsTypeSupported( Class<? extends Artifact> type ) throws Exception {
         return acceptableTypes.contains(type);
     }
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(
-                                                                              Class<A> type,
+    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames( Class<A> type,
                                                                               ArtifactSource source,
-                                                                              String initialPath )
-            throws Exception {
+                                                                              String initialPath ) throws Exception {
         final Set<String> result = new HashSet<String>();
         final Node rootNode = getSessionForSource(source).getRootNode();
-        final Node initial = initialPath == null ? rootNode : rootNode
-                                                                      .getNode(initialPath);
+        final Node initial = initialPath == null ? rootNode : rootNode.getNode(initialPath);
         initial.accept(withVisitor(new FillNamesVisitor(result)));
 
         return result;
@@ -214,8 +202,7 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
 
     private final Map<ArtifactSource, Session>   mappingSessions  = new ConcurrentHashMap<ArtifactSource, Session>();
 
-    protected abstract void configureWithBundle(
-                                                 RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+    protected abstract void configureWithBundle( RepositorySourceDefinition<JcrConfiguration> repositorySource2,
                                                  ArtifactSource source );
 
     /**
@@ -223,8 +210,7 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
      * @return the jcr session
      * @throws Exception
      */
-    protected synchronized Session getSessionForSource(
-                                                        final ArtifactSource source ) throws Exception {
+    protected synchronized Session getSessionForSource( final ArtifactSource source ) throws Exception {
         Session session = mappingSessions.get(source);
         if (session == null) {
             JcrEngine engine = mappingEngines.get(source);
@@ -232,9 +218,7 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
                 setupSource(source);
                 engine = mappingEngines.get(source);
             }
-            session = engine.getRepository(repositoryName).login(
-                                                                 new SecurityContextCredentials(
-                                                                                                DefaultSecurityContext.READ_ONLY));
+            session = engine.getRepository(repositoryName).login(new SecurityContextCredentials(DefaultSecurityContext.READ_ONLY));
             mappingSessions.put(source, session);
         }
         return session;
@@ -244,10 +228,8 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
         try {
 
             final JcrConfiguration configuration = new JcrConfiguration();
-            configureWithBundle(configuration
-                                             .repositorySource(repositorySource), source);
-            configuration.repository(repositoryName)
-                         .setSource(repositorySource);
+            configureWithBundle(configuration.repositorySource(repositorySource), source);
+            configuration.repository(repositoryName).setSource(repositorySource);
             configuration.save();
             final JcrEngine engine = configuration.build();
             engine.start();

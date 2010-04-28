@@ -93,8 +93,7 @@ public enum DatabaseMetadataScriptManager {
         private final ScriptType   scriptType;
 
         public MapKey(
-                       final DatabaseType databaseType,
-                       final ScriptType scriptType ) {
+                       final DatabaseType databaseType, final ScriptType scriptType ) {
             this.databaseType = databaseType;
             this.scriptType = scriptType;
             this.hashCode = hashOf(databaseType, scriptType);
@@ -109,8 +108,7 @@ public enum DatabaseMetadataScriptManager {
                 return false;
             }
             final MapKey that = (MapKey)o;
-            return eachEquality(of(this.databaseType, this.scriptType), andOf(
-                                                                              that.databaseType, that.scriptType));
+            return eachEquality(of(this.databaseType, this.scriptType), andOf(that.databaseType, that.scriptType));
         }
 
         @Override
@@ -134,8 +132,7 @@ public enum DatabaseMetadataScriptManager {
         if (this.scriptMap.size() == 0) {
             this.reloadScripts();
         }
-        DatabaseMetadataScript script = this.scriptMap.get(new MapKey(
-                                                                      databaseType, scriptType));
+        DatabaseMetadataScript script = this.scriptMap.get(new MapKey(databaseType, scriptType));
         DatabaseType internalType = databaseType;
         while (script == null) {
             internalType = internalType.getParent();
@@ -161,47 +158,37 @@ public enum DatabaseMetadataScriptManager {
             xstream.omitField(DatabaseMetadataScript.class, "immutable"); //$NON-NLS-1$
             for (final ScriptType scriptType : ScriptType.values()) {
                 for (final DatabaseType databaseType : DatabaseType.values()) {
-                    final String fileName = format(
-                                                   "/configuration/{0}-{1}.xml", databaseType,
-                                                   scriptType);
+                    final String fileName = format("/configuration/{0}-{1}.xml", databaseType, scriptType);
                     final InputStream stream = getResourceFromClassPath(fileName);
                     if (stream == null) {
                         continue;
                     }
-                    final DatabaseMetadataScript newScript = (DatabaseMetadataScript)xstream
-                                                                                            .fromXML(stream);
+                    final DatabaseMetadataScript newScript = (DatabaseMetadataScript)xstream.fromXML(stream);
                     if (!databaseType.equals(newScript.getDatabase())) {
-                        logAndReturn(new IllegalStateException(format(
-                                                                      "Wrong database on {0}", fileName)));
+                        logAndReturn(new IllegalStateException(format("Wrong database on {0}", fileName)));
                     }
                     if (!scriptType.equals(newScript.getScriptType())) {
-                        logAndReturn(new IllegalStateException(format(
-                                                                      "Wrong scriptType on {0}", fileName)));
+                        logAndReturn(new IllegalStateException(format("Wrong scriptType on {0}", fileName)));
                     }
                     if (newScript.getPreferedType() == null) {
-                        logAndReturn(new IllegalStateException(format(
-                                                                      "No preferedType on {0}", fileName)));
+                        logAndReturn(new IllegalStateException(format("No preferedType on {0}", fileName)));
                     }
                     if (PreferedType.SQL.equals(newScript.getPreferedType())
-                            && ((newScript.getContentSelect() == null) || (newScript
-                                                                                    .getDataSelect() == null))) {
+                        && ((newScript.getContentSelect() == null) || (newScript.getDataSelect() == null))) {
                         logAndReturn(new IllegalStateException(
                                                                format(
                                                                       "PreferedType SQL but no selects for content or data on {0}",
                                                                       fileName)));
                     }
-                    if (PreferedType.TEMPLATE.equals(newScript
-                                                              .getPreferedType())
-                            && ((newScript.getTemplate() == null) || (newScript
-                                                                               .getTemplatesSelect() == null))) {
+                    if (PreferedType.TEMPLATE.equals(newScript.getPreferedType())
+                        && ((newScript.getTemplate() == null) || (newScript.getTemplatesSelect() == null))) {
                         logAndReturn(new IllegalStateException(
                                                                format(
                                                                       "PreferedType TEMPLATE but no select for template or missing template itself on {0}",
                                                                       fileName)));
                     }
 
-                    this.scriptMap.put(new MapKey(newScript.getDatabase(),
-                                                  newScript.getScriptType()), newScript);
+                    this.scriptMap.put(new MapKey(newScript.getDatabase(), newScript.getScriptType()), newScript);
                 }
             }
         } catch (final Exception e) {

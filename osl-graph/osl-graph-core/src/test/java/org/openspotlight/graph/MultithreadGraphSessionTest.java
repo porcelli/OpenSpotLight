@@ -122,27 +122,22 @@ public class MultithreadGraphSessionTest {
      */
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
-        final SLGraphFactory factory = AbstractFactory
-                                                      .getDefaultInstance(SLGraphFactory.class);
-        MultithreadGraphSessionTest.graph = factory
-                                                   .createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+        MultithreadGraphSessionTest.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
-        final SecurityFactory securityFactory = AbstractFactory
-                                                               .getDefaultInstance(SecurityFactory.class);
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        MultithreadGraphSessionTest.user = securityFactory
-                                                          .createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                                                          .authenticate(simpleUser, "password");
+        MultithreadGraphSessionTest.user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+                                                                                                                                    simpleUser,
+                                                                                                                                    "password");
     }
 
     @Test
     public void startExecutorAndSaveAllChangedGraphSessions() throws Exception {
-        MultithreadGraphSessionTest.session = MultithreadGraphSessionTest.graph
-                                                                               .openSession(MultithreadGraphSessionTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
-        MultithreadGraphSessionTest.rootNode = MultithreadGraphSessionTest.session
-                                                                                  .createContext("new context").getRootNode();
-        MultithreadGraphSessionTest.newNode = MultithreadGraphSessionTest.rootNode
-                                                                                  .addNode("abc");
+        MultithreadGraphSessionTest.session = MultithreadGraphSessionTest.graph.openSession(MultithreadGraphSessionTest.user,
+                                                                                            SLConsts.DEFAULT_REPOSITORY_NAME);
+        MultithreadGraphSessionTest.rootNode = MultithreadGraphSessionTest.session.createContext("new context").getRootNode();
+        MultithreadGraphSessionTest.newNode = MultithreadGraphSessionTest.rootNode.addNode("abc");
         MultithreadGraphSessionTest.session.save();
         // session.close();
 

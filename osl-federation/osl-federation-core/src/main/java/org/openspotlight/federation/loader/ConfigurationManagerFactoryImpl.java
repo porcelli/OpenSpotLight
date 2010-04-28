@@ -70,8 +70,7 @@ public class ConfigurationManagerFactoryImpl {
     /**
      * The Class MutableConfigurationManager.
      */
-    private static class MutableConfigurationManager implements
-            ConfigurationManager {
+    private static class MutableConfigurationManager implements ConfigurationManager {
 
         /**
          * The session.
@@ -81,42 +80,40 @@ public class ConfigurationManagerFactoryImpl {
         /**
          * The Constant globalSettingsRootNode.
          */
-        private final STNodeEntry globalSettingsRootNode;
+        private final STNodeEntry                                         globalSettingsRootNode;
         /**
          * The Constant repositoriesRootNode.
          */
-        private final STNodeEntry repositoriesRootNode;
+        private final STNodeEntry                                         repositoriesRootNode;
 
         /**
          * Instantiates a new mutable jcr session configuration manager.
          */
         public MutableConfigurationManager(
-                final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
+                                            final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
             this.simplePersist = simplePersist;
-            this.globalSettingsRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration", "global-settings");
+            this.globalSettingsRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration",
+                                                                                                  "global-settings");
             this.repositoriesRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration", "repositories");
         }
 
-        private void applyGroupDeltas(final Repository configuration) {
-            GroupDifferences existentDeltas = GroupSupport.getDifferences(
-                    simplePersist, configuration.getName());
+        private void applyGroupDeltas( final Repository configuration ) {
+            GroupDifferences existentDeltas = GroupSupport.getDifferences(simplePersist, configuration.getName());
             if (existentDeltas == null) {
                 existentDeltas = new GroupDifferences();
                 existentDeltas.setRepositoryName(configuration.getName());
             }
-            final Iterable<Repository> existentRepository = simplePersist
-                    .findByProperties(
-                            repositoriesRootNode, Repository.class,
-                            new String[]{"name"},
-                            new Object[]{configuration.getName()});
+            final Iterable<Repository> existentRepository = simplePersist.findByProperties(repositoriesRootNode,
+                                                                                           Repository.class,
+                                                                                           new String[] {"name"},
+                                                                                           new Object[] {configuration.getName()});
             Iterator<Repository> it = existentRepository.iterator();
             Repository old = null;
             if (it.hasNext()) {
                 old = it.next();
             }
 
-            GroupSupport.findDifferencesOnAllRepositories(existentDeltas, old,
-                    configuration);
+            GroupSupport.findDifferencesOnAllRepositories(existentDeltas, old, configuration);
             GroupSupport.saveDifferences(simplePersist, existentDeltas);
         }
 
@@ -132,20 +129,15 @@ public class ConfigurationManagerFactoryImpl {
 
         }
 
-        public Iterable<Repository> getAllRepositories()
-                throws ConfigurationException {
+        public Iterable<Repository> getAllRepositories() throws ConfigurationException {
             final Iterable<Repository> repositories = simplePersist.findByProperties(repositoriesRootNode, Repository.class,
-                    new String[]{}, new Object[]{});
+                                                                                     new String[] {}, new Object[] {});
             return repositories;
         }
 
-        public Set<String> getAllRepositoryNames()
-                throws ConfigurationException {
-            final Iterable<Repository> repositories = simplePersist
-                    .findByProperties(
-                            repositoriesRootNode,
-                            Repository.class,
-                            new String[]{}, new Object[]{});
+        public Set<String> getAllRepositoryNames() throws ConfigurationException {
+            final Iterable<Repository> repositories = simplePersist.findByProperties(repositoriesRootNode, Repository.class,
+                                                                                     new String[] {}, new Object[] {});
             final Set<String> repositoryNames = new HashSet<String>();
             for (final Repository repo : repositories) {
                 repositoryNames.add(repo.getName());
@@ -162,13 +154,11 @@ public class ConfigurationManagerFactoryImpl {
 
         public GlobalSettings getGlobalSettings() {
             try {
-                GlobalSettings settings = simplePersist
-                        .findUnique(GlobalSettings.class);
+                GlobalSettings settings = simplePersist.findUnique(GlobalSettings.class);
                 return settings;
 
             } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                        ConfigurationException.class);
+                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
             }
 
         }
@@ -180,18 +170,14 @@ public class ConfigurationManagerFactoryImpl {
          * getRepositoryByName(java.lang.String)
          */
 
-        public Repository getRepositoryByName(final String name)
-                throws ConfigurationException {
+        public Repository getRepositoryByName( final String name ) throws ConfigurationException {
             try {
-                final Repository repository = simplePersist
-                        .findUniqueByProperties(repositoriesRootNode,
-                                 Repository.class,
-                                new String[]{"name"}, new Object[]{name});
+                final Repository repository = simplePersist.findUniqueByProperties(repositoriesRootNode, Repository.class,
+                                                                                   new String[] {"name"}, new Object[] {name});
 
                 return repository;
             } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                        ConfigurationException.class);
+                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
             }
         }
 
@@ -203,17 +189,12 @@ public class ConfigurationManagerFactoryImpl {
          * (org.openspotlight.federation.domain.GlobalSettings)
          */
 
-        public void saveGlobalSettings(final GlobalSettings globalSettings)
-                throws ConfigurationException {
+        public void saveGlobalSettings( final GlobalSettings globalSettings ) throws ConfigurationException {
             try {
-                simplePersist
-                        .convertBeanToNode(
-                                globalSettingsRootNode,
-                                 globalSettings);
+                simplePersist.convertBeanToNode(globalSettingsRootNode, globalSettings);
                 simplePersist.getCurrentSession().flushTransient();
             } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                        ConfigurationException.class);
+                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
             }
         }
 
@@ -225,18 +206,13 @@ public class ConfigurationManagerFactoryImpl {
          * (org.openspotlight.federation.domain.Repository)
          */
 
-        public void saveRepository(final Repository configuration)
-                throws ConfigurationException {
+        public void saveRepository( final Repository configuration ) throws ConfigurationException {
             try {
                 applyGroupDeltas(configuration);
-                simplePersist
-                        .convertBeanToNode(
-                                repositoriesRootNode,
-                                 configuration);
+                simplePersist.convertBeanToNode(repositoriesRootNode, configuration);
                 simplePersist.getCurrentSession().flushTransient();
             } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                        ConfigurationException.class);
+                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
             }
         }
 
@@ -244,12 +220,11 @@ public class ConfigurationManagerFactoryImpl {
 
     /**
      * Creates a new JcrSessionConfigurationManager object.
-     *
+     * 
      * @param simplePersist the simplePersist
      * @return the configuration manager
      */
-    public static ConfigurationManager createMutableUsingSession(
-            final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
+    public static ConfigurationManager createMutableUsingSession( final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
         return new MutableConfigurationManager(simplePersist);
     }
 

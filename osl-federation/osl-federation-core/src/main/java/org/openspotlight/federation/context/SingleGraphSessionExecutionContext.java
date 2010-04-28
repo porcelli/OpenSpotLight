@@ -67,12 +67,10 @@ public class SingleGraphSessionExecutionContext extends DefaultExecutionContext 
     private final SLGraphSession    uniqueGraphSession;
 
     SingleGraphSessionExecutionContext(
-                                        final String username,
-                                        final String password, final JcrConnectionDescriptor descriptor,
-                                        final Repository repository,
-                                        final DisposingListener<DefaultExecutionContext> listener,
-                                        final AuthenticatedUser user,
-                                        final SLGraphSession uniqueGraphSession, SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider ) {
+                                        final String username, final String password, final JcrConnectionDescriptor descriptor,
+                                        final Repository repository, final DisposingListener<DefaultExecutionContext> listener,
+                                        final AuthenticatedUser user, final SLGraphSession uniqueGraphSession,
+                                        SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider ) {
         super(username, password, descriptor, listener, repository, simplePersistFactory, detailedLoggerProvider);
         this.uniqueGraphSession = uniqueGraphSession;
         this.user = user;

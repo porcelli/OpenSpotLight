@@ -77,8 +77,7 @@ public class Sha1Test {
     @SuppressWarnings( {"nls", "boxing"} )
     @Test
     public void shouldCreateSha1SignatureAsBase64String() throws Exception {
-        final String sha1 = getSha1SignatureEncodedAsBase64("content"
-                                                                     .getBytes());
+        final String sha1 = getSha1SignatureEncodedAsBase64("content".getBytes());
         assertThat(sha1, is(notNullValue()));
         assertThat(sha1.length(), is(not(0)));
     }

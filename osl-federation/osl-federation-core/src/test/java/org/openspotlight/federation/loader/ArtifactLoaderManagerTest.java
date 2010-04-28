@@ -83,21 +83,17 @@ public class ArtifactLoaderManagerTest {
 
     @Test
     public void shouldLoad() throws Exception {
-        Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
-
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
         final GlobalSettings settings = new GlobalSettings();
         settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
         settings.setDefaultSleepingIntervalInMilliseconds(500);
-        final String initialRawPath = Files.getNormalizedFileName(new File(
-                "."));
-        final String initial = initialRawPath.substring(0, initialRawPath
-                .lastIndexOf('/'));
+        final String initialRawPath = Files.getNormalizedFileName(new File("."));
+        final String initial = initialRawPath.substring(0, initialRawPath.lastIndexOf('/'));
         final String finalStr = initialRawPath.substring(initial.length());
         final ArtifactSource source = new ArtifactSource();
         final Repository repository = new Repository();
@@ -116,23 +112,23 @@ public class ArtifactLoaderManagerTest {
         source.setBinary(false);
         source.setInitialLookup(initial);
         source.setName("sourceName");
-        ExecutionContext ctx = injector.getInstance(ExecutionContextFactory.class).createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
-        PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
-                ctx.getSimplePersistFactory(), repository);
+        ExecutionContext ctx = injector.getInstance(ExecutionContextFactory.class).createExecutionContext(
+                                                                                                          "",
+                                                                                                          "",
+                                                                                                          DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                                          repository);
+        PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
+                                                                                                   repository);
 
-        ArtifactLoaderManager.INSTANCE.refreshResources(settings, source,
-                provider);
-        Set<StringArtifact> artifacts = provider.get().listByPath(
-                StringArtifact.class, null);
+        ArtifactLoaderManager.INSTANCE.refreshResources(settings, source, provider);
+        Set<StringArtifact> artifacts = provider.get().listByPath(StringArtifact.class, null);
         provider.closeResources();
         boolean hasAny = false;
 
         for (final Artifact a : artifacts) {
             assertThat(a, is(notNullValue()));
-            assertThat(a.getArtifactCompleteName().startsWith(
-                    mapping.getTo() + "/"), is(true));
-            assertThat(a.getArtifactCompleteName().contains(
-                    mapping.getFrom() + "/"), is(false));
+            assertThat(a.getArtifactCompleteName().startsWith(mapping.getTo() + "/"), is(true));
+            assertThat(a.getArtifactCompleteName().contains(mapping.getFrom() + "/"), is(false));
             hasAny = true;
         }
         assertThat(hasAny, is(true));

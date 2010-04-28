@@ -85,21 +85,17 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
      */
     private void addSourceCount( final SLPersistentNode pNode,
                                  final Class<? extends SLLink> linkType,
-                                 final int n )
-            throws SLPersistentTreeSessionException {
+                                 final int n ) throws SLPersistentTreeSessionException {
         synchronized (lock) {
-            final String sourceLinkCountName = SLCommonSupport
-                                                              .toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_COUNT
-                                                                                      + "." + linkType.getName().hashCode());
-            final SLPersistentProperty<Integer> prop = SLCommonSupport
-                                                                      .getProperty(pNode, Integer.class, sourceLinkCountName);
+            final String sourceLinkCountName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_COUNT + "."
+                                                                                      + linkType.getName().hashCode());
+            final SLPersistentProperty<Integer> prop = SLCommonSupport.getProperty(pNode, Integer.class, sourceLinkCountName);
             Integer sourceLinkCount = prop == null ? null : prop.getValue();
             sourceLinkCount = sourceLinkCount == null ? 1 : sourceLinkCount + n;
             if (sourceLinkCount <= 0) {
                 prop.remove();
             } else {
-                pNode.setProperty(Integer.class, sourceLinkCountName,
-                                  sourceLinkCount);
+                pNode.setProperty(Integer.class, sourceLinkCountName, sourceLinkCount);
             }
         }
     }
@@ -114,21 +110,17 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
      */
     private void addTargetCount( final SLPersistentNode pNode,
                                  final Class<? extends SLLink> linkType,
-                                 final int n )
-            throws SLPersistentTreeSessionException {
+                                 final int n ) throws SLPersistentTreeSessionException {
         synchronized (lock) {
-            final String targetLinkCountName = SLCommonSupport
-                                                              .toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_COUNT
-                                                                                      + "." + linkType.getName().hashCode());
-            final SLPersistentProperty<Integer> prop = SLCommonSupport
-                                                                      .getProperty(pNode, Integer.class, targetLinkCountName);
+            final String targetLinkCountName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_COUNT + "."
+                                                                                      + linkType.getName().hashCode());
+            final SLPersistentProperty<Integer> prop = SLCommonSupport.getProperty(pNode, Integer.class, targetLinkCountName);
             Integer targetLinkCount = prop == null ? null : prop.getValue();
             targetLinkCount = targetLinkCount == null ? 1 : targetLinkCount + n;
             if (targetLinkCount <= 0) {
                 prop.remove();
             } else {
-                pNode.setProperty(Integer.class, targetLinkCountName,
-                                  targetLinkCount);
+                pNode.setProperty(Integer.class, targetLinkCountName, targetLinkCount);
             }
         }
     }
@@ -141,14 +133,9 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
         synchronized (lock) {
             try {
                 final SLLink link = event.getLink();
-                final Class<? extends SLLink> linkType = SLCommonSupport
-                                                                        .getLinkType(link);
-                final SLPersistentNode sourceNode = SLCommonSupport
-                                                                   .getPNode(event.getLink().isBidirectional() ? event
-                                                                                                                      .getSides()[0] : event.getSource());
-                final SLPersistentNode targetNode = SLCommonSupport
-                                                                   .getPNode(event.getLink().isBidirectional() ? event
-                                                                                                                      .getSides()[1] : event.getTarget());
+                final Class<? extends SLLink> linkType = SLCommonSupport.getLinkType(link);
+                final SLPersistentNode sourceNode = SLCommonSupport.getPNode(event.getLink().isBidirectional() ? event.getSides()[0] : event.getSource());
+                final SLPersistentNode targetNode = SLCommonSupport.getPNode(event.getLink().isBidirectional() ? event.getSides()[1] : event.getTarget());
                 if (event.isNewLink()) {
                     if (link.isBidirectional()) {
                         addSourceCount(sourceNode, linkType, 1);
@@ -164,8 +151,7 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
                     addTargetCount(targetNode, linkType, 1);
                 }
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to add link count data.", e);
+                throw new SLGraphSessionException("Error on attempt to add link count data.", e);
             }
         }
     }
@@ -180,25 +166,20 @@ public class SLLinkCountListener extends SLAbstractGraphSessionEventListener {
                 final SLLink link = event.getLink();
                 final Class<? extends SLLink> linkType = link.getLinkType();
                 if (event.isBidirectional()) {
-                    final SLPersistentNode sideNode1 = SLCommonSupport
-                                                                      .getPNode(event.getSides()[0]);
-                    final SLPersistentNode sideNode2 = SLCommonSupport
-                                                                      .getPNode(event.getSides()[1]);
+                    final SLPersistentNode sideNode1 = SLCommonSupport.getPNode(event.getSides()[0]);
+                    final SLPersistentNode sideNode2 = SLCommonSupport.getPNode(event.getSides()[1]);
                     addSourceCount(sideNode1, linkType, -1);
                     addSourceCount(sideNode2, linkType, -1);
                     addTargetCount(sideNode1, linkType, -1);
                     addTargetCount(sideNode2, linkType, -1);
                 } else {
-                    final SLPersistentNode sourceNode = SLCommonSupport
-                                                                       .getPNode(event.getSource());
-                    final SLPersistentNode targetNode = SLCommonSupport
-                                                                       .getPNode(event.getTarget());
+                    final SLPersistentNode sourceNode = SLCommonSupport.getPNode(event.getSource());
+                    final SLPersistentNode targetNode = SLCommonSupport.getPNode(event.getTarget());
                     addSourceCount(sourceNode, linkType, -1);
                     addTargetCount(targetNode, linkType, -1);
                 }
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to remove link count data.", e);
+                throw new SLGraphSessionException("Error on attempt to remove link count data.", e);
             }
         }
     }

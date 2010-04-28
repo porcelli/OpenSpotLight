@@ -82,15 +82,13 @@ public class InheritedNodeTest {
     private <T extends SLNode> T findByProperty( final SLGraphSession session,
                                                  final Class<T> type,
                                                  final String propertyName,
-                                                 final String propertyValue ) throws
-            SLQueryException, SLInvalidQuerySyntaxException,
-            SLInvalidQueryElementException {
+                                                 final String propertyValue )
+        throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
         final SLQueryApi query1 = session.createQueryApi();
-        query1.select().type(type.getName()).subTypes().selectEnd().where()
-                .type(type.getName()).subTypes().each().property(propertyName)
-                .equalsTo().value(propertyValue).typeEnd().whereEnd();
-        final NeedsSyncronizationList<SLNode> result1 = query1.execute()
-                                                              .getNodes();
+        query1.select().type(type.getName()).subTypes().selectEnd().where().type(type.getName()).subTypes().each().property(
+                                                                                                                            propertyName).equalsTo().value(
+                                                                                                                                                           propertyValue).typeEnd().whereEnd();
+        final NeedsSyncronizationList<SLNode> result1 = query1.execute().getNodes();
         if (result1.size() > 0) {
             synchronized (result1.getLockObject()) {
                 for (final SLNode found : result1) {
@@ -100,11 +98,9 @@ public class InheritedNodeTest {
         }
 
         final SLQueryApi query = session.createQueryApi();
-        query.select().type(type.getName()).selectEnd().where().type(
-                                                                     type.getName()).each().property(propertyName).equalsTo().value(
+        query.select().type(type.getName()).selectEnd().where().type(type.getName()).each().property(propertyName).equalsTo().value(
                                                                                                                                     propertyValue).typeEnd().whereEnd();
-        final NeedsSyncronizationList<SLNode> result = query.execute()
-                                                            .getNodes();
+        final NeedsSyncronizationList<SLNode> result = query.execute().getNodes();
         if (result.size() > 0) {
             synchronized (result.getLockObject()) {
                 for (final SLNode found : result) {
@@ -125,31 +121,27 @@ public class InheritedNodeTest {
     @Test
     public void shouldFindNodesByItsProperties() throws Exception {
 
-Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
         final ExecutionContextFactory factory = injector.getInstance(ExecutionContextFactory.class);
-        final ExecutionContext context = factory.createExecutionContext("sa",
-                                                                        "sa", DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
+        final ExecutionContext context = factory.createExecutionContext("sa", "sa", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                        repository);
         SLGraphSession graphSession = context.getGraphSession();
-        JavaTypeClass newClass = graphSession.createContext("context")
-                                             .getRootNode().addNode(JavaTypeClass.class, "newClass");
+        JavaTypeClass newClass = graphSession.createContext("context").getRootNode().addNode(JavaTypeClass.class, "newClass");
         newClass.setQualifiedName("qualifiedName");
         newClass.setSimpleName("simpleName");
         graphSession.save();
         context.closeResources();
         factory.closeResources();
         graphSession = context.getGraphSession();
-        newClass = graphSession.getContext("context").getRootNode().addNode(
-                                                                            JavaTypeClass.class, "newClass");
+        newClass = graphSession.getContext("context").getRootNode().addNode(JavaTypeClass.class, "newClass");
         Assert.assertThat(newClass.getQualifiedName(), Is.is("qualifiedName"));
         Assert.assertThat(newClass.getSimpleName(), Is.is("simpleName"));
-        newClass = (JavaTypeClass)findByProperty(context.getGraphSession(),
-                                                 JavaType.class, "qualifiedName", "qualifiedName");
+        newClass = (JavaTypeClass)findByProperty(context.getGraphSession(), JavaType.class, "qualifiedName", "qualifiedName");
         Assert.assertThat(newClass.getQualifiedName(), Is.is("qualifiedName"));
         Assert.assertThat(newClass.getSimpleName(), Is.is("simpleName"));
 

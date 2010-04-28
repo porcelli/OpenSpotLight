@@ -68,8 +68,7 @@ public interface SLPersistentNode extends LockContainer {
      * @return the sL persistent node
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public SLPersistentNode addNode( String name )
-            throws SLPersistentTreeSessionException;
+    public SLPersistentNode addNode( String name ) throws SLPersistentTreeSessionException;
 
     /**
      * Gets the iD.
@@ -94,8 +93,7 @@ public interface SLPersistentNode extends LockContainer {
      * @return the node
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public SLPersistentNode getNode( String name )
-            throws SLPersistentTreeSessionException;
+    public SLPersistentNode getNode( String name ) throws SLPersistentTreeSessionException;
 
     /**
      * Gets the nodes.
@@ -103,8 +101,7 @@ public interface SLPersistentNode extends LockContainer {
      * @return the nodes
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public NeedsSyncronizationSet<SLPersistentNode> getNodes()
-            throws SLPersistentTreeSessionException;
+    public NeedsSyncronizationSet<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException;
 
     /**
      * Gets the nodes.
@@ -113,8 +110,7 @@ public interface SLPersistentNode extends LockContainer {
      * @return the nodes
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public NeedsSyncronizationCollection<SLPersistentNode> getNodes( String name )
-            throws SLPersistentTreeSessionException;
+    public NeedsSyncronizationCollection<SLPersistentNode> getNodes( String name ) throws SLPersistentTreeSessionException;
 
     /**
      * Gets the parent.
@@ -139,8 +135,7 @@ public interface SLPersistentNode extends LockContainer {
      * @return the properties
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties(
-                                                                                     String pattern )
+    public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties( String pattern )
         throws SLPersistentTreeSessionException;
 
     /**
@@ -152,11 +147,9 @@ public interface SLPersistentNode extends LockContainer {
      * @throws SLPersistentPropertyNotFoundException the SL persistent property not found exception
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public <V extends Serializable> SLPersistentProperty<V> getProperty(
-                                                                         Class<V> clazz,
+    public <V extends Serializable> SLPersistentProperty<V> getProperty( Class<V> clazz,
                                                                          String name )
-            throws SLPersistentPropertyNotFoundException,
-            SLPersistentTreeSessionException;
+        throws SLPersistentPropertyNotFoundException, SLPersistentTreeSessionException;
 
     /**
      * Gets the session.
@@ -188,10 +181,8 @@ public interface SLPersistentNode extends LockContainer {
      * @return the sL persistent property< v>
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public <V extends Serializable> SLPersistentProperty<V> setProperty(
-                                                                         Class<V> clazz,
+    public <V extends Serializable> SLPersistentProperty<V> setProperty( Class<V> clazz,
                                                                          String name,
-                                                                         V value )
-            throws SLPersistentTreeSessionException;
+                                                                         V value ) throws SLPersistentTreeSessionException;
 
 }

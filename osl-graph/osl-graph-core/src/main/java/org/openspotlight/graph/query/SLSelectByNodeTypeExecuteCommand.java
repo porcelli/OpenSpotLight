@@ -111,7 +111,9 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
         this.metadata = commandDO.getMetadata();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.query.SLSelectAbstractCommand#execute()
      */
     @Override
@@ -129,11 +131,13 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 
             Set<String> typesNotFiltered = new HashSet<String>();
             for (SLSelectTypeInfo typeInfo : typeInfoSet) {
-                List<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(metadata, typeInfo.getName(), typeInfo.isSubTypes());
+                List<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(metadata, typeInfo.getName(),
+                                                                                       typeInfo.isSubTypes());
                 typesNotFiltered.addAll(hierarchyTypeNames);
             }
 
-            SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/contexts//*");
+            SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
+                                                                                   + "/contexts//*");
             Statement rootStatement = statementBuilder.getRootStatement();
 
             if (whereStatementInfo != null) {
@@ -146,9 +150,9 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
                         Statement typeStatement;
                         if (i > 0) typeStatement = rootStatement.operator(OR).openBracket();
                         else typeStatement = rootStatement.openBracket();
-                        Statement typeFilterStatement = typeStatement.condition()
-                                                                     .leftOperand(typePropName).operator(EQUAL).rightOperand(typeInfo.getName())
-                                                                     .operator(AND).openBracket();
+                        Statement typeFilterStatement = typeStatement.condition().leftOperand(typePropName).operator(EQUAL).rightOperand(
+                                                                                                                                         typeInfo.getName()).operator(
+                                                                                                                                                                      AND).openBracket();
                         filterByWhereStatement(typeFilterStatement, typeInfo.getName(), typeInfo.getTypeStatementInfo());
                         typeFilterStatement.closeBracket();
                         typeStatement.closeBracket();
@@ -203,7 +207,8 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
         Map<String, SLWhereTypeInfo> map = new HashMap<String, SLWhereTypeInfo>();
         List<SLWhereTypeInfo> list = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
         for (SLWhereTypeInfo whereTypeInfo : list) {
-            List<String> typeNames = SLQuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(), whereTypeInfo.isSubTypes());
+            List<String> typeNames = SLQuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(),
+                                                                          whereTypeInfo.isSubTypes());
             for (String typeName : typeNames) {
                 if (!map.containsKey(typeName)) {
                     SLWhereTypeInfo typeInfo = new SLWhereTypeInfo(typeName);
@@ -235,7 +240,8 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
             if (conditionInfo.getConditionalOperator() == null) {
                 conditionStatement = statement.openBracket();
             } else {
-                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(), conditionInfo.isConditionalNotOperator()).openBracket();
+                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(),
+                                                        conditionInfo.isConditionalNotOperator()).openBracket();
             }
 
             if (conditionInfo.getInnerStatementInfo() == null) {
@@ -265,11 +271,14 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
                 if (conditionInfo.getPropertyName() != null) {
                     propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
                 } else {
-                    propertyName = (conditionInfo.getSide().equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_COUNT : SLConsts.PROPERTY_NAME_TARGET_COUNT) + "." + conditionInfo.getLinkTypeName().hashCode();
+                    propertyName = (conditionInfo.getSide().equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_COUNT : SLConsts.PROPERTY_NAME_TARGET_COUNT)
+                                   + "." + conditionInfo.getLinkTypeName().hashCode();
                     propertyName = SLCommonSupport.toInternalPropertyName(propertyName);
                 }
 
-                condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
+                condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(),
+                                                             conditionInfo.isRelationalNotOperator()).rightOperand(
+                                                                                                                   conditionInfo.getValue());
             } else {
                 filterByWhereStatement(conditionStatement, typeName, conditionInfo.getInnerStatementInfo());
             }

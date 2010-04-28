@@ -243,8 +243,7 @@ public interface SLNodeWithMetrics extends SLNode {
 
     public void setDecisionDensity4( Integer newDecisionDensity4 );
 
-    public void setDeclarativeStatementCount(
-                                              Integer newDeclarativeStatementCount );
+    public void setDeclarativeStatementCount( Integer newDeclarativeStatementCount );
 
     public void setEfectiveLines( Integer newEfectiveLines );
 
@@ -266,8 +265,7 @@ public interface SLNodeWithMetrics extends SLNode {
 
     public void setFunctionPointLOCBased( Integer newFunctionPointLOCBased );
 
-    public void setImplementedInterfacesCount(
-                                               Integer newImplementedInterfacesCount );
+    public void setImplementedInterfacesCount( Integer newImplementedInterfacesCount );
 
     public void setInterfaceComplexity( Integer newInterfaceComplexity );
 
@@ -303,17 +301,13 @@ public interface SLNodeWithMetrics extends SLNode {
 
     public void setStatementCount( Integer newStatementCount );
 
-    public void setTotalCyclomaticComplexity1(
-                                               Integer newTotalCyclomaticComplexity1 );
+    public void setTotalCyclomaticComplexity1( Integer newTotalCyclomaticComplexity1 );
 
-    public void setTotalCyclomaticComplexity2(
-                                               Integer newTotalCyclomaticComplexity2 );
+    public void setTotalCyclomaticComplexity2( Integer newTotalCyclomaticComplexity2 );
 
-    public void setTotalCyclomaticComplexity3(
-                                               Integer newTotalCyclomaticComplexity3 );
+    public void setTotalCyclomaticComplexity3( Integer newTotalCyclomaticComplexity3 );
 
-    public void setTotalCyclomaticComplexity4(
-                                               Integer newTotalCyclomaticComplexity4 );
+    public void setTotalCyclomaticComplexity4( Integer newTotalCyclomaticComplexity4 );
 
     public void setVariablesCount( Integer newVariablesCount );
 

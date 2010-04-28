@@ -64,8 +64,7 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLNodePropertyImpl<V extends Serializable> implements
-        SLNodeProperty<V> {
+public class SLNodePropertyImpl<V extends Serializable> implements SLNodeProperty<V> {
 
     private final Lock                      lock;
 
@@ -88,8 +87,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements
      * @param persistentProperty the persistent property
      */
     public SLNodePropertyImpl(
-                               final SLNode node,
-                               final SLPersistentProperty<V> persistentProperty,
+                               final SLNode node, final SLPersistentProperty<V> persistentProperty,
                                final SLGraphSessionEventPoster eventPoster ) {
         this.node = node;
         this.pProperty = persistentProperty;
@@ -107,8 +105,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements
                 return false;
             }
             final SLNodeProperty property = (SLNodeProperty)obj;
-            final String name1 = property.getNode().getID() + ":"
-                                 + getName();
+            final String name1 = property.getNode().getID() + ":" + getName();
             final String name2 = getNode().getID() + ":" + getName();
             return name1.equals(name2);
         }
@@ -125,11 +122,9 @@ public class SLNodePropertyImpl<V extends Serializable> implements
         synchronized (lock) {
 
             try {
-                return SLCommonSupport
-                                      .toSimplePropertyName(pProperty.getName());
+                return SLCommonSupport.toSimplePropertyName(pProperty.getName());
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve the property name.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve the property name.", e);
             }
         }
     }
@@ -148,8 +143,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements
         try {
             return pProperty.getValue();
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to retrieve the property value.", e);
+            throw new SLGraphSessionException("Error on attempt to retrieve the property value.", e);
         }
     }
 
@@ -176,18 +170,15 @@ public class SLNodePropertyImpl<V extends Serializable> implements
         synchronized (lock) {
             try {
                 final SLPersistentNode pNode = pProperty.getNode();
-                final String name = SLCommonSupport
-                                                   .toSimplePropertyName(getName());
+                final String name = SLCommonSupport.toSimplePropertyName(getName());
                 final boolean string = pProperty.getValue() instanceof String;
                 pProperty.remove();
-                final SLNodePropertyEvent event = new SLNodePropertyRemovedEvent(
-                                                                                 this, pProperty, name);
+                final SLNodePropertyEvent event = new SLNodePropertyRemovedEvent(this, pProperty, name);
                 event.setString(string);
                 event.setPNode(pNode);
                 eventPoster.post(event);
             } catch (final Exception e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to remove property.", e);
+                throw new SLGraphSessionException("Error on attempt to remove property.", e);
             }
         }
     }
@@ -199,8 +190,7 @@ public class SLNodePropertyImpl<V extends Serializable> implements
         try {
             pProperty.setValue(value);
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to set the property value.", e);
+            throw new SLGraphSessionException("Error on attempt to set the property value.", e);
         }
     }
 }

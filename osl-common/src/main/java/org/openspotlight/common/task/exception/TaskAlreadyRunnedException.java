@@ -66,8 +66,7 @@ public class TaskAlreadyRunnedException extends SLRuntimeException {
     }
 
     public TaskAlreadyRunnedException(
-                                       final String message,
-                                       final Throwable cause ) {
+                                       final String message, final Throwable cause ) {
         super(message, cause);
     }
 

@@ -65,7 +65,7 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 @Ignore
-//Just waiting a response from jackrabbit user group
+// Just waiting a response from jackrabbit user group
 public class MultithreadedSessionTest {
 
     enum Status {
@@ -107,8 +107,7 @@ public class MultithreadedSessionTest {
     private final int NODES_SIZE  = 10;
 
     private Session openSession() {
-        final JcrConnectionProvider provider = JcrConnectionProvider
-                                                                    .createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         final Session s = provider.openSession();
         return s;
     }
@@ -119,8 +118,7 @@ public class MultithreadedSessionTest {
         s.getRootNode().addNode("root");
         s.save();
         s.logout();
-        final List<Callable<Status>> workers = new ArrayList<Callable<Status>>(
-                                                                               THREAD_SIZE);
+        final List<Callable<Status>> workers = new ArrayList<Callable<Status>>(THREAD_SIZE);
 
         for (int i = 0; i < THREAD_SIZE; i++) {
             final Session session = openSession();

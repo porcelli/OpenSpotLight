@@ -77,8 +77,7 @@ public class GroupDifferences implements SimpleNodeType, Serializable {
             return false;
         }
         final GroupDifferences that = (GroupDifferences)obj;
-        return Equals.eachEquality(Arrays.of(getRepositoryName()), Arrays
-                                                                         .andOf(that.getRepositoryName()));
+        return Equals.eachEquality(Arrays.of(getRepositoryName()), Arrays.andOf(that.getRepositoryName()));
     }
 
     public Set<String> getAddedGroups() {

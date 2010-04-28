@@ -134,7 +134,7 @@ public class Arrays {
     public static <K> Map<K, Class<?>> map( final K[] ofKeys,
                                             final Class<?>[] andValues ) {
         checkCondition("keysAndValuesWithSameSize", //$NON-NLS-1$
-        ofKeys == null || andValues == null || ofKeys.length == andValues.length);
+                       ofKeys == null || andValues == null || ofKeys.length == andValues.length);
         if (ofKeys == null) {
             return new HashMap<K, Class<?>>();
         }
@@ -163,7 +163,7 @@ public class Arrays {
     public static <K, V> Map<K, V> map( final K[] ofKeys,
                                         final V[] andValues ) {
         checkCondition("keysAndValuesWithSameSize", //$NON-NLS-1$
-        ofKeys == null || andValues == null || ofKeys.length == andValues.length);
+                       ofKeys == null || andValues == null || ofKeys.length == andValues.length);
         if (ofKeys == null) {
             return new HashMap<K, V>();
         }

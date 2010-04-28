@@ -72,8 +72,7 @@ public class XmlConfigurationManagerFactory {
     /**
      * The Class ImmutableXmlConfigurationManager.
      */
-    private static class ImmutableXmlConfigurationManager implements
-            ConfigurationManager {
+    private static class ImmutableXmlConfigurationManager implements ConfigurationManager {
 
         /** The global settings. */
         protected GlobalSettings          globalSettings;
@@ -106,17 +105,13 @@ public class XmlConfigurationManagerFactory {
             //
         }
 
-        public Set<Repository> getAllRepositories()
-                throws ConfigurationException {
-            final Set<Repository> allNames = new HashSet<Repository>(
-                                                                     this.allRepositories.values());
+        public Set<Repository> getAllRepositories() throws ConfigurationException {
+            final Set<Repository> allNames = new HashSet<Repository>(this.allRepositories.values());
             return allNames;
         }
 
-        public Set<String> getAllRepositoryNames()
-                throws ConfigurationException {
-            final Set<String> allNames = new HashSet<String>(
-                                                             this.allRepositories.keySet());
+        public Set<String> getAllRepositoryNames() throws ConfigurationException {
+            final Set<String> allNames = new HashSet<String>(this.allRepositories.keySet());
             return allNames;
         }
 
@@ -136,8 +131,7 @@ public class XmlConfigurationManagerFactory {
          * @seeorg.openspotlight.federation.loader.ConfigurationManager#
          * getRepositoryByName(java.lang.String)
          */
-        public Repository getRepositoryByName( final String name )
-                throws ConfigurationException {
+        public Repository getRepositoryByName( final String name ) throws ConfigurationException {
             return this.allRepositories.get(name);
         }
 
@@ -159,8 +153,7 @@ public class XmlConfigurationManagerFactory {
          * saveGlobalSettings
          * (org.openspotlight.federation.domain.GlobalSettings)
          */
-        public void saveGlobalSettings( final GlobalSettings globalSettings )
-                throws ConfigurationException {
+        public void saveGlobalSettings( final GlobalSettings globalSettings ) throws ConfigurationException {
             throw new UnsupportedOperationException();
 
         }
@@ -172,8 +165,7 @@ public class XmlConfigurationManagerFactory {
          * org.openspotlight.federation.loader.ConfigurationManager#saveRepository
          * (org.openspotlight.federation.domain.Repository)
          */
-        public void saveRepository( final Repository configuration )
-                throws ConfigurationException {
+        public void saveRepository( final Repository configuration ) throws ConfigurationException {
             throw new UnsupportedOperationException();
         }
 
@@ -182,8 +174,7 @@ public class XmlConfigurationManagerFactory {
     /**
      * The Class MuttableXmlConfigurationManager.
      */
-    private static class MuttableXmlConfigurationManager extends
-            ImmutableXmlConfigurationManager {
+    private static class MuttableXmlConfigurationManager extends ImmutableXmlConfigurationManager {
 
         /** The x stream. */
         private final XStream xStream;
@@ -199,12 +190,9 @@ public class XmlConfigurationManagerFactory {
          * @throws Exception the exception
          */
         public MuttableXmlConfigurationManager(
-                                                final XStream xStream,
-                                                final String xmlFileLocation ) throws Exception {
+                                                final XStream xStream, final String xmlFileLocation ) throws Exception {
             super(
-                    new File(xmlFileLocation).exists() ? (XmlConfiguration)xStream
-                                                                                  .fromXML(new FileInputStream(xmlFileLocation))
-                            : new XmlConfiguration());
+                  new File(xmlFileLocation).exists() ? (XmlConfiguration)xStream.fromXML(new FileInputStream(xmlFileLocation)) : new XmlConfiguration());
             this.xStream = xStream;
             this.xmlFileLocation = xmlFileLocation;
         }
@@ -219,8 +207,7 @@ public class XmlConfigurationManagerFactory {
          * .federation.domain.GlobalSettings)
          */
         @Override
-        public void saveGlobalSettings( final GlobalSettings globalSettings )
-                throws ConfigurationException {
+        public void saveGlobalSettings( final GlobalSettings globalSettings ) throws ConfigurationException {
             this.configuration.setSettings(globalSettings);
             this.refreshConfiguration();
             this.saveXml();
@@ -235,8 +222,7 @@ public class XmlConfigurationManagerFactory {
          * #saveRepository(org.openspotlight.federation.domain.Repository)
          */
         @Override
-        public void saveRepository( final Repository configuration )
-                throws ConfigurationException {
+        public void saveRepository( final Repository configuration ) throws ConfigurationException {
             this.configuration.getRepositories().add(configuration);
             this.refreshConfiguration();
             this.saveXml();
@@ -250,17 +236,14 @@ public class XmlConfigurationManagerFactory {
         private void saveXml() throws ConfigurationException {
             try {
                 final String content = this.xStream.toXML(this.configuration);
-                final String dir = this.xmlFileLocation.substring(0,
-                                                                  this.xmlFileLocation.lastIndexOf('/'));
+                final String dir = this.xmlFileLocation.substring(0, this.xmlFileLocation.lastIndexOf('/'));
                 new File(dir).mkdirs();
-                final FileOutputStream fos = new FileOutputStream(
-                                                                  this.xmlFileLocation);
+                final FileOutputStream fos = new FileOutputStream(this.xmlFileLocation);
                 fos.write(content.getBytes());
                 fos.flush();
                 fos.close();
             } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e,
-                                                 ConfigurationException.class);
+                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
             }
         }
 
@@ -272,11 +255,9 @@ public class XmlConfigurationManagerFactory {
      * @param xmlContent the xml content
      * @return the configuration manager
      */
-    public static ConfigurationManager loadImmutableFromXmlContent(
-                                                                    final String xmlContent ) {
+    public static ConfigurationManager loadImmutableFromXmlContent( final String xmlContent ) {
         final XStream xStream = XmlConfigurationManagerFactory.setupXStream();
-        final XmlConfiguration configuration = (XmlConfiguration)xStream
-                                                                        .fromXML(xmlContent);
+        final XmlConfiguration configuration = (XmlConfiguration)xStream.fromXML(xmlContent);
         return new ImmutableXmlConfigurationManager(configuration);
     }
 
@@ -286,11 +267,9 @@ public class XmlConfigurationManagerFactory {
      * @param fileLocation the file location
      * @return the configuration manager
      */
-    public static ConfigurationManager loadMutableFromFile(
-                                                            final String fileLocation ) {
+    public static ConfigurationManager loadMutableFromFile( final String fileLocation ) {
         try {
-            final XStream xStream = XmlConfigurationManagerFactory
-                                                                  .setupXStream();
+            final XStream xStream = XmlConfigurationManagerFactory.setupXStream();
             return new MuttableXmlConfigurationManager(xStream, fileLocation);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, ConfigurationException.class);

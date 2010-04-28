@@ -67,8 +67,7 @@ public class TaskAlreadyOnPoolException extends SLRuntimeException {
     }
 
     public TaskAlreadyOnPoolException(
-                                       final String message,
-                                       final Throwable cause ) {
+                                       final String message, final Throwable cause ) {
         super(message, cause);
     }
 

@@ -52,8 +52,7 @@ import java.io.Serializable;
 
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-public interface StreamPropertyWithParent<P extends SimpleNodeType> extends
-        Serializable {
+public interface StreamPropertyWithParent<P extends SimpleNodeType> extends Serializable {
 
     public P getParent();
 

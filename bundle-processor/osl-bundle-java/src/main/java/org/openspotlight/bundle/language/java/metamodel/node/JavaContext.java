@@ -76,7 +76,9 @@ public interface JavaContext extends SLNode {
      */
     public void setVersion( String newVersion );
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.SLNode#getName()
      */
     @SLProperty

@@ -138,8 +138,7 @@ public abstract class AbstractConfigurationManagerTest {
 
         final ConfigurationManager manager1 = createNewConfigurationManager();
         final GlobalSettings sessing1 = manager1.getGlobalSettings();
-        final Repository repo1 = manager1
-                                         .getRepositoryByName("repository name");
+        final Repository repo1 = manager1.getRepositoryByName("repository name");
         assertThat(sessing1, is(notNullValue()));
         assertThat(repo1, is(repository));
     }

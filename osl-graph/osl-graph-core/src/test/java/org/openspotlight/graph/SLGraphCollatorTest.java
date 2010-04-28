@@ -92,20 +92,14 @@ public class SLGraphCollatorTest {
 
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                             .closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
-        final SLGraphFactory factory = AbstractFactory
-                                                      .getDefaultInstance(SLGraphFactory.class);
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
-        final SecurityFactory securityFactory = AbstractFactory
-                                                               .getDefaultInstance(SecurityFactory.class);
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(
-                                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-                                                                                                        "password");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
     }
 
     @After
@@ -123,19 +117,14 @@ public class SLGraphCollatorTest {
     @Test
     public void testLinkPropertyCollator() throws SLPropertyNotFoundException {
         final SLNode root1 = session.createContext("1L").getRootNode();
-        final JavaClassNode javaClassNode1 = root1.addNode(
-                                                           JavaClassNode.class, "javaClassNode1");
-        final JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(
-                                                                      JavaMethodNode.class, "javaMethodNode1");
+        final JavaClassNode javaClassNode1 = root1.addNode(JavaClassNode.class, "javaClassNode1");
+        final JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
-        final JavaClassJavaMethodSimpleLink link = session.addLink(
-                                                                   JavaClassJavaMethodSimpleLink.class, javaClassNode1,
+        final JavaClassJavaMethodSimpleLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
                                                                    javaMethodNode1, false);
 
-        final SLLinkProperty<String> prop1 = link.setProperty(String.class,
-                                                              VisibilityLevel.PUBLIC, "selecao", "great");
-        final SLLinkProperty<String> prop2 = link.getProperty(String.class,
-                                                              "sele\u00E7\u00E3o");
+        final SLLinkProperty<String> prop1 = link.setProperty(String.class, VisibilityLevel.PUBLIC, "selecao", "great");
+        final SLLinkProperty<String> prop2 = link.getProperty(String.class, "sele\u00E7\u00E3o");
 
         Assert.assertEquals(prop1, prop2);
         Assert.assertEquals(prop1.getName(), "selecao");
@@ -156,17 +145,14 @@ public class SLGraphCollatorTest {
         final SLNode root1 = session.createContext("1L").getRootNode();
 
         // test addNode ...
-        final SQLElement element1 = root1.addNode(SQLElement.class,
-                                                  "selecao");
-        final SQLElement element2 = root1.addNode(SQLElement.class,
-                                                  "sele\u00E7\u00E3o");
+        final SQLElement element1 = root1.addNode(SQLElement.class, "selecao");
+        final SQLElement element2 = root1.addNode(SQLElement.class, "sele\u00E7\u00E3o");
         Assert.assertEquals(1, root1.getNodes().size());
 
         Assert.assertEquals(element1, element2);
 
         // test getNode ...
-        final SQLElement element3 = root1.getNode(SQLElement.class,
-                                                  "sele\u00E7\u00E3o");
+        final SQLElement element3 = root1.getNode(SQLElement.class, "sele\u00E7\u00E3o");
         Assert.assertEquals(element1, element3);
 
         // the original name remains ...
@@ -178,20 +164,16 @@ public class SLGraphCollatorTest {
     @Test
     public void testNodePropertyCollator() throws SLPropertyNotFoundException {
         final SLNode root1 = session.createContext("1L").getRootNode();
-        final SQLElement element = root1.addNode(SQLElement.class,
-                                                 "element");
+        final SQLElement element = root1.addNode(SQLElement.class, "element");
 
-        final SLNodeProperty<String> prop1 = element.setProperty(
-                                                                 String.class, VisibilityLevel.PUBLIC, "selecao", "great");
-        final SLNodeProperty<String> prop2 = element.getProperty(
-                                                                 String.class, "sele\u00E7\u00E3o");
+        final SLNodeProperty<String> prop1 = element.setProperty(String.class, VisibilityLevel.PUBLIC, "selecao", "great");
+        final SLNodeProperty<String> prop2 = element.getProperty(String.class, "sele\u00E7\u00E3o");
         Assert.assertEquals(prop1, prop2);
         Assert.assertEquals(prop1.getName(), "selecao");
         Assert.assertEquals(prop1.getName(), "selecao");
         final Collator collator = Collator.getInstance(Locale.US);
         collator.setStrength(Collator.TERTIARY);
-        final SLNodeProperty<String> property = element.getProperty(
-                                                                    String.class, "sele\u00E7\u00E3o", collator);
+        final SLNodeProperty<String> property = element.getProperty(String.class, "sele\u00E7\u00E3o", collator);
         Assert.assertTrue(property == null);
     }
 

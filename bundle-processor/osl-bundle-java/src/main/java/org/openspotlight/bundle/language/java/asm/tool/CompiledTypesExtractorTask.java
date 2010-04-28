@@ -78,8 +78,7 @@ import com.thoughtworks.xstream.converters.javabean.JavaBeanConverter;
 public class CompiledTypesExtractorTask extends Task {
 
     /** The LOG. */
-    private final Logger    LOG               = LoggerFactory
-                                                             .getLogger(CompiledTypesExtractorTask.class);
+    private final Logger    LOG               = LoggerFactory.getLogger(CompiledTypesExtractorTask.class);
 
     /** The context name. Default value is "unknown". */
     private String          contextName       = "unknown";
@@ -99,11 +98,9 @@ public class CompiledTypesExtractorTask extends Task {
      * @param artifactSet the artifact set
      */
     public void addCompiledArtifacts( final FileSet artifactSet ) {
-        final DirectoryScanner scanner = artifactSet
-                                                    .getDirectoryScanner(getProject());
+        final DirectoryScanner scanner = artifactSet.getDirectoryScanner(getProject());
         for (final String activeFileName : scanner.getIncludedFiles()) {
-            final File file = new File(artifactSet.getDir(getProject()),
-                                       activeFileName);
+            final File file = new File(artifactSet.getDir(getProject()), activeFileName);
             compiledArtifacts.add(file);
         }
     }
@@ -118,34 +115,28 @@ public class CompiledTypesExtractorTask extends Task {
         if (isValid()) {
             try {
                 final CompiledTypesExtractor typeExtractor = new CompiledTypesExtractor();
-                final List<TypeDefinition> scannedTypes = typeExtractor
-                                                                       .getJavaTypes(compiledArtifacts);
+                final List<TypeDefinition> scannedTypes = typeExtractor.getJavaTypes(compiledArtifacts);
                 final TypeDefinitionSet wrapper = new TypeDefinitionSet();
                 wrapper.setTypes(scannedTypes);
                 wrapper.setName(contextName);
                 wrapper.setVersion(contextVersion);
                 // XML Output Generation
                 final XStream xstream = new XStream();
-                xstream.aliasPackage("",
-                                     "org.openspotlight.bundle.language.java.asm.model");
+                xstream.aliasPackage("", "org.openspotlight.bundle.language.java.asm.model");
                 xstream.alias("List", LinkedList.class);
 
-                xstream.registerConverter(new JavaBeanConverter(xstream
-                                                                       .getMapper()) {
+                xstream.registerConverter(new JavaBeanConverter(xstream.getMapper()) {
                     @Override
                     @SuppressWarnings( "unchecked" )
                     public boolean canConvert( final Class type ) {
-                        return type.getName() == MethodDeclaration.class
-                                                                        .getName();
+                        return type.getName() == MethodDeclaration.class.getName();
                     }
                 });
 
                 LOG.info("Starting XML Output generation.");
-                final String dirName = xmlOutputFileName.substring(0,
-                                                                   xmlOutputFileName.lastIndexOf("/"));
+                final String dirName = xmlOutputFileName.substring(0, xmlOutputFileName.lastIndexOf("/"));
                 new File(dirName).mkdirs();
-                final OutputStream outputStream = new FileOutputStream(
-                                                                       xmlOutputFileName);
+                final OutputStream outputStream = new FileOutputStream(xmlOutputFileName);
                 xstream.toXML(wrapper, outputStream);
                 outputStream.flush();
                 outputStream.close();

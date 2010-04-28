@@ -67,8 +67,7 @@ public class ITHelloWeb {
     @Test
     public void testHelloWorld() throws ClientProtocolException, IOException {
         HttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpget = new HttpGet(
-                                      "http://localhost:8080/osl-web-war/?action=hello");
+        HttpGet httpget = new HttpGet("http://localhost:8080/osl-web-war/?action=hello");
         HttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
 

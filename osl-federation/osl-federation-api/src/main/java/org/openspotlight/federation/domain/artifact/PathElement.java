@@ -64,8 +64,7 @@ import org.openspotlight.persist.annotation.TransientProperty;
  * The Class PathElement.
  */
 @Name( "path_element" )
-public class PathElement implements Comparable<PathElement>, SimpleNodeType,
-    Serializable {
+public class PathElement implements Comparable<PathElement>, SimpleNodeType, Serializable {
 
     private static final long serialVersionUID = -6520096568789344933L;
 
@@ -101,14 +100,11 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
 
     }
 
-    public static PathElement createRelativePath(
-                                                  final PathElement initialPathElement,
+    public static PathElement createRelativePath( final PathElement initialPathElement,
                                                   final String pathString ) {
-        final String newPathString = pathString.startsWith("/") ? Strings
-                                                                         .removeBegginingFrom("/", pathString) : pathString;
+        final String newPathString = pathString.startsWith("/") ? Strings.removeBegginingFrom("/", pathString) : pathString;
 
-        return createFromPathString(initialPathElement.getCompletePath()
-                                    + Artifact.SEPARATOR + newPathString);
+        return createFromPathString(initialPathElement.getCompletePath() + Artifact.SEPARATOR + newPathString);
 
     }
 
@@ -153,8 +149,7 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
             return false;
         }
         final PathElement that = (PathElement)o;
-        return Equals.eachEquality(name, that.name)
-               && Equals.eachEquality(parent, that.parent);
+        return Equals.eachEquality(name, that.name) && Equals.eachEquality(parent, that.parent);
 
     }
 
@@ -169,8 +164,7 @@ public class PathElement implements Comparable<PathElement>, SimpleNodeType,
             if (isRootElement()) {
                 path = "/" + name;
             } else {
-                path = getParent().getCompletePath() + Artifact.SEPARATOR
-                       + getName();
+                path = getParent().getCompletePath() + Artifact.SEPARATOR + getName();
             }
             completePathCache = path;
         }

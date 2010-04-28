@@ -121,8 +121,7 @@ public abstract class SLLinkEvent extends SLGraphSessionEvent {
      * @param persistenceMode the persistence mode
      */
     public SLLinkEvent(
-                        final SLLink link, final SLPersistentNode linkNode,
-                        final SLPersistenceMode persistenceMode ) {
+                        final SLLink link, final SLPersistentNode linkNode, final SLPersistenceMode persistenceMode ) {
         super(link.getSession());
         this.link = link;
         this.linkNode = linkNode;

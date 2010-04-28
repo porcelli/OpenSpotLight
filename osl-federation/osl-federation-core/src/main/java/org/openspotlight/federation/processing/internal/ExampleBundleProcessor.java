@@ -74,15 +74,13 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ExampleBundleProcessor implements
-        BundleProcessorSinglePhase<StringArtifact> {
+public class ExampleBundleProcessor implements BundleProcessorSinglePhase<StringArtifact> {
 
     public static List<LastProcessStatus> allStatus = new CopyOnWriteArrayList<LastProcessStatus>();
 
     private final Logger                  logger    = LoggerFactory.getLogger(this.getClass());
 
-    public <A extends Artifact> boolean acceptKindOfArtifact(
-                                                              final Class<A> kindOfArtifact ) {
+    public <A extends Artifact> boolean acceptKindOfArtifact( final Class<A> kindOfArtifact ) {
         return StringArtifact.class.equals(kindOfArtifact);
     }
 
@@ -113,8 +111,7 @@ public class ExampleBundleProcessor implements
 
     @SuppressWarnings( "unchecked" )
     public Set<Class<? extends StringArtifact>> getArtifactTypes() {
-        return SLCollections
-                            .<Class<? extends StringArtifact>>setOf(StringArtifact.class);
+        return SLCollections.<Class<? extends StringArtifact>>setOf(StringArtifact.class);
     }
 
     public SaveBehavior getSaveBehavior() {
@@ -124,8 +121,7 @@ public class ExampleBundleProcessor implements
     public LastProcessStatus processArtifact( final StringArtifact artifact,
                                               final CurrentProcessorContext currentContext,
                                               final ExecutionContext context ) throws Exception {
-        context.getLogger().log(context.getUser(), LogEventType.DEBUG,
-                                "another test", artifact);
+        context.getLogger().log(context.getUser(), LogEventType.DEBUG, "another test", artifact);
         for (int i = 0; i < 10; i++) {
             final SLNode groupNode = currentContext.getCurrentNodeGroup();
             final String nodeName = artifact.getArtifactCompleteName() + i;
@@ -134,17 +130,14 @@ public class ExampleBundleProcessor implements
             context.getGraphSession().addLink(SLLink.class, node, node1, false);
         }
 
-        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = context.getPersistentArtifactManager()
-                .getSimplePersist();
+        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = context.getPersistentArtifactManager().getSimplePersist();
 
-        artifact.addSyntaxInformation(2, 4, 5, 6,
-                                      SyntaxInformationType.COMMENT, simplePersist);
+        artifact.addSyntaxInformation(2, 4, 5, 6, SyntaxInformationType.COMMENT, simplePersist);
 
         return LastProcessStatus.PROCESSED;
     }
 
-    public void selectArtifactsToBeProcessed(
-                                              final CurrentProcessorContext currentContext,
+    public void selectArtifactsToBeProcessed( final CurrentProcessorContext currentContext,
                                               final ExecutionContext context,
                                               final ArtifactChanges<Artifact> changes,
                                               final ArtifactsToBeProcessed<Artifact> toBeReturned ) {

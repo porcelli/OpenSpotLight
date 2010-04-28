@@ -60,8 +60,7 @@ public class SLCommonToken extends CommonToken implements SLLineInfo {
     private int               endLine               = -1;
 
     public SLCommonToken(
-                          final CharStream input, final int type,
-                          final int channel, final int start, final int stop ) {
+                          final CharStream input, final int type, final int channel, final int start, final int stop ) {
         super(type);
         this.input = input;
         this.channel = channel;
@@ -96,8 +95,7 @@ public class SLCommonToken extends CommonToken implements SLLineInfo {
         }
         if (oldToken instanceof SLCommonToken) {
             endLine = ((SLCommonToken)oldToken).getEndLine();
-            endCharPositionInLine = ((SLCommonToken)oldToken)
-                                                             .getEndCharPositionInLine();
+            endCharPositionInLine = ((SLCommonToken)oldToken).getEndCharPositionInLine();
         }
     }
 

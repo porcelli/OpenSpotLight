@@ -104,32 +104,28 @@ public class JavaStringChangesTest {
         repo.setName("name");
         repo.setActive(true);
 
-Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
-        
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
+
         final ArtifactSource includedSource = new ArtifactSource();
         includedSource.setRepository(repo);
         includedSource.setName("classpath");
-        includedSource
-                      .setInitialLookup("./src/test/resources/stringArtifacts/new_file");
+        includedSource.setInitialLookup("./src/test/resources/stringArtifacts/new_file");
         includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ArtifactSource changedSource = new ArtifactSource();
         changedSource.setRepository(repo);
         changedSource.setName("classpath");
-        changedSource
-                     .setInitialLookup("./src/test/resources/stringArtifacts/changed_file");
+        changedSource.setInitialLookup("./src/test/resources/stringArtifacts/changed_file");
         changedFilesContextFactory = includedFilesContextFactory;
 
         final ArtifactSource removedSource = new ArtifactSource();
         removedSource.setRepository(repo);
         removedSource.setName("classpath");
-        removedSource
-                     .setInitialLookup("./src/test/resources/stringArtifacts/removed_file");
+        removedSource.setInitialLookup("./src/test/resources/stringArtifacts/removed_file");
         removedFilesContextFactory = includedFilesContextFactory;
         settings = new GlobalSettings();
         settings.setDefaultSleepingIntervalInMilliseconds(1000);
@@ -144,10 +140,8 @@ Injector injector = Guice.createInjector(
         commonProcessor.setActive(true);
         commonProcessor.setGroup(group);
         commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
-        commonProcessor.getArtifactPhases().add(
-                                                JavaLexerAndParserTypesPhase.class);
-        commonProcessor.getArtifactPhases().add(
-                                                JavaParserPublicElementsPhase.class);
+        commonProcessor.getArtifactPhases().add(JavaLexerAndParserTypesPhase.class);
+        commonProcessor.getArtifactPhases().add(JavaParserPublicElementsPhase.class);
         commonProcessor.getArtifactPhases().add(JavaTreePhase.class);
         group.getBundleTypes().add(commonProcessor);
 
@@ -156,9 +150,8 @@ Injector injector = Guice.createInjector(
         bundleSource.setBundleProcessorType(commonProcessor);
         bundleSource.setRelative("tests/");
         bundleSource.getIncludeds().add("**/*.java");
-        final ExecutionContext ctx = includedFilesContextFactory
-                                                                .createExecutionContext(username, password, descriptor, group
-                                                                                                                             .getRootRepository());
+        final ExecutionContext ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
+                                                                                        group.getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
         ctx.closeResources();
@@ -166,26 +159,20 @@ Injector injector = Guice.createInjector(
 
     @Ignore
     @Test
-    public void shouldRemoveDeletedInnerClassWhenItIsRemovedFromFile()
-            throws Exception {
+    public void shouldRemoveDeletedInnerClassWhenItIsRemovedFromFile() throws Exception {
         // FIXME write this test!
     }
 
     @Ignore
     @Test
-    public void shouldRemoveDeletedPublicClassWhenItsFileIsRemoved()
-            throws Exception {
+    public void shouldRemoveDeletedPublicClassWhenItsFileIsRemoved() throws Exception {
         // FIXME write this test!
-        DefaultBundleProcessorManager.INSTANCE.executeBundles(username,
-                                                              password, descriptor, includedFilesContextFactory, settings,
-                                                              group);
-        final ExecutionContext context = includedFilesContextFactory
-                                                                    .createExecutionContext(username, password, descriptor, group
-                                                                                                                                 .getRootRepository());
-        final SLContext ctx = context.getGraphSession().getContext(
-                                                                   SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode = ctx.getRootNode().getNode(
-                                                           group.getUniqueName());
+        DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password, descriptor, includedFilesContextFactory,
+                                                              settings, group);
+        final ExecutionContext context = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
+                                                                                            group.getRootRepository());
+        final SLContext ctx = context.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode = ctx.getRootNode().getNode(group.getUniqueName());
         final SLNode packageNode = groupNode.getNode("org.openspotlight.test");
         final SLNode classNode = packageNode.getNode("ExamplePublicClass");
         Assert.assertThat(classNode, Is.is(IsNull.notNullValue()));

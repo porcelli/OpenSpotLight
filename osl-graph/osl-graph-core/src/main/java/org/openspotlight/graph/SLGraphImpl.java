@@ -103,10 +103,8 @@ public class SLGraphImpl implements SLGraph {
      * @param identityManager the identity manager
      */
     public SLGraphImpl(
-                        final SLPersistentTree tree,
-                        final SLGraphClosingListener listener,
-                        final IdentityManager identityManager,
-                        final PolicyEnforcement policyEnforcement, final SystemUser user ) {
+                        final SLPersistentTree tree, final SLGraphClosingListener listener,
+                        final IdentityManager identityManager, final PolicyEnforcement policyEnforcement, final SystemUser user ) {
         Assertions.checkNotNull("tree", tree);
         Assertions.checkNotNull("identityManager", identityManager);
         Assertions.checkNotNull("policyEnforcement", policyEnforcement);
@@ -144,15 +142,13 @@ public class SLGraphImpl implements SLGraph {
                                    final Action action ) {
         final EnforcementContext enforcementContext = new EnforcementContext();
         enforcementContext.setAttribute("user", user);
-        enforcementContext
-                          .setAttribute("graphElement", GraphElement.REPOSITORY);
+        enforcementContext.setAttribute("graphElement", GraphElement.REPOSITORY);
         enforcementContext.setAttribute("repository", repositoryName);
         enforcementContext.setAttribute("action", action);
         enforcementContext.setAttribute("graph", this);
 
         try {
-            final EnforcementResponse response = policyEnforcement
-                                                                  .checkAccess(enforcementContext);
+            final EnforcementResponse response = policyEnforcement.checkAccess(enforcementContext);
             if (response.equals(EnforcementResponse.GRANTED)) {
                 return true;
             }
@@ -169,8 +165,7 @@ public class SLGraphImpl implements SLGraph {
     public SLGraphSession openSession( final AuthenticatedUser user,
                                        final String repositoryName ) throws SLGraphException {
         if (graphState == GraphState.SHUTDOWN) {
-            throw new SLGraphException(
-                                       "Could not open graph session. Graph is shutdown.");
+            throw new SLGraphException("Could not open graph session. Graph is shutdown.");
         }
 
         Assertions.checkNotNull("repositoryName", repositoryName);
@@ -181,17 +176,13 @@ public class SLGraphImpl implements SLGraph {
         }
 
         if (!hasPrivileges(user, repositoryName, Action.READ)) {
-            throw new SLInvalidCredentialException(
-                                                   "User does not have privilegies to access repository.");
+            throw new SLInvalidCredentialException("User does not have privilegies to access repository.");
         }
 
         try {
-            final SLPersistentTreeSession treeSession = tree
-                                                            .openSession(repositoryName);
-            final SLGraphFactory factory = AbstractFactory
-                                                          .getDefaultInstance(SLGraphFactory.class);
-            return factory.createGraphSession(treeSession, policyEnforcement,
-                                              user);
+            final SLPersistentTreeSession treeSession = tree.openSession(repositoryName);
+            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+            return factory.createGraphSession(treeSession, policyEnforcement, user);
         } catch (final Exception e) {
             throw new SLGraphRuntimeException("Could not open graph session.", e);
         }

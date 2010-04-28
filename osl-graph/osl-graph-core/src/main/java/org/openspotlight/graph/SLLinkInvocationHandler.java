@@ -62,8 +62,7 @@ import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLLinkInvocationHandler implements InvocationHandler,
-        LockContainer {
+public class SLLinkInvocationHandler implements InvocationHandler, LockContainer {
 
     private final Lock   lock;
 
@@ -106,35 +105,26 @@ public class SLLinkInvocationHandler implements InvocationHandler,
                           final Object[] args ) throws Throwable {
         synchronized (lock) {
             Object result = null;
-            if (!method.getDeclaringClass().equals(SLLink.class)
-                    && SLLink.class
-                                   .isAssignableFrom(method.getDeclaringClass())) {
+            if (!method.getDeclaringClass().equals(SLLink.class) && SLLink.class.isAssignableFrom(method.getDeclaringClass())) {
                 if (SLInvocationHandlerSupport.isGetter(proxy, method)) {
-                    final String propName = SLInvocationHandlerSupport
-                                                                      .getPropertyName(method);
-                    final Class<? extends Serializable> typeClass = (Class<? extends Serializable>)method
-                                                                                                         .getReturnType();
+                    final String propName = SLInvocationHandlerSupport.getPropertyName(method);
+                    final Class<? extends Serializable> typeClass = (Class<? extends Serializable>)method.getReturnType();
                     result = link.getProperty(typeClass, propName).getValue();
                 } else if (SLInvocationHandlerSupport.isSetter(proxy, method)) {
                     VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
-                    final Method getterMethod = method.getDeclaringClass()
-                                                      .getMethod("get" + method.getName().substring(3));
+                    final Method getterMethod = method.getDeclaringClass().getMethod("get" + method.getName().substring(3));
                     if (getterMethod != null) {
-                        final SLVisibility visibilityAnnotation = getterMethod
-                                                                              .getAnnotation(SLVisibility.class);
+                        final SLVisibility visibilityAnnotation = getterMethod.getAnnotation(SLVisibility.class);
                         if (visibilityAnnotation != null) {
                             visibilityLevel = visibilityAnnotation.value();
                         }
                     }
 
-                    final String propName = SLInvocationHandlerSupport
-                                                                      .getPropertyName(method);
-                    link.setProperty(Serializable.class, visibilityLevel,
-                                     propName, (Serializable)args[0]);
+                    final String propName = SLInvocationHandlerSupport.getPropertyName(method);
+                    link.setProperty(Serializable.class, visibilityLevel, propName, (Serializable)args[0]);
                 }
             } else {
-                result = SLInvocationHandlerSupport.invokeMethod(link, method,
-                                                                 args);
+                result = SLInvocationHandlerSupport.invokeMethod(link, method, args);
             }
             return result;
 

@@ -76,8 +76,7 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
             return false;
         }
         final PrimaryKeyConstraintArtifact that = (PrimaryKeyConstraintArtifact)other;
-        return eachEquality(of(tableName, columnName), andOf(that.tableName,
-                                                             that.columnName));
+        return eachEquality(of(tableName, columnName), andOf(that.tableName, that.columnName));
     }
 
     @SuppressWarnings( "unchecked" )
@@ -87,13 +86,10 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
         }
         final PrimaryKeyConstraintArtifact that = (PrimaryKeyConstraintArtifact)o;
 
-        return eachEquality(
-                            of(constraintName, catalogName, schemaName, getDatabaseName(),
-                               getDatabaseType(), getServerName(), getUrl()),
-                            andOf(of(that.constraintName, that.catalogName,
-                                     that.schemaName, that.getDatabaseName(), that
-                                                                                  .getDatabaseType(), that.getServerName(), that
-                                                                                                                                .getUrl())));
+        return eachEquality(of(constraintName, catalogName, schemaName, getDatabaseName(), getDatabaseType(), getServerName(),
+                               getUrl()), andOf(of(that.constraintName, that.catalogName, that.schemaName,
+                                                   that.getDatabaseName(), that.getDatabaseType(), that.getServerName(),
+                                                   that.getUrl())));
     }
 
     public String getCatalogName() {
@@ -117,9 +113,7 @@ public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {
     }
 
     public int hashCode() {
-        return HashCodes
-                        .hashOf(constraintName, catalogName, schemaName,
-                                getDatabaseName(), getDatabaseType(), getServerName(),
+        return HashCodes.hashOf(constraintName, catalogName, schemaName, getDatabaseName(), getDatabaseType(), getServerName(),
                                 getUrl());
     }
 

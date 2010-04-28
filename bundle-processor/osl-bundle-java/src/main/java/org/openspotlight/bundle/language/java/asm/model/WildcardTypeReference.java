@@ -147,15 +147,23 @@ public class WildcardTypeReference implements TypeReference {
         this.alias = alias;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getFullName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getFullName
+     * ()
      */
     public String getFullName() {
         return getName();
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getName
+     * ()
      */
     public String getName() {
         if (boundType != null && isUpperBound) {

@@ -74,8 +74,7 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
         return loaderRegistry;
     }
 
-    public void setLoaderRegistry(
-                                   Set<Class<? extends OriginArtifactLoader>> loaderRegistry ) {
+    public void setLoaderRegistry( Set<Class<? extends OriginArtifactLoader>> loaderRegistry ) {
         this.loaderRegistry = loaderRegistry;
     }
 
@@ -120,8 +119,7 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
         return systemUser;
     }
 
-    public void setDefaultSleepingIntervalInMilliseconds(
-                                                          final long defaultSleepingIntervalInMilliseconds ) {
+    public void setDefaultSleepingIntervalInMilliseconds( final long defaultSleepingIntervalInMilliseconds ) {
         this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
     }
 
@@ -135,8 +133,7 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
     }
 
     @SuppressWarnings( "unchecked" )
-    public void setSchedulableCommandMap(
-                                          final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap ) {
+    public void setSchedulableCommandMap( final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap ) {
         this.schedulableCommandMap = schedulableCommandMap;
     }
 

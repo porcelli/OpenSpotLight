@@ -69,10 +69,8 @@ public class VariableDeclarationDto {
     private final SLCommonTree       treeElement;
 
     public VariableDeclarationDto(
-                                   final String name,
-                                   final List<JavaModifier> modifiers, final JavaType type,
-                                   final String threeDots, final String arrayDimensions,
-                                   final CommonTree treeElement ) {
+                                   final String name, final List<JavaModifier> modifiers, final JavaType type,
+                                   final String threeDots, final String arrayDimensions, final CommonTree treeElement ) {
         this.name = name;
         this.modifiers = modifiers;
         this.type = type;

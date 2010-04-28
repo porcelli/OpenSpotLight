@@ -83,39 +83,33 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class SLIdentityStoreImplTest {
 
+    private static class SLIdStoreTestContext implements IdentityStoreTestContext {
 
-    private static class SLIdStoreTestContext implements
-            IdentityStoreTestContext {
-
-        private SLIdentityStoreImpl store;
+        private SLIdentityStoreImpl        store;
 
         private SLIdentityStoreSessionImpl session;
 
         public void begin() throws Exception {
 
-            final IdentityConfigurationMetaData configurationMD = JAXB2IdentityConfiguration
-                    .createConfigurationMetaData("slstore.xml");
+            final IdentityConfigurationMetaData configurationMD = JAXB2IdentityConfiguration.createConfigurationMetaData("slstore.xml");
 
-            final IdentityConfigurationContextRegistry registry = (IdentityConfigurationContextRegistry) new IdentityConfigurationImpl()
-                    .configure(configurationMD);
+            final IdentityConfigurationContextRegistry registry = (IdentityConfigurationContextRegistry)new IdentityConfigurationImpl().configure(configurationMD);
 
             IdentityStoreConfigurationMetaData storeMD = null;
 
-            for (final IdentityStoreConfigurationMetaData metaData : configurationMD
-                    .getIdentityStores()) {
+            for (final IdentityStoreConfigurationMetaData metaData : configurationMD.getIdentityStores()) {
                 if (metaData.getId().equals("SLStore")) {
                     storeMD = metaData;
                     break;
                 }
             }
 
-            final IdentityStoreConfigurationContext context = new IdentityStoreConfigurationContextImpl(
-                    configurationMD, registry, storeMD);
+            final IdentityStoreConfigurationContext context = new IdentityStoreConfigurationContextImpl(configurationMD,
+                                                                                                        registry, storeMD);
 
             this.store = new SLIdentityStoreImpl();
             this.store.bootstrap(context);
-            this.session = (SLIdentityStoreSessionImpl) this.store
-                    .createIdentityStoreSession();
+            this.session = (SLIdentityStoreSessionImpl)this.store.createIdentityStoreSession();
         }
 
         public void commit() throws Exception {
@@ -151,30 +145,29 @@ public class SLIdentityStoreImplTest {
 
     }
 
-
-    private final CommonIdentityStoreTest test = new CommonIdentityStoreTest(
-            new SLIdStoreTestContext());
-
+    private final CommonIdentityStoreTest test = new CommonIdentityStoreTest(new SLIdStoreTestContext());
 
     @Before
     public void clearAllData() throws Exception {
 
-        Injector autoFlushInjector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repositoryPath")) {
+        Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
+                                                                                  STStorageSession.STFlushMode.AUTO,
+                                                                                  ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                                  repositoryPath("repositoryPath")) {
 
-                    @Override
-                    protected void configure() {
-                        super.configure();
-                        bind(SimplePersistFactory.class).to(SimplePersistFactoryImpl.class);
-                    }
-                });
+            @Override
+            protected void configure() {
+                super.configure();
+                bind(SimplePersistFactory.class).to(SimplePersistFactoryImpl.class);
+            }
+        });
         autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.SECURITY).flushall();
         StaticInjector.INSTANCE.setInjector(autoFlushInjector);
     }
 
     @Test
     @Ignore
-    //needs to verify its strange behavior on maven
+    // needs to verify its strange behavior on maven
     public void testAttributes() throws Exception {
         this.test.testAttributes();
     }

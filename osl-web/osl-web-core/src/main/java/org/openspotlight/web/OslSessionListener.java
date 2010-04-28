@@ -51,8 +51,7 @@ package org.openspotlight.web;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-public class OslSessionListener implements HttpSessionListener,
-        OslDataConstants {
+public class OslSessionListener implements HttpSessionListener, OslDataConstants {
 
     public void sessionCreated( final HttpSessionEvent se ) {
         // FIXME remove this and add a login servlet

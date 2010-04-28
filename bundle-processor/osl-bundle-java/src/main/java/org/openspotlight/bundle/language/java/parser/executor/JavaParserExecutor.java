@@ -70,8 +70,7 @@ public class JavaParserExecutor implements JavaConstants {
     private final SourceLineInfoAggregator    sourceLineAggregator;
 
     public JavaParserExecutor(
-                               final SourceLineInfoAggregator sourceLineInfoAggregator,
-                               final JavaParserNodeHelper helper ) {
+                               final SourceLineInfoAggregator sourceLineInfoAggregator, final JavaParserNodeHelper helper ) {
         sourceLineAggregator = sourceLineInfoAggregator;
         this.helper = helper;
     }
@@ -95,27 +94,23 @@ public class JavaParserExecutor implements JavaConstants {
     }
 
     public void createJavaTypeAnnotation( final SLCommonToken identifier292 ) {
-        final Pair<SLNode, SLNode> newNode = helper.createJavaTypeAnnotation(
-                                                                             typeContext.peek(), identifier292.getText());
+        final Pair<SLNode, SLNode> newNode = helper.createJavaTypeAnnotation(typeContext.peek(), identifier292.getText());
         typeContext.push(newNode);
     }
 
     public void createJavaTypeClass( final SLCommonToken identifier35 ) {
-        final Pair<SLNode, SLNode> newNode = helper.createJavaTypeClass(
-                                                                        typeContext.peek(), identifier35.getText());
+        final Pair<SLNode, SLNode> newNode = helper.createJavaTypeClass(typeContext.peek(), identifier35.getText());
         typeContext.push(newNode);
     }
 
     public void createJavaTypeEnum( final SLCommonToken identifier54 ) {
-        final Pair<SLNode, SLNode> newNode = helper.createJavaTypeEnum(
-                                                                       typeContext.peek(), identifier54.getText());
+        final Pair<SLNode, SLNode> newNode = helper.createJavaTypeEnum(typeContext.peek(), identifier54.getText());
         typeContext.push(newNode);
 
     }
 
     public void createJavaTypeInterface( final SLCommonToken identifier75 ) {
-        final Pair<SLNode, SLNode> newNode = helper.createJavaTypeInterface(
-                                                                            typeContext.peek(), identifier75.getText());
+        final Pair<SLNode, SLNode> newNode = helper.createJavaTypeInterface(typeContext.peek(), identifier75.getText());
         typeContext.push(newNode);
 
     }
@@ -131,8 +126,7 @@ public class JavaParserExecutor implements JavaConstants {
         for (int i = 0, count = qualifiedName.getChildCount(); i < count; i++) {
             packageName.append(qualifiedName.getChild(i));
         }
-        final Pair<SLNode, SLNode> newNode = helper
-                                                   .createPackageNode(packageName.toString());
+        final Pair<SLNode, SLNode> newNode = helper.createPackageNode(packageName.toString());
         typeContext.push(newNode);
     }
 

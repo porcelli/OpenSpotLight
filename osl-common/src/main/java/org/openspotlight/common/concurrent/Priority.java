@@ -82,8 +82,7 @@ public final class Priority implements Comparable<Priority> {
         Assertions.checkCondition("positiveValue", priorityNumber > 0);
         this.priorityNumber = priorityNumber;
         this.subPriority = subPriority;
-        hashcode = HashCodes.hashOf(priorityNumber,
-                                    subPriority != null ? subPriority.hashcode : 0);
+        hashcode = HashCodes.hashOf(priorityNumber, subPriority != null ? subPriority.hashcode : 0);
     }
 
     private int compareIntValues( final int thisVal,
@@ -96,10 +95,8 @@ public final class Priority implements Comparable<Priority> {
         Priority thisPriority = this;
         Priority thatPriority = o;
         while (true) {
-            final int thisVal = thisPriority != null ? thisPriority.priorityNumber
-                    : 0;
-            final int thatVal = thatPriority != null ? thatPriority.priorityNumber
-                    : 0;
+            final int thisVal = thisPriority != null ? thisPriority.priorityNumber : 0;
+            final int thatVal = thatPriority != null ? thatPriority.priorityNumber : 0;
             final int result = compareIntValues(thisVal, thatVal);
             if (result != 0) {
                 return result;

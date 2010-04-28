@@ -92,8 +92,7 @@ public interface SLQueryCache {
                                          final String[] inputNodesIDs,
                                          final SortMode sortMode,
                                          final Integer limit,
-                                         final Integer offset )
-        throws SLException;
+                                         final Integer offset ) throws SLException;
 
     /**
      * Gets the cache content. Returns null if not found.

@@ -78,8 +78,7 @@ import org.slf4j.LoggerFactory;
 public class CompiledTypesExtractor {
 
     /** The LOG. */
-    private final Logger LOG = LoggerFactory
-                                            .getLogger(CompiledTypesExtractor.class);
+    private final Logger LOG = LoggerFactory.getLogger(CompiledTypesExtractor.class);
 
     /**
      * Generates a list of {@link TypeDefinition} based on a set of artifacts (.jar or .class files).
@@ -93,8 +92,7 @@ public class CompiledTypesExtractor {
         final List<TypeDefinition> scannedTypes = new LinkedList<TypeDefinition>();
         try {
             if (artifactName.endsWith(".jar")) {
-                LOG.info(String.format("Opening JAR Artifact \"%s\".",
-                                       artifactName));
+                LOG.info(String.format("Opening JAR Artifact \"%s\".", artifactName));
                 // Open Zip file for reading
                 final ZipInputStream zipStream = new ZipInputStream(inputStream);
 
@@ -102,30 +100,23 @@ public class CompiledTypesExtractor {
                 // Process each entry
                 while ((entry = zipStream.getNextEntry()) != null) {
                     // extract file if not a directory
-                    if (!entry.isDirectory()
-                            && entry.getName().endsWith(".class")) {
-                        LOG.info(String.format(
-                                               "\tExtracting .class Type \"%s\".", entry
-                                                                                        .getName()));
+                    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+                        LOG.info(String.format("\tExtracting .class Type \"%s\".", entry.getName()));
                         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        for (int c = zipStream.read(); c != -1; c = zipStream
-                                                                             .read()) {
+                        for (int c = zipStream.read(); c != -1; c = zipStream.read()) {
                             baos.write(c);
                         }
                         baos.close();
-                        final TypeDefinition type = processCompiledInputStream(new ByteArrayInputStream(
-                                                                                                        baos.toByteArray()));
+                        final TypeDefinition type = processCompiledInputStream(new ByteArrayInputStream(baos.toByteArray()));
                         zipStream.closeEntry();
                         count++;
                         scannedTypes.add(type);
                     }
                 }
-                LOG.info(String.format("Closing JAR Artifact \"%s\"",
-                                       artifactName));
+                LOG.info(String.format("Closing JAR Artifact \"%s\"", artifactName));
                 zipStream.close();
             } else if (artifactName.endsWith(".class")) {
-                LOG.info(String.format("Extracting .class Type \"%s\".",
-                                       artifactName));
+                LOG.info(String.format("Extracting .class Type \"%s\".", artifactName));
                 final TypeDefinition type = processCompiledInputStream(inputStream);
                 count++;
                 scannedTypes.add(type);
@@ -133,8 +124,7 @@ public class CompiledTypesExtractor {
         } catch (final Exception ex) {
             final StringWriter sWriter = new StringWriter();
             ex.printStackTrace(new PrintWriter(sWriter));
-            LOG.error("Problems during parser - Stack trace:\n"
-                      + sWriter.getBuffer().toString());
+            LOG.error("Problems during parser - Stack trace:\n" + sWriter.getBuffer().toString());
         } finally {
             LOG.info(String.format("Finished processing %d types.", count));
         }
@@ -153,40 +143,30 @@ public class CompiledTypesExtractor {
         try {
             for (final File activeArtifact : artifacts) {
                 if (activeArtifact.getName().endsWith(".jar")) {
-                    LOG.info(String.format("Opening JAR Artifact \"%s\".",
-                                           activeArtifact.getCanonicalFile()));
+                    LOG.info(String.format("Opening JAR Artifact \"%s\".", activeArtifact.getCanonicalFile()));
                     // Open Zip file for reading
-                    final ZipFile zipFile = new ZipFile(activeArtifact,
-                                                        ZipFile.OPEN_READ);
+                    final ZipFile zipFile = new ZipFile(activeArtifact, ZipFile.OPEN_READ);
 
                     // Create an enumeration of the entries in the zip file
-                    final Enumeration<? extends ZipEntry> zipFileEntries = zipFile
-                                                                                  .entries();
+                    final Enumeration<? extends ZipEntry> zipFileEntries = zipFile.entries();
 
                     // Process each entry
                     while (zipFileEntries.hasMoreElements()) {
                         // grab a zip file entry
                         final ZipEntry entry = zipFileEntries.nextElement();
                         // extract file if not a directory
-                        if (!entry.isDirectory()
-                                && entry.getName().endsWith(".class")) {
-                            LOG.info(String.format(
-                                                   "\tExtracting .class Type \"%s\".", entry
-                                                                                            .getName()));
-                            final TypeDefinition type = processCompiledInputStream(zipFile
-                                                                                          .getInputStream(entry));
+                        if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+                            LOG.info(String.format("\tExtracting .class Type \"%s\".", entry.getName()));
+                            final TypeDefinition type = processCompiledInputStream(zipFile.getInputStream(entry));
                             count++;
                             scannedTypes.add(type);
                         }
                     }
-                    LOG.info(String.format("Closing JAR Artifact \"%s\"",
-                                           activeArtifact.getCanonicalFile()));
+                    LOG.info(String.format("Closing JAR Artifact \"%s\"", activeArtifact.getCanonicalFile()));
                     zipFile.close();
                 } else if (activeArtifact.getName().endsWith(".class")) {
-                    LOG.info(String.format("Extracting .class Type \"%s\".",
-                                           activeArtifact.getCanonicalPath()));
-                    final TypeDefinition type = processCompiledInputStream(new FileInputStream(
-                                                                                               activeArtifact));
+                    LOG.info(String.format("Extracting .class Type \"%s\".", activeArtifact.getCanonicalPath()));
+                    final TypeDefinition type = processCompiledInputStream(new FileInputStream(activeArtifact));
                     count++;
                     scannedTypes.add(type);
                 }
@@ -194,8 +174,7 @@ public class CompiledTypesExtractor {
         } catch (final Exception ex) {
             final StringWriter sWriter = new StringWriter();
             ex.printStackTrace(new PrintWriter(sWriter));
-            LOG.error("Problems during parser - Stack trace:\n"
-                      + sWriter.getBuffer().toString());
+            LOG.error("Problems during parser - Stack trace:\n" + sWriter.getBuffer().toString());
         } finally {
             LOG.info(String.format("Finished processing %d types.", count));
         }
@@ -209,8 +188,7 @@ public class CompiledTypesExtractor {
      * @return the type definition
      * @throws IOException Signals that an I/O exception has occurred.
      */
-    private TypeDefinition processCompiledInputStream( final InputStream stream )
-            throws IOException {
+    private TypeDefinition processCompiledInputStream( final InputStream stream ) throws IOException {
         final ClassReader reader = new ClassReader(stream);
         final TypeExtractorVisitor visitor = new TypeExtractorVisitor();
         reader.accept(visitor, 0);

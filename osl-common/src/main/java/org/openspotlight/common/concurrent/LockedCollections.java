@@ -76,8 +76,7 @@ import java.util.Set;
  */
 public class LockedCollections {
 
-    private static class SynchronizedCollectionWithLock<E> implements
-            NeedsSyncronizationCollection<E>, Serializable {
+    private static class SynchronizedCollectionWithLock<E> implements NeedsSyncronizationCollection<E>, Serializable {
         /**
 		 * 
 		 */
@@ -88,8 +87,7 @@ public class LockedCollections {
         private final Collection<E> items;
 
         public SynchronizedCollectionWithLock(
-                                               final Lock lockObject,
-                                               final Collection<E> items ) {
+                                               final Lock lockObject, final Collection<E> items ) {
             this.lockObject = lockObject;
             this.items = items;
         }
@@ -187,8 +185,7 @@ public class LockedCollections {
         }
     }
 
-    private static class SynchronizedListWithLock<E> implements
-            NeedsSyncronizationList<E>, Serializable {
+    private static class SynchronizedListWithLock<E> implements NeedsSyncronizationList<E>, Serializable {
         /**
 		 * 
 		 */
@@ -199,8 +196,7 @@ public class LockedCollections {
         private final List<E>     items;
 
         public SynchronizedListWithLock(
-                                         final Lock lockObject,
-                                         final List<E> items ) {
+                                         final Lock lockObject, final List<E> items ) {
             super();
             this.lockObject = lockObject;
             this.items = items;
@@ -365,8 +361,7 @@ public class LockedCollections {
         }
     }
 
-    private static class SynchronizedMapWithLock<K, V> implements
-            NeedsSyncronizationMap<K, V>, Serializable {
+    private static class SynchronizedMapWithLock<K, V> implements NeedsSyncronizationMap<K, V>, Serializable {
         /**
 		 * 
 		 */
@@ -377,8 +372,7 @@ public class LockedCollections {
         private final Map<K, V>   items;
 
         public SynchronizedMapWithLock(
-                                        final Lock lockObject,
-                                        final Map<K, V> items ) {
+                                        final Lock lockObject, final Map<K, V> items ) {
             super();
             this.lockObject = lockObject;
             this.items = items;
@@ -473,8 +467,7 @@ public class LockedCollections {
 
     }
 
-    private static class SynchronizedSetWithLock<E> implements
-            NeedsSyncronizationSet<E>, Serializable {
+    private static class SynchronizedSetWithLock<E> implements NeedsSyncronizationSet<E>, Serializable {
 
         /**
 		 * 
@@ -585,39 +578,31 @@ public class LockedCollections {
 
     }
 
-    public static <E> NeedsSyncronizationCollection<E> createCollectionWithLock(
-                                                                                 final LockContainer parent,
+    public static <E> NeedsSyncronizationCollection<E> createCollectionWithLock( final LockContainer parent,
                                                                                  final Collection<E> originData ) {
         synchronized (parent.getLockObject()) {
-            return new SynchronizedCollectionWithLock<E>(
-                                                         parent.getLockObject(), originData);
+            return new SynchronizedCollectionWithLock<E>(parent.getLockObject(), originData);
         }
     }
 
-    public static <E> NeedsSyncronizationList<E> createListWithLock(
-                                                                     final LockContainer parent,
+    public static <E> NeedsSyncronizationList<E> createListWithLock( final LockContainer parent,
                                                                      final List<E> originData ) {
         synchronized (parent.getLockObject()) {
-            return new SynchronizedListWithLock<E>(parent.getLockObject(),
-                                                   originData);
+            return new SynchronizedListWithLock<E>(parent.getLockObject(), originData);
         }
     }
 
-    public static <K, V> NeedsSyncronizationMap<K, V> createMapWithLock(
-                                                                         final LockContainer parent,
+    public static <K, V> NeedsSyncronizationMap<K, V> createMapWithLock( final LockContainer parent,
                                                                          final Map<K, V> originData ) {
         synchronized (parent.getLockObject()) {
-            return new SynchronizedMapWithLock<K, V>(parent.getLockObject(),
-                                                     originData);
+            return new SynchronizedMapWithLock<K, V>(parent.getLockObject(), originData);
         }
     }
 
-    public static <E> NeedsSyncronizationSet<E> createSetWithLock(
-                                                                   final LockContainer parent,
+    public static <E> NeedsSyncronizationSet<E> createSetWithLock( final LockContainer parent,
                                                                    final Set<E> originData ) {
         synchronized (parent.getLockObject()) {
-            return new SynchronizedSetWithLock<E>(parent.getLockObject(),
-                                                  originData);
+            return new SynchronizedSetWithLock<E>(parent.getLockObject(), originData);
         }
     }
 

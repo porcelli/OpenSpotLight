@@ -68,8 +68,7 @@ public class SLLinkedNodeDeletionMarkImpl implements SLLinkedNodeDeletionMark {
      * @param node the node
      */
     SLLinkedNodeDeletionMarkImpl(
-                                  final Class<? extends SLLink> linkType,
-                                  final SLNode node ) {
+                                  final Class<? extends SLLink> linkType, final SLNode node ) {
         this.linkType = linkType;
         this.node = node;
     }
@@ -85,8 +84,7 @@ public class SLLinkedNodeDeletionMarkImpl implements SLLinkedNodeDeletionMark {
             return false;
         }
         final SLLinkedNodeDeletionMark order = (SLLinkedNodeDeletionMark)obj;
-        return linkType.getName().concat(node.getID()).equals(
-                                                              order.getLinkType().getName().concat(order.getNode().getID()));
+        return linkType.getName().concat(node.getID()).equals(order.getLinkType().getName().concat(order.getNode().getID()));
     }
 
     // @Override

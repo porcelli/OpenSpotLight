@@ -59,15 +59,12 @@ import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 public class SyntaxInformationAggregator {
-    private final ArtifactWithSyntaxInformation artifact;
+    private final ArtifactWithSyntaxInformation                       artifact;
 
-    private final SimplePersistCapable<STNodeEntry,STStorageSession> simplePersist;
+    private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-
-
-
-    public SyntaxInformationAggregator(SimplePersistFactory simplePersistFactory,
-                                        final ArtifactWithSyntaxInformation artifact) {
+    public SyntaxInformationAggregator(
+                                        SimplePersistFactory simplePersistFactory, final ArtifactWithSyntaxInformation artifact ) {
         this.artifact = artifact;
         this.simplePersist = simplePersistFactory.createSimplePersist(SLPartition.SYNTAX_HIGHLIGHT);
     }
@@ -75,16 +72,14 @@ public class SyntaxInformationAggregator {
     public void addHidden( final int tokenLine,
                            final int tokenStartCharPositionInLine,
                            final int tokenEndCharPositionInLine ) {
-        artifact.addSyntaxInformation(tokenLine, tokenLine,
-                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+        artifact.addSyntaxInformation(tokenLine, tokenLine, tokenStartCharPositionInLine, tokenEndCharPositionInLine,
                                       SyntaxInformationType.HIDDEN, simplePersist);
     }
 
     public void addIdentifier( final int tokenLine,
                                final int tokenStartCharPositionInLine,
                                final int tokenEndCharPositionInLine ) {
-        artifact.addSyntaxInformation(tokenLine, tokenLine,
-                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+        artifact.addSyntaxInformation(tokenLine, tokenLine, tokenStartCharPositionInLine, tokenEndCharPositionInLine,
                                       SyntaxInformationType.IDENTIFIER, simplePersist);
     }
 
@@ -92,48 +87,42 @@ public class SyntaxInformationAggregator {
                                      final int tokenStartCharPositionInLine,
                                      final int tokenEndLine,
                                      final int tokenEndCharPositionInLine ) {
-        artifact.addSyntaxInformation(tokenStartLine, tokenEndLine,
-                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+        artifact.addSyntaxInformation(tokenStartLine, tokenEndLine, tokenStartCharPositionInLine, tokenEndCharPositionInLine,
                                       SyntaxInformationType.COMMENT, simplePersist);
     }
 
     public void addNumberLiteral( final int tokenLine,
                                   final int tokenStartCharPositionInLine,
                                   final int tokenEndCharPositionInLine ) {
-        artifact.addSyntaxInformation(tokenLine, tokenLine,
-                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+        artifact.addSyntaxInformation(tokenLine, tokenLine, tokenStartCharPositionInLine, tokenEndCharPositionInLine,
                                       SyntaxInformationType.NUMBER_LITERAL, simplePersist);
     }
 
     public void addReserved( final int tokenStartLine,
                              final int tokenStartCharPositionInLine,
                              final int tokenEndCharPositionInLine ) {
-        artifact.addSyntaxInformation(tokenStartLine, tokenStartLine,
-                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+        artifact.addSyntaxInformation(tokenStartLine, tokenStartLine, tokenStartCharPositionInLine, tokenEndCharPositionInLine,
                                       SyntaxInformationType.RESERVED, simplePersist);
     }
 
     public void addSingleLineComment( final int tokenLine,
                                       final int tokenStartCharPositionInLine,
                                       final int tokenEndCharPositionInLine ) {
-        artifact.addSyntaxInformation(tokenLine, tokenLine,
-                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+        artifact.addSyntaxInformation(tokenLine, tokenLine, tokenStartCharPositionInLine, tokenEndCharPositionInLine,
                                       SyntaxInformationType.COMMENT, simplePersist);
     }
 
     public void addStringLiteral( final int tokenLine,
                                   final int tokenStartCharPositionInLine,
                                   final int tokenEndCharPositionInLine ) {
-        artifact.addSyntaxInformation(tokenLine, tokenLine,
-                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+        artifact.addSyntaxInformation(tokenLine, tokenLine, tokenStartCharPositionInLine, tokenEndCharPositionInLine,
                                       SyntaxInformationType.STRING_LITERAL, simplePersist);
     }
 
     public void addSymbol( final int tokenLine,
                            final int tokenStartCharPositionInLine,
                            final int tokenEndCharPositionInLine ) {
-        artifact.addSyntaxInformation(tokenLine, tokenLine,
-                                      tokenStartCharPositionInLine, tokenEndCharPositionInLine,
+        artifact.addSyntaxInformation(tokenLine, tokenLine, tokenStartCharPositionInLine, tokenEndCharPositionInLine,
                                       SyntaxInformationType.SYMBOL, simplePersist);
     }
 

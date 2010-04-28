@@ -97,12 +97,10 @@ public class Sha1 {
     public static byte[] getSha1Signature( final InputStream content ) {
         checkNotNull("content", content);//$NON-NLS-1$
         try {
-            if (content.markSupported())
-                content.reset();
+            if (content.markSupported()) content.reset();
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
             IOUtils.copy(content, output);
-            if (content.markSupported())
-                content.reset();
+            if (content.markSupported()) content.reset();
             return DIGESTER.digest(output.toByteArray());
         } catch (final Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
@@ -206,8 +204,7 @@ public class Sha1 {
      * Should not be instantiated
      */
     private Sha1() {
-        logAndThrow(new IllegalStateException(Messages
-                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

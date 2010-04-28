@@ -70,18 +70,17 @@ public class DNASvnArtifactFinder extends DnaArtifactFinder {
         final DnaSvnArtifactSource svnBundle = (DnaSvnArtifactSource)source;
         repositorySource2.usingClass(SVNRepositorySource.class).setProperty("password", svnBundle.getPassword()).setProperty(
                                                                                                                              "username",
-                                                                                                                             svnBundle.getUserName()).setProperty("repositoryRootURL", svnBundle.getInitialLookup()).setProperty( //$NON-NLS-1$ //$NON-NLS-2$
-        "creatingWorkspacesAllowed",
+                                                                                                                             svnBundle.getUserName()).setProperty(
+                                                                                                                                                                  "repositoryRootURL", svnBundle.getInitialLookup()).setProperty( //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                                                                                                                                                 "creatingWorkspacesAllowed",
                                                                                                                                                                                                                                  true);
 
     }
 
     @Override
-    protected <A extends Artifact> boolean internalAccept(
-                                                           ArtifactSource source,
+    protected <A extends Artifact> boolean internalAccept( ArtifactSource source,
                                                            Class<A> type ) throws Exception {
-        return source instanceof DnaSvnArtifactSource
-                && StringArtifact.class.equals(type);
+        return source instanceof DnaSvnArtifactSource && StringArtifact.class.equals(type);
     }
 
 }

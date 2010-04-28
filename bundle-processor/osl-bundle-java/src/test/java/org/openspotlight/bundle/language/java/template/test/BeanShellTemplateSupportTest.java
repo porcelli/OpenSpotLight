@@ -101,34 +101,30 @@ public class BeanShellTemplateSupportTest {
                                                                       new FileInputStream(
                                                                                           "src/test/resources/dynamo-file-gen-1.0.1.jar"),
                                                                       "/lalala/dynamo-file-gen-1.0.1.jar");
-        final String beanShellScript = BeanShellTemplateSupport
-                                                               .createBeanShellScriptToImpotJar(javaTypes);
+        final String beanShellScript = BeanShellTemplateSupport.createBeanShellScriptToImpotJar(javaTypes);
         Assert.assertThat(beanShellScript, Is.is(IsNull.notNullValue()));
         Assert.assertThat(Strings.isEmpty(beanShellScript), Is.is(false));
         final Interpreter interpreter = new Interpreter();
-        Injector injector = Guice.createInjector(
-                        new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                        new SimplePersistModule(),
-                        new DetailedLoggerModule(),
-                        new DefaultExecutionContextFactoryModule());
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
         final ExecutionContextFactory contextFactory = injector.getInstance(ExecutionContextFactory.class);
-        final ExecutionContext context = contextFactory.createExecutionContext(
-                                                                               "user", "pass", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                               repository);
+        final ExecutionContext context = contextFactory.createExecutionContext("user", "pass",
+                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
         interpreter.set("session", context.getGraphSession());
         interpreter.set("currentContextName", "exampleContext");
-        SLContext exampleContext = context.getGraphSession().getContext(
-                                                                        "exampleContext");
+        SLContext exampleContext = context.getGraphSession().getContext("exampleContext");
         Assert.assertThat(exampleContext, Is.is(IsNull.nullValue()));
-        final JavaGraphNodeSupport helper = new JavaGraphNodeSupport(context
-                                                                            .getGraphSession(), context.getGraphSession().createContext(
-                                                                                                                                        "exampleContext").getRootNode(), context.getGraphSession()
-                                                                                                                                                                                .createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode());
+        final JavaGraphNodeSupport helper = new JavaGraphNodeSupport(
+                                                                     context.getGraphSession(),
+                                                                     context.getGraphSession().createContext("exampleContext").getRootNode(),
+                                                                     context.getGraphSession().createContext(
+                                                                                                             JavaConstants.ABSTRACT_CONTEXT).getRootNode());
         interpreter.set("helper", helper);
-        final BufferedReader reader = new BufferedReader(new StringReader(
-                                                                          beanShellScript));
+        final BufferedReader reader = new BufferedReader(new StringReader(beanShellScript));
         String line;
         while ((line = reader.readLine()) != null) {
             interpreter.eval(line);

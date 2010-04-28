@@ -101,7 +101,9 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
         this.commandDO = commandDO;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.query.SLSelectAbstractCommand#execute()
      */
     @Override
@@ -118,11 +120,15 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
                 List<String> typeNames = new ArrayList<String>();
                 List<SLSelectTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
                 for (SLSelectTypeInfo typeInfo : typeInfoList) {
-                    Collection<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(commandDO.getMetadata(), typeInfo.getName(), typeInfo.isSubTypes());
+                    Collection<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(commandDO.getMetadata(),
+                                                                                                 typeInfo.getName(),
+                                                                                                 typeInfo.isSubTypes());
                     typeNames.addAll(hierarchyTypeNames);
                 }
 
-                SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/links/*//*");
+                SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(
+                                                                                       commandDO.getTreeSession().getXPathRootPath()
+                                                                                       + "/links/*//*");
                 Statement rootStatement = statementBuilder.getRootStatement();
 
                 List<SLSelectByLinkInfo> byLinkInfoList = selectInfo.getByLinkInfoList();
@@ -135,7 +141,8 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
                     else statement = rootStatement.operator(OR).openBracket();
 
                     String linkTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
-                    statement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(byLinkInfo.getName().hashCode());
+                    statement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(
+                                                                                                         byLinkInfo.getName().hashCode());
 
                     SLLinkTypeStatementInfo linkTypeStatementInfo = getLinkTypeStatementInfo(byLinkInfo.getName());
                     if (linkTypeStatementInfo != null) {
@@ -171,8 +178,11 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
                             String typeName = typeNames.get(j);
                             String sourceTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH);
                             String targetTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH);
-                            condition.leftOperand(sourceTypeHashPropName).operator(EQUAL).rightOperand(typeName.hashCode())
-                                     .operator(operator).condition().leftOperand(targetTypeHashPropName).operator(EQUAL).rightOperand(typeName.hashCode());
+                            condition.leftOperand(sourceTypeHashPropName).operator(EQUAL).rightOperand(typeName.hashCode()).operator(
+                                                                                                                                     operator).condition().leftOperand(
+                                                                                                                                                                       targetTypeHashPropName).operator(
+                                                                                                                                                                                                        EQUAL).rightOperand(
+                                                                                                                                                                                                                            typeName.hashCode());
                         }
                         typeStatement.closeBracket();
                         typeStatement = statement.operator(AND).openBracket();
@@ -181,8 +191,11 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
                             PNodeWrapper pNodeWrapper = inputNodeWrappers.get(j);
                             String sourceIdPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_SOURCE_ID);
                             String targetIdPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_TARGET_ID);
-                            condition.leftOperand(sourceIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getID())
-                                     .operator(operator).condition().leftOperand(targetIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getID());
+                            condition.leftOperand(sourceIdPropName).operator(EQUAL).rightOperand(pNodeWrapper.getID()).operator(
+                                                                                                                                operator).condition().leftOperand(
+                                                                                                                                                                  targetIdPropName).operator(
+                                                                                                                                                                                             EQUAL).rightOperand(
+                                                                                                                                                                                                                 pNodeWrapper.getID());
                         }
                         typeStatement.closeBracket();
                     }
@@ -294,7 +307,8 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
             if (conditionInfo.getConditionalOperator() == null) {
                 conditionStatement = statement.openBracket();
             } else {
-                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(), conditionInfo.isConditionalNotOperator()).openBracket();
+                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(),
+                                                        conditionInfo.isConditionalNotOperator()).openBracket();
             }
 
             if (conditionInfo.getInnerStatementInfo() == null) {
@@ -304,8 +318,13 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
                 String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
 
                 String linkTypeHashPropName = toInternalPropertyName(SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
-                conditionStatement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(linkTypeName.hashCode())
-                                  .operator(AND).condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
+                conditionStatement.condition().leftOperand(linkTypeHashPropName).operator(EQUAL).rightOperand(
+                                                                                                              linkTypeName.hashCode()).operator(
+                                                                                                                                                AND).condition().leftOperand(
+                                                                                                                                                                             propertyName).operator(
+                                                                                                                                                                                                    conditionInfo.getRelationalOperator(),
+                                                                                                                                                                                                    conditionInfo.isRelationalNotOperator()).rightOperand(
+                                                                                                                                                                                                                                                          conditionInfo.getValue());
 
             } else {
                 filterByWhereStatement(conditionStatement, conditionInfo.getInnerStatementInfo());

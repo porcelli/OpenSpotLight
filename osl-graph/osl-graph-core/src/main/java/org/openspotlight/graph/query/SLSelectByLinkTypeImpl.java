@@ -237,7 +237,7 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
                  SLSelectFacade selectFacade, SLSelectByLinkTypeInfo selectInfo ) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
-            //this.orderBy = new SLOrderByStatementImpl();
+            // this.orderBy = new SLOrderByStatementImpl();
         }
 
         /**

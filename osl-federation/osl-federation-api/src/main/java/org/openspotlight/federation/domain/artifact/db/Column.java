@@ -83,8 +83,7 @@ public class Column implements SimpleNodeType, Serializable {
             return false;
         }
         final Column that = (Column)o;
-        return Equals.eachEquality(Arrays.of(table, name), Arrays.andOf(
-                                                                        that.table, that.name));
+        return Equals.eachEquality(Arrays.of(table, name), Arrays.andOf(that.table, that.name));
     }
 
     public int getColumnSize() {
@@ -149,8 +148,7 @@ public class Column implements SimpleNodeType, Serializable {
     public String toString() {
         String toString = description;
         if (toString == null) {
-            toString = "Column " + name + " "
-                       + (table != null ? table.toString() : "no_table ");
+            toString = "Column " + name + " " + (table != null ? table.toString() : "no_table ");
             description = toString;
         }
         return toString;

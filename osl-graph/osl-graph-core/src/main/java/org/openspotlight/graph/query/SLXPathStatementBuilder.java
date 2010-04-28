@@ -174,7 +174,9 @@ public class SLXPathStatementBuilder {
                 if (condition.inexistent) {
                     append(statementBuffer, "not(@", condition.leftOperandValue, ")\n");
                 } else {
-                    String expression = condition.relationalOperator.xPathExpression(condition.leftOperandValue, condition.rightOperandValue, condition.relationalOperatorApplyNot);
+                    String expression = condition.relationalOperator.xPathExpression(condition.leftOperandValue,
+                                                                                     condition.rightOperandValue,
+                                                                                     condition.relationalOperatorApplyNot);
                     append(statementBuffer, expression, '\n');
                     if (condition.conditionalOperator != null && condition.conditionalOperatorApplyNot) {
                         append(statementBuffer, tabs0, ")\n");

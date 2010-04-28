@@ -79,12 +79,10 @@ public class SLContextImpl implements SLContext {
      * @param eventPoster the event poster
      */
     public SLContextImpl(
-                          final SLGraphSession session,
-                          final SLPersistentNode contextRootPersistentNode,
+                          final SLGraphSession session, final SLPersistentNode contextRootPersistentNode,
                           final SLGraphSessionEventPoster eventPoster ) {
         this.session = session;
-        rootNode = new SLNodeImpl(this, null, contextRootPersistentNode,
-                                  eventPoster);
+        rootNode = new SLNodeImpl(this, null, contextRootPersistentNode, eventPoster);
         lock = session.getLockObject();
     }
 

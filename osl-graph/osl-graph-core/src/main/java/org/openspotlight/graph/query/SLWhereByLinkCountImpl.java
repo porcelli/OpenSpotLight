@@ -91,8 +91,11 @@ public class SLWhereByLinkCountImpl implements SLWhereByLinkCount {
         this.whereByLinkCountInfo = whereByLinkCountInfo;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLWhereByLinkCountInfoGetter#getWhereStatementInfo()
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.openspotlight.graph.query.SLWhereByLinkCountInfoGetter#
+     * getWhereStatementInfo()
      */
     /**
      * Gets the where statement info.
@@ -735,7 +738,8 @@ public class SLWhereByLinkCountImpl implements SLWhereByLinkCount {
                                      * {@inheritDoc}
                                      */
                                     public OpenBracket openBracket() {
-                                        SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(conditionInfo.getTypeInfo());
+                                        SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(
+                                                                                                       conditionInfo.getTypeInfo());
                                         conditionInfo.setInnerStatementInfo(newStatementInfo);
                                         SLConditionInfo newConditionInfo = newStatementInfo.addCondition();
                                         Each each = new EachImpl(whereStatement, newConditionInfo, this.each);

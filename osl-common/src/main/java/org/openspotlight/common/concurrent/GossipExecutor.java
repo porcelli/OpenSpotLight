@@ -79,8 +79,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
          * @param wrapped the wrapped
          */
         public DelegateThreadFactory(
-                                      final ThreadFactory wrapped,
-                                      final String poolName ) {
+                                      final ThreadFactory wrapped, final String poolName ) {
             this.wrapped = wrapped;
             this.poolName = poolName;
         }
@@ -176,9 +175,8 @@ public class GossipExecutor extends ThreadPoolExecutor {
     public static GossipExecutor newFixedThreadPool( final int nThreads,
                                                      final String poolName ) {
 
-        final GossipExecutor ex = new GossipExecutor(nThreads, nThreads, 0L,
-                                                     TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
-                                                     poolName);
+        final GossipExecutor ex = new GossipExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS,
+                                                     new LinkedBlockingQueue<Runnable>(), poolName);
         return ex;
 
     }
@@ -199,12 +197,10 @@ public class GossipExecutor extends ThreadPoolExecutor {
      * @param workQueue the work queue
      */
     private GossipExecutor(
-                            final int corePoolSize, final int maximumPoolSize,
-                            final long keepAliveTime, final TimeUnit unit,
+                            final int corePoolSize, final int maximumPoolSize, final long keepAliveTime, final TimeUnit unit,
                             final BlockingQueue<Runnable> workQueue, final String poolName ) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-        delegateThreadFactory = new DelegateThreadFactory(getThreadFactory(),
-                                                          poolName);
+        delegateThreadFactory = new DelegateThreadFactory(getThreadFactory(), poolName);
         setThreadFactory(delegateThreadFactory);
 
     }

@@ -73,37 +73,31 @@ import java.util.*;
 
 public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
-    private static final long serialVersionUID = -1340118659974257278L;
+    private static final long                                   serialVersionUID = -1340118659974257278L;
 
-    private IdentityStoreConfigurationMetaData configurationMetaData;
+    private IdentityStoreConfigurationMetaData                  configurationMetaData;
 
-    private String id;
+    private String                                              id;
 
-    private STNodeEntry rootNode;
+    private STNodeEntry                                         rootNode;
 
-    private FeaturesMetaData supportedFeatures;
+    private FeaturesMetaData                                    supportedFeatures;
     private SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
     public SLIdentityStoreImpl() {
     }
 
-    @SuppressWarnings("unchecked")
-    public void addAttributes(
-            final IdentityStoreInvocationContext invocationCtx,
-            final IdentityObject identity,
-            final IdentityObjectAttribute[] attributes)
-            throws IdentityException {
+    @SuppressWarnings( "unchecked" )
+    public void addAttributes( final IdentityStoreInvocationContext invocationCtx,
+                               final IdentityObject identity,
+                               final IdentityObjectAttribute[] attributes ) throws IdentityException {
         try {
-            final SLIdentityObject identityAsSlId = (SLIdentityObject) identity;
-            onEachAttribute:
-            for (final IdentityObjectAttribute entry : attributes) {
-                for (final SLAttributeEntry savedAttribute : identityAsSlId
-                        .getAttributes()) {
+            final SLIdentityObject identityAsSlId = (SLIdentityObject)identity;
+            onEachAttribute: for (final IdentityObjectAttribute entry : attributes) {
+                for (final SLAttributeEntry savedAttribute : identityAsSlId.getAttributes()) {
                     if (savedAttribute.getName().equals(entry.getName())) {
-                        final Collection<String> newEntriesAsCollection = entry
-                                .getValues();
-                        savedAttribute.getEntries().addAll(
-                                newEntriesAsCollection);
+                        final Collection<String> newEntriesAsCollection = entry.getValues();
+                        savedAttribute.getEntries().addAll(newEntriesAsCollection);
                         continue onEachAttribute;
                     }
                 }
@@ -120,29 +114,23 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         }
     }
 
-    public void addNodeToSave(
-            final IdentityStoreInvocationContext invocationCtx,
-            final SimpleNodeType node) throws Exception {
+    public void addNodeToSave( final IdentityStoreInvocationContext invocationCtx,
+                               final SimpleNodeType node ) throws Exception {
         getContext(invocationCtx).getSession().addNode(node);
     }
 
-    public void bootstrap(
-            final IdentityStoreConfigurationContext configurationContext)
-            throws IdentityException {
+    public void bootstrap( final IdentityStoreConfigurationContext configurationContext ) throws IdentityException {
         try {
-            configurationMetaData = configurationContext
-                    .getStoreConfigurationMetaData();
+            configurationMetaData = configurationContext.getStoreConfigurationMetaData();
             id = configurationMetaData.getId();
             supportedFeatures = new FeaturesMetaDataImpl(configurationMetaData,
-                    java.util.Collections
-                            .<IdentityObjectSearchCriteriaType>emptySet(),
-                    true, true, java.util.Collections.<String>emptySet());
+                                                         java.util.Collections.<IdentityObjectSearchCriteriaType>emptySet(),
+                                                         true, true, java.util.Collections.<String>emptySet());
             Injector injector = StaticInjector.INSTANCE.getInjector();
             STStorageSession session = injector.getInstance(STStorageSession.class);
 
             SimplePersistFactory factory = injector.getInstance(SimplePersistFactory.class);
             simplePersist = factory.createSimplePersist(SLPartition.SECURITY);
-
 
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, IdentityException.class);
@@ -150,20 +138,16 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
     }
 
-    public IdentityObject createIdentityObject(
-            final IdentityStoreInvocationContext invocationCtx,
-            final String name,
-            final IdentityObjectType identityObjectType)
-            throws IdentityException {
-        return this.createIdentityObject(invocationCtx, name,
-                identityObjectType, null);
+    public IdentityObject createIdentityObject( final IdentityStoreInvocationContext invocationCtx,
+                                                final String name,
+                                                final IdentityObjectType identityObjectType ) throws IdentityException {
+        return this.createIdentityObject(invocationCtx, name, identityObjectType, null);
     }
 
-    public IdentityObject createIdentityObject(
-            final IdentityStoreInvocationContext invocationCtx,
-            final String name,
-            final IdentityObjectType identityObjectType,
-            final Map<String, String[]> attributes) throws IdentityException {
+    public IdentityObject createIdentityObject( final IdentityStoreInvocationContext invocationCtx,
+                                                final String name,
+                                                final IdentityObjectType identityObjectType,
+                                                final Map<String, String[]> attributes ) throws IdentityException {
         try {
             final String newId = UUID.randomUUID().toString();
             final SLIdentityObject id = new SLIdentityObject();
@@ -174,8 +158,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
             type.setName(identityObjectType.getName());
             id.setIdentityType(type);
             if (attributes != null) {
-                for (final Map.Entry<String, String[]> entry : attributes
-                        .entrySet()) {
+                for (final Map.Entry<String, String[]> entry : attributes.entrySet()) {
                     final SLAttributeEntry attribute = new SLAttributeEntry();
                     attribute.setName(entry.getKey());
                     attribute.setParent(id);
@@ -190,19 +173,16 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         }
     }
 
-    public IdentityStoreSession createIdentityStoreSession()
-            throws IdentityException {
+    public IdentityStoreSession createIdentityStoreSession() throws IdentityException {
         return new SLIdentityStoreSessionImpl(simplePersist);
     }
 
-    public IdentityObjectRelationship createRelationship(
-            final IdentityStoreInvocationContext invocationCxt,
-            final IdentityObject fromIdentity,
-            final IdentityObject toIdentity,
-            final IdentityObjectRelationshipType relationshipType,
-            final String relationshipName,
-            final boolean createNames)
-            throws IdentityException {
+    public IdentityObjectRelationship createRelationship( final IdentityStoreInvocationContext invocationCxt,
+                                                          final IdentityObject fromIdentity,
+                                                          final IdentityObject toIdentity,
+                                                          final IdentityObjectRelationshipType relationshipType,
+                                                          final String relationshipName,
+                                                          final boolean createNames ) throws IdentityException {
         try {
             final SLIdentityObjectRelationship relationship = new SLIdentityObjectRelationship();
             relationship.setFromIdentityObject(fromIdentity);
@@ -219,30 +199,25 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         }
     }
 
-    public String createRelationshipName(
-            final IdentityStoreInvocationContext ctx,
-            final String name)
-            throws IdentityException, OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public String createRelationshipName( final IdentityStoreInvocationContext ctx,
+                                          final String name ) throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
     }
 
-    public Collection<IdentityObject> findIdentityObject(
-            final IdentityStoreInvocationContext invocationCxt,
-            final IdentityObject identity,
-            final IdentityObjectRelationshipType relationshipType,
-            final boolean parent,
-            final IdentityObjectSearchCriteria criteria)
-            throws IdentityException {
-        final String property = parent ? "fromIdentityObjectId"
-                : "toIdentityObjectId";
+    public Collection<IdentityObject> findIdentityObject( final IdentityStoreInvocationContext invocationCxt,
+                                                          final IdentityObject identity,
+                                                          final IdentityObjectRelationshipType relationshipType,
+                                                          final boolean parent,
+                                                          final IdentityObjectSearchCriteria criteria ) throws IdentityException {
+        final String property = parent ? "fromIdentityObjectId" : "toIdentityObjectId";
 
         final Iterable<SLIdentityObjectRelationship> foundRelationShips = simplePersist.findByProperties(
-                SLIdentityObjectRelationship.class, new String[]{property}, new Object[]{identity.getId()});
+                                                                                                         SLIdentityObjectRelationship.class,
+                                                                                                         new String[] {property},
+                                                                                                         new Object[] {identity.getId()});
         final List<String> ids = new ArrayList<String>();
         for (final SLIdentityObjectRelationship relation : foundRelationShips) {
-            ids.add(parent ? relation.getFromIdentityObjectId() : relation
-                    .getToIdentityObjectId());
+            ids.add(parent ? relation.getFromIdentityObjectId() : relation.getToIdentityObjectId());
         }
         final List<IdentityObject> foundIdentities = new ArrayList<IdentityObject>();
         for (final String id : ids) {
@@ -252,16 +227,13 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         return foundIdentities;
     }
 
-    public Collection<IdentityObject> findIdentityObject(
-            final IdentityStoreInvocationContext invocationCtx,
-            final IdentityObjectType identityType,
-            final IdentityObjectSearchCriteria criteria)
-            throws IdentityException {
+    public Collection<IdentityObject> findIdentityObject( final IdentityStoreInvocationContext invocationCtx,
+                                                          final IdentityObjectType identityType,
+                                                          final IdentityObjectSearchCriteria criteria ) throws IdentityException {
 
-        final Iterable<SLIdentityObject> foundNodes = simplePersist
-                .findByProperties(rootNode, SLIdentityObject.class,
-                        new String[]{"typeAsString"},
-                        new Object[]{identityType.getName()});
+        final Iterable<SLIdentityObject> foundNodes = simplePersist.findByProperties(rootNode, SLIdentityObject.class,
+                                                                                     new String[] {"typeAsString"},
+                                                                                     new Object[] {identityType.getName()});
         final List<IdentityObject> foundNodesAsCollection = new LinkedList<IdentityObject>();
         for (IdentityObject o : foundNodes)
             foundNodesAsCollection.add(o);
@@ -269,29 +241,23 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         return foundNodesAsCollection;
     }
 
-    public IdentityObject findIdentityObject(
-            final IdentityStoreInvocationContext invocationContext,
-            final String id) throws IdentityException {
+    public IdentityObject findIdentityObject( final IdentityStoreInvocationContext invocationContext,
+                                              final String id ) throws IdentityException {
 
-        final Iterable<SLIdentityObject> foundNodes = simplePersist
-                .findByProperties(SLIdentityObject.class,
-                        new String[]{"id"}, new Object[]{id});
+        final Iterable<SLIdentityObject> foundNodes = simplePersist.findByProperties(SLIdentityObject.class, new String[] {"id"},
+                                                                                     new Object[] {id});
         if (!foundNodes.iterator().hasNext()) {
             return null;
         }
         return foundNodes.iterator().next();
     }
 
-    public IdentityObject findIdentityObject(
-            final IdentityStoreInvocationContext invocationContext,
-            final String name,
-            final IdentityObjectType identityObjectType)
-            throws IdentityException {
+    public IdentityObject findIdentityObject( final IdentityStoreInvocationContext invocationContext,
+                                              final String name,
+                                              final IdentityObjectType identityObjectType ) throws IdentityException {
 
-        final Iterable<SLIdentityObject> foundNodes = simplePersist
-                .findByProperties(SLIdentityObject.class,
-                        new String[]{"name", "typeAsString"}, new Object[]{
-                                name, identityObjectType.getName()});
+        final Iterable<SLIdentityObject> foundNodes = simplePersist.findByProperties(SLIdentityObject.class, new String[] {
+            "name", "typeAsString"}, new Object[] {name, identityObjectType.getName()});
         if (!foundNodes.iterator().hasNext()) {
             return null;
         }
@@ -299,22 +265,18 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
     }
 
-    public IdentityObject findIdentityObjectByUniqueAttribute(
-            final IdentityStoreInvocationContext invocationCtx,
-            final IdentityObjectType identityObjectType,
-            final IdentityObjectAttribute attribute) throws IdentityException {
+    public IdentityObject findIdentityObjectByUniqueAttribute( final IdentityStoreInvocationContext invocationCtx,
+                                                               final IdentityObjectType identityObjectType,
+                                                               final IdentityObjectAttribute attribute ) throws IdentityException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public IdentityObjectAttribute getAttribute(
-            final IdentityStoreInvocationContext invocationContext,
-            final IdentityObject identity,
-            final String name)
-            throws IdentityException {
-        final SLIdentityObject identityAsSlId = (SLIdentityObject) identity;
-        final Set<SLTransientIdentityObjectAttribute> allAttributes = identityAsSlId
-                .getAttributesAsIdentityAttributes();
+    public IdentityObjectAttribute getAttribute( final IdentityStoreInvocationContext invocationContext,
+                                                 final IdentityObject identity,
+                                                 final String name ) throws IdentityException {
+        final SLIdentityObject identityAsSlId = (SLIdentityObject)identity;
+        final Set<SLTransientIdentityObjectAttribute> allAttributes = identityAsSlId.getAttributesAsIdentityAttributes();
         for (final SLTransientIdentityObjectAttribute att : allAttributes) {
             if (name.equals(att.getName())) {
                 return att;
@@ -324,12 +286,10 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         return null;
     }
 
-    public Map<String, IdentityObjectAttribute> getAttributes(
-            final IdentityStoreInvocationContext invocationContext,
-            final IdentityObject identity) throws IdentityException {
-        final SLIdentityObject identityAsSlId = (SLIdentityObject) identity;
-        final Set<SLTransientIdentityObjectAttribute> allAttributes = identityAsSlId
-                .getAttributesAsIdentityAttributes();
+    public Map<String, IdentityObjectAttribute> getAttributes( final IdentityStoreInvocationContext invocationContext,
+                                                               final IdentityObject identity ) throws IdentityException {
+        final SLIdentityObject identityAsSlId = (SLIdentityObject)identity;
+        final Set<SLTransientIdentityObjectAttribute> allAttributes = identityAsSlId.getAttributesAsIdentityAttributes();
         final Map<String, IdentityObjectAttribute> result = new HashMap<String, IdentityObjectAttribute>();
         for (final SLTransientIdentityObjectAttribute att : allAttributes) {
             result.put(att.getName(), att);
@@ -337,17 +297,14 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         return result;
     }
 
-    public Map<String, IdentityObjectAttributeMetaData> getAttributesMetaData(
-            final IdentityStoreInvocationContext invocationContext,
-            final IdentityObjectType identityType) {
+    public Map<String, IdentityObjectAttributeMetaData> getAttributesMetaData( final IdentityStoreInvocationContext invocationContext,
+                                                                               final IdentityObjectType identityType ) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public SLIdentityStoreSessionContext getContext(
-            final IdentityStoreInvocationContext ctx) throws IdentityException {
-        final SLIdentityStoreSessionContext sessionContext = (SLIdentityStoreSessionContext) ctx
-                .getIdentityStoreSession().getSessionContext();
+    public SLIdentityStoreSessionContext getContext( final IdentityStoreInvocationContext ctx ) throws IdentityException {
+        final SLIdentityStoreSessionContext sessionContext = (SLIdentityStoreSessionContext)ctx.getIdentityStoreSession().getSessionContext();
         if (sessionContext == null) {
             throw Exceptions.logAndReturn(new IllegalStateException());
         }
@@ -358,68 +315,53 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         return id;
     }
 
-    public int getIdentityObjectsCount(
-            final IdentityStoreInvocationContext invocationCtx,
-            final IdentityObjectType identityType) throws IdentityException {
-        final Collection<IdentityObject> foundIds = this.findIdentityObject(
-                invocationCtx, identityType, null);
+    public int getIdentityObjectsCount( final IdentityStoreInvocationContext invocationCtx,
+                                        final IdentityObjectType identityType ) throws IdentityException {
+        final Collection<IdentityObject> foundIds = this.findIdentityObject(invocationCtx, identityType, null);
         return foundIds.size();
     }
 
-    public Map<String, String> getRelationshipNameProperties(
-            final IdentityStoreInvocationContext ctx,
-            final String name)
-            throws IdentityException, OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public Map<String, String> getRelationshipNameProperties( final IdentityStoreInvocationContext ctx,
+                                                              final String name )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
 
     }
 
-    public Set<String> getRelationshipNames(
-            final IdentityStoreInvocationContext ctx) throws IdentityException,
-            OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public Set<String> getRelationshipNames( final IdentityStoreInvocationContext ctx )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
     }
 
-    public Set<String> getRelationshipNames(
-            final IdentityStoreInvocationContext ctx,
-            final IdentityObject identity) throws IdentityException,
-            OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public Set<String> getRelationshipNames( final IdentityStoreInvocationContext ctx,
+                                             final IdentityObject identity )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
     }
 
-    public Set<String> getRelationshipNames(
-            final IdentityStoreInvocationContext ctx,
-            final IdentityObject identity,
-            final IdentityObjectSearchCriteria criteria)
-            throws IdentityException, OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public Set<String> getRelationshipNames( final IdentityStoreInvocationContext ctx,
+                                             final IdentityObject identity,
+                                             final IdentityObjectSearchCriteria criteria )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
 
     }
 
-    public Set<String> getRelationshipNames(
-            final IdentityStoreInvocationContext ctx,
-            final IdentityObjectSearchCriteria criteria)
-            throws IdentityException, OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public Set<String> getRelationshipNames( final IdentityStoreInvocationContext ctx,
+                                             final IdentityObjectSearchCriteria criteria )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
     }
 
-    public Map<String, String> getRelationshipProperties(
-            final IdentityStoreInvocationContext ctx,
-            final IdentityObjectRelationship relationship)
-            throws IdentityException, OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Relationship properties are not supported");
+    public Map<String, String> getRelationshipProperties( final IdentityStoreInvocationContext ctx,
+                                                          final IdentityObjectRelationship relationship )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Relationship properties are not supported");
 
     }
 
-    public Set<String> getSupportedAttributeNames(
-            final IdentityStoreInvocationContext invocationContext,
-            final IdentityObjectType identityType) throws IdentityException {
+    public Set<String> getSupportedAttributeNames( final IdentityStoreInvocationContext invocationContext,
+                                                   final IdentityObjectType identityType ) throws IdentityException {
         // TODO Auto-generated method stub
         return null;
     }
@@ -428,12 +370,11 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         return supportedFeatures;
     }
 
-    private Set<IdentityObjectRelationship> internalResolveRelationships(
-            final IdentityStoreInvocationContext invocationCxt,
-            final IdentityObject fromIdentity,
-            final IdentityObject toIdentity,
-            final IdentityObjectRelationshipType relationshipType,
-            final String name) throws IdentityException {
+    private Set<IdentityObjectRelationship> internalResolveRelationships( final IdentityStoreInvocationContext invocationCxt,
+                                                                          final IdentityObject fromIdentity,
+                                                                          final IdentityObject toIdentity,
+                                                                          final IdentityObjectRelationshipType relationshipType,
+                                                                          final String name ) throws IdentityException {
 
         final List<String> parameterNames = new ArrayList<String>();
         final List<Object> parameterValues = new ArrayList<Object>();
@@ -454,35 +395,30 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
             parameterValues.add(toIdentity.getId());
         }
 
-        final Iterable<SLIdentityObjectRelationship> foundNodes = simplePersist
-                .findByProperties(SLIdentityObjectRelationship.class, parameterNames.toArray(new String[0]),
-                        parameterValues.toArray());
+        final Iterable<SLIdentityObjectRelationship> foundNodes = simplePersist.findByProperties(
+                                                                                                 SLIdentityObjectRelationship.class,
+                                                                                                 parameterNames.toArray(new String[0]),
+                                                                                                 parameterValues.toArray());
 
         final Set<IdentityObjectRelationship> result = new HashSet<IdentityObjectRelationship>();
 
         for (final SLIdentityObjectRelationship relationship : foundNodes) {
-            final IdentityObject newFrom = this.findIdentityObject(
-                    invocationCxt, relationship.getFromIdentityObjectId());
+            final IdentityObject newFrom = this.findIdentityObject(invocationCxt, relationship.getFromIdentityObjectId());
             relationship.setFromIdentityObject(newFrom);
-            final IdentityObject newTo = this.findIdentityObject(invocationCxt,
-                    relationship.getToIdentityObjectId());
+            final IdentityObject newTo = this.findIdentityObject(invocationCxt, relationship.getToIdentityObjectId());
             relationship.setToIdentityObject(newTo);
             result.add(relationship);
         }
         return result;
     }
 
-    public void removeAttributes(
-            final IdentityStoreInvocationContext invocationCtx,
-            final IdentityObject identity,
-            final String[] attributeNames)
-            throws IdentityException {
+    public void removeAttributes( final IdentityStoreInvocationContext invocationCtx,
+                                  final IdentityObject identity,
+                                  final String[] attributeNames ) throws IdentityException {
         try {
-            final SLIdentityObject typedIdObj = (SLIdentityObject) identity;
-            final Set<String> allAttributesToRemove = SLCollections
-                    .setOf(attributeNames);
-            for (final SLAttributeEntry attribute : new ArrayList<SLAttributeEntry>(
-                    typedIdObj.getAttributes())) {
+            final SLIdentityObject typedIdObj = (SLIdentityObject)identity;
+            final Set<String> allAttributesToRemove = SLCollections.setOf(attributeNames);
+            for (final SLAttributeEntry attribute : new ArrayList<SLAttributeEntry>(typedIdObj.getAttributes())) {
                 if (allAttributesToRemove.contains(attribute.getName())) {
                     typedIdObj.getAttributes().remove(attribute);
                 }
@@ -494,11 +430,10 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         }
     }
 
-    public void removeIdentityObject(
-            final IdentityStoreInvocationContext invocationCtx,
-            final IdentityObject identity) throws IdentityException {
+    public void removeIdentityObject( final IdentityStoreInvocationContext invocationCtx,
+                                      final IdentityObject identity ) throws IdentityException {
         try {
-            final SLIdentityObject typedIdObj = (SLIdentityObject) identity;
+            final SLIdentityObject typedIdObj = (SLIdentityObject)identity;
             final SLIdentityStoreSessionContext sessionContext = getContext(invocationCtx);
 
             sessionContext.getSession().remove(typedIdObj);
@@ -507,70 +442,58 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         }
     }
 
-    public void removeRelationship(
-            final IdentityStoreInvocationContext invocationCxt,
-            final IdentityObject fromIdentity,
-            final IdentityObject toIdentity,
-            final IdentityObjectRelationshipType relationshipType,
-            final String relationshipName) throws IdentityException {
+    public void removeRelationship( final IdentityStoreInvocationContext invocationCxt,
+                                    final IdentityObject fromIdentity,
+                                    final IdentityObject toIdentity,
+                                    final IdentityObjectRelationshipType relationshipType,
+                                    final String relationshipName ) throws IdentityException {
         try {
-            final Set<IdentityObjectRelationship> result = internalResolveRelationships(
-                    invocationCxt, fromIdentity, toIdentity, relationshipType,
-                    relationshipName);
+            final Set<IdentityObjectRelationship> result = internalResolveRelationships(invocationCxt, fromIdentity, toIdentity,
+                                                                                        relationshipType, relationshipName);
             final SLIdentityStoreSessionContext sessionContext = getContext(invocationCxt);
             for (final IdentityObjectRelationship relationShip : result) {
-                sessionContext.getSession().remove(
-                        (SLIdentityObjectRelationship) relationShip);
+                sessionContext.getSession().remove((SLIdentityObjectRelationship)relationShip);
             }
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, IdentityException.class);
         }
     }
 
-    public String removeRelationshipName(
-            final IdentityStoreInvocationContext ctx,
-            final String name)
-            throws IdentityException, OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public String removeRelationshipName( final IdentityStoreInvocationContext ctx,
+                                          final String name ) throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
     }
 
-    public void removeRelationshipNameProperties(
-            final IdentityStoreInvocationContext ctx,
-            final String name,
-            final Set<String> properties) throws IdentityException,
-            OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public void removeRelationshipNameProperties( final IdentityStoreInvocationContext ctx,
+                                                  final String name,
+                                                  final Set<String> properties )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
 
     }
 
-    public void removeRelationshipProperties(
-            final IdentityStoreInvocationContext ctx,
-            final IdentityObjectRelationship relationship,
-            final Set<String> properties) throws IdentityException,
-            OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Relationship properties are not supported");
+    public void removeRelationshipProperties( final IdentityStoreInvocationContext ctx,
+                                              final IdentityObjectRelationship relationship,
+                                              final Set<String> properties )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Relationship properties are not supported");
 
     }
 
-    public void removeRelationships(
-            final IdentityStoreInvocationContext invocationCtx,
-            final IdentityObject identity1,
-            final IdentityObject identity2,
-            final boolean named) throws IdentityException {
+    public void removeRelationships( final IdentityStoreInvocationContext invocationCtx,
+                                     final IdentityObject identity1,
+                                     final IdentityObject identity2,
+                                     final boolean named ) throws IdentityException {
         try {
-            final Set<IdentityObjectRelationship> result1 = internalResolveRelationships(
-                    invocationCtx, identity1, identity2, null, null);
-            final Set<IdentityObjectRelationship> result2 = internalResolveRelationships(
-                    invocationCtx, identity2, identity1, null, null);
+            final Set<IdentityObjectRelationship> result1 = internalResolveRelationships(invocationCtx, identity1, identity2,
+                                                                                         null, null);
+            final Set<IdentityObjectRelationship> result2 = internalResolveRelationships(invocationCtx, identity2, identity1,
+                                                                                         null, null);
             final Set<IdentityObjectRelationship> result = new HashSet<IdentityObjectRelationship>();
             result.addAll(result1);
             result.addAll(result2);
             if (!named) {
-                for (final IdentityObjectRelationship r : new ArrayList<IdentityObjectRelationship>(
-                        result)) {
+                for (final IdentityObjectRelationship r : new ArrayList<IdentityObjectRelationship>(result)) {
                     if (r.getName() != null) {
                         result.remove(r);
                     }
@@ -578,8 +501,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
             }
             final SLIdentityStoreSessionContext sessionContext = getContext(invocationCtx);
             for (final IdentityObjectRelationship relationShip : result) {
-                sessionContext.getSession().remove(
-                        (SLIdentityObjectRelationship) relationShip);
+                sessionContext.getSession().remove((SLIdentityObjectRelationship)relationShip);
             }
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, IdentityException.class);
@@ -587,63 +509,52 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
     }
 
-    public Set<IdentityObjectRelationship> resolveRelationships(
-            final IdentityStoreInvocationContext invocationCxt,
-            final IdentityObject fromIdentity,
-            final IdentityObject toIdentity,
-            final IdentityObjectRelationshipType relationshipType)
-            throws IdentityException {
+    public Set<IdentityObjectRelationship> resolveRelationships( final IdentityStoreInvocationContext invocationCxt,
+                                                                 final IdentityObject fromIdentity,
+                                                                 final IdentityObject toIdentity,
+                                                                 final IdentityObjectRelationshipType relationshipType )
+        throws IdentityException {
 
-        return internalResolveRelationships(invocationCxt, fromIdentity,
-                toIdentity, relationshipType, null);
+        return internalResolveRelationships(invocationCxt, fromIdentity, toIdentity, relationshipType, null);
     }
 
-    public Set<IdentityObjectRelationship> resolveRelationships(
-            final IdentityStoreInvocationContext invocationCxt,
-            final IdentityObject identity,
-            final IdentityObjectRelationshipType relationshipType,
-            final boolean parent,
-            final boolean named,
-            final String name)
-            throws IdentityException {
+    public Set<IdentityObjectRelationship> resolveRelationships( final IdentityStoreInvocationContext invocationCxt,
+                                                                 final IdentityObject identity,
+                                                                 final IdentityObjectRelationshipType relationshipType,
+                                                                 final boolean parent,
+                                                                 final boolean named,
+                                                                 final String name ) throws IdentityException {
         final IdentityObject from = parent ? identity : null;
         final IdentityObject to = parent ? null : identity;
-        return internalResolveRelationships(invocationCxt, from, to,
-                relationshipType, name);
+        return internalResolveRelationships(invocationCxt, from, to, relationshipType, name);
     }
 
-    public void setRelationshipNameProperties(
-            final IdentityStoreInvocationContext ctx,
-            final String name,
-            final Map<String, String> properties) throws IdentityException,
-            OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Named relationships are not supported");
+    public void setRelationshipNameProperties( final IdentityStoreInvocationContext ctx,
+                                               final String name,
+                                               final Map<String, String> properties )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Named relationships are not supported");
 
     }
 
-    public void setRelationshipProperties(
-            final IdentityStoreInvocationContext ctx,
-            final IdentityObjectRelationship relationship,
-            final Map<String, String> properties) throws IdentityException,
-            OperationNotSupportedException {
-        throw new OperationNotSupportedException(
-                "Relationship properties are not supported");
+    public void setRelationshipProperties( final IdentityStoreInvocationContext ctx,
+                                           final IdentityObjectRelationship relationship,
+                                           final Map<String, String> properties )
+        throws IdentityException, OperationNotSupportedException {
+        throw new OperationNotSupportedException("Relationship properties are not supported");
 
     }
 
-    public void updateAttributes(
-            final IdentityStoreInvocationContext invocationCtx,
-            final IdentityObject identity,
-            final IdentityObjectAttribute[] attributes)
-            throws IdentityException {
+    public void updateAttributes( final IdentityStoreInvocationContext invocationCtx,
+                                  final IdentityObject identity,
+                                  final IdentityObjectAttribute[] attributes ) throws IdentityException {
         try {
-            final SLIdentityObject identityAsSlId = (SLIdentityObject) identity;
+            final SLIdentityObject identityAsSlId = (SLIdentityObject)identity;
             for (final IdentityObjectAttribute entry : attributes) {
                 final SLAttributeEntry attribute = new SLAttributeEntry();
                 attribute.setName(entry.getName());
                 attribute.setParent(identityAsSlId);
-                @SuppressWarnings("unchecked")
+                @SuppressWarnings( "unchecked" )
                 final Collection<String> entries = entry.getValues();
                 attribute.setEntries(new HashSet<String>(entries));
                 identityAsSlId.getAttributes().add(attribute);
@@ -654,27 +565,25 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
         }
     }
 
-    public void updateCredential(final IdentityStoreInvocationContext ctx,
-                                 final IdentityObject identityObject,
-                                 final IdentityObjectCredential credential) throws IdentityException {
+    public void updateCredential( final IdentityStoreInvocationContext ctx,
+                                  final IdentityObject identityObject,
+                                  final IdentityObjectCredential credential ) throws IdentityException {
         try {
-            final SLPasswordEntry entry = SLPasswordEntry.create(
-                    identityObject, credential);
+            final SLPasswordEntry entry = SLPasswordEntry.create(identityObject, credential);
             addNodeToSave(ctx, entry);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, IdentityException.class);
         }
     }
 
-    public boolean validateCredential(final IdentityStoreInvocationContext ctx,
-                                      final IdentityObject identityObject,
-                                      final IdentityObjectCredential credential) throws IdentityException {
+    public boolean validateCredential( final IdentityStoreInvocationContext ctx,
+                                       final IdentityObject identityObject,
+                                       final IdentityObjectCredential credential ) throws IdentityException {
         try {
 
-
-            final Iterable<SLPasswordEntry> foundNodes = simplePersist
-                    .findByProperties(SLPasswordEntry.class, new String[]{"userId"},
-                            new Object[]{identityObject.getId()});
+            final Iterable<SLPasswordEntry> foundNodes = simplePersist.findByProperties(SLPasswordEntry.class,
+                                                                                        new String[] {"userId"},
+                                                                                        new Object[] {identityObject.getId()});
             if (!foundNodes.iterator().hasNext()) {
                 return false;
             }

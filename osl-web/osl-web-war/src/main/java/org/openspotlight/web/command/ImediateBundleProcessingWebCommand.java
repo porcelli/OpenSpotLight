@@ -78,24 +78,19 @@ public class ImediateBundleProcessingWebCommand implements WebCommand {
     public String execute( final ExecutionContext context,
                            final Map<String, String> parameters ) throws WebException {
         try {
-            final Set<Repository> allRepositories = context
-                                                           .getDefaultConfigurationManager().getAllRepositories();
+            final Set<Repository> allRepositories = context.getDefaultConfigurationManager().getAllRepositories();
             final RepositorySet repositorySet = new RepositorySet();
             repositorySet.setRepositories(allRepositories);
             final SLScheduler scheduler = DefaultScheduler.INSTANCE;
             final Set<Group> groups = new HashSet<Group>();
-            SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class,
-                                                         repositorySet, new AggregateVisitor<Group>(groups));
-            scheduler.fireSchedulable(context.getUserName(), context
-                                                                    .getPassword(), groups.toArray(new Group[0]));
+            SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, repositorySet, new AggregateVisitor<Group>(groups));
+            scheduler.fireSchedulable(context.getUserName(), context.getPassword(), groups.toArray(new Group[0]));
             final Message message = new Message();
             message.setMessage("execution fired");
             return JSONObject.fromObject(message).toString();
         } catch (final Exception e) {
             Exceptions.catchAndLog(e);
-            throw new MessageWebException(
-                                          "There's something wrong during the firing action: "
-                                          + e.getMessage());
+            throw new MessageWebException("There's something wrong during the firing action: " + e.getMessage());
         }
 
     }

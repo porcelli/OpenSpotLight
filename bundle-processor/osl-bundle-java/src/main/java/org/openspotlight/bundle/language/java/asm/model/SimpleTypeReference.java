@@ -109,14 +109,19 @@ public class SimpleTypeReference implements TypeReference {
         this.typeName = typeName;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getFullName()
      */
     public String getFullName() {
         return packageName + "." + typeName;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.tool.dap.language.java.asm.model.TypeRef#getName()
      */
     public String getName() {

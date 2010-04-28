@@ -88,12 +88,11 @@ public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
         final ForeignKeyConstraintArtifact that = (ForeignKeyConstraintArtifact)other;
         return eachEquality(
 
-        of(fromCatalogName, fromSchemaName, toCatalogName, toSchemaName,
-                        fromTableName, fromColumnName, toTableName, toColumnName),
+                            of(fromCatalogName, fromSchemaName, toCatalogName, toSchemaName, fromTableName, fromColumnName,
+                               toTableName, toColumnName),
 
-        andOf(that.fromCatalogName, that.fromSchemaName, that.toCatalogName,
-                                that.toSchemaName, that.fromTableName, that.fromColumnName,
-                                that.toTableName, that.toColumnName));
+                            andOf(that.fromCatalogName, that.fromSchemaName, that.toCatalogName, that.toSchemaName,
+                                  that.fromTableName, that.fromColumnName, that.toTableName, that.toColumnName));
     }
 
     @SuppressWarnings( "unchecked" )
@@ -105,11 +104,9 @@ public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
 
         return eachEquality(
 
-        of(constraintName, getDatabaseName(), getDatabaseType(),
-                        getServerName(), getUrl()),
+        of(constraintName, getDatabaseName(), getDatabaseType(), getServerName(), getUrl()),
 
-        andOf(that.constraintName, that.getDatabaseName(), that
-                                                               .getDatabaseType(), that.getServerName(), that.getUrl()));
+        andOf(that.constraintName, that.getDatabaseName(), that.getDatabaseType(), that.getServerName(), that.getUrl()));
     }
 
     public String getConstraintName() {
@@ -149,8 +146,7 @@ public class ForeignKeyConstraintArtifact extends ConstraintArtifact {
     }
 
     public int hashCode() {
-        return HashCodes.hashOf(constraintName, getDatabaseName(),
-                                getDatabaseType(), getServerName(), getUrl());
+        return HashCodes.hashOf(constraintName, getDatabaseName(), getDatabaseType(), getServerName(), getUrl());
     }
 
     public void setConstraintName( final String constraintName ) {

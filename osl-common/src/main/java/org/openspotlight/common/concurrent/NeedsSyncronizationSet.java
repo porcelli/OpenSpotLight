@@ -67,7 +67,6 @@ import java.util.Set;
  * @author feu
  * @param <E>
  */
-public interface NeedsSyncronizationSet<E> extends Set<E>, LockContainer,
-        NeedsSyncronizationCollection<E> {
+public interface NeedsSyncronizationSet<E> extends Set<E>, LockContainer, NeedsSyncronizationCollection<E> {
 
 }

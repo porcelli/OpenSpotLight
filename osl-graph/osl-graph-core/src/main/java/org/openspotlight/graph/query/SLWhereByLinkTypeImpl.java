@@ -98,8 +98,12 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
         return whereStatementInfo;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLWhereByLinkType#linkType(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.query.SLWhereByLinkType#linkType(java.lang.String
+     * )
      */
     public LinkType linkType( String typeName ) {
         SLWhereLinkTypeInfo typeInfo = new SLWhereLinkTypeInfo(typeName);
@@ -107,7 +111,9 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
         return new LinkTypeImpl(this, typeInfo);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.query.SLWhereByLinkType#whereEnd()
      */
     public End whereEnd() {
@@ -116,7 +122,7 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
 
     /**
      * private void verifyConditionalOperator() { if (statementInfo.getConditionInfoList().isEmpty()) { throw new
-     * SLInvalidQuerySyntaxRuntimeException("the first condition of a statement must not start with AND or OR operators"); } }
+     * SLInvalidQuerySyntaxRuntimeException( "the first condition of a statement must not start with AND or OR operators" ); } }
      */
 
     public static class EndImpl implements End {
@@ -139,14 +145,18 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
             this.orderByStatement = orderByStatement;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.openspotlight.graph.query.SLWhereByLinkType.End#orderBy()
          */
         public SLOrderByStatement orderBy() {
             return orderByStatement;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.openspotlight.graph.query.SLWhereByLinkType.End#keepResult()
          */
         public End keepResult() {
@@ -172,16 +182,23 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLWhereByLinkType.End#executeXTimes()
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.openspotlight.graph.query.SLWhereByLinkType.End#executeXTimes()
          */
         public End executeXTimes() {
             whereByLinkTypeInfo.getSelectByLinkTypeInfo().setXTimes(0);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLWhereByLinkType.End#executeXTimes(int)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.openspotlight.graph.query.SLWhereByLinkType.End#executeXTimes
+         * (int)
          */
         public End executeXTimes( int x ) {
             whereByLinkTypeInfo.getSelectByLinkTypeInfo().setXTimes(x);
@@ -214,7 +231,9 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
             this.typeInfo = typeInfo;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType#each()
          */
         public Each each() {
@@ -265,8 +284,12 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                 this.outerEach = outerEach;
             }
 
-            /* (non-Javadoc)
-             * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each#property(java.lang.String)
+            /*
+             * (non-Javadoc)
+             * 
+             * @see
+             * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each
+             * #property(java.lang.String)
              */
             public Property property( String name ) {
                 conditionInfo.setPropertyName(name);
@@ -308,72 +331,108 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                     this.outerEach = outerEach;
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#not()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#not()
                  */
                 public Property not() {
                     conditionInfo.setRelationalNotOperator(true);
                     return this;
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#lesserThan()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#lesserThan()
                  */
                 public Operator lesserThan() {
                     conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#greaterThan()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#greaterThan()
                  */
                 public Operator greaterThan() {
                     conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#equalsTo()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#equalsTo()
                  */
                 public Operator equalsTo() {
                     conditionInfo.setRelationalOperator(SLRelationalOperatorType.EQUAL);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#lesserOrEqualThan()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#lesserOrEqualThan()
                  */
                 public Operator lesserOrEqualThan() {
                     conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#greaterOrEqualThan()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#greaterOrEqualThan()
                  */
                 public Operator greaterOrEqualThan() {
                     conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#contains()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#contains()
                  */
                 public Operator contains() {
                     conditionInfo.setRelationalOperator(SLRelationalOperatorType.CONTAINS);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#startsWith()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#startsWith()
                  */
                 public Operator startsWith() {
                     conditionInfo.setRelationalOperator(SLRelationalOperatorType.STARTS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
-                /* (non-Javadoc)
-                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property#endsWith()
+                /*
+                 * (non-Javadoc)
+                 * 
+                 * @see
+                 * org.openspotlight.graph.query.SLWhereByLinkType.LinkType.
+                 * Each.Property#endsWith()
                  */
                 public Operator endsWith() {
                     conditionInfo.setRelationalOperator(SLRelationalOperatorType.ENDS_WITH);
@@ -416,48 +475,72 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                         this.conditionInfo = conditionInfo;
                     }
 
-                    /* (non-Javadoc)
-                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator#value(java.lang.String)
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see
+                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * .Each.Property.Operator#value(java.lang.String)
                      */
                     public Value value( String value ) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
-                    /* (non-Javadoc)
-                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator#value(java.lang.Integer)
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see
+                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * .Each.Property.Operator#value(java.lang.Integer)
                      */
                     public Value value( Integer value ) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
-                    /* (non-Javadoc)
-                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator#value(java.lang.Long)
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see
+                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * .Each.Property.Operator#value(java.lang.Long)
                      */
                     public Value value( Long value ) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
-                    /* (non-Javadoc)
-                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator#value(java.lang.Float)
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see
+                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * .Each.Property.Operator#value(java.lang.Float)
                      */
                     public Value value( Float value ) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
-                    /* (non-Javadoc)
-                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator#value(java.lang.Double)
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see
+                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * .Each.Property.Operator#value(java.lang.Double)
                      */
                     public Value value( Double value ) {
                         conditionInfo.setValue(value);
                         return new ValueImpl(whereStatement, each, outerEach, conditionInfo);
                     }
 
-                    /* (non-Javadoc)
-                     * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator#value(java.lang.Boolean)
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see
+                     * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                     * .Each.Property.Operator#value(java.lang.Boolean)
                      */
                     public Value value( Boolean value ) {
                         conditionInfo.setValue(value);
@@ -500,15 +583,23 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                             this.conditionInfo = conditionInfo;
                         }
 
-                        /* (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value#linkTypeEnd()
+                        /*
+                         * (non-Javadoc)
+                         * 
+                         * @see
+                         * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                         * .Each.Property.Operator.Value#linkTypeEnd()
                          */
                         public SLWhereByLinkType linkTypeEnd() {
                             return whereStatement;
                         }
 
-                        /* (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value#or()
+                        /*
+                         * (non-Javadoc)
+                         * 
+                         * @see
+                         * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                         * .Each.Property.Operator.Value#or()
                          */
                         public RelationalOperator or() {
                             SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
@@ -517,8 +608,12 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                             return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                         }
 
-                        /* (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value#and()
+                        /*
+                         * (non-Javadoc)
+                         * 
+                         * @see
+                         * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                         * .Each.Property.Operator.Value#and()
                          */
                         public RelationalOperator and() {
                             SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
@@ -527,8 +622,12 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                             return new RelationalOperatorImpl(whereStatement, newEach, newConditionInfo);
                         }
 
-                        /* (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value#closeBracket()
+                        /*
+                         * (non-Javadoc)
+                         * 
+                         * @see
+                         * org.openspotlight.graph.query.SLWhereByLinkType.LinkType
+                         * .Each.Property.Operator.Value#closeBracket()
                          */
                         public CloseBracket closeBracket() {
                             return new CloseBracketImpl(whereStatement, outerEach, conditionInfo);
@@ -565,25 +664,44 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                                 this.conditionInfo = conditionInfo;
                             }
 
-                            /* (non-Javadoc)
-                             * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value.RelationalOperator#comma()
+                            /*
+                             * (non-Javadoc)
+                             * 
+                             * @see
+                             * org.openspotlight.graph.query.SLWhereByLinkType
+                             * .LinkType
+                             * .Each.Property.Operator.Value.RelationalOperator
+                             * #comma()
                              */
                             public SLWhereByLinkType comma() {
                                 return this.whereStatement;
                             }
 
-                            /* (non-Javadoc)
-                             * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value.RelationalOperator#each()
+                            /*
+                             * (non-Javadoc)
+                             * 
+                             * @see
+                             * org.openspotlight.graph.query.SLWhereByLinkType
+                             * .LinkType
+                             * .Each.Property.Operator.Value.RelationalOperator
+                             * #each()
                              */
                             public Each each() {
                                 return this.each;
                             }
 
-                            /* (non-Javadoc)
-                             * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value.RelationalOperator#openBracket()
+                            /*
+                             * (non-Javadoc)
+                             * 
+                             * @see
+                             * org.openspotlight.graph.query.SLWhereByLinkType
+                             * .LinkType
+                             * .Each.Property.Operator.Value.RelationalOperator
+                             * #openBracket()
                              */
                             public OpenBracket openBracket() {
-                                SLLinkTypeStatementInfo newStatementInfo = new SLLinkTypeStatementInfo(conditionInfo.getTypeInfo());
+                                SLLinkTypeStatementInfo newStatementInfo = new SLLinkTypeStatementInfo(
+                                                                                                       conditionInfo.getTypeInfo());
                                 conditionInfo.setInnerStatementInfo(newStatementInfo);
                                 SLConditionInfo newConditionInfo = newStatementInfo.addCondition();
                                 Each each = new EachImpl(whereStatement, newConditionInfo, this.each);
@@ -610,8 +728,13 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                                     this.each = each;
                                 }
 
-                                /* (non-Javadoc)
-                                 * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value.RelationalOperator.OpenBracket#each()
+                                /*
+                                 * (non-Javadoc)
+                                 * 
+                                 * @see
+                                 * org.openspotlight.graph.query.SLWhereByLinkType
+                                 * .LinkType.Each.Property.Operator.Value.
+                                 * RelationalOperator.OpenBracket#each()
                                  */
                                 public Each each() {
                                     return each;
@@ -650,8 +773,13 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                                 this.conditionInfo = conditionInfo;
                             }
 
-                            /* (non-Javadoc)
-                             * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value.CloseBracket#or()
+                            /*
+                             * (non-Javadoc)
+                             * 
+                             * @see
+                             * org.openspotlight.graph.query.SLWhereByLinkType
+                             * .LinkType
+                             * .Each.Property.Operator.Value.CloseBracket#or()
                              */
                             public RelationalOperator or() {
                                 SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
@@ -660,8 +788,13 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                                 return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                             }
 
-                            /* (non-Javadoc)
-                             * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value.CloseBracket#and()
+                            /*
+                             * (non-Javadoc)
+                             * 
+                             * @see
+                             * org.openspotlight.graph.query.SLWhereByLinkType
+                             * .LinkType
+                             * .Each.Property.Operator.Value.CloseBracket#and()
                              */
                             public RelationalOperator and() {
                                 SLLinkTypeStatementInfo outerStatementInfo = conditionInfo.getOuterStatementInfo();
@@ -670,8 +803,14 @@ public class SLWhereByLinkTypeImpl implements SLWhereByLinkType {
                                 return new RelationalOperatorImpl(whereStatement, each, conditionInfo);
                             }
 
-                            /* (non-Javadoc)
-                             * @see org.openspotlight.graph.query.SLWhereByLinkType.LinkType.Each.Property.Operator.Value.CloseBracket#typeEnd()
+                            /*
+                             * (non-Javadoc)
+                             * 
+                             * @see
+                             * org.openspotlight.graph.query.SLWhereByLinkType
+                             * .LinkType
+                             * .Each.Property.Operator.Value.CloseBracket
+                             * #typeEnd()
                              */
                             public SLWhereByLinkType typeEnd() {
                                 return whereStatement;

@@ -103,20 +103,15 @@ public class SLGraphMetadataPropertiesTest {
     public static void setUp() {
         try {
 
-            JcrConnectionProvider.createFromData(
-                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                                 .closeRepositoryAndCleanResources();
+            JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
-            final SecurityFactory securityFactory = AbstractFactory
-                                                                   .getDefaultInstance(SecurityFactory.class);
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
 
             final User simpleUser = securityFactory.createUser("testUser");
-            user = securityFactory.createIdentityManager(
-                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                                                                                                            simpleUser, "password");
+            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
+                                                                                                            "password");
 
-            final SLGraphFactory factory = AbstractFactory
-                                                          .getDefaultInstance(SLGraphFactory.class);
+            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         } catch (final Exception e) {
@@ -127,44 +122,27 @@ public class SLGraphMetadataPropertiesTest {
     @Test
     public void testLinkPropertyVisibility() throws SLMetaLinkTypeNotFoundException {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        final SLNode testNode1 = rootNode.addNode(JavaClassNode.class,
-                                                  "testNode");
-        final SLNode testNode2 = rootNode.addNode(JavaClassNode.class,
-                                                  "testNode2");
+        final SLNode testNode1 = rootNode.addNode(JavaClassNode.class, "testNode");
+        final SLNode testNode2 = rootNode.addNode(JavaClassNode.class, "testNode2");
 
-        final JavaClassHierarchy link1 = session.addLink(
-                                                         JavaClassHierarchy.class, testNode1, testNode2, false);
+        final JavaClassHierarchy link1 = session.addLink(JavaClassHierarchy.class, testNode1, testNode2, false);
         link1.setName("someName");
-        link1.setProperty(String.class, VisibilityLevel.PUBLIC, "otherProp",
-                          "something");
+        link1.setProperty(String.class, VisibilityLevel.PUBLIC, "otherProp", "something");
         session.save();
-        final SLMetaLinkType metaLinkType = session.getMetadata()
-                                                   .getMetaLinkType(JavaClassHierarchy.class);
-        final SLMetaLink metaLink = metaLinkType.getMetaLinks(
-                                                              JavaClassNode.class, JavaClassNode.class, false).iterator()
-                                                .next();
-        Assert.assertEquals(VisibilityLevel.INTERNAL, metaLink.getMetaProperty(
-                                                                               "name").getVisibility());
-        Assert.assertEquals(VisibilityLevel.PUBLIC, metaLink.getMetaProperty(
-                                                                             "otherProp").getVisibility());
+        final SLMetaLinkType metaLinkType = session.getMetadata().getMetaLinkType(JavaClassHierarchy.class);
+        final SLMetaLink metaLink = metaLinkType.getMetaLinks(JavaClassNode.class, JavaClassNode.class, false).iterator().next();
+        Assert.assertEquals(VisibilityLevel.INTERNAL, metaLink.getMetaProperty("name").getVisibility());
+        Assert.assertEquals(VisibilityLevel.PUBLIC, metaLink.getMetaProperty("otherProp").getVisibility());
 
-        final JavaClassHierarchyWithoutProperties link2 = session.addLink(
-                                                                          JavaClassHierarchyWithoutProperties.class, testNode1,
+        final JavaClassHierarchyWithoutProperties link2 = session.addLink(JavaClassHierarchyWithoutProperties.class, testNode1,
                                                                           testNode2, false);
-        link2.setProperty(String.class, VisibilityLevel.PUBLIC, "otherProp",
-                          "something");
-        link2.setProperty(String.class, VisibilityLevel.PRIVATE, "otherProp2",
-                          "something");
+        link2.setProperty(String.class, VisibilityLevel.PUBLIC, "otherProp", "something");
+        link2.setProperty(String.class, VisibilityLevel.PRIVATE, "otherProp2", "something");
         session.save();
-        final SLMetaLinkType metaLinkType2 = session.getMetadata()
-                                                    .getMetaLinkType(JavaClassHierarchyWithoutProperties.class);
-        final SLMetaLink metaLink2 = metaLinkType2.getMetaLinks(
-                                                                JavaClassNode.class, JavaClassNode.class, false).iterator()
-                                                  .next();
-        Assert.assertEquals(VisibilityLevel.PUBLIC, metaLink2.getMetaProperty(
-                                                                              "otherProp").getVisibility());
-        Assert.assertEquals(VisibilityLevel.PRIVATE, metaLink2.getMetaProperty(
-                                                                               "otherProp2").getVisibility());
+        final SLMetaLinkType metaLinkType2 = session.getMetadata().getMetaLinkType(JavaClassHierarchyWithoutProperties.class);
+        final SLMetaLink metaLink2 = metaLinkType2.getMetaLinks(JavaClassNode.class, JavaClassNode.class, false).iterator().next();
+        Assert.assertEquals(VisibilityLevel.PUBLIC, metaLink2.getMetaProperty("otherProp").getVisibility());
+        Assert.assertEquals(VisibilityLevel.PRIVATE, metaLink2.getMetaProperty("otherProp2").getVisibility());
     }
 
     /**
@@ -173,48 +151,30 @@ public class SLGraphMetadataPropertiesTest {
     @Test
     public void testNodePropertyVisibility() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        final SLNode testNode = rootNode.addNode(
-                                                 JavaClassNodeWithoutProperties.class, "testNode");
-        testNode.setProperty(String.class, VisibilityLevel.PRIVATE,
-                             "somePropName", "value");
+        final SLNode testNode = rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
+        testNode.setProperty(String.class, VisibilityLevel.PRIVATE, "somePropName", "value");
 
-        for (final SLMetaNodeType metaType : session.getMetadata()
-                                                    .getMetaNodesTypes()) {
-            if (metaType.getTypeName().equals(
-                                              JavaClassNodeWithoutProperties.class.getName())) {
-                final SLMetaNodeProperty property = metaType
-                                                            .getMetaProperty("somePropName");
-                Assert.assertEquals(VisibilityLevel.PRIVATE, property
-                                                                     .getVisibility());
+        for (final SLMetaNodeType metaType : session.getMetadata().getMetaNodesTypes()) {
+            if (metaType.getTypeName().equals(JavaClassNodeWithoutProperties.class.getName())) {
+                final SLMetaNodeProperty property = metaType.getMetaProperty("somePropName");
+                Assert.assertEquals(VisibilityLevel.PRIVATE, property.getVisibility());
             }
         }
 
-        final JavaClassNode testNodeWithProperty = rootNode.addNode(
-                                                                    JavaClassNode.class, "testNode2");
+        final JavaClassNode testNodeWithProperty = rootNode.addNode(JavaClassNode.class, "testNode2");
         testNodeWithProperty.setClassName("someClassNAme");
-        testNodeWithProperty.setProperty(String.class, VisibilityLevel.PUBLIC,
-                                         "somePropName", "value2");
-        testNodeWithProperty.setProperty(String.class, VisibilityLevel.PRIVATE,
-                                         "somePropName2", "value2");
+        testNodeWithProperty.setProperty(String.class, VisibilityLevel.PUBLIC, "somePropName", "value2");
+        testNodeWithProperty.setProperty(String.class, VisibilityLevel.PRIVATE, "somePropName2", "value2");
 
-        for (final SLMetaNodeType metaType : session.getMetadata()
-                                                    .getMetaNodesTypes()) {
-            if (metaType.getTypeName().equals(
-                                              JavaClassNodeWithoutProperties.class.getName())) {
-                final SLMetaNodeProperty property = metaType
-                                                            .getMetaProperty("somePropName");
-                Assert.assertEquals(VisibilityLevel.PRIVATE, property
-                                                                     .getVisibility());
-            } else if (metaType.getTypeName().equals(
-                                                     JavaElementNode.class.getName())) {
-                final SLMetaNodeType subType = metaType
-                                                       .getSubMetaNodeType(JavaClassNode.class.getName());
-                Assert.assertEquals(VisibilityLevel.PUBLIC, subType
-                                                                   .getMetaProperty("somePropName").getVisibility());
-                Assert.assertEquals(VisibilityLevel.PRIVATE, subType
-                                                                    .getMetaProperty("somePropName2").getVisibility());
-                Assert.assertEquals(VisibilityLevel.INTERNAL, subType
-                                                                     .getMetaProperty("className").getVisibility());
+        for (final SLMetaNodeType metaType : session.getMetadata().getMetaNodesTypes()) {
+            if (metaType.getTypeName().equals(JavaClassNodeWithoutProperties.class.getName())) {
+                final SLMetaNodeProperty property = metaType.getMetaProperty("somePropName");
+                Assert.assertEquals(VisibilityLevel.PRIVATE, property.getVisibility());
+            } else if (metaType.getTypeName().equals(JavaElementNode.class.getName())) {
+                final SLMetaNodeType subType = metaType.getSubMetaNodeType(JavaClassNode.class.getName());
+                Assert.assertEquals(VisibilityLevel.PUBLIC, subType.getMetaProperty("somePropName").getVisibility());
+                Assert.assertEquals(VisibilityLevel.PRIVATE, subType.getMetaProperty("somePropName2").getVisibility());
+                Assert.assertEquals(VisibilityLevel.INTERNAL, subType.getMetaProperty("className").getVisibility());
             }
         }
     }

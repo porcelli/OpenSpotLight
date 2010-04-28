@@ -66,8 +66,7 @@ import org.openspotlight.graph.SLNode;
 /**
  * The Class TypeFinder.
  */
-public abstract class AbstractTypeResolver<N extends SLNode> implements
-        TypeResolver<N> {
+public abstract class AbstractTypeResolver<N extends SLNode> implements TypeResolver<N> {
 
     protected static enum Recursive {
         ONLY_DIRECT_PARENTS,
@@ -113,39 +112,27 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
     protected AbstractTypeResolver(
                                     final Set<Class<? extends SLLink>> implementationInheritanceLinks,
                                     final Set<Class<? extends SLLink>> interfaceInheritanceLinks,
-                                    final Set<Class<? extends SLLink>> primitiveHierarchyLinks,
-                                    final SLContext abstractContext,
-                                    final List<SLContext> orderedActiveContexts,
-                                    final Set<Class<?>> primitiveTypes,
-                                    final Set<Class<?>> concreteTypes, final boolean enableBoxing,
-                                    final SLGraphSession session ) {
-        Assertions.checkNotNull("implementationInheritanceLinks",
-                                implementationInheritanceLinks);
-        Assertions.checkNotNull("interfaceInheritanceLinks",
-                                interfaceInheritanceLinks);
-        Assertions.checkNotNull("primitiveHierarchyLinks",
-                                primitiveHierarchyLinks);
+                                    final Set<Class<? extends SLLink>> primitiveHierarchyLinks, final SLContext abstractContext,
+                                    final List<SLContext> orderedActiveContexts, final Set<Class<?>> primitiveTypes,
+                                    final Set<Class<?>> concreteTypes, final boolean enableBoxing, final SLGraphSession session ) {
+        Assertions.checkNotNull("implementationInheritanceLinks", implementationInheritanceLinks);
+        Assertions.checkNotNull("interfaceInheritanceLinks", interfaceInheritanceLinks);
+        Assertions.checkNotNull("primitiveHierarchyLinks", primitiveHierarchyLinks);
         Assertions.checkNotNull("abstractContext", abstractContext);
         Assertions.checkNotNull("orderedActiveContexts", orderedActiveContexts);
         Assertions.checkNotNull("primitiveTypes", primitiveTypes);
         Assertions.checkNotNull("concreteTypes", concreteTypes);
         Assertions.checkNotNull("session", session);
-        Assertions.checkCondition("implementationInheritanceLinksNotEmpty",
-                                  implementationInheritanceLinks.size() > 0);
-        Assertions.checkCondition("interfaceInheritanceLinksNotEmpty",
-                                  interfaceInheritanceLinks.size() > 0);
-        Assertions.checkCondition("primitiveHierarchyLinksNotEmpty",
-                                  primitiveHierarchyLinks.size() > 0);
-        Assertions.checkCondition("orderedActiveContextsNotEmpty",
-                                  orderedActiveContexts.size() > 0);
-        Assertions.checkCondition("primitiveTypesNotEmpty", primitiveTypes
-                                                                          .size() > 0);
+        Assertions.checkCondition("implementationInheritanceLinksNotEmpty", implementationInheritanceLinks.size() > 0);
+        Assertions.checkCondition("interfaceInheritanceLinksNotEmpty", interfaceInheritanceLinks.size() > 0);
+        Assertions.checkCondition("primitiveHierarchyLinksNotEmpty", primitiveHierarchyLinks.size() > 0);
+        Assertions.checkCondition("orderedActiveContextsNotEmpty", orderedActiveContexts.size() > 0);
+        Assertions.checkCondition("primitiveTypesNotEmpty", primitiveTypes.size() > 0);
         this.implementationInheritanceLinks = implementationInheritanceLinks;
         this.interfaceInheritanceLinks = interfaceInheritanceLinks;
         this.primitiveHierarchyLinks = primitiveHierarchyLinks;
         this.abstractContext = abstractContext;
-        final ArrayList<SLContext> all = new ArrayList<SLContext>(
-                                                                  orderedActiveContexts);
+        final ArrayList<SLContext> all = new ArrayList<SLContext>(orderedActiveContexts);
         if (!all.contains(abstractContext)) {
             all.add(abstractContext);
         }
@@ -175,10 +162,8 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * countAllChildren(T)
      */
-    public <T extends N> int countAllChildren( final T activeType )
-            throws InternalJavaFinderError {
-        return this.countAllChildren(activeType,
-                                     IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public <T extends N> int countAllChildren( final T activeType ) throws InternalJavaFinderError {
+        return this.countAllChildren(activeType, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
     }
 
     /*
@@ -201,10 +186,8 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java.support.TypeFinder#countAllParents
      * (T)
      */
-    public <T extends N> int countAllParents( final T activeType )
-            throws InternalJavaFinderError {
-        return this.countAllParents(activeType,
-                                    IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public <T extends N> int countAllParents( final T activeType ) throws InternalJavaFinderError {
+        return this.countAllParents(activeType, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
     }
 
     /*
@@ -227,10 +210,8 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * countConcreteChildren(T)
      */
-    public <T extends N> int countConcreteChildren( final T activeType )
-            throws InternalJavaFinderError {
-        return this.countConcreteChildren(activeType,
-                                          IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public <T extends N> int countConcreteChildren( final T activeType ) throws InternalJavaFinderError {
+        return this.countConcreteChildren(activeType, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
     }
 
     /*
@@ -252,10 +233,8 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * countConcreteParents(T)
      */
-    public <T extends N> int countConcreteParents( final T activeType )
-            throws InternalJavaFinderError {
-        return this.countConcreteParents(activeType,
-                                         IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public <T extends N> int countConcreteParents( final T activeType ) throws InternalJavaFinderError {
+        return this.countConcreteParents(activeType, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
     }
 
     /*
@@ -277,10 +256,8 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * countInterfaceChildren(T)
      */
-    public <T extends N> int countInterfaceChildren( final T activeType )
-            throws InternalJavaFinderError {
-        return this.countInterfaceChildren(activeType,
-                                           IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public <T extends N> int countInterfaceChildren( final T activeType ) throws InternalJavaFinderError {
+        return this.countInterfaceChildren(activeType, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
     }
 
     /*
@@ -302,10 +279,8 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * countInterfaceParents(T)
      */
-    public <T extends N> int countInterfaceParents( final T activeType )
-            throws InternalJavaFinderError {
-        return this.countInterfaceParents(activeType,
-                                          IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public <T extends N> int countInterfaceParents( final T activeType ) throws InternalJavaFinderError {
+        return this.countInterfaceParents(activeType, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
     }
 
     /*
@@ -341,8 +316,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java.support.AbstractTypeFinder
      * .IncludedResult)
      */
-    public <T extends N, A extends T> List<T> getAllChildren(
-                                                              final A activeType,
+    public <T extends N, A extends T> List<T> getAllChildren( final A activeType,
                                                               final ResultOrder order,
                                                               final IncludedResult includedResult )
         throws InternalJavaFinderError {
@@ -362,8 +336,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      */
     public <T extends N, A extends T> List<T> getAllParents( final A activeType,
                                                              final ResultOrder order,
-                                                             final IncludedResult includedResult )
-            throws InternalJavaFinderError {
+                                                             final IncludedResult includedResult ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException();
     }
 
@@ -377,8 +350,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java
      * .support.AbstractTypeFinder.IncludedResult)
      */
-    public <T extends N, A extends T> List<T> getConcreteChildren(
-                                                                   final A activeType,
+    public <T extends N, A extends T> List<T> getConcreteChildren( final A activeType,
                                                                    final ResultOrder order,
                                                                    final IncludedResult includedResult )
         throws InternalJavaFinderError {
@@ -395,8 +367,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java.support.AbstractTypeFinder
      * .IncludedResult)
      */
-    public <T extends N, A extends N> List<T> getConcreteParents(
-                                                                  final A activeType,
+    public <T extends N, A extends N> List<T> getConcreteParents( final A activeType,
                                                                   final ResultOrder order,
                                                                   final IncludedResult includedResult )
         throws InternalJavaFinderError {
@@ -409,8 +380,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * getDirectConcreteChildren(A)
      */
-    public <T extends N, A extends T> List<T> getDirectConcreteChildren(
-                                                                         final A activeType ) throws InternalJavaFinderError {
+    public <T extends N, A extends T> List<T> getDirectConcreteChildren( final A activeType ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException();
     }
 
@@ -420,8 +390,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * getDirectConcreteParents(A)
      */
-    public <T extends N, A extends T> List<T> getDirectConcreteParents(
-                                                                        final A activeType ) throws InternalJavaFinderError {
+    public <T extends N, A extends T> List<T> getDirectConcreteParents( final A activeType ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException();
     }
 
@@ -431,8 +400,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * getDirectInterfaceChildren(A)
      */
-    public <T extends N, A extends T> List<T> getDirectInterfaceChildren(
-                                                                          final A activeType ) throws InternalJavaFinderError {
+    public <T extends N, A extends T> List<T> getDirectInterfaceChildren( final A activeType ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException();
     }
 
@@ -442,8 +410,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * @seeorg.openspotlight.bundle.dap.language.java.support.TypeFinder#
      * getDirectInterfaceParents(A)
      */
-    public <T extends N, A extends T> List<T> getDirectInterfaceParents(
-                                                                         final A activeType ) throws InternalJavaFinderError {
+    public <T extends N, A extends T> List<T> getDirectInterfaceParents( final A activeType ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException();
     }
 
@@ -452,8 +419,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * 
      * @return the implementation inheritance links
      */
-    protected Set<Class<? extends SLLink>> getImplementationInheritanceLinks()
-            throws LinkNotFoundException {
+    protected Set<Class<? extends SLLink>> getImplementationInheritanceLinks() throws LinkNotFoundException {
         return this.implementationInheritanceLinks;
     }
 
@@ -467,8 +433,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java
      * .support.AbstractTypeFinder.IncludedResult)
      */
-    public <T extends N, A extends T> List<T> getInterfaceChildren(
-                                                                    final A activeType,
+    public <T extends N, A extends T> List<T> getInterfaceChildren( final A activeType,
                                                                     final ResultOrder order,
                                                                     final IncludedResult includedResult )
         throws InternalJavaFinderError {
@@ -480,8 +445,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * 
      * @return the interface inheritance links
      */
-    protected Set<Class<? extends SLLink>> getInterfaceInheritanceLinks()
-            throws LinkNotFoundException {
+    protected Set<Class<? extends SLLink>> getInterfaceInheritanceLinks() throws LinkNotFoundException {
         return this.interfaceInheritanceLinks;
     }
 
@@ -495,8 +459,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java
      * .support.AbstractTypeFinder.IncludedResult)
      */
-    public <T extends N, A extends T> List<T> getInterfaceParents(
-                                                                   final A activeType,
+    public <T extends N, A extends T> List<T> getInterfaceParents( final A activeType,
                                                                    final ResultOrder order,
                                                                    final IncludedResult includedResult )
         throws InternalJavaFinderError {
@@ -519,8 +482,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java.support.TypeFinder#getPrimitiveFor
      * (A)
      */
-    public <T extends N, A extends N> T getPrimitiveFor( final A wrappedType )
-            throws InternalJavaFinderError {
+    public <T extends N, A extends N> T getPrimitiveFor( final A wrappedType ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -558,8 +520,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java.support.TypeFinder#getType
      * (java.lang.String)
      */
-    public abstract <T extends N> T getType( String typeToSolve )
-            throws InternalJavaFinderError;
+    public abstract <T extends N> T getType( String typeToSolve ) throws InternalJavaFinderError;
 
     /*
      * (non-Javadoc)
@@ -570,8 +531,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      */
     public abstract <T extends N, A extends T> N getType( String typeToSolve,
                                                           A activeType,
-                                                          List<? extends N> parametrizedTypes )
-            throws InternalJavaFinderError;
+                                                          List<? extends N> parametrizedTypes ) throws InternalJavaFinderError;
 
     /*
      * (non-Javadoc)
@@ -580,8 +540,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java.support.TypeFinder#getWrapperFor
      * (A)
      */
-    public <T extends N, A extends N> T getWrapperFor( final A primitiveType )
-            throws InternalJavaFinderError {
+    public <T extends N, A extends N> T getWrapperFor( final A primitiveType ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -592,8 +551,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java.support.TypeFinder#isConcreteType
      * (T)
      */
-    public <T extends N> boolean isConcreteType( final T type )
-            throws InternalJavaFinderError {
+    public <T extends N> boolean isConcreteType( final T type ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -613,8 +571,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements
      * org.openspotlight.bundle.dap.language.java.support.TypeFinder#isPrimitiveType
      * (T)
      */
-    public <T extends N> boolean isPrimitiveType( final T type )
-            throws InternalJavaFinderError {
+    public <T extends N> boolean isPrimitiveType( final T type ) throws InternalJavaFinderError {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 

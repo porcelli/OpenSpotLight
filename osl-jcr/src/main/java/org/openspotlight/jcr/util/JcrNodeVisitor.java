@@ -224,18 +224,15 @@ public final class JcrNodeVisitor implements ItemVisitor {
         public static void fillQueue( final Node n,
                                       final NodeVisitor visitor,
                                       final Integer maxLevels,
-                                      final ErrorHandler handler )
-                throws Exception {
+                                      final ErrorHandler handler ) throws Exception {
             visitor.visiting(n);
             final LinkedList<Node> currenctlyAddedNodes = new LinkedList<Node>();
             fillChildren(n, currenctlyAddedNodes, maxLevels, handler, visitor);
             while (currenctlyAddedNodes.size() != 0) {
-                final LinkedList<Node> toIterate = new LinkedList<Node>(
-                                                                        currenctlyAddedNodes);
+                final LinkedList<Node> toIterate = new LinkedList<Node>(currenctlyAddedNodes);
                 currenctlyAddedNodes.clear();
                 for (final Node current : toIterate) {
-                    fillChildren(current, currenctlyAddedNodes, maxLevels,
-                                 handler, visitor);
+                    fillChildren(current, currenctlyAddedNodes, maxLevels, handler, visitor);
                 }
             }
 
@@ -263,8 +260,7 @@ public final class JcrNodeVisitor implements ItemVisitor {
      * @param handler
      * @return a jcr item visitor with the {@link NodeVisitor} inside
      */
-    public static ItemVisitor withVisitorAndErrorHandler(
-                                                          final NodeVisitor visitor,
+    public static ItemVisitor withVisitorAndErrorHandler( final NodeVisitor visitor,
                                                           final ErrorHandler handler ) {
 
         checkNotNull("visitor", visitor); //$NON-NLS-1$
@@ -279,8 +275,7 @@ public final class JcrNodeVisitor implements ItemVisitor {
      * @param limit
      * @return a jcr item visitor with the {@link NodeVisitor} inside
      */
-    public static ItemVisitor withVisitorAndLevelLimmit(
-                                                         final NodeVisitor visitor,
+    public static ItemVisitor withVisitorAndLevelLimmit( final NodeVisitor visitor,
                                                          final int limit ) {
         checkNotNull("visitor", visitor); //$NON-NLS-1$
         checkCondition("validMaxLevel", limit > 0); //$NON-NLS-1$
@@ -295,8 +290,7 @@ public final class JcrNodeVisitor implements ItemVisitor {
      * @param handler
      * @return a jcr item visitor with the {@link NodeVisitor} inside
      */
-    public static ItemVisitor withVisitorLevelLimmitAndErrorHandler(
-                                                                     final NodeVisitor visitor,
+    public static ItemVisitor withVisitorLevelLimmitAndErrorHandler( final NodeVisitor visitor,
                                                                      final int limit,
                                                                      final ErrorHandler handler ) {
         checkNotNull("visitor", visitor); //$NON-NLS-1$
@@ -319,8 +313,7 @@ public final class JcrNodeVisitor implements ItemVisitor {
      * @param handler
      */
     private JcrNodeVisitor(
-                            final NodeVisitor visitor, final Integer maxLevels,
-                            final ErrorHandler handler ) {
+                            final NodeVisitor visitor, final Integer maxLevels, final ErrorHandler handler ) {
         this.errorHandler = handler != null ? handler : DEFAULT_HANDLER;
         this.maxLevels = maxLevels;
         this.visitor = visitor;
@@ -331,8 +324,7 @@ public final class JcrNodeVisitor implements ItemVisitor {
      */
     public void visit( final Node node ) throws RepositoryException {
         try {
-            VisitorSupport.fillQueue(node, this.visitor, this.maxLevels,
-                                     this.errorHandler);
+            VisitorSupport.fillQueue(node, this.visitor, this.maxLevels, this.errorHandler);
         } catch (final Exception e) {
             throw logAndReturnNew(e, RepositoryException.class);
         }

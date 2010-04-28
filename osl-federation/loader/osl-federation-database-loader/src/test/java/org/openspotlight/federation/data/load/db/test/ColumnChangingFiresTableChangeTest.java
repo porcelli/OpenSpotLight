@@ -79,6 +79,8 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -92,9 +94,7 @@ public class ColumnChangingFiresTableChangeTest {
 
     @Before
     public void cleanDatabaseFiles() throws Exception {
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                             .closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
         delete("./target/test-data/ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
     }
 
@@ -102,34 +102,32 @@ public class ColumnChangingFiresTableChangeTest {
     public void columnChangeShouldFireTableChange() throws Exception {
 
         final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
-        final DbArtifactSource dbBundle = (DbArtifactSource)repository
-                                                                      .getArtifactSources().iterator().next(); //$NON-NLS-1$
+
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath(repository.getName())),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+        final DbArtifactSource dbBundle = (DbArtifactSource)repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
         Connection conn = DatabaseSupport.createConnection(dbBundle);
 
-        conn
-                .prepareStatement("create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
-                .execute();
+        conn.prepareStatement(
+                              "create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+        .execute();
         conn.close();
         final GlobalSettings configuration = new GlobalSettings();
         configuration.setDefaultSleepingIntervalInMilliseconds(500);
         GlobalSettings globalSettings = new GlobalSettings();
-        globalSettings.getLoaderRegistry().add(
-                                               DatabaseCustomArtifactFinder.class);
+        globalSettings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
 
-        Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
+                                                                                               injector.getInstance(SimplePersistFactory.class),
+                                                                                               dbBundle.getRepository());
 
-        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(injector.getInstance(SimplePersistFactory.class), dbBundle.getRepository());
+        ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings, dbBundle, provider);
 
-        ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings,
-                                                        dbBundle, provider);
-
-        Set<DatabaseCustomArtifact> firstLoadedItems = provider.get()
-                                                               .listByPath(DatabaseCustomArtifact.class, null);
+        Set<DatabaseCustomArtifact> firstLoadedItems = provider.get().listByPath(DatabaseCustomArtifact.class, null);
         conn = DatabaseSupport.createConnection(dbBundle);
 
         conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
@@ -139,8 +137,7 @@ public class ColumnChangingFiresTableChangeTest {
         .execute();
         conn.close();
 
-        Set<DatabaseCustomArtifact> lastLoadedItems = provider.get()
-                                                              .listByPath(DatabaseCustomArtifact.class, null);
+        Set<DatabaseCustomArtifact> lastLoadedItems = provider.get().listByPath(DatabaseCustomArtifact.class, null);
         conn = DatabaseSupport.createConnection(dbBundle);
 
         boolean found = false;

@@ -82,13 +82,10 @@ import org.openspotlight.jcr.provider.SessionWithLock;
 @Ignore
 public class ClasspathImport {
 
-    private static File extractZippedOnTempFile() throws IOException,
-            FileNotFoundException {
+    private static File extractZippedOnTempFile() throws IOException, FileNotFoundException {
         final File temp = File.createTempFile("stress-data", ".xml");
-        final ZipInputStream zis = new ZipInputStream(new FileInputStream(
-                                                                          "src/test/resources/data/exported-stress-data.xml.zip"));
-        final OutputStream fos = new BufferedOutputStream(new FileOutputStream(
-                                                                               temp));
+        final ZipInputStream zis = new ZipInputStream(new FileInputStream("src/test/resources/data/exported-stress-data.xml.zip"));
+        final OutputStream fos = new BufferedOutputStream(new FileOutputStream(temp));
         final byte data[] = new byte[2048];
         int count;
         ZipEntry entry;
@@ -106,35 +103,26 @@ public class ClasspathImport {
         return temp;
     }
 
-    public static void importClassPathData(
-                                            final JcrConnectionDescriptor descriptor ) throws IOException,
-            FileNotFoundException, RepositoryException, PathNotFoundException,
-            ItemExistsException, ConstraintViolationException,
-            VersionException, InvalidSerializedDataException, LockException,
-            AccessDeniedException, InvalidItemStateException,
-            NoSuchNodeTypeException {
+    public static void importClassPathData( final JcrConnectionDescriptor descriptor )
+        throws IOException, FileNotFoundException, RepositoryException, PathNotFoundException, ItemExistsException,
+        ConstraintViolationException, VersionException, InvalidSerializedDataException, LockException, AccessDeniedException,
+        InvalidItemStateException, NoSuchNodeTypeException {
         final File temp = extractZippedOnTempFile();
         importDataFromFile(temp, descriptor);
     }
 
     private static void importDataFromFile( final File temp,
                                             final JcrConnectionDescriptor descriptor )
-            throws FileNotFoundException, RepositoryException, IOException,
-            PathNotFoundException, ItemExistsException,
-            ConstraintViolationException, VersionException,
-            InvalidSerializedDataException, LockException,
-            AccessDeniedException, InvalidItemStateException,
-            NoSuchNodeTypeException {
+        throws FileNotFoundException, RepositoryException, IOException, PathNotFoundException, ItemExistsException,
+        ConstraintViolationException, VersionException, InvalidSerializedDataException, LockException, AccessDeniedException,
+        InvalidItemStateException, NoSuchNodeTypeException {
         final InputStream is = new FileInputStream(temp);
-        final JcrConnectionProvider desc = JcrConnectionProvider
-                                                                .createFromData(descriptor);
+        final JcrConnectionProvider desc = JcrConnectionProvider.createFromData(descriptor);
         desc.closeRepositoryAndCleanResources();
         final SessionWithLock session = desc.openSession();
         final Node root = session.getRootNode();
-        final BufferedInputStream bufferedInputStream = new BufferedInputStream(
-                                                                                is);
-        session.importXML(root.getPath(), bufferedInputStream,
-                          ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
+        final BufferedInputStream bufferedInputStream = new BufferedInputStream(is);
+        session.importXML(root.getPath(), bufferedInputStream, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
         session.save();
         session.logout();
     }

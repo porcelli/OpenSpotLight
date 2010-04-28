@@ -93,15 +93,13 @@ class SessionWrapper implements SessionWithLock {
     private final Logger         logger = LoggerFactory.getLogger(getClass());
 
     public SessionWrapper(
-                           final Session session, final int sessionId,
-                           final SessionClosingListener sessionClosingListener ) {
+                           final Session session, final int sessionId, final SessionClosingListener sessionClosingListener ) {
         this.session = session;
         this.sessionId = sessionId;
         this.sessionClosingListener = sessionClosingListener;
     }
 
-    public void addLockToken( final String lt ) throws LockException,
-        RepositoryException {
+    public void addLockToken( final String lt ) throws LockException, RepositoryException {
         synchronized (lock) {
 
             session.addLockToken(lt);
@@ -109,8 +107,7 @@ class SessionWrapper implements SessionWithLock {
     }
 
     public void checkPermission( final String absPath,
-                                 final String actions )
-        throws AccessControlException, RepositoryException {
+                                 final String actions ) throws AccessControlException, RepositoryException {
         synchronized (lock) {
 
             session.checkPermission(absPath, actions);
@@ -121,12 +118,10 @@ class SessionWrapper implements SessionWithLock {
     public void exportDocumentView( final String absPath,
                                     final ContentHandler contentHandler,
                                     final boolean skipBinary,
-                                    final boolean noRecurse ) throws PathNotFoundException,
-            SAXException, RepositoryException {
+                                    final boolean noRecurse ) throws PathNotFoundException, SAXException, RepositoryException {
         synchronized (lock) {
 
-            session.exportDocumentView(absPath, contentHandler, skipBinary,
-                                       noRecurse);
+            session.exportDocumentView(absPath, contentHandler, skipBinary, noRecurse);
 
         }
     }
@@ -134,8 +129,7 @@ class SessionWrapper implements SessionWithLock {
     public void exportDocumentView( final String absPath,
                                     final OutputStream out,
                                     final boolean skipBinary,
-                                    final boolean noRecurse ) throws IOException, PathNotFoundException,
-            RepositoryException {
+                                    final boolean noRecurse ) throws IOException, PathNotFoundException, RepositoryException {
         synchronized (lock) {
 
             session.exportDocumentView(absPath, out, skipBinary, noRecurse);
@@ -146,12 +140,10 @@ class SessionWrapper implements SessionWithLock {
     public void exportSystemView( final String absPath,
                                   final ContentHandler contentHandler,
                                   final boolean skipBinary,
-                                  final boolean noRecurse ) throws PathNotFoundException,
-            SAXException, RepositoryException {
+                                  final boolean noRecurse ) throws PathNotFoundException, SAXException, RepositoryException {
         synchronized (lock) {
 
-            session.exportSystemView(absPath, contentHandler, skipBinary,
-                                     noRecurse);
+            session.exportSystemView(absPath, contentHandler, skipBinary, noRecurse);
 
         }
     }
@@ -159,8 +151,7 @@ class SessionWrapper implements SessionWithLock {
     public void exportSystemView( final String absPath,
                                   final OutputStream out,
                                   final boolean skipBinary,
-                                  final boolean noRecurse )
-        throws IOException, PathNotFoundException, RepositoryException {
+                                  final boolean noRecurse ) throws IOException, PathNotFoundException, RepositoryException {
         synchronized (lock) {
 
             session.exportSystemView(absPath, out, skipBinary, noRecurse);
@@ -185,9 +176,8 @@ class SessionWrapper implements SessionWithLock {
     }
 
     public ContentHandler getImportContentHandler( final String parentAbsPath,
-                                                   final int uuidBehavior ) throws PathNotFoundException,
-            ConstraintViolationException, VersionException, LockException,
-            RepositoryException {
+                                                   final int uuidBehavior )
+        throws PathNotFoundException, ConstraintViolationException, VersionException, LockException, RepositoryException {
         synchronized (lock) {
 
             return session.getImportContentHandler(parentAbsPath, uuidBehavior);
@@ -195,8 +185,7 @@ class SessionWrapper implements SessionWithLock {
         }
     }
 
-    public Item getItem( final String absPath ) throws PathNotFoundException,
-        RepositoryException {
+    public Item getItem( final String absPath ) throws PathNotFoundException, RepositoryException {
         synchronized (lock) {
 
             return session.getItem(absPath);
@@ -216,8 +205,7 @@ class SessionWrapper implements SessionWithLock {
         }
     }
 
-    public String getNamespacePrefix( final String uri )
-        throws NamespaceException, RepositoryException {
+    public String getNamespacePrefix( final String uri ) throws NamespaceException, RepositoryException {
         synchronized (lock) {
 
             return session.getNamespacePrefix(uri);
@@ -233,8 +221,7 @@ class SessionWrapper implements SessionWithLock {
         }
     }
 
-    public String getNamespaceURI( final String prefix )
-        throws NamespaceException, RepositoryException {
+    public String getNamespaceURI( final String prefix ) throws NamespaceException, RepositoryException {
         synchronized (lock) {
 
             return session.getNamespaceURI(prefix);
@@ -242,8 +229,7 @@ class SessionWrapper implements SessionWithLock {
         }
     }
 
-    public Node getNodeByUUID( final String uuid ) throws ItemNotFoundException,
-        RepositoryException {
+    public Node getNodeByUUID( final String uuid ) throws ItemNotFoundException, RepositoryException {
         synchronized (lock) {
 
             return session.getNodeByUUID(uuid);
@@ -275,8 +261,7 @@ class SessionWrapper implements SessionWithLock {
         }
     }
 
-    public ValueFactory getValueFactory()
-        throws UnsupportedRepositoryOperationException, RepositoryException {
+    public ValueFactory getValueFactory() throws UnsupportedRepositoryOperationException, RepositoryException {
         synchronized (lock) {
 
             return session.getValueFactory();
@@ -300,8 +285,7 @@ class SessionWrapper implements SessionWithLock {
         }
     }
 
-    public Session impersonate( final Credentials credentials )
-        throws LoginException, RepositoryException {
+    public Session impersonate( final Credentials credentials ) throws LoginException, RepositoryException {
         synchronized (lock) {
 
             return session.impersonate(credentials);
@@ -311,10 +295,9 @@ class SessionWrapper implements SessionWithLock {
 
     public void importXML( final String parentAbsPath,
                            final InputStream in,
-                           final int uuidBehavior ) throws IOException, PathNotFoundException,
-            ItemExistsException, ConstraintViolationException,
-            VersionException, InvalidSerializedDataException, LockException,
-            RepositoryException {
+                           final int uuidBehavior )
+        throws IOException, PathNotFoundException, ItemExistsException, ConstraintViolationException, VersionException,
+        InvalidSerializedDataException, LockException, RepositoryException {
         synchronized (lock) {
 
             session.importXML(parentAbsPath, in, uuidBehavior);
@@ -349,8 +332,7 @@ class SessionWrapper implements SessionWithLock {
 
     public void move( final String srcAbsPath,
                       final String destAbsPath )
-        throws ItemExistsException, PathNotFoundException,
-        VersionException, ConstraintViolationException, LockException,
+        throws ItemExistsException, PathNotFoundException, VersionException, ConstraintViolationException, LockException,
         RepositoryException {
         synchronized (lock) {
 
@@ -375,10 +357,9 @@ class SessionWrapper implements SessionWithLock {
         }
     }
 
-    public void save() throws AccessDeniedException, ItemExistsException,
-        ConstraintViolationException, InvalidItemStateException,
-        VersionException, LockException, NoSuchNodeTypeException,
-        RepositoryException {
+    public void save()
+        throws AccessDeniedException, ItemExistsException, ConstraintViolationException, InvalidItemStateException,
+        VersionException, LockException, NoSuchNodeTypeException, RepositoryException {
         synchronized (lock) {
             logger.debug("starting save");
             session.save();
@@ -387,8 +368,7 @@ class SessionWrapper implements SessionWithLock {
     }
 
     public void setNamespacePrefix( final String newPrefix,
-                                    final String existingUri ) throws NamespaceException,
-            RepositoryException {
+                                    final String existingUri ) throws NamespaceException, RepositoryException {
         synchronized (lock) {
 
             session.setNamespacePrefix(newPrefix, existingUri);

@@ -72,9 +72,12 @@ public class SimpleInvocationHandler implements InvocationHandler {
         this.target = target;
     }
 
-    //@Override
-    /* (non-Javadoc)
-     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
+     * java.lang.reflect.Method, java.lang.Object[])
      */
     public Object invoke( Object proxy,
                           Method method,

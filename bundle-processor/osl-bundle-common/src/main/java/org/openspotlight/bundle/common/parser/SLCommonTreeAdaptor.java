@@ -84,8 +84,7 @@ public class SLCommonTreeAdaptor extends CommonTreeAdaptor {
                           final Token fromToken,
                           final String text ) {
         if (fromToken instanceof SLCommonToken) {
-            final SLCommonTree result = (SLCommonTree)super.create(
-                                                                   tokenType, fromToken, text);
+            final SLCommonTree result = (SLCommonTree)super.create(tokenType, fromToken, text);
             return result;
         }
         return super.create(tokenType, fromToken, text);

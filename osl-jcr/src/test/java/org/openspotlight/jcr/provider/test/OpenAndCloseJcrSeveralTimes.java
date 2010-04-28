@@ -58,8 +58,7 @@ public class OpenAndCloseJcrSeveralTimes {
     @Test
     public void shouldOpenAndCloseJcrSeveralTimes() throws Exception {
         final JcrConnectionDescriptor desc = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
-        JcrConnectionProvider provider = JcrConnectionProvider
-                                                              .createFromData(desc);
+        JcrConnectionProvider provider = JcrConnectionProvider.createFromData(desc);
         provider.openRepository();
         provider.closeRepositoryAndCleanResources();
         provider = JcrConnectionProvider.createFromData(desc);

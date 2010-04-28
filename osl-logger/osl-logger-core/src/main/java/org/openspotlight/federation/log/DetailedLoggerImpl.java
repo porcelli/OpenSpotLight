@@ -63,15 +63,16 @@ import java.util.Date;
 
 public final class DetailedLoggerImpl implements DetailedLogger {
 
-    private final STNodeEntry rootNode;
+    private final STNodeEntry                                         rootNode;
 
     private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-    public DetailedLoggerImpl(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
+    public DetailedLoggerImpl(
+                               SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
         try {
             this.simplePersist = simplePersist;
-            rootNode = this.simplePersist.getCurrentSession().withPartition(
-                    this.simplePersist.getCurrentPartition()).createNewSimpleNode("log");
+            rootNode = this.simplePersist.getCurrentSession().withPartition(this.simplePersist.getCurrentPartition()).createNewSimpleNode(
+                                                                                                                                          "log");
 
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -79,88 +80,82 @@ public final class DetailedLoggerImpl implements DetailedLogger {
 
     }
 
-    public void log(final AuthenticatedUser user,
-                    final LogEventType type,
-                    final ErrorCode errorCode,
-                    final String detailedMessage,
-                    final LogableObject... anotherNodes) {
+    public void log( final AuthenticatedUser user,
+                     final LogEventType type,
+                     final ErrorCode errorCode,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
 
     }
 
-    public void log(final AuthenticatedUser user,
-                    final LogEventType type,
-                    final ErrorCode errorCode,
-                    final String message,
-                    final String detailedMessage,
-                    final LogableObject... anotherNodes) {
-        this.log(user, null, type, errorCode, message, detailedMessage,
-                anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final LogEventType type,
+                     final ErrorCode errorCode,
+                     final String message,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, null, type, errorCode, message, detailedMessage, anotherNodes);
 
     }
 
-    public void log(final AuthenticatedUser user,
-                    final LogEventType type,
-                    final String message,
-                    final LogableObject... anotherNodes) {
+    public void log( final AuthenticatedUser user,
+                     final LogEventType type,
+                     final String message,
+                     final LogableObject... anotherNodes ) {
         this.log(user, null, type, null, message, null, anotherNodes);
 
     }
 
-    public void log(final AuthenticatedUser user,
-                    final LogEventType type,
-                    final String message,
-                    final String detailedMessage,
-                    final LogableObject... anotherNodes) {
-        this
-                .log(user, null, type, null, message, detailedMessage,
-                        anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final LogEventType type,
+                     final String message,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, null, type, null, message, detailedMessage, anotherNodes);
 
     }
 
-    public void log(final AuthenticatedUser user,
-                    final String repository,
-                    final LogEventType type,
-                    final ErrorCode errorCode,
-                    final String detailedMessage,
-                    final LogableObject... anotherNodes) {
-        this.log(user, repository, type, errorCode, null, detailedMessage,
-                anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final String repository,
+                     final LogEventType type,
+                     final ErrorCode errorCode,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, repository, type, errorCode, null, detailedMessage, anotherNodes);
 
     }
 
-    public void log(final AuthenticatedUser user,
-                    final String repository,
-                    final LogEventType type,
-                    final ErrorCode errorCode,
-                    final String message,
-                    final String detailedMessage,
-                    final LogableObject... anotherNodes) {
-        final LogEntry entry = new LogEntry(errorCode, System.currentTimeMillis(), type,
-                message, detailedMessage, LoggedObjectInformation
-                        .getHierarchyFrom(anotherNodes));
+    public void log( final AuthenticatedUser user,
+                     final String repository,
+                     final LogEventType type,
+                     final ErrorCode errorCode,
+                     final String message,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        final LogEntry entry = new LogEntry(errorCode, System.currentTimeMillis(), type, message, detailedMessage,
+                                            LoggedObjectInformation.getHierarchyFrom(anotherNodes));
 
         simplePersist.convertBeanToNode(rootNode, entry);
         simplePersist.getCurrentSession().flushTransient();
 
     }
 
-    public void log(final AuthenticatedUser user,
-                    final String repository,
-                    final LogEventType type,
-                    final String message,
-                    final LogableObject... anotherNodes) {
+    public void log( final AuthenticatedUser user,
+                     final String repository,
+                     final LogEventType type,
+                     final String message,
+                     final LogableObject... anotherNodes ) {
         this.log(user, repository, type, null, message, null, anotherNodes);
 
     }
 
-    public void log(final AuthenticatedUser user,
-                    final String repository,
-                    final LogEventType type,
-                    final String message,
-                    final String detailedMessage,
-                    final LogableObject... anotherNodes) {
-        this.log(user, repository, type, null, message, detailedMessage,
-                anotherNodes);
+    public void log( final AuthenticatedUser user,
+                     final String repository,
+                     final LogEventType type,
+                     final String message,
+                     final String detailedMessage,
+                     final LogableObject... anotherNodes ) {
+        this.log(user, repository, type, null, message, detailedMessage, anotherNodes);
     }
 
 }

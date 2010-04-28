@@ -88,8 +88,7 @@ public class ExceptionsTest {
     }
 
     @Test( expected = IllegalArgumentException.class )
-    public void shouldCatchExceptionAndThrowAnotherKindThatReturned()
-            throws Exception {
+    public void shouldCatchExceptionAndThrowAnotherKindThatReturned() throws Exception {
         try {
             this.dangerousMethod();
         } catch (final Exception e) {
@@ -98,30 +97,27 @@ public class ExceptionsTest {
     }
 
     @Test( expected = IllegalArgumentException.class )
-    public void shouldCatchExceptionAndThrowAnotherKindThatReturnedWithMessage()
-            throws Exception {
+    public void shouldCatchExceptionAndThrowAnotherKindThatReturnedWithMessage() throws Exception {
         try {
             this.dangerousMethod();
         } catch (final Exception e) {
             throw logAndReturnNew("it was so dangerous!", e, //$NON-NLS-1$
-            IllegalArgumentException.class);
+                                  IllegalArgumentException.class);
         }
     }
 
     @Test( expected = IllegalArgumentException.class )
-    public void shouldCatchExceptionAndThrowAnotherKindWithMessage()
-            throws Exception {
+    public void shouldCatchExceptionAndThrowAnotherKindWithMessage() throws Exception {
         try {
             this.dangerousMethod();
         } catch (final Exception e) {
             logAndThrowNew("it was so dangerous!", e, //$NON-NLS-1$
-            IllegalArgumentException.class);
+                           IllegalArgumentException.class);
         }
     }
 
     @Test( expected = ConfigurationException.class )
-    public void shouldCatchExceptionAndThrowTheSame()
-            throws ConfigurationException {
+    public void shouldCatchExceptionAndThrowTheSame() throws ConfigurationException {
         try {
             this.dangerousMethod();
         } catch (final Exception e) {
@@ -130,8 +126,7 @@ public class ExceptionsTest {
     }
 
     @Test( expected = ConfigurationException.class )
-    public void shouldCatchExceptionAndThrowTheSameThatReturned()
-            throws Exception {
+    public void shouldCatchExceptionAndThrowTheSameThatReturned() throws Exception {
         try {
             this.dangerousMethod();
         } catch (final Exception e) {

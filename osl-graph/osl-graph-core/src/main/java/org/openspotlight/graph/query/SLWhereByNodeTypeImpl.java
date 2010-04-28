@@ -116,7 +116,7 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
 
     /**
      * private void verifyConditionalOperator() { if (statementInfo.getConditionInfoList().isEmpty()) { throw new
-     * SLInvalidQuerySyntaxRuntimeException("the first condition of a statement must not start with AND or OR operators"); } }
+     * SLInvalidQuerySyntaxRuntimeException( "the first condition of a statement must not start with AND or OR operators" ); } }
      */
 
     public static class EndImpl implements End {
@@ -536,8 +536,12 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
-                        /* (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#contains()
+                        /*
+                         * (non-Javadoc)
+                         * 
+                         * @see
+                         * org.openspotlight.graph.query.SLWhereByNodeType.Type
+                         * .Each.Property#contains()
                          */
                         /**
                          * Contains.
@@ -549,8 +553,12 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
-                        /* (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#startsWith()
+                        /*
+                         * (non-Javadoc)
+                         * 
+                         * @see
+                         * org.openspotlight.graph.query.SLWhereByNodeType.Type
+                         * .Each.Property#startsWith()
                          */
                         /**
                          * Starts with.
@@ -562,8 +570,12 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
-                        /* (non-Javadoc)
-                         * @see org.openspotlight.graph.query.SLWhereByNodeType.Type.Each.Property#endsWith()
+                        /*
+                         * (non-Javadoc)
+                         * 
+                         * @see
+                         * org.openspotlight.graph.query.SLWhereByNodeType.Type
+                         * .Each.Property#endsWith()
                          */
                         /**
                          * Ends with.
@@ -746,7 +758,8 @@ public class SLWhereByNodeTypeImpl implements SLWhereByNodeType, SLWhereByNodeTy
                                      * {@inheritDoc}
                                      */
                                     public OpenBracket openBracket() {
-                                        SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(conditionInfo.getTypeInfo());
+                                        SLTypeStatementInfo newStatementInfo = new SLTypeStatementInfo(
+                                                                                                       conditionInfo.getTypeInfo());
                                         conditionInfo.setInnerStatementInfo(newStatementInfo);
                                         SLConditionInfo newConditionInfo = newStatementInfo.addCondition();
                                         Each each = new EachImpl(whereStatement, newConditionInfo, this.each);

@@ -76,14 +76,18 @@ public enum SLConditionalOperatorType implements SLOperatorType {
         this.symbol = symbol;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.query.SLOperatorType#symbol()
      */
     public String symbol() {
         return symbol;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Enum#toString()
      */
     @Override

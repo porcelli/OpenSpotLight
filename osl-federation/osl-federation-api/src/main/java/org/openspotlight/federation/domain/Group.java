@@ -108,8 +108,8 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
             return false;
         }
         final Group that = (Group)o;
-        final boolean result = Equals.eachEquality(Arrays.of(group, repository,
-                                                             name), Arrays.andOf(that.group, that.repository, that.name));
+        final boolean result = Equals.eachEquality(Arrays.of(group, repository, name), Arrays.andOf(that.group, that.repository,
+                                                                                                    that.name));
         return result;
     }
 
@@ -172,9 +172,7 @@ public class Group implements SimpleNodeType, Serializable, Schedulable {
     public String getUniqueName() {
         String result = uniqueName;
         if (result == null) {
-            result = (group != null ? group.getUniqueName() : repository
-                                                                        .getName())
-                     + "/" + getName();
+            result = (group != null ? group.getUniqueName() : repository.getName()) + "/" + getName();
             uniqueName = result;
         }
         return result;

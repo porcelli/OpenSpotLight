@@ -66,8 +66,7 @@ public class ExpressionDto {
     private ExpressionDto() {
         resultType = null;
         leaf = null;
-        participants = Collections
-                                  .unmodifiableList(new ArrayList<ExpressionDto>(0));
+        participants = Collections.unmodifiableList(new ArrayList<ExpressionDto>(0));
     }
 
     public ExpressionDto(
@@ -88,8 +87,7 @@ public class ExpressionDto {
     }
 
     public ExpressionDto(
-                          final JavaType resultType, final SLNode leaf,
-                          final ExpressionDto... dtos ) {
+                          final JavaType resultType, final SLNode leaf, final ExpressionDto... dtos ) {
         Assertions.checkNotNull("resultType", resultType);
         Assertions.checkNotNull("leaf", leaf);
         this.resultType = resultType;
@@ -111,8 +109,7 @@ public class ExpressionDto {
         if (this == NULL_EXPRESSION) {
             return "ExpressionDTO[NULL]";
         }
-        return "ExpressionDTO[leaf: " + leaf.getName() + " , resultType: "
-                + resultType.getName() + " ] and " + participants.size()
-                + " participants";
+        return "ExpressionDTO[leaf: " + leaf.getName() + " , resultType: " + resultType.getName() + " ] and "
+               + participants.size() + " participants";
     }
 }

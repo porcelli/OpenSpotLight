@@ -15,14 +15,15 @@ import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
  */
 public class SLGraphSessionProvider extends ThreadLocalProvider<SLGraphSession> {
 
-    private final SLGraph graph;
+    private final SLGraph          graph;
 
     private final STRepositoryPath repositoryPath;
 
-    private final UserProvider userProvider;
+    private final UserProvider     userProvider;
 
     @Inject
-    public SLGraphSessionProvider(SLGraph graph, STRepositoryPath repositoryPath, UserProvider userProvider) {
+    public SLGraphSessionProvider(
+                                   SLGraph graph, STRepositoryPath repositoryPath, UserProvider userProvider ) {
         this.graph = graph;
         this.repositoryPath = repositoryPath;
         this.userProvider = userProvider;

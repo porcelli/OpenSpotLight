@@ -84,9 +84,12 @@ public class SLPersistentQueryResultImpl implements SLPersistentQueryResult {
     /** The persistent nodes. */
     private Collection<SLPersistentNode> persistentNodes;
 
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.persistence.SLPersistentQueryResult#getNodes()
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.persistence.SLPersistentQueryResult#getNodes()
      */
     public Collection<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException {
         if (persistentNodes == null) {
@@ -115,8 +118,11 @@ public class SLPersistentQueryResultImpl implements SLPersistentQueryResult {
         return persistentNodes;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.persistence.SLPersistentQueryResult#getRowCount()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.persistence.SLPersistentQueryResult#getRowCount()
      */
     public int getRowCount() throws SLPersistentTreeSessionException {
         try {

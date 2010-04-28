@@ -102,8 +102,7 @@ public class JavaExampleDataCreationTest {
         } catch (final AssertionError e) {
             e.printStackTrace();
         } finally {
-            JcrConnectionProvider.createFromData(descriptor)
-                                 .closeRepositoryAndCleanResources();
+            JcrConnectionProvider.createFromData(descriptor).closeRepositoryAndCleanResources();
 
         }
 
@@ -119,24 +118,20 @@ public class JavaExampleDataCreationTest {
     private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 
     public void setupResourcesAndCreateData() throws Exception {
-        JcrConnectionProvider.createFromData(descriptor)
-                             .closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(descriptor).closeRepositoryAndCleanResources();
         final Repository repo = new Repository();
         repo.setName("name");
         repo.setActive(true);
         final ArtifactSource includedSource = new ArtifactSource();
         includedSource.setRepository(repo);
         includedSource.setName("classpath");
-        includedSource
-                      .setInitialLookup("./src/test/resources/stringArtifacts/exampleFiles");
+        includedSource.setInitialLookup("./src/test/resources/stringArtifacts/exampleFiles");
 
-Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
-
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
         includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
@@ -162,32 +157,27 @@ Injector injector = Guice.createInjector(
         bundleJarSource.setBundleProcessorType(jarProcessor);
         bundleJarSource.setRelative("jar/");
         bundleJarSource.getIncludeds().add("**/luni-few-classes.jar");
-        ExecutionContext ctx = includedFilesContextFactory
-                                                          .createExecutionContext(username, password, descriptor, group
-                                                                                                                       .getRootRepository());
+        ExecutionContext ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
+                                                                                  group.getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
-        final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE
-                                                                                   .executeBundles(username, password, descriptor,
-                                                                                                   includedFilesContextFactory, settings, group);
+        final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password,
+                                                                                                   descriptor,
+                                                                                                   includedFilesContextFactory,
+                                                                                                   settings, group);
         Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
-        ctx = includedFilesContextFactory.createExecutionContext(username,
-                                                                 password, descriptor, group.getRootRepository());
-        final SLNode ctxRoot = ctx.getGraphSession().getContext(
-                                                                JavaConstants.ABSTRACT_CONTEXT).getRootNode();
-        final SLNode objectNode = ctxRoot.getNode("java.lang")
-                                         .getNode("Object");
+        ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor, group.getRootRepository());
+        final SLNode ctxRoot = ctx.getGraphSession().getContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
+        final SLNode objectNode = ctxRoot.getNode("java.lang").getNode("Object");
         Assert.assertThat(objectNode, Is.is(IsNull.notNullValue()));
 
-        final SessionWithLock session = ctx.getDefaultConnectionProvider()
-                                           .openSession();
-        final Node node = session.getRootNode().getNode(
-                                                        SLConsts.DEFAULT_JCR_ROOT_NAME);
+        final SessionWithLock session = ctx.getDefaultConnectionProvider().openSession();
+        final Node node = session.getRootNode().getNode(SLConsts.DEFAULT_JCR_ROOT_NAME);
         new File("target/test-data/").mkdirs();
         final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
-                                                                                   new FileOutputStream("target/test-data/exportedData.xml"));
-        session.exportSystemView(node.getPath(), bufferedOutputStream, false,
-                                 false);
+                                                                                   new FileOutputStream(
+                                                                                                        "target/test-data/exportedData.xml"));
+        session.exportSystemView(node.getPath(), bufferedOutputStream, false, false);
         bufferedOutputStream.flush();
         bufferedOutputStream.close();
 

@@ -72,8 +72,7 @@ import org.openspotlight.persist.annotation.TransientProperty;
  * The Class ArtifactSource.
  */
 @Name( "artifact_source" )
-public class ArtifactSource implements SimpleNodeType, Serializable,
-        LogableObject, Schedulable {
+public class ArtifactSource implements SimpleNodeType, Serializable, LogableObject, Schedulable {
 
     private boolean                    binary           = false;
 
@@ -103,9 +102,9 @@ public class ArtifactSource implements SimpleNodeType, Serializable,
             return false;
         }
         final ArtifactSource that = (ArtifactSource)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.getClass(),
-                                                             name, repository), Arrays.andOf(that.getClass(), that.name,
-                                                                                             that.repository));
+        final boolean result = Equals.eachEquality(Arrays.of(this.getClass(), name, repository), Arrays.andOf(that.getClass(),
+                                                                                                              that.name,
+                                                                                                              that.repository));
         return result;
     }
 
@@ -227,8 +226,7 @@ public class ArtifactSource implements SimpleNodeType, Serializable,
     }
 
     public String toUniqueJobString() {
-        return getRepository().getName() + ":" + getName() + ":"
-                + getInitialLookup();
+        return getRepository().getName() + ":" + getName() + ":" + getInitialLookup();
     }
 
     @TransientProperty

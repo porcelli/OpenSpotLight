@@ -55,6 +55,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import com.google.common.collect.ImmutableSet;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.artifact.Artifact;
@@ -62,14 +63,12 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.task.ExecutorInstance;
 
-public abstract class AbstractPersistentArtifactManager implements
-        PersistentArtifactManager {
+public abstract class AbstractPersistentArtifactManager implements PersistentArtifactManager {
     protected abstract boolean isMultithreaded();
 
     private final PersistentArtifactInternalMethods internalMethods = new PersistentArtifactInternalMethodsImpl();
 
-    private final class PersistentArtifactInternalMethodsImpl implements
-            PersistentArtifactInternalMethods {
+    private final class PersistentArtifactInternalMethodsImpl implements PersistentArtifactInternalMethods {
 
         public <A extends Artifact> A findByOriginalName( ArtifactSource source,
                                                           Class<A> type,
@@ -89,8 +88,7 @@ public abstract class AbstractPersistentArtifactManager implements
             }
         }
 
-        public <A extends Artifact> Set<A> listByOriginalNames(
-                                                                ArtifactSource source,
+        public <A extends Artifact> Set<A> listByOriginalNames( ArtifactSource source,
                                                                 Class<A> type,
                                                                 String originName ) {
             try {
@@ -100,8 +98,7 @@ public abstract class AbstractPersistentArtifactManager implements
             }
         }
 
-        public <A extends Artifact> Set<String> retrieveOriginalNames(
-                                                                       ArtifactSource source,
+        public <A extends Artifact> Set<String> retrieveOriginalNames( ArtifactSource source,
                                                                        Class<A> type,
                                                                        String initialPath ) {
             try {
@@ -176,45 +173,34 @@ public abstract class AbstractPersistentArtifactManager implements
         }
     }
 
-    protected abstract <A extends Artifact> A internalFindByOriginalName(
-                                                                          ArtifactSource source,
+    protected abstract <A extends Artifact> A internalFindByOriginalName( ArtifactSource source,
                                                                           Class<A> type,
-                                                                          String originName )
-            throws Exception;
+                                                                          String originName ) throws Exception;
 
-    protected abstract <A extends Artifact> boolean internalIsTypeSupported(
-                                                                             Class<A> type ) throws Exception;
+    protected abstract <A extends Artifact> boolean internalIsTypeSupported( Class<A> type ) throws Exception;
 
-    protected abstract <A extends Artifact> Set<String> internalRetrieveOriginalNames(
-                                                                                       ArtifactSource source,
+    protected abstract <A extends Artifact> Set<String> internalRetrieveOriginalNames( ArtifactSource source,
                                                                                        Class<A> type,
-                                                                                       String initialPath )
-            throws Exception;
+                                                                                       String initialPath ) throws Exception;
 
-    protected abstract <A extends Artifact> Set<String> internalRetrieveNames(
-                                                                               Class<A> type,
+    protected abstract <A extends Artifact> Set<String> internalRetrieveNames( Class<A> type,
                                                                                String initialPath ) throws Exception;
 
-    protected abstract <A extends Artifact> void internalAddTransient( A artifact )
-            throws Exception;
+    protected abstract <A extends Artifact> void internalAddTransient( A artifact ) throws Exception;
 
     protected abstract <A extends Artifact> A internalFindByPath( Class<A> type,
                                                                   String path ) throws Exception;
 
-    protected abstract <A extends Artifact> void internalMarkAsRemoved(
-                                                                        A artifact ) throws Exception;
+    protected abstract <A extends Artifact> void internalMarkAsRemoved( A artifact ) throws Exception;
 
     protected abstract void internalSaveTransientData() throws Exception;
 
     protected abstract void internalCloseResources() throws Exception;
 
-    protected final <A extends Artifact> Set<A> internalListByOriginalNames(
-                                                                             final ArtifactSource source,
+    protected final <A extends Artifact> Set<A> internalListByOriginalNames( final ArtifactSource source,
                                                                              final Class<A> type,
-                                                                             String initialPath )
-            throws Exception {
-        Set<String> paths = getInternalMethods().retrieveOriginalNames(source,
-                                                                       type, initialPath);
+                                                                             String initialPath ) throws Exception {
+        Set<String> paths = getInternalMethods().retrieveOriginalNames(source, type, initialPath);
         Set<A> result = new HashSet<A>();
         if (isMultithreaded()) {
             List<Callable<A>> tasks = new ArrayList<Callable<A>>();
@@ -226,8 +212,7 @@ public abstract class AbstractPersistentArtifactManager implements
                 };
                 tasks.add(callable);
             }
-            List<Future<A>> futures = ExecutorInstance.INSTANCE
-                                                               .invokeAll(tasks);
+            List<Future<A>> futures = ExecutorInstance.INSTANCE.invokeAll(tasks);
             for (Future<A> f : futures)
                 result.add(f.get());
         } else {
@@ -238,11 +223,9 @@ public abstract class AbstractPersistentArtifactManager implements
         return result;
     }
 
-    protected final <A extends Artifact> Set<A> internalListByPath(
-                                                                    final Class<A> type,
+    protected final <A extends Artifact> Set<A> internalListByPath( final Class<A> type,
                                                                     String initialPath ) throws Exception {
-        Set<String> paths = getInternalMethods().retrieveNames(type,
-                                                               initialPath);
+        Set<String> paths = getInternalMethods().retrieveNames(type, initialPath);
         Set<A> result = new HashSet<A>();
         if (isMultithreaded()) {
             List<Callable<A>> tasks = new ArrayList<Callable<A>>();
@@ -254,8 +237,7 @@ public abstract class AbstractPersistentArtifactManager implements
                 };
                 tasks.add(callable);
             }
-            List<Future<A>> futures = ExecutorInstance.INSTANCE
-                                                               .invokeAll(tasks);
+            List<Future<A>> futures = ExecutorInstance.INSTANCE.invokeAll(tasks);
             for (Future<A> f : futures)
                 result.add(f.get());
         } else {
@@ -263,7 +245,7 @@ public abstract class AbstractPersistentArtifactManager implements
                 result.add(internalFindByPath(type, path));
             }
         }
-        return result;
+        return ImmutableSet.copyOf(result);
     }
 
 }

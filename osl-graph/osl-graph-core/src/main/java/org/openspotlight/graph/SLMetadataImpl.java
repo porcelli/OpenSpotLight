@@ -90,8 +90,7 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public SLMetaNodeType getMetaNodeType(
-                                            final Class<? extends SLNode> nodeClass ) {
+    public SLMetaNodeType getMetaNodeType( final Class<? extends SLNode> nodeClass ) {
         synchronized (lock) {
             return this.getMetaNodeType(nodeClass.getName());
         }
@@ -103,24 +102,18 @@ public class SLMetadataImpl implements SLMetadata {
     public SLMetaNodeType getMetaNodeType( final String typeName ) {
         synchronized (lock) {
             try {
-                final StringBuilder statement = new StringBuilder(treeSession
-                                                                             .getXPathRootPath()
-                                                                  + "/metadata/types//*");
-                StringBuilderUtil.append(statement, '[',
-                                         SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        statement.toString(), SLPersistentQuery.TYPE_XPATH);
+                final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/types//*");
+                StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_NODE_TYPE, "='", typeName, "']");
+                final SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
                 SLMetaNodeType metaNode = null;
                 if (result.getRowCount() == 1) {
-                    final SLPersistentNode pMetaNode = result.getNodes()
-                                                             .iterator().next();
+                    final SLPersistentNode pMetaNode = result.getNodes().iterator().next();
                     metaNode = new SLMetaNodeTypeImpl(this, pMetaNode);
                 }
                 return metaNode;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta node.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta node.", e);
             }
         }
     }
@@ -131,25 +124,18 @@ public class SLMetadataImpl implements SLMetadata {
     public SLMetaNodeType getMetaNodeTypeByDescription( final String description ) {
         synchronized (lock) {
             try {
-                final StringBuilder statement = new StringBuilder(treeSession
-                                                                             .getXPathRootPath()
-                                                                  + "/metadata/types//*");
-                StringBuilderUtil.append(statement, '[',
-                                         SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description,
-                                         "']");
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        statement.toString(), SLPersistentQuery.TYPE_XPATH);
+                final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/types//*");
+                StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description, "']");
+                final SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
                 SLMetaNodeType metaNode = null;
                 if (result.getRowCount() == 1) {
-                    final SLPersistentNode pMetaNode = result.getNodes()
-                                                             .iterator().next();
+                    final SLPersistentNode pMetaNode = result.getNodes().iterator().next();
                     metaNode = new SLMetaNodeTypeImpl(this, pMetaNode);
                 }
                 return metaNode;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta node.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta node.", e);
             }
         }
     }
@@ -174,21 +160,16 @@ public class SLMetadataImpl implements SLMetadata {
         synchronized (lock) {
             try {
                 final StringBuilder statement = new StringBuilder();
-                statement.append(
-                                 treeSession.getXPathRootPath() + "/metadata/links/")
-                         .append(name);
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        statement.toString(), SLPersistentQuery.TYPE_XPATH);
+                statement.append(treeSession.getXPathRootPath() + "/metadata/links/").append(name);
+                final SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
                 SLMetaLinkType metaLinkType = null;
                 if (result.getRowCount() == 1) {
-                    metaLinkType = new SLMetaLinkTypeImpl(this, result
-                                                                      .getNodes().iterator().next());
+                    metaLinkType = new SLMetaLinkTypeImpl(this, result.getNodes().iterator().next());
                 }
                 return metaLinkType;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta link type.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta link type.", e);
             }
         }
     }
@@ -200,23 +181,17 @@ public class SLMetadataImpl implements SLMetadata {
         synchronized (lock) {
             try {
                 final StringBuilder statement = new StringBuilder();
-                statement.append(treeSession.getXPathRootPath()
-                                 + "/metadata/links/*");
-                StringBuilderUtil.append(statement, '[',
-                                         SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description,
-                                         "']");
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        statement.toString(), SLPersistentQuery.TYPE_XPATH);
+                statement.append(treeSession.getXPathRootPath() + "/metadata/links/*");
+                StringBuilderUtil.append(statement, '[', SLConsts.PROPERTY_NAME_DESCRIPTION, "='", description, "']");
+                final SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
                 SLMetaLinkType metaLinkType = null;
                 if (result.getRowCount() == 1) {
-                    metaLinkType = new SLMetaLinkTypeImpl(this, result
-                                                                      .getNodes().iterator().next());
+                    metaLinkType = new SLMetaLinkTypeImpl(this, result.getNodes().iterator().next());
                 }
                 return metaLinkType;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta link type.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta link type.", e);
             }
         }
     }
@@ -227,26 +202,20 @@ public class SLMetadataImpl implements SLMetadata {
     public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes() {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationCollection<SLMetaLinkType> metaLinkTypes = LockedCollections
-                                                                                                     .createCollectionWithLock(this,
+                final NeedsSyncronizationCollection<SLMetaLinkType> metaLinkTypes = LockedCollections.createCollectionWithLock(
+                                                                                                                               this,
                                                                                                                                new ArrayList<SLMetaLinkType>());
-                final StringBuilder statement = new StringBuilder(treeSession
-                                                                             .getXPathRootPath()
-                                                                  + "/metadata/links/*");
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        statement.toString(), SLPersistentQuery.TYPE_XPATH);
+                final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/links/*");
+                final SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
-                final Collection<SLPersistentNode> linkTypeNodes = result
-                                                                         .getNodes();
+                final Collection<SLPersistentNode> linkTypeNodes = result.getNodes();
                 for (final SLPersistentNode linkTypeNode : linkTypeNodes) {
-                    final SLMetaLinkType metaLinkType = new SLMetaLinkTypeImpl(
-                                                                               this, linkTypeNode);
+                    final SLMetaLinkType metaLinkType = new SLMetaLinkTypeImpl(this, linkTypeNode);
                     metaLinkTypes.add(metaLinkType);
                 }
                 return metaLinkTypes;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta link type.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta link type.", e);
             }
         }
     }
@@ -263,8 +232,7 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
-                                                                            final SLRecursiveMode recursiveMode ) {
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( final SLRecursiveMode recursiveMode ) {
         synchronized (lock) {
             return getMetaNodesTypes(recursiveMode, null);
         }
@@ -273,43 +241,34 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
-                                                                            final SLRecursiveMode recursiveMode,
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( final SLRecursiveMode recursiveMode,
                                                                             final VisibilityLevel visibility ) {
         synchronized (lock) {
             try {
                 final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
-                final StringBuilder statement = new StringBuilder(treeSession
-                                                                             .getXPathRootPath()
-                                                                  + "/metadata/types");
+                final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/types");
                 if (recursiveMode.equals(SLRecursiveMode.RECURSIVE)) {
                     statement.append("//*");
                 } else {
                     statement.append("/*");
                 }
                 if (visibility != null) {
-                    final String propName = SLCommonSupport
-                                                           .toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
+                    final String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
 
-                    StringBuilderUtil.append(statement, '[', propName, "='",
-                                             visibility.toString(), "']");
+                    StringBuilderUtil.append(statement, '[', propName, "='", visibility.toString(), "']");
                 }
 
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        statement.toString(), SLPersistentQuery.TYPE_XPATH);
+                final SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
                 final Collection<SLPersistentNode> pNodes = result.getNodes();
                 for (final SLPersistentNode pNode : pNodes) {
-                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(
-                                                                           this, pNode);
+                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(this, pNode);
                     metaNodes.add(metaNode);
                 }
-                return LockedCollections.createCollectionWithLock(this,
-                                                                  metaNodes);
+                return LockedCollections.createCollectionWithLock(this, metaNodes);
 
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node metadata.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve node metadata.", e);
             }
         }
     }
@@ -317,8 +276,7 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType(
-                                                                             final SLRecursiveMode recursiveMode,
+    public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType( final SLRecursiveMode recursiveMode,
                                                                              final VisibilityLevel visibility,
                                                                              final MetaNodeTypeProperty property2Find,
                                                                              final LogicOperator logicOp,
@@ -326,28 +284,23 @@ public class SLMetadataImpl implements SLMetadata {
                                                                              final List<String> values ) {
         synchronized (lock) {
             try {
-                final String statement = SLMetadataXPathSupporter
-                                                                 .buildXpathForMetaNodeType(treeSession
-                                                                                                       .getXPathRootPath()
-                                                                                            + "/metadata/types", recursiveMode, visibility,
-                                                                                            property2Find, logicOp, booleanOp, values);
+                final String statement = SLMetadataXPathSupporter.buildXpathForMetaNodeType(treeSession.getXPathRootPath()
+                                                                                            + "/metadata/types", recursiveMode,
+                                                                                            visibility, property2Find, logicOp,
+                                                                                            booleanOp, values);
 
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        statement, SLPersistentQuery.TYPE_XPATH);
+                final SLPersistentQuery query = treeSession.createQuery(statement, SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
                 final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
                 final Collection<SLPersistentNode> pNodes = result.getNodes();
                 for (final SLPersistentNode pNode : pNodes) {
-                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(
-                                                                           this, pNode);
+                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(this, pNode);
                     metaNodes.add(metaNode);
                 }
-                return LockedCollections.createCollectionWithLock(this,
-                                                                  metaNodes);
+                return LockedCollections.createCollectionWithLock(this, metaNodes);
 
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node metadata.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve node metadata.", e);
             }
         }
     }

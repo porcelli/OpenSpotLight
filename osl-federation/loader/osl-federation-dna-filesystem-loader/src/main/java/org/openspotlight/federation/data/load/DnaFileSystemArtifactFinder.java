@@ -65,21 +65,21 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 public class DnaFileSystemArtifactFinder extends DnaArtifactFinder {
 
     @Override
-    protected void configureWithBundle(
-                                        final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+    protected void configureWithBundle( final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
                                         final ArtifactSource source ) {
         repositorySource2.usingClass(FileSystemSource.class).setProperty("workspaceRootPath", source.getInitialLookup()).setProperty( //$NON-NLS-1$ 
-        "creatingWorkspacesAllowed", true).setProperty(//$NON-NLS-1$
-        "defaultWorkspaceName", "."); //$NON-NLS-1$          
+                                                                                                                                     "creatingWorkspacesAllowed",
+                                                                                                                                     true).setProperty(
+                                                                                                                                                       //$NON-NLS-1$
+                                                                                                                                                       "defaultWorkspaceName",
+                                                                                                                                                       "."); //$NON-NLS-1$          
 
     }
 
     @Override
-    protected <A extends Artifact> boolean internalAccept(
-                                                           ArtifactSource source,
+    protected <A extends Artifact> boolean internalAccept( ArtifactSource source,
                                                            Class<A> type ) throws Exception {
-        return source instanceof DnaFileSystemArtifactSource
-                && StringArtifact.class.equals(type);
+        return source instanceof DnaFileSystemArtifactSource && StringArtifact.class.equals(type);
     }
 
 }

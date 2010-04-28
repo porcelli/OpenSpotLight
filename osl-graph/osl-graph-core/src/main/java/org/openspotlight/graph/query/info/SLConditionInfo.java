@@ -326,7 +326,9 @@ public class SLConditionInfo {
         this.linkTypeInfo = typeInfo;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override

@@ -72,8 +72,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLGraphSessionEventPosterImpl implements
-        SLGraphSessionEventPoster, LockContainer {
+public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster, LockContainer {
 
     private final Lock                                    lock;
 
@@ -88,8 +87,7 @@ public class SLGraphSessionEventPosterImpl implements
      * @param listeners the listeners
      */
     SLGraphSessionEventPosterImpl(
-                                   final Collection<SLGraphSessionEventListener> listeners,
-                                   final LockContainer parent ) {
+                                   final Collection<SLGraphSessionEventListener> listeners, final LockContainer parent ) {
         this.listeners = listeners;
         lock = parent.getLockObject();
     }
@@ -117,23 +115,17 @@ public class SLGraphSessionEventPosterImpl implements
                     listener.nodeAdded((SLNodeAddedEvent)event);
                 } else if (event instanceof SLNodePropertySetEvent) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Graph node property setted "
-                                     + ((SLNodePropertyEvent)event)
-                                                                   .getPropertyName());
+                        logger.debug("Graph node property setted " + ((SLNodePropertyEvent)event).getPropertyName());
                     }
                     listener.nodePropertySet((SLNodePropertySetEvent)event);
                 } else if (event instanceof SLNodePropertyRemovedEvent) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Graph property removed "
-                                     + ((SLNodePropertyEvent)event)
-                                                                   .getPropertyName());
+                        logger.debug("Graph property removed " + ((SLNodePropertyEvent)event).getPropertyName());
                     }
 
-                    listener
-                            .nodePropertyRemoved((SLNodePropertyRemovedEvent)event);
+                    listener.nodePropertyRemoved((SLNodePropertyRemovedEvent)event);
                 } else {
-                    throw Exceptions.logAndReturn(new IllegalArgumentException(
-                                                                               "Unhandled event class"));
+                    throw Exceptions.logAndReturn(new IllegalArgumentException("Unhandled event class"));
                 }
             }
         }

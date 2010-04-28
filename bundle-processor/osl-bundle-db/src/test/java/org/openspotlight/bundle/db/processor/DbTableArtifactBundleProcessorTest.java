@@ -107,8 +107,7 @@ public class DbTableArtifactBundleProcessorTest {
         public final DbArtifactSource artifactSource;
 
         public RepositoryData(
-                               final GlobalSettings settings,
-                               final Repository repository, final Group group,
+                               final GlobalSettings settings, final Repository repository, final Group group,
                                final DbArtifactSource artifactSource ) {
             this.settings = settings;
             this.repository = repository;
@@ -150,8 +149,7 @@ public class DbTableArtifactBundleProcessorTest {
         artifactSource.setDatabaseName("db");
         artifactSource.setServerName("server name");
         artifactSource.setType(DatabaseType.H2);
-        artifactSource
-                      .setInitialLookup("jdbc:h2:./target/test-data/DbTableArtifactBundleProcessorTest/h2/db;DB_CLOSE_ON_EXIT=FALSE");
+        artifactSource.setInitialLookup("jdbc:h2:./target/test-data/DbTableArtifactBundleProcessorTest/h2/db;DB_CLOSE_ON_EXIT=FALSE");
         artifactSource.setDriverClass("org.h2.Driver");
 
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
@@ -183,38 +181,29 @@ public class DbTableArtifactBundleProcessorTest {
     public static void setupResources() throws Exception {
         delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
 
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR)
-                             .closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
         data = createRepositoryData();
 
-
-        Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
-
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
-        final ExecutionContext context = contextFactory.createExecutionContext(
-                                                                               "username", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+        final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
+                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                                                                                data.repository);
 
-        context.getDefaultConfigurationManager().saveGlobalSettings(
-                                                                    data.settings);
-        context.getDefaultConfigurationManager()
-                .saveRepository(data.repository);
+        context.getDefaultConfigurationManager().saveGlobalSettings(data.settings);
+        context.getDefaultConfigurationManager().saveRepository(data.repository);
         context.closeResources();
 
         scheduler = DefaultScheduler.INSTANCE;
-        scheduler.initializeSettings(contextFactory, "user", "password",
-                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        scheduler.refreshJobs(data.settings, SLCollections
-                                                          .setOf(data.repository));
+        scheduler.initializeSettings(contextFactory, "user", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        scheduler.refreshJobs(data.settings, SLCollections.setOf(data.repository));
         scheduler.startScheduler();
 
     }
@@ -232,64 +221,47 @@ public class DbTableArtifactBundleProcessorTest {
     @Test
     public void shouldIncludeNewColumnOnChangedTable() throws Exception {
 
-        final Connection connection1 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
-        connection1
-                   .prepareStatement(
-                                     "create table exampleTable2(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-                   .execute();
+        connection1.prepareStatement(
+                                     "create table exampleTable2(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext1 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-        final SLNode exampleTableNode1 = exampleCatalogNode1
-                                                            .getNode("EXAMPLETABLE2");
-        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
-                                                                "I");
+        final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE2");
+        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class, "I");
         Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
-        final Column invalidColumn1 = exampleTableNode1.getNode(Column.class,
-                                                                "INVALID");
+        final Column invalidColumn1 = exampleTableNode1.getNode(Column.class, "INVALID");
         Assert.assertThat(invalidColumn1, Is.is(IsNull.nullValue()));
-        final Connection connection2 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
-        connection2.prepareStatement(
-                                     "alter table exampleTable2 add column invalid int").execute();
+        connection2.prepareStatement("alter table exampleTable2 add column invalid int").execute();
         connection2.close();
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext2 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-        final SLNode exampleTableNode2 = exampleCatalogNode2
-                                                            .getNode("EXAMPLETABLE2");
-        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
-                                                                "I");
+        final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE2");
+        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class, "I");
         Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
-        final Column invalidColumn2 = exampleTableNode2.getNode(Column.class,
-                                                                "INVALID");
+        final Column invalidColumn2 = exampleTableNode2.getNode(Column.class, "INVALID");
         Assert.assertThat(invalidColumn2, Is.is(IsNull.notNullValue()));
 
     }
@@ -297,154 +269,115 @@ public class DbTableArtifactBundleProcessorTest {
     @Test
     public void shouldRemoveDeletedColumns() throws Exception {
 
-        final Connection connection1 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
-        connection1
-                   .prepareStatement(
-                                     "create table exampleTable3(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-                   .execute();
+        connection1.prepareStatement(
+                                     "create table exampleTable3(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext1 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-        final SLNode exampleTableNode1 = exampleCatalogNode1
-                                                            .getNode("EXAMPLETABLE3");
-        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
-                                                                "I");
+        final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE3");
+        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class, "I");
         Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
-        final Column invalidColumn1 = exampleTableNode1.getNode(Column.class,
-                                                                "LAST_I_PLUS_2");
+        final Column invalidColumn1 = exampleTableNode1.getNode(Column.class, "LAST_I_PLUS_2");
         Assert.assertThat(invalidColumn1, Is.is(IsNull.notNullValue()));
-        final Connection connection2 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
-        connection2.prepareStatement(
-                                     "alter table exampleTable3 drop column last_i_plus_2 ")
-                   .execute();
+        connection2.prepareStatement("alter table exampleTable3 drop column last_i_plus_2 ").execute();
         connection2.close();
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext2 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-        final SLNode exampleTableNode2 = exampleCatalogNode2
-                                                            .getNode("EXAMPLETABLE3");
-        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
-                                                                "I");
+        final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE3");
+        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class, "I");
         Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
-        final Column invalidColumn2 = exampleTableNode2.getNode(Column.class,
-                                                                "LAST_I_PLUS_2");
+        final Column invalidColumn2 = exampleTableNode2.getNode(Column.class, "LAST_I_PLUS_2");
         Assert.assertThat(invalidColumn2, Is.is(IsNull.nullValue()));
     }
 
     @Test
     public void shouldRemoveDeletedTables() throws Exception {
 
-        final Connection connection1 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
-        connection1
-                   .prepareStatement(
-                                     "create table exampleTable4(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-                   .execute();
+        connection1.prepareStatement(
+                                     "create table exampleTable4(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext1 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-        final SLNode exampleTableNode1 = exampleCatalogNode1
-                                                            .getNode("EXAMPLETABLE4");
+        final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE4");
         Assert.assertThat(exampleTableNode1, Is.is(IsNull.notNullValue()));
-        final Connection connection2 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection2.prepareStatement("drop table exampleTable4").execute();
         connection2.close();
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext2 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-        final SLNode exampleTableNode2 = exampleCatalogNode2
-                                                            .getNode("EXAMPLETABLE4");
+        final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE4");
         Assert.assertThat(exampleTableNode2, Is.is(IsNull.nullValue()));
     }
 
     @Test
     public void shouldUpdateChangedDatatypesAndRemoveUnused() throws Exception {
-        final Connection connection1 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
-        connection1
-                   .prepareStatement(
-                                     "create table exampleTable7(i int , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-                   .execute();
+        connection1.prepareStatement(
+                                     "create table exampleTable7(i int , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext1 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-        final SLNode exampleTableNode1 = exampleCatalogNode1
-                                                            .getNode("EXAMPLETABLE7");
+        final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE7");
 
-        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class,
-                                                                "I");
+        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class, "I");
 
-        final Collection<SLLink> links1 = executionContext1.getGraphSession()
-                                                           .getUnidirectionalLinksBySource(exampleColumn1);
+        final Collection<SLLink> links1 = executionContext1.getGraphSession().getUnidirectionalLinksBySource(exampleColumn1);
         String dataType1 = null;
         synchronized (exampleTableNode1.getLockObject()) {
             for (final SLLink link : links1) {
@@ -456,38 +389,29 @@ public class DbTableArtifactBundleProcessorTest {
 
         Assert.assertThat(dataType1, Is.is(IsNull.notNullValue()));
 
-        final Connection connection2 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection2.prepareStatement("drop table exampleTable7 ").execute();
-        connection2
-                   .prepareStatement(
-                                     "create table exampleTable7(i varchar(10) not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-                   .execute();
+        connection2.prepareStatement(
+                                     "create table exampleTable7(i varchar(10) not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection2.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext2 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-        final SLNode exampleTableNode2 = exampleCatalogNode2
-                                                            .getNode("EXAMPLETABLE7");
+        final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE7");
 
-        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class,
-                                                                "I");
+        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class, "I");
 
-        final Collection<SLLink> links2 = executionContext1.getGraphSession()
-                                                           .getUnidirectionalLinksBySource(exampleColumn2);
+        final Collection<SLLink> links2 = executionContext1.getGraphSession().getUnidirectionalLinksBySource(exampleColumn2);
         String dataType2 = null;
         synchronized (exampleTableNode2.getLockObject()) {
             for (final SLLink link : links2) {
@@ -505,44 +429,33 @@ public class DbTableArtifactBundleProcessorTest {
     @Test
     public void shouldUpdateChangedFkInformation() throws Exception {
 
-        final Connection connection1 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
         final Random r = new Random();
-        final String tableSufix = r.nextInt(50) + "_" + r.nextInt(50) + "_"
-                                  + r.nextInt(50);
-        connection1
-                   .prepareStatement(
+        final String tableSufix = r.nextInt(50) + "_" + r.nextInt(50) + "_" + r.nextInt(50);
+        connection1.prepareStatement(
                                      "create table exampleTable"
                                      + tableSufix
-                                     + "(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-                   .execute();
-        connection1.prepareStatement(
-                                     "create table anotherTable" + tableSufix
-                                     + "(i int not null , i_fk int)").execute();
+                                     + "(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+        connection1.prepareStatement("create table anotherTable" + tableSufix + "(i int not null , i_fk int)").execute();
 
         connection1.prepareStatement(
-                                     "alter table anotherTable" + tableSufix
-                                     + " add constraint example_fk" + tableSufix
-                                     + " foreign key(i_fk) references exampleTable"
-                                     + tableSufix + "(i)").execute();
+                                     "alter table anotherTable" + tableSufix + " add constraint example_fk" + tableSufix
+                                     + " foreign key(i_fk) references exampleTable" + tableSufix + "(i)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext1 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
         boolean foundFkConstraint1 = false;
         synchronized (exampleDatabaseNode1.getLockObject()) {
 
-            final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode1
-                                                                             .getNodes();
+            final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode1.getNodes();
             for (final SLNode node : nodes) {
                 if (node instanceof DatabaseConstraintForeignKey) {
                     foundFkConstraint1 = true;
@@ -550,30 +463,24 @@ public class DbTableArtifactBundleProcessorTest {
             }
         }
 
-        final Connection connection2 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
-        connection2.prepareStatement(
-                                     "alter table anotherTable" + tableSufix
-                                     + " drop constraint example_fk" + tableSufix).execute();
+        connection2.prepareStatement("alter table anotherTable" + tableSufix + " drop constraint example_fk" + tableSufix).execute();
         connection2.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext2 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
         boolean foundFkConstraint2 = false;
         synchronized (exampleDatabaseNode2.getLockObject()) {
 
-            final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode2
-                                                                             .getNodes();
+            final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode2.getNodes();
             for (final SLNode node : nodes) {
                 if (node instanceof DatabaseConstraintForeignKey) {
                     foundFkConstraint2 = true;
@@ -589,35 +496,28 @@ public class DbTableArtifactBundleProcessorTest {
     @Test
     public void shouldUpdateChangedPkInformation() throws Exception {
 
-        final Connection connection1 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
-        connection1
-                   .prepareStatement(
-                                     "create table exampleTable6(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-                   .execute();
+        connection1.prepareStatement(
+                                     "create table exampleTable6(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext1 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
 
         boolean foundPk = false;
         synchronized (exampleCatalogNode1.getLockObject()) {
 
-            final NeedsSyncronizationSet<SLNode> nodes = exampleCatalogNode1
-                                                                            .getNodes();
+            final NeedsSyncronizationSet<SLNode> nodes = exampleCatalogNode1.getNodes();
             for (final SLNode node : nodes) {
                 if (node instanceof DatabaseConstraintPrimaryKey) {
                     foundPk = true;
@@ -627,36 +527,29 @@ public class DbTableArtifactBundleProcessorTest {
         }
         Assert.assertThat(foundPk, Is.is(true));
 
-        final Connection connection2 = DatabaseSupport
-                                                      .createConnection(data.artifactSource);
+        final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection2.prepareStatement("drop table exampleTable6 ").execute();
-        connection2
-                   .prepareStatement(
-                                     "create table exampleTable6(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-                   .execute();
+        connection2.prepareStatement(
+                                     "create table exampleTable6(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection2.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
-        final ExecutionContext executionContext2 = contextFactory
-                                                                 .createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR, data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession()
-                                                         .getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(
-                                                                      data.group.getUniqueName());
+        final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
+                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                                                                                         data.repository);
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2
-                                                              .getNode("PUBLIC");
+        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
 
         boolean foundPk2 = false;
         synchronized (exampleCatalogNode2.getLockObject()) {
 
-            final NeedsSyncronizationSet<SLNode> nodes = exampleCatalogNode2
-                                                                            .getNodes();
+            final NeedsSyncronizationSet<SLNode> nodes = exampleCatalogNode2.getNodes();
             for (final SLNode node : nodes) {
                 if (node instanceof DatabaseConstraintPrimaryKey) {
                     foundPk2 = true;

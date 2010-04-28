@@ -72,8 +72,7 @@ public class LevelOneObj implements SimpleNodeType {
             return false;
         }
         final LevelOneObj that = (LevelOneObj)o;
-        return Equals.eachEquality(Arrays.of(rootObj, key), Arrays.andOf(
-                                                                         that.rootObj, that.key));
+        return Equals.eachEquality(Arrays.of(rootObj, key), Arrays.andOf(that.rootObj, that.key));
     }
 
     @KeyProperty

@@ -70,24 +70,19 @@ public class PaternMatcherTest {
     @SuppressWarnings( {"nls", "boxing"} )
     @Test
     public void shouldMatchFileName() throws Exception {
-        Set<String> allFiles = setOf("/Test.java", "/Test.cs",
-                                     "/included/Test.cs", "/included/Test.java",
-                                     "/excluded/Test.cs", "/Excluded/Test.java",
-                                     "/ignored/Test.class", "/ignored/Test.txt");
+        Set<String> allFiles = setOf("/Test.java", "/Test.cs", "/included/Test.cs", "/included/Test.java", "/excluded/Test.cs",
+                                     "/Excluded/Test.java", "/ignored/Test.class", "/ignored/Test.txt");
         final Set<String> included = setOf("**.java", "/included/**");
         final Set<String> excluded = setOf("**.cs", "/excluded/**");
-        FilterResult result = filterNamesByPattern(null, allFiles, included,
-                                                   excluded, false);
+        FilterResult result = filterNamesByPattern(null, allFiles, included, excluded, false);
         assertThat(result.getAllNames().size(), is(8));
         assertThat(result.getIncludedNames().size(), is(2));
         assertThat(result.getExcludedNames().size(), is(4));
         assertThat(result.getIgnoredNames().size(), is(2));
-        allFiles = setOf("/root/Test.java", "/root/Test.cs",
-                         "/root/included/Test.cs", "/root/included/Test.java",
-                         "/root/excluded/Test.cs", "/root/Excluded/Test.java",
-                         "/root/ignored/Test.class", "/root/ignored/Test.txt");
-        result = filterNamesByPattern("/root", allFiles, included,
-                                      excluded, false);
+        allFiles = setOf("/root/Test.java", "/root/Test.cs", "/root/included/Test.cs", "/root/included/Test.java",
+                         "/root/excluded/Test.cs", "/root/Excluded/Test.java", "/root/ignored/Test.class",
+                         "/root/ignored/Test.txt");
+        result = filterNamesByPattern("/root", allFiles, included, excluded, false);
 
         assertThat(result.getAllNames().size(), is(8));
         assertThat(result.getIncludedNames().size(), is(2));

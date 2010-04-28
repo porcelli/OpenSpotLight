@@ -67,8 +67,7 @@ import org.openspotlight.persist.annotation.TransientProperty;
  * {@link Artifact} based on another one. Please register any non-abstract implementation of Artifact subclass on
  * {@link ArtifactTypeRegistry}, so the bundle processor manager should load this classes.
  */
-public abstract class Artifact implements SimpleNodeType, Serializable,
-        LogableObject {
+public abstract class Artifact implements SimpleNodeType, Serializable, LogableObject {
 
     private String originalName;
 
@@ -103,19 +102,14 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
      * @param artifactType the artifact type
      * @return the stream artifact
      */
-    public static <A extends Artifact> A createArtifact(
-                                                         final Class<A> artifactType,
+    public static <A extends Artifact> A createArtifact( final Class<A> artifactType,
                                                          final String artifactCompletePath,
                                                          final ChangeType changeType ) {
 
         try {
-            final String internalArtifactName = artifactCompletePath
-                                                                    .substring(artifactCompletePath.lastIndexOf('/') + 1);
-            final String path = artifactCompletePath.substring(0,
-                                                               artifactCompletePath.length()
-                                                               - internalArtifactName.length());
-            final PathElement pathElement = PathElement
-                                                       .createFromPathString(path);
+            final String internalArtifactName = artifactCompletePath.substring(artifactCompletePath.lastIndexOf('/') + 1);
+            final String path = artifactCompletePath.substring(0, artifactCompletePath.length() - internalArtifactName.length());
+            final PathElement pathElement = PathElement.createFromPathString(path);
             final A artifact = artifactType.newInstance();
 
             artifact.setArtifactName(internalArtifactName);
@@ -127,35 +121,35 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
         }
     }
 
-    private String                               uniqueContextName;
+    private String                                         uniqueContextName;
 
     /** The Constant SEPARATOR. */
-    final static String                          SEPARATOR         = "/";
+    final static String                                    SEPARATOR         = "/";
 
     private transient AddOnlyConcurrentMap<String, Object> transientMap;
 
-    private String                               repositoryName;
+    private String                                         repositoryName;
 
-    private static final long                    serialVersionUID  = 372692540369995072L;
+    private static final long                              serialVersionUID  = 372692540369995072L;
 
-    private LastProcessStatus                    lastProcessStatus = LastProcessStatus.NOT_PROCESSED_YET;
+    private LastProcessStatus                              lastProcessStatus = LastProcessStatus.NOT_PROCESSED_YET;
 
-    private Date                                 lastProcessedDate;
+    private Date                                           lastProcessedDate;
 
     /** The artifact name. */
-    private String                               artifactName;
+    private String                                         artifactName;
 
     /** The artifact complete name. */
-    private volatile transient String            artifactCompleteName;
+    private volatile transient String                      artifactCompleteName;
 
     /** The change type. */
-    private ChangeType                           changeType        = ChangeType.INCLUDED;
+    private ChangeType                                     changeType        = ChangeType.INCLUDED;
 
     /** The parent. */
-    private transient PathElement                parent;
+    private transient PathElement                          parent;
 
     /** The hashcode. */
-    private volatile transient int               hashcode;
+    private volatile transient int                         hashcode;
 
     public Artifact() {
         transientMap = AddOnlyConcurrentMap.newMap();
@@ -184,8 +178,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
         }
 
         final Artifact that = (Artifact)o;
-        return Equals.eachEquality(parent, that.parent)
-                && Equals.eachEquality(artifactName, that.artifactName);
+        return Equals.eachEquality(parent, that.parent) && Equals.eachEquality(artifactName, that.artifactName);
     }
 
     /**
@@ -271,12 +264,9 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
             result = 17;
             result = 31 * result + this.getClass().hashCode();
             result = 31 * result + (parent != null ? parent.hashCode() : 0);
-            result = 31 * result
-                     + (artifactName != null ? artifactName.hashCode() : 0);
-            result = 31 * result
-                     + (artifactName != null ? artifactName.hashCode() : 0);
-            result = 31 * result
-                     + (changeType != null ? changeType.hashCode() : 0);
+            result = 31 * result + (artifactName != null ? artifactName.hashCode() : 0);
+            result = 31 * result + (artifactName != null ? artifactName.hashCode() : 0);
+            result = 31 * result + (changeType != null ? changeType.hashCode() : 0);
             hashcode = result;
         }
         return result;
@@ -326,8 +316,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
         this.repositoryName = repositoryName;
     }
 
-    public void setTransientMap(
-                                 final AddOnlyConcurrentMap<String, Object> transientMap ) {
+    public void setTransientMap( final AddOnlyConcurrentMap<String, Object> transientMap ) {
         this.transientMap = transientMap;
     }
 
@@ -341,8 +330,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable,
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return getClass().getSimpleName() + getArtifactCompleteName() + " "
-                + getChangeType();
+        return getClass().getSimpleName() + getArtifactCompleteName() + " " + getChangeType();
     }
 
 }

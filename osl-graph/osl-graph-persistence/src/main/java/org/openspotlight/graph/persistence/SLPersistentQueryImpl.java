@@ -90,24 +90,30 @@ public class SLPersistentQueryImpl implements SLPersistentQuery {
         this.type = type;
     }
 
-    //@Override
-    /* (non-Javadoc)
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.persistence.SLPersistentQuery#getStatement()
      */
     public String getStatement() {
         return statement;
     }
 
-    //@Override
-    /* (non-Javadoc)
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.persistence.SLPersistentQuery#getType()
      */
     public int getType() {
         return type;
     }
 
-    //@Override
-    /* (non-Javadoc)
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.persistence.SLPersistentQuery#execute()
      */
     public SLPersistentQueryResult execute() throws SLPersistentTreeSessionException {

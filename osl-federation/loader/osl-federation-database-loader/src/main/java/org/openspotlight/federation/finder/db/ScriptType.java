@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
@@ -66,47 +67,47 @@ public enum ScriptType {
     /**
      * Constraint creation script.
      */
-    CONSTRAINT(),
+    CONSTRAINT(StringArtifact.class),
     /**
      * Foreign key information.
      */
-    FK(ForeignKeyConstraintArtifact.class),
+    FK(StringArtifact.class, ForeignKeyConstraintArtifact.class),
     /**
      * Function type.
      */
-    FUNCTION(RoutineArtifact.class),
+    FUNCTION(StringArtifact.class, RoutineArtifact.class),
     /**
      * Index creation script.
      */
-    INDEX,
+    INDEX(StringArtifact.class),
     /**
      * Package creation script.
      */
-    PACKAGE,
+    PACKAGE(StringArtifact.class),
     /**
      * Procedure type.
      */
-    PROCEDURE(RoutineArtifact.class),
+    PROCEDURE(StringArtifact.class, RoutineArtifact.class),
     /**
      * Sequence creation script.
      */
-    SEQUENCE,
+    SEQUENCE(StringArtifact.class),
     /**
      * Table creation script.
      */
-    TABLE(TableArtifact.class),
+    TABLE(StringArtifact.class, TableArtifact.class),
     /**
      * Tablespace creation script.
      */
-    TABLESPACE,
+    TABLESPACE(StringArtifact.class),
     /**
      * Trigger type.
      */
-    TRIGGER,
+    TRIGGER(StringArtifact.class),
     /**
      * View creation script.
      */
-    VIEW(ViewArtifact.class);
+    VIEW(StringArtifact.class, ViewArtifact.class);
 
     private ScriptType(
                         Class<? extends Artifact>... classes ) {
@@ -120,7 +121,6 @@ public enum ScriptType {
     }
 
     public boolean acceptName( String name ) {
-        return name != null
-                && name.toLowerCase().contains(this.name().toLowerCase());
+        return name != null && name.toLowerCase().contains(this.name().toLowerCase());
     }
 }

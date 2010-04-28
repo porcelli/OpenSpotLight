@@ -74,10 +74,8 @@ public class ConfigurationSupport {
      * @throws SLException the SL exception
      */
     public static boolean initializeConfiguration( final boolean forceReload,
-                                                   final ConfigurationManager jcrConfigurationManager )
-            throws Exception {
-        final boolean firstTime = jcrConfigurationManager.getAllRepositories()
-                                                         .size() == 0;
+                                                   final ConfigurationManager jcrConfigurationManager ) throws Exception {
+        final boolean firstTime = jcrConfigurationManager.getAllRepositories().size() == 0;
         boolean reloaded = false;
         if (firstTime || forceReload) {
             saveXmlOnJcr(jcrConfigurationManager);
@@ -93,18 +91,15 @@ public class ConfigurationSupport {
      * @return the configuration
      * @throws SLException the SL exception
      */
-    private static void saveXmlOnJcr( final ConfigurationManager manager )
-            throws Exception {
+    private static void saveXmlOnJcr( final ConfigurationManager manager ) throws Exception {
         GlobalSettings settings;
         Set<Repository> repositories;
-        final InputStream is = ClassPathResource
-                                                .getResourceFromClassPath("osl-configuration.xml");
+        final InputStream is = ClassPathResource.getResourceFromClassPath("osl-configuration.xml");
         final StringWriter writter = new StringWriter();
         IOUtils.copy(is, writter);
         final String xmlContent = writter.toString();
         is.close();
-        final ConfigurationManager xmlManager = XmlConfigurationManagerFactory
-                                                                              .loadImmutableFromXmlContent(xmlContent);
+        final ConfigurationManager xmlManager = XmlConfigurationManagerFactory.loadImmutableFromXmlContent(xmlContent);
         settings = xmlManager.getGlobalSettings();
         WebGlobalSettingsSupport.initializeSettings(settings);
         repositories = xmlManager.getAllRepositories();

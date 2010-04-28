@@ -192,8 +192,7 @@ public class AbstractGeneralQueryTest {
          */
         @Override
         public int hashCode() {
-            return HashCodes.hashOf(getTypeName(), getParentName(),
-                                    getName());
+            return HashCodes.hashOf(getTypeName(), getParentName(), getName());
         }
 
         /**
@@ -225,8 +224,7 @@ public class AbstractGeneralQueryTest {
     }
 
     /** The LOGGER. */
-    protected static Logger            LOGGER   = Logger
-                                                        .getLogger(AbstractGeneralQueryTest.class);
+    protected static Logger            LOGGER   = Logger.getLogger(AbstractGeneralQueryTest.class);
     /** The graph. */
     protected static SLGraph           graph;
     /** The session. */
@@ -251,15 +249,11 @@ public class AbstractGeneralQueryTest {
         final Class<?>[] iFaces = clazz.getInterfaces();
         for (final Class<?> iFace : iFaces) {
             final Package iFacePack = iFace.getPackage();
-            final JavaPackage javaPackage = root.addNode(JavaPackage.class,
-                                                         iFacePack.getName());
-            //javaPackage.setCaption(iFacePack.getName());
-            final JavaInterface javaInterface = javaPackage.addNode(
-                                                                    JavaInterface.class, iFace.getName());
-            //javaInterface.setCaption(iFace.getName());
-            final ClassImplementsInterface link = session.addLink(
-                                                                  ClassImplementsInterface.class, javaClass, javaInterface,
-                                                                  false);
+            final JavaPackage javaPackage = root.addNode(JavaPackage.class, iFacePack.getName());
+            // javaPackage.setCaption(iFacePack.getName());
+            final JavaInterface javaInterface = javaPackage.addNode(JavaInterface.class, iFace.getName());
+            // javaInterface.setCaption(iFace.getName());
+            final ClassImplementsInterface link = session.addLink(ClassImplementsInterface.class, javaClass, javaInterface, false);
             link.setTag(randomTag());
         }
     }
@@ -270,16 +264,13 @@ public class AbstractGeneralQueryTest {
      * @param clazz the clazz
      * @param javaClass the java class
      */
-    private static void addJavaClassContainsJavaClassMethod(
-                                                             final Class<?> clazz,
+    private static void addJavaClassContainsJavaClassMethod( final Class<?> clazz,
                                                              final JavaClass javaClass ) {
         final Method[] methods = clazz.getDeclaredMethods();
         for (final Method method : methods) {
-            final JavaTypeMethod javaTypeMethod = javaClass.addNode(
-                                                                    JavaTypeMethod.class, method.getName());
-            //javaTypeMethod.setCaption(method.getName());
-            final TypeContainsMethod link = session.addLink(
-                                                            TypeContainsMethod.class, javaClass, javaTypeMethod, false);
+            final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
+            // javaTypeMethod.setCaption(method.getName());
+            final TypeContainsMethod link = session.addLink(TypeContainsMethod.class, javaClass, javaTypeMethod, false);
             link.setTag(randomTag());
         }
     }
@@ -297,15 +288,11 @@ public class AbstractGeneralQueryTest {
         final Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
             final Package classPack = clazz.getPackage();
-            final JavaPackage javaPackage = root.addNode(JavaPackage.class,
-                                                         classPack.getName());
-            //javaPackage.setCaption(classPack.getName());
-            final JavaClass superJavaClass = javaPackage.addNode(
-                                                                 JavaClass.class, superClass.getName());
-            session.addLink(PackageContainsType.class, javaPackage,
-                            superJavaClass, false);
-            session.addLink(JavaClassHierarchy.class, javaClass,
-                            superJavaClass, false);
+            final JavaPackage javaPackage = root.addNode(JavaPackage.class, classPack.getName());
+            // javaPackage.setCaption(classPack.getName());
+            final JavaClass superJavaClass = javaPackage.addNode(JavaClass.class, superClass.getName());
+            session.addLink(PackageContainsType.class, javaPackage, superJavaClass, false);
+            session.addLink(JavaClassHierarchy.class, javaClass, superJavaClass, false);
             addJavaClassHirarchyLinks(root, superClass, superJavaClass);
         }
     }
@@ -316,17 +303,13 @@ public class AbstractGeneralQueryTest {
      * @param iFace the i face
      * @param javaInterface the java interface
      */
-    private static void addJavaInterfaceContainsJavaMethod(
-                                                            final Class<?> iFace,
+    private static void addJavaInterfaceContainsJavaMethod( final Class<?> iFace,
                                                             final JavaInterface javaInterface ) {
         final Method[] methods = iFace.getDeclaredMethods();
         for (final Method method : methods) {
-            final JavaTypeMethod javaTypeMethod = javaInterface.addNode(
-                                                                        JavaTypeMethod.class, method.getName());
-            //javaTypeMethod.setCaption(method.getName());
-            final TypeContainsMethod link = session.addLink(
-                                                            TypeContainsMethod.class, javaInterface, javaTypeMethod,
-                                                            false);
+            final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
+            // javaTypeMethod.setCaption(method.getName());
+            final TypeContainsMethod link = session.addLink(TypeContainsMethod.class, javaInterface, javaTypeMethod, false);
             link.setTag(randomTag());
         }
     }
@@ -344,16 +327,12 @@ public class AbstractGeneralQueryTest {
         final Class<?>[] superIFaces = iFace.getInterfaces();
         for (final Class<?> superIFace : superIFaces) {
             final Package iFacePack = iFace.getPackage();
-            final JavaPackage javaPackage = root.addNode(JavaPackage.class,
-                                                         iFacePack.getName());
-            //javaPackage.setCaption(iFacePack.getName());
-            final JavaInterface superJavaInterface = javaPackage.addNode(
-                                                                         JavaInterface.class, superIFace.getName());
-            session.addLink(PackageContainsType.class, javaPackage,
-                            superJavaInterface, false);
-            //superJavaInterface.setCaption(superIFace.getName());
-            session.addLink(JavaInterfaceHierarchy.class, javaInterface,
-                            superJavaInterface, false);
+            final JavaPackage javaPackage = root.addNode(JavaPackage.class, iFacePack.getName());
+            // javaPackage.setCaption(iFacePack.getName());
+            final JavaInterface superJavaInterface = javaPackage.addNode(JavaInterface.class, superIFace.getName());
+            session.addLink(PackageContainsType.class, javaPackage, superJavaInterface, false);
+            // superJavaInterface.setCaption(superIFace.getName());
+            session.addLink(JavaInterfaceHierarchy.class, javaInterface, superJavaInterface, false);
             addJavaInterfaceHirarchyLinks(root, superIFace, superJavaInterface);
         }
     }
@@ -379,8 +358,7 @@ public class AbstractGeneralQueryTest {
     private static Collection<Class<?>> loadClasses( final String fileName )
         throws SLException, IOException, ClassNotFoundException {
         final Collection<Class<?>> classes = new ArrayList<Class<?>>();
-        final String packagePath = AbstractGeneralQueryTest.class.getPackage()
-                                                                 .getName().replace('.', '/');
+        final String packagePath = AbstractGeneralQueryTest.class.getPackage().getName().replace('.', '/');
         final String filePath = packagePath + '/' + fileName;
         final InputStream inputStream = getResourceFromClassPath(filePath);
         final Collection<String> names = Files.readLines(inputStream);
@@ -419,23 +397,18 @@ public class AbstractGeneralQueryTest {
             SLNode root = context.getRootNode();
 
             final Package pack = java.util.Date.class.getPackage();
-            final JavaPackage utilJavaPackage = root.addNode(JavaPackage.class,
-                                                             pack.getName());
-            //utilJavaPackage.setCaption(pack.getName());
+            final JavaPackage utilJavaPackage = root.addNode(JavaPackage.class, pack.getName());
+            // utilJavaPackage.setCaption(pack.getName());
 
             int count = 0;
             final float floatValue = 0.3F;
             for (final Class<?> iFace : iFaces) {
-                final JavaInterface javaInterface = utilJavaPackage.addNode(
-                                                                            JavaInterface.class, iFace.getName());
-                session.addLink(PackageContainsType.class, utilJavaPackage,
-                                javaInterface, false);
-                //javaInterface.setCaption(iFace.getName());
+                final JavaInterface javaInterface = utilJavaPackage.addNode(JavaInterface.class, iFace.getName());
+                session.addLink(PackageContainsType.class, utilJavaPackage, javaInterface, false);
+                // javaInterface.setCaption(iFace.getName());
                 javaInterface.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
-                javaInterface.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(
-                                                                                                     count + floatValue));
-                javaInterface.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue",
-                                          new Boolean(true));
+                javaInterface.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(count + floatValue));
+                javaInterface.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue", new Boolean(true));
                 addJavaInterfaceHirarchyLinks(root, iFace, javaInterface);
                 addJavaInterfaceContainsJavaMethod(iFace, javaInterface);
                 count++;
@@ -445,24 +418,20 @@ public class AbstractGeneralQueryTest {
             for (final Class<?> clazz : classes) {
                 // context = session.createContext("queryTest2");
                 root = context.getRootNode();
-                final JavaClass javaClass = utilJavaPackage.addNode(
-                                                                    JavaClass.class, clazz.getName());
-                session.addLink(PackageContainsType.class, utilJavaPackage,
-                                javaClass, false);
-                //javaClass.setCaption(clazz.getName());
+                final JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
+                session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
+                // javaClass.setCaption(clazz.getName());
                 javaClass.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
-                javaClass.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(count
-                                                                                                 + floatValue));
-                javaClass.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue", new Boolean(
-                                                                                                      false));
+                javaClass.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(count + floatValue));
+                javaClass.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue", new Boolean(false));
                 addJavaClassHirarchyLinks(root, clazz, javaClass);
                 addClassImplementsInterfaceLinks(root, clazz, javaClass);
                 addJavaClassContainsJavaClassMethod(clazz, javaClass);
                 count++;
             }
 
-            final JavaInnerInterface javaInnerInterface = utilJavaPackage.addNode(
-                                                                                  JavaInnerInterface.class, java.util.Map.Entry.class.getName());
+            final JavaInnerInterface javaInnerInterface = utilJavaPackage.addNode(JavaInnerInterface.class,
+                                                                                  java.util.Map.Entry.class.getName());
 
             session.save();
             session.close();
@@ -484,18 +453,13 @@ public class AbstractGeneralQueryTest {
 
     protected static void setupSession() throws Exception {
 
-        JcrConnectionProvider.createFromData(
-                                             DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
-        final SecurityFactory securityFactory = AbstractFactory
-                                                               .getDefaultInstance(SecurityFactory.class);
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(
-                                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-                                                                                                        "password");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
-        final SLGraphFactory factory = AbstractFactory
-                                                      .getDefaultInstance(SLGraphFactory.class);
+        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         session = graph.openSession(user, SharedConstants.DEFAULT_REPOSITORY_NAME);
     }
@@ -515,8 +479,7 @@ public class AbstractGeneralQueryTest {
      */
     protected String getResourceContent( final String resourceName ) {
         try {
-            final InputStream in = this.getClass().getResourceAsStream(
-                                                                       resourceName);
+            final InputStream in = this.getClass().getResourceAsStream(resourceName);
             final Reader reader = new InputStreamReader(in);
 
             final StringBuilder text = new StringBuilder();
@@ -541,17 +504,12 @@ public class AbstractGeneralQueryTest {
      */
     void printAsserts( final NodeWrapper[] wrappers ) {
         final StringBuilder buffer = new StringBuilder();
-        StringBuilderUtil
-                         .append(buffer, '\n', "assertThat(wrappers.length, is(",
-                                 wrappers.length, "));", '\n');
+        StringBuilderUtil.append(buffer, '\n', "assertThat(wrappers.length, is(", wrappers.length, "));", '\n');
         for (final NodeWrapper wrapper : wrappers) {
             String pattern = "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), isOneOf(wrappers));";
-            pattern = StringUtils.replace(pattern, "${typeName}", wrapper
-                                                                         .getTypeName());
-            pattern = StringUtils.replace(pattern, "${parentName}", wrapper
-                                                                           .getParentName());
-            pattern = StringUtils
-                                 .replace(pattern, "${name}", wrapper.getName());
+            pattern = StringUtils.replace(pattern, "${typeName}", wrapper.getTypeName());
+            pattern = StringUtils.replace(pattern, "${parentName}", wrapper.getParentName());
+            pattern = StringUtils.replace(pattern, "${name}", wrapper.getName());
             buffer.append(pattern).append('\n');
         }
         buffer.append('\n');
@@ -565,18 +523,13 @@ public class AbstractGeneralQueryTest {
      */
     void printAssertsInOrder( final NodeWrapper[] wrappers ) {
         final StringBuilder buffer = new StringBuilder();
-        StringBuilderUtil
-                         .append(buffer, '\n', "assertThat(wrappers.length, is(",
-                                 wrappers.length, "));", '\n');
+        StringBuilderUtil.append(buffer, '\n', "assertThat(wrappers.length, is(", wrappers.length, "));", '\n');
         for (int i = 0; i < wrappers.length; i++) {
             final NodeWrapper wrapper = wrappers[i];
             String pattern = "assertThat(new NodeWrapper(${typeName}.class.getName(), \"${parentName}\", \"${name}\"), is(wrappers[${index}]));";
-            pattern = StringUtils.replace(pattern, "${typeName}", wrapper
-                                                                         .getTypeName());
-            pattern = StringUtils.replace(pattern, "${parentName}", wrapper
-                                                                           .getParentName());
-            pattern = StringUtils
-                                 .replace(pattern, "${name}", wrapper.getName());
+            pattern = StringUtils.replace(pattern, "${typeName}", wrapper.getTypeName());
+            pattern = StringUtils.replace(pattern, "${parentName}", wrapper.getParentName());
+            pattern = StringUtils.replace(pattern, "${name}", wrapper.getName());
             pattern = StringUtils.replace(pattern, "${index}", "" + i);
             buffer.append(pattern).append('\n');
         }
@@ -592,12 +545,10 @@ public class AbstractGeneralQueryTest {
     protected void printResult( final Collection<SLNode> nodes ) {
         if (printInfo && !nodes.isEmpty()) {
             final StringBuilder buffer = new StringBuilder();
-            StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(),
-                                     "):\n");
+            StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
             for (final SLNode node : nodes) {
-                StringBuilderUtil.append(buffer, StringUtils.rightPad(node
-                                                                          .getTypeName(), 60), StringUtils.rightPad(node
-                                                                                                                        .getName(), 60), node.getParent().getName(), '\n');
+                StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60),
+                                         StringUtils.rightPad(node.getName(), 60), node.getParent().getName(), '\n');
             }
             LOGGER.info(buffer);
         }

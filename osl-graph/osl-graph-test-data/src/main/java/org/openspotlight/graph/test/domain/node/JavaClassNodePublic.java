@@ -83,7 +83,7 @@ public interface JavaClassNodePublic extends SLNode {
     /** The Constant MODIFIER_DEFAULT. */
     public static final Integer MODIFIER_DEFAULT   = 4;
 
-    //@SLProperty(collatorLevel=IDENTICAL)
+    // @SLProperty(collatorLevel=IDENTICAL)
     /**
      * Gets the class name.
      * 

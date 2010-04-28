@@ -251,7 +251,8 @@ public class SLCommonSupport {
      */
     public static String toUserPropertyName( String name,
                                              String attributeName ) {
-        return new StringBuilder().append(SLConsts.PROPERTY_PREFIX_USER).append('.').append(name).append('.').append(attributeName).toString();
+        return new StringBuilder().append(SLConsts.PROPERTY_PREFIX_USER).append('.').append(name).append('.').append(
+                                                                                                                     attributeName).toString();
     }
 
     /**
@@ -306,7 +307,7 @@ public class SLCommonSupport {
         return pProperty;
     }
 
-    //osl/contexts
+    // osl/contexts
     /**
      * Gets the contexts persistent node.
      * 
@@ -324,7 +325,7 @@ public class SLCommonSupport {
         return contextsPersistentNode;
     }
 
-    //osl/links
+    // osl/links
     /**
      * Gets the links persistent node.
      * 
@@ -342,7 +343,7 @@ public class SLCommonSupport {
         return linksPersistentNode;
     }
 
-    //osl/links/linkClassFullQualifiedName
+    // osl/links/linkClassFullQualifiedName
     /**
      * Gets the link class node.
      * 
@@ -361,7 +362,7 @@ public class SLCommonSupport {
         return linkClassNode;
     }
 
-    //osl/metadata
+    // osl/metadata
     /**
      * Gets the metadata node.
      * 
@@ -378,7 +379,7 @@ public class SLCommonSupport {
         return metadataNode;
     }
 
-    //osl/queryCache
+    // osl/queryCache
     /**
      * Gets the query cache node.
      * 
@@ -396,8 +397,7 @@ public class SLCommonSupport {
         return queryCacheNode;
     }
 
-    public static boolean containsQueryCache( SLPersistentTreeSession treeSession )
-        throws SLPersistentTreeSessionException {
+    public static boolean containsQueryCache( SLPersistentTreeSession treeSession ) throws SLPersistentTreeSessionException {
         SLPersistentNode oslRootNode = treeSession.getRootNode();
         SLPersistentNode queryCacheNode = oslRootNode.getNode(SLConsts.NODE_NAME_QUERY_CACHE);
         if (queryCacheNode == null) {
@@ -406,7 +406,7 @@ public class SLCommonSupport {
         return true;
     }
 
-    //osl/metadata/types
+    // osl/metadata/types
     /**
      * Gets the meta types node.
      * 
@@ -424,7 +424,7 @@ public class SLCommonSupport {
         return typesNode;
     }
 
-    //osl/metadata/links
+    // osl/metadata/links
     /**
      * Gets the meta links node.
      * 
@@ -442,7 +442,7 @@ public class SLCommonSupport {
         return linksNode;
     }
 
-    //osl/metadata/links/linkClassFullQualifiedName
+    // osl/metadata/links/linkClassFullQualifiedName
     /**
      * Gets the meta link class node.
      * 

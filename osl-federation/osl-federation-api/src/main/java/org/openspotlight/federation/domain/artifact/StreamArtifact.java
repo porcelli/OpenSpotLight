@@ -69,16 +69,14 @@ public class StreamArtifact extends ArtifactWithSyntaxInformation {
 
     private static final long         serialVersionUID = -8912205023568005794L;
 
-    private LazyProperty<InputStream> content          = LazyProperty.Factory
-                                                                             .create(InputStream.class,this);
+    private LazyProperty<InputStream> content          = LazyProperty.Factory.create(InputStream.class, this);
 
     @Override
     public boolean contentEquals( final Artifact other ) {
         if (other instanceof StreamArtifact) {
             final StreamArtifact that = (StreamArtifact)other;
-            return Equals.eachEquality(content == null ? null : content
-                                                                       .getMetadata().getSha1(), that.content == null ? null : that.content
-                                                                                                                                           .getMetadata().getSha1());
+            return Equals.eachEquality(content == null ? null : content.getMetadata().getSha1(),
+                                       that.content == null ? null : that.content.getMetadata().getSha1());
         }
         return false;
     }

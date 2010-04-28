@@ -12,16 +12,17 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
  * Created by User: feu - Date: Apr 20, 2010 - Time: 9:58:43 AM
  */
 @Singleton
-public class SimplePersistFactoryImpl implements SimplePersistFactory{
+public class SimplePersistFactoryImpl implements SimplePersistFactory {
 
     private final Provider<STStorageSession> sessionProvider;
 
     @Inject
-    public SimplePersistFactoryImpl(Provider<STStorageSession> sessionProvider) {
+    public SimplePersistFactoryImpl(
+                                     Provider<STStorageSession> sessionProvider ) {
         this.sessionProvider = sessionProvider;
     }
 
-    public SimplePersistCapable<STNodeEntry,STStorageSession> createSimplePersist(STPartition partition) {
-        return new SimplePersistImpl(sessionProvider.get(),partition);
+    public SimplePersistCapable<STNodeEntry, STStorageSession> createSimplePersist( STPartition partition ) {
+        return new SimplePersistImpl(sessionProvider.get(), partition);
     }
 }

@@ -67,7 +67,6 @@ import java.util.List;
  * @author feu
  * @param <E>
  */
-public interface NeedsSyncronizationList<E> extends List<E>, LockContainer,
-        NeedsSyncronizationCollection<E> {
+public interface NeedsSyncronizationList<E> extends List<E>, LockContainer, NeedsSyncronizationCollection<E> {
 
 }

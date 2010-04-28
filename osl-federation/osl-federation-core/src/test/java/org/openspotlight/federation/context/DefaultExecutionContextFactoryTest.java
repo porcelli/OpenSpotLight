@@ -75,28 +75,22 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
-
 public class DefaultExecutionContextFactoryTest {
 
-    private ExecutionContext              context;
+    private ExecutionContext               context;
 
     private static ExecutionContextFactory factory;
 
-
-
     @BeforeClass
-    public static void setup() throws Exception{
-        Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),repositoryPath("repository")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
+    public static void setup() throws Exception {
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
         factory = injector.getInstance(ExecutionContextFactory.class);
 
     }
-
-
 
     @After
     public void closeResources() throws Exception {
@@ -109,20 +103,16 @@ public class DefaultExecutionContextFactoryTest {
         repo.setName("test");
         repo.setActive(true);
 
-        context = factory.createExecutionContext("testUser", "testPassword",
-                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR, repo);
+        context = factory.createExecutionContext("testUser", "testPassword", DefaultJcrDescriptor.TEMP_DESCRIPTOR, repo);
     }
 
     @Test
     public void shouldUseAllResourcesInsideContext() throws Exception {
-        final PersistentArtifactManager manager = context
-                                                         .getPersistentArtifactManager();
+        final PersistentArtifactManager manager = context.getPersistentArtifactManager();
         Assert.assertThat(manager, Is.is(IsNull.notNullValue()));
-        final ConfigurationManager configurationManager = context
-                                                                 .getDefaultConfigurationManager();
+        final ConfigurationManager configurationManager = context.getDefaultConfigurationManager();
         Assert.assertThat(configurationManager, Is.is(IsNull.notNullValue()));
-        final JcrConnectionProvider connectionProvider = context
-                                                                .getDefaultConnectionProvider();
+        final JcrConnectionProvider connectionProvider = context.getDefaultConnectionProvider();
         Assert.assertThat(connectionProvider, Is.is(IsNull.notNullValue()));
         final SLGraphSession graphSession = context.getGraphSession();
         Assert.assertThat(graphSession, Is.is(IsNull.notNullValue()));

@@ -122,8 +122,8 @@ public class Equals {
                 final Object value2 = field.get(thatObject);
                 status = value1 == value2 || value1.equals(value2);
             } catch (final Exception e) {
-                throw new SLRuntimeException("Error on attempt to perform "
-                                             + thisObjectType.getName() + " equality operation.", e);
+                throw new SLRuntimeException("Error on attempt to perform " + thisObjectType.getName() + " equality operation.",
+                                             e);
             } finally {
                 if (field != null) {
                     field.setAccessible(false);
@@ -245,8 +245,7 @@ public class Equals {
      * Should not be instantiated.
      */
     private Equals() {
-        logAndThrow(new IllegalStateException(Messages
-                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

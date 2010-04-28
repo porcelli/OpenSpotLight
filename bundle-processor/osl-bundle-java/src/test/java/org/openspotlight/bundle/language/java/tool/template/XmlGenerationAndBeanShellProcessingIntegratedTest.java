@@ -66,7 +66,7 @@ public class XmlGenerationAndBeanShellProcessingIntegratedTest {
         final FileSet jreFileSet = new FileSet();
         jreFileSet.setDir(new File("."));
         jreFileSet.setIncludes("**/dynamo*.jar");
-        //        jreFileSet.setIncludes("**/*.class");
+        // jreFileSet.setIncludes("**/*.class");
         task.addCompiledArtifacts(jreFileSet);
         task.setContextName("Dynamo");
         task.setContextVersion("1.0.1");
@@ -84,7 +84,7 @@ public class XmlGenerationAndBeanShellProcessingIntegratedTest {
         anotherTask.addXmlFiles(xmls);
         anotherTask.setOutputDirectory("./target/test-data/XmlGenerationAndBeanShellProcessingIntegratedTest/output/");
         anotherTask.execute();
-        //        assertThat(new File(linkDir).exists(), is(true));
-        //        assertThat(new File(linkDir).list().length, is(not(0)));
+        // assertThat(new File(linkDir).exists(), is(true));
+        // assertThat(new File(linkDir).list().length, is(not(0)));
     }
 }

@@ -79,21 +79,21 @@ public class DnaFileSystemUsingJcrWithProgramaticConfigurationTest {
         final String javaFilesRepositorySource = "JavaFileRepositorySource";
         final String repositoryName = "JavaRepository";
         final JcrConfiguration configuration = new JcrConfiguration();
-        configuration.repositorySource(javaFilesRepositorySource).usingClass(
-                                                                             FileSystemSource.class).setProperty("workspaceRootPath", "./src/main/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$
-        "creatingWorkspacesAllowed", true).setProperty(
-                                                       "defaultWorkspaceName", "java");
+        configuration.repositorySource(javaFilesRepositorySource).usingClass(FileSystemSource.class).setProperty(
+                                                                                                                 "workspaceRootPath", "./src/main/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                                                                                 "creatingWorkspacesAllowed",
+                                                                                                                                                                 true).setProperty(
+                                                                                                                                                                                   "defaultWorkspaceName",
+                                                                                                                                                                                   "java");
 
-        configuration.repository(repositoryName).setSource(
-                                                           javaFilesRepositorySource);
+        configuration.repository(repositoryName).setSource(javaFilesRepositorySource);
         configuration.save();
         this.engine = configuration.build();
         this.engine.start();
 
-        this.session = this.engine.getRepository(repositoryName)
-                                  .login(
-                                         new SecurityContextCredentials(
-                                                                        DefaultSecurityContext.READ_ONLY));
+        this.session = this.engine.getRepository(repositoryName).login(
+                                                                       new SecurityContextCredentials(
+                                                                                                      DefaultSecurityContext.READ_ONLY));
 
     }
 
@@ -110,7 +110,6 @@ public class DnaFileSystemUsingJcrWithProgramaticConfigurationTest {
     @Test
     public void test() throws Exception {
 
-        assertThat(this.session.getRootNode().getNode("org"),
-                   is(notNullValue()));
+        assertThat(this.session.getRootNode().getNode("org"), is(notNullValue()));
     }
 }

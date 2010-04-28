@@ -264,7 +264,9 @@ public class SLWhereLinkTypeInfo {
             this.opened = opened;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#toString()
          */
         @Override
@@ -544,7 +546,9 @@ public class SLWhereLinkTypeInfo {
                 this.linkTypeInfo = typeInfo;
             }
 
-            /* (non-Javadoc)
+            /*
+             * (non-Javadoc)
+             * 
              * @see java.lang.Object#toString()
              */
             @Override

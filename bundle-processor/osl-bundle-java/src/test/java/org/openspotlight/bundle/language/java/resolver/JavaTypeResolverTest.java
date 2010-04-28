@@ -115,32 +115,20 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
 
-    protected static void createCrudNodes(
-                                           final JavaGraphNodeSupport crudFrameworkSupport ) throws Exception {
-        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class,
-                                                     "com.crud.dao", "Dao", Opcodes.ACC_PUBLIC);
-        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class,
-                                                     "com.crud.dao", "DaoImpl", Opcodes.ACC_PUBLIC);
-        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class,
-                                                     "com.crud.dao", "CustomerDao", Opcodes.ACC_PUBLIC);
-        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class,
-                                                     "com.crud.dao", "CustomerDaoImpl", Opcodes.ACC_PUBLIC);
-        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class,
-                                                     "com.crud.dao", "AbstractCustomerDao", Opcodes.ACC_PUBLIC);
-        crudFrameworkSupport.addImplementsLinks("com.crud.dao",
-                                                "AbstractCustomerDao", "com.crud.dao", "CustomerDao");
-        crudFrameworkSupport.addExtendsLinks("com.crud.dao",
-                                             "AbstractCustomerDao", "com.crud.dao", "DaoImpl");
-        crudFrameworkSupport.addExtendsLinks("com.crud.dao", "CustomerDaoImpl",
-                                             "com.crud.dao", "AbstractCustomerDao");
-        crudFrameworkSupport.addExtendsLinks("com.crud.dao", "CustomerDao",
-                                             "com.crud.dao", "Dao");
-        crudFrameworkSupport.addImplementsLinks("com.crud.dao", "DaoImpl",
-                                                "com.crud.dao", "Dao");
-        crudFrameworkSupport.addImplementsLinks("com.crud.dao",
-                                                "AbstractCustomerDao", "com.crud.dao", "CustomerDao");
-        crudFrameworkSupport.addExtendsLinks("com.crud.dao", "DaoImpl",
-                                             "java.lang.reflect", "Proxy");
+    protected static void createCrudNodes( final JavaGraphNodeSupport crudFrameworkSupport ) throws Exception {
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class, "com.crud.dao", "Dao", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.dao", "DaoImpl", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeInterface.class, "com.crud.dao", "CustomerDao", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.dao", "CustomerDaoImpl", Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addTypeOnCurrentContext(JavaTypeClass.class, "com.crud.dao", "AbstractCustomerDao",
+                                                     Opcodes.ACC_PUBLIC);
+        crudFrameworkSupport.addImplementsLinks("com.crud.dao", "AbstractCustomerDao", "com.crud.dao", "CustomerDao");
+        crudFrameworkSupport.addExtendsLinks("com.crud.dao", "AbstractCustomerDao", "com.crud.dao", "DaoImpl");
+        crudFrameworkSupport.addExtendsLinks("com.crud.dao", "CustomerDaoImpl", "com.crud.dao", "AbstractCustomerDao");
+        crudFrameworkSupport.addExtendsLinks("com.crud.dao", "CustomerDao", "com.crud.dao", "Dao");
+        crudFrameworkSupport.addImplementsLinks("com.crud.dao", "DaoImpl", "com.crud.dao", "Dao");
+        crudFrameworkSupport.addImplementsLinks("com.crud.dao", "AbstractCustomerDao", "com.crud.dao", "CustomerDao");
+        crudFrameworkSupport.addExtendsLinks("com.crud.dao", "DaoImpl", "java.lang.reflect", "Proxy");
 
     }
 
@@ -150,83 +138,48 @@ public class JavaTypeResolverTest {
      * @param jresupport the jresupport
      * @throws Exception the exception
      */
-    protected static void createJavaNodes( final JavaGraphNodeSupport jresupport )
-            throws Exception {
-        jresupport.addTypeOnCurrentContext(JavaType.class, "java.lang",
-                                           "Object", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class,
-                                           "java.lang.reflect", "Proxy", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "String", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "Number", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.util",
-                                           "HashMap", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.io",
-                                           "File", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.util",
-                                           "AbstractMap", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.util",
-                                           "AbstractMap.SimpleEntry", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeInterface.class,
-                                           "java.util", "Map.Entry", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeInterface.class,
-                                           "java.util", "Map", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeInterface.class, "java.io",
-                                           "Serializable", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeInterface.class,
-                                           "java.lang", "Comparable", Opcodes.ACC_PUBLIC);
+    protected static void createJavaNodes( final JavaGraphNodeSupport jresupport ) throws Exception {
+        jresupport.addTypeOnCurrentContext(JavaType.class, "java.lang", "Object", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang.reflect", "Proxy", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "String", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Number", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.util", "HashMap", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.io", "File", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.util", "AbstractMap", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.util", "AbstractMap.SimpleEntry", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeInterface.class, "java.util", "Map.Entry", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeInterface.class, "java.util", "Map", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeInterface.class, "java.io", "Serializable", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeInterface.class, "java.lang", "Comparable", Opcodes.ACC_PUBLIC);
 
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "Byte", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "Short", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "Short", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "Integer", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "Long", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "Float", Opcodes.ACC_PUBLIC);
-        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang",
-                                           "Double", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Byte", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Short", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Short", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Integer", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Long", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Float", Opcodes.ACC_PUBLIC);
+        jresupport.addTypeOnCurrentContext(JavaTypeClass.class, "java.lang", "Double", Opcodes.ACC_PUBLIC);
 
-        jresupport.addExtendsLinks("java.lang.reflect", "Proxy", "java.lang",
-                                   "Object");
-        jresupport
-                  .addExtendsLinks("java.lang", "String", "java.lang", "Object");
-        jresupport
-                  .addExtendsLinks("java.lang", "Number", "java.lang", "Object");
+        jresupport.addExtendsLinks("java.lang.reflect", "Proxy", "java.lang", "Object");
+        jresupport.addExtendsLinks("java.lang", "String", "java.lang", "Object");
+        jresupport.addExtendsLinks("java.lang", "Number", "java.lang", "Object");
         jresupport.addExtendsLinks("java.io", "File", "java.lang", "Object");
-        jresupport.addExtendsLinks("java.util", "HashMap", "java.util",
-                                   "AbstractMap");
-        jresupport.addExtendsLinks("java.util", "AbstractMap", "java.lang",
-                                   "Object");
+        jresupport.addExtendsLinks("java.util", "HashMap", "java.util", "AbstractMap");
+        jresupport.addExtendsLinks("java.util", "AbstractMap", "java.lang", "Object");
         jresupport.addExtendsLinks("java.lang", "Byte", "java.lang", "Number");
         jresupport.addExtendsLinks("java.lang", "Short", "java.lang", "Number");
-        jresupport.addExtendsLinks("java.lang", "Integer", "java.lang",
-                                   "Number");
+        jresupport.addExtendsLinks("java.lang", "Integer", "java.lang", "Number");
         jresupport.addExtendsLinks("java.lang", "Long", "java.lang", "Number");
         jresupport.addExtendsLinks("java.lang", "Float", "java.lang", "Number");
-        jresupport
-                  .addExtendsLinks("java.lang", "Double", "java.lang", "Number");
-        jresupport.addImplementsLinks("java.util", "HashMap", "java.util",
-                                      "Map");
-        jresupport.addImplementsLinks("java.util", "AbstractMap", "java.util",
-                                      "Map");
-        jresupport.addImplementsLinks("java.util", "AbstractMap.SimpleEntry",
-                                      "java.lang", "Map.Entry");
-        jresupport.addImplementsLinks("java.lang", "String", "java.lang",
-                                      "Comparable");
-        jresupport.addImplementsLinks("java.lang", "Number", "java.lang",
-                                      "Comparable");
-        jresupport.addImplementsLinks("java.lang", "String", "java.io",
-                                      "Serializable");
-        jresupport.addImplementsLinks("java.lang", "Number", "java.io",
-                                      "Serializable");
-        jresupport.addTypeOnCurrentContext(JavaTypePrimitive.class, "", "int",
-                                           Opcodes.ACC_PUBLIC);
+        jresupport.addExtendsLinks("java.lang", "Double", "java.lang", "Number");
+        jresupport.addImplementsLinks("java.util", "HashMap", "java.util", "Map");
+        jresupport.addImplementsLinks("java.util", "AbstractMap", "java.util", "Map");
+        jresupport.addImplementsLinks("java.util", "AbstractMap.SimpleEntry", "java.lang", "Map.Entry");
+        jresupport.addImplementsLinks("java.lang", "String", "java.lang", "Comparable");
+        jresupport.addImplementsLinks("java.lang", "Number", "java.lang", "Comparable");
+        jresupport.addImplementsLinks("java.lang", "String", "java.io", "Serializable");
+        jresupport.addImplementsLinks("java.lang", "Number", "java.io", "Serializable");
+        jresupport.addTypeOnCurrentContext(JavaTypePrimitive.class, "", "int", Opcodes.ACC_PUBLIC);
         jresupport.setupJavaTypesOnCurrentContext();
     }
 
@@ -238,37 +191,31 @@ public class JavaTypeResolverTest {
     @SuppressWarnings( "deprecation" )
     @BeforeClass
     public static void setupJavaFinder() throws Exception {
-        final SecurityFactory securityFactory = AbstractFactory
-                                                               .getDefaultInstance(SecurityFactory.class);
+        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(
-                                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-                                                                                                        "password");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
         final SLGraphFactory factory = new SLGraphFactoryImpl();
         graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-        SLContext abstractContext = session
-                                           .createContext(JavaConstants.ABSTRACT_CONTEXT);
+        SLContext abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT);
         SLContext jre14ctx = session.createContext("JRE-util-1.4");
         SLContext jre15ctx = session.createContext("JRE-util-1.5");
         SLContext crudFrameworkCtx = session.createContext("Crud-1.2");
-        final SLContext crudFrameworkLegacyCtx = session
-                                                        .createContext("Crud-0.5-legacy");
-        final JavaGraphNodeSupport jre5support = new JavaGraphNodeSupport(
-                                                                          session, jre15ctx.getRootNode(), abstractContext.getRootNode());
-        final JavaGraphNodeSupport jre4support = new JavaGraphNodeSupport(
-                                                                          session, jre14ctx.getRootNode(), abstractContext.getRootNode());
+        final SLContext crudFrameworkLegacyCtx = session.createContext("Crud-0.5-legacy");
+        final JavaGraphNodeSupport jre5support = new JavaGraphNodeSupport(session, jre15ctx.getRootNode(),
+                                                                          abstractContext.getRootNode());
+        final JavaGraphNodeSupport jre4support = new JavaGraphNodeSupport(session, jre14ctx.getRootNode(),
+                                                                          abstractContext.getRootNode());
 
         createJavaNodes(jre4support);
         createJavaNodes(jre5support);
 
-        final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(
-                                                                                   session, crudFrameworkCtx.getRootNode(), abstractContext
-                                                                                                                                           .getRootNode());
-        final JavaGraphNodeSupport crudFrameworkLegacySupport = new JavaGraphNodeSupport(
-                                                                                         session, crudFrameworkLegacyCtx.getRootNode(), abstractContext
-                                                                                                                                                       .getRootNode());
+        final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(session, crudFrameworkCtx.getRootNode(),
+                                                                                   abstractContext.getRootNode());
+        final JavaGraphNodeSupport crudFrameworkLegacySupport = new JavaGraphNodeSupport(session,
+                                                                                         crudFrameworkLegacyCtx.getRootNode(),
+                                                                                         abstractContext.getRootNode());
         createCrudNodes(crudFrameworkSupport);
         createCrudNodes(crudFrameworkLegacySupport);
         session.save();
@@ -278,15 +225,11 @@ public class JavaTypeResolverTest {
         jre15ctx = session.getContext("JRE-util-1.5");
         jre14ctx = session.getContext("JRE-util-1.4");
         crudFrameworkCtx = session.getContext("Crud-1.2");
-        final List<SLContext> orderedActiveContexts = Arrays.asList(
-                                                                    crudFrameworkCtx, jre15ctx);
-        final List<SLContext> orderedActiveContextsFor14 = Arrays.asList(
-                                                                         crudFrameworkCtx, jre14ctx);
+        final List<SLContext> orderedActiveContexts = Arrays.asList(crudFrameworkCtx, jre15ctx);
+        final List<SLContext> orderedActiveContextsFor14 = Arrays.asList(crudFrameworkCtx, jre14ctx);
 
-        javaTypeFinder = JavaTypeResolver.createNewUncachedAndSlow(
-                                                                   abstractContext, orderedActiveContexts, true, session);
-        java14TypeFinder = JavaTypeResolver.createNewUncachedAndSlow(
-                                                                     abstractContext, orderedActiveContextsFor14, false, session);
+        javaTypeFinder = JavaTypeResolver.createNewUncachedAndSlow(abstractContext, orderedActiveContexts, true, session);
+        java14TypeFinder = JavaTypeResolver.createNewUncachedAndSlow(abstractContext, orderedActiveContextsFor14, false, session);
     }
 
     @AfterClass
@@ -303,8 +246,7 @@ public class JavaTypeResolverTest {
     @Test
     public void shouldCountAllChildrenIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final int size = javaTypeFinder.countAllChildren(type,
-                                                         IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final int size = javaTypeFinder.countAllChildren(type, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(5));
     }
 
@@ -316,8 +258,7 @@ public class JavaTypeResolverTest {
     @Test
     public void shouldCountAllChildrenNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final int size = javaTypeFinder.countAllChildren(type,
-                                                         IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final int size = javaTypeFinder.countAllChildren(type, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(4));
     }
 
@@ -328,10 +269,8 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldCountAllParentsIncludingActualType() throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final int size = javaTypeFinder.countAllParents(type,
-                                                        IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final int size = javaTypeFinder.countAllParents(type, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(7));
     }
 
@@ -342,10 +281,8 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldCountAllParentsNotIncludingActualType() throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final int size = javaTypeFinder.countAllParents(type,
-                                                        IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final int size = javaTypeFinder.countAllParents(type, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(6));
     }
 
@@ -355,11 +292,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldCountConcreteChildrenIncludingActualType()
-            throws Exception {
+    public void shouldCountConcreteChildrenIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final int size = javaTypeFinder.countConcreteChildren(type,
-                                                              IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final int size = javaTypeFinder.countConcreteChildren(type, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(4));
     }
 
@@ -369,11 +304,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldCountConcreteChildrenNotIncludingActualType()
-            throws Exception {
+    public void shouldCountConcreteChildrenNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final int size = javaTypeFinder.countConcreteChildren(type,
-                                                              IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final int size = javaTypeFinder.countConcreteChildren(type, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(3));
     }
 
@@ -383,12 +316,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldCountConcreteParentsIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final int size = javaTypeFinder.countConcreteParents(type,
-                                                             IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldCountConcreteParentsIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final int size = javaTypeFinder.countConcreteParents(type, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(5));
     }
 
@@ -398,12 +328,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldCountConcreteParentsNotIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final int size = javaTypeFinder.countConcreteParents(type,
-                                                             IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldCountConcreteParentsNotIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final int size = javaTypeFinder.countConcreteParents(type, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(4));
     }
 
@@ -413,11 +340,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldCountInterfaceChildrenIncludingActualType()
-            throws Exception {
+    public void shouldCountInterfaceChildrenIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final int size = javaTypeFinder.countInterfaceChildren(type,
-                                                               IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final int size = javaTypeFinder.countInterfaceChildren(type, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(2));
     }
 
@@ -427,11 +352,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldCountInterfaceChildrenNotIncludingActualType()
-            throws Exception {
+    public void shouldCountInterfaceChildrenNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final int size = javaTypeFinder.countInterfaceChildren(type,
-                                                               IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final int size = javaTypeFinder.countInterfaceChildren(type, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(1));
     }
 
@@ -441,12 +364,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldCountInterfaceParentsIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final int size = javaTypeFinder.countInterfaceParents(type,
-                                                              IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldCountInterfaceParentsIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final int size = javaTypeFinder.countInterfaceParents(type, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(3));
     }
 
@@ -456,12 +376,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldCountInterfaceParentsNotIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final int size = javaTypeFinder.countInterfaceParents(type,
-                                                              IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldCountInterfaceParentsNotIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final int size = javaTypeFinder.countInterfaceParents(type, IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(size, is(2));
     }
 
@@ -473,13 +390,10 @@ public class JavaTypeResolverTest {
     @Test
     public void shouldDoNotFindAutoboxedTypeWhenItsTurnedOff() throws Exception {
         final JavaType primitiveType = java14TypeFinder.getType("int");
-        final JavaType wrapperType = java14TypeFinder
-                                                     .getType("java.lang.Integer");
+        final JavaType wrapperType = java14TypeFinder.getType("java.lang.Integer");
 
-        assertThat(java14TypeFinder.isTypeOf(primitiveType, wrapperType),
-                   is(false));
-        assertThat(java14TypeFinder.isTypeOf(wrapperType, primitiveType),
-                   is(false));
+        assertThat(java14TypeFinder.isTypeOf(primitiveType, wrapperType), is(false));
+        assertThat(java14TypeFinder.isTypeOf(wrapperType, primitiveType), is(false));
     }
 
     /**
@@ -492,8 +406,7 @@ public class JavaTypeResolverTest {
         final JavaType primitiveType = javaTypeFinder.getType("long");
         final JavaType primitiveSubType = javaTypeFinder.getType("int");
 
-        assertThat(javaTypeFinder.isTypeOf(primitiveType, primitiveSubType),
-                   is(false));
+        assertThat(javaTypeFinder.isTypeOf(primitiveType, primitiveSubType), is(false));
     }
 
     /**
@@ -504,8 +417,7 @@ public class JavaTypeResolverTest {
     @Test
     public void shouldDoNotFindTypeOfSomethingInWrongOrder() throws Exception {
         final JavaType mapClass = javaTypeFinder.getType("java.util.Map");
-        final JavaType hashMapClass = javaTypeFinder
-                                                    .getType("java.util.HashMap");
+        final JavaType hashMapClass = javaTypeFinder.getType("java.util.HashMap");
         assertThat(javaTypeFinder.isTypeOf(mapClass, hashMapClass), is(false));
     }
 
@@ -527,11 +439,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAllChildrenTypesOnCorrectOrderIncludingActualType()
-            throws Exception {
+    public void shouldFindAllChildrenTypesOnCorrectOrderIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getAllChildren(type,
-                                                                    ResultOrder.ASC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final List<JavaType> result = javaTypeFinder.getAllChildren(type, ResultOrder.ASC,
+                                                                    IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(5));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("CustomerDaoImpl"));
@@ -547,11 +458,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAllChildrenTypesOnCorrectOrderNotIncludingActualType()
-            throws Exception {
+    public void shouldFindAllChildrenTypesOnCorrectOrderNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getAllChildren(type,
-                                                                    ResultOrder.ASC,
+        final List<JavaType> result = javaTypeFinder.getAllChildren(type, ResultOrder.ASC,
                                                                     IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(4));
         int i = 0;
@@ -567,11 +476,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAllChildrenTypesOnReverseOrderIncludingActualType()
-            throws Exception {
+    public void shouldFindAllChildrenTypesOnReverseOrderIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getAllChildren(type,
-                                                                    ResultOrder.DESC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final List<JavaType> result = javaTypeFinder.getAllChildren(type, ResultOrder.DESC,
+                                                                    IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(5));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("Dao"));
@@ -587,11 +495,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAllChildrenTypesOnReverseOrderNotIncludingActualType()
-            throws Exception {
+    public void shouldFindAllChildrenTypesOnReverseOrderNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getAllChildren(type,
-                                                                    ResultOrder.DESC,
+        final List<JavaType> result = javaTypeFinder.getAllChildren(type, ResultOrder.DESC,
                                                                     IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(4));
         int i = 0;
@@ -607,12 +513,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAllParentTypesOnCorrectOrderIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getAllParents(type,
-                                                                   ResultOrder.ASC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldFindAllParentTypesOnCorrectOrderIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getAllParents(type, ResultOrder.ASC,
+                                                                   IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(7));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("Object"));
@@ -630,12 +534,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAllParentTypesOnCorrectOrderNotIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getAllParents(type,
-                                                                   ResultOrder.ASC,
+    public void shouldFindAllParentTypesOnCorrectOrderNotIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getAllParents(type, ResultOrder.ASC,
                                                                    IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(6));
         int i = 0;
@@ -653,12 +554,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAllParentTypesOnReverseOrderIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<? extends JavaType> result = javaTypeFinder.getAllParents(
-                                                                             type, ResultOrder.DESC,
+    public void shouldFindAllParentTypesOnReverseOrderIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<? extends JavaType> result = javaTypeFinder.getAllParents(type, ResultOrder.DESC,
                                                                              IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(7));
         int i = 0;
@@ -677,12 +575,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAllParentTypesOnReverseOrderNotIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<? extends JavaType> result = javaTypeFinder.getAllParents(
-                                                                             type, ResultOrder.DESC,
+    public void shouldFindAllParentTypesOnReverseOrderNotIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<? extends JavaType> result = javaTypeFinder.getAllParents(type, ResultOrder.DESC,
                                                                              IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(6));
         int i = 0;
@@ -700,15 +595,12 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAnotherTypeOnTheSamePackageFromImplementedType()
-            throws Exception {
+    public void shouldFindAnotherTypeOnTheSamePackageFromImplementedType() throws Exception {
         final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
-        final JavaType fileClass = javaTypeFinder.getType("File", stringClass,
-                                                          null);
+        final JavaType fileClass = javaTypeFinder.getType("File", stringClass, null);
         assertThat(fileClass, is(notNullValue()));
         assertThat(fileClass.getName(), is("File"));
-        assertThat(fileClass.getPropertyValueAsString("qualifiedName"),
-                   is("java.io.File"));
+        assertThat(fileClass.getPropertyValueAsString("qualifiedName"), is("java.io.File"));
 
     }
 
@@ -718,16 +610,12 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAnotherTypeOnTheSamePackageFromSuperType()
-            throws Exception {
-        final JavaType stringClass = javaTypeFinder
-                                                   .getType("java.util.HashMap");
-        final JavaType numberClass = javaTypeFinder.getType("Number",
-                                                            stringClass, null);
+    public void shouldFindAnotherTypeOnTheSamePackageFromSuperType() throws Exception {
+        final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
+        final JavaType numberClass = javaTypeFinder.getType("Number", stringClass, null);
         assertThat(numberClass, is(notNullValue()));
         assertThat(numberClass.getName(), is("Number"));
-        assertThat(numberClass.getPropertyValueAsString("qualifiedName"),
-                   is("java.lang.Number"));
+        assertThat(numberClass.getPropertyValueAsString("qualifiedName"), is("java.lang.Number"));
 
     }
 
@@ -737,16 +625,12 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAnotherTypeWithDolarOnTheSamePackageFromSuperType()
-            throws Exception {
-        final JavaType stringClass = javaTypeFinder
-                                                   .getType("java.util.HashMap");
-        final JavaType numberClass = javaTypeFinder.getType("Map.Entry",
-                                                            stringClass, null);
+    public void shouldFindAnotherTypeWithDolarOnTheSamePackageFromSuperType() throws Exception {
+        final JavaType stringClass = javaTypeFinder.getType("java.util.HashMap");
+        final JavaType numberClass = javaTypeFinder.getType("Map.Entry", stringClass, null);
         assertThat(numberClass, is(notNullValue()));
         assertThat(numberClass.getName(), is("Map.Entry"));
-        assertThat(numberClass.getPropertyValueAsString("qualifiedName"),
-                   is("java.util.Map.Entry"));
+        assertThat(numberClass.getPropertyValueAsString("qualifiedName"), is("java.util.Map.Entry"));
 
     }
 
@@ -756,16 +640,12 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindAnotherTypeWithDolarOnTheSamePackageFromSuperTypeWithDolar()
-            throws Exception {
-        final JavaType stringClass = javaTypeFinder
-                                                   .getType("java.util.AbstractMap.SimpleEntry");
-        final JavaType numberClass = javaTypeFinder.getType("Map.Entry",
-                                                            stringClass, null);
+    public void shouldFindAnotherTypeWithDolarOnTheSamePackageFromSuperTypeWithDolar() throws Exception {
+        final JavaType stringClass = javaTypeFinder.getType("java.util.AbstractMap.SimpleEntry");
+        final JavaType numberClass = javaTypeFinder.getType("Map.Entry", stringClass, null);
         assertThat(numberClass, is(notNullValue()));
         assertThat(numberClass.getName(), is("Map.Entry"));
-        assertThat(numberClass.getPropertyValueAsString("qualifiedName"),
-                   is("java.util.Map.Entry"));
+        assertThat(numberClass.getPropertyValueAsString("qualifiedName"), is("java.util.Map.Entry"));
 
     }
 
@@ -777,14 +657,11 @@ public class JavaTypeResolverTest {
     @Test
     public void shouldFindAutoboxedType() throws Exception {
         final JavaType primitiveType = javaTypeFinder.getType("int");
-        final JavaType wrapperType = javaTypeFinder
-                                                   .getType("java.lang.Integer");
+        final JavaType wrapperType = javaTypeFinder.getType("java.lang.Integer");
 
         // both ways are allowed
-        assertThat(javaTypeFinder.isTypeOf(primitiveType, wrapperType),
-                   is(true));
-        assertThat(javaTypeFinder.isTypeOf(wrapperType, primitiveType),
-                   is(true));
+        assertThat(javaTypeFinder.isTypeOf(primitiveType, wrapperType), is(true));
+        assertThat(javaTypeFinder.isTypeOf(wrapperType, primitiveType), is(true));
     }
 
     /**
@@ -863,11 +740,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindConcreteChildrenTypesOnCorrectOrderIncludingActualType()
-            throws Exception {
+    public void shouldFindConcreteChildrenTypesOnCorrectOrderIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type,
-                                                                         ResultOrder.ASC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type, ResultOrder.ASC,
+                                                                         IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
         assertThat(result.size(), is(4));
         int i = 0;
@@ -883,11 +759,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindConcreteChildrenTypesOnCorrectOrderNotIncludingActualType()
-            throws Exception {
+    public void shouldFindConcreteChildrenTypesOnCorrectOrderNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type,
-                                                                         ResultOrder.ASC,
+        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type, ResultOrder.ASC,
                                                                          IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
         assertThat(result.size(), is(3));
@@ -903,11 +777,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindConcreteChildrenTypesOnReverseOrderIncludingActualType()
-            throws Exception {
+    public void shouldFindConcreteChildrenTypesOnReverseOrderIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type,
-                                                                         ResultOrder.DESC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type, ResultOrder.DESC,
+                                                                         IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(4));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("Dao"));
@@ -922,11 +795,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindConcreteChildrenTypesOnReverseOrderNotIncludingActualType()
-            throws Exception {
+    public void shouldFindConcreteChildrenTypesOnReverseOrderNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type,
-                                                                         ResultOrder.DESC,
+        final List<JavaType> result = javaTypeFinder.getConcreteChildren(type, ResultOrder.DESC,
                                                                          IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(3));
         int i = 0;
@@ -945,8 +816,7 @@ public class JavaTypeResolverTest {
         final JavaType stringClass = javaTypeFinder.getType("java.lang.String");
         assertThat(stringClass, is(notNullValue()));
         assertThat(stringClass.getName(), is("String"));
-        assertThat(stringClass.getPropertyValueAsString("qualifiedName"),
-                   is("java.lang.String"));
+        assertThat(stringClass.getPropertyValueAsString("qualifiedName"), is("java.lang.String"));
     }
 
     /**
@@ -958,12 +828,10 @@ public class JavaTypeResolverTest {
     public void shouldFindConcreteInnerClass() throws Exception {
         final SLNode entryClass = javaTypeFinder.getType("java.util.Map.Entry");
         assertThat(entryClass, is(notNullValue()));
-        final SLNode newEntryClass = javaTypeFinder
-                                                   .getType("java.util.Map.Entry");
+        final SLNode newEntryClass = javaTypeFinder.getType("java.util.Map.Entry");
         assertThat(newEntryClass, is(notNullValue()));
         assertThat(entryClass.getName(), is("Map.Entry"));
-        assertThat(entryClass.getPropertyValueAsString("qualifiedName"),
-                   is("java.util.Map.Entry"));
+        assertThat(entryClass.getPropertyValueAsString("qualifiedName"), is("java.util.Map.Entry"));
 
     }
 
@@ -973,12 +841,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindConcreteParentTypesOnCorrectOrderIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getConcreteParents(type,
-                                                                        ResultOrder.ASC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldFindConcreteParentTypesOnCorrectOrderIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getConcreteParents(type, ResultOrder.ASC,
+                                                                        IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(5));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("Object"));
@@ -994,12 +860,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindConcreteParentTypesOnCorrectOrderNotIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getConcreteParents(type,
-                                                                        ResultOrder.ASC,
+    public void shouldFindConcreteParentTypesOnCorrectOrderNotIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getConcreteParents(type, ResultOrder.ASC,
                                                                         IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(4));
         int i = 0;
@@ -1015,12 +878,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindConcreteParentTypesOnReverseOrderIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getConcreteParents(type,
-                                                                        ResultOrder.DESC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldFindConcreteParentTypesOnReverseOrderIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getConcreteParents(type, ResultOrder.DESC,
+                                                                        IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(5));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("CustomerDaoImpl"));
@@ -1036,12 +897,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindConcreteParentTypesOnReverseOrderNotIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getConcreteParents(type,
-                                                                        ResultOrder.DESC,
+    public void shouldFindConcreteParentTypesOnReverseOrderNotIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getConcreteParents(type, ResultOrder.DESC,
                                                                         IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(4));
         int i = 0;
@@ -1058,8 +916,7 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldFindConcreteType() throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
         assertThat(javaTypeFinder.isConcreteType(type), is(true));
     }
 
@@ -1071,8 +928,7 @@ public class JavaTypeResolverTest {
     @Test
     public void shouldFindDirectConcreteChildrenTypes() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder
-                                                    .getDirectConcreteChildren(type);
+        final List<JavaType> result = javaTypeFinder.getDirectConcreteChildren(type);
         assertThat(result.size(), is(1));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("DaoImpl"));
@@ -1085,10 +941,8 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldFindDirectConcreteParentTypes() throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder
-                                                    .getDirectConcreteParents(type);
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getDirectConcreteParents(type);
         assertThat(result.size(), is(1));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("AbstractCustomerDao"));
@@ -1102,8 +956,7 @@ public class JavaTypeResolverTest {
     @Test
     public void shouldFindDirectInterfaceChildrenTypes() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder
-                                                    .getDirectInterfaceChildren(type);
+        final List<JavaType> result = javaTypeFinder.getDirectInterfaceChildren(type);
         assertThat(result.size(), is(1));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("CustomerDao"));
@@ -1116,10 +969,8 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldFindDirectInterfaceParentTypes() throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder
-                                                    .getDirectInterfaceParents(type);
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getDirectInterfaceParents(type);
         assertThat(result.size(), is(1));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("Dao"));
@@ -1131,11 +982,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindInterfaceChildrenTypesOnCorrectOrderIncludingActualType()
-            throws Exception {
+    public void shouldFindInterfaceChildrenTypesOnCorrectOrderIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type,
-                                                                          ResultOrder.ASC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type, ResultOrder.ASC,
+                                                                          IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
         assertThat(result.size(), is(2));
         int i = 0;
@@ -1150,11 +1000,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindInterfaceChildrenTypesOnCorrectOrderNotIncludingActualType()
-            throws Exception {
+    public void shouldFindInterfaceChildrenTypesOnCorrectOrderNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type,
-                                                                          ResultOrder.ASC,
+        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type, ResultOrder.ASC,
                                                                           IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
 
         assertThat(result.size(), is(1));
@@ -1169,11 +1017,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindInterfaceChildrenTypesOnReverseOrderIncludingActualType()
-            throws Exception {
+    public void shouldFindInterfaceChildrenTypesOnReverseOrderIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type,
-                                                                          ResultOrder.DESC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type, ResultOrder.DESC,
+                                                                          IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(2));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("Dao"));
@@ -1186,11 +1033,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindInterfaceChildrenTypesOnReverseOrderNotIncludingActualType()
-            throws Exception {
+    public void shouldFindInterfaceChildrenTypesOnReverseOrderNotIncludingActualType() throws Exception {
         final JavaType type = javaTypeFinder.getType("com.crud.dao.Dao");
-        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type,
-                                                                          ResultOrder.DESC,
+        final List<JavaType> result = javaTypeFinder.getInterfaceChildren(type, ResultOrder.DESC,
                                                                           IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(1));
         int i = 0;
@@ -1203,12 +1048,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindInterfaceParentTypesOnCorrectOrderIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type,
-                                                                         ResultOrder.ASC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldFindInterfaceParentTypesOnCorrectOrderIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type, ResultOrder.ASC,
+                                                                         IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(3));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("Dao"));
@@ -1222,12 +1065,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindInterfaceParentTypesOnCorrectOrderNotIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type,
-                                                                         ResultOrder.ASC,
+    public void shouldFindInterfaceParentTypesOnCorrectOrderNotIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type, ResultOrder.ASC,
                                                                          IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(2));
         int i = 0;
@@ -1241,12 +1081,10 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindInterfaceParentTypesOnReverseOrderIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type,
-                                                                         ResultOrder.DESC, IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+    public void shouldFindInterfaceParentTypesOnReverseOrderIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type, ResultOrder.DESC,
+                                                                         IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(3));
         int i = 0;
         assertThat(result.get(i++).getSimpleName(), is("CustomerDaoImpl"));
@@ -1260,12 +1098,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindInterfaceParentTypesOnReverseOrderNotIncludingActualType()
-            throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDaoImpl");
-        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type,
-                                                                         ResultOrder.DESC,
+    public void shouldFindInterfaceParentTypesOnReverseOrderNotIncludingActualType() throws Exception {
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
+        final List<JavaType> result = javaTypeFinder.getInterfaceParents(type, ResultOrder.DESC,
                                                                          IncludedResult.DO_NOT_INCLUDE_ACTUAL_TYPE_ON_RESULT);
         assertThat(result.size(), is(2));
         int i = 0;
@@ -1283,8 +1118,7 @@ public class JavaTypeResolverTest {
         final SLNode mapClass = javaTypeFinder.getType("java.util.Map");
         assertThat(mapClass, is(notNullValue()));
         assertThat(mapClass.getName(), is("Map"));
-        assertThat(mapClass.getPropertyValueAsString("qualifiedName"),
-                   is("java.util.Map"));
+        assertThat(mapClass.getPropertyValueAsString("qualifiedName"), is("java.util.Map"));
     }
 
     /**
@@ -1294,10 +1128,8 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldFindPrimitive() throws Exception {
-        final JavaType wrapperType = javaTypeFinder
-                                                   .getType("java.lang.Integer");
-        final JavaType wrappedType = javaTypeFinder
-                                                   .getPrimitiveFor(wrapperType);
+        final JavaType wrapperType = javaTypeFinder.getType("java.lang.Integer");
+        final JavaType wrappedType = javaTypeFinder.getPrimitiveFor(wrapperType);
         assertThat(wrappedType.getName(), is("int"));
     }
 
@@ -1311,8 +1143,7 @@ public class JavaTypeResolverTest {
         final JavaType primitiveType = javaTypeFinder.getType("long");
         final JavaType primitiveSubType = javaTypeFinder.getType("int");
 
-        assertThat(javaTypeFinder.isTypeOf(primitiveSubType, primitiveType),
-                   is(true));
+        assertThat(javaTypeFinder.isTypeOf(primitiveSubType, primitiveType), is(true));
     }
 
     /**
@@ -1373,11 +1204,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindTypeOfSomethingWhenUsingConcreteType()
-            throws Exception {
+    public void shouldFindTypeOfSomethingWhenUsingConcreteType() throws Exception {
         final JavaType superClass = javaTypeFinder.getType("java.lang.Object");
-        final JavaType hashMapClass = javaTypeFinder
-                                                    .getType("java.util.HashMap");
+        final JavaType hashMapClass = javaTypeFinder.getType("java.util.HashMap");
         assertThat(javaTypeFinder.isTypeOf(hashMapClass, superClass), is(true));
     }
 
@@ -1387,11 +1216,9 @@ public class JavaTypeResolverTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldFindTypeOfSomethingWhenUsingInterfaceType()
-            throws Exception {
+    public void shouldFindTypeOfSomethingWhenUsingInterfaceType() throws Exception {
         final JavaType superClass = javaTypeFinder.getType("java.util.Map");
-        final JavaType hashMapClass = javaTypeFinder
-                                                    .getType("java.util.HashMap");
+        final JavaType hashMapClass = javaTypeFinder.getType("java.util.HashMap");
         assertThat(javaTypeFinder.isTypeOf(hashMapClass, superClass), is(true));
     }
 
@@ -1414,8 +1241,7 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldNotFindConcreteType() throws Exception {
-        final JavaType type = javaTypeFinder
-                                            .getType("com.crud.dao.CustomerDao");
+        final JavaType type = javaTypeFinder.getType("com.crud.dao.CustomerDao");
         assertThat(javaTypeFinder.isConcreteType(type), is(false));
     }
 
@@ -1469,8 +1295,7 @@ public class JavaTypeResolverTest {
         final JavaType wrapperType = javaTypeFinder.getType("java.lang.Long");
 
         // not allowed because Integer isn't a Long
-        assertThat(javaTypeFinder.isTypeOf(primitiveType, wrapperType),
-                   is(false)); // FIXME here there's a problem
+        assertThat(javaTypeFinder.isTypeOf(primitiveType, wrapperType), is(false)); // FIXME here there's a problem
     }
 
     @Test
@@ -1479,8 +1304,7 @@ public class JavaTypeResolverTest {
         final JavaType wrapperType = javaTypeFinder.getType("java.lang.Long");
 
         // not allowed because Integer isn't a Long
-        assertThat(javaTypeFinder.isTypeOf(wrapperType, primitiveType),
-                   is(false));
+        assertThat(javaTypeFinder.isTypeOf(wrapperType, primitiveType), is(false));
     }
 
 }

@@ -123,23 +123,14 @@ public class SLCollections {
      * @return the c
      */
     @SuppressWarnings( "unchecked" )
-    public static <I> Collection<I> createNewCollection(
-                                                         final Class<? extends Collection> collectionType,
+    public static <I> Collection<I> createNewCollection( final Class<? extends Collection> collectionType,
                                                          final int initialSize ) {
         if (NeedsSyncronizationSet.class.isAssignableFrom(collectionType)) {
-            return LockedCollections
-                                    .createSetWithLock(new UnsafeDummyLockContainer(),
-                                                       new HashSet<I>(initialSize));
-        } else if (NeedsSyncronizationList.class
-                                                .isAssignableFrom(collectionType)) {
-            return LockedCollections.createListWithLock(
-                                                        new UnsafeDummyLockContainer(), new ArrayList<I>(
-                                                                                                         initialSize));
-        } else if (NeedsSyncronizationCollection.class
-                                                      .isAssignableFrom(collectionType)) {
-            return LockedCollections.createCollectionWithLock(
-                                                              new UnsafeDummyLockContainer(), new ArrayList<I>(
-                                                                                                               initialSize));
+            return LockedCollections.createSetWithLock(new UnsafeDummyLockContainer(), new HashSet<I>(initialSize));
+        } else if (NeedsSyncronizationList.class.isAssignableFrom(collectionType)) {
+            return LockedCollections.createListWithLock(new UnsafeDummyLockContainer(), new ArrayList<I>(initialSize));
+        } else if (NeedsSyncronizationCollection.class.isAssignableFrom(collectionType)) {
+            return LockedCollections.createCollectionWithLock(new UnsafeDummyLockContainer(), new ArrayList<I>(initialSize));
         } else if (Set.class.isAssignableFrom(collectionType)) {
             return new HashSet<I>(initialSize);
         } else if (Queue.class.isAssignableFrom(collectionType)) {
@@ -172,7 +163,6 @@ public class SLCollections {
      * Should not be instantiated
      */
     private SLCollections() {
-        logAndThrow(new IllegalStateException(Messages
-                                                      .getString("invalidConstructor"))); //$NON-NLS-1$
+        logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

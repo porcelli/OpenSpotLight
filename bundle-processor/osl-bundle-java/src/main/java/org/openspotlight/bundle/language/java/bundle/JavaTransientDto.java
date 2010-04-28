@@ -106,8 +106,7 @@ public class JavaTransientDto {
 
         public final JavaTransientDto create() {
             validate();
-            return new JavaTransientDto(stream, lexer, sourceLine,
-                                        lexerExecutor, commonTokenStream, parser, parserExecutor,
+            return new JavaTransientDto(stream, lexer, sourceLine, lexerExecutor, commonTokenStream, parser, parserExecutor,
                                         tree, treeNodes, walker, support);
         }
 
@@ -134,8 +133,7 @@ public class JavaTransientDto {
 
         }
 
-        public ParserDtoBuilder withCommonTokenStream(
-                                                       final CommonTokenStream commonTokenStream ) {
+        public ParserDtoBuilder withCommonTokenStream( final CommonTokenStream commonTokenStream ) {
             this.commonTokenStream = commonTokenStream;
             return this;
         }
@@ -145,8 +143,7 @@ public class JavaTransientDto {
             return this;
         }
 
-        public ParserDtoBuilder withLexerExecutor(
-                                                   final JavaLexerExecutor lexerExecutor ) {
+        public ParserDtoBuilder withLexerExecutor( final JavaLexerExecutor lexerExecutor ) {
             this.lexerExecutor = lexerExecutor;
             return this;
         }
@@ -156,14 +153,12 @@ public class JavaTransientDto {
             return this;
         }
 
-        public ParserDtoBuilder withParserExecutor(
-                                                    final JavaParserExecutor parserExecutor ) {
+        public ParserDtoBuilder withParserExecutor( final JavaParserExecutor parserExecutor ) {
             this.parserExecutor = parserExecutor;
             return this;
         }
 
-        public ParserDtoBuilder withSourceline(
-                                                final SourceLineInfoAggregator sourceLine ) {
+        public ParserDtoBuilder withSourceline( final SourceLineInfoAggregator sourceLine ) {
             this.sourceLine = sourceLine;
             return this;
         }
@@ -203,14 +198,12 @@ public class JavaTransientDto {
 
         }
 
-        public TreeDtoBuilder withExecutorSupport(
-                                                   final JavaExecutorSupport support ) {
+        public TreeDtoBuilder withExecutorSupport( final JavaExecutorSupport support ) {
             this.support = support;
             return this;
         }
 
-        public TreeDtoBuilder withTreeNodeStream(
-                                                  final CommonTreeNodeStream treeNodes ) {
+        public TreeDtoBuilder withTreeNodeStream( final CommonTreeNodeStream treeNodes ) {
             this.treeNodes = treeNodes;
             return this;
         }
@@ -243,13 +236,10 @@ public class JavaTransientDto {
     public final JavaPublicElementsTree   walker;
 
     private JavaTransientDto(
-                              final SLArtifactStream stream,
-                              final JavaLexer lexer, final SourceLineInfoAggregator sourceLine,
-                              final JavaLexerExecutor lexerExecutor,
-                              final CommonTokenStream commonTokenStream, final JavaParser parser,
-                              final JavaParserExecutor parserExecutor, final Tree tree,
-                              final CommonTreeNodeStream treeNodes,
-                              final JavaPublicElementsTree walker,
+                              final SLArtifactStream stream, final JavaLexer lexer, final SourceLineInfoAggregator sourceLine,
+                              final JavaLexerExecutor lexerExecutor, final CommonTokenStream commonTokenStream,
+                              final JavaParser parser, final JavaParserExecutor parserExecutor, final Tree tree,
+                              final CommonTreeNodeStream treeNodes, final JavaPublicElementsTree walker,
                               final JavaExecutorSupport support ) {
         super();
         this.support = support;

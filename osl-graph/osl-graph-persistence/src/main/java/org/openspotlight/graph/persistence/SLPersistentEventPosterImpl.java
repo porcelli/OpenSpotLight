@@ -68,9 +68,13 @@ public class SLPersistentEventPosterImpl implements SLPersistentEventPoster {
         this.listener = listener;
     }
 
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.persistence.SLPersistentEventPoster#post(org.openspotlight.graph.persistence.SLPersistentNodeEvent)
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.persistence.SLPersistentEventPoster#post(org.
+     * openspotlight.graph.persistence.SLPersistentNodeEvent)
      */
     public void post( SLPersistentNodeEvent event ) throws SLPersistentTreeSessionException {
         switch (event.getType()) {
@@ -85,9 +89,13 @@ public class SLPersistentEventPosterImpl implements SLPersistentEventPoster {
         }
     }
 
-    //@Override
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.persistence.SLPersistentEventPoster#post(org.openspotlight.graph.persistence.SLPersistentPropertyEvent)
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.persistence.SLPersistentEventPoster#post(org.
+     * openspotlight.graph.persistence.SLPersistentPropertyEvent)
      */
     public void post( SLPersistentPropertyEvent event ) throws SLPersistentTreeSessionException {
         switch (event.getType()) {

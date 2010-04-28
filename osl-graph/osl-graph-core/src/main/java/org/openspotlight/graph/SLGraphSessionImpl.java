@@ -151,8 +151,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @param user the user
      */
     public SLGraphSessionImpl(
-                               final SLPersistentTreeSession treeSession,
-                               final PolicyEnforcement policyEnforcement,
+                               final SLPersistentTreeSession treeSession, final PolicyEnforcement policyEnforcement,
                                final AuthenticatedUser user ) {
 
         Assertions.checkNotNull("treeSession", treeSession);
@@ -184,8 +183,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                          final SLNode target,
                                          final boolean bidirecional ) {
         synchronized (lock) {
-            return this.addLink(linkClass, source, target, bidirecional,
-                                SLPersistenceMode.NORMAL);
+            return this.addLink(linkClass, source, target, bidirecional, SLPersistenceMode.NORMAL);
         }
     }
 
@@ -204,8 +202,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
             try {
 
                 if (!hasPrivileges(GraphElement.LINK, Action.WRITE)) {
-                    throw new SLInvalidCredentialException(
-                                                           "User does not have privilegies to add links.");
+                    throw new SLInvalidCredentialException("User does not have privilegies to add links.");
                 }
 
                 SLPersistentNode linkNode = null;
@@ -219,8 +216,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                                       "ALLOWS_CHANGE_TO_BIDIRECTIONAL and ALLOWS_MULTIPLE attributes are not supported at once.");
                 }
 
-                final SLPersistentNode pairKeyNode = getPairKeyNode(linkClass,
-                                                                    source, target);
+                final SLPersistentNode pairKeyNode = getPairKeyNode(linkClass, source, target);
                 final int direction = getDirection(source, target, bidirecional);
 
                 boolean newLink = false;
@@ -237,13 +233,11 @@ public class SLGraphSessionImpl implements SLGraphSession {
                             if (linkNode == null) {
                                 newLink = true;
                             } else {
-                                final SLPersistentProperty<Integer> directionProp = linkNode
-                                                                                            .getProperty(
+                                final SLPersistentProperty<Integer> directionProp = linkNode.getProperty(
                                                                                                          Integer.class,
                                                                                                          SLConsts.PROPERTY_NAME_DIRECTION);
                                 if (directionProp.getValue() != SLConsts.DIRECTION_BOTH) {
-                                    directionProp
-                                                 .setValue(SLConsts.DIRECTION_BOTH);
+                                    directionProp.setValue(SLConsts.DIRECTION_BOTH);
                                     changedToBidirectional = true;
                                 }
                             }
@@ -254,28 +248,23 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 }
 
                 if (newLink) {
-                    linkNode = addLinkNode(pairKeyNode, linkClass, source,
-                                           target, direction);
+                    linkNode = addLinkNode(pairKeyNode, linkClass, source, target, direction);
                 }
 
                 final SLLink link;
                 if (bidirecional) {
-                    link = new SLLinkImpl(this, linkNode, eventPoster,
-                                          new SLNode[] {source, target});
+                    link = new SLLinkImpl(this, linkNode, eventPoster, new SLNode[] {source, target});
                 } else {
-                    link = new SLLinkImpl(this, linkNode, eventPoster, source,
-                                          target);
+                    link = new SLLinkImpl(this, linkNode, eventPoster, source, target);
                 }
                 final L linkProxy = ProxyUtil.createLinkProxy(linkClass, link);
-                final SLLinkEvent event = new SLLinkAddedEvent(linkProxy,
-                                                               linkNode, persistenceMode);
+                final SLLinkEvent event = new SLLinkAddedEvent(linkProxy, linkNode, persistenceMode);
                 event.setNewLink(newLink);
                 event.setChangedToBidirectional(changedToBidirectional);
                 eventPoster.post(event);
                 return linkProxy;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to add link.", e);
+                throw new SLGraphSessionException("Error on attempt to add link.", e);
             }
         }
     }
@@ -296,32 +285,21 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                           final Class<? extends SLLink> linkType,
                                           final SLNode source,
                                           final SLNode target,
-                                          final int direction )
-        throws SLPersistentTreeSessionException {
+                                          final int direction ) throws SLPersistentTreeSessionException {
         final long linkCount = incLinkCount(pairKeyNode);
         final String name = SLCommonSupport.getLinkIndexNodeName(linkCount);
         final SLPersistentNode linkNode = pairKeyNode.addNode(name);
-        final Class<? extends SLNode> sourceType = (Class<? extends SLNode>)source
-                                                                                  .getClass().getInterfaces()[0];
-        final Class<? extends SLNode> targetType = (Class<? extends SLNode>)target
-                                                                                  .getClass().getInterfaces()[0];
-        SLCommonSupport.setInternalStringProperty(linkNode,
-                                                  SLConsts.PROPERTY_NAME_SOURCE_ID, source.getID());
-        SLCommonSupport.setInternalStringProperty(linkNode,
-                                                  SLConsts.PROPERTY_NAME_TARGET_ID, target.getID());
-        SLCommonSupport.setInternalIntegerProperty(linkNode,
-                                                   SLConsts.PROPERTY_NAME_LINK_TYPE_HASH, linkType.getName()
-                                                                                                  .hashCode());
-        SLCommonSupport.setInternalIntegerProperty(linkNode,
-                                                   SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH, sourceType.getName()
-                                                                                                      .hashCode());
-        SLCommonSupport.setInternalIntegerProperty(linkNode,
-                                                   SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH, targetType.getName()
-                                                                                                      .hashCode());
-        linkNode.setProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT,
-                             linkCount);
-        linkNode.setProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION,
-                             direction);
+        final Class<? extends SLNode> sourceType = (Class<? extends SLNode>)source.getClass().getInterfaces()[0];
+        final Class<? extends SLNode> targetType = (Class<? extends SLNode>)target.getClass().getInterfaces()[0];
+        SLCommonSupport.setInternalStringProperty(linkNode, SLConsts.PROPERTY_NAME_SOURCE_ID, source.getID());
+        SLCommonSupport.setInternalStringProperty(linkNode, SLConsts.PROPERTY_NAME_TARGET_ID, target.getID());
+        SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_LINK_TYPE_HASH, linkType.getName().hashCode());
+        SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_SOURCE_TYPE_HASH,
+                                                   sourceType.getName().hashCode());
+        SLCommonSupport.setInternalIntegerProperty(linkNode, SLConsts.PROPERTY_NAME_TARGET_TYPE_HASH,
+                                                   targetType.getName().hashCode());
+        linkNode.setProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT, linkCount);
+        linkNode.setProperty(Integer.class, SLConsts.PROPERTY_NAME_DIRECTION, direction);
         return linkNode;
     }
 
@@ -331,13 +309,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @param linkTypeClass the link type class
      * @return true, if successful
      */
-    private boolean allowsChangeToBidirecional(
-                                                final Class<? extends SLLink> linkTypeClass ) {
-        final SLLinkAttribute attribute = linkTypeClass
-                                                       .getAnnotation(SLLinkAttribute.class);
-        return attribute != null
-               && Arrays.binarySearch(attribute.value(),
-                                      SLLinkAttribute.ALLOWS_CHANGE_TO_BIDIRECTIONAL) > -1;
+    private boolean allowsChangeToBidirecional( final Class<? extends SLLink> linkTypeClass ) {
+        final SLLinkAttribute attribute = linkTypeClass.getAnnotation(SLLinkAttribute.class);
+        return attribute != null && Arrays.binarySearch(attribute.value(), SLLinkAttribute.ALLOWS_CHANGE_TO_BIDIRECTIONAL) > -1;
     }
 
     /**
@@ -347,11 +321,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @return true, if successful
      */
     private boolean allowsMultiple( final Class<? extends SLLink> linkTypeClass ) {
-        final SLLinkAttribute attribute = linkTypeClass
-                                                       .getAnnotation(SLLinkAttribute.class);
-        return attribute != null
-               && Arrays.binarySearch(attribute.value(),
-                                      SLLinkAttribute.ALLOWS_MULTIPLE) > -1;
+        final SLLinkAttribute attribute = linkTypeClass.getAnnotation(SLLinkAttribute.class);
+        return attribute != null && Arrays.binarySearch(attribute.value(), SLLinkAttribute.ALLOWS_MULTIPLE) > -1;
     }
 
     /**
@@ -361,8 +332,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         try {
             queryCache.flush();
         } catch (final SLPersistentTreeSessionException e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to flush cache.", e);
+            throw new SLGraphSessionException("Error on attempt to flush cache.", e);
         }
     }
 
@@ -375,8 +345,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 eventPoster.sessionCleaned();
                 treeSession.clear();
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to clear OSL repository.", e);
+                throw new SLGraphSessionException("Error on attempt to clear OSL repository.", e);
             }
         }
     }
@@ -400,12 +369,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
         synchronized (lock) {
             try {
                 if (!hasPrivileges(GraphElement.CONTEXT, Action.WRITE)) {
-                    throw new SLInvalidCredentialException(
-                                                           "User does not have privilegies to create contexts.");
+                    throw new SLInvalidCredentialException("User does not have privilegies to create contexts.");
                 }
 
-                final SLPersistentNode contextsPersistentNode = SLCommonSupport
-                                                                               .getContextsPersistentNode(treeSession);
+                final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(treeSession);
 
                 SLPersistentNode contextRootPersistentNode = contextsPersistentNode.getNode(id);
                 if (contextRootPersistentNode == null) {
@@ -417,8 +384,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 return new SLContextImpl(this, contextRootPersistentNode, eventPoster);
             } catch (final SLPersistentTreeSessionException e) {
                 Exceptions.catchAndLog(e);
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to create context node.", e);
+                throw new SLGraphSessionException("Error on attempt to create context node.", e);
             }
         }
     }
@@ -435,8 +401,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public SLQueryText createQueryText( final String slqlInput )
-        throws SLInvalidQuerySyntaxException {
+    public SLQueryText createQueryText( final String slqlInput ) throws SLInvalidQuerySyntaxException {
         final SLQueryTextInternal query = queryBuilder.build(slqlInput);
         synchronized (lock) {
             return new SLQueryTextImpl(this, treeSession, query);
@@ -452,8 +417,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @param returnSubTypes the return sub types
      * @return the set< n>
      */
-    private <N extends SLNode> NeedsSyncronizationSet<N> filterNodesFromLinks(
-                                                                               final Collection<? extends SLLink> links,
+    private <N extends SLNode> NeedsSyncronizationSet<N> filterNodesFromLinks( final Collection<? extends SLLink> links,
                                                                                final SLNode node,
                                                                                final Class<N> nodeClass,
                                                                                final boolean returnSubTypes ) {
@@ -486,11 +450,8 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @return the sL persistent node
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    private SLPersistentNode findUniqueLinkNode(
-                                                 final SLPersistentNode pairKeyNode )
-        throws SLPersistentTreeSessionException {
-        return pairKeyNode.getNodes().isEmpty() ? null : pairKeyNode.getNodes()
-                                                                    .iterator().next();
+    private SLPersistentNode findUniqueLinkNode( final SLPersistentNode pairKeyNode ) throws SLPersistentTreeSessionException {
+        return pairKeyNode.getNodes().isEmpty() ? null : pairKeyNode.getNodes().iterator().next();
     }
 
     /**
@@ -508,8 +469,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinks(
-                                                                                      final Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinks( final Class<L> linkClass,
                                                                                       final SLNode side1,
                                                                                       final SLNode side2 ) {
         synchronized (lock) {
@@ -520,8 +480,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinks(
-                                                                        final SLNode side1,
+    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinks( final SLNode side1,
                                                                         final SLNode side2 ) {
         synchronized (lock) {
             return this.getLinks(side1, side2, SLLink.DIRECTION_BI);
@@ -531,8 +490,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinksBySide(
-                                                                                            final Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinksBySide( final Class<L> linkClass,
                                                                                             final SLNode side ) {
         synchronized (lock) {
             return this.getLinks(linkClass, side, null, SLLink.DIRECTION_BI);
@@ -542,8 +500,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinksBySide(
-                                                                              final SLNode side ) {
+    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinksBySide( final SLNode side ) {
         synchronized (lock) {
             return this.getLinks(side, null, SLLink.DIRECTION_BI);
         }
@@ -591,8 +548,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         if (bidirecional) {
             return SLConsts.DIRECTION_BOTH;
         } else {
-            return getANode(source, target).equals(source) ? SLConsts.DIRECTION_AB
-                : SLConsts.DIRECTION_BA;
+            return getANode(source, target).equals(source) ? SLConsts.DIRECTION_AB : SLConsts.DIRECTION_BA;
         }
     }
 
@@ -612,21 +568,17 @@ public class SLGraphSessionImpl implements SLGraphSession {
     private Collection<Class<? extends SLLink>> getLinkClasses() {
         try {
             final Collection<Class<? extends SLLink>> linkClasses = new ArrayList<Class<? extends SLLink>>();
-            final SLPersistentQuery query = treeSession.createQuery(treeSession
-                                                                               .getXPathRootPath()
-                                                                    + "/links/*", SLPersistentQuery.TYPE_XPATH);
+            final SLPersistentQuery query = treeSession.createQuery(treeSession.getXPathRootPath() + "/links/*",
+                                                                    SLPersistentQuery.TYPE_XPATH);
             final SLPersistentQueryResult result = query.execute();
-            final Collection<SLPersistentNode> linkClassNodes = result
-                                                                      .getNodes();
+            final Collection<SLPersistentNode> linkClassNodes = result.getNodes();
             for (final SLPersistentNode linkClassNode : linkClassNodes) {
-                final Class<? extends SLLink> linkClass = (Class<? extends SLLink>)Class
-                                                                                        .forName(linkClassNode.getName());
+                final Class<? extends SLLink> linkClass = (Class<? extends SLLink>)Class.forName(linkClassNode.getName());
                 linkClasses.add(linkClass);
             }
             return linkClasses;
         } catch (final Exception e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to retrieve link classes.", e);
+            throw new SLGraphSessionException("Error on attempt to retrieve link classes.", e);
         }
     }
 
@@ -638,14 +590,11 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @return the link node by direction
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    private SLPersistentNode getLinkNodeByDirection(
-                                                     final SLPersistentNode pairKeyNode,
-                                                     final int direction )
-        throws SLPersistentTreeSessionException {
+    private SLPersistentNode getLinkNodeByDirection( final SLPersistentNode pairKeyNode,
+                                                     final int direction ) throws SLPersistentTreeSessionException {
         SLPersistentNode linkNode = null;
         for (final SLPersistentNode node : pairKeyNode.getNodes()) {
-            final SLPersistentProperty<Long> directionProp = node.getProperty(
-                                                                              Long.class, SLConsts.PROPERTY_NAME_DIRECTION);
+            final SLPersistentProperty<Long> directionProp = node.getProperty(Long.class, SLConsts.PROPERTY_NAME_DIRECTION);
             if (directionProp.getValue() == direction) {
                 linkNode = node;
             }
@@ -656,29 +605,25 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks(
-                                                                         final Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks( final Class<L> linkClass,
                                                                          final SLNode source,
                                                                          final SLNode target ) {
         synchronized (lock) {
-            return this.getLinks(linkClass, source, target,
-                                 SLLink.DIRECTION_ANY);
+            return this.getLinks(linkClass, source, target, SLLink.DIRECTION_ANY);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks(
-                                                                         final Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks( final Class<L> linkClass,
                                                                          final SLNode source,
                                                                          final SLNode target,
                                                                          final int direction ) {
         synchronized (lock) {
 
             try {
-                final NeedsSyncronizationSet<L> links = LockedCollections
-                                                                         .createSetWithLock(this, new TreeSet<L>());
+                final NeedsSyncronizationSet<L> links = LockedCollections.createSetWithLock(this, new TreeSet<L>());
 
                 // query format:
                 // //osl/links/JavaClassToJavaMethod/*[(@a=sourceID or
@@ -688,8 +633,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 // order by @linkCount ascending
 
                 final StringBuilder statement = new StringBuilder();
-                statement.append(treeSession.getXPathRootPath()).append("/links/")
-                         .append(linkClass.getName()).append("/*");
+                statement.append(treeSession.getXPathRootPath()).append("/links/").append(linkClass.getName()).append("/*");
 
                 if (source != null || target != null) {
 
@@ -697,13 +641,16 @@ public class SLGraphSessionImpl implements SLGraphSession {
 
                     // filter source ...
                     if (source != null) {
-                        statement.append('(').append('@').append(
-                                                                 SLConsts.PROPERTY_NAME_A_NODE_ID).append("='")
-                                 .append(source.getID()).append("'").append(
-                                                                            " or ").append('@').append(
-                                                                                                       SLConsts.PROPERTY_NAME_B_NODE_ID)
-                                 .append("='").append(source.getID())
-                                 .append("'").append(')');
+                        statement.append('(').append('@').append(SLConsts.PROPERTY_NAME_A_NODE_ID).append("='").append(
+                                                                                                                       source.getID()).append(
+                                                                                                                                              "'").append(
+                                                                                                                                                          " or ").append(
+                                                                                                                                                                         '@').append(
+                                                                                                                                                                                     SLConsts.PROPERTY_NAME_B_NODE_ID).append(
+                                                                                                                                                                                                                              "='").append(
+                                                                                                                                                                                                                                           source.getID()).append(
+                                                                                                                                                                                                                                                                  "'").append(
+                                                                                                                                                                                                                                                                              ')');
                     }
 
                     if (source != null && target != null) {
@@ -712,13 +659,16 @@ public class SLGraphSessionImpl implements SLGraphSession {
 
                     // filter target ...
                     if (target != null) {
-                        statement.append('(').append('@').append(
-                                                                 SLConsts.PROPERTY_NAME_A_NODE_ID).append("='")
-                                 .append(target.getID()).append("'").append(
-                                                                            " or ").append('@').append(
-                                                                                                       SLConsts.PROPERTY_NAME_B_NODE_ID)
-                                 .append("='").append(target.getID())
-                                 .append("'").append(')');
+                        statement.append('(').append('@').append(SLConsts.PROPERTY_NAME_A_NODE_ID).append("='").append(
+                                                                                                                       target.getID()).append(
+                                                                                                                                              "'").append(
+                                                                                                                                                          " or ").append(
+                                                                                                                                                                         '@').append(
+                                                                                                                                                                                     SLConsts.PROPERTY_NAME_B_NODE_ID).append(
+                                                                                                                                                                                                                              "='").append(
+                                                                                                                                                                                                                                           target.getID()).append(
+                                                                                                                                                                                                                                                                  "'").append(
+                                                                                                                                                                                                                                                                              ')');
                     }
 
                     statement.append(']');
@@ -727,21 +677,19 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 statement.append("/*");
 
                 final StringBuilder directionFilter = new StringBuilder();
-                if (direction == (direction | SLLink.DIRECTION_UNI)
-                    || direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)) {
-                    directionFilter.append('@').append(
-                                                       SLConsts.PROPERTY_NAME_DIRECTION).append('=')
-                                   .append(SLConsts.DIRECTION_AB).append(" or @")
-                                   .append(SLConsts.PROPERTY_NAME_DIRECTION).append(
-                                                                                    '=').append(SLConsts.DIRECTION_BA);
+                if (direction == (direction | SLLink.DIRECTION_UNI) || direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)) {
+                    directionFilter.append('@').append(SLConsts.PROPERTY_NAME_DIRECTION).append('=').append(SLConsts.DIRECTION_AB).append(
+                                                                                                                                          " or @").append(
+                                                                                                                                                          SLConsts.PROPERTY_NAME_DIRECTION).append(
+                                                                                                                                                                                                   '=').append(
+                                                                                                                                                                                                               SLConsts.DIRECTION_BA);
                 }
                 if (direction == (direction | SLLink.DIRECTION_BI)) {
                     if (directionFilter.length() > 0) {
                         directionFilter.append(" or ");
                     }
-                    directionFilter.append('@').append(
-                                                       SLConsts.PROPERTY_NAME_DIRECTION).append('=')
-                                   .append(SLConsts.DIRECTION_BOTH);
+                    directionFilter.append('@').append(SLConsts.PROPERTY_NAME_DIRECTION).append('=').append(
+                                                                                                            SLConsts.DIRECTION_BOTH);
                 }
 
                 // add direction filter ...
@@ -750,28 +698,22 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 // order by link count (the order the links are added by the
                 // user)
                 // ...
-                statement.append(" order by @").append(
-                                                       SLConsts.PROPERTY_NAME_LINK_COUNT).append(" ascending");
+                statement.append(" order by @").append(SLConsts.PROPERTY_NAME_LINK_COUNT).append(" ascending");
 
                 // execute query ...
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        statement.toString(), SLPersistentQuery.TYPE_XPATH);
+                final SLPersistentQuery query = treeSession.createQuery(statement.toString(), SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
-                final Collection<SLPersistentNode> linkNodes = result
-                                                                     .getNodes();
+                final Collection<SLPersistentNode> linkNodes = result.getNodes();
 
                 for (final SLPersistentNode linkNode : linkNodes) {
 
                     final SLPersistentNode pairKeyNode = linkNode.getParent();
 
-                    final SLPersistentProperty<String> aNodeIDProp = pairKeyNode
-                                                                                .getProperty(String.class,
+                    final SLPersistentProperty<String> aNodeIDProp = pairKeyNode.getProperty(String.class,
                                                                                              SLConsts.PROPERTY_NAME_A_NODE_ID);
-                    final SLPersistentProperty<String> bNodeIDProp = pairKeyNode
-                                                                                .getProperty(String.class,
+                    final SLPersistentProperty<String> bNodeIDProp = pairKeyNode.getProperty(String.class,
                                                                                              SLConsts.PROPERTY_NAME_B_NODE_ID);
-                    final SLPersistentProperty<Integer> directionProp = linkNode
-                                                                                .getProperty(Integer.class,
+                    final SLPersistentProperty<Integer> directionProp = linkNode.getProperty(Integer.class,
                                                                                              SLConsts.PROPERTY_NAME_DIRECTION);
 
                     SLNode aNode = null;
@@ -780,8 +722,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                         aNode = getNodeByID(aNodeIDProp.getValue());
                         bNode = getNodeByID(bNodeIDProp.getValue());
                     } catch (SLNodeNotFoundException e) {
-                        throw new SLGraphSessionException(
-                                                          "Error on attempt to retrieve links.", e);
+                        throw new SLGraphSessionException("Error on attempt to retrieve links.", e);
                     }
 
                     boolean status;
@@ -810,24 +751,21 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                 t = aNode;
                             }
 
-                            status = direction == (direction | SLLink.DIRECTION_UNI)
-                                     && (s.equals(source) || t.equals(target))
+                            status = direction == (direction | SLLink.DIRECTION_UNI) && (s.equals(source) || t.equals(target))
                                      || direction == (direction | SLLink.DIRECTION_UNI_REVERSAL)
                                      && (s.equals(target) || t.equals(source));
                         }
                     }
 
                     if (status) {
-                        final SLLink link = new SLLinkImpl(this, linkNode,
-                                                           eventPoster);
+                        final SLLink link = new SLLinkImpl(this, linkNode, eventPoster);
                         links.add(ProxyUtil.createLinkProxy(linkClass, link));
                     }
                 }
 
                 return links;
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve links.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve links.", e);
             }
         }
     }
@@ -849,12 +787,12 @@ public class SLGraphSessionImpl implements SLGraphSession {
                                                            final SLNode target,
                                                            final int directionType ) {
         synchronized (lock) {
-            final NeedsSyncronizationCollection<SLLink> links = LockedCollections
-                                                                                 .createCollectionWithLock(this, new ArrayList<SLLink>());
+            final NeedsSyncronizationCollection<SLLink> links = LockedCollections.createCollectionWithLock(
+                                                                                                           this,
+                                                                                                           new ArrayList<SLLink>());
             final Collection<Class<? extends SLLink>> linkClasses = getLinkClasses();
             for (final Class<? extends SLLink> linkClass : linkClasses) {
-                links.addAll(this.getLinks(linkClass, source, target,
-                                           directionType));
+                links.addAll(this.getLinks(linkClass, source, target, directionType));
             }
             return links;
         }
@@ -885,21 +823,16 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 final String[] names = pNode.getPath().substring(1).split("/");
                 final String contextID = names[INDEX_CONTEXT_ID];
                 final SLContext context = getContext(contextID);
-                final SLEncoder fakeEncoder = getEncoderFactory()
-                                                                 .getFakeEncoder();
+                final SLEncoder fakeEncoder = getEncoderFactory().getFakeEncoder();
                 for (int i = INDEX_CONTEXT_ID + 1; i < names.length; i++) {
                     if (node == null) {
                         final SLNode rootNode = context.getRootNode();
-                        node = context.getRootNode().getNode(SLNode.class,
-                                                             names[i], fakeEncoder);
-                        final Class<? extends SLNode> nodeType = this
-                                                                     .getNodeType(rootNode);
+                        node = context.getRootNode().getNode(SLNode.class, names[i], fakeEncoder);
+                        final Class<? extends SLNode> nodeType = this.getNodeType(rootNode);
                         node = ProxyUtil.createNodeProxy(nodeType, node);
                     } else {
-                        node = node
-                                   .getNode(SLNode.class, names[i], fakeEncoder);
-                        final Class<? extends SLNode> nodeType = this
-                                                                     .getNodeType(node);
+                        node = node.getNode(SLNode.class, names[i], fakeEncoder);
+                        final Class<? extends SLNode> nodeType = this.getNodeType(node);
                         node = ProxyUtil.createNodeProxy(nodeType, node);
                     }
                 }
@@ -907,8 +840,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
             } catch (final SLPersistentNodeNotFoundException e) {
                 throw new SLNodeNotFoundException(id, e);
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node by id.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve node by id.", e);
             }
         }
     }
@@ -916,8 +848,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(
-                                                                 final Class<? extends SLLink> linkClass ) {
+    public NeedsSyncronizationCollection<SLNode> getNodesByLink( final Class<? extends SLLink> linkClass ) {
         synchronized (lock) {
             return this.getNodesByLink(linkClass, null);
         }
@@ -926,47 +857,39 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(
-                                                                 final Class<? extends SLLink> linkClass,
+    public NeedsSyncronizationCollection<SLNode> getNodesByLink( final Class<? extends SLLink> linkClass,
                                                                  final SLNode node ) {
         synchronized (lock) {
-            return this.getNodesByLink(linkClass, node, SLLink.DIRECTION_UNI
-                                                        | SLLink.DIRECTION_BI);
+            return this.getNodesByLink(linkClass, node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(
-                                                                               final Class<? extends SLLink> linkClass,
+    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( final Class<? extends SLLink> linkClass,
                                                                                final SLNode node,
                                                                                final Class<N> nodeClass,
                                                                                final boolean returnSubTypes ) {
         synchronized (lock) {
-            return this.getNodesByLink(linkClass, node, nodeClass,
-                                       returnSubTypes, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
+            return this.getNodesByLink(linkClass, node, nodeClass, returnSubTypes, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(
-                                                                               final Class<? extends SLLink> linkClass,
+    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( final Class<? extends SLLink> linkClass,
                                                                                final SLNode node,
                                                                                final Class<N> nodeClass,
                                                                                final boolean returnSubTypes,
                                                                                final int direction ) {
         synchronized (lock) {
             try {
-                final Collection<? extends SLLink> links = this.getLinks(
-                                                                         linkClass, node, null, direction);
-                return this.filterNodesFromLinks(links, node, nodeClass,
-                                                 returnSubTypes);
+                final Collection<? extends SLLink> links = this.getLinks(linkClass, node, null, direction);
+                return this.filterNodesFromLinks(links, node, nodeClass, returnSubTypes);
             } catch (final SLGraphSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve nodes by link.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve nodes by link.", e);
             }
         }
     }
@@ -974,21 +897,18 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(
-                                                                 final Class<? extends SLLink> linkClass,
+    public NeedsSyncronizationCollection<SLNode> getNodesByLink( final Class<? extends SLLink> linkClass,
                                                                  final SLNode node,
                                                                  final int direction ) {
         synchronized (lock) {
-            return this.getNodesByLink(linkClass, node, SLNode.class, true,
-                                       direction);
+            return this.getNodesByLink(linkClass, node, SLNode.class, true, direction);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(
-                                                                 final SLNode node ) {
+    public NeedsSyncronizationCollection<SLNode> getNodesByLink( final SLNode node ) {
         synchronized (lock) {
             return this.getNodesByLink(node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
         }
@@ -997,33 +917,27 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(
-                                                                               final SLNode node,
+    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( final SLNode node,
                                                                                final Class<N> nodeClass,
                                                                                final boolean returnSubTypes ) {
         synchronized (lock) {
-            return this.getNodesByLink(node, nodeClass, returnSubTypes,
-                                       SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
+            return this.getNodesByLink(node, nodeClass, returnSubTypes, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(
-                                                                               final SLNode node,
+    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( final SLNode node,
                                                                                final Class<N> nodeClass,
                                                                                final boolean returnSubTypes,
                                                                                final int direction ) {
         synchronized (lock) {
             try {
-                final Collection<? extends SLLink> links = this.getLinks(node,
-                                                                         null, direction);
-                return this.filterNodesFromLinks(links, node, nodeClass,
-                                                 returnSubTypes);
+                final Collection<? extends SLLink> links = this.getLinks(node, null, direction);
+                return this.filterNodesFromLinks(links, node, nodeClass, returnSubTypes);
             } catch (final SLGraphSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve nodes by link.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve nodes by link.", e);
             }
         }
     }
@@ -1031,8 +945,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(
-                                                                 final SLNode node,
+    public NeedsSyncronizationCollection<SLNode> getNodesByLink( final SLNode node,
                                                                  final int direction ) {
         synchronized (lock) {
             return this.getNodesByLink(node, SLNode.class, true, direction);
@@ -1042,14 +955,13 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByPredicate(
-                                                                      final SLNodePredicate predicate ) {
+    public NeedsSyncronizationCollection<SLNode> getNodesByPredicate( final SLNodePredicate predicate ) {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationCollection<SLNode> nodes = LockedCollections
-                                                                                     .createCollectionWithLock(this, new ArrayList<SLNode>());
-                final SLPersistentQuery query = treeSession.createQuery(
-                                                                        treeSession.getXPathRootPath()
+                final NeedsSyncronizationCollection<SLNode> nodes = LockedCollections.createCollectionWithLock(
+                                                                                                               this,
+                                                                                                               new ArrayList<SLNode>());
+                final SLPersistentQuery query = treeSession.createQuery(treeSession.getXPathRootPath()
                                                                         + "/contexts/*//descendant::node()",
                                                                         SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
@@ -1062,8 +974,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 }
                 return nodes;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve nodes by predicate.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve nodes by predicate.", e);
             }
         }
     }
@@ -1075,11 +986,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @return the node type
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    private Class<? extends SLNode> getNodeType( final SLNode node )
-        throws SLPersistentTreeSessionException {
+    private Class<? extends SLNode> getNodeType( final SLNode node ) throws SLPersistentTreeSessionException {
         final SLPersistentNode pNode = SLCommonSupport.getPNode(node);
-        final String typeName = SLCommonSupport.getInternalPropertyAsString(
-                                                                            pNode, SLConsts.PROPERTY_NAME_TYPE);
+        final String typeName = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
         return this.getNodeType(typeName);
     }
 
@@ -1116,8 +1025,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @return the pair key node
      * @throws SLException the SL exception
      */
-    private SLPersistentNode getPairKeyNode(
-                                             final Class<? extends SLLink> linkClass,
+    private SLPersistentNode getPairKeyNode( final Class<? extends SLLink> linkClass,
                                              final SLNode source,
                                              final SLNode target ) throws SLException {
 
@@ -1128,19 +1036,14 @@ public class SLGraphSessionImpl implements SLGraphSession {
 
         final StringBuilder pairKey = new StringBuilder();
         pairKey.append(aIDName).append('.').append(bIDName);
-        final SLPersistentNode linkClassNode = SLCommonSupport
-                                                              .getLinkClassNode(treeSession, linkClass);
-        SLPersistentNode pairKeyNode = linkClassNode
-                                                    .getNode(pairKey.toString());
+        final SLPersistentNode linkClassNode = SLCommonSupport.getLinkClassNode(treeSession, linkClass);
+        SLPersistentNode pairKeyNode = linkClassNode.getNode(pairKey.toString());
 
         if (pairKeyNode == null) {
             pairKeyNode = linkClassNode.addNode(pairKey.toString());
-            pairKeyNode.setProperty(String.class,
-                                    SLConsts.PROPERTY_NAME_A_NODE_ID, a.getID());
-            pairKeyNode.setProperty(String.class,
-                                    SLConsts.PROPERTY_NAME_B_NODE_ID, b.getID());
-            pairKeyNode.setProperty(Long.class,
-                                    SLConsts.PROPERTY_NAME_LINK_COUNT, 0L);
+            pairKeyNode.setProperty(String.class, SLConsts.PROPERTY_NAME_A_NODE_ID, a.getID());
+            pairKeyNode.setProperty(String.class, SLConsts.PROPERTY_NAME_B_NODE_ID, b.getID());
+            pairKeyNode.setProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT, 0L);
         }
 
         return pairKeyNode;
@@ -1156,21 +1059,18 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinks(
-                                                                                       final Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinks( final Class<L> linkClass,
                                                                                        final SLNode source,
                                                                                        final SLNode target ) {
         synchronized (lock) {
-            return this.getLinks(linkClass, source, target,
-                                 SLLink.DIRECTION_UNI);
+            return this.getLinks(linkClass, source, target, SLLink.DIRECTION_UNI);
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinks(
-                                                                         final SLNode source,
+    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinks( final SLNode source,
                                                                          final SLNode target ) {
         synchronized (lock) {
             return this.getLinks(source, target, SLLink.DIRECTION_UNI);
@@ -1180,8 +1080,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksBySource(
-                                                                                               final Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksBySource( final Class<L> linkClass,
                                                                                                final SLNode source ) {
         synchronized (lock) {
             return this.getLinks(linkClass, source, null, SLLink.DIRECTION_UNI);
@@ -1191,8 +1090,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksBySource(
-                                                                                 final SLNode source ) {
+    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksBySource( final SLNode source ) {
         synchronized (lock) {
             return this.getLinks(source, null, SLLink.DIRECTION_UNI);
         }
@@ -1201,8 +1099,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksByTarget(
-                                                                                               final Class<L> linkClass,
+    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksByTarget( final Class<L> linkClass,
                                                                                                final SLNode target ) {
         synchronized (lock) {
             return this.getLinks(linkClass, null, target, SLLink.DIRECTION_UNI);
@@ -1212,8 +1109,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksByTarget(
-                                                                                 final SLNode target ) {
+    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksByTarget( final SLNode target ) {
         synchronized (lock) {
             return this.getLinks(null, target, SLLink.DIRECTION_UNI);
         }
@@ -1242,8 +1138,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         enforcementContext.setAttribute("graphSession", this);
 
         try {
-            final EnforcementResponse response = policyEnforcement
-                                                                  .checkAccess(enforcementContext);
+            final EnforcementResponse response = policyEnforcement.checkAccess(enforcementContext);
             return response.equals(EnforcementResponse.GRANTED);
         } catch (final EnforcementException e) {
             Exceptions.catchAndLog(e);
@@ -1258,10 +1153,9 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @return the long
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    private long incLinkCount( final SLPersistentNode linkKeyPairNode )
-        throws SLPersistentTreeSessionException {
-        final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode
-                                                                        .getProperty(Long.class, SLConsts.PROPERTY_NAME_LINK_COUNT);
+    private long incLinkCount( final SLPersistentNode linkKeyPairNode ) throws SLPersistentTreeSessionException {
+        final SLPersistentProperty<Long> linkCountProp = linkKeyPairNode.getProperty(Long.class,
+                                                                                     SLConsts.PROPERTY_NAME_LINK_COUNT);
         final long linkCount = linkCountProp.getValue() + 1;
         linkCountProp.setValue(linkCount);
         return linkCount;
@@ -1278,10 +1172,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     private boolean nodeOfType( final SLNode node,
                                 final Class<? extends SLNode> nodeClass,
                                 final boolean returnSubTypes ) {
-        return returnSubTypes
-               && nodeClass
-                           .isAssignableFrom(node.getClass().getInterfaces()[0])
-               || !returnSubTypes
+        return returnSubTypes && nodeClass.isAssignableFrom(node.getClass().getInterfaces()[0]) || !returnSubTypes
                && nodeClass.equals(node.getClass().getInterfaces()[0]);
     }
 
@@ -1292,8 +1183,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         synchronized (lock) {
             try {
                 if (!hasPrivileges(GraphElement.SESSION, Action.OPERATE)) {
-                    throw new SLInvalidCredentialException(
-                                                           "User does not have privilegies to save session.");
+                    throw new SLInvalidCredentialException("User does not have privilegies to save session.");
                 }
                 eventPoster.post(new SLGraphSessionSaveEvent(this));
                 logger.info("Starting to save graph");
@@ -1301,8 +1191,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 logger.info("Fisnihed to save graph");
             } catch (SLPersistentTreeSessionException e) {
                 Exceptions.catchAndLog(e);
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to save the session.", e);
+                throw new SLGraphSessionException("Error on attempt to save the session.", e);
             }
         }
     }
@@ -1313,15 +1202,13 @@ public class SLGraphSessionImpl implements SLGraphSession {
     public NeedsSyncronizationCollection<SLNode> searchNodes( final String text ) {
         try {
             final SLQueryApi query = createQueryApi();
-            query.select().type(SLNode.class.getName()).subTypes().selectEnd()
-                 .where().type(SLNode.class.getName()).subTypes().each()
-                 .property(SLConsts.PROPERTY_CAPTION_NAME).contains().value(
-                                                                            text).typeEnd().whereEnd().collator(
-                                                                                                                Collator.PRIMARY);
+            query.select().type(SLNode.class.getName()).subTypes().selectEnd().where().type(SLNode.class.getName()).subTypes().each().property(
+                                                                                                                                               SLConsts.PROPERTY_CAPTION_NAME).contains().value(
+                                                                                                                                                                                                text).typeEnd().whereEnd().collator(
+                                                                                                                                                                                                                                    Collator.PRIMARY);
             return query.execute().getNodes();
         } catch (final SLGraphException e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to execute search.", e);
+            throw new SLGraphSessionException("Error on attempt to execute search.", e);
         }
     }
 

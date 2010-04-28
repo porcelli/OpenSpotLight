@@ -60,8 +60,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
-public class SLIdentityObject implements IdentityObject, SimpleNodeType,
-        Serializable {
+public class SLIdentityObject implements IdentityObject, SimpleNodeType, Serializable {
 
     private static final long     serialVersionUID = -4651245099086963026L;
 
@@ -121,8 +120,7 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType,
 
     public void setIdentityType( final IdentityObjectType identityType ) {
         this.typedIdentityType = (SLIdentityObjectType)identityType;
-        this.typeAsString = identityType == null ? null : identityType
-                                                                      .getName();
+        this.typeAsString = identityType == null ? null : identityType.getName();
     }
 
     public void setName( final String name ) {
@@ -133,8 +131,7 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType,
         this.typeAsString = typeAsString;
     }
 
-    public void setTypedIdentityType(
-                                      final SLIdentityObjectType typedIdentityType ) {
+    public void setTypedIdentityType( final SLIdentityObjectType typedIdentityType ) {
         this.typedIdentityType = typedIdentityType;
     }
 

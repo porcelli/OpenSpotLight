@@ -102,8 +102,7 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
             if (artifactCache == null) {
                 if (getChildCount() > 0) {
                     for (int i = 0, size = getChildCount(); i < size; i++) {
-                        final SLArtifactStream result = ((SLCommonTree)getChild(0))
-                                                                                   .getArtifact();
+                        final SLArtifactStream result = ((SLCommonTree)getChild(0)).getArtifact();
                         if (result != null) {
                             artifactCache = result;
                             break;
@@ -123,8 +122,7 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
     public int getEndCharPositionInLine() {
         if (token == null || token.getCharPositionInLine() == -1) {
             if (getChildCount() > 0) {
-                return ((SLCommonTree)getChild(getChildCount() - 1))
-                                                                    .getEndCharPositionInLine();
+                return ((SLCommonTree)getChild(getChildCount() - 1)).getEndCharPositionInLine();
             }
             return 0;
         }

@@ -57,8 +57,7 @@ public class TypeParameterDto {
     private final List<JavaType> typeParameterExtends;
 
     public TypeParameterDto(
-                             final String string,
-                             final List<JavaType> typeParameters ) {
+                             final String string, final List<JavaType> typeParameters ) {
         name = string;
         typeParameterExtends = typeParameters;
     }

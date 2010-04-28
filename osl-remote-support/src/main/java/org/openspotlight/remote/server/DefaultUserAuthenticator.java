@@ -64,8 +64,7 @@ public class DefaultUserAuthenticator implements UserAuthenticator {
                                      final JcrConnectionDescriptor descriptor ) {
         try {
             this.descriptor = descriptor;
-            securityFactory = AbstractFactory
-                                             .getDefaultInstance(SecurityFactory.class);
+            securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
@@ -77,8 +76,7 @@ public class DefaultUserAuthenticator implements UserAuthenticator {
                                final String clientHost ) {
         try {
             final User simpleUser = securityFactory.createUser(userName);
-            securityFactory.createIdentityManager(descriptor).authenticate(
-                                                                           simpleUser, password);
+            securityFactory.createIdentityManager(descriptor).authenticate(simpleUser, password);
             return true;
         } catch (final Exception e) {
             Exceptions.catchAndLog(e);

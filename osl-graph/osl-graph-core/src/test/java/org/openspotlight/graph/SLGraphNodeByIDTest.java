@@ -99,19 +99,15 @@ public class SLGraphNodeByIDTest {
     public static void setUp() {
         try {
 
-            JcrConnectionProvider.createFromData(
-                                                 DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+            JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
-            final SecurityFactory securityFactory = AbstractFactory
-                                                                   .getDefaultInstance(SecurityFactory.class);
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
 
             final User simpleUser = securityFactory.createUser("testUser");
-            user = securityFactory.createIdentityManager(
-                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                                                                                                            simpleUser, "password");
+            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
+                                                                                                            "password");
 
-            final SLGraphFactory factory = AbstractFactory
-                                                          .getDefaultInstance(SLGraphFactory.class);
+            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
             session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         } catch (final Exception e) {
@@ -129,10 +125,8 @@ public class SLGraphNodeByIDTest {
             final SLContext context = session.createContext("linkCountTest");
             final SLNode root = context.getRootNode();
 
-            final JavaInterface javaInterface = root.addNode(
-                                                             JavaInterface.class, "javaInterface");
-            final JavaInterface javaInterface2 = (JavaInterface)session
-                                                                       .getNodeByID(javaInterface.getID());
+            final JavaInterface javaInterface = root.addNode(JavaInterface.class, "javaInterface");
+            final JavaInterface javaInterface2 = (JavaInterface)session.getNodeByID(javaInterface.getID());
 
             assertThat(javaInterface, is(javaInterface2));
         } catch (final Exception e) {

@@ -63,8 +63,7 @@ import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLNodeInvocationHandler implements InvocationHandler,
-        LockContainer {
+public class SLNodeInvocationHandler implements InvocationHandler, LockContainer {
 
     /** The node. */
     private final SLNode node;
@@ -109,37 +108,27 @@ public class SLNodeInvocationHandler implements InvocationHandler,
                           final Object[] args ) throws Throwable {
         synchronized (lock) {
             Object result = null;
-            if (!method.getDeclaringClass().equals(SLNode.class)
-                    && SLNode.class
-                                   .isAssignableFrom(method.getDeclaringClass())) {
+            if (!method.getDeclaringClass().equals(SLNode.class) && SLNode.class.isAssignableFrom(method.getDeclaringClass())) {
                 if (SLInvocationHandlerSupport.isGetter(proxy, method)) {
-                    final String propName = SLInvocationHandlerSupport
-                                                                      .getPropertyName(method);
-                    final Class<? extends Serializable> typeClass = (Class<? extends Serializable>)method
-                                                                                                         .getReturnType();
-                    final SLNodeProperty<? extends Serializable> property = node
-                                                                                .getProperty(typeClass, propName);
+                    final String propName = SLInvocationHandlerSupport.getPropertyName(method);
+                    final Class<? extends Serializable> typeClass = (Class<? extends Serializable>)method.getReturnType();
+                    final SLNodeProperty<? extends Serializable> property = node.getProperty(typeClass, propName);
                     result = property != null ? property.getValue() : null;
                 } else if (SLInvocationHandlerSupport.isSetter(proxy, method)) {
-                    final Method getterMethod = method.getDeclaringClass()
-                                                      .getMethod("get" + method.getName().substring(3));
+                    final Method getterMethod = method.getDeclaringClass().getMethod("get" + method.getName().substring(3));
                     VisibilityLevel visibilityLevel = VisibilityLevel.PUBLIC;
                     if (getterMethod != null) {
-                        final SLVisibility visibilityAnnotation = getterMethod
-                                                                              .getAnnotation(SLVisibility.class);
+                        final SLVisibility visibilityAnnotation = getterMethod.getAnnotation(SLVisibility.class);
                         if (visibilityAnnotation != null) {
                             visibilityLevel = visibilityAnnotation.value();
                         }
                     }
 
-                    final String propName = SLInvocationHandlerSupport
-                                                                      .getPropertyName(method);
-                    node.setProperty(Serializable.class, visibilityLevel,
-                                     propName, (Serializable)args[0]);
+                    final String propName = SLInvocationHandlerSupport.getPropertyName(method);
+                    node.setProperty(Serializable.class, visibilityLevel, propName, (Serializable)args[0]);
                 }
             } else {
-                result = SLInvocationHandlerSupport.invokeMethod(node, method,
-                                                                 args);
+                result = SLInvocationHandlerSupport.invokeMethod(node, method, args);
             }
             return result;
 

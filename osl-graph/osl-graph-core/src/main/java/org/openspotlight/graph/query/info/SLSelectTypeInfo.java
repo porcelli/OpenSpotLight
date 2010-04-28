@@ -155,7 +155,9 @@ public class SLSelectTypeInfo {
         this.comma = comma;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -163,7 +165,9 @@ public class SLSelectTypeInfo {
         return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

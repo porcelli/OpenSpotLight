@@ -96,8 +96,7 @@ public class RemoteGraphSessionFactory {
         public String getUserName();
     }
 
-    public static final class RemoteGraphFactoryConnectionDataImpl implements
-            RemoteGraphFactoryConnectionData {
+    public static final class RemoteGraphFactoryConnectionDataImpl implements RemoteGraphFactoryConnectionData {
         private final String host;
 
         private final String password;
@@ -107,8 +106,8 @@ public class RemoteGraphSessionFactory {
         private final String userName;
 
         public RemoteGraphFactoryConnectionDataImpl(
-                                                     final String host,
-                                                     final String userName, final String password, final int port ) {
+                                                     final String host, final String userName, final String password,
+                                                     final int port ) {
             this.host = host;
             this.password = password;
             this.port = port;
@@ -150,10 +149,9 @@ public class RemoteGraphSessionFactory {
      */
     public RemoteGraphSessionFactory(
                                       final RemoteGraphFactoryConnectionData connectionData )
-            throws CantConnectException, AccessDeniedException {
-        remoteObjectFactory = new RemoteObjectFactory(connectionData.getHost(),
-                                                      connectionData.getPort(), connectionData.getUserName(),
-                                                      connectionData.getPassword());
+        throws CantConnectException, AccessDeniedException {
+        remoteObjectFactory = new RemoteObjectFactory(connectionData.getHost(), connectionData.getPort(),
+                                                      connectionData.getUserName(), connectionData.getPassword());
     }
 
     /**
@@ -165,8 +163,7 @@ public class RemoteGraphSessionFactory {
                                                     final String password,
                                                     final String repository ) {
         try {
-            return remoteObjectFactory.createRemoteObject(SLGraphSession.class,
-                                                          username, password, repository);
+            return remoteObjectFactory.createRemoteObject(SLGraphSession.class, username, password, repository);
         } catch (final InvalidReferenceTypeException e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }

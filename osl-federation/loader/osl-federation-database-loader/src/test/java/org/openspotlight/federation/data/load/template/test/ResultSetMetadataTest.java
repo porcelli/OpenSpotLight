@@ -76,8 +76,7 @@ public class ResultSetMetadataTest {
     @Before
     public void cleanAndFillFreshDatabase() throws Exception {
         delete("./target/test-data/ResultSetMetadataTest/h2");
-        final Connection conn = DriverManager
-                                             .getConnection("jdbc:h2:./target/test-data/ResultSetMetadataTest/h2/db");
+        final Connection conn = DriverManager.getConnection("jdbc:h2:./target/test-data/ResultSetMetadataTest/h2/db");
         H2Support.fillDatabaseArtifacts(conn);
         conn.commit();
         conn.close();
@@ -86,15 +85,11 @@ public class ResultSetMetadataTest {
     @SuppressWarnings( "boxing" )
     @Test
     public void shouldReadMetadataFromSelect() throws Exception {
-        final Connection conn = DriverManager
-                                             .getConnection("jdbc:h2:./target/test-data/ResultSetMetadataTest/h2/db");
-        final ResultSet resultSet = conn
-                                        .prepareStatement(
-                                                          " select TABLE_CATALOG AS CATALOG_NAME, TABLE_SCHEMA AS SCHEMA_NAME, TABLE_NAME AS NAME from INFORMATION_SCHEMA.TABLES where TABLE_TYPE='TABLE'")
-                                        .executeQuery();
+        final Connection conn = DriverManager.getConnection("jdbc:h2:./target/test-data/ResultSetMetadataTest/h2/db");
+        final ResultSet resultSet = conn.prepareStatement(
+                                                          " select TABLE_CATALOG AS CATALOG_NAME, TABLE_SCHEMA AS SCHEMA_NAME, TABLE_NAME AS NAME from INFORMATION_SCHEMA.TABLES where TABLE_TYPE='TABLE'").executeQuery();
         final ResultSetMetaData metadata = resultSet.getMetaData();
-        final List<String> columnNames = Arrays.asList("CATALOG_NAME",
-                                                       "SCHEMA_NAME", "NAME");
+        final List<String> columnNames = Arrays.asList("CATALOG_NAME", "SCHEMA_NAME", "NAME");
 
         for (int i = 1, count = metadata.getColumnCount(); i <= count; i++) {
             final String name = metadata.getColumnLabel(i);

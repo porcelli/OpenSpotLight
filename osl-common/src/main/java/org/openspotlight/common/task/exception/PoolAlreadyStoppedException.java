@@ -66,8 +66,7 @@ public class PoolAlreadyStoppedException extends SLRuntimeException {
     }
 
     public PoolAlreadyStoppedException(
-                                        final String message,
-                                        final Throwable cause ) {
+                                        final String message, final Throwable cause ) {
         super(message, cause);
     }
 

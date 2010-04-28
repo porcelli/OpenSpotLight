@@ -79,7 +79,8 @@ public abstract class AbstractFactory {
             if (factory == null) {
                 final Properties props = loadProps(clazz);
                 final String implClassName = props.getProperty("defaultImpl");
-                final Class<? extends T> implClass = (Class<? extends T>)Class.forName(implClassName, true, clazz.getClassLoader());
+                final Class<? extends T> implClass = (Class<? extends T>)Class.forName(implClassName, true,
+                                                                                       clazz.getClassLoader());
                 factory = implClass.newInstance();
                 factoryMap.put(clazz, factory);
             }

@@ -97,8 +97,7 @@ public enum TaskExecManager {
 
         public TaskExec andPublishTask() {
             checkCondition("notPublished", published.get() == false);
-            final TaskImpl task = new TaskImpl(parents, description,
-                                               thisRunnable, taskId);
+            final TaskImpl task = new TaskImpl(parents, description, thisRunnable, taskId);
             taskGroup.addTaskToPool(task);
             published.set(true);
             return task;
@@ -120,8 +119,7 @@ public enum TaskExecManager {
             return this;
         }
 
-        public TaskExecBuilder withReadableDescription(
-                                                        final String readableDescription ) {
+        public TaskExecBuilder withReadableDescription( final String readableDescription ) {
             checkNotEmpty("readableDescription", readableDescription);
             checkCondition("notPublished", published.get() == false);
             checkCondition("notStarded", started.get() == false);
@@ -130,10 +128,8 @@ public enum TaskExecManager {
             return this;
         }
 
-        public TaskExecBuilder withReadableDescriptionAndUniqueId(
-                                                                   final String readableDescriptionAndUniqueId ) {
-            checkNotEmpty("readableDescriptionAndUniqueId",
-                          readableDescriptionAndUniqueId);
+        public TaskExecBuilder withReadableDescriptionAndUniqueId( final String readableDescriptionAndUniqueId ) {
+            checkNotEmpty("readableDescriptionAndUniqueId", readableDescriptionAndUniqueId);
             withUniqueId(readableDescriptionAndUniqueId);
             withReadableDescription(readableDescriptionAndUniqueId);
             return this;
@@ -179,14 +175,11 @@ public enum TaskExecManager {
         private final String                    poolName;
 
         public TaskGroupImpl(
-                              final Priority thisGroupPriority,
-                              final CountDownLatch stopped,
-                              final BlockingQueue<TaskImpl> queue,
-                              final List<String> alreadyRunnedTaskIds,
+                              final Priority thisGroupPriority, final CountDownLatch stopped,
+                              final BlockingQueue<TaskImpl> queue, final List<String> alreadyRunnedTaskIds,
                               final List<String> runningTaskIds, final ReentrantLock lock,
                               final AtomicReference<Priority> currentPriorityRunning,
-                              final LinkedBlockingQueue<TaskImpl> tasksForThisPriority,
-                              final String name, final String poolName ) {
+                              final LinkedBlockingQueue<TaskImpl> tasksForThisPriority, final String name, final String poolName ) {
             this.thisGroupPriority = thisGroupPriority;
             this.stopped = stopped;
             this.queue = queue;
@@ -200,9 +193,8 @@ public enum TaskExecManager {
         }
 
         public void addTaskToPool( final TaskExec task )
-                throws TaskAlreadyOnPoolException, TaskAlreadyRunnedException,
-                TaskRunningException, PoolAlreadyStoppedException,
-                RunningPriorityBigger {
+            throws TaskAlreadyOnPoolException, TaskAlreadyRunnedException, TaskRunningException, PoolAlreadyStoppedException,
+            RunningPriorityBigger {
             try {
                 lock.lock();
                 final Priority curPriority = currentPriorityRunning.get();
@@ -210,41 +202,31 @@ public enum TaskExecManager {
                     Exceptions.logAndThrow(new PoolAlreadyStoppedException());
                 }
                 if (alreadyRunnedTaskIds.contains(task.getUniqueId())) {
-                    Exceptions.logAndThrow(new TaskAlreadyRunnedException(
-                                                                          "task already runned: " + task.getUniqueId()));
+                    Exceptions.logAndThrow(new TaskAlreadyRunnedException("task already runned: " + task.getUniqueId()));
                 }
                 if (runningTaskIds.contains(task.getUniqueId())) {
-                    Exceptions.logAndThrow(new TaskRunningException(
-                                                                    "task running: " + task.getUniqueId()));
+                    Exceptions.logAndThrow(new TaskRunningException("task running: " + task.getUniqueId()));
                 }
-                if (curPriority != null
-                        && curPriority.compareTo(thisGroupPriority) > 0) {
+                if (curPriority != null && curPriority.compareTo(thisGroupPriority) > 0) {
                     Exceptions.logAndThrow(new RunningPriorityBigger());
                 }
-                if (curPriority != null
-                        && curPriority.compareTo(thisGroupPriority) == 0) {
+                if (curPriority != null && curPriority.compareTo(thisGroupPriority) == 0) {
                     if (queue.contains(task)) {
-                        Exceptions
-                                  .logAndThrow(new TaskAlreadyOnPoolException());
+                        Exceptions.logAndThrow(new TaskAlreadyOnPoolException());
                     }
                     queue.add((TaskImpl)task);
                     if (logger.isDebugEnabled()) {
-                        logger.debug("added task " + task.getUniqueId() + " "
-                                     + task.getReadableDescription()
-                                     + " to the current pool " + poolName
-                                     + " and group " + name);
+                        logger.debug("added task " + task.getUniqueId() + " " + task.getReadableDescription()
+                                     + " to the current pool " + poolName + " and group " + name);
                     }
                 } else {
                     if (tasksForThisPriority.contains(task)) {
-                        Exceptions
-                                  .logAndThrow(new TaskAlreadyOnPoolException());
+                        Exceptions.logAndThrow(new TaskAlreadyOnPoolException());
                     }
                     tasksForThisPriority.add((TaskImpl)task);
                     if (logger.isDebugEnabled()) {
-                        logger.debug("added task " + task.getUniqueId() + " "
-                                     + task.getReadableDescription()
-                                     + " to the future pool " + poolName
-                                     + " and group " + name);
+                        logger.debug("added task " + task.getUniqueId() + " " + task.getReadableDescription()
+                                     + " to the future pool " + poolName + " and group " + name);
                     }
                 }
             } finally {
@@ -280,8 +262,7 @@ public enum TaskExecManager {
         private final Logger                logger = LoggerFactory.getLogger(getClass());
 
         public TaskImpl(
-                         final List<TaskExec> parentTasks,
-                         final String readableDescription,
+                         final List<TaskExec> parentTasks, final String readableDescription,
                          final RunnableWithException runnable, final String uniqueId ) {
             this.parentTasks = parentTasks;
             this.readableDescription = readableDescription;
@@ -291,27 +272,21 @@ public enum TaskExecManager {
 
         public void awaitToRun() throws InterruptedException {
             if (logger.isDebugEnabled()) {
-                logger.debug("verifying if parents did run for task "
-                             + getUniqueId() + " " + getReadableDescription());
+                logger.debug("verifying if parents did run for task " + getUniqueId() + " " + getReadableDescription());
             }
             for (final TaskExec parent : parentTasks) {
                 if (logger.isDebugEnabled()) {
-                    logger.debug("verifying if parent " + parent.getUniqueId()
-                                 + " " + parent.getReadableDescription()
-                                 + " did run for task " + getUniqueId() + " "
-                                 + getReadableDescription());
+                    logger.debug("verifying if parent " + parent.getUniqueId() + " " + parent.getReadableDescription()
+                                 + " did run for task " + getUniqueId() + " " + getReadableDescription());
                 }
                 parent.awaitToRunChild();
                 if (logger.isDebugEnabled()) {
-                    logger.debug("parent " + parent.getUniqueId() + " "
-                                 + parent.getReadableDescription()
-                                 + " runned for task " + getUniqueId() + " "
-                                 + getReadableDescription());
+                    logger.debug("parent " + parent.getUniqueId() + " " + parent.getReadableDescription() + " runned for task "
+                                 + getUniqueId() + " " + getReadableDescription());
                 }
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("all parents runned for task " + getUniqueId()
-                             + " " + getReadableDescription());
+                logger.debug("all parents runned for task " + getUniqueId() + " " + getReadableDescription());
             }
         }
 
@@ -342,8 +317,7 @@ public enum TaskExecManager {
 
         public void run() throws Exception {
             if (didRun()) {
-                Exceptions.logAndThrow(new IllegalArgumentException(
-                                                                    "trying to run a task more than once: "
+                Exceptions.logAndThrow(new IllegalArgumentException("trying to run a task more than once: "
                                                                     + getReadableDescription()));
             }
             try {
@@ -386,8 +360,7 @@ public enum TaskExecManager {
                                               final int... priorities ) throws RunningPriorityBigger {
             try {
                 lock.lock();
-                final Priority priorityAsObj = Priority
-                                                       .createPriority(priorities);
+                final Priority priorityAsObj = Priority.createPriority(priorities);
                 final Priority currentPriority = currentPriorityRunning.get();
                 if (currentPriority != null) {
                     if (currentPriority.compareTo(priorityAsObj) < 0) {
@@ -397,10 +370,8 @@ public enum TaskExecManager {
                 existentPriorities.add(priorityAsObj);
                 final LinkedBlockingQueue<TaskImpl> tasksForThisPriority = new LinkedBlockingQueue<TaskImpl>();
                 taskMap.put(priorityAsObj, tasksForThisPriority);
-                return new TaskGroupImpl(priorityAsObj, stopped, queue,
-                                         alreadyRunnedTaskIds, runningTaskIds, lock,
-                                         currentPriorityRunning, tasksForThisPriority,
-                                         taskGroupName, poolName);
+                return new TaskGroupImpl(priorityAsObj, stopped, queue, alreadyRunnedTaskIds, runningTaskIds, lock,
+                                         currentPriorityRunning, tasksForThisPriority, taskGroupName, poolName);
             } finally {
                 lock.unlock();
             }
@@ -419,18 +390,15 @@ public enum TaskExecManager {
             listeners.remove(listener);
         }
 
-        public void startExecutorBlockingUntilFinish()
-                throws InterruptedException {
+        public void startExecutorBlockingUntilFinish() throws InterruptedException {
             startExecutorOnBackground();
             stopped.await();
         }
 
         public void startExecutorOnBackground() {
             for (int i = 0; i < poolSize; i++) {
-                executor.execute(new Worker(listeners, poolName + "_" + i,
-                                            stopped, queue, alreadyRunnedTaskIds, runningTaskIds,
-                                            lock, currentPriorityRunning, existentPriorities,
-                                            taskMap));
+                executor.execute(new Worker(listeners, poolName + "_" + i, stopped, queue, alreadyRunnedTaskIds, runningTaskIds,
+                                            lock, currentPriorityRunning, existentPriorities, taskMap));
             }
             executor.shutdown();
         }
@@ -454,13 +422,10 @@ public enum TaskExecManager {
         private final CopyOnWriteArrayList<RunnableListener> listeners;
 
         public Worker(
-                       final CopyOnWriteArrayList<RunnableListener> listeners,
-                       final String workerId, final CountDownLatch stopped,
-                       final BlockingQueue<TaskImpl> queue,
-                       final List<String> alreadyRunnedTaskIds,
-                       final List<String> runningTaskIds, final ReentrantLock lock,
-                       final AtomicReference<Priority> currentPriorityRunning,
-                       final BlockingQueue<Priority> existentPriorities,
+                       final CopyOnWriteArrayList<RunnableListener> listeners, final String workerId,
+                       final CountDownLatch stopped, final BlockingQueue<TaskImpl> queue,
+                       final List<String> alreadyRunnedTaskIds, final List<String> runningTaskIds, final ReentrantLock lock,
+                       final AtomicReference<Priority> currentPriorityRunning, final BlockingQueue<Priority> existentPriorities,
                        final Map<Priority, BlockingQueue<TaskImpl>> taskMap ) {
             this.stopped = stopped;
             this.queue = queue;
@@ -488,8 +453,7 @@ public enum TaskExecManager {
                 TaskImpl task = null;
                 try {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("worker " + workerId
-                                     + ": locking to get a task");
+                        logger.debug("worker " + workerId + ": locking to get a task");
                     }
 
                     lock.lock();
@@ -499,27 +463,18 @@ public enum TaskExecManager {
                         if (runningTaskIds.size() == 0) {
                             if (existentPriorities.size() > 0) {
 
-                                final Priority priority = existentPriorities
-                                                                            .poll();
+                                final Priority priority = existentPriorities.poll();
                                 currentPriorityRunning.set(priority);
-                                final BlockingQueue<TaskImpl> tasksForThisPriority = taskMap
-                                                                                            .get(priority);
+                                final BlockingQueue<TaskImpl> tasksForThisPriority = taskMap.get(priority);
                                 taskMap.remove(priority);
                                 queue.addAll(tasksForThisPriority);
-                                logger
-                                        .info("worker "
-                                                + workerId
-                                                + ": needs to get new tasks for another priority: from "
-                                                + currentPriorityRunning
-                                                + " to " + priority);
+                                logger.info("worker " + workerId + ": needs to get new tasks for another priority: from "
+                                            + currentPriorityRunning + " to " + priority);
 
                                 continue;
                             } else {
                                 currentPriorityRunning.set(null);
-                                logger
-                                        .info("worker "
-                                                + workerId
-                                                + ": no more priorities. Going to shutdown");
+                                logger.info("worker " + workerId + ": no more priorities. Going to shutdown");
                                 stopped.countDown();
                             }
                         }
@@ -527,13 +482,11 @@ public enum TaskExecManager {
                     if (task != null) {
                         runningTaskIds.add(task.getUniqueId());
                         if (logger.isDebugEnabled()) {
-                            logger.debug("worker " + workerId
-                                         + ": getting task " + task.getUniqueId()
-                                         + " " + task.getReadableDescription());
+                            logger.debug("worker " + workerId + ": getting task " + task.getUniqueId() + " "
+                                         + task.getReadableDescription());
                         }
                         if (logger.isDebugEnabled()) {
-                            logger.debug("worker " + workerId
-                                         + ": unlocking to get a task");
+                            logger.debug("worker " + workerId + ": unlocking to get a task");
                         }
                     }
 
@@ -547,15 +500,13 @@ public enum TaskExecManager {
                 }
                 try {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("worker " + workerId
-                                     + ": waiting to run task " + task.getUniqueId()
-                                     + " " + task.getReadableDescription());
+                        logger.debug("worker " + workerId + ": waiting to run task " + task.getUniqueId() + " "
+                                     + task.getReadableDescription());
                     }
                     currentTask.set(task);
                     try {
                         for (final RunnableListener l : listeners) {
-                            l.beforeRunningTask(threadLocalMap, task
-                                                                    .getRunnable());
+                            l.beforeRunningTask(threadLocalMap, task.getRunnable());
                         }
                     } catch (final Exception e) {
                         Exceptions.catchAndLog(e);
@@ -563,15 +514,13 @@ public enum TaskExecManager {
 
                     task.awaitToRun();
                     if (logger.isDebugEnabled()) {
-                        logger.debug("worker " + workerId
-                                     + ": about to run task " + task.getUniqueId()
-                                     + " " + task.getReadableDescription());
+                        logger.debug("worker " + workerId + ": about to run task " + task.getUniqueId() + " "
+                                     + task.getReadableDescription());
                     }
                     task.run();
                     try {
                         for (final RunnableListener l : listeners) {
-                            l.afterRunningTask(threadLocalMap, task
-                                                                   .getRunnable());
+                            l.afterRunningTask(threadLocalMap, task.getRunnable());
                         }
                     } catch (final Exception e) {
                         Exceptions.catchAndLog(e);
@@ -579,23 +528,20 @@ public enum TaskExecManager {
                     currentTask.set(null);
                 } catch (final Exception e) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("worker " + workerId + ": error on task "
-                                     + task.getUniqueId() + " "
+                        logger.debug("worker " + workerId + ": error on task " + task.getUniqueId() + " "
                                      + task.getReadableDescription());
                     }
                     Exceptions.catchAndLog(e);
                 }
                 try {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("worker " + workerId
-                                     + ": locking to update task information ");
+                        logger.debug("worker " + workerId + ": locking to update task information ");
                     }
                     lock.lock();
                     alreadyRunnedTaskIds.add(task.getUniqueId());
                     runningTaskIds.remove(task.getUniqueId());
                     try {
-                        if (!(queue.size() == 0 && runningTaskIds.size() == 0 && taskMap
-                                                                                        .size() == 0)) {
+                        if (!(queue.size() == 0 && runningTaskIds.size() == 0 && taskMap.size() == 0)) {
                             continue;
                         }
                     } catch (final Exception e) {
@@ -606,14 +552,11 @@ public enum TaskExecManager {
                 } finally {
                     lock.unlock();
                     if (logger.isDebugEnabled()) {
-                        logger.debug("worker " + workerId
-                                     + ": finished to run task "
-                                     + task.getUniqueId() + " "
+                        logger.debug("worker " + workerId + ": finished to run task " + task.getUniqueId() + " "
                                      + task.getReadableDescription());
                     }
                     if (logger.isDebugEnabled()) {
-                        logger.debug("worker " + workerId
-                                     + ": unlocking to update task information ");
+                        logger.debug("worker " + workerId + ": unlocking to update task information ");
                     }
 
                 }

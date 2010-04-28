@@ -54,8 +54,7 @@ import org.openspotlight.persist.internal.StreamPropertyWithParent;
 /**
  * The Class SyntaxInformation.
  */
-public class SyntaxInformation implements StreamPropertyWithParent<Artifact>,
-    Comparable<SyntaxInformation> {
+public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Comparable<SyntaxInformation> {
     private static final long serialVersionUID = 9056717121341748618L;
 
     private static int compare( final int anotherVal,
@@ -88,9 +87,8 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>,
     }
 
     public SyntaxInformation(
-                              final Artifact parent, final int lineStart,
-                              final int lineEnd, final int columnStart, final int columnEnd,
-                              final SyntaxInformationType type ) {
+                              final Artifact parent, final int lineStart, final int lineEnd, final int columnStart,
+                              final int columnEnd, final SyntaxInformationType type ) {
         this.parent = parent;
         this.lineStart = lineStart;
         this.lineEnd = lineEnd;

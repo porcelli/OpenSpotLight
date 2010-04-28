@@ -311,8 +311,7 @@ public interface SLQueryText extends SLQuery {
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult executeTarget()
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+    public SLQueryResult executeTarget() throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute target. If there is no target query, returns empty result.

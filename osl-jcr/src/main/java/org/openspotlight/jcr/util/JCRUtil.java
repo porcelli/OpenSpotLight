@@ -82,17 +82,14 @@ public class JCRUtil {
      * @throws JCRUtilException the JCR util exception
      */
     public static Value createValue( final Session session,
-                                     final Object value )
-            throws JCRUtilException {
+                                     final Object value ) throws JCRUtilException {
         try {
             Value jcrValue = null;
             final ValueFactory factory = session.getValueFactory();
-            if (value.getClass().equals(Integer.class)
-                    || value.getClass().equals(Long.class)) {
+            if (value.getClass().equals(Integer.class) || value.getClass().equals(Long.class)) {
                 final Number number = Number.class.cast(value);
                 jcrValue = factory.createValue(number.longValue());
-            } else if (value.getClass().equals(Float.class)
-                       || value.getClass().equals(Double.class)) {
+            } else if (value.getClass().equals(Float.class) || value.getClass().equals(Double.class)) {
                 final Number number = Number.class.cast(value);
                 jcrValue = factory.createValue(number.doubleValue());
             } else if (value.getClass().equals(String.class)) {
@@ -100,8 +97,7 @@ public class JCRUtil {
             } else if (value.getClass().equals(Boolean.class)) {
                 jcrValue = factory.createValue(Boolean.class.cast(value));
             } else {
-                final InputStream inputStream = SerializationUtil
-                                                                 .serialize(value);
+                final InputStream inputStream = SerializationUtil.serialize(value);
                 jcrValue = factory.createValue(inputStream);
             }
             return jcrValue;
@@ -119,20 +115,17 @@ public class JCRUtil {
      * @throws JCRUtilException the JCR util exception
      */
     public static Value[] createValues( final Session session,
-                                        final Object value )
-            throws JCRUtilException {
+                                        final Object value ) throws JCRUtilException {
         try {
             Value[] jcrValues = null;
             final ValueFactory factory = session.getValueFactory();
-            if (value.getClass().equals(Integer[].class)
-                    || value.getClass().equals(Long[].class)) {
+            if (value.getClass().equals(Integer[].class) || value.getClass().equals(Long[].class)) {
                 final Long[] arr = (Long[])value;
                 jcrValues = new Value[arr.length];
                 for (int i = 0; i < arr.length; i++) {
                     jcrValues[i] = factory.createValue(arr[i]);
                 }
-            } else if (value.getClass().equals(Float[].class)
-                       || value.getClass().equals(Double[].class)) {
+            } else if (value.getClass().equals(Float[].class) || value.getClass().equals(Double[].class)) {
                 final Float[] arr = (Float[])value;
                 jcrValues = new Value[arr.length];
                 for (int i = 0; i < arr.length; i++) {
@@ -154,16 +147,14 @@ public class JCRUtil {
                 final Serializable[] arr = (Serializable[])value;
                 jcrValues = new Value[arr.length];
                 for (int i = 0; i < jcrValues.length; i++) {
-                    final InputStream inputStream = SerializationUtil
-                                                                     .serialize(arr[i]);
+                    final InputStream inputStream = SerializationUtil.serialize(arr[i]);
                     jcrValues[i] = factory.createValue(inputStream);
                 }
             }
             return jcrValues;
 
         } catch (final Exception e) {
-            throw new JCRUtilException(
-                                       "Error on attempt to create value array.", e);
+            throw new JCRUtilException("Error on attempt to create value array.", e);
         }
     }
 
@@ -176,8 +167,7 @@ public class JCRUtil {
      * @throws RepositoryException the repository exception
      */
     public static Node getChildNode( final Node node,
-                                     final String name )
-            throws RepositoryException {
+                                     final String name ) throws RepositoryException {
         try {
             return node.getNode(name);
         } catch (final PathNotFoundException e) {
@@ -191,8 +181,7 @@ public class JCRUtil {
         if (session instanceof SessionWithLock) {
             final SessionWithLock sessionWithLock = (SessionWithLock)session;
             synchronized (sessionWithLock.getLockObject()) {
-                return internalGetOrCreateByPath(sessionWithLock, parentNode,
-                                                 pathWithSlashes);
+                return internalGetOrCreateByPath(sessionWithLock, parentNode, pathWithSlashes);
             }
         }
         return internalGetOrCreateByPath(session, parentNode, pathWithSlashes);
@@ -220,8 +209,7 @@ public class JCRUtil {
                                                    final String pathWithSlashes ) {
         try {
             Node newParent = parentNode;
-            final StringTokenizer tok = new StringTokenizer(pathWithSlashes,
-                                                            "/");
+            final StringTokenizer tok = new StringTokenizer(pathWithSlashes, "/");
             while (tok.hasMoreTokens()) {
                 final String currentToken = tok.nextToken();
                 if (currentToken.length() == 0) {
@@ -246,8 +234,7 @@ public class JCRUtil {
      * @param node the node
      * @throws RepositoryException the repository exception
      */
-    public static void makeReferenceable( final Node node )
-            throws RepositoryException {
+    public static void makeReferenceable( final Node node ) throws RepositoryException {
         node.addMixin("mix:referenceable");
     }
 
@@ -257,8 +244,7 @@ public class JCRUtil {
      * @param node the node
      * @throws RepositoryException the repository exception
      */
-    public static void makeVersionable( final Node node )
-            throws RepositoryException {
+    public static void makeVersionable( final Node node ) throws RepositoryException {
         node.addMixin("mix:versionable");
     }
 }

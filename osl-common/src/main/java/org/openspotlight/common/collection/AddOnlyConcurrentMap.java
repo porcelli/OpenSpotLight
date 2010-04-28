@@ -160,8 +160,7 @@ public class AddOnlyConcurrentMap<K, V> implements ConcurrentMap<K, V> {
 
     private void validateKey( final K key ) {
         if (containsKey(key)) {
-            throw new IllegalStateException(
-                                            "this key was already associated with another value");
+            throw new IllegalStateException("this key was already associated with another value");
         }
     }
 

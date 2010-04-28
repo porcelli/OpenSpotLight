@@ -143,11 +143,9 @@ public class SLQuerySupport {
      * @throws SLPersistentNodeNotFoundException the SL persistent node not found exception
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    static Set<PNodeWrapper> getNodeWrappers(
-                                              final SLPersistentTreeSession treeSession,
+    static Set<PNodeWrapper> getNodeWrappers( final SLPersistentTreeSession treeSession,
                                               final String[] ids )
-            throws SLPersistentNodeNotFoundException,
-            SLPersistentTreeSessionException {
+        throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException {
         Set<PNodeWrapper> wrappers = null;
         if (ids != null && ids.length > 0) {
             wrappers = new HashSet<PNodeWrapper>();
@@ -190,9 +188,8 @@ public class SLQuerySupport {
      *         >
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    static Map<String, List<PNodeWrapper>> mapNodesByType(
-                                                           final Collection<PNodeWrapper> selectNodeWrappers )
-            throws SLPersistentTreeSessionException {
+    static Map<String, List<PNodeWrapper>> mapNodesByType( final Collection<PNodeWrapper> selectNodeWrappers )
+        throws SLPersistentTreeSessionException {
         final Map<String, List<PNodeWrapper>> nodeWrapperListMap = new HashMap<String, List<PNodeWrapper>>();
         for (final PNodeWrapper pNodeWrapper : selectNodeWrappers) {
             final String typeName = pNodeWrapper.getTypeName();
@@ -213,12 +210,10 @@ public class SLQuerySupport {
      * @return the collection
      *         < p link node wrapper>
      */
-    static Collection<PLinkNodeWrapper> wrapLinkNodes(
-                                                       final Collection<SLPersistentNode> pLinkNodes ) {
+    static Collection<PLinkNodeWrapper> wrapLinkNodes( final Collection<SLPersistentNode> pLinkNodes ) {
         final Collection<PLinkNodeWrapper> pLinkNodeWrappers = new ArrayList<PLinkNodeWrapper>();
         for (final SLPersistentNode pLinkNode : pLinkNodes) {
-            final PLinkNodeWrapper pNodeWrapper = new PLinkNodeWrapper(
-                                                                       pLinkNode);
+            final PLinkNodeWrapper pNodeWrapper = new PLinkNodeWrapper(pLinkNode);
             pLinkNodeWrappers.add(pNodeWrapper);
         }
         return pLinkNodeWrappers;

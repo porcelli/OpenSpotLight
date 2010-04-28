@@ -203,7 +203,7 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
                  SLSelectFacade selectFacade, SLSelectByLinkCountInfo selectInfo ) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
-            //this.orderBy = new SLOrderByStatementImpl();
+            // this.orderBy = new SLOrderByStatementImpl();
         }
 
         /**
@@ -251,8 +251,11 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes()
          */
         /**
          * Execute x times.
@@ -264,8 +267,12 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes(int)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.openspotlight.graph.query.SLSelectByLinkCount.End#executeXTimes
+         * (int)
          */
         /**
          * Execute x times.

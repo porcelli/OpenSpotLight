@@ -63,8 +63,7 @@ public class SLPersistentEventListenerImpl implements SLPersistentEventListener 
      * org.openspotlight.graph.persistence.SLPersistentEventListener#nodeAdded
      * (org.openspotlight.graph.persistence.SLPersistentNodeEvent)
      */
-    public void nodeAdded( final SLPersistentNodeEvent event )
-            throws SLPersistentTreeSessionException {
+    public void nodeAdded( final SLPersistentNodeEvent event ) throws SLPersistentTreeSessionException {
         final SLPersistentNode parent = event.getNode().getParent();
         if (parent != null) {
             parent.save();
@@ -81,8 +80,7 @@ public class SLPersistentEventListenerImpl implements SLPersistentEventListener 
      * org.openspotlight.graph.persistence.SLPersistentEventListener#nodeRemoved
      * (org.openspotlight.graph.persistence.SLPersistentNodeEvent)
      */
-    public void nodeRemoved( final SLPersistentNodeEvent event )
-            throws SLPersistentTreeSessionException {
+    public void nodeRemoved( final SLPersistentNodeEvent event ) throws SLPersistentTreeSessionException {
         event.getNode().getParent().save();
     }
 
@@ -94,8 +92,7 @@ public class SLPersistentEventListenerImpl implements SLPersistentEventListener 
      * org.openspotlight.graph.persistence.SLPersistentEventListener#propertyRemoved
      * (org.openspotlight.graph.persistence.SLPersistentPropertyEvent)
      */
-    public void propertyRemoved( final SLPersistentPropertyEvent event )
-            throws SLPersistentTreeSessionException {
+    public void propertyRemoved( final SLPersistentPropertyEvent event ) throws SLPersistentTreeSessionException {
         event.getProperty().getNode().save();
     }
 
@@ -107,8 +104,7 @@ public class SLPersistentEventListenerImpl implements SLPersistentEventListener 
      * org.openspotlight.graph.persistence.SLPersistentEventListener#propertySet
      * (org.openspotlight.graph.persistence.SLPersistentPropertyEvent)
      */
-    public void propertySet( final SLPersistentPropertyEvent event )
-            throws SLPersistentTreeSessionException {
+    public void propertySet( final SLPersistentPropertyEvent event ) throws SLPersistentTreeSessionException {
         event.getProperty().getNode().save();
     }
 }

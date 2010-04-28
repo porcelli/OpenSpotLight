@@ -112,15 +112,23 @@ public class ParameterizedTypeReference implements TypeReference {
         this.type = type;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getFullName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getFullName
+     * ()
      */
     public String getFullName() {
         return type.getFullName() + getParameterizedFormat();
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getName()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.tool.dap.language.java.asm.model.TypeReference#getName
+     * ()
      */
     public String getName() {
         return type.getName() + getParameterizedFormat();

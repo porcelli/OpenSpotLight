@@ -73,7 +73,9 @@ public class ExampleGraphImport {
     public void shouldImportSomeData() throws Exception {
         final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        final AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+        final AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+                                                                                                                                simpleUser,
+                                                                                                                                "password");
 
         final SLGraphFactory factory = new SLGraphFactoryImpl();
         final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);

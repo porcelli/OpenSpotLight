@@ -76,8 +76,7 @@ public class RemoteGraphSessionServer {
     /**
      * A factory for creating InternalGraphSession objects.
      */
-    private static class InternalGraphSessionFactory implements
-            InternalObjectFactory<SLGraphSession> {
+    private static class InternalGraphSessionFactory implements InternalObjectFactory<SLGraphSession> {
 
         private final SLGraph                 graph;
         private final JcrConnectionDescriptor descriptor;
@@ -89,8 +88,7 @@ public class RemoteGraphSessionServer {
                                             final JcrConnectionDescriptor descriptor ) {
             try {
                 this.descriptor = descriptor;
-                final SLGraphFactory graphFactory = AbstractFactory
-                                                                   .getDefaultInstance(SLGraphFactory.class);
+                final SLGraphFactory graphFactory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
                 graph = graphFactory.createGraph(descriptor);
             } catch (final AbstractFactoryException e) {
                 throw logAndReturnNew(e, ConfigurationException.class);
@@ -104,24 +102,19 @@ public class RemoteGraphSessionServer {
          * org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory
          * #createNewInstance(java.lang.Object[])
          */
-        public synchronized SLGraphSession createNewInstance(
-                                                              final Object... parameters ) throws Exception {
+        public synchronized SLGraphSession createNewInstance( final Object... parameters ) throws Exception {
             checkNotNull("parameters", parameters);
             checkCondition("correctParamSize", parameters.length == 3);
-            checkCondition("correctTypeForFirstParam",
-                           parameters[0] instanceof String);
-            checkCondition("correctTypeForSecondParam",
-                           parameters[1] instanceof String);
-            checkCondition("correctTypeForThirdParam",
-                           parameters[2] instanceof String);
+            checkCondition("correctTypeForFirstParam", parameters[0] instanceof String);
+            checkCondition("correctTypeForSecondParam", parameters[1] instanceof String);
+            checkCondition("correctTypeForThirdParam", parameters[2] instanceof String);
             final String user = (String)parameters[0];
             final String pass = (String)parameters[1];
             final String repository = (String)parameters[2];
-            final SecurityFactory securityFactory = AbstractFactory
-                                                                   .getDefaultInstance(SecurityFactory.class);
+            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser(user);
-            final AuthenticatedUser authenticatedUser = securityFactory
-                                                                       .createIdentityManager(descriptor).authenticate(simpleUser,
+            final AuthenticatedUser authenticatedUser = securityFactory.createIdentityManager(descriptor).authenticate(
+                                                                                                                       simpleUser,
                                                                                                                        pass);
 
             return graph.openSession(authenticatedUser, repository);
@@ -147,8 +140,7 @@ public class RemoteGraphSessionServer {
          */
         public void shutdown() {
             graph.shutdown();
-            final JcrConnectionProvider provider = JcrConnectionProvider
-                                                                        .createFromData(descriptor);
+            final JcrConnectionProvider provider = JcrConnectionProvider.createFromData(descriptor);
             provider.closeRepositoryAndCleanResources();
 
         }
@@ -165,17 +157,14 @@ public class RemoteGraphSessionServer {
      * @param timeoutInMilliseconds the timeout in milliseconds
      */
     public RemoteGraphSessionServer(
-                                     final UserAuthenticator userAutenticator,
-                                     final Integer portToUse, final Long timeoutInMilliseconds,
-                                     final JcrConnectionDescriptor descriptor ) {
+                                     final UserAuthenticator userAutenticator, final Integer portToUse,
+                                     final Long timeoutInMilliseconds, final JcrConnectionDescriptor descriptor ) {
         checkNotNull("userAutenticator", userAutenticator);
         checkNotNull("portToUse", portToUse);
         checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);
         checkNotNull("descriptor", descriptor);
-        remoteObjectServer = RemoteObjectServerImpl.getDefault(
-                                                               userAutenticator, portToUse, timeoutInMilliseconds);
-        remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class,
-                                                         new InternalGraphSessionFactory(descriptor));
+        remoteObjectServer = RemoteObjectServerImpl.getDefault(userAutenticator, portToUse, timeoutInMilliseconds);
+        remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class, new InternalGraphSessionFactory(descriptor));
     }
 
     public void removeAllObjectsFromServer() {

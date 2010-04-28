@@ -106,15 +106,11 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     public String getDescription() {
         synchronized (lock) {
             try {
-                final String propName = SLCommonSupport
-                                                       .toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
-                final SLPersistentProperty<String> prop = SLCommonSupport
-                                                                         .getProperty(pMetaNode, String.class, propName);
+                final String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_DESCRIPTION);
+                final SLPersistentProperty<String> prop = SLCommonSupport.getProperty(pMetaNode, String.class, propName);
                 return prop == null ? null : prop.getValue();
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta node description.",
-                                                  e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta node description.", e);
             }
         }
     }
@@ -125,15 +121,11 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     public VisibilityLevel getVisibility() {
         synchronized (lock) {
             try {
-                final String propName = SLCommonSupport
-                                                       .toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
-                final SLPersistentProperty<String> prop = SLCommonSupport
-                                                                         .getProperty(pMetaNode, String.class, propName);
+                final String propName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_VISIBILITY);
+                final SLPersistentProperty<String> prop = SLCommonSupport.getProperty(pMetaNode, String.class, propName);
                 return prop == null ? null : VisibilityLevel.valueOf(prop.getValue());
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta node visibility.",
-                                                  e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta node visibility.", e);
             }
         }
     }
@@ -166,18 +158,14 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
         synchronized (lock) {
             try {
                 final Collection<SLMetaNodeProperty> metaProperties = new HashSet<SLMetaNodeProperty>();
-                final Collection<SLPersistentProperty<Serializable>> pProperties = pMetaNode
-                                                                                            .getProperties(SLConsts.PROPERTY_PREFIX_USER
-                                                                                                                                        .concat(".*"));
+                final Collection<SLPersistentProperty<Serializable>> pProperties = pMetaNode.getProperties(SLConsts.PROPERTY_PREFIX_USER.concat(".*"));
                 for (final SLPersistentProperty<Serializable> pProperty : pProperties) {
-                    final SLMetaNodeProperty metaProperty = new SLMetaNodePropertyImpl(
-                                                                                       metadata, this, pProperty);
+                    final SLMetaNodeProperty metaProperty = new SLMetaNodePropertyImpl(metadata, this, pProperty);
                     metaProperties.add(metaProperty);
                 }
                 return metaProperties;
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta node properties.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta node properties.", e);
             }
         }
     }
@@ -189,23 +177,19 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
         synchronized (lock) {
 
             try {
-                final String propName = SLCommonSupport
-                                                       .toUserPropertyName(name);
+                final String propName = SLCommonSupport.toUserPropertyName(name);
                 SLPersistentProperty<Serializable> pProperty = null;
                 try {
-                    pProperty = pMetaNode.getProperty(Serializable.class,
-                                                      propName);
+                    pProperty = pMetaNode.getProperty(Serializable.class, propName);
                 } catch (final SLPersistentPropertyNotFoundException e) {
                 }
                 SLMetaNodeProperty metaProperty = null;
                 if (pProperty != null) {
-                    metaProperty = new SLMetaNodePropertyImpl(metadata, this,
-                                                              pProperty);
+                    metaProperty = new SLMetaNodePropertyImpl(metadata, this, pProperty);
                 }
                 return metaProperty;
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta node property.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta node property.", e);
             }
         }
     }
@@ -217,11 +201,9 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
         synchronized (lock) {
             try {
                 SLMetaRenderHint renderHint = null;
-                final String pattern = SLCommonSupport
-                                                      .toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT
-                                                                              + "." + name);
-                final SLPersistentProperty<Serializable> pProperty = SLCommonSupport
-                                                                                    .getProperty(pMetaNode, Serializable.class, pattern);
+                final String pattern = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT + "." + name);
+                final SLPersistentProperty<Serializable> pProperty = SLCommonSupport.getProperty(pMetaNode, Serializable.class,
+                                                                                                 pattern);
                 if (pProperty != null) {
                     renderHint = new SLMetaRenderHintImpl(this, pProperty);
                 } else {
@@ -229,8 +211,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
                 }
                 return renderHint;
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta render hint.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta render hint.", e);
             }
         }
     }
@@ -243,20 +224,15 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
 
             try {
                 final Collection<SLMetaRenderHint> renderHints = new ArrayList<SLMetaRenderHint>();
-                final String pattern = SLCommonSupport
-                                                      .toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT)
-                                       + ".*";
-                final Set<SLPersistentProperty<Serializable>> pProperties = pMetaNode
-                                                                                     .getProperties(pattern);
+                final String pattern = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_RENDER_HINT) + ".*";
+                final Set<SLPersistentProperty<Serializable>> pProperties = pMetaNode.getProperties(pattern);
                 for (final SLPersistentProperty<Serializable> pProperty : pProperties) {
-                    final SLMetaRenderHint renderHint = new SLMetaRenderHintImpl(
-                                                                                 this, pProperty);
+                    final SLMetaRenderHint renderHint = new SLMetaRenderHintImpl(this, pProperty);
                     renderHints.add(renderHint);
                 }
                 return renderHints;
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta render hints.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta render hints.", e);
             }
         }
     }
@@ -269,20 +245,15 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
 
             try {
                 SLMetaNodeType parentMetaNodeType = null;
-                final SLPersistentTreeSession treeSession = pMetaNode
-                                                                     .getSession();
-                final SLPersistentNode pMetaTypesNode = SLCommonSupport
-                                                                       .getMetaTypesNode(treeSession);
+                final SLPersistentTreeSession treeSession = pMetaNode.getSession();
+                final SLPersistentNode pMetaTypesNode = SLCommonSupport.getMetaTypesNode(treeSession);
                 final SLPersistentNode pParentNode = pMetaNode.getParent();
                 if (!pParentNode.equals(pMetaTypesNode)) {
-                    parentMetaNodeType = new SLMetaNodeTypeImpl(metadata,
-                                                                pParentNode);
+                    parentMetaNodeType = new SLMetaNodeTypeImpl(metadata, pParentNode);
                 }
                 return parentMetaNodeType;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta node type parent.",
-                                                  e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta node type parent.", e);
             }
         }
     }
@@ -290,8 +261,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
     /**
      * {@inheritDoc}
      */
-    public SLMetaNodeType getSubMetaNodeType(
-                                              final Class<? extends SLNode> nodeClass ) {
+    public SLMetaNodeType getSubMetaNodeType( final Class<? extends SLNode> nodeClass ) {
         synchronized (lock) {
             return getSubMetaNodeType(nodeClass.getName());
         }
@@ -310,8 +280,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
                 }
                 return metaNode;
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta node.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta node.", e);
             }
         }
     }
@@ -323,17 +292,14 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
         synchronized (lock) {
             try {
                 final Collection<SLMetaNodeType> subMetaNodeTypes = new ArrayList<SLMetaNodeType>();
-                final Collection<SLPersistentNode> pMetaNodes = pMetaNode
-                                                                         .getNodes();
+                final Collection<SLPersistentNode> pMetaNodes = pMetaNode.getNodes();
                 for (final SLPersistentNode pMetaNode : pMetaNodes) {
-                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(
-                                                                           metadata, pMetaNode);
+                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(metadata, pMetaNode);
                     subMetaNodeTypes.add(metaNode);
                 }
                 return subMetaNodeTypes;
             } catch (final SLPersistentTreeSessionException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve meta nodes.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve meta nodes.", e);
             }
         }
     }
@@ -349,23 +315,23 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
                                                               List<String> values ) {
         synchronized (lock) {
             try {
-                final String statement = SLMetadataXPathSupporter.buildXpathForMetaNodeType("/" + pMetaNode.getPath(), recursiveMode, visibility, property2Find, logicOp, booleanOp, values);
+                final String statement = SLMetadataXPathSupporter.buildXpathForMetaNodeType("/" + pMetaNode.getPath(),
+                                                                                            recursiveMode, visibility,
+                                                                                            property2Find, logicOp, booleanOp,
+                                                                                            values);
 
-                final SLPersistentQuery query = pMetaNode.getSession().createQuery(
-                                                                                   statement, SLPersistentQuery.TYPE_XPATH);
+                final SLPersistentQuery query = pMetaNode.getSession().createQuery(statement, SLPersistentQuery.TYPE_XPATH);
                 final SLPersistentQueryResult result = query.execute();
                 final Collection<SLMetaNodeType> metaNodes = new ArrayList<SLMetaNodeType>();
                 final Collection<SLPersistentNode> pNodes = result.getNodes();
                 for (final SLPersistentNode pNode : pNodes) {
-                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(
-                                                                           metadata, pNode);
+                    final SLMetaNodeType metaNode = new SLMetaNodeTypeImpl(metadata, pNode);
                     metaNodes.add(metaNode);
                 }
                 return metaNodes;
 
             } catch (final SLException e) {
-                throw new SLGraphSessionException(
-                                                  "Error on attempt to retrieve node metadata.", e);
+                throw new SLGraphSessionException("Error on attempt to retrieve node metadata.", e);
             }
         }
     }
@@ -378,8 +344,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
         try {
             return (Class<? extends SLNode>)Class.forName(pMetaNode.getName());
         } catch (final Exception e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to retrieve node type.", e);
+            throw new SLGraphSessionException("Error on attempt to retrieve node type.", e);
         }
     }
 
@@ -390,8 +355,7 @@ public class SLMetaNodeTypeImpl implements SLMetaNodeType {
         try {
             return pMetaNode.getName();
         } catch (final Exception e) {
-            throw new SLGraphSessionException(
-                                              "Error on attempt to retrieve node type name.", e);
+            throw new SLGraphSessionException("Error on attempt to retrieve node type name.", e);
         }
     }
 

@@ -107,27 +107,27 @@ import org.slf4j.LoggerFactory;
 
 public class JavaPublicElementsTreeExecutor {
 
-    private final Logger              logger                         = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public ParsingSupport getParsingSupport() {
         return parsingSupport;
     }
 
-    private final ParsingSupport parsingSupport;
+    private final ParsingSupport                                parsingSupport;
 
-    private JavaPackage               currentPackage;
-    private final String              artifactVersion;
-    private final String              completeArtifactName;
-    private final int                 currentAnonymousInnerClassName = 1;
+    private JavaPackage                                         currentPackage;
+    private final String                                        artifactVersion;
+    private final String                                        completeArtifactName;
+    private final int                                           currentAnonymousInnerClassName = 1;
 
-    private final JavaExecutorSupport support;
+    private final JavaExecutorSupport                           support;
 
-    private final boolean             quiet                          = false;
+    private final boolean                                       quiet                          = false;
     private SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-    public JavaPublicElementsTreeExecutor(SimplePersistFactory factory,
-                                          final JavaExecutorSupport support,
-                                          final String artifactVersion, ParsingSupport parsingSupport) throws Exception {
+    public JavaPublicElementsTreeExecutor(
+                                           SimplePersistFactory factory, final JavaExecutorSupport support,
+                                           final String artifactVersion, ParsingSupport parsingSupport ) throws Exception {
         super();
         this.support = support;
         this.parsingSupport = parsingSupport;
@@ -151,23 +151,17 @@ public class JavaPublicElementsTreeExecutor {
         Assertions.checkNotNull("node", node);
         try {
             if (!(commonTree instanceof SLCommonTree)) {
-                throw Exceptions.logAndReturn(new IllegalStateException(
-                                                                        "wrong type of tree " + commonTree.getClass()));
+                throw Exceptions.logAndReturn(new IllegalStateException("wrong type of tree " + commonTree.getClass()));
             }
 
             final SLCommonTree typed = (SLCommonTree)commonTree;
-            Assertions.checkCondition("validLineStart:" + typed.getLine(),
-                                      typed.getLine() > 0);
-            Assertions.checkCondition("validStartCharOffset:"
-                                      + typed.getStartCharOffset(),
-                                      typed.getStartCharOffset() > 0);
-            Assertions.checkCondition("validEndCharOffset:"
-                                      + typed.getEndCharOffset(), typed.getEndCharOffset() > 0
-                                                                  && typed.getEndCharOffset() >= typed.getStartCharOffset());
+            Assertions.checkCondition("validLineStart:" + typed.getLine(), typed.getLine() > 0);
+            Assertions.checkCondition("validStartCharOffset:" + typed.getStartCharOffset(), typed.getStartCharOffset() > 0);
+            Assertions.checkCondition("validEndCharOffset:" + typed.getEndCharOffset(),
+                                      typed.getEndCharOffset() > 0 && typed.getEndCharOffset() >= typed.getStartCharOffset());
             Assertions.checkNotEmpty("text", typed.getText());
-            node.addLineReference(simplePersist,typed.getLine(), typed.getLine(), typed
-                                                                         .getStartCharOffset(), typed.getEndCharOffset(), typed
-                                                                                                                               .getText(), completeArtifactName, artifactVersion);
+            node.addLineReference(simplePersist, typed.getLine(), typed.getLine(), typed.getStartCharOffset(),
+                                  typed.getEndCharOffset(), typed.getText(), completeArtifactName, artifactVersion);
             typed.setNode(node);
         } catch (final Exception e) {
             if (quiet) {
@@ -182,16 +176,15 @@ public class JavaPublicElementsTreeExecutor {
                                     final String string,
                                     final List<JavaModifier> modifiers64,
                                     final List<JavaType> annotations65 ) {
-        return createInnerTypeWithSateliteData(peek, string, modifiers64,
-                                               annotations65, null, null, JavaTypeAnnotation.class, null);
+        return createInnerTypeWithSateliteData(peek, string, modifiers64, annotations65, null, null, JavaTypeAnnotation.class,
+                                               null);
     }
 
     public JavaType createAnonymousClass( final SLNode peek,
                                           final JavaType superType ) {
         try {
-            return createInnerTypeWithSateliteData(peek, peek.getName() + "$"
-                                                         + currentAnonymousInnerClassName, null, null, superType,
-                                                   null, JavaTypeClass.class, null);
+            return createInnerTypeWithSateliteData(peek, peek.getName() + "$" + currentAnonymousInnerClassName, null, null,
+                                                   superType, null, JavaTypeClass.class, null);
         } catch (final Exception e) {
             if (quiet) {
                 Exceptions.catchAndLog(e);
@@ -207,8 +200,8 @@ public class JavaPublicElementsTreeExecutor {
                                     final List<JavaType> annotations,
                                     final List<JavaType> interfaces ) {
         final JavaType enumType = findSimpleType("Enum");
-        return createInnerTypeWithSateliteData(parent, name, modifiers,
-                                               annotations, enumType, interfaces, JavaTypeEnum.class, null);
+        return createInnerTypeWithSateliteData(parent, name, modifiers, annotations, enumType, interfaces, JavaTypeEnum.class,
+                                               null);
     }
 
     public List<SLNode> createFieldDeclaration( final SLNode peek,
@@ -217,21 +210,15 @@ public class JavaPublicElementsTreeExecutor {
                                                 final JavaType type31,
                                                 final List<VariableDeclarationDto> variables ) {
         try {
-            final String qualifiedParent = ((JavaType)peek).getQualifiedName()
-                                           + ".";
-            final SLNode concreteParent = support.findEquivalend(peek,
-                                                                 WhatContext.CONCRETE);
+            final String qualifiedParent = ((JavaType)peek).getQualifiedName() + ".";
+            final SLNode concreteParent = support.findEquivalend(peek, WhatContext.CONCRETE);
             final List<SLNode> nodes = new ArrayList<SLNode>();
             for (final VariableDeclarationDto var : variables) {
-                final JavaDataField newField = concreteParent.addNode(
-                                                                      JavaDataField.class, var.getName());
-                support.session
-                               .addLink(DataType.class, newField, type31, false);
+                final JavaDataField newField = concreteParent.addNode(JavaDataField.class, var.getName());
+                support.session.addLink(DataType.class, newField, type31, false);
 
                 nodes.add(newField);
-                support.session.addLink(TypeDeclares.class, concreteParent,
-                                        newField,
-                                        false);
+                support.session.addLink(TypeDeclares.class, concreteParent, newField, false);
                 newField.setQualifiedName(qualifiedParent + var.getName());
                 for (final JavaModifier modifier : modifiers29) {
 
@@ -261,8 +248,7 @@ public class JavaPublicElementsTreeExecutor {
 
                 if (annotations30 != null) {
                     for (final JavaType annotation : annotations30) {
-                        support.session.addLink(AnottatedBy.class, newField,
-                                                annotation, false);
+                        support.session.addLink(AnottatedBy.class, newField, annotation, false);
                     }
                 }
 
@@ -278,8 +264,7 @@ public class JavaPublicElementsTreeExecutor {
 
     }
 
-    private <T extends JavaType> T createInnerTypeWithSateliteData(
-                                                                    final SLNode peek,
+    private <T extends JavaType> T createInnerTypeWithSateliteData( final SLNode peek,
                                                                     final String string,
                                                                     final List<JavaModifier> modifiers7,
                                                                     final List<JavaType> annotations8,
@@ -307,70 +292,44 @@ public class JavaPublicElementsTreeExecutor {
                     }
                     annotationsStr = sb.toString();
                 }
-                logger.debug(completeArtifactName
-                             + ": "
-                             + "creating type "
-                             + type.getSimpleName()
-                             + " with parent= "
-                             + peek.getName()
-                             + ", name="
-                             + string
-                             + ", modifiers="
-                             + modifiers7
-                             + ", annotations="
-                             + annotationsStr
-                             + ", extends="
-                             + (normalClassExtends9 != null ? normalClassExtends9
-                                                                                 .getName() : "") + ", implements="
-                                + implementsStr);
+                logger.debug(completeArtifactName + ": " + "creating type " + type.getSimpleName() + " with parent= "
+                             + peek.getName() + ", name=" + string + ", modifiers=" + modifiers7 + ", annotations="
+                             + annotationsStr + ", extends=" + (normalClassExtends9 != null ? normalClassExtends9.getName() : "")
+                             + ", implements=" + implementsStr);
             }
-            final SLNode concreteParent = support.findEquivalend(peek,
-                                                                 WhatContext.CONCRETE);
-            final T newClass = createNodeOnBothContexts(JavaType.class, type,
-                                                        concreteParent, string);
-            final JavaType newAbstractClass = support.findEquivalend(newClass,
-                                                                     WhatContext.ABSTRACT);
+            final SLNode concreteParent = support.findEquivalend(peek, WhatContext.CONCRETE);
+            final T newClass = createNodeOnBothContexts(JavaType.class, type, concreteParent, string);
+            final JavaType newAbstractClass = support.findEquivalend(newClass, WhatContext.ABSTRACT);
             final StringBuilder qualifiedNameBuff = new StringBuilder();
             if (!(concreteParent instanceof JavaPackage)) {
                 final JavaType typedType = (JavaType)concreteParent;
                 newClass.setInner(true);
                 newAbstractClass.setInner(true);
-                support.session
-                               .addLink(InnerClass.class, newClass, concreteParent, false);
-                SLNode abstractParent = support.findEquivalend(concreteParent,
-                                                               WhatContext.ABSTRACT);
+                support.session.addLink(InnerClass.class, newClass, concreteParent, false);
+                SLNode abstractParent = support.findEquivalend(concreteParent, WhatContext.ABSTRACT);
                 if (abstractParent == null) {
                     abstractParent = concreteParent;
                 }
-                support.session.addLink(InnerClass.class, newAbstractClass,
-                                        abstractParent, false);
+                support.session.addLink(InnerClass.class, newAbstractClass, abstractParent, false);
                 qualifiedNameBuff.append(typedType.getQualifiedName());
             } else {
                 qualifiedNameBuff.append(concreteParent.getName());
             }
-            if (logger.isDebugEnabled()
-                    && (currentPackage == null || newClass == null)) {
-                logger.debug("error on adding link "
-                             + PackageType.class.getSimpleName()
-                             + " with "
-                             + (currentPackage != null ? currentPackage.getName()
-                                 : "null") + " and "
-                                + (newClass != null ? newClass.getName() : "null"));
+            if (logger.isDebugEnabled() && (currentPackage == null || newClass == null)) {
+                logger.debug("error on adding link " + PackageType.class.getSimpleName() + " with "
+                             + (currentPackage != null ? currentPackage.getName() : "null") + " and "
+                             + (newClass != null ? newClass.getName() : "null"));
             }
-            support.session.addLink(PackageType.class, currentPackage,
-                                    newClass, false);
-            SLNode abstractParent = support.findEquivalend(currentPackage,
-                                                           WhatContext.ABSTRACT);
+            support.session.addLink(PackageType.class, currentPackage, newClass, false);
+            SLNode abstractParent = support.findEquivalend(currentPackage, WhatContext.ABSTRACT);
             if (abstractParent == null) {
                 abstractParent = currentPackage;
             }
-            support.session.addLink(PackageType.class, newAbstractClass,
-                                    abstractParent, false);
+            support.session.addLink(PackageType.class, newAbstractClass, abstractParent, false);
             qualifiedNameBuff.append('.');
             qualifiedNameBuff.append(string);
-            final String qualifiedName = Strings.tryToRemoveBegginingFrom(
-                                                                          JavaConstants.DEFAULT_PACKAGE + ".", qualifiedNameBuff
-                                                                                                                                .toString());
+            final String qualifiedName = Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE + ".",
+                                                                          qualifiedNameBuff.toString());
             newClass.setQualifiedName(qualifiedName);
 
             newClass.setSimpleName(string);
@@ -400,104 +359,72 @@ public class JavaPublicElementsTreeExecutor {
                     }
                 }
             }
-            final Class<? extends SLLink> linkType = type
-                                                         .equals(JavaTypeInterface.class) ? InterfaceExtends.class
-                    : Extends.class;
+            final Class<? extends SLLink> linkType = type.equals(JavaTypeInterface.class) ? InterfaceExtends.class : Extends.class;
 
             if (normalClassExtends9 != null) {
-                support.session.addLink(linkType, newClass,
-                                        normalClassExtends9, false);
+                support.session.addLink(linkType, newClass, normalClassExtends9, false);
                 addIncludedStaticClass(normalClassExtends9.getQualifiedName());
-                SLNode superType = support.findEquivalend(normalClassExtends9,
-                                                          WhatContext.ABSTRACT);
+                SLNode superType = support.findEquivalend(normalClassExtends9, WhatContext.ABSTRACT);
                 if (superType == null) {
                     superType = normalClassExtends9;
                 }
-                support.session.addLink(linkType, newAbstractClass, superType,
-                                        false);
-                final SLQueryApi packagesQuery = support.session
-                                                                .createQueryApi();
-                packagesQuery.select().type(JavaType.class.getName())
-                             .subTypes().byLink(linkType.getName()).b().selectEnd()
-                             .select().type(JavaPackage.class.getName()).byLink(
-                                                                                PackageType.class.getName()).selectEnd()
-                             .keepResult().executeXTimes();
-                final NeedsSyncronizationList<SLNode> nodes = packagesQuery
-                                                                           .execute(Arrays.asList(superType)).getNodes();
+                support.session.addLink(linkType, newAbstractClass, superType, false);
+                final SLQueryApi packagesQuery = support.session.createQueryApi();
+                packagesQuery.select().type(JavaType.class.getName()).subTypes().byLink(linkType.getName()).b().selectEnd().select().type(
+                                                                                                                                          JavaPackage.class.getName()).byLink(
+                                                                                                                                                                              PackageType.class.getName()).selectEnd().keepResult().executeXTimes();
+                final NeedsSyncronizationList<SLNode> nodes = packagesQuery.execute(Arrays.asList(superType)).getNodes();
                 if (nodes.size() > 0) {
                     synchronized (nodes.getLockObject()) {
                         for (final SLNode node : nodes) {
-                            importDeclaration(currentPackage, false, true, node
-                                                                               .getName());
+                            importDeclaration(currentPackage, false, true, node.getName());
                         }
                     }
                 }
             } else {
                 final JavaType object = findSimpleType("Object");
                 support.session.addLink(Extends.class, newClass, object, false);
-                support.session.addLink(Extends.class, newAbstractClass,
-                                        object, false);
+                support.session.addLink(Extends.class, newAbstractClass, object, false);
             }
             if (annotations8 != null) {
                 for (final JavaType annotation : annotations8) {
-                    support.session.addLink(AnottatedBy.class, newClass,
-                                            annotation, false);
-                    final JavaType abstractAnnotation = support.findEquivalend(
-                                                                               annotation, WhatContext.ABSTRACT);
+                    support.session.addLink(AnottatedBy.class, newClass, annotation, false);
+                    final JavaType abstractAnnotation = support.findEquivalend(annotation, WhatContext.ABSTRACT);
 
-                    support.session.addLink(AnottatedBy.class,
-                                            newAbstractClass, abstractAnnotation, false);
+                    support.session.addLink(AnottatedBy.class, newAbstractClass, abstractAnnotation, false);
                 }
             }
             if (normalClassImplements10 != null) {
                 for (final JavaType interfaceType : normalClassImplements10) {
                     addIncludedStaticClass(interfaceType.getQualifiedName());
-                    support.session.addLink(Implements.class, newClass,
-                                            interfaceType, false);
-                    final JavaType abstractInterfaceType = support
-                                                                  .findEquivalend(interfaceType, WhatContext.ABSTRACT);
+                    support.session.addLink(Implements.class, newClass, interfaceType, false);
+                    final JavaType abstractInterfaceType = support.findEquivalend(interfaceType, WhatContext.ABSTRACT);
 
-                    support.session.addLink(Implements.class, newAbstractClass,
-                                            abstractInterfaceType, false);
+                    support.session.addLink(Implements.class, newAbstractClass, abstractInterfaceType, false);
                     SLQueryApi packagesQuery = support.session.createQueryApi();
-                    packagesQuery.select().type(JavaType.class.getName())
-                                 .subTypes().byLink(Implements.class.getName()).b()
-                                 .selectEnd().select().type(
-                                                            JavaPackage.class.getName()).byLink(
-                                                                                                PackageType.class.getName()).selectEnd()
-                                    .keepResult().executeXTimes();
-                    NeedsSyncronizationList<SLNode> nodes = packagesQuery
-                                                                         .execute(Arrays.asList((SLNode)interfaceType))
-                                                                         .getNodes();
+                    packagesQuery.select().type(JavaType.class.getName()).subTypes().byLink(Implements.class.getName()).b().selectEnd().select().type(
+                                                                                                                                                      JavaPackage.class.getName()).byLink(
+                                                                                                                                                                                          PackageType.class.getName()).selectEnd().keepResult().executeXTimes();
+                    NeedsSyncronizationList<SLNode> nodes = packagesQuery.execute(Arrays.asList((SLNode)interfaceType)).getNodes();
                     if (nodes.size() > 0) {
                         synchronized (nodes.getLockObject()) {
                             for (final SLNode node : nodes) {
-                                importDeclaration(currentPackage, false, true,
-                                                  node.getName());
+                                importDeclaration(currentPackage, false, true, node.getName());
                             }
                         }
                     }
-                    support.session.addLink(Implements.class, newClass,
-                                            interfaceType, false);
-                    final JavaType abstractInterface = support.findEquivalend(
-                                                                              interfaceType, WhatContext.ABSTRACT);
-                    support.session.addLink(Implements.class, newAbstractClass,
-                                            abstractInterface, false);
+                    support.session.addLink(Implements.class, newClass, interfaceType, false);
+                    final JavaType abstractInterface = support.findEquivalend(interfaceType, WhatContext.ABSTRACT);
+                    support.session.addLink(Implements.class, newAbstractClass, abstractInterface, false);
                     packagesQuery = support.session.createQueryApi();
-                    packagesQuery.select().type(JavaType.class.getName())
-                                 .subTypes()
-                                 .byLink(InterfaceExtends.class.getName()).b()
-                                 .selectEnd().select().type(
-                                                            JavaPackage.class.getName()).byLink(
-                                                                                                PackageType.class.getName()).selectEnd()
-                                    .keepResult().executeXTimes();
-                    nodes = packagesQuery.execute(
-                                                  Arrays.asList((SLNode)interfaceType)).getNodes();
+                    packagesQuery.select().type(JavaType.class.getName()).subTypes().byLink(InterfaceExtends.class.getName()).b().selectEnd().select().type(
+                                                                                                                                                            JavaPackage.class.getName()).byLink(
+                                                                                                                                                                                                PackageType.class.getName()).selectEnd().keepResult().executeXTimes();
+                    nodes = packagesQuery.execute(Arrays.asList((SLNode)interfaceType)).getNodes();
                     if (nodes.size() > 0) {
                         synchronized (nodes.getLockObject()) {
                             for (final SLNode node : nodes) {
-                                importDeclaration(currentPackage, false, true,
-                                                  node.getName());
+                                importDeclaration(currentPackage, false, true, node.getName());
                             }
                         }
                     }
@@ -505,18 +432,13 @@ public class JavaPublicElementsTreeExecutor {
             }
             if (typeParams != null) {
                 for (final TypeParameterDto typeParam : typeParams) {
-                    final JavaTypeParameterized typeParameterized = newClass
-                                                                            .addNode(JavaTypeParameterized.class, typeParam
-                                                                                                                           .getName());
-                    support.session.addLink(TypeParameter.class, newClass,
-                                            typeParameterized, false);
+                    final JavaTypeParameterized typeParameterized = newClass.addNode(JavaTypeParameterized.class,
+                                                                                     typeParam.getName());
+                    support.session.addLink(TypeParameter.class, newClass, typeParameterized, false);
                     if (typeParam.getTypeParameterExtends() != null) {
-                        for (final JavaType ext : typeParam
-                                                           .getTypeParameterExtends()) {
+                        for (final JavaType ext : typeParam.getTypeParameterExtends()) {
                             if (ext != null) {
-                                support.session.addLink(
-                                                        TypeArgumentExtends.class,
-                                                        typeParameterized, ext, false);
+                                support.session.addLink(TypeArgumentExtends.class, typeParameterized, ext, false);
                             }
                         }
                     }
@@ -541,9 +463,8 @@ public class JavaPublicElementsTreeExecutor {
                                               final List<JavaType> annotations20,
                                               final List<JavaType> normalInterfaceDeclarationExtends21,
                                               final List<TypeParameterDto> typeParameters28 ) {
-        return createInnerTypeWithSateliteData(peek, string, modifiers19,
-                                               annotations20, null, normalInterfaceDeclarationExtends21,
-                                               JavaTypeInterface.class, typeParameters28);
+        return createInnerTypeWithSateliteData(peek, string, modifiers19, annotations20, null,
+                                               normalInterfaceDeclarationExtends21, JavaTypeInterface.class, typeParameters28);
     }
 
     public JavaTypeClass createJavaClass( final SLNode peek,
@@ -553,9 +474,9 @@ public class JavaPublicElementsTreeExecutor {
                                           final JavaType normalClassExtends9,
                                           final List<JavaType> normalClassImplements10,
                                           final List<TypeParameterDto> typeParameters11 ) {
-        final JavaTypeClass javaClass = createInnerTypeWithSateliteData(peek,
-                                                                        string, modifiers7, annotations8, normalClassExtends9,
-                                                                        normalClassImplements10, JavaTypeClass.class, typeParameters11);
+        final JavaTypeClass javaClass = createInnerTypeWithSateliteData(peek, string, modifiers7, annotations8,
+                                                                        normalClassExtends9, normalClassImplements10,
+                                                                        JavaTypeClass.class, typeParameters11);
         return javaClass;
     }
 
@@ -565,8 +486,7 @@ public class JavaPublicElementsTreeExecutor {
                                                           final List<VariableDeclarationDto> formalParameters26,
                                                           final List<JavaType> annotations27,
                                                           final List<JavaType> typeBodyDeclarationThrows28 ) {
-        return internalCreateMethod(peek, string, modifiers25,
-                                    formalParameters26, annotations27, null,
+        return internalCreateMethod(peek, string, modifiers25, formalParameters26, annotations27, null,
                                     typeBodyDeclarationThrows28, true);
 
     }
@@ -578,35 +498,28 @@ public class JavaPublicElementsTreeExecutor {
                                                final List<JavaType> annotations35,
                                                final JavaType type36,
                                                final List<JavaType> typeBodyDeclarationThrows37 ) {
-        return internalCreateMethod(peek, string, modifiers33,
-                                    formalParameters34, annotations35, type36,
+        return internalCreateMethod(peek, string, modifiers33, formalParameters34, annotations35, type36,
                                     typeBodyDeclarationThrows37, false);
     }
 
-    private <T extends SLNode> T createNodeOnBothContexts(
-                                                           final Class<? extends SLNode> abstractType,
+    private <T extends SLNode> T createNodeOnBothContexts( final Class<? extends SLNode> abstractType,
                                                            final Class<T> type,
                                                            final SLNode parent,
                                                            final String name ) {
         try {
             final T newNode = parent.addNode(type, name);
             SLNode cachedParent;
-            if (parent.getContext()
-                      .equals(support.abstractContext.getContext())) {
+            if (parent.getContext().equals(support.abstractContext.getContext())) {
                 cachedParent = parent;
             } else {
-                cachedParent = support.findEquivalend(parent,
-                                                      WhatContext.ABSTRACT);
+                cachedParent = support.findEquivalend(parent, WhatContext.ABSTRACT);
             }
             if (cachedParent == null) {
-                cachedParent = support.findEquivalend(parent,
-                                                      WhatContext.ABSTRACT);
+                cachedParent = support.findEquivalend(parent, WhatContext.ABSTRACT);
             }
-            final SLNode newAbstractNode = cachedParent.addNode(abstractType,
-                                                                name);
+            final SLNode newAbstractNode = cachedParent.addNode(abstractType, name);
             support.putOnBothCaches(newNode, newAbstractNode);
-            support.session.addLink(AbstractTypeBind.class, newAbstractNode,
-                                    newNode, false);
+            support.session.addLink(AbstractTypeBind.class, newAbstractNode, newNode, false);
             return newNode;
         } catch (final Exception e) {
             if (quiet) {
@@ -617,12 +530,10 @@ public class JavaPublicElementsTreeExecutor {
         }
     }
 
-    private <T extends SLNode> T createNodeOnBothContexts(
-                                                           final Class<? extends SLNode> abstractType,
+    private <T extends SLNode> T createNodeOnBothContexts( final Class<? extends SLNode> abstractType,
                                                            final Class<T> type,
                                                            final String name ) {
-        return this.createNodeOnBothContexts(abstractType, type,
-                                             support.currentContext, name);
+        return this.createNodeOnBothContexts(abstractType, type, support.currentContext, name);
     }
 
     @SuppressWarnings( "unused" )
@@ -648,14 +559,12 @@ public class JavaPublicElementsTreeExecutor {
             JavaType arrayNode = (JavaType)parent.getNode(arrayName);
             if (arrayNode == null) {
                 @SuppressWarnings( "unchecked" )
-                final Class<? extends JavaType> sameType = simpleOne.getClass()
-                                                                    .getInterfaces()[0];
+                final Class<? extends JavaType> sameType = simpleOne.getClass().getInterfaces()[0];
                 arrayNode = parent.addNode(sameType, arrayName);
                 arrayNode.setArray(true);
                 arrayNode.setQualifiedName(simpleOne.getQualifiedName() + "[]");
                 arrayNode.setSimpleName(arrayName);
-                support.session.addLink(ArrayOfType.class, arrayNode,
-                                        simpleOne, false);
+                support.session.addLink(ArrayOfType.class, arrayNode, simpleOne, false);
             }
             return arrayNode;
         } catch (final Exception e) {
@@ -671,8 +580,7 @@ public class JavaPublicElementsTreeExecutor {
         final StringBuilder qualifiedName = new StringBuilder();
         for (int i = 0, size = types.size(); i < size; i++) {
             final JavaType currentType = types.get(i);
-            final String name = i == 0 ? currentType.getQualifiedName()
-                    : currentType.getSimpleName();
+            final String name = i == 0 ? currentType.getQualifiedName() : currentType.getSimpleName();
             qualifiedName.append(name);
             if (i != size - 1) {
                 qualifiedName.append('.');
@@ -682,22 +590,16 @@ public class JavaPublicElementsTreeExecutor {
         return findSimpleType(qualifiedName.toString());
     }
 
-    public JavaTypeParameterizedExtended findExtendsParameterizedType(
-                                                                       final JavaType simpleOne ) {
+    public JavaTypeParameterizedExtended findExtendsParameterizedType( final JavaType simpleOne ) {
         try {
             final SLNode parent = simpleOne.getParent();
-            final String parameterizedName = "<? extends "
-                                             + simpleOne.getName() + ">";
-            JavaTypeParameterizedExtended parameterizedNode = (JavaTypeParameterizedExtended)parent
-                                                                                                   .getNode(parameterizedName);
+            final String parameterizedName = "<? extends " + simpleOne.getName() + ">";
+            JavaTypeParameterizedExtended parameterizedNode = (JavaTypeParameterizedExtended)parent.getNode(parameterizedName);
             if (parameterizedNode == null) {
-                parameterizedNode = parent.addNode(
-                                                   JavaTypeParameterizedExtended.class, parameterizedName);
-                parameterizedNode.setQualifiedName("<? extends "
-                                                   + simpleOne.getQualifiedName() + ">");
+                parameterizedNode = parent.addNode(JavaTypeParameterizedExtended.class, parameterizedName);
+                parameterizedNode.setQualifiedName("<? extends " + simpleOne.getQualifiedName() + ">");
                 parameterizedNode.setSimpleName(parameterizedName);
-                support.session.addLink(TypeArgumentExtends.class,
-                                        parameterizedNode, simpleOne, false);
+                support.session.addLink(TypeArgumentExtends.class, parameterizedNode, simpleOne, false);
             }
             return parameterizedNode;
         } catch (final Exception e) {
@@ -722,23 +624,17 @@ public class JavaPublicElementsTreeExecutor {
                 }
             }
             parameterizedNameBuilder.append('>');
-            final String parameterizedName = simpleOne.getName()
-                                             + parameterizedNameBuilder.toString();
-            JavaTypeParameterized parameterizedNode = (JavaTypeParameterized)parent
-                                                                                   .getNode(parameterizedName);
+            final String parameterizedName = simpleOne.getName() + parameterizedNameBuilder.toString();
+            JavaTypeParameterized parameterizedNode = (JavaTypeParameterized)parent.getNode(parameterizedName);
             if (parameterizedNode == null) {
-                parameterizedNode = parent.addNode(JavaTypeParameterized.class,
-                                                   parameterizedName);
-                parameterizedNode.setQualifiedName(simpleOne.getQualifiedName()
-                                                   + parameterizedNameBuilder.toString());
+                parameterizedNode = parent.addNode(JavaTypeParameterized.class, parameterizedName);
+                parameterizedNode.setQualifiedName(simpleOne.getQualifiedName() + parameterizedNameBuilder.toString());
                 parameterizedNode.setSimpleName(parameterizedName);
 
-                support.session.addLink(ParameterizedTypeClass.class,
-                                        parameterizedNode, simpleOne, false);
+                support.session.addLink(ParameterizedTypeClass.class, parameterizedNode, simpleOne, false);
                 for (final JavaType argument : typeArguments40) {
                     if (argument != null) {
-                        support.session.addLink(TypeArgument.class,
-                                                parameterizedNode, argument, false);
+                        support.session.addLink(TypeArgument.class, parameterizedNode, argument, false);
                     }
                 }
             }
@@ -762,24 +658,17 @@ public class JavaPublicElementsTreeExecutor {
         return foundType;
     }
 
-    public JavaTypeParameterizedSuper findSuperParameterizedType(
-                                                                  final JavaType typeReturn ) {
+    public JavaTypeParameterizedSuper findSuperParameterizedType( final JavaType typeReturn ) {
         try {
-            final JavaType simpleOne = findSimpleType(typeReturn
-                                                                .getQualifiedName());
+            final JavaType simpleOne = findSimpleType(typeReturn.getQualifiedName());
             final SLNode parent = simpleOne.getParent();
-            final String parameterizedName = "<? super " + simpleOne.getName()
-                                             + ">";
-            JavaTypeParameterizedSuper parameterizedNode = (JavaTypeParameterizedSuper)parent
-                                                                                             .getNode(parameterizedName);
+            final String parameterizedName = "<? super " + simpleOne.getName() + ">";
+            JavaTypeParameterizedSuper parameterizedNode = (JavaTypeParameterizedSuper)parent.getNode(parameterizedName);
             if (parameterizedNode == null) {
-                parameterizedNode = parent.addNode(
-                                                   JavaTypeParameterizedSuper.class, parameterizedName);
-                parameterizedNode.setQualifiedName("<? super "
-                                                   + simpleOne.getQualifiedName() + ">");
+                parameterizedNode = parent.addNode(JavaTypeParameterizedSuper.class, parameterizedName);
+                parameterizedNode.setQualifiedName("<? super " + simpleOne.getQualifiedName() + ">");
                 parameterizedNode.setSimpleName(parameterizedName);
-                support.session.addLink(TypeArgumentSuper.class,
-                                        parameterizedNode, simpleOne, false);
+                support.session.addLink(TypeArgumentSuper.class, parameterizedNode, simpleOne, false);
             }
             return parameterizedNode;
         } catch (final Exception e) {
@@ -816,82 +705,52 @@ public class JavaPublicElementsTreeExecutor {
             if (isStatic) {
                 if (starred) {
                     support.includedStaticClasses.add(string);
-                    JavaType classNode = support.currentContextFinder
-                                                                     .findByProperty(JavaType.class, "qualifiedName",
-                                                                                     string);
+                    JavaType classNode = support.currentContextFinder.findByProperty(JavaType.class, "qualifiedName", string);
                     if (classNode == null) {
-                        classNode = support.abstractContextFinder
-                                                                 .findByProperty(JavaType.class,
-                                                                                 "qualifiedName", string);
+                        classNode = support.abstractContextFinder.findByProperty(JavaType.class, "qualifiedName", string);
                     }
 
-                    support.session.addLink(References.class, peek, classNode,
-                                            false);
-                    support.importedNodeCache.put(classNode.getQualifiedName(),
-                                                  classNode);
-                    support.importedNodeCache.put(classNode.getSimpleName(),
-                                                  classNode);
+                    support.session.addLink(References.class, peek, classNode, false);
+                    support.importedNodeCache.put(classNode.getQualifiedName(), classNode);
+                    support.importedNodeCache.put(classNode.getSimpleName(), classNode);
                     return classNode;
                 } else {
                     support.includedStaticMethods.add(string);
-                    final JavaMethod methodNode = support.abstractContextFinder
-                                                                               .findByProperty(JavaMethod.class, "qualifiedName",
+                    final JavaMethod methodNode = support.abstractContextFinder.findByProperty(JavaMethod.class, "qualifiedName",
                                                                                                string);
-                    support.session.addLink(References.class, peek, methodNode,
-                                            false);
-                    support.importedNodeCache.put(
-                                                  methodNode.getQualifiedName(), methodNode);
-                    support.importedNodeCache.put(methodNode.getSimpleName(),
-                                                  methodNode);
+                    support.session.addLink(References.class, peek, methodNode, false);
+                    support.importedNodeCache.put(methodNode.getQualifiedName(), methodNode);
+                    support.importedNodeCache.put(methodNode.getSimpleName(), methodNode);
                     return methodNode;
                 }
             } else {
                 if (starred) {
                     support.includedPackages.add(string);
-                    final JavaPackage packageNode = (JavaPackage)support.abstractContext
-                                                                                        .getNode(string);
-                    if (logger.isDebugEnabled()
-                            && (packageNode == null || peek == null)) {
-                        logger.debug("error on adding link "
-                                     + References.class.getSimpleName()
-                                     + " with "
-                                     + (peek != null ? peek.getName() : "null")
-                                     + " and "
-                                     + (packageNode != null ? packageNode.getName()
-                                         : "null"));
+                    final JavaPackage packageNode = (JavaPackage)support.abstractContext.getNode(string);
+                    if (logger.isDebugEnabled() && (packageNode == null || peek == null)) {
+                        logger.debug("error on adding link " + References.class.getSimpleName() + " with "
+                                     + (peek != null ? peek.getName() : "null") + " and "
+                                     + (packageNode != null ? packageNode.getName() : "null"));
                     }
-                    support.session.addLink(References.class, peek,
-                                            packageNode, false);
+                    support.session.addLink(References.class, peek, packageNode, false);
                     return packageNode;
                 } else {
                     support.includedClasses.add(string);
-                    JavaType classNode = support.currentContextFinder
-                                                                     .findByProperty(JavaType.class, "qualifiedName",
-                                                                                     string);
+                    JavaType classNode = support.currentContextFinder.findByProperty(JavaType.class, "qualifiedName", string);
                     if (classNode == null) {
-                        classNode = support.abstractContextFinder
-                                                                 .findByProperty(JavaType.class,
-                                                                                 "qualifiedName", string);
+                        classNode = support.abstractContextFinder.findByProperty(JavaType.class, "qualifiedName", string);
                     }
 
-                    if (logger.isDebugEnabled()
-                            && (classNode == null || peek == null)) {
-                        logger.debug("error on adding link "
-                                     + References.class.getSimpleName()
-                                     + " with "
-                                     + (peek != null ? peek.getName() : "null")
-                                     + " and "
-                                     + (classNode != null ? classNode.getName()
-                                         : "null")
-                                        + " and string to find classnode = " + string);
+                    if (logger.isDebugEnabled() && (classNode == null || peek == null)) {
+                        logger.debug("error on adding link " + References.class.getSimpleName() + " with "
+                                     + (peek != null ? peek.getName() : "null") + " and "
+                                     + (classNode != null ? classNode.getName() : "null") + " and string to find classnode = "
+                                     + string);
                     }
 
-                    support.session.addLink(References.class, peek, classNode,
-                                            false);
-                    support.importedNodeCache.put(classNode.getQualifiedName(),
-                                                  classNode);
-                    support.importedNodeCache.put(classNode.getSimpleName(),
-                                                  classNode);
+                    support.session.addLink(References.class, peek, classNode, false);
+                    support.importedNodeCache.put(classNode.getQualifiedName(), classNode);
+                    support.importedNodeCache.put(classNode.getSimpleName(), classNode);
                     return classNode;
                 }
             }
@@ -900,9 +759,8 @@ public class JavaPublicElementsTreeExecutor {
                 Exceptions.catchAndLog(e);
                 return null;
             }
-            throw Exceptions.logAndReturnNew("parameters passed: parent:"
-                                             + peek + ", static:" + isStatic + ", starred:" + starred
-                                             + ", name:" + string, e, SLRuntimeException.class);
+            throw Exceptions.logAndReturnNew("parameters passed: parent:" + peek + ", static:" + isStatic + ", starred:"
+                                             + starred + ", name:" + string, e, SLRuntimeException.class);
         }
 
     }
@@ -916,8 +774,7 @@ public class JavaPublicElementsTreeExecutor {
                                              final List<JavaType> typeBodyDeclarationThrows37,
                                              final boolean constructor ) {
         try {
-            final SLNode concreteParent = support.findEquivalend(peek,
-                                                                 WhatContext.CONCRETE);
+            final SLNode concreteParent = support.findEquivalend(peek, WhatContext.CONCRETE);
 
             final StringBuilder completeMethodName = new StringBuilder();
             completeMethodName.append(string);
@@ -936,27 +793,22 @@ public class JavaPublicElementsTreeExecutor {
             final String complMethodName = completeMethodName.toString();
             final JavaMethod javaMethod;
             if (constructor) {
-                javaMethod = concreteParent.addNode(
-                                                    JavaMethodConstructor.class,
-                                                    complMethodName);
+                javaMethod = concreteParent.addNode(JavaMethodConstructor.class, complMethodName);
             } else {
-                javaMethod = concreteParent.addNode(JavaMethodMethod.class,
-                                                    complMethodName);
+                javaMethod = concreteParent.addNode(JavaMethodMethod.class, complMethodName);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("creating method " + complMethodName
-                             + " inside its parent " + concreteParent.getName()
-                             + " (id " + concreteParent.getID() + ")");
+                logger.debug("creating method " + complMethodName + " inside its parent " + concreteParent.getName() + " (id "
+                             + concreteParent.getID() + ")");
             }
-            support.session
-                           .addLink(TypeDeclares.class, concreteParent,
-                                    javaMethod, false);
+            support.session.addLink(TypeDeclares.class, concreteParent, javaMethod, false);
             javaMethod.setNumberOfParameters(formalParameters34.size());
             // final int i = 0;
             for (final VariableDeclarationDto param : formalParameters34) {
-                final MethodParameterDefinition methodParametersTypeLink = support.session
-                                                                                          .addLink(MethodParameterDefinition.class, javaMethod,
-                                                                                                   param.getType(), false);
+                final MethodParameterDefinition methodParametersTypeLink = support.session.addLink(
+                                                                                                   MethodParameterDefinition.class,
+                                                                                                   javaMethod, param.getType(),
+                                                                                                   false);
                 // methodParametersTypeLink.setOrder(i++);
                 // int arrayDimensions = 0;
                 // if (param.getArrayDimensions() != null
@@ -966,11 +818,9 @@ public class JavaPublicElementsTreeExecutor {
                 // }
                 // methodParametersTypeLink.setArray(arrayDimensions != 0);
                 // methodParametersTypeLink.setArrayDimension(arrayDimensions);
-                final JavaDataParameter parameter = javaMethod.addNode(
-                                                                       JavaDataParameter.class, param.getName());
+                final JavaDataParameter parameter = javaMethod.addNode(JavaDataParameter.class, param.getName());
                 param.getTreeElement().setNode(parameter);
-                support.session.addLink(DataType.class, parameter, param
-                                                                        .getType(), false);
+                support.session.addLink(DataType.class, parameter, param.getType(), false);
 
             }
             javaMethod.setQualifiedName(complMethodName);
@@ -982,38 +832,30 @@ public class JavaPublicElementsTreeExecutor {
                 qualifiedNameBuff.append('.');
                 parent = parent.getParent();
             } while (parent instanceof JavaType);
-            final String qualifiedName = Strings.tryToRemoveBegginingFrom(
-                                                                          JavaConstants.DEFAULT_PACKAGE + ".", qualifiedNameBuff
-                                                                                                                                .toString().replaceAll("[$]", "."));
+            final String qualifiedName = Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE + ".",
+                                                                          qualifiedNameBuff.toString().replaceAll("[$]", "."));
 
-            javaMethod
-                      .setCompleteQualifiedName(qualifiedName + complMethodName);
+            javaMethod.setCompleteQualifiedName(qualifiedName + complMethodName);
 
             javaMethod.setQualifiedName(qualifiedName + string);
             if (annotations35 != null) {
                 for (final JavaType annotation : annotations35) {
-                    support.session.addLink(AnottatedBy.class, javaMethod,
-                                            annotation, false);
+                    support.session.addLink(AnottatedBy.class, javaMethod, annotation, false);
                 }
             }
             if (annotations35 != null) {
                 for (final JavaType annotation : annotations35) {
-                    support.session.addLink(AnottatedBy.class, javaMethod,
-                                            annotation, false);
+                    support.session.addLink(AnottatedBy.class, javaMethod, annotation, false);
                 }
             }
             if (!constructor) {
-                support.session.addLink(MethodReturns.class, javaMethod,
-                                        type36, false);
+                support.session.addLink(MethodReturns.class, javaMethod, type36, false);
             } else {
-                support.session.addLink(MethodReturns.class, javaMethod,
-                                        concreteParent,
-                                        false);
+                support.session.addLink(MethodReturns.class, javaMethod, concreteParent, false);
             }
             if (typeBodyDeclarationThrows37 != null) {
                 for (final JavaType annotation : typeBodyDeclarationThrows37) {
-                    support.session.addLink(MethodThrows.class, javaMethod,
-                                            annotation, false);
+                    support.session.addLink(MethodThrows.class, javaMethod, annotation, false);
                 }
             }
 
@@ -1061,14 +903,12 @@ public class JavaPublicElementsTreeExecutor {
 
     public JavaPackage packageDeclaration( final String string,
                                            final CommonTree tree ) {
-        final String packageName = string == null ? JavaConstants.DEFAULT_PACKAGE
-                : string;
+        final String packageName = string == null ? JavaConstants.DEFAULT_PACKAGE : string;
         if (string != null) {
             importDeclaration(support.currentContext, false, true, packageName);
         }
         importDeclaration(support.currentContext, false, true, "java.lang");
-        currentPackage = this.createNodeOnBothContexts(JavaPackage.class,
-                                                       packageName);
+        currentPackage = this.createNodeOnBothContexts(JavaPackage.class, packageName);
         addLineReference(tree, currentPackage);
         return currentPackage;
     }

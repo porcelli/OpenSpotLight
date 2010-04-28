@@ -98,17 +98,15 @@ public class JavaBundleTest extends AbstractTestServerClass {
     private final String            password = "sa";
 
     @Override
-    protected void doWork( final JcrConnectionProvider provider )
-        throws Exception {
+    protected void doWork( final JcrConnectionProvider provider ) throws Exception {
         final Repository repo = new Repository();
         repo.setName("name");
         repo.setActive(true);
-        Injector injector = Guice.createInjector(
-                        new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("repository")),
-                        new SimplePersistModule(),
-                        new DetailedLoggerModule(),
-                        new DefaultExecutionContextFactoryModule());
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
@@ -154,16 +152,13 @@ public class JavaBundleTest extends AbstractTestServerClass {
         jarSource.getIncludeds().add("/jar/luni-few-classes.jar");
 
         final BundleProcessorType commonProcessor = new BundleProcessorType();
-        commonProcessor.getBundleProperties().put(JavaConstants.JAR_CLASSPATH,
-                                                  "/jar/luni-few-classes.jar");
+        commonProcessor.getBundleProperties().put(JavaConstants.JAR_CLASSPATH, "/jar/luni-few-classes.jar");
         commonProcessor.setActive(true);
         commonProcessor.setName("source processor");
         commonProcessor.setGroup(group);
         commonProcessor.setGlobalPhase(JavaGlobalPhase.class);
-        commonProcessor.getArtifactPhases().add(
-                                                JavaLexerAndParserTypesPhase.class);
-        commonProcessor.getArtifactPhases().add(
-                                                JavaParserPublicElementsPhase.class);
+        commonProcessor.getArtifactPhases().add(JavaLexerAndParserTypesPhase.class);
+        commonProcessor.getArtifactPhases().add(JavaParserPublicElementsPhase.class);
         commonProcessor.getArtifactPhases().add(JavaBodyElementsPhase.class);
         group.getBundleTypes().add(commonProcessor);
 
@@ -172,21 +167,17 @@ public class JavaBundleTest extends AbstractTestServerClass {
         bundleSource.setBundleProcessorType(commonProcessor);
         bundleSource.setRelative("src/");
         bundleSource.getIncludeds().add("**/*.java");
-        final ExecutionContext ctx = contextFactory.createExecutionContext(
-                                                                           username, password, getDescriptor(), group.getRootRepository());
+        final ExecutionContext ctx = contextFactory.createExecutionContext(username, password, getDescriptor(),
+                                                                           group.getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
 
-        DefaultScheduler.INSTANCE.initializeSettings(contextFactory, "user",
-                                                     "password", getDescriptor());
-        DefaultScheduler.INSTANCE
-                                 .refreshJobs(settings, SLCollections.setOf(repo));
+        DefaultScheduler.INSTANCE.initializeSettings(contextFactory, "user", "password", getDescriptor());
+        DefaultScheduler.INSTANCE.refreshJobs(settings, SLCollections.setOf(repo));
         DefaultScheduler.INSTANCE.startScheduler();
 
-        DefaultScheduler.INSTANCE.fireSchedulable("username", "password",
-                                                  artifactSource);
-        DefaultScheduler.INSTANCE
-                                 .fireSchedulable("username", "password", group);
+        DefaultScheduler.INSTANCE.fireSchedulable("username", "password", artifactSource);
+        DefaultScheduler.INSTANCE.fireSchedulable("username", "password", group);
 
     }
 

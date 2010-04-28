@@ -57,18 +57,15 @@ import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtif
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 
-public class DbForeignKeyProcessor implements
-        BundleProcessorArtifactPhase<ForeignKeyConstraintArtifact> {
+public class DbForeignKeyProcessor implements BundleProcessorArtifactPhase<ForeignKeyConstraintArtifact> {
 
-    public void beforeProcessArtifact(
-                                       final ForeignKeyConstraintArtifact artifact,
+    public void beforeProcessArtifact( final ForeignKeyConstraintArtifact artifact,
                                        final CurrentProcessorContext currentContext,
                                        final ExecutionContext context ) {
 
     }
 
-    public void didFinishToProcessArtifact(
-                                            final ForeignKeyConstraintArtifact artifact,
+    public void didFinishToProcessArtifact( final ForeignKeyConstraintArtifact artifact,
                                             final LastProcessStatus status,
                                             final CurrentProcessorContext currentContext,
                                             final ExecutionContext context ) {
@@ -79,12 +76,10 @@ public class DbForeignKeyProcessor implements
         return ForeignKeyConstraintArtifact.class;
     }
 
-    public LastProcessStatus processArtifact(
-                                              final ForeignKeyConstraintArtifact artifact,
+    public LastProcessStatus processArtifact( final ForeignKeyConstraintArtifact artifact,
                                               final CurrentProcessorContext currentContext,
                                               final ExecutionContext context ) throws Exception {
-        final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE
-                                                                     .createByType(artifact.getDatabaseType());
+        final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE.createByType(artifact.getDatabaseType());
         createForeignKey(wrappedType, context, currentContext, artifact);
         return LastProcessStatus.PROCESSED;
     }

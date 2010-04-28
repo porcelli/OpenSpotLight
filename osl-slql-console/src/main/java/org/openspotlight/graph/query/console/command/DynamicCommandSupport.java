@@ -87,14 +87,13 @@ public class DynamicCommandSupport {
         ClassFinder finder = new ClassFinder();
         finder.addClassPath();
 
-        ClassFilter filter =
-            new AndClassFilter(
-                                       //Must not be an interface
-                                       new NotClassFilter(new InterfaceOnlyClassFilter()),
-                                       //Must implement the ClassFilter interface
-                                       new SubclassClassFilter(DynamicCommand.class),
-                                       // Must not be abstract
-                                       new NotClassFilter(new AbstractClassFilter()));
+        ClassFilter filter = new AndClassFilter(
+        // Must not be an interface
+                                                new NotClassFilter(new InterfaceOnlyClassFilter()),
+                                                // Must implement the ClassFilter interface
+                                                new SubclassClassFilter(DynamicCommand.class),
+                                                // Must not be abstract
+                                                new NotClassFilter(new AbstractClassFilter()));
 
         Collection<ClassInfo> foundClasses = new ArrayList<ClassInfo>();
         finder.findClasses(foundClasses, filter);

@@ -55,8 +55,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-public class SLIdentityObjectRelationshipType implements
-        IdentityObjectRelationshipType, SimpleNodeType, Serializable {
+public class SLIdentityObjectRelationshipType implements IdentityObjectRelationshipType, SimpleNodeType, Serializable {
 
     private static final long            serialVersionUID = 8035155847614722394L;
 

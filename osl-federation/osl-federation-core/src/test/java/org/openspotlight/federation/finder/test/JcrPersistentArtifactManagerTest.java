@@ -86,29 +86,27 @@ public class JcrPersistentArtifactManagerTest {
      * The provider.
      */
 
-    private static ArtifactSource artifactSource;
+    private static ArtifactSource                artifactSource;
 
-    private static Repository repository;
+    private static Repository                    repository;
 
     private static PersistentArtifactManagerImpl persistenArtifactManager;
-    private static JRedis jredis;
+    private static JRedis                        jredis;
 
     /**
      * Setup.
-     *
+     * 
      * @throws Exception the exception
      */
     @BeforeClass
     public static void setup() throws Exception {
-        Injector injector = Guice.createInjector(
-                new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(), repositoryPath("name")),
-                new SimplePersistModule(),
-                new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule());
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("name")), new SimplePersistModule(),
+                                                 new DetailedLoggerModule(), new DefaultExecutionContextFactoryModule());
         jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
         jredis.flushall();
-        
+
         artifactSource = new ArtifactSource();
         artifactSource.setName("classpath");
         artifactSource.setInitialLookup("./src");
@@ -116,16 +114,13 @@ public class JcrPersistentArtifactManagerTest {
         repository.setName("name");
         artifactSource.setRepository(repository);
         final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
-        final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(
-                StringArtifact.class, artifactSource, null);
-        persistenArtifactManager = new PersistentArtifactManagerImpl(repository,
-                injector.getInstance(SimplePersistFactory.class));
+        final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(StringArtifact.class, artifactSource, null);
+        persistenArtifactManager = new PersistentArtifactManagerImpl(repository, injector.getInstance(SimplePersistFactory.class));
         for (StringArtifact artifact : artifacts)
             persistenArtifactManager.addTransient(artifact);
         persistenArtifactManager.saveTransientData();
 
     }
-
 
     @AfterClass
     public static void closeResources() {
@@ -134,9 +129,8 @@ public class JcrPersistentArtifactManagerTest {
 
     @Test
     public void shouldFindArtifacts() throws Exception {
-        final StringArtifact sa = persistenArtifactManager.findByPath(
-                StringArtifact.class,
-                "/test/resources/artifacts/included/folder/file_included2");
+        final StringArtifact sa = persistenArtifactManager.findByPath(StringArtifact.class,
+                                                                      "/test/resources/artifacts/included/folder/file_included2");
         assertThat(sa, is(notNullValue()));
         assertThat(sa.getContent(), is(notNullValue()));
 
@@ -144,8 +138,7 @@ public class JcrPersistentArtifactManagerTest {
 
     @Test
     public void shouldListArtifactNames() throws Exception {
-        final Set<String> artifacts = persistenArtifactManager
-                .getInternalMethods().retrieveNames(StringArtifact.class, null);
+        final Set<String> artifacts = persistenArtifactManager.getInternalMethods().retrieveNames(StringArtifact.class, null);
 
         assertThat(artifacts, is(notNullValue()));
         assertThat(artifacts.size(), is(not(0)));
@@ -156,9 +149,8 @@ public class JcrPersistentArtifactManagerTest {
 
     @Test
     public void shouldListArtifacts() throws Exception {
-        final Set<StringArtifact> artifacts = persistenArtifactManager
-                .listByPath(StringArtifact.class,
-                        "/main/java/org/openspotlight/federation");
+        final Set<StringArtifact> artifacts = persistenArtifactManager.listByPath(StringArtifact.class,
+                                                                                  "/main/java/org/openspotlight/federation");
 
         assertThat(artifacts, is(notNullValue()));
         assertThat(artifacts.size(), is(not(0)));

@@ -179,11 +179,9 @@ public interface SLMetadata extends LockContainer {
      * @param recursiveMode the recursive mode
      * @return the meta nodes types
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
-                                                                            SLRecursiveMode recursiveMode );
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( SLRecursiveMode recursiveMode );
 
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes(
-                                                                            SLRecursiveMode recursiveMode,
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( SLRecursiveMode recursiveMode,
                                                                             final VisibilityLevel visibility );
 
     /**
@@ -197,13 +195,12 @@ public interface SLMetadata extends LockContainer {
      * @param values the values
      * @return the collection< sl meta node type>
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType(
-                                                                             final SLRecursiveMode recursiveMode,
+    public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType( final SLRecursiveMode recursiveMode,
                                                                              final VisibilityLevel visibility,
                                                                              final MetaNodeTypeProperty property2Find,
                                                                              final LogicOperator logicOp,
                                                                              final BooleanOperator booleanOp,
                                                                              final List<String> values );
 
-    //TODO implement searchMetaLinkType 
+    // TODO implement searchMetaLinkType
 }
