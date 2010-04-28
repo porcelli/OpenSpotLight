@@ -52,13 +52,15 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelTwoObj implements SimpleNodeType {
+    private String      uuid;
+
     private String      key;
 
     private String      property;
-
     private LevelOneObj parentObj;
 
     private PropertyObj propertyObj;
@@ -71,25 +73,30 @@ public class LevelTwoObj implements SimpleNodeType {
             return false;
         }
         final LevelTwoObj that = (LevelTwoObj)o;
-        return Equals.eachEquality(Arrays.of(this.parentObj, this.key), Arrays.andOf(that.parentObj, that.key));
+        return Equals.eachEquality(Arrays.of(parentObj, key), Arrays.andOf(that.parentObj, that.key));
     }
 
     @KeyProperty
     public String getKey() {
-        return this.key;
+        return key;
     }
 
     @ParentProperty
     public LevelOneObj getLevelOneObj() {
-        return this.parentObj;
+        return parentObj;
     }
 
     public String getProperty() {
-        return this.property;
+        return property;
     }
 
     public PropertyObj getPropertyObj() {
-        return this.propertyObj;
+        return propertyObj;
+    }
+
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
     }
 
     public void setKey( final String key ) {
@@ -106,6 +113,10 @@ public class LevelTwoObj implements SimpleNodeType {
 
     public void setPropertyObj( final PropertyObj propertyObj ) {
         this.propertyObj = propertyObj;
+    }
+
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
     }
 
 }

@@ -75,7 +75,7 @@ public class CautiousExecutorTest {
         public void afterExecutingTask( final Runnable r,
                                         final Throwable t ) {
             if (r instanceof CustomRunnable) {
-                this.integer.incrementAndGet();
+                integer.incrementAndGet();
             }
 
         }
@@ -93,31 +93,31 @@ public class CautiousExecutorTest {
         final AtomicInteger integer = new AtomicInteger();
 
         public void afterCreatingThread( final Thread t ) {
-            this.integer.incrementAndGet();
+            integer.incrementAndGet();
 
         }
     };
 
     private final CustomThreadListener threadListener = new CustomThreadListener();
     private final CustomTaskListener   taskListener   = new CustomTaskListener();
-    private GossipExecutor           executor;
+    private GossipExecutor             executor;
 
     @Test
     public void setup() throws Exception {
 
-        this.executor = GossipExecutor.newFixedThreadPool(4);
-        this.executor.addTaskListener(this.taskListener);
-        this.executor.addThreadListener(this.threadListener);
+        executor = GossipExecutor.newFixedThreadPool(4, "testPool");
+        executor.addTaskListener(taskListener);
+        executor.addThreadListener(threadListener);
         for (int i = 0; i < 100; i++) {
-            this.executor.execute(new CustomRunnable());
+            executor.execute(new CustomRunnable());
         }
         Thread.sleep(100);
 
-        this.executor.shutdown();
+        executor.shutdown();
 
-        assertThat(this.taskListener.integer.get(), is(100));
+        assertThat(taskListener.integer.get(), is(100));
 
-        assertThat(this.threadListener.integer.get(), is(4));
+        assertThat(threadListener.integer.get(), is(4));
     }
 
 }

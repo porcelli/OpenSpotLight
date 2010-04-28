@@ -62,12 +62,15 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.exception.SLGraphException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
-import org.openspotlight.graph.test.domain.JavaClass;
-import org.openspotlight.graph.test.domain.JavaType;
+import org.openspotlight.graph.test.domain.node.JavaClass;
+import org.openspotlight.graph.test.domain.node.JavaPackage;
+import org.openspotlight.graph.test.domain.node.JavaType;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
@@ -84,21 +87,50 @@ public class DuplicateTest {
     AuthenticatedUser user    = null;
 
     @Before
-    public void setup() throws AbstractFactoryException, SLGraphException, SLInvalidCredentialException, IdentityException {
+    public void setup() throws AbstractFactoryException, SLGraphException, IdentityException {
 
         final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
-        this.user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
         final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        this.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        this.session = this.graph.openSession(this.user);
+        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+    }
+
+    @Test
+    public void shouldInsertTwoDifferentNodes() throws Exception {
+        final SLNode rootNode = session.createContext("tmpXX").getRootNode();
+
+        final JavaClass javaClass = rootNode.addNode(JavaClass.class, "test");
+        final JavaPackage javaPackage = rootNode.addNode(JavaPackage.class, "test");
+
+        final List<SLNode> nodes = new ArrayList<SLNode>();
+        nodes.add(javaClass);
+        nodes.add(javaPackage);
+
+        session.save();
+        session.cleanCache();
+        final NeedsSyncronizationSet<SLNode> foundNodes = rootNode.getNodes();
+        for (final SLNode n : foundNodes) {
+            System.err.println(n.getName() + " " + n.getClass().getInterfaces()[0].getSimpleName());
+        }
+        assertThat(foundNodes.size(), is(1));
+
+        assertThat(session.getNodeByID(javaPackage.getID()).getID(), is(javaPackage.getID()));
+
+        final NeedsSyncronizationSet<JavaClass> classChildren = rootNode.getChildNodes(JavaClass.class);
+        assertThat(classChildren.size(), is(0));
+
+        final NeedsSyncronizationSet<JavaPackage> allChildren = rootNode.getChildNodes(JavaPackage.class);
+        assertThat(allChildren.size(), is(1));
+
     }
 
     @Test
     public void shouldNotInsertTwoEqualNodes() throws Exception {
-        final SLNode rootNode = this.session.createContext("tmp").getRootNode();
-        final SLNode rootNode1 = this.session.createContext("tmp1").getRootNode();
+        final SLNode rootNode = session.createContext("tmp").getRootNode();
+        final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
         final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
         final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
         final JavaType n1 = parent.addNode(JavaClass.class, "someName");
@@ -119,10 +151,10 @@ public class DuplicateTest {
         assertThat(n1_, is(n3_));
 
         n3_.setCaption("someName");
-        this.session.save();
-        this.session.close();
-        this.session = this.graph.openSession(this.user);
-        final SLQueryApi query = this.session.createQueryApi();
+        session.save();
+        session.close();
+        session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+        final SLQueryApi query = session.createQueryApi();
         query
 
         .select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
@@ -142,14 +174,14 @@ public class DuplicateTest {
             assertThat(entry.getValue().size(), is(1));
         }
 
-        this.session.close();
-        this.graph.shutdown();
+        session.close();
+        graph.shutdown();
     }
 
     @Test
     public void shouldNotInsertTwoEqualNodes2() throws Exception {
-        final SLNode rootNode = this.session.createContext("tmp").getRootNode();
-        final SLNode rootNode1 = this.session.createContext("tmp1").getRootNode();
+        final SLNode rootNode = session.createContext("tmp").getRootNode();
+        final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
         final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
         final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
         final JavaType n1 = parent.addNode(JavaClass.class, "someName");
@@ -170,10 +202,10 @@ public class DuplicateTest {
         assertThat(n1_, is(n3_));
 
         n3_.setCaption("someName");
-        this.session.save();
-        this.session.close();
-        this.session = this.graph.openSession(this.user);
-        final SLQueryApi query = this.session.createQueryApi();
+        // session.save();
+        session.close();
+        session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+        final SLQueryApi query = session.createQueryApi();
         query
 
         .select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
@@ -197,7 +229,7 @@ public class DuplicateTest {
 
     @After
     public void shutdown() {
-        this.session.close();
-        this.graph.shutdown();
+        session.close();
+        graph.shutdown();
     }
 }

@@ -48,42 +48,44 @@
  */
 package org.openspotlight.common.exception;
 
-
 /**
  * The Class SerializationUtilException.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public class SerializationUtilException extends SLException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new serialization util exception.
-	 *
-	 * @param message the message
-	 */
-	public SerializationUtilException(final String message) {
-		super(message);
-	}
+    /**
+     * Instantiates a new serialization util exception.
+     * 
+     * @param message the message
+     */
+    public SerializationUtilException(
+                                       final String message ) {
+        super(message);
+    }
 
-	/**
-	 * Instantiates a new serialization util exception.
-	 *
-	 * @param cause the cause
-	 */
-	public SerializationUtilException(final Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Instantiates a new serialization util exception.
+     * 
+     * @param cause the cause
+     */
+    public SerializationUtilException(
+                                       final Throwable cause ) {
+        super(cause);
+    }
 
-	/**
-	 * Instantiates a new serialization util exception.
-	 *
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public SerializationUtilException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    /**
+     * Instantiates a new serialization util exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public SerializationUtilException(
+                                       final String message, final Throwable cause ) {
+        super(message, cause);
+    }
 }

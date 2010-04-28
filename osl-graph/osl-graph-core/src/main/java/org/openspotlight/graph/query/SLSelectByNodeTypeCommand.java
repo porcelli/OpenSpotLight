@@ -62,7 +62,7 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLCollatorSupport;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraphSessionException;
+import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
@@ -104,11 +104,13 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
         this.commandDO = commandDO;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.query.SLSelectAbstractCommand#execute()
      */
     @Override
-    public void execute() throws SLGraphSessionException {
+    public void execute() {
         try {
             if (commandDO.getPreviousNodeWrappers() != null) {
                 nodeWrapperListMap = SLQuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
@@ -123,7 +125,8 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
                 typesNotFiltered.add(typeInfo.getName());
             }
 
-            SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath() + "/contexts//*");
+            SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
+                                                                                   + "/contexts//*");
             Statement rootStatement = statementBuilder.getRootStatement();
 
             if (whereStatementInfo != null) {
@@ -134,13 +137,14 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
                     for (int i = 0; i < list.size(); i++) {
                         SLWhereTypeInfo typeInfo = list.get(i);
                         typesNotFiltered.remove(typeInfo.getName());
-                        if (nodeWrapperListMap == null || (nodeWrapperListMap != null && nodeWrapperListMap.containsKey(typeInfo.getName()))) {
+                        if (nodeWrapperListMap == null
+                            || (nodeWrapperListMap != null && nodeWrapperListMap.containsKey(typeInfo.getName()))) {
                             Statement typeStatement;
                             if (addedConditions > 0) typeStatement = rootStatement.operator(OR).openBracket();
                             else typeStatement = rootStatement.openBracket();
-                            Statement typeFilterStatement = typeStatement.condition()
-                                                                         .leftOperand(typePropName).operator(EQUAL).rightOperand(typeInfo.getName())
-                                                                         .operator(AND).openBracket();
+                            Statement typeFilterStatement = typeStatement.condition().leftOperand(typePropName).operator(EQUAL).rightOperand(
+                                                                                                                                             typeInfo.getName()).operator(
+                                                                                                                                                                          AND).openBracket();
                             filterByWhereStatement(typeFilterStatement, typeInfo.getName(), typeInfo.getTypeStatementInfo());
                             typeFilterStatement.closeBracket();
                             typeStatement.closeBracket();
@@ -193,13 +197,11 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
      * @param statement the statement
      * @param typeName the type name
      * @param typeStatementInfo the type statement info
-     * @throws SLGraphSessionException the SL graph session exception
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
     private void filterByWhereStatement( Statement statement,
                                          String typeName,
-                                         SLTypeStatementInfo typeStatementInfo )
-        throws SLGraphSessionException, SLPersistentTreeSessionException {
+                                         SLTypeStatementInfo typeStatementInfo ) throws SLPersistentTreeSessionException {
 
         List<SLTypeConditionInfo> conditionInfoList = typeStatementInfo.getConditionInfoList();
 
@@ -209,7 +211,8 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
             if (conditionInfo.getConditionalOperator() == null) {
                 conditionStatement = statement.openBracket();
             } else {
-                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(), conditionInfo.isConditionalNotOperator()).openBracket();
+                conditionStatement = statement.operator(conditionInfo.getConditionalOperator(),
+                                                        conditionInfo.isConditionalNotOperator()).openBracket();
             }
 
             if (conditionInfo.getInnerStatementInfo() == null) {
@@ -231,29 +234,42 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
 
                 if (conditionInfo.getPropertyName() != null) {
                     String propertyName = SLCommonSupport.toUserPropertyName(conditionInfo.getPropertyName());
-                    Statement propStatement = idStatement == null ? conditionStatement.openBracket() : conditionStatement.operator(AND).openBracket();
-                    propStatement.condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
+                    Statement propStatement = idStatement == null ? conditionStatement.openBracket() : conditionStatement.operator(
+                                                                                                                                   AND).openBracket();
+                    propStatement.condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(),
+                                                                                 conditionInfo.isRelationalNotOperator()).rightOperand(
+                                                                                                                                       conditionInfo.getValue());
                     int collatorStrength = commandDO.getCollatorStrength();
                     if (conditionInfo.getValue() instanceof String && collatorStrength != Collator.IDENTICAL) {
                         String value;
                         if (conditionInfo.getRelationalOperator().equals(SLRelationalOperatorType.EQUAL)) {
-                            propertyName = SLCollatorSupport.getCollatorKeyPropName(conditionInfo.getPropertyName(), commandDO.getCollatorStrength());
-                            value = SLCollatorSupport.getCollatorKey(commandDO.getCollatorStrength(), conditionInfo.getValue().toString());
+                            propertyName = SLCollatorSupport.getCollatorKeyPropName(conditionInfo.getPropertyName(),
+                                                                                    commandDO.getCollatorStrength());
+                            value = SLCollatorSupport.getCollatorKey(commandDO.getCollatorStrength(),
+                                                                     conditionInfo.getValue().toString());
                         } else {
-                            propertyName = SLCollatorSupport.getCollatorDescriptionPropName(conditionInfo.getPropertyName(), commandDO.getCollatorStrength());
-                            value = SLCollatorSupport.getCollatorDescription(commandDO.getCollatorStrength(), conditionInfo.getValue().toString());
+                            propertyName = SLCollatorSupport.getCollatorDescriptionPropName(conditionInfo.getPropertyName(),
+                                                                                            commandDO.getCollatorStrength());
+                            value = SLCollatorSupport.getCollatorDescription(commandDO.getCollatorStrength(),
+                                                                             conditionInfo.getValue().toString());
                         }
-                        propStatement.operator(OR).condition().leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(value);
+                        propStatement.operator(OR).condition().leftOperand(propertyName).operator(
+                                                                                                  conditionInfo.getRelationalOperator(),
+                                                                                                  conditionInfo.isRelationalNotOperator()).rightOperand(
+                                                                                                                                                        value);
                     }
                     propStatement.closeBracket();
                 } else {
                     Condition condition = idStatement == null ? conditionStatement.condition() : conditionStatement.operator(AND).condition();
-                    String propertyName = (conditionInfo.getSide().equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_COUNT : SLConsts.PROPERTY_NAME_TARGET_COUNT) + "." + conditionInfo.getLinkTypeName().hashCode();
+                    String propertyName = (conditionInfo.getSide().equals(SLSideType.A_SIDE) ? SLConsts.PROPERTY_NAME_SOURCE_COUNT : SLConsts.PROPERTY_NAME_TARGET_COUNT)
+                                          + "." + conditionInfo.getLinkTypeName().hashCode();
                     propertyName = SLCommonSupport.toInternalPropertyName(propertyName);
                     if (conditionInfo.getRelationalOperator().equals(EQUAL) && conditionInfo.getValue().equals(0)) {
                         condition.leftOperand(propertyName).inexistent();
                     } else {
-                        condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(), conditionInfo.isRelationalNotOperator()).rightOperand(conditionInfo.getValue());
+                        condition.leftOperand(propertyName).operator(conditionInfo.getRelationalOperator(),
+                                                                     conditionInfo.isRelationalNotOperator()).rightOperand(
+                                                                                                                           conditionInfo.getValue());
                     }
                 }
             } else {

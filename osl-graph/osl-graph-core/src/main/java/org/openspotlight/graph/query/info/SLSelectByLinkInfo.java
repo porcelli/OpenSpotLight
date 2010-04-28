@@ -135,7 +135,9 @@ public class SLSelectByLinkInfo {
         this.side = side;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -143,7 +145,9 @@ public class SLSelectByLinkInfo {
         return Equals.eachEquality(SLSelectByLinkInfo.class, this, obj, "name");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -151,7 +155,9 @@ public class SLSelectByLinkInfo {
         return HashCodes.hashOf(name);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

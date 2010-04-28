@@ -58,7 +58,7 @@ import java.util.EnumMap;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.junit.Test;
-import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
@@ -74,61 +74,56 @@ import com.thoughtworks.xstream.XStream;
  * Test class for {@link DatabaseMetadataScriptManager}.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DatabaseMetadataScriptManagerTest {
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private String createSample() {
-		final XStream xstream = new XStream();
-		xstream.omitField(DatabaseMetadataScript.class, "immutable");
-		xstream.alias("script", DatabaseMetadataScript.class); //$NON-NLS-1$
-		xstream.alias("column", ColumnsNamesForMetadataSelect.class);
-		final DatabaseMetadataScript script = new DatabaseMetadataScript();
-		script.setContentSelect("select text from table");
-		script.setPreferedType(PreferedType.SQL);
-		script.setDataSelect("select * from data");
-		script
-				.setTemplatesSelect("select sysdate from dual where $dummy$ = 'X'");
-		script.setTemplate("create table $dummy$ ");
-		script.setDatabase(DatabaseType.ORACLE);
-		script.setScriptType(ScriptType.TABLE);
-		script.setStreamHandlerClass(PostgresRoutineStreamHandler.class);
-		final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(
-				ColumnsNamesForMetadataSelect.class);
-		columnAliasMap.put(ColumnsNamesForMetadataSelect.catalog_name,
-				"newName");
-		script.setColumnAliasMap(columnAliasMap);
-		return xstream.toXML(script);
-	}
+    private String createSample() {
+        final XStream xstream = new XStream();
+        xstream.omitField(DatabaseMetadataScript.class, "immutable");
+        xstream.alias("script", DatabaseMetadataScript.class); //$NON-NLS-1$
+        xstream.alias("column", ColumnsNamesForMetadataSelect.class);
+        final DatabaseMetadataScript script = new DatabaseMetadataScript();
+        script.setContentSelect("select text from table");
+        script.setPreferedType(PreferedType.SQL);
+        script.setDataSelect("select * from data");
+        script.setTemplatesSelect("select sysdate from dual where $dummy$ = 'X'");
+        script.setTemplate("create table $dummy$ ");
+        script.setDatabase(DatabaseType.ORACLE);
+        script.setScriptType(ScriptType.TABLE);
+        script.setStreamHandlerClass(PostgresRoutineStreamHandler.class);
+        final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(
+                                                                                                                                 ColumnsNamesForMetadataSelect.class);
+        columnAliasMap.put(ColumnsNamesForMetadataSelect.catalog_name, "newName");
+        script.setColumnAliasMap(columnAliasMap);
+        return xstream.toXML(script);
+    }
 
-	@Test
-	public void shouldLoadScript() throws Exception {
-		final DatabaseMetadataScript script = DatabaseMetadataScriptManager.INSTANCE
-				.getScript(DatabaseType.H2, ScriptType.FUNCTION);
-		assertThat(script, is(notNullValue()));
-	}
+    @Test
+    public void shouldLoadScript() throws Exception {
+        final DatabaseMetadataScript script = DatabaseMetadataScriptManager.INSTANCE.getScript(DatabaseType.H2,
+                                                                                               ScriptType.FUNCTION);
+        assertThat(script, is(notNullValue()));
+    }
 
-	@Test
-	public void shouldLogValidXmlFromXStream() {
-		System.out.println("valid xml config script: \n" + this.createSample());
-	}
+    @Test
+    public void shouldLogValidXmlFromXStream() {
+        System.out.println("valid xml config script: \n" + this.createSample());
+    }
 
-	@Test
-	public void shouldReplaceTemplateInACorrectWay() throws Exception {
-		final DatabaseMetadataScript tableScript = DatabaseMetadataScriptManager.INSTANCE
-				.getScript(DatabaseType.MYSQL, ScriptType.TABLE);
-		final StringTemplate template = new StringTemplate(tableScript
-				.getTemplate(), DefaultTemplateLexer.class);
-		template.setAttribute("name", "example_table");
-		for (int i = 0; i < 10; i++) {
-			template.setAttribute("detail.{column_name,column_type,is_null}",
-					"column" + i, "type" + i, "isNull" + i);
-		}
-		final String result = template.toString();
-		assertThat(result, is(notNullValue()));
-	}
+    @Test
+    public void shouldReplaceTemplateInACorrectWay() throws Exception {
+        final DatabaseMetadataScript tableScript = DatabaseMetadataScriptManager.INSTANCE.getScript(DatabaseType.MY_SQL,
+                                                                                                    ScriptType.TABLE);
+        final StringTemplate template = new StringTemplate(tableScript.getTemplate(), DefaultTemplateLexer.class);
+        template.setAttribute("name", "example_table");
+        for (int i = 0; i < 10; i++) {
+            template.setAttribute("detail.{column_name,column_type,is_null}", "column" + i, "type" + i, "isNull" + i);
+        }
+        final String result = template.toString();
+        assertThat(result, is(notNullValue()));
+    }
 
 }

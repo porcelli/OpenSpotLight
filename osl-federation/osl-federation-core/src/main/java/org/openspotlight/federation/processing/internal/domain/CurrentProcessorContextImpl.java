@@ -48,58 +48,124 @@
  */
 package org.openspotlight.federation.processing.internal.domain;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.openspotlight.common.collection.AddOnlyConcurrentMap;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.domain.BundleProcessorType;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.processing.BundleProcessor.CurrentProcessorContext;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
+import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
 
 public class CurrentProcessorContextImpl implements CurrentProcessorContext {
 
-    private Group      currentGroup;
+    private BundleProcessorType       bundleProcessor;
 
-    private SLNode     currentNodeGroup;
+    private Group                     currentGroup;
 
-    private Repository currentRepository;
+    private ArtifactSource            artifactSource;
 
-    private SLContext  groupContext;
+    private SLNode                    currentNodeGroup;
 
-    public Group getCurrentGroup() {
-        return this.currentGroup;
+    private Repository                currentRepository;
+
+    private SLContext                 groupContext;
+
+    private final Map<String, Object> transientProperties       = new AddOnlyConcurrentMap<String, Object>(
+                                                                                                           new ConcurrentHashMap<String, Object>());
+
+    private SLNode                    nodeForUniqueBundleConfig = null;
+
+    public CurrentProcessorContextImpl() {
     }
 
-    public SLNode getCurrentNodeGroup()
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        if (this.currentNodeGroup == null) {
-            if (this.currentGroup != null && this.groupContext != null) {
-                this.currentNodeGroup = this.getNodeForGroup(this.currentGroup);
+    public ArtifactSource getArtifactSource() {
+        return artifactSource;
+    }
+
+    public BundleProcessorType getBundleProcessor() {
+        return bundleProcessor;
+    }
+
+    public Map<String, String> getBundleProperties() {
+        return bundleProcessor.getBundleProperties();
+    }
+
+    public Group getCurrentGroup() {
+        return currentGroup;
+    }
+
+    public SLNode getCurrentNodeGroup() {
+        if (currentNodeGroup == null) {
+            if (currentGroup != null && groupContext != null) {
+                currentNodeGroup = getNodeForGroup(currentGroup);
+            } else {
+                Exceptions.logAndReturn(new IllegalStateException("currentGroup=" + currentGroup + " / " + "groupContext="
+                                                                  + groupContext + " - anyone can't be null"));
             }
         }
-        return this.currentNodeGroup;
+        return currentNodeGroup;
     }
 
     public Repository getCurrentRepository() {
-        return this.currentRepository;
+        return currentRepository;
     }
 
     public SLContext getGroupContext() {
-        return this.groupContext;
+        return groupContext;
     }
 
-    public SLNode getNodeForGroup( final Group group )
-        throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
-        return this.groupContext.getRootNode().addNode(group.getUniqueName());
+    public SLNode getNodeForGroup( final Group group ) {
+        return groupContext.getRootNode().addNode(group.getUniqueName());
+    }
+
+    public SLNode getNodeForUniqueBundleConfig() {
+
+        if (nodeForUniqueBundleConfig == null) {
+            synchronized (groupContext.getLockObject()) {
+                try {
+                    if (currentGroup != null && groupContext != null) {
+                        final SLGraphSession sess = groupContext.getSession();
+                        sess.save();
+                        final SLContext context = sess.createContext(bundleProcessor.getUniqueName().replaceAll("([ ]|[/]|[.])",
+                                                                                                                "-"));
+                        sess.save();
+                        nodeForUniqueBundleConfig = context.getRootNode();
+                    } else {
+                        Exceptions.logAndReturn(new IllegalStateException("currentGroup=" + currentGroup + " / "
+                                                                          + "groupContext=" + groupContext
+                                                                          + " - anyone can't be null"));
+                    }
+                } catch (final Exception e) {
+                    throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+                }
+
+            }
+
+        }
+        return nodeForUniqueBundleConfig;
+    }
+
+    public Map<String, Object> getTransientProperties() {
+        return transientProperties;
+    }
+
+    public void setArtifactSource( final ArtifactSource artifactSource ) {
+        this.artifactSource = artifactSource;
+    }
+
+    public void setBundleProcessor( final BundleProcessorType bundleProcessor ) {
+        this.bundleProcessor = bundleProcessor;
     }
 
     public void setCurrentGroup( final Group currentGroup ) {
         this.currentGroup = currentGroup;
-    }
-
-    public void setCurrentNodeGroup( final SLNode currentNodeGroup ) {
-        this.currentNodeGroup = currentNodeGroup;
     }
 
     public void setCurrentRepository( final Repository currentRepository ) {

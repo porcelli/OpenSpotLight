@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.domain;
 
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+
 public class DnaFileSystemArtifactSource extends ArtifactSource {
 
     private static final long serialVersionUID = -184403072980952509L;

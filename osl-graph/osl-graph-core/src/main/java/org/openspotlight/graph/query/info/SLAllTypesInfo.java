@@ -55,50 +55,52 @@ package org.openspotlight.graph.query.info;
  */
 public class SLAllTypesInfo {
 
-	/** The select info. */
-	private SLSelectStatementInfo selectInfo;
-	
-	/** The on where. */
-	private boolean onWhere;
-	
-	/**
-	 * Instantiates a new sL all types info.
-	 */
-	public SLAllTypesInfo() {}
-	
-	/**
-	 * Instantiates a new sL all types info.
-	 * 
-	 * @param selectInfo the select info
-	 */
-	public SLAllTypesInfo(SLSelectStatementInfo selectInfo) {
-		this.selectInfo = selectInfo;
-	}
-	
-	/**
-	 * Gets the select statement info.
-	 * 
-	 * @return the select statement info
-	 */
-	public SLSelectStatementInfo getSelectStatementInfo() {
-		return selectInfo;
-	}
+    /** The select info. */
+    private SLSelectStatementInfo selectInfo;
 
-	/**
-	 * Checks if is on where.
-	 * 
-	 * @return true, if is on where
-	 */
-	public boolean isOnWhere() {
-		return onWhere;
-	}
+    /** The on where. */
+    private boolean               onWhere;
 
-	/**
-	 * Sets the on where.
-	 * 
-	 * @param onWhere the new on where
-	 */
-	public void setOnWhere(boolean onWhere) {
-		this.onWhere = onWhere;
-	}
+    /**
+     * Instantiates a new sL all types info.
+     */
+    public SLAllTypesInfo() {
+    }
+
+    /**
+     * Instantiates a new sL all types info.
+     * 
+     * @param selectInfo the select info
+     */
+    public SLAllTypesInfo(
+                           SLSelectStatementInfo selectInfo ) {
+        this.selectInfo = selectInfo;
+    }
+
+    /**
+     * Gets the select statement info.
+     * 
+     * @return the select statement info
+     */
+    public SLSelectStatementInfo getSelectStatementInfo() {
+        return selectInfo;
+    }
+
+    /**
+     * Checks if is on where.
+     * 
+     * @return true, if is on where
+     */
+    public boolean isOnWhere() {
+        return onWhere;
+    }
+
+    /**
+     * Sets the on where.
+     * 
+     * @param onWhere the new on where
+     */
+    public void setOnWhere( boolean onWhere ) {
+        this.onWhere = onWhere;
+    }
 }

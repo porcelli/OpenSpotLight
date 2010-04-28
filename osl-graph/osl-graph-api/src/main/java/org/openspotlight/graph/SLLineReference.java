@@ -48,150 +48,124 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.annotation.SLProperty;
-
+import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
 /**
  * The Interface SLLineReference.
  * 
  * @author Vitor Hugo Chagas
  */
-/**
- * @author vitorchagas
- *
- */
-public interface SLLineReference extends SLNode {
-	
-	/**
-	 * Gets the start line.
-	 * 
-	 * @return the start line
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getStartLine() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the start line.
-	 * 
-	 * @param startLine the new start line
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setStartLine(Integer startLine) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the end line.
-	 * 
-	 * @return the end line
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getEndLine() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the end line.
-	 * 
-	 * @param endLine the new end line
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setEndLine(Integer endLine) throws SLGraphSessionException;
+public final class SLLineReference implements SimpleNodeType {
 
-	/**
-	 * Gets the start column.
-	 * 
-	 * @return the start column
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getStartColumn() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the start column.
-	 * 
-	 * @param startColumn the new start column
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setStartColumn(Integer startColumn) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the end column.
-	 * 
-	 * @return the end column
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public Integer getEndColumn() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the end column.
-	 * 
-	 * @param endColumn the new end column
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setEndColumn(Integer endColumn) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the statement.
-	 * 
-	 * @return the statement
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getStatement() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the statement.
-	 * 
-	 * @param statement the new statement
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setStatement(String statement) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the artifact id.
-	 * 
-	 * @return the artifact id
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getArtifactId() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the artifact id.
-	 * 
-	 * @param artifactId the new artifact id
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setArtifactId(String artifactId) throws SLGraphSessionException;
-	
-	/**
-	 * Gets the artifact version.
-	 * 
-	 * @return the artifact version
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getArtifactVersion() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the artifact version.
-	 * 
-	 * @param artifactVersion the new artifact version
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setArtifactVersion(String artifactVersion) throws SLGraphSessionException;
+    private String nodeId;
+    private int    startLine;
+    private int    endLine;
+    private int    startColumn;
+    private int    endColumn;
+    private String statement;
+    private String artifactId;
+    private String artifactVersion;
+
+    @KeyProperty
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId( String nodeId ) {
+        this.nodeId = nodeId;
+    }
+
+    @KeyProperty
+    public int getStartLine() {
+        return startLine;
+    }
+
+    public void setStartLine( int startLine ) {
+        this.startLine = startLine;
+    }
+
+    @KeyProperty
+    public int getEndLine() {
+        return endLine;
+    }
+
+    public void setEndLine( int endLine ) {
+        this.endLine = endLine;
+    }
+
+    @KeyProperty
+    public int getStartColumn() {
+        return startColumn;
+    }
+
+    public void setStartColumn( int startColumn ) {
+        this.startColumn = startColumn;
+    }
+
+    @KeyProperty
+    public int getEndColumn() {
+        return endColumn;
+    }
+
+    public void setEndColumn( int endColumn ) {
+        this.endColumn = endColumn;
+    }
+
+    @KeyProperty
+    public String getStatement() {
+        return statement;
+    }
+
+    public void setStatement( String statement ) {
+        this.statement = statement;
+    }
+
+    @KeyProperty
+    public String getArtifactId() {
+        return artifactId;
+    }
+
+    public void setArtifactId( String artifactId ) {
+        this.artifactId = artifactId;
+    }
+
+    @KeyProperty
+    public String getArtifactVersion() {
+        return artifactVersion;
+    }
+
+    public void setArtifactVersion( String artifactVersion ) {
+        this.artifactVersion = artifactVersion;
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SLLineReference that = (SLLineReference)o;
+
+        if (endColumn != that.endColumn) return false;
+        if (endLine != that.endLine) return false;
+        if (startColumn != that.startColumn) return false;
+        if (startLine != that.startLine) return false;
+        if (artifactId != null ? !artifactId.equals(that.artifactId) : that.artifactId != null) return false;
+        if (artifactVersion != null ? !artifactVersion.equals(that.artifactVersion) : that.artifactVersion != null) return false;
+        if (statement != null ? !statement.equals(that.statement) : that.statement != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = startLine;
+        result = 31 * result + endLine;
+        result = 31 * result + startColumn;
+        result = 31 * result + endColumn;
+        result = 31 * result + (statement != null ? statement.hashCode() : 0);
+        result = 31 * result + (artifactId != null ? artifactId.hashCode() : 0);
+        result = 31 * result + (artifactVersion != null ? artifactVersion.hashCode() : 0);
+        return result;
+    }
 }

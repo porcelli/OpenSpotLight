@@ -59,14 +59,13 @@ import java.util.Collection;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Files;
+import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
-import org.openspotlight.graph.SLInvalidCredentialException;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodeTypeNotInExistentHierarchy;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.query.console.GraphConnection;
 import org.openspotlight.graph.query.console.test.domain.ClassImplementsInterface;
 import org.openspotlight.graph.query.console.test.domain.JavaClass;
@@ -95,13 +94,11 @@ public class ExampleRemoteServerWithData {
          * @param clazz the clazz
          * @param javaClass the java class
          * @param session the session
-         * @throws SLGraphSessionException the SL graph session exception
          */
         private void addClassImplementsInterfaceLinks( final SLGraphSession session,
                                                        final SLNode root,
                                                        final Class<?> clazz,
-                                                       final JavaClass javaClass )
-            throws SLGraphSessionException, SLInvalidCredentialException {
+                                                       final JavaClass javaClass ) {
             final Class<?>[] iFaces = clazz.getInterfaces();
             for (final Class<?> iFace : iFaces) {
                 final Package iFacePack = iFace.getPackage();
@@ -119,13 +116,10 @@ public class ExampleRemoteServerWithData {
          * @param clazz the clazz
          * @param javaClass the java class
          * @param session the session
-         * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
-         * @throws SLGraphSessionException the SL graph session exception
          */
         private void addJavaClassContainsJavaClassMethod( final SLGraphSession session,
                                                           final Class<?> clazz,
-                                                          final JavaClass javaClass )
-            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
+                                                          final JavaClass javaClass ) {
             final Method[] methods = clazz.getDeclaredMethods();
             for (final Method method : methods) {
                 final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
@@ -141,13 +135,11 @@ public class ExampleRemoteServerWithData {
          * @param clazz the clazz
          * @param javaClass the java class
          * @param session the session
-         * @throws SLGraphSessionException the SL graph session exception
          */
         private void addJavaClassHirarchyLinks( final SLGraphSession session,
                                                 final SLNode root,
                                                 final Class<?> clazz,
-                                                final JavaClass javaClass )
-            throws SLGraphSessionException, SLInvalidCredentialException {
+                                                final JavaClass javaClass ) {
             final Class<?> superClass = clazz.getSuperclass();
             if (superClass != null) {
                 final Package classPack = clazz.getPackage();
@@ -166,13 +158,10 @@ public class ExampleRemoteServerWithData {
          * @param iFace the i face
          * @param javaInterface the java interface
          * @param session the session
-         * @throws SLNodeTypeNotInExistentHierarchy the SL node type not in existent hierarchy
-         * @throws SLGraphSessionException the SL graph session exception
          */
         private void addJavaInterfaceContainsJavaMethod( final SLGraphSession session,
                                                          final Class<?> iFace,
-                                                         final JavaInterface javaInterface )
-            throws SLNodeTypeNotInExistentHierarchy, SLGraphSessionException, SLInvalidCredentialException {
+                                                         final JavaInterface javaInterface ) {
             final Method[] methods = iFace.getDeclaredMethods();
             for (final Method method : methods) {
                 final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
@@ -188,13 +177,11 @@ public class ExampleRemoteServerWithData {
          * @param iFace the i face
          * @param javaInterface the java interface
          * @param session the session
-         * @throws SLGraphSessionException the SL graph session exception
          */
         private void addJavaInterfaceHirarchyLinks( final SLGraphSession session,
                                                     final SLNode root,
                                                     final Class<?> iFace,
-                                                    final JavaInterface javaInterface )
-            throws SLGraphSessionException, SLInvalidCredentialException {
+                                                    final JavaInterface javaInterface ) {
             final Class<?>[] superIFaces = iFace.getInterfaces();
             for (final Class<?> superIFace : superIFaces) {
                 final Package iFacePack = iFace.getPackage();
@@ -240,14 +227,16 @@ public class ExampleRemoteServerWithData {
          * @throws IOException Signals that an I/O exception has occurred.
          * @throws ClassNotFoundException the class not found exception
          */
-        public void populateGraph() throws SLException, IOException, ClassNotFoundException, SLInvalidCredentialException, IdentityException {
+        public void populateGraph() throws SLException, IOException, ClassNotFoundException, IdentityException {
             final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
-            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
+                                                                                                                              simpleUser,
+                                                                                                                              "password");
 
             final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
             final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-            final SLGraphSession session = graph.openSession(user);
+            final SLGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");
             final Collection<Class<?>> classes = this.loadClasses("java-util-classes.txt");
@@ -267,9 +256,9 @@ public class ExampleRemoteServerWithData {
                     final JavaInterface javaInterface = utilJavaPackage.addNode(JavaInterface.class, iFace.getName());
                     session.addLink(PackageContainsType.class, utilJavaPackage, javaInterface, false);
                     javaInterface.setCaption(iFace.getName());
-                    javaInterface.setProperty(Integer.class, "intValue", count);
-                    javaInterface.setProperty(Float.class, "decValue", new Float(count + floatValue));
-                    javaInterface.setProperty(Boolean.class, "boolValue", new Boolean(true));
+                    javaInterface.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
+                    javaInterface.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(count + floatValue));
+                    javaInterface.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue", new Boolean(true));
                     this.addJavaInterfaceHirarchyLinks(session, root, iFace, javaInterface);
                     this.addJavaInterfaceContainsJavaMethod(session, iFace, javaInterface);
                     count++;
@@ -277,14 +266,14 @@ public class ExampleRemoteServerWithData {
 
                 count = 0;
                 for (final Class<?> clazz : classes) {
-                    //              context = session.createContext("queryTest2");
+                    // context = session.createContext("queryTest2");
                     root = context.getRootNode();
                     final JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
                     session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
                     javaClass.setCaption(clazz.getName());
-                    javaClass.setProperty(Integer.class, "intValue", count);
-                    javaClass.setProperty(Float.class, "decValue", new Float(count + floatValue));
-                    javaClass.setProperty(Boolean.class, "boolValue", new Boolean(false));
+                    javaClass.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
+                    javaClass.setProperty(Float.class, VisibilityLevel.PUBLIC, "decValue", new Float(count + floatValue));
+                    javaClass.setProperty(Boolean.class, VisibilityLevel.PUBLIC, "boolValue", new Boolean(false));
                     this.addJavaClassHirarchyLinks(session, root, clazz, javaClass);
                     this.addClassImplementsInterfaceLinks(session, root, clazz, javaClass);
                     this.addJavaClassContainsJavaClassMethod(session, clazz, javaClass);

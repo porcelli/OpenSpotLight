@@ -48,8 +48,8 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.List;
-
+import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.graph.SLNode;
 
 /**
@@ -57,7 +57,7 @@ import org.openspotlight.graph.SLNode;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQueryResult {
+public interface SLQueryResult extends LockContainer {
 
     /**
      * Gets the nodes.
@@ -65,7 +65,7 @@ public interface SLQueryResult {
      * @return the nodes
      * @throws SLQueryException the SL query exception
      */
-    public List<SLNode> getNodes() throws SLQueryException;
+    public NeedsSyncronizationList<SLNode> getNodes() throws SLQueryException;
 
     /**
      * Gets the query id. This id is related to cache.

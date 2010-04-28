@@ -80,6 +80,10 @@ public interface DetailedLogger {
          */
         public String getErrorCode();
 
+        public void setDescription( String s );
+
+        public void setErrorCode( String s );
+
     }
 
     /**

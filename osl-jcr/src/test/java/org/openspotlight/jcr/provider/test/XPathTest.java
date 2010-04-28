@@ -63,32 +63,44 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 
 public class XPathTest {
 
-	private static JcrConnectionProvider provider;
-	private static Session session;
+    private static JcrConnectionProvider provider;
+    private static Session               session;
 
-	@AfterClass
-	public static void close() throws Exception {
-		XPathTest.session.logout();
-	}
+    @AfterClass
+    public static void close() throws Exception {
+        XPathTest.session.logout();
+    }
 
-	@BeforeClass
-	public static void setup() throws Exception {
-		XPathTest.provider = JcrConnectionProvider
-				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-		XPathTest.provider.openRepository();
-		XPathTest.session = XPathTest.provider.openSession();
+    @BeforeClass
+    public static void setup() throws Exception {
+        XPathTest.provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        XPathTest.provider.openRepository();
+        XPathTest.session = XPathTest.provider.openSession();
 
-	}
+    }
 
-	@Test
-	public void shouldExecuteXPath() throws Exception {
-		final Node rootNode = XPathTest.session.getRootNode();
-		rootNode.addNode("abc");
-		XPathTest.session.save();
-		final QueryResult result = XPathTest.session.getWorkspace()
-				.getQueryManager().createQuery("abc", Query.XPATH).execute();
-		Assert.assertThat(result.getNodes().hasNext(), Is.is(true));
+    @Test
+    public void shouldExecuteXPath() throws Exception {
+        final Node rootNode = XPathTest.session.getRootNode();
+        rootNode.addNode("abc");
+        XPathTest.session.save();
+        final QueryResult result = XPathTest.session.getWorkspace().getQueryManager().createQuery("abc", Query.XPATH).execute();
+        Assert.assertThat(result.getNodes().hasNext(), Is.is(true));
 
-	}
+    }
+
+    @Test
+    public void shouldExecuteXPath2() throws Exception {
+        final Node rootNode = XPathTest.session.getRootNode();
+        rootNode.addNode("abc1").setProperty("Teste", "test");
+        rootNode.addNode("abc2").setProperty("TesteA", "test");
+        rootNode.addNode("abc3").setProperty("Teste", "testX");
+        rootNode.addNode("abc4").setProperty("Teste", "test");
+        XPathTest.session.save();
+        final QueryResult result = XPathTest.session.getWorkspace().getQueryManager().createQuery(
+                                                                                                  "//element(*)[jcr:contains(.,'test')]",
+                                                                                                  Query.XPATH).execute();
+        Assert.assertThat(result.getNodes().getSize(), Is.is(3L));
+    }
 
 }

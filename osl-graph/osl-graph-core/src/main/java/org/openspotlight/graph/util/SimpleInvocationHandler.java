@@ -58,41 +58,45 @@ import java.lang.reflect.Method;
  * @author Vitor Hugo Chagas
  */
 public class SimpleInvocationHandler implements InvocationHandler {
-	
-	/** The target. */
-	private Object target;
-	
-	/**
-	 * Instantiates a new simple invocation handler.
-	 * 
-	 * @param target the target
-	 */
-	public SimpleInvocationHandler(Object target) {
-		this.target = target;
-	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
-	 */
-	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		try {
-			return method.invoke(target, args);
-		}
-		catch (InvocationTargetException e) {
-			throw e.getTargetException();
-		}
-		catch (Exception e) {
-			throw e;
-		}
-	}
-	
-	/**
-	 * Gets the target.
-	 * 
-	 * @return the target
-	 */
-	public Object getTarget() {
-		return target;
-	}
+    /** The target. */
+    private Object target;
+
+    /**
+     * Instantiates a new simple invocation handler.
+     * 
+     * @param target the target
+     */
+    public SimpleInvocationHandler(
+                                    Object target ) {
+        this.target = target;
+    }
+
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
+     * java.lang.reflect.Method, java.lang.Object[])
+     */
+    public Object invoke( Object proxy,
+                          Method method,
+                          Object[] args ) throws Throwable {
+        try {
+            return method.invoke(target, args);
+        } catch (InvocationTargetException e) {
+            throw e.getTargetException();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    /**
+     * Gets the target.
+     * 
+     * @return the target
+     */
+    public Object getTarget() {
+        return target;
+    }
 }

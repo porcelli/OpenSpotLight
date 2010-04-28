@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.openspotlight</groupId>
+		<artifactId>osl-persistence</artifactId>
+		<version>0.7-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>osl-persistence-core</artifactId>
+	<packaging>jar</packaging>
+	<name>OpenSpotLight Persistence Core</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-persistence-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>google</groupId>
+			<artifactId>guice</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>google</groupId>
+			<artifactId>collect</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common</artifactId>
+            <scope>compile</scope>
+		</dependency>
+	</dependencies>
+</project>

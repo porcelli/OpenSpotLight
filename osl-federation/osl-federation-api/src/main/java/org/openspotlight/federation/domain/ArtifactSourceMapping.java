@@ -55,6 +55,7 @@ import java.util.Set;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
@@ -66,27 +67,29 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "artifact_source_mapping" )
 public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
 
-    private static final long serialVersionUID = -242895748094958633L;
+    private static final long        serialVersionUID = -242895748094958633L;
 
     /** The to. */
-    private String            to;
+    private String                   to;
 
     /** The relative. */
-    private String            from;
+    private String                   from;
 
     /** The source. */
-    private ArtifactSource    source;
+    private transient ArtifactSource source;
 
     /** The excludeds. */
-    private Set<String>       excludeds        = new HashSet<String>();
+    private Set<String>              excludeds        = new HashSet<String>();
 
     /** The includeds. */
-    private Set<String>       includeds        = new HashSet<String>();
+    private Set<String>              includeds        = new HashSet<String>();
 
     /** The hash code. */
-    private volatile int      hashCode;
+    private volatile transient int   hashCode;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals( final Object o ) {
@@ -94,8 +97,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
             return false;
         }
         final ArtifactSourceMapping that = (ArtifactSourceMapping)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.to, this.source, this.from), Arrays.andOf(that.to, that.source,
-                                                                                                            that.from));
+        final boolean result = Equals.eachEquality(Arrays.of(to, source, from), Arrays.andOf(that.to, that.source, that.from));
         return result;
     }
 
@@ -105,7 +107,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * @return the excludeds
      */
     public Set<String> getExcludeds() {
-        return this.excludeds;
+        return excludeds;
     }
 
     /**
@@ -115,7 +117,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      */
     @KeyProperty
     public String getFrom() {
-        return this.from;
+        return from;
     }
 
     /**
@@ -124,7 +126,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * @return the includeds
      */
     public Set<String> getIncludeds() {
-        return this.includeds;
+        return includeds;
     }
 
     /**
@@ -134,7 +136,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      */
     @ParentProperty
     public ArtifactSource getSource() {
-        return this.source;
+        return source;
     }
 
     /**
@@ -143,17 +145,19 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * @return the to
      */
     public String getTo() {
-        return this.to;
+        return to;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
-        int result = this.hashCode;
+        int result = hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(this.to, this.source, this.from);
-            this.hashCode = result;
+            result = HashCodes.hashOf(to, source, from);
+            hashCode = result;
         }
         return result;
     }

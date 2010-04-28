@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Helper class to deal with exceptions, and also to log then.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Exceptions {
@@ -65,7 +65,7 @@ public class Exceptions {
 
     /**
      * Just catch and log the exception.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -73,7 +73,7 @@ public class Exceptions {
      *     catchAndLog(e);
      * }
      * </pre>
-     *
+     * 
      * @param exception
      */
     public static void catchAndLog( final Exception exception ) {
@@ -82,7 +82,7 @@ public class Exceptions {
 
     /**
      * Just catch and log the exception.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -90,18 +90,18 @@ public class Exceptions {
      *     catchAndLog(e);
      * }
      * </pre>
-     *
+     * 
      * @param message
      * @param exception
      */
     public static void catchAndLog( final String message,
-                                    final Exception exception ) {
+                                    final Throwable exception ) {
         logger.error(message, exception);
     }
 
     /**
      * Log the exception and return the same exception to be used in non void methods.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -109,7 +109,7 @@ public class Exceptions {
      *     throw logAndReturn(e);
      * }
      * </pre>
-     *
+     * 
      * @param <E>
      * @param exception
      * @return the same exception
@@ -121,7 +121,7 @@ public class Exceptions {
 
     /**
      * Log the exception and return the same exception to be used in non void methods.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -129,7 +129,7 @@ public class Exceptions {
      *     throw logAndReturn(e);
      * }
      * </pre>
-     *
+     * 
      * @param <E>
      * @param message
      * @param exception
@@ -144,7 +144,7 @@ public class Exceptions {
 
     /**
      * Log the exception and return a new exception on the described class. To be used on non void methods.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -152,7 +152,7 @@ public class Exceptions {
      *     throw logAndReturnNew(e, MyCheckedException.class);
      * }
      * </pre>
-     *
+     * 
      * @param <E>
      * @param baseException
      * @param newExceptionClass that has a constructor to wrap the original exception
@@ -177,7 +177,7 @@ public class Exceptions {
 
     /**
      * Log the exception and return a new exception on the described class. To be used on non void methods.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -185,7 +185,7 @@ public class Exceptions {
      *     throw logAndReturnNew(&quot;it was so dangerous&quot;, e, MyCheckedException.class);
      * }
      * </pre>
-     *
+     * 
      * @param <E>
      * @param message
      * @param baseException
@@ -209,7 +209,7 @@ public class Exceptions {
 
     /**
      * Log the exception and throw the same exception on a void method.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -217,7 +217,7 @@ public class Exceptions {
      *     logAndThrow(e);
      * }
      * </pre>
-     *
+     * 
      * @param <E>
      * @param exception
      * @throws E
@@ -229,7 +229,7 @@ public class Exceptions {
 
     /**
      * Log the exception and throw a new exception on the described class. To be used on void methods.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -237,7 +237,7 @@ public class Exceptions {
      *     logAndThrowNew(e, MyCheckedException.class);
      * }
      * </pre>
-     *
+     * 
      * @param <E>
      * @param baseException
      * @param newExceptionClass that has a constructor to wrap the original exception
@@ -262,7 +262,7 @@ public class Exceptions {
 
     /**
      * Log the exception and throw a new exception on the described class. To be used on void methods.
-     *
+     * 
      * <pre>
      * try {
      *     somethingDangerous();
@@ -270,7 +270,7 @@ public class Exceptions {
      *     logAndThrowNew(&quot;it was so dangerous&quot;, e, MyCheckedException.class);
      * }
      * </pre>
-     *
+     * 
      * @param <E>
      * @param message
      * @param baseException

@@ -58,7 +58,8 @@ public class ServerAndClientTest {
 
     @Test
     @Ignore
-    // for some strange reason it doesn't work on maven, but it works on eclipse and junit. 
+    // for some strange reason it doesn't work on maven, but it works on eclipse
+    // and junit.
     // since there's some best tests running I'll leave this test ignored
     public void shouldConnectToRemoteInstance() throws Exception {
         ExampleCajoServer.startServer();

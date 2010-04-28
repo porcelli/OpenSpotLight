@@ -56,12 +56,12 @@ import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
  * @author Vitor Hugo Chagas
  */
 public interface SLSelectByNodeTypeInfoGetter {
-	
-	/**
-	 * Gets the select info.
-	 * 
-	 * @return the select info
-	 */
-	public SLSelectByNodeTypeInfo getSelectByNodeTypeInfo();	
+
+    /**
+     * Gets the select info.
+     * 
+     * @return the select info
+     */
+    public SLSelectByNodeTypeInfo getSelectByNodeTypeInfo();
 
 }

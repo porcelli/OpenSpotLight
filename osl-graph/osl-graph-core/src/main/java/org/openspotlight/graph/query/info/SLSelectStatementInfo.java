@@ -186,7 +186,9 @@ public class SLSelectStatementInfo extends SLSelectInfo {
         this.collatorStrength = collatorStrength;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.openspotlight.graph.query.info.SLSelectInfo#toString()
      */
     @Override

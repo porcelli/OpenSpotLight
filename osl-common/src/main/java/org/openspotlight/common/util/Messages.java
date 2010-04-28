@@ -53,24 +53,20 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * Internationalization class using the Eclipse <b>right
- * click->source->externalize strings</b>
- *
+ * Internationalization class using the Eclipse <b>right click->source->externalize strings</b>
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
 public class Messages {
-    private static final String BUNDLE_NAME = "org.openspotlight.common.util.messages"; //$NON-NLS-1$
+    private static final String         BUNDLE_NAME     = "org.openspotlight.common.util.messages"; //$NON-NLS-1$
 
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-            .getBundle(BUNDLE_NAME);
+    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
     /**
-     *
      * @param key
      * @return the string for this key
      */
-    public static String getString(final String key) {
+    public static String getString( final String key ) {
         try {
             return RESOURCE_BUNDLE.getString(key);
         } catch (final MissingResourceException e) {

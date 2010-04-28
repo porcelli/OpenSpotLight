@@ -54,13 +54,12 @@ package org.openspotlight.graph;
  * @author Vitor Hugo Chagas
  */
 public interface SLEncoder {
-	
-	/**
-	 * Encode.
-	 * 
-	 * @param value the value
-	 * 
-	 * @return the string
-	 */
-	public String encode(String value);
+
+    /**
+     * Encode.
+     * 
+     * @param value the value
+     * @return the string
+     */
+    public String encode( String value );
 }

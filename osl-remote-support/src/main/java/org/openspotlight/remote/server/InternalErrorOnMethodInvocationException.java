@@ -73,7 +73,7 @@ public class InternalErrorOnMethodInvocationException extends SLException {
      * @param message the message
      */
     public InternalErrorOnMethodInvocationException(
-                                             final String message ) {
+                                                     final String message ) {
         super(message);
     }
 
@@ -84,7 +84,7 @@ public class InternalErrorOnMethodInvocationException extends SLException {
      * @param cause the cause
      */
     public InternalErrorOnMethodInvocationException(
-                                             final String message, final Throwable cause ) {
+                                                     final String message, final Throwable cause ) {
         super(message, cause);
     }
 
@@ -94,7 +94,7 @@ public class InternalErrorOnMethodInvocationException extends SLException {
      * @param cause the cause
      */
     public InternalErrorOnMethodInvocationException(
-                                             final Throwable cause ) {
+                                                     final Throwable cause ) {
         super(cause);
     }
 

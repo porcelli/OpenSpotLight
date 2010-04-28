@@ -49,17 +49,24 @@
 package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.processing.BundleProcessor;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
+import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.TransientProperty;
 
 /**
  * The Class BundleProcessorType.
@@ -67,33 +74,60 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "bundle_processor_type" )
 public class BundleProcessorType implements SimpleNodeType, Serializable {
 
-    private static final long                                    serialVersionUID = -8305990807194729295L;
+    private volatile transient String                                       uniqueName       = null;
+
+    private String                                                          name;
+
+    private Map<String, String>                                             bundleProperties = new HashMap<String, String>();
+
+    private static final long                                               serialVersionUID = -8305990807194729295L;
 
     /** The type. */
-    private Class<? extends BundleProcessor<? extends Artifact>> type;
+    private Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase;
+
+    private List<Class<? extends BundleProcessorArtifactPhase<?>>>          artifactPhases   = new ArrayList<Class<? extends BundleProcessorArtifactPhase<?>>>();
 
     /** The active. */
-    private boolean                                              active;
+    private boolean                                                         active;
 
     /** The group. */
-    private Group                                                group;
+    private transient Group                                                 group;
 
     /** The sources. */
-    private Set<BundleSource>                                    sources          = new HashSet<BundleSource>();
+    private Set<BundleSource>                                               sources          = new HashSet<BundleSource>();
 
     /** The hash code. */
-    private volatile int                                         hashCode;
+    private volatile transient int                                          hashCode;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals( final Object o ) {
+        if (o == this) {
+            return true;
+        }
         if (!(o instanceof BundleProcessorType)) {
             return false;
         }
         final BundleProcessorType that = (BundleProcessorType)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.group, this.type), Arrays.andOf(that.group, that.type));
+        final boolean result = Equals.eachEquality(Arrays.of(group, globalPhase, name), Arrays.andOf(that.group,
+                                                                                                     that.globalPhase, that.name));
         return result;
+    }
+
+    public List<Class<? extends BundleProcessorArtifactPhase<?>>> getArtifactPhases() {
+        return artifactPhases;
+    }
+
+    public Map<String, String> getBundleProperties() {
+        return bundleProperties;
+    }
+
+    @KeyProperty
+    public Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> getGlobalPhase() {
+        return globalPhase;
     }
 
     /**
@@ -103,7 +137,12 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      */
     @ParentProperty
     public Group getGroup() {
-        return this.group;
+        return group;
+    }
+
+    @KeyProperty
+    public String getName() {
+        return name;
     }
 
     /**
@@ -112,27 +151,29 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      * @return the sources
      */
     public Set<BundleSource> getSources() {
-        return this.sources;
+        return sources;
     }
 
-    /**
-     * Gets the type.
+    @TransientProperty
+    public String getUniqueName() {
+        String temp = uniqueName;
+        if (temp == null) {
+            temp = getGroup().getUniqueName() + "/" + getName();
+            uniqueName = temp;
+        }
+        return temp;
+    }
+
+    /*
+     * (non-Javadoc)
      * 
-     * @return the type
-     */
-    @KeyProperty
-    public Class<? extends BundleProcessor<? extends Artifact>> getType() {
-        return this.type;
-    }
-
-    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
-        int result = this.hashCode;
+        int result = hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(this.group, this.type);
-            this.hashCode = result;
+            result = HashCodes.hashOf(group, globalPhase, name);
+            hashCode = result;
         }
         return result;
     }
@@ -143,7 +184,7 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      * @return true, if is active
      */
     public boolean isActive() {
-        return this.active;
+        return active;
     }
 
     /**
@@ -155,6 +196,18 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
         this.active = active;
     }
 
+    public void setArtifactPhases( final List<Class<? extends BundleProcessorArtifactPhase<?>>> artifactPhases ) {
+        this.artifactPhases = artifactPhases;
+    }
+
+    public void setBundleProperties( final Map<String, String> bundleProperties ) {
+        this.bundleProperties = bundleProperties;
+    }
+
+    public void setGlobalPhase( final Class<? extends BundleProcessorGlobalPhase<? extends Artifact>> globalPhase ) {
+        this.globalPhase = globalPhase;
+    }
+
     /**
      * Sets the group.
      * 
@@ -164,6 +217,10 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
         this.group = group;
     }
 
+    public void setName( final String name ) {
+        this.name = name;
+    }
+
     /**
      * Sets the sources.
      * 
@@ -171,15 +228,6 @@ public class BundleProcessorType implements SimpleNodeType, Serializable {
      */
     public void setSources( final Set<BundleSource> sources ) {
         this.sources = sources;
-    }
-
-    /**
-     * Sets the type.
-     * 
-     * @param type the new type
-     */
-    public void setType( final Class<? extends BundleProcessor<? extends Artifact>> type ) {
-        this.type = type;
     }
 
 }

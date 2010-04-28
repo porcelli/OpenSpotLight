@@ -59,109 +59,109 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
  * @author Vitor Hugo Chagas
  */
 public class SLSelectCommandDO {
-	
-	/** The metadata. */
-	private SLMetadata metadata;
-	
-	/** The node wrappers. */
-	private Collection<PNodeWrapper> nodeWrappers;
-	
-	/** The previous node wrappers. */
-	private Collection<PNodeWrapper> previousNodeWrappers;
-	
-	/** The tree session. */
-	private SLPersistentTreeSession treeSession;
-	
-	/** The collator strength. */
-	private int collatorStrength;
-	
-	/**
-	 * Gets the metadata.
-	 * 
-	 * @return the metadata
-	 */
-	public SLMetadata getMetadata() {
-		return metadata;
-	}
-	
-	/**
-	 * Sets the metadata.
-	 * 
-	 * @param metadata the new metadata
-	 */
-	public void setMetadata(SLMetadata metadata) {
-		this.metadata = metadata;
-	}
-	
-	/**
-	 * Gets the node wrappers.
-	 * 
-	 * @return the node wrappers
-	 */
-	public Collection<PNodeWrapper> getNodeWrappers() {
-		return nodeWrappers;
-	}
-	
-	/**
-	 * Sets the node wrappers.
-	 * 
-	 * @param nodeWrappers the new node wrappers
-	 */
-	public void setNodeWrappers(Collection<PNodeWrapper> nodeWrappers) {
-		this.nodeWrappers = nodeWrappers;
-	}
-	
-	/**
-	 * Gets the tree session.
-	 * 
-	 * @return the tree session
-	 */
-	public SLPersistentTreeSession getTreeSession() {
-		return treeSession;
-	}
-	
-	/**
-	 * Sets the tree session.
-	 * 
-	 * @param treeSession the new tree session
-	 */
-	public void setTreeSession(SLPersistentTreeSession treeSession) {
-		this.treeSession = treeSession;
-	}
-	
-	/**
-	 * Gets the previous node wrappers.
-	 * 
-	 * @return the previous node wrappers
-	 */
-	public Collection<PNodeWrapper> getPreviousNodeWrappers() {
-		return previousNodeWrappers;
-	}
-	
-	/**
-	 * Sets the previous node wrappers.
-	 * 
-	 * @param previousNodeWrappers the new previous node wrappers
-	 */
-	public void setPreviousNodeWrappers(Collection<PNodeWrapper> previousNodeWrappers) {
-		this.previousNodeWrappers = previousNodeWrappers;
-	}
 
-	/**
-	 * Gets the collator strength.
-	 * 
-	 * @return the collator strength
-	 */
-	public int getCollatorStrength() {
-		return collatorStrength;
-	}
+    /** The metadata. */
+    private SLMetadata               metadata;
 
-	/**
-	 * Sets the collator strength.
-	 * 
-	 * @param collatorStrength the new collator strength
-	 */
-	public void setCollatorStrength(int collatorStrength) {
-		this.collatorStrength = collatorStrength;
-	}
+    /** The node wrappers. */
+    private Collection<PNodeWrapper> nodeWrappers;
+
+    /** The previous node wrappers. */
+    private Collection<PNodeWrapper> previousNodeWrappers;
+
+    /** The tree session. */
+    private SLPersistentTreeSession  treeSession;
+
+    /** The collator strength. */
+    private int                      collatorStrength;
+
+    /**
+     * Gets the metadata.
+     * 
+     * @return the metadata
+     */
+    public SLMetadata getMetadata() {
+        return metadata;
+    }
+
+    /**
+     * Sets the metadata.
+     * 
+     * @param metadata the new metadata
+     */
+    public void setMetadata( SLMetadata metadata ) {
+        this.metadata = metadata;
+    }
+
+    /**
+     * Gets the node wrappers.
+     * 
+     * @return the node wrappers
+     */
+    public Collection<PNodeWrapper> getNodeWrappers() {
+        return nodeWrappers;
+    }
+
+    /**
+     * Sets the node wrappers.
+     * 
+     * @param nodeWrappers the new node wrappers
+     */
+    public void setNodeWrappers( Collection<PNodeWrapper> nodeWrappers ) {
+        this.nodeWrappers = nodeWrappers;
+    }
+
+    /**
+     * Gets the tree session.
+     * 
+     * @return the tree session
+     */
+    public SLPersistentTreeSession getTreeSession() {
+        return treeSession;
+    }
+
+    /**
+     * Sets the tree session.
+     * 
+     * @param treeSession the new tree session
+     */
+    public void setTreeSession( SLPersistentTreeSession treeSession ) {
+        this.treeSession = treeSession;
+    }
+
+    /**
+     * Gets the previous node wrappers.
+     * 
+     * @return the previous node wrappers
+     */
+    public Collection<PNodeWrapper> getPreviousNodeWrappers() {
+        return previousNodeWrappers;
+    }
+
+    /**
+     * Sets the previous node wrappers.
+     * 
+     * @param previousNodeWrappers the new previous node wrappers
+     */
+    public void setPreviousNodeWrappers( Collection<PNodeWrapper> previousNodeWrappers ) {
+        this.previousNodeWrappers = previousNodeWrappers;
+    }
+
+    /**
+     * Gets the collator strength.
+     * 
+     * @return the collator strength
+     */
+    public int getCollatorStrength() {
+        return collatorStrength;
+    }
+
+    /**
+     * Sets the collator strength.
+     * 
+     * @param collatorStrength the new collator strength
+     */
+    public void setCollatorStrength( int collatorStrength ) {
+        this.collatorStrength = collatorStrength;
+    }
 }

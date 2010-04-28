@@ -57,115 +57,121 @@ import org.openspotlight.common.util.HashCodes;
  * @author Vitor Hugo Chagas
  */
 public class SLSelectTypeInfo {
-	
-	/** The name. */
-	private String name;
-	
-	/** The sub types. */
-	private boolean subTypes;
-	
-	/** The comma. */
-	private boolean comma;
-	
-	/** The select statement info. */
-	private SLSelectStatementInfo selectStatementInfo;
-	
-	/**
-	 * Instantiates a new sL select type info.
-	 * 
-	 * @param selectStatementInfo the select statement info
-	 * @param name the name
-	 */
-	public SLSelectTypeInfo(SLSelectStatementInfo selectStatementInfo, String name) {
-		this.selectStatementInfo = selectStatementInfo;
-		setName(name);
-	}
 
-	/**
-	 * Instantiates a new sL select type info.
-	 * 
-	 * @param name the name
-	 */
-	public SLSelectTypeInfo(String name) {
-		setName(name);
-	}
+    /** The name. */
+    private String                name;
 
-	/**
-	 * Gets the select statement info.
-	 * 
-	 * @return the select statement info
-	 */
-	public SLSelectStatementInfo getSelectStatementInfo() {
-		return selectStatementInfo;
-	}
-	
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * Sets the name.
-	 * 
-	 * @param name the new name
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * Checks if is sub types.
-	 * 
-	 * @return true, if is sub types
-	 */
-	public boolean isSubTypes() {
-		return subTypes;
-	}
-	
-	/**
-	 * Sets the sub types.
-	 * 
-	 * @param subTypes the new sub types
-	 */
-	public void setSubTypes(boolean subTypes) {
-		this.subTypes = subTypes;
-	}
-	
-	/**
-	 * Checks if is comma.
-	 * 
-	 * @return true, if is comma
-	 */
-	public boolean isComma() {
-		return comma;
-	}
-	
-	/**
-	 * Sets the comma.
-	 * 
-	 * @param comma the new comma
-	 */
-	public void setComma(boolean comma) {
-		this.comma = comma;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return HashCodes.hashOf(name);
-	}
+    /** The sub types. */
+    private boolean               subTypes;
+
+    /** The comma. */
+    private boolean               comma;
+
+    /** The select statement info. */
+    private SLSelectStatementInfo selectStatementInfo;
+
+    /**
+     * Instantiates a new sL select type info.
+     * 
+     * @param selectStatementInfo the select statement info
+     * @param name the name
+     */
+    public SLSelectTypeInfo(
+                             SLSelectStatementInfo selectStatementInfo, String name ) {
+        this.selectStatementInfo = selectStatementInfo;
+        setName(name);
+    }
+
+    /**
+     * Instantiates a new sL select type info.
+     * 
+     * @param name the name
+     */
+    public SLSelectTypeInfo(
+                             String name ) {
+        setName(name);
+    }
+
+    /**
+     * Gets the select statement info.
+     * 
+     * @return the select statement info
+     */
+    public SLSelectStatementInfo getSelectStatementInfo() {
+        return selectStatementInfo;
+    }
+
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name.
+     * 
+     * @param name the new name
+     */
+    public void setName( String name ) {
+        this.name = name;
+    }
+
+    /**
+     * Checks if is sub types.
+     * 
+     * @return true, if is sub types
+     */
+    public boolean isSubTypes() {
+        return subTypes;
+    }
+
+    /**
+     * Sets the sub types.
+     * 
+     * @param subTypes the new sub types
+     */
+    public void setSubTypes( boolean subTypes ) {
+        this.subTypes = subTypes;
+    }
+
+    /**
+     * Checks if is comma.
+     * 
+     * @return true, if is comma
+     */
+    public boolean isComma() {
+        return comma;
+    }
+
+    /**
+     * Sets the comma.
+     * 
+     * @param comma the new comma
+     */
+    public void setComma( boolean comma ) {
+        this.comma = comma;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals( Object obj ) {
+        return Equals.eachEquality(SLSelectTypeInfo.class, this, obj, "name");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return HashCodes.hashOf(name);
+    }
 }

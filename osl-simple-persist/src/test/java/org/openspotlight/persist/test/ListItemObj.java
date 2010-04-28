@@ -51,9 +51,12 @@ package org.openspotlight.persist.test;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-public class ListItemObj implements SimpleNodeType {
+public class ListItemObj implements SimpleNodeType, Comparable<ListItemObj> {
+    private String uuid;
+
     private String name;
 
     private int    value;
@@ -66,24 +69,36 @@ public class ListItemObj implements SimpleNodeType {
             return false;
         }
         final ListItemObj that = (ListItemObj)o;
-        return Equals.eachEquality(Arrays.of(this.value), Arrays.andOf(that.value));
+        return Equals.eachEquality(Arrays.of(value), Arrays.andOf(that.value));
     }
 
     public String getName() {
-        return this.name;
+        return name;
+    }
+
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
     }
 
     @KeyProperty
     public int getValue() {
-        return this.value;
+        return value;
     }
 
     public void setName( final String name ) {
         this.name = name;
     }
 
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
+    }
+
     public void setValue( final int value ) {
         this.value = value;
     }
 
+    public int compareTo( ListItemObj o ) {
+        return this.value < o.value ? -1 : (this.value == o.value ? 0 : 1);
+    }
 }

@@ -50,132 +50,139 @@ package org.openspotlight.federation.data.load.db.test;
 
 import static java.sql.DriverManager.getConnection;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.sql.Connection;
+import java.util.Set;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.domain.DatabaseCustomArtifact;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.RoutineArtifact;
-import org.openspotlight.federation.domain.RoutineType;
-import org.openspotlight.federation.domain.TableArtifact;
-import org.openspotlight.federation.domain.ViewArtifact;
+import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineType;
+import org.openspotlight.federation.domain.artifact.db.TableArtifact;
+import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
-import org.openspotlight.federation.loader.ArtifactLoader;
-import org.openspotlight.federation.loader.ArtifactLoaderFactory;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProvider;
+import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
+import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder.Constraints;
+import org.openspotlight.federation.log.DetailedLoggerModule;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DatabaseCustomTest {
 
-	@BeforeClass
-	public static void loadDriver() throws Exception {
-		Class.forName("org.h2.Driver");
-	}
+    @BeforeClass
+    public static void loadDriver() throws Exception {
+        Class.forName("org.h2.Driver");
+    }
 
-	private ArtifactLoader artifactLoader;
-	private DatabaseCustomArtifactFinder finder;
-	private DbArtifactSource bundle;
+    private DatabaseCustomArtifactFinder          finder;
+    private DbArtifactSource                      bundle;
+    private PersistentArtifactManagerProviderImpl persistentManagerProvider;
 
-	@Before
-	public void setup() throws Exception {
-		delete("./target/test-data"); //$NON-NLS-1$
+    @Before
+    public void setup() throws Exception {
+        delete("./target/test-data"); //$NON-NLS-1$
 
-		final GlobalSettings configuration = new GlobalSettings();
-		configuration
-				.setArtifactFinderRegistryClass(SampleDatabaseCustomArtifactRegistry.class);
-		configuration.setDefaultSleepingIntervalInMilliseconds(500);
-		configuration.setNumberOfParallelThreads(4);
+        final GlobalSettings configuration = new GlobalSettings();
+        configuration.setDefaultSleepingIntervalInMilliseconds(500);
 
-		artifactLoader = ArtifactLoaderFactory.createNewLoader(configuration);
-		bundle = (DbArtifactSource) createH2DbConfiguration(
-				"DatabaseArtifactLoaderTest").getArtifactSources().iterator()
-				.next();
-		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
-		finder = new DatabaseCustomArtifactFinder(bundle);
-	}
+        bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getArtifactSources().iterator().next();
+        bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+        finder = new DatabaseCustomArtifactFinder();
 
-	@Test
-	public void shouldLoadProceduresAndFunctions() throws Exception {
-		Connection connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
-				"sa", "");
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
 
-		connection
-				.prepareStatement(
-						"create alias newExampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\" ")
-				.execute();
-		connection
-				.prepareStatement(
-						"create alias newExampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\"")
-				.execute();
-		connection.commit();
-		connection.close();
+        PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
+                                                                                               injector.getInstance(SimplePersistFactory.class),
+                                                                                               bundle.getRepository());
 
-		final Iterable<Artifact> loadedArtifacts = artifactLoader
-				.loadArtifactsFromSource(bundle);
-		assertThat(loadedArtifacts, is(notNullValue()));
-		assertThat(loadedArtifacts.iterator().hasNext(), is(true));
+    }
 
-		final RoutineArtifact exampleProcedure = (RoutineArtifact) finder
-				.findByPath("PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE");
-		final RoutineArtifact exampleFunction = (RoutineArtifact) finder
-				.findByPath("PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION");
-		assertThat(exampleProcedure.getType(), is(RoutineType.PROCEDURE));
-		assertThat(exampleFunction.getType(), is(RoutineType.FUNCTION));
-		connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
-				"sa", "");
+    @Test
+    public void shouldLoadProceduresAndFunctions() throws Exception {
+        Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
 
-		connection.prepareStatement("drop alias newExampleProcedure ")
-				.execute();
-		connection.prepareStatement("drop alias newExampleFunction ").execute();
-		connection.commit();
-		connection.close();
+        connection.prepareStatement(
+                                    "create alias newExampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\" ").execute();
+        connection.prepareStatement(
+                                    "create alias newExampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\"").execute();
+        connection.commit();
+        connection.close();
 
-	}
+        final RoutineArtifact exampleProcedure = (RoutineArtifact)finder.findByPath(RoutineArtifact.class, bundle,
+                                                                                    "/PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE");
+        final RoutineArtifact exampleFunction = (RoutineArtifact)finder.findByPath(RoutineArtifact.class, bundle,
+                                                                                   "/PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION");
+        assertThat(exampleProcedure.getType(), is(RoutineType.PROCEDURE));
+        assertThat(exampleFunction.getType(), is(RoutineType.FUNCTION));
+        connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
 
-	@Test
-	public void shouldLoadTablesAndViews() throws Exception {
-		final DbArtifactSource bundle = (DbArtifactSource) createH2DbConfiguration(
-				"DatabaseArtifactLoaderTest").getArtifactSources().iterator()
-				.next();
-		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
-		final Connection connection = getConnection(
-				"jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
-				"sa", "");
-		bundle
-				.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
-		connection
-				.prepareStatement(
-						"create table exampleTable(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)")
-				.execute();
-		connection
-				.prepareStatement(
-						"create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable")
-				.execute();
-		connection.commit();
-		connection.close();
+        connection.prepareStatement("drop alias newExampleProcedure ").execute();
+        connection.prepareStatement("drop alias newExampleFunction ").execute();
+        connection.commit();
+        connection.close();
 
-		final Iterable<Artifact> loadedArtifacts = artifactLoader
-				.loadArtifactsFromSource(bundle);
-		assertThat(loadedArtifacts, is(notNullValue()));
-		assertThat(loadedArtifacts.iterator().hasNext(), is(true));
+    }
 
-		final DatabaseCustomArtifact exampleTable = finder
-				.findByPath("PUBLIC/TABLE/DB/EXAMPLETABLE");
-		final DatabaseCustomArtifact exampleView = finder
-				.findByPath("PUBLIC/VIEW/DB/EXAMPLEVIEW");
-		assertThat(exampleTable, is(TableArtifact.class));
-		assertThat(exampleView, is(ViewArtifact.class));
-	}
+    @Test
+    public void shouldLoadTablesAndViews() throws Exception {
+        final DbArtifactSource bundle = (DbArtifactSource)createH2DbConfiguration("DatabaseArtifactLoaderTest").getArtifactSources().iterator().next();
+        bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+        final Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db",
+                                                    "sa", "");
+        bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
+        connection.prepareStatement(
+                                    "create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+        connection.prepareStatement(
+                                    "create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable").execute();
+        connection.prepareStatement("create table anotherTable(i int not null primary key, i_fk int)").execute();
+
+        connection.prepareStatement(
+                                    "alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)").execute();
+
+        connection.commit();
+        connection.close();
+
+        final TableArtifact exampleTable = finder.findByPath(TableArtifact.class, bundle, "/PUBLIC/DB/TABLE/EXAMPLETABLE");
+        final TableArtifact exampleView = (TableArtifact)finder.findByPath(TableArtifact.class, bundle,
+                                                                           "/PUBLIC/DB/VIEW/EXAMPLEVIEW");
+        assertThat(exampleTable, is(TableArtifact.class));
+        final Set<DatabaseCustomArtifact> pks = finder.listByPath(DatabaseCustomArtifact.class, bundle,
+                                                                  Constraints.PRIMARY_KEY.toString());
+        final Set<DatabaseCustomArtifact> fks = finder.listByPath(DatabaseCustomArtifact.class, bundle,
+                                                                  Constraints.FOREIGN_KEY.toString());
+
+        Set<String> names = finder.getInternalMethods().retrieveOriginalNames(DatabaseCustomArtifact.class, bundle, null);
+
+        for (String name : names)
+            System.err.println(name);
+
+        assertThat(fks, is(notNullValue()));
+        assertThat(fks.size(), is(not(0)));
+        assertThat(pks, is(notNullValue()));
+        assertThat(pks.size(), is(not(0)));
+        assertThat(exampleView, is(ViewArtifact.class));
+    }
 }

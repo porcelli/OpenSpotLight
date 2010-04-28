@@ -1,4 +1,6 @@
 # .gitignore for OpenSpotLight
+jrat.output
+jrat.xml
 
 # IDE support files
 .classpath
@@ -7,6 +9,7 @@
 .settings
 .wtpmodules
 .pmd
+atlassian-ide-plugin.xml
 
 #ANTLR temp files
 *.tokens
@@ -19,6 +22,9 @@ temp-testng-customsuite.xml
 test-output
 target
 bin
+META-INF
+out.slql
+profiles.xml
 
 # General folders
 local

@@ -48,81 +48,107 @@
  */
 package org.openspotlight.federation.loader;
 
-import java.util.Set;
-
-import javax.jcr.Session;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.jredis.JRedis;
+import org.junit.*;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import javax.jcr.Session;
+import java.util.Set;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * The Class JcrSessionConfigurationManagerTest.
  */
-public class JcrSessionConfigurationManagerTest extends
-		AbstractConfigurationManagerTest {
+public class JcrSessionConfigurationManagerTest extends AbstractConfigurationManagerTest {
 
-	private static JcrConnectionProvider provider;
+    private static JcrConnectionProvider                               provider;
 
-	@BeforeClass
-	public static void setupJcrRepo() throws Exception {
-		provider = JcrConnectionProvider
-				.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-	}
+    private static Injector                                            injector;
+    private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-	private Session session;
+    private static JRedis                                              jredis;
 
-	@After
-	public void closeSession() throws Exception {
-		if (session != null && session.isLive()) {
-			session.logout();
-			session = null;
-		}
-	}
+    @BeforeClass
+    public static void setupJcrRepo() throws Exception {
+        provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
+        simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.FEDERATION);
+        jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
+    }
 
-	@Override
-	protected ConfigurationManager createNewConfigurationManager() {
-		return JcrSessionConfigurationManagerFactory
-				.createMutableUsingSession(session);
-	}
+    private Session session;
 
-	@Before
-	public void setupSession() throws Exception {
-		session = provider.openSession();
-	}
+    @Before
+    public void clean() throws Exception {
+        jredis.flushall();
+    }
 
-	@Test
-	public void shouldFindGroupDeltas() throws Exception {
-		final Repository repository = new Repository();
-		repository.setName("newRepository");
-		final Group group = new Group();
-		group.setName("willBeRemoved");
-		group.setRepository(repository);
-		repository.getGroups().add(group);
-		final ConfigurationManager manager1 = createNewConfigurationManager();
-		manager1.saveRepository(repository);
-		final Group group2 = new Group();
-		group2.setName("new");
-		group2.setRepository(repository);
-		repository.getGroups().add(group2);
-		repository.getGroups().remove(group);
-		manager1.saveRepository(repository);
+    @After
+    public void closeSession() throws Exception {
+        if (session != null && session.isLive()) {
+            session.logout();
+            session = null;
+        }
 
-		final GroupDifferences differences = GroupSupport.getDifferences(
-				session, repository.getName());
-		final Set<String> added = differences.getAddedGroups();
+    }
 
-		Assert.assertThat(added.contains("newRepository/new"), Is.is(true));
+    @Override
+    protected ConfigurationManager createNewConfigurationManager() {
+        return ConfigurationManagerFactoryImpl.createMutableUsingSession(simplePersist);
+    }
 
-	}
+    @Before
+    public void setupSession() throws Exception {
+        session = provider.openSession();
+    }
+
+    @Test
+    public void shouldFindGroupDeltas() throws Exception {
+
+        final Repository repository = new Repository();
+        repository.setName("newRepository");
+        final Group group = new Group();
+        group.setName("willBeRemoved");
+        group.setRepository(repository);
+        repository.getGroups().add(group);
+        final ConfigurationManager manager1 = createNewConfigurationManager();
+        manager1.saveRepository(repository);
+        final Group group2 = new Group();
+        group2.setName("new");
+        group2.setRepository(repository);
+        repository.getGroups().add(group2);
+        repository.getGroups().remove(group);
+        manager1.saveRepository(repository);
+
+        final GroupDifferences differences = GroupSupport.getDifferences(simplePersist, repository.getName());
+        final Set<String> added = differences.getAddedGroups();
+
+        Assert.assertThat(added.contains("newRepository/new"), Is.is(true));
+
+    }
 
 }

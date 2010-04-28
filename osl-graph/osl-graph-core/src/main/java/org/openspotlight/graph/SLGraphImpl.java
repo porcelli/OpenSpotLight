@@ -53,10 +53,11 @@ import static org.openspotlight.common.util.Exceptions.catchAndLog;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLGraphFactoryImpl.SLGraphClosingListener;
-import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.exception.SLGraphRuntimeException;
 import org.openspotlight.graph.persistence.SLPersistentTree;
-import org.openspotlight.graph.persistence.SLPersistentTreeException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+import org.openspotlight.security.SLInvalidCredentialException;
 import org.openspotlight.security.authz.Action;
 import org.openspotlight.security.authz.EnforcementContext;
 import org.openspotlight.security.authz.EnforcementException;
@@ -100,14 +101,10 @@ public class SLGraphImpl implements SLGraph {
      * @param policyEnforcement the policy enforcement
      * @param user the user
      * @param identityManager the identity manager
-     * @throws SLInvalidCredentialsException the SL invalid credentials exception
      */
     public SLGraphImpl(
                         final SLPersistentTree tree, final SLGraphClosingListener listener,
-                        final IdentityManager identityManager,
-                        final PolicyEnforcement policyEnforcement,
-                        final SystemUser user )
-        throws SLInvalidCredentialException {
+                        final IdentityManager identityManager, final PolicyEnforcement policyEnforcement, final SystemUser user ) {
         Assertions.checkNotNull("tree", tree);
         Assertions.checkNotNull("identityManager", identityManager);
         Assertions.checkNotNull("policyEnforcement", policyEnforcement);
@@ -118,97 +115,11 @@ public class SLGraphImpl implements SLGraph {
         }
 
         this.tree = tree;
-        this.graphState = GraphState.OPENED;
+        graphState = GraphState.OPENED;
         this.listener = listener;
         this.identityManager = identityManager;
         this.policyEnforcement = policyEnforcement;
         this.user = user;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void gc( AuthenticatedUser user,
-                    String repositoryName ) throws SLPersistentTreeException, SLInvalidCredentialException {
-        if (this.graphState != GraphState.SHUTDOWN) {
-
-            Assertions.checkNotNull("repositoryName", repositoryName);
-            Assertions.checkNotNull("user", user);
-
-            if (!this.identityManager.isValid(user)) {
-                throw new SLInvalidCredentialException("Invalid user.");
-            }
-
-            if (!hasPrivileges(user, repositoryName, Action.MANAGE)) {
-                throw new SLInvalidCredentialException("User does not have privilegies to manage repository.");
-            }
-
-            final SLPersistentTreeSession treeSession = this.tree.openSession(repositoryName);
-            if (SLCommonSupport.containsQueryCache(treeSession)) {
-                final SLPersistentNode pNode = SLCommonSupport.getQueryCacheNode(treeSession);
-                pNode.remove();
-            }
-            treeSession.close();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void gc( AuthenticatedUser user ) throws SLPersistentTreeException, SLInvalidCredentialException {
-        this.gc(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public GraphState getGraphState() {
-        return this.graphState;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public SLGraphSession openSession( AuthenticatedUser user,
-                                       String repositoryName ) throws SLGraphException, SLInvalidCredentialException {
-        if (this.graphState == GraphState.SHUTDOWN) {
-            throw new SLGraphException("Could not open SL graph session. Graph is already shutdown.");
-        }
-
-        Assertions.checkNotNull("repositoryName", repositoryName);
-        Assertions.checkNotNull("user", user);
-
-        if (!this.identityManager.isValid(user)) {
-            throw new SLInvalidCredentialException("Invalid user.");
-        }
-
-        if (!hasPrivileges(user, repositoryName, Action.READ)) {
-            throw new SLInvalidCredentialException("User does not have privilegies to access repository.");
-        }
-
-        try {
-            final SLPersistentTreeSession treeSession = this.tree.openSession(repositoryName);
-            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            return factory.createGraphSession(treeSession, policyEnforcement, user);
-        } catch (final Exception e) {
-            throw new SLGraphException("Could not open SL graph session.", e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public SLGraphSession openSession( AuthenticatedUser user ) throws SLGraphException, SLInvalidCredentialException {
-        return this.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void shutdown() {
-        this.tree.shutdown();
-        this.graphState = GraphState.SHUTDOWN;
-        this.listener.graphClosed(this);
     }
 
     /**
@@ -226,10 +137,10 @@ public class SLGraphImpl implements SLGraph {
      * @param action the action
      * @return true, if successful
      */
-    private boolean hasPrivileges( AuthenticatedUser user,
-                                   String repositoryName,
-                                   Action action ) {
-        EnforcementContext enforcementContext = new EnforcementContext();
+    private boolean hasPrivileges( final AuthenticatedUser user,
+                                   final String repositoryName,
+                                   final Action action ) {
+        final EnforcementContext enforcementContext = new EnforcementContext();
         enforcementContext.setAttribute("user", user);
         enforcementContext.setAttribute("graphElement", GraphElement.REPOSITORY);
         enforcementContext.setAttribute("repository", repositoryName);
@@ -237,14 +148,52 @@ public class SLGraphImpl implements SLGraph {
         enforcementContext.setAttribute("graph", this);
 
         try {
-            EnforcementResponse response = policyEnforcement.checkAccess(enforcementContext);
+            final EnforcementResponse response = policyEnforcement.checkAccess(enforcementContext);
             if (response.equals(EnforcementResponse.GRANTED)) {
                 return true;
             }
             return false;
-        } catch (EnforcementException e) {
+        } catch (final EnforcementException e) {
             catchAndLog(e);
             return false;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLGraphSession openSession( final AuthenticatedUser user,
+                                       final String repositoryName ) throws SLGraphException {
+        if (graphState == GraphState.SHUTDOWN) {
+            throw new SLGraphException("Could not open graph session. Graph is shutdown.");
+        }
+
+        Assertions.checkNotNull("repositoryName", repositoryName);
+        Assertions.checkNotNull("user", user);
+
+        if (!identityManager.isValid(user)) {
+            throw new SLInvalidCredentialException("Invalid user.");
+        }
+
+        if (!hasPrivileges(user, repositoryName, Action.READ)) {
+            throw new SLInvalidCredentialException("User does not have privilegies to access repository.");
+        }
+
+        try {
+            final SLPersistentTreeSession treeSession = tree.openSession(repositoryName);
+            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
+            return factory.createGraphSession(treeSession, policyEnforcement, user);
+        } catch (final Exception e) {
+            throw new SLGraphRuntimeException("Could not open graph session.", e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void shutdown() {
+        tree.shutdown();
+        graphState = GraphState.SHUTDOWN;
+        listener.graphClosed(this);
     }
 }

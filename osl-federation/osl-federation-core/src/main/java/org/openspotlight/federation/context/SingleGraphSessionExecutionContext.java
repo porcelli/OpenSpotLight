@@ -49,42 +49,42 @@
 package org.openspotlight.federation.context;
 
 import org.openspotlight.common.DisposingListener;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
- * This class is an {@link ExecutionContext} which initialize all resources in a
- * lazy way, and also close it in a lazy way also.
+ * This class is an {@link ExecutionContext} which initialize all resources in a lazy way, and also close it in a lazy way also.
  * 
  * @author feu
- * 
  */
 public class SingleGraphSessionExecutionContext extends DefaultExecutionContext {
 
-	private final AuthenticatedUser user;
-	private final SLGraphSession uniqueGraphSession;
+    private final AuthenticatedUser user;
+    private final SLGraphSession    uniqueGraphSession;
 
-	SingleGraphSessionExecutionContext(final String username,
-			final String password, final JcrConnectionDescriptor descriptor,
-			final String repositoryName,
-			final DisposingListener<DefaultExecutionContext> listener,
-			final AuthenticatedUser user,
-			final SLGraphSession uniqueGraphSession) {
-		super(username, password, descriptor, repositoryName, listener);
-		this.uniqueGraphSession = uniqueGraphSession;
-		this.user = user;
+    SingleGraphSessionExecutionContext(
+                                        final String username, final String password, final JcrConnectionDescriptor descriptor,
+                                        final Repository repository, final DisposingListener<DefaultExecutionContext> listener,
+                                        final AuthenticatedUser user, final SLGraphSession uniqueGraphSession,
+                                        SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider ) {
+        super(username, password, descriptor, listener, repository, simplePersistFactory, detailedLoggerProvider);
+        this.uniqueGraphSession = uniqueGraphSession;
+        this.user = user;
 
-	}
+    }
 
-	@Override
-	public SLGraphSession getGraphSession() {
-		return uniqueGraphSession;
-	}
+    @Override
+    public SLGraphSession getGraphSession() {
+        return uniqueGraphSession;
+    }
 
-	@Override
-	public AuthenticatedUser getUser() {
-		return user;
-	}
+    @Override
+    public AuthenticatedUser getUser() {
+        return user;
+    }
 
 }

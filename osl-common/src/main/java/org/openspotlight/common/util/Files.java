@@ -72,7 +72,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
  * Helper class to deal with multiple files.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * @author Vitor Hugo Chagas
  */
@@ -80,7 +80,7 @@ public class Files {
 
     /**
      * Delete multiple files.
-     *
+     * 
      * @param path the path
      * @throws SLException the SL exception
      */
@@ -102,7 +102,7 @@ public class Files {
 
     /**
      * Delete multiple files.
-     *
+     * 
      * @param path the path
      * @throws SLException the SL exception
      */
@@ -114,7 +114,7 @@ public class Files {
 
     /**
      * Deletes directory in a recursive way, first excluding its contents.
-     *
+     * 
      * @param dir the dir
      * @throws Exception the exception
      */
@@ -135,7 +135,7 @@ public class Files {
 
     /**
      * Delete a file itself.
-     *
+     * 
      * @param file the file
      */
     private static void deleteFile( final File file ) {
@@ -145,7 +145,7 @@ public class Files {
 
     /**
      * Returns the normalized path (in a unix like way).
-     *
+     * 
      * @param f the f
      * @return a normalized file name
      */
@@ -159,7 +159,7 @@ public class Files {
 
     /**
      * Execute the file listing using recursion to fill the file name set.
-     *
+     * 
      * @param setOfFiles the set of files
      * @param basePath the base path
      * @param file the file
@@ -185,16 +185,19 @@ public class Files {
 
     /**
      * Returns a relative path list from an initial directory, or the file path itself if the initialPath is a file.
-     *
+     * 
      * @param basePath the base path
      * @return a relative path list
      * @throws SLException the SL exception
      */
-    public static Set<String> listFileNamesFrom( final String basePath ) throws SLException {
+    public static Set<String> listFileNamesFrom( final String basePath,
+                                                 final boolean silent ) throws SLException {
         checkNotEmpty("basePath", basePath); //$NON-NLS-1$
         final File basePathAsFile = new File(basePath);
-        checkCondition("basePathExists", basePathAsFile.exists()); //$NON-NLS-1$
-        checkCondition("basePathIsDirectory", basePathAsFile.isDirectory()); //$NON-NLS-1$
+        if (!silent) {
+            checkCondition("basePathExists:" + basePath, basePathAsFile.exists()); //$NON-NLS-1$
+            checkCondition("basePathIsDirectory", basePathAsFile.isDirectory()); //$NON-NLS-1$
+        }
         try {
             String normalizedBasePath = getNormalizedFileName(basePathAsFile);
             if (!normalizedBasePath.endsWith("/")) { //$NON-NLS-1$
@@ -211,7 +214,7 @@ public class Files {
 
     /**
      * Reads an streams content and writes it on a byte array.
-     *
+     * 
      * @param inputStream the input stream
      * @return the stream content as bytes
      * @throws SLException the SL exception
@@ -232,7 +235,7 @@ public class Files {
 
     /**
      * Reads text file lines.
-     *
+     * 
      * @param inputStream
      * @return collection of string lines.
      * @throws SLException

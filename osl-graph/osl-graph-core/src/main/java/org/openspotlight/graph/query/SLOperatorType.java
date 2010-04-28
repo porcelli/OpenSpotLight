@@ -54,12 +54,12 @@ package org.openspotlight.graph.query;
  * @author Vitor Hugo Chagas
  */
 public interface SLOperatorType {
-	
-	/**
-	 * Symbol.
-	 * 
-	 * @return the string
-	 */
-	public String symbol();
+
+    /**
+     * Symbol.
+     * 
+     * @return the string
+     */
+    public String symbol();
 
 }

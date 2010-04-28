@@ -55,15 +55,16 @@ package org.openspotlight.graph.persistence;
  */
 public class SLPersistentPropertyNotFoundException extends SLPersistentTreeSessionException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL persistent property not found exception.
-	 * 
-	 * @param name the name
-	 */
-	public SLPersistentPropertyNotFoundException(String name) {
-		super("Persistent property " + name + " not found.");
-	}
+    /**
+     * Instantiates a new sL persistent property not found exception.
+     * 
+     * @param name the name
+     */
+    public SLPersistentPropertyNotFoundException(
+                                                  String name ) {
+        super("Persistent property " + name + " not found.");
+    }
 }

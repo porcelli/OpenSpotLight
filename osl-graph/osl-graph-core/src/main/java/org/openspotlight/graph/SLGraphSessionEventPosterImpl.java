@@ -50,15 +50,36 @@ package org.openspotlight.graph;
 
 import java.util.Collection;
 
+import org.openspotlight.common.concurrent.Lock;
+import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.event.SLGraphSessionEvent;
+import org.openspotlight.graph.event.SLGraphSessionEventListener;
+import org.openspotlight.graph.event.SLGraphSessionEventPoster;
+import org.openspotlight.graph.event.SLGraphSessionSaveEvent;
+import org.openspotlight.graph.event.SLLinkAddedEvent;
+import org.openspotlight.graph.event.SLLinkPropertySetEvent;
+import org.openspotlight.graph.event.SLLinkRemovedEvent;
+import org.openspotlight.graph.event.SLNodeAddedEvent;
+import org.openspotlight.graph.event.SLNodePropertyEvent;
+import org.openspotlight.graph.event.SLNodePropertyRemovedEvent;
+import org.openspotlight.graph.event.SLNodePropertySetEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The Class SLGraphSessionEventPosterImpl.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster {
+public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster, LockContainer {
+
+    private final Lock                                    lock;
 
     /** The listeners. */
     private final Collection<SLGraphSessionEventListener> listeners;
+
+    private final Logger                                  logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Instantiates a new sL graph session event poster impl.
@@ -66,88 +87,46 @@ public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster 
      * @param listeners the listeners
      */
     SLGraphSessionEventPosterImpl(
-                                   final Collection<SLGraphSessionEventListener> listeners ) {
+                                   final Collection<SLGraphSessionEventListener> listeners, final LockContainer parent ) {
         this.listeners = listeners;
+        lock = parent.getLockObject();
     }
 
     // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-     * .graph.SLGraphSessionEvent)
-     */
-    public void post( final SLGraphSessionEvent event ) throws SLGraphSessionException, SLInvalidCredentialException {
-        if (event.getType() == SLGraphSessionEvent.TYPE_BEFORE_SAVE) {
-            for (final SLGraphSessionEventListener listener : this.listeners) {
-                listener.beforeSave(event);
-            }
-        }
+    public Lock getLockObject() {
+        return lock;
     }
 
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-     * .graph.SLLinkEvent)
+    /**
+     * {@inheritDoc}
      */
-    public void post( final SLLinkEvent event ) throws SLGraphSessionException {
-        for (final SLGraphSessionEventListener listener : this.listeners) {
-            if (event.getType() == SLLinkEvent.TYPE_LINK_ADDED) {
-                listener.linkAdded(event);
-            } else if (event.getType() == SLLinkEvent.TYPE_LINK_REMOVED) {
-                listener.linkRemoved(event);
-            }
-        }
-    }
+    public void post( final SLGraphSessionEvent event ) {
+        synchronized (lock) {
+            for (final SLGraphSessionEventListener listener : listeners) {
+                if (event instanceof SLGraphSessionSaveEvent) {
+                    listener.beforeSave((SLGraphSessionSaveEvent)event);
+                } else if (event instanceof SLLinkAddedEvent) {
+                    listener.linkAdded((SLLinkAddedEvent)event);
+                } else if (event instanceof SLLinkRemovedEvent) {
+                    listener.linkRemoved((SLLinkRemovedEvent)event);
+                } else if (event instanceof SLLinkPropertySetEvent) {
+                    listener.linkPropertySet((SLLinkPropertySetEvent)event);
+                } else if (event instanceof SLNodeAddedEvent) {
+                    listener.nodeAdded((SLNodeAddedEvent)event);
+                } else if (event instanceof SLNodePropertySetEvent) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Graph node property setted " + ((SLNodePropertyEvent)event).getPropertyName());
+                    }
+                    listener.nodePropertySet((SLNodePropertySetEvent)event);
+                } else if (event instanceof SLNodePropertyRemovedEvent) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Graph property removed " + ((SLNodePropertyEvent)event).getPropertyName());
+                    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-     * .graph.SLLinkPropertyEvent)
-     */
-    public void post( final SLLinkPropertyEvent event ) throws SLGraphSessionException {
-        for (final SLGraphSessionEventListener listener : this.listeners) {
-            if (event.getType() == SLLinkPropertyEvent.TYPE_LINK_PROPERTY_SET) {
-                listener.linkPropertySet(event);
-            }
-        }
-    }
-
-    // @Override
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-     * .graph.SLNodeEvent)
-     */
-    public void post( final SLNodeEvent event ) throws SLGraphSessionException {
-        for (final SLGraphSessionEventListener listener : this.listeners) {
-            if (event.getType() == SLNodeEvent.TYPE_NODE_ADDED) {
-                listener.nodeAdded(event);
-            }
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.openspotlight.graph.SLGraphSessionEventPoster#post(org.openspotlight
-     * .graph.SLNodePropertyEvent)
-     */
-    public void post( final SLNodePropertyEvent event ) throws SLGraphSessionException {
-        for (final SLGraphSessionEventListener listener : this.listeners) {
-            if (event.getType() == SLNodePropertyEvent.TYPE_NODE_PROPERTY_SET) {
-                listener.nodePropertySet(event);
-            } else if (event.getType() == SLNodePropertyEvent.TYPE_NODE_PROPERTY_REMOVED) {
-                listener.nodePropertyRemoved(event);
+                    listener.nodePropertyRemoved((SLNodePropertyRemovedEvent)event);
+                } else {
+                    throw Exceptions.logAndReturn(new IllegalArgumentException("Unhandled event class"));
+                }
             }
         }
     }
@@ -156,8 +135,10 @@ public class SLGraphSessionEventPosterImpl implements SLGraphSessionEventPoster 
      * {@inheritDoc}
      */
     public void sessionCleaned() {
-        for (final SLGraphSessionEventListener listener : this.listeners) {
-            listener.sessionCleaned();
+        synchronized (lock) {
+            for (final SLGraphSessionEventListener listener : listeners) {
+                listener.sessionCleaned();
+            }
         }
     }
 }

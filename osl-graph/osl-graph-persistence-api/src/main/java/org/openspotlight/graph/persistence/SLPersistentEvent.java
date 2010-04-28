@@ -54,34 +54,35 @@ package org.openspotlight.graph.persistence;
  * @author Vitor Hugo Chagas
  */
 public class SLPersistentEvent {
-	
-	/** The type. */
-	private int type;
-	
-	/**
-	 * Instantiates a new sL persistent event.
-	 * 
-	 * @param type the type
-	 */
-	public SLPersistentEvent(int type) {
-		this.type = type;
-	}
 
-	/**
-	 * Gets the type.
-	 * 
-	 * @return the type
-	 */
-	public int getType() {
-		return type;
-	}
+    /** The type. */
+    private int type;
 
-	/**
-	 * Sets the type.
-	 * 
-	 * @param type the new type
-	 */
-	public void setType(int type) {
-		this.type = type;
-	}
+    /**
+     * Instantiates a new sL persistent event.
+     * 
+     * @param type the type
+     */
+    public SLPersistentEvent(
+                              int type ) {
+        this.type = type;
+    }
+
+    /**
+     * Gets the type.
+     * 
+     * @return the type
+     */
+    public int getType() {
+        return type;
+    }
+
+    /**
+     * Sets the type.
+     * 
+     * @param type the new type
+     */
+    public void setType( int type ) {
+        this.type = type;
+    }
 }

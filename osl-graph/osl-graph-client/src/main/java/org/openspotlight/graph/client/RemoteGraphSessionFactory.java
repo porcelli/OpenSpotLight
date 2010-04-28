@@ -115,23 +115,26 @@ public class RemoteGraphSessionFactory {
         }
 
         public String getHost() {
-            return this.host;
+            return host;
         }
 
         public String getPassword() {
-            return this.password;
+            return password;
         }
 
         public int getPort() {
-            return this.port;
+            return port;
         }
 
         public String getUserName() {
-            return this.userName;
+            return userName;
         }
     }
 
-    public static final int           DEFAULT_PORT = 9876;
+    public static final int           DEFAULT_PORT                   = 7070;
+
+    public static final long          DEFAULT_TIMOUT_IN_MILLISECONDS = 10 * 60 * 1000; // 10
+    // minutes
 
     /** The remote object factory. */
     private final RemoteObjectFactory remoteObjectFactory;
@@ -147,8 +150,8 @@ public class RemoteGraphSessionFactory {
     public RemoteGraphSessionFactory(
                                       final RemoteGraphFactoryConnectionData connectionData )
         throws CantConnectException, AccessDeniedException {
-        this.remoteObjectFactory = new RemoteObjectFactory(connectionData.getHost(), connectionData.getPort(),
-                                                           connectionData.getUserName(), connectionData.getPassword());
+        remoteObjectFactory = new RemoteObjectFactory(connectionData.getHost(), connectionData.getPort(),
+                                                      connectionData.getUserName(), connectionData.getPassword());
     }
 
     /**
@@ -157,9 +160,10 @@ public class RemoteGraphSessionFactory {
      * @return the SL graph session
      */
     public SLGraphSession createRemoteGraphSession( final String username,
-                                                    final String password ) {
+                                                    final String password,
+                                                    final String repository ) {
         try {
-            return this.remoteObjectFactory.createRemoteObject(SLGraphSession.class, username, password);
+            return remoteObjectFactory.createRemoteObject(SLGraphSession.class, username, password, repository);
         } catch (final InvalidReferenceTypeException e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }

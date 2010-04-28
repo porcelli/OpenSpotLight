@@ -49,7 +49,6 @@
 package org.openspotlight.graph.query.console.command.dynamic;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -60,9 +59,7 @@ import jline.ConsoleReader;
 import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.graph.query.console.ConsoleState;
@@ -104,7 +101,7 @@ public class QueryCommand implements DynamicCommand {
             } else {
                 lastQuery = state.getInput();
             }
-            //execute query here
+            // execute query here
             executeQuery(reader, out, state, lastQuery, outputFileName);
             state.setLastQuery(lastQuery);
             state.clearBuffer();
@@ -160,13 +157,7 @@ public class QueryCommand implements DynamicCommand {
             } else if (slqlText.getVariables() == null) {
                 out.println("ERROR: can't execute queries with variables.");
             }
-        } catch (SLGraphSessionException e) {
-            out.print("ERROR: ");
-            out.println(e.getMessage());
-        } catch (SLInvalidQuerySyntaxException e) {
-            out.print("ERROR: ");
-            out.println(e.getMessage());
-        } catch (IOException e) {
+        } catch (Throwable e) {
             out.print("ERROR: ");
             out.println(e.getMessage());
         }
@@ -179,13 +170,13 @@ public class QueryCommand implements DynamicCommand {
      * @param nodes the nodes
      * @param additionalProperties the additional properties
      * @return the string
-     * @throws SLGraphSessionException the SL graph session exception
      */
     protected String generateOutput( Collection<SLNode> nodes,
-                                     Collection<String> additionalProperties ) throws SLGraphSessionException {
+                                     Collection<String> additionalProperties ) {
         StringBuilder buffer = new StringBuilder();
-        //Header
-        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1), "\n");
+        // Header
+        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1),
+                                 "\n");
         StringBuilderUtil.append(buffer, "|", StringUtils.center("type name", COLUMN_SIZE + 2), "|");
         StringBuilderUtil.append(buffer, StringUtils.center("name", COLUMN_SIZE + 2), "|");
         StringBuilderUtil.append(buffer, StringUtils.center("parent name", COLUMN_SIZE + 2), "|");
@@ -193,7 +184,8 @@ public class QueryCommand implements DynamicCommand {
             StringBuilderUtil.append(buffer, StringUtils.center(property, COLUMN_SIZE + 2), "|");
         }
         StringBuilderUtil.append(buffer, "\n");
-        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1), "\n");
+        StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1),
+                                 "\n");
         if (!nodes.isEmpty()) {
             for (SLNode node : nodes) {
                 List<String> output = new LinkedList<String>();

@@ -48,9 +48,7 @@
  */
 package org.openspotlight.graph.query.console.test.domain;
 
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLProperty;
 
 /**
  * The Interface JavaPackage.
@@ -58,24 +56,5 @@ import org.openspotlight.graph.annotation.SLProperty;
  * @author Vitor Hugo Chagas
  */
 public interface JavaPackage extends SLNode {
-	
-	/**
-	 * Gets the caption.
-	 * 
-	 * @return the caption
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	@SLProperty
-	public String getCaption() throws SLGraphSessionException;
-	
-	/**
-	 * Sets the caption.
-	 * 
-	 * @param caption the new caption
-	 * 
-	 * @throws SLGraphSessionException the SL graph session exception
-	 */
-	public void setCaption(String caption) throws SLGraphSessionException;
 
 }

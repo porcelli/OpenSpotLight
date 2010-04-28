@@ -24,13 +24,28 @@
 			<artifactId>hamcrest-library</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-jcr</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-persistence-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>google</groupId>
+            <artifactId>collect</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-persistence-redis</artifactId>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-common</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.jcr</groupId>
+                    <artifactId>jcr</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>

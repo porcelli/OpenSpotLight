@@ -48,75 +48,85 @@
  */
 package org.openspotlight.federation.context;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import com.google.inject.Inject;
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 
-public class SingleGraphSessionExecutionContextFactory implements
-		ExecutionContextFactory, DisposingListener<DefaultExecutionContext> {
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-	public static ExecutionContextFactory createFactory() {
-		return new SingleGraphSessionExecutionContextFactory();
-	}
+public class SingleGraphSessionExecutionContextFactory
+    implements ExecutionContextFactory, DisposingListener<DefaultExecutionContext> {
 
-	private final CopyOnWriteArrayList<SingleGraphSessionExecutionContext> openedContexts = new CopyOnWriteArrayList<SingleGraphSessionExecutionContext>();
-	private AuthenticatedUser user;
+    private final CopyOnWriteArrayList<SingleGraphSessionExecutionContext> openedContexts = new CopyOnWriteArrayList<SingleGraphSessionExecutionContext>();
+    private AuthenticatedUser                                              user;
 
-	private final ConcurrentHashMap<String, SLGraphSession> sessionMap = new ConcurrentHashMap<String, SLGraphSession>();
+    private final ConcurrentHashMap<String, SLGraphSession>                sessionMap     = new ConcurrentHashMap<String, SLGraphSession>();
 
-	private SingleGraphSessionExecutionContextFactory() {
-	}
+    private final SimplePersistFactory                                     simplePersistFactory;
 
-	public synchronized void closeResources() {
-		for (final SingleGraphSessionExecutionContext openedContext : openedContexts) {
-			openedContext.closeResources();
-		}
-		for (final SLGraphSession session : sessionMap.values()) {
-			session.close();
-		}
-	}
+    private final DetailedLoggerProvider                                   detailedLoggerProvider;
 
-	public synchronized ExecutionContext createExecutionContext(
-			final String username, final String password,
-			final JcrConnectionDescriptor descriptor,
-			final String repositoryName) {
+    @Inject
+    public SingleGraphSessionExecutionContextFactory(
+                                                      SimplePersistFactory simplePersistFactory,
+                                                      DetailedLoggerProvider detailedLoggerProvider ) {
+        this.simplePersistFactory = simplePersistFactory;
+        this.detailedLoggerProvider = detailedLoggerProvider;
+    }
 
-		try {
-			SLGraphSession graphSession = sessionMap.get(repositoryName);
-			if (user == null || graphSession == null) {
-				final SecurityFactory securityFactory = AbstractFactory
-						.getDefaultInstance(SecurityFactory.class);
-				final User simpleUser = securityFactory.createUser(username);
-				user = securityFactory.createIdentityManager(descriptor)
-						.authenticate(simpleUser, password);
-				final SLGraph graph = AbstractFactory.getDefaultInstance(
-						SLGraphFactory.class).createGraph(descriptor);
-				graphSession = graph.openSession(user, repositoryName);
-				sessionMap.put(repositoryName, graphSession);
-			}
-			final SingleGraphSessionExecutionContext newContext = new SingleGraphSessionExecutionContext(
-					username, password, descriptor, repositoryName, this, user,
-					graphSession);
-			openedContexts.add(newContext);
-			return newContext;
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
-	}
+    public synchronized void closeResources() {
+        for (final SingleGraphSessionExecutionContext openedContext : openedContexts) {
+            openedContext.closeResources();
+        }
+        for (final SLGraphSession session : sessionMap.values()) {
+            session.close();
+        }
+        sessionMap.clear();
+    }
 
-	public void didCloseResource(final DefaultExecutionContext context) {
-		openedContexts.remove(context);
-	}
+    public synchronized ExecutionContext createExecutionContext( final String username,
+                                                                 final String password,
+                                                                 final JcrConnectionDescriptor descriptor,
+                                                                 final Repository repository ) {
+
+        try {
+            SLGraphSession graphSession = sessionMap.get(repository.getName());
+            if (user == null || graphSession == null) {
+                final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+                final User simpleUser = securityFactory.createUser(username);
+                user = securityFactory.createIdentityManager(descriptor).authenticate(simpleUser, password);
+                final SLGraph graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(descriptor);
+                graphSession = graph.openSession(user, repository.getName());
+                sessionMap.put(repository.getName(), graphSession);
+            }
+            final SingleGraphSessionExecutionContext newContext = new SingleGraphSessionExecutionContext(username, password,
+                                                                                                         descriptor, repository,
+                                                                                                         this, user,
+                                                                                                         graphSession,
+                                                                                                         simplePersistFactory,
+                                                                                                         detailedLoggerProvider);
+            openedContexts.add(newContext);
+            return newContext;
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    public void didCloseResource( final DefaultExecutionContext context ) {
+        openedContexts.remove(context);
+    }
 
 }

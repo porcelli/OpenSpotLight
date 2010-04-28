@@ -63,11 +63,10 @@ import org.junit.Test;
 
 /**
  * Test class for {@link Dates}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DatesTest {
 
     @Test
@@ -82,8 +81,7 @@ public class DatesTest {
 
     @Test
     public void shouldGetTheDateTimeWhenStringIsValid() {
-        assertThat(
-                dateTimeFromString("2008-12-01 12:22:33"), is(notNullValue())); //$NON-NLS-1$
+        assertThat(dateTimeFromString("2008-12-01 12:22:33"), is(notNullValue())); //$NON-NLS-1$
     }
 
     @Test
@@ -91,7 +89,7 @@ public class DatesTest {
         assertThat(dateFromString("2008-12-01"), is(notNullValue())); //$NON-NLS-1$
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test( expected = IllegalArgumentException.class )
     public void shouldThrowExceptionGettingDateWithInvalidString() {
         dateFromString("Invalid string"); //$NON-NLS-1$
     }

@@ -49,24 +49,36 @@
 package org.openspotlight.persist.test;
 
 import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class PropertyObj implements SimpleNodeType {
+    private String uuid;
+
     private String name;
 
     private int    value;
 
     public String getName() {
-        return this.name;
+        return name;
+    }
+
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
     }
 
     @KeyProperty
     public int getValue() {
-        return this.value;
+        return value;
     }
 
     public void setName( final String name ) {
         this.name = name;
+    }
+
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
     }
 
     public void setValue( final int value ) {

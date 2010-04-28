@@ -1,103 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.openspotlight</groupId>
-		<artifactId>osl-federation</artifactId>
-		<version>0.7-SNAPSHOT</version>
-		<relativePath>../..</relativePath>
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.openspotlight</groupId>
+        <artifactId>osl-federation</artifactId>
+        <version>0.7-SNAPSHOT</version>
+        <relativePath>../..</relativePath>
+    </parent>
 
-	<artifactId>osl-federation-database-loader</artifactId>
-	<packaging>jar</packaging>
-	<name>OpenSpotLight Federation Database Loader</name>
+    <artifactId>osl-federation-database-loader</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenSpotLight Federation Database Loader</name>
 
-	<dependencies>
-		<!-- Internal dependencies -->
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-core</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<!-- Test dependencies -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- h2 for sql92 tests -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>antlr</groupId>
-			<artifactId>stringtemplate</artifactId>
-		</dependency>
-		<!-- xml easy manipulation -->
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-		</dependency>
-	</dependencies>
-	<profiles>
-		<profile>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-				<property>
-					<name>runDatabaseVendorTests</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<id>withDatabaseVendorTests</id>
-			<dependencies>
-				<!-- 
-			      Databases and JDBC Drivers
-			    -->
-				<dependency>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc5</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>net.sourceforge.jtds</groupId>
-					<artifactId>jtds</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>com.ibm</groupId>
-					<artifactId>db2jcc</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>com.ibm</groupId>
-					<artifactId>db2jcc_license_cu</artifactId>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>postgresql</groupId>
-					<artifactId>postgresql</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
+    <dependencies>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-federation-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-persistence-redis</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- h2 for sql92 tests -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- xml easy manipulation -->
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>
+    </dependencies>
+    <profiles>
+        <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>runDatabaseVendorTests</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <id>withDatabaseVendorTests</id>
+            <dependencies>
+                <!--
+                      Databases and JDBC Drivers
+                    -->
+                <dependency>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>ojdbc5</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>net.sourceforge.jtds</groupId>
+                    <artifactId>jtds</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.ibm</groupId>
+                    <artifactId>db2jcc</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.ibm</groupId>
+                    <artifactId>db2jcc_license_cu</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>

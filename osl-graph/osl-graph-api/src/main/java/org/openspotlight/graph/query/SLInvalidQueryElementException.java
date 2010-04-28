@@ -48,43 +48,47 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.graph.exception.SLGraphException;
+
 /**
  * The Class SLInvalidQueryElementException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLInvalidQueryElementException extends SLQueryException {
+public class SLInvalidQueryElementException extends SLGraphException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL invalid query element exception.
-	 * 
-	 * @param message the message
-	 * @param cause the cause
-	 */
-	public SLInvalidQueryElementException(String message, Throwable cause) {
-		super(message, cause);
-	}
-	
-	/**
-	 * Instantiates a new sL invalid query element exception.
-	 * 
-	 * @param message the message
-	 */
-	public SLInvalidQueryElementException(String message) {
-		super(message);
-	}
-	
-	/**
-	 * Instantiates a new sL invalid query element exception.
-	 * 
-	 * @param cause the cause
-	 */
-	public SLInvalidQueryElementException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Instantiates a new sL invalid query element exception.
+     * 
+     * @param message the message
+     * @param cause the cause
+     */
+    public SLInvalidQueryElementException(
+                                           String message, Throwable cause ) {
+        super(message, cause);
+    }
 
+    /**
+     * Instantiates a new sL invalid query element exception.
+     * 
+     * @param message the message
+     */
+    public SLInvalidQueryElementException(
+                                           String message ) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new sL invalid query element exception.
+     * 
+     * @param cause the cause
+     */
+    public SLInvalidQueryElementException(
+                                           Throwable cause ) {
+        super(cause);
+    }
 
 }

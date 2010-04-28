@@ -55,15 +55,16 @@ package org.openspotlight.graph.persistence;
  */
 public class SLPersistentNodeAlreadyExistsException extends SLPersistentTreeSessionException {
 
-	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 1L;
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Instantiates a new sL persistent node already exists exception.
-	 * 
-	 * @param name the name
-	 */
-	public SLPersistentNodeAlreadyExistsException(String name) {
-		super("Persistent node " + name + " already exists.");
-	}
+    /**
+     * Instantiates a new sL persistent node already exists exception.
+     * 
+     * @param name the name
+     */
+    public SLPersistentNodeAlreadyExistsException(
+                                                   String name ) {
+        super("Persistent node " + name + " already exists.");
+    }
 }

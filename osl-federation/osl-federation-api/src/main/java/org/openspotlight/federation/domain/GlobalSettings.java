@@ -50,9 +50,12 @@ package org.openspotlight.federation.domain;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
@@ -60,112 +63,86 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 /**
  * The Class Configuration.
  */
-@Name("configuration")
+@Name( "configuration" )
 public class GlobalSettings implements SimpleNodeType, Serializable {
 
-	private static final long serialVersionUID = 3443359462450366393L;
+    private static final long                          serialVersionUID = 3443359462450366393L;
 
-	private Class<? extends ArtifactFinderRegistry> artifactFinderRegistryClass;
+    private Set<Class<? extends OriginArtifactLoader>> loaderRegistry   = new HashSet<Class<? extends OriginArtifactLoader>>();
 
-	@SuppressWarnings("unchecked")
-	private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
+    public Set<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
+        return loaderRegistry;
+    }
 
-	private long defaultSleepingIntervalInMilliseconds;
+    public void setLoaderRegistry( Set<Class<? extends OriginArtifactLoader>> loaderRegistry ) {
+        this.loaderRegistry = loaderRegistry;
+    }
 
-	/** The number of parallel threads. */
-	private int numberOfParallelThreads;
+    @SuppressWarnings( "unchecked" )
+    private Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap = new HashMap<Class<? extends Schedulable>, Class<? extends SchedulableCommand>>();
 
-	/** The max result list size. */
-	private int maxResultListSize;
+    private long                                                                   defaultSleepingIntervalInMilliseconds;
 
-	private String systemUser;
+    /** The max result list size. */
+    private int                                                                    maxResultListSize;
 
-	private String systemPassword;
+    private String                                                                 systemUser;
 
-	public GlobalSettings() {
-	}
+    private String                                                                 systemPassword;
 
-	public Class<? extends ArtifactFinderRegistry> getArtifactFinderRegistryClass() {
-		return artifactFinderRegistryClass;
-	}
+    public GlobalSettings() {
+    }
 
-	public long getDefaultSleepingIntervalInMilliseconds() {
-		return defaultSleepingIntervalInMilliseconds;
-	}
+    public long getDefaultSleepingIntervalInMilliseconds() {
+        return defaultSleepingIntervalInMilliseconds;
+    }
 
-	/**
-	 * Gets the max result list size.
-	 * 
-	 * @return the max result list size
-	 */
-	public int getMaxResultListSize() {
-		return maxResultListSize;
-	}
+    /**
+     * Gets the max result list size.
+     * 
+     * @return the max result list size
+     */
+    public int getMaxResultListSize() {
+        return maxResultListSize;
+    }
 
-	/**
-	 * Gets the number of parallel threads.
-	 * 
-	 * @return the number of parallel threads
-	 */
-	public int getNumberOfParallelThreads() {
-		return numberOfParallelThreads;
-	}
+    @SuppressWarnings( "unchecked" )
+    public Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> getSchedulableCommandMap() {
+        return schedulableCommandMap;
+    }
 
-	@SuppressWarnings("unchecked")
-	public Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> getSchedulableCommandMap() {
-		return schedulableCommandMap;
-	}
+    public String getSystemPassword() {
+        return systemPassword;
+    }
 
-	public String getSystemPassword() {
-		return systemPassword;
-	}
+    public String getSystemUser() {
+        return systemUser;
+    }
 
-	public String getSystemUser() {
-		return systemUser;
-	}
+    public void setDefaultSleepingIntervalInMilliseconds( final long defaultSleepingIntervalInMilliseconds ) {
+        this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
+    }
 
-	public void setArtifactFinderRegistryClass(
-			final Class<? extends ArtifactFinderRegistry> artifactFinderRegistryClass) {
-		this.artifactFinderRegistryClass = artifactFinderRegistryClass;
-	}
+    /**
+     * Sets the max result list size.
+     * 
+     * @param maxResultListSize the new max result list size
+     */
+    public void setMaxResultListSize( final int maxResultListSize ) {
+        this.maxResultListSize = maxResultListSize;
+    }
 
-	public void setDefaultSleepingIntervalInMilliseconds(
-			final long defaultSleepingIntervalInMilliseconds) {
-		this.defaultSleepingIntervalInMilliseconds = defaultSleepingIntervalInMilliseconds;
-	}
+    @SuppressWarnings( "unchecked" )
+    public void setSchedulableCommandMap( final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap ) {
+        this.schedulableCommandMap = schedulableCommandMap;
+    }
 
-	/**
-	 * Sets the max result list size.
-	 * 
-	 * @param maxResultListSize
-	 *            the new max result list size
-	 */
-	public void setMaxResultListSize(final int maxResultListSize) {
-		this.maxResultListSize = maxResultListSize;
-	}
+    public void setSystemPassword( final String systemPassword ) {
+        this.systemPassword = systemPassword;
+    }
 
-	/**
-	 * Sets the number of parallel threads.
-	 * 
-	 * @param numberOfParallelThreads
-	 *            the new number of parallel threads
-	 */
-	public void setNumberOfParallelThreads(final int numberOfParallelThreads) {
-		this.numberOfParallelThreads = numberOfParallelThreads;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void setSchedulableCommandMap(
-			final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> schedulableCommandMap) {
-		this.schedulableCommandMap = schedulableCommandMap;
-	}
-
-	public void setSystemPassword(final String systemPassword) {
-		this.systemPassword = systemPassword;
-	}
-
-	public void setSystemUser(final String systemUser) {
-		this.systemUser = systemUser;
-	}
+    public void setSystemUser( final String systemUser ) {
+        this.systemUser = systemUser;
+    }
 
 }

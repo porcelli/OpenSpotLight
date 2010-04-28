@@ -49,31 +49,44 @@
 package org.openspotlight.federation.context;
 
 import org.openspotlight.common.Disposable;
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.storage.STRepositoryPath;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 public interface ExecutionContext extends Disposable {
-	public <A extends Artifact> ArtifactFinder<A> getArtifactFinder(
-			Class<A> type);
+    public boolean artifactFinderSupportsThisType( Class<? extends Artifact> type );
 
-	public ConfigurationManager getDefaultConfigurationManager();
+    public PersistentArtifactManager getPersistentArtifactManager();
 
-	public JcrConnectionProvider getDefaultConnectionProvider();
+    public ConfigurationManager getDefaultConfigurationManager();
 
-	public SLGraphSession getGraphSession();
+    public JcrConnectionProvider getDefaultConnectionProvider();
 
-	public DetailedLogger getLogger();
+    public SLGraphSession getGraphSession();
 
-	public String getPassword();
+    public DetailedLogger getLogger();
 
-	public String getRepository();
+    public String getPassword();
 
-	public AuthenticatedUser getUser();
+    public String getRepository();
 
-	public String getUserName();
+    public AuthenticatedUser getUser();
+
+    public String getUserName();
+
+    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist( STPartition partition );
+
+    public STRepositoryPath getRepositoryPath();
+
+    public SimplePersistFactory getSimplePersistFactory();
 }

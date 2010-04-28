@@ -51,9 +51,12 @@ package org.openspotlight.persist.test;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class MapValueObj implements SimpleNodeType {
+    private String uuid;
+
     private String name;
 
     private int    value;
@@ -66,20 +69,29 @@ public class MapValueObj implements SimpleNodeType {
             return false;
         }
         final MapValueObj that = (MapValueObj)o;
-        return Equals.eachEquality(Arrays.of(this.name), Arrays.andOf(that.name));
+        return Equals.eachEquality(Arrays.of(name), Arrays.andOf(that.name));
     }
 
     @KeyProperty
     public String getName() {
-        return this.name;
+        return name;
+    }
+
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
     }
 
     public int getValue() {
-        return this.value;
+        return value;
     }
 
     public void setName( final String name ) {
         this.name = name;
+    }
+
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
     }
 
     public void setValue( final int value ) {

@@ -48,6 +48,8 @@
  */
 package org.openspotlight.federation.domain;
 
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+
 public class DnaSvnArtifactSource extends ArtifactSource {
     private static final long serialVersionUID = 780480895292133774L;
 

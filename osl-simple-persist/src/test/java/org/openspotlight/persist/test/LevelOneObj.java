@@ -52,9 +52,11 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelOneObj implements SimpleNodeType {
+    private String  uuid;
 
     private String  key;
 
@@ -70,21 +72,26 @@ public class LevelOneObj implements SimpleNodeType {
             return false;
         }
         final LevelOneObj that = (LevelOneObj)o;
-        return Equals.eachEquality(Arrays.of(this.rootObj, this.key), Arrays.andOf(that.rootObj, that.key));
+        return Equals.eachEquality(Arrays.of(rootObj, key), Arrays.andOf(that.rootObj, that.key));
     }
 
     @KeyProperty
     public String getKey() {
-        return this.key;
+        return key;
     }
 
     public String getProperty() {
-        return this.property;
+        return property;
     }
 
     @ParentProperty
     public RootObj getRootObj() {
-        return this.rootObj;
+        return rootObj;
+    }
+
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
     }
 
     public void setKey( final String key ) {
@@ -97,6 +104,10 @@ public class LevelOneObj implements SimpleNodeType {
 
     public void setRootObj( final RootObj rootObj ) {
         this.rootObj = rootObj;
+    }
+
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
     }
 
 }

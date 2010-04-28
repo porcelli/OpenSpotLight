@@ -56,7 +56,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.util.InvocationCacheFactory;
 
-
 @SuppressWarnings( "boxing" )
 public class InvocationCacheTest {
 

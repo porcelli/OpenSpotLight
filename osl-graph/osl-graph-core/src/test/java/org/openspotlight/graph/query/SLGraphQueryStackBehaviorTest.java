@@ -56,181 +56,144 @@ import static org.hamcrest.Matchers.not;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.openspotlight.graph.test.domain.JavaInterface;
-import org.openspotlight.graph.test.domain.JavaPackage;
-import org.openspotlight.graph.test.domain.JavaType;
-import org.openspotlight.graph.test.domain.PackageContainsType;
+import org.openspotlight.graph.test.domain.link.PackageContainsType;
+import org.openspotlight.graph.test.domain.node.JavaInterface;
+import org.openspotlight.graph.test.domain.node.JavaPackage;
+import org.openspotlight.graph.test.domain.node.JavaType;
 
 public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
 
-	/**
-	 * Instantiates a new sL graph query test.
-	 */
-	public SLGraphQueryStackBehaviorTest() {
-		LOGGER = Logger.getLogger(SLGraphQueryStackBehaviorTest.class);
-	}
+    /**
+     * Instantiates a new sL graph query test.
+     */
+    public SLGraphQueryStackBehaviorTest() {
+        LOGGER = Logger.getLogger(SLGraphQueryStackBehaviorTest.class);
+    }
 
-	/**
-	 * Instantiates a new sL graph query test.
-	 * 
-	 * @param session
-	 *            the session
-	 * @param sortMode
-	 *            the sort mode
-	 * @param printInfo
-	 *            the print info
-	 */
-	public SLGraphQueryStackBehaviorTest(final SLGraphSession sessionParam,
-			final SortMode sortModeParam, final boolean printInfoParam) {
-		session = sessionParam;
-		sortMode = sortModeParam;
-		printInfo = printInfoParam;
-		LOGGER = Logger.getLogger(SLGraphQueryStackBehaviorTest.class);
-	}
+    public SLGraphQueryStackBehaviorTest(
+                                          final SLGraphSession sessionParam, final SortMode sortModeParam,
+                                          final boolean printInfoParam ) {
+        session = sessionParam;
+        sortMode = sortModeParam;
+        printInfo = printInfoParam;
+        LOGGER = Logger.getLogger(SLGraphQueryStackBehaviorTest.class);
+    }
 
-	@Test
-	public void testVerifyWhereInStack() throws SLQueryException,
-			SLGraphSessionException, SLInvalidQuerySyntaxException {
+    @Test
+    public void testVerifyWhereInStack() throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
 
-		final SLQueryApi query2Input = session.createQueryApi();
+        final SLQueryApi query2Input = session.createQueryApi();
 
-		query2Input.select().type(JavaPackage.class.getName()).selectEnd()
-				.where().type(JavaPackage.class.getName()).each().property(
-						"caption").equalsTo().value("java.util").typeEnd()
-				.whereEnd();
+        query2Input.select().type(JavaPackage.class.getName()).selectEnd().where().type(JavaPackage.class.getName()).each().property(
+                                                                                                                                     "caption").equalsTo().value(
+                                                                                                                                                                 "java.util").typeEnd().whereEnd();
 
-		final SLQueryResult inputResult = query2Input.execute(sortMode, true);
-		final NodeWrapper[] inputWrappers = wrapNodes(inputResult.getNodes());
+        final SLQueryResult inputResult = query2Input.execute(sortMode, true);
+        final NodeWrapper[] inputWrappers = wrapNodes(inputResult.getNodes());
 
-		new AssertResult() {
-			public void execute() {
-				assertThat(inputWrappers.length, is(1));
-				assertThat(new NodeWrapper(
-						org.openspotlight.graph.test.domain.JavaPackage.class
-								.getName(), "queryTest", "java.util"),
-						is(inputWrappers[0]));
-			}
-		}.execute();
+        new AssertResult() {
+            public void execute() {
+                assertThat(inputWrappers.length, is(1));
+                assertThat(new NodeWrapper(JavaPackage.class.getName(), "queryTest", "java.util"), is(inputWrappers[0]));
+            }
+        }.execute();
 
-		printInfo = true;
-		printResult(inputResult.getNodes());
+        printInfo = true;
+        printResult(inputResult.getNodes());
 
-		final SLQueryApi query = session.createQueryApi();
+        final SLQueryApi query = session.createQueryApi();
 
-		query.select().type(JavaInterface.class.getName()).comma().byLink(
-				PackageContainsType.class.getName()).b().selectEnd().select()
-				.allTypes().selectEnd().where().type(JavaType.class.getName())
-				.subTypes().each().property("caption").contains().value("Map")
-				.typeEnd().whereEnd();
+        query.select().type(JavaInterface.class.getName()).comma().byLink(PackageContainsType.class.getName()).b().selectEnd().select().allTypes().selectEnd().where().type(
+                                                                                                                                                                            JavaType.class.getName()).subTypes().each().property(
+                                                                                                                                                                                                                                 "caption").contains().value(
+                                                                                                                                                                                                                                                             "Map").typeEnd().whereEnd();
 
-		final SLQueryResult initialData = query.execute(inputResult.getNodes(),
-				sortMode, printInfo);
-		final NodeWrapper[] wrappers = wrapNodes(initialData.getNodes());
+        final SLQueryResult initialData = query.execute(inputResult.getNodes(), sortMode, printInfo);
+        final NodeWrapper[] wrappers = wrapNodes(initialData.getNodes());
 
-		new AssertResult() {
-			public void execute() {
-				assertThat(wrappers.length, is(2));
-				assertThat(new NodeWrapper(
-						org.openspotlight.graph.test.domain.JavaInterface.class
-								.getName(), "java.util", "java.util.Map"),
-						isOneOf(wrappers));
-				assertThat(
-						new NodeWrapper(
-								org.openspotlight.graph.test.domain.JavaInterface.class
-										.getName(), "java.util",
-								"java.util.SortedMap"), isOneOf(wrappers));
-			}
-		}.execute();
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(2));
+                assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
+            }
+        }.execute();
 
-		printResult(initialData.getNodes());
-	}
+        printResult(initialData.getNodes());
+    }
 
-	@Test
-	public void testVerifyWhereInStack2() throws SLQueryException,
-			SLGraphSessionException, SLInvalidQuerySyntaxException {
+    @Test
+    public void testVerifyWhereInStack2() throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
 
-		final SLQueryApi query2Input = session.createQueryApi();
+        final SLQueryApi query2Input = session.createQueryApi();
 
-		query2Input.select().type(JavaPackage.class.getName()).selectEnd()
-				.where().type(JavaPackage.class.getName()).each().property(
-						"caption").equalsTo().value("java.util").typeEnd()
-				.whereEnd();
+        query2Input.select().type(JavaPackage.class.getName()).selectEnd().where().type(JavaPackage.class.getName()).each().property(
+                                                                                                                                     "caption").equalsTo().value(
+                                                                                                                                                                 "java.util").typeEnd().whereEnd();
 
-		final SLQueryResult inputResult = query2Input.execute(sortMode, true);
-		final NodeWrapper[] inputWrappers = wrapNodes(inputResult.getNodes());
+        final SLQueryResult inputResult = query2Input.execute(sortMode, true);
+        final NodeWrapper[] inputWrappers = wrapNodes(inputResult.getNodes());
 
-		printInfo = true;
-		printResult(inputResult.getNodes());
+        printInfo = true;
+        printResult(inputResult.getNodes());
 
-		new AssertResult() {
-			public void execute() {
-				assertThat(inputWrappers.length, is(1));
-				assertThat(new NodeWrapper(
-						org.openspotlight.graph.test.domain.JavaPackage.class
-								.getName(), "queryTest", "java.util"),
-						is(inputWrappers[0]));
-			}
-		}.execute();
+        new AssertResult() {
+            public void execute() {
+                assertThat(inputWrappers.length, is(1));
+                assertThat(new NodeWrapper(JavaPackage.class.getName(), "queryTest", "java.util"), is(inputWrappers[0]));
+            }
+        }.execute();
 
-		final SLQueryApi query = session.createQueryApi();
+        final SLQueryApi query = session.createQueryApi();
 
-		query.select().type(JavaInterface.class.getName()).comma().byLink(
-				PackageContainsType.class.getName()).b().selectEnd().select()
-				.allTypes().selectEnd();
+        query.select().type(JavaInterface.class.getName()).comma().byLink(PackageContainsType.class.getName()).b().selectEnd().select().allTypes().selectEnd();
 
-		final SLQueryResult initialData = query.execute(inputResult.getNodes(),
-				sortMode, printInfo);
-		final NodeWrapper[] wrappers = wrapNodes(initialData.getNodes());
+        final SLQueryResult initialData = query.execute(inputResult.getNodes(), sortMode, printInfo);
+        final NodeWrapper[] wrappers = wrapNodes(initialData.getNodes());
 
-		printResult(initialData.getNodes());
+        printResult(initialData.getNodes());
 
-		new AssertResult() {
-			public void execute() {
-				assertThat(wrappers.length, is(14));
-			}
-		}.execute();
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers.length, is(14));
+            }
+        }.execute();
 
-		final SLQueryApi query2Compare = session.createQueryApi();
+        final SLQueryApi query2Compare = session.createQueryApi();
 
-		query2Compare.select().type(JavaInterface.class.getName()).selectEnd()
-				.select().allTypes().selectEnd();
+        query2Compare.select().type(JavaInterface.class.getName()).selectEnd().select().allTypes().selectEnd();
 
-		final SLQueryResult resultData = query2Compare.execute(sortMode,
-				printInfo);
-		final NodeWrapper[] wrappers2 = wrapNodes(resultData.getNodes());
+        final SLQueryResult resultData = query2Compare.execute(sortMode, printInfo);
+        final NodeWrapper[] wrappers2 = wrapNodes(resultData.getNodes());
 
-		printResult(resultData.getNodes());
+        printResult(resultData.getNodes());
 
-		new AssertResult() {
-			public void execute() {
-				assertThat(wrappers2.length, is(19));
-			}
-		}.execute();
+        new AssertResult() {
+            public void execute() {
+                assertThat(wrappers2.length, is(19));
+            }
+        }.execute();
 
-		assertThat(wrappers.length, is(not(wrappers2.length)));
-	}
+        assertThat(wrappers.length, is(not(wrappers2.length)));
+    }
 
-	@Test
-	public void testVerifyWhereInStack3() throws SLQueryException,
-			SLGraphSessionException, SLInvalidQuerySyntaxException {
+    @Test
+    public void testVerifyWhereInStack3() throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
 
-		final SLQueryApi query1 = session.createQueryApi();
+        final SLQueryApi query1 = session.createQueryApi();
 
-		query1.select().type(JavaInterface.class.getName()).selectEnd();
+        query1.select().type(JavaInterface.class.getName()).selectEnd();
 
-		final SLQueryResult resultData = query1.execute(sortMode, printInfo);
+        final SLQueryResult resultData = query1.execute(sortMode, printInfo);
 
-		final SLQueryApi query2 = session.createQueryApi();
+        final SLQueryApi query2 = session.createQueryApi();
 
-		query2.select().type(JavaInterface.class.getName()).selectEnd()
-				.select().allTypes().selectEnd();
+        query2.select().type(JavaInterface.class.getName()).selectEnd().select().allTypes().selectEnd();
 
-		final SLQueryResult resultData2 = query2.execute(sortMode, printInfo);
+        final SLQueryResult resultData2 = query2.execute(sortMode, printInfo);
 
-		assertThat(resultData2.getNodes().size(), is(resultData.getNodes()
-				.size()));
-	}
+        assertThat(resultData2.getNodes().size(), is(resultData.getNodes().size()));
+    }
 
 }

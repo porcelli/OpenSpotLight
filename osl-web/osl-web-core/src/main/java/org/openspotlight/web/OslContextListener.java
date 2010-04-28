@@ -57,6 +57,7 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
@@ -64,105 +65,84 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
 import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.remote.server.DefaultUserAuthenticator;
 import org.openspotlight.web.command.InitialImportWebCommand;
 
 /**
- * The listener interface for receiving oslContext events. The class that is
- * interested in processing a oslContext event implements this interface, and
- * the object created with that class is registered with a component using the
- * component's <code>addOslContextListener<code> method. When
+ * The listener interface for receiving oslContext events. The class that is interested in processing a oslContext event
+ * implements this interface, and the object created with that class is registered with a component using the component's
+ * <code>addOslContextListener<code> method. When
  * the oslContext event occurs, that object's appropriate
  * method is invoked.
- * 
- * @see OslContextEvent
  */
-public class OslContextListener implements ServletContextListener,
-		OslDataConstants {
+public class OslContextListener implements ServletContextListener, OslDataConstants {
 
-	private RemoteGraphSessionServer server;
+    private RemoteGraphSessionServer server;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seejavax.servlet.ServletContextListener#contextDestroyed(javax.servlet.
-	 * ServletContextEvent)
-	 */
-	public void contextDestroyed(final ServletContextEvent arg0) {
-		WebExecutionContextFactory.INSTANCE.contextStopped();
-		final SLScheduler scheduler = DefaultScheduler.INSTANCE;
-		scheduler.stopScheduler();
-		server.shutdown();
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void contextDestroyed( final ServletContextEvent arg0 ) {
+        WebExecutionContextFactory.INSTANCE.contextStopped();
+        final SLScheduler scheduler = DefaultScheduler.INSTANCE;
+        scheduler.stopScheduler();
+        server.shutdown();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * javax.servlet.ServletContextListener#contextInitialized(javax.servlet
-	 * .ServletContextEvent)
-	 */
-	public void contextInitialized(final ServletContextEvent sce) {
-		try {
-			JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
-			final String jcrDescriptorName = sce.getServletContext()
-					.getInitParameter("JCR_DESCRIPTOR");
+    /**
+     * {@inheritDoc}
+     */
+    public void contextInitialized( final ServletContextEvent sce ) {
+        try {
+            JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
+            final String jcrDescriptorName = sce.getServletContext().getInitParameter("JCR_DESCRIPTOR");
+            final String remotePortAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_PORT");
+            final String remoteGraphTimeoutAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_TIMEOUT");
 
-			if (jcrDescriptorName != null) {
-				try {
-					descriptor = DefaultJcrDescriptor
-							.valueOf(jcrDescriptorName);
-				} catch (final IllegalArgumentException e) {
-				}
-			}
+            final int remotePort = Strings.isEmpty(remotePortAsString) ? RemoteGraphSessionFactory.DEFAULT_PORT : Integer.parseInt(remotePortAsString);
+            final long remoteGraphTimeout = Strings.isEmpty(remoteGraphTimeoutAsString) ? RemoteGraphSessionFactory.DEFAULT_TIMOUT_IN_MILLISECONDS : Long.parseLong(remoteGraphTimeoutAsString);
+            if (jcrDescriptorName != null) {
+                try {
+                    descriptor = DefaultJcrDescriptor.valueOf(jcrDescriptorName);
+                } catch (final IllegalArgumentException e) {
+                }
+            }
 
-			sce.getServletContext().setAttribute(CONTEXT__JCR_DESCRIPTOR,
-					descriptor);
-			WebExecutionContextFactory.INSTANCE.contextStarted();
-			final ExecutionContextFactory factory = WebExecutionContextFactory.INSTANCE
-					.getFactory();
-			final ExecutionContext context = factory.createExecutionContext(
-					SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD, descriptor,
-					SLConsts.DEFAULT_REPOSITORY_NAME);
+            sce.getServletContext().setAttribute(CONTEXT__JCR_DESCRIPTOR, descriptor);
+            WebExecutionContextFactory.INSTANCE.contextStarted();
+            final ExecutionContextFactory factory = WebExecutionContextFactory.INSTANCE.getFactory();
+            Repository dummyRepo = new Repository();
+            dummyRepo.setActive(true);
+            dummyRepo.setName(SLConsts.DEFAULT_REPOSITORY_NAME);
 
-			GlobalSettings settings = context.getDefaultConfigurationManager()
-					.getGlobalSettings();
-			Set<Repository> repositories = context
-					.getDefaultConfigurationManager().getAllRepositories();
+            final ExecutionContext context = factory.createExecutionContext(SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD,
+                                                                            descriptor, dummyRepo);
 
-			if (settings == null || repositories == null
-					|| repositories.size() == 0) {
-				// needs to load the xml again
-				new InitialImportWebCommand().execute(context, Arrays.map(
-						Arrays.of("forceReload"), Arrays.andOf("true")));
-				settings = context.getDefaultConfigurationManager()
-						.getGlobalSettings();
-				repositories = context.getDefaultConfigurationManager()
-						.getAllRepositories();
-				Assertions.checkNotNull("settings", settings);
-				Assertions.checkNotNull("repositories", repositories);
-				Assertions.checkCondition("repositoriesSizePositive",
-						repositories.size() > 0);
-			}
-			final SLScheduler scheduler = DefaultScheduler.INSTANCE;
-			scheduler.initializeSettings(factory, SLConsts.SYSTEM_USER,
-					SLConsts.SYSTEM_PASSWORD, descriptor);
-			scheduler.refreshJobs(settings, repositories);
+            GlobalSettings settings = context.getDefaultConfigurationManager().getGlobalSettings();
+            Set<Repository> repositories = context.getDefaultConfigurationManager().getAllRepositories();
 
-			server = new RemoteGraphSessionServer(new UserAuthenticator() {
+            if (settings == null || repositories == null || repositories.size() == 0) {
+                // needs to load the xml again
+                new InitialImportWebCommand().execute(context, Arrays.map(Arrays.of("forceReload"), Arrays.andOf("true")));
+                settings = context.getDefaultConfigurationManager().getGlobalSettings();
+                repositories = context.getDefaultConfigurationManager().getAllRepositories();
+                Assertions.checkNotNull("settings", settings);
+                Assertions.checkNotNull("repositories", repositories);
+                Assertions.checkCondition("repositoriesSizePositive", repositories.size() > 0);
+            }
+            final SLScheduler scheduler = DefaultScheduler.INSTANCE;
+            scheduler.initializeSettings(factory, SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD, descriptor);
+            scheduler.refreshJobs(settings, repositories);
 
-				public boolean canConnect(final String userName,
-						final String password, final String clientHost) {
-					return true;
-					// FIXME create user authenticator
-				}
-			}, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+            server = new RemoteGraphSessionServer(new DefaultUserAuthenticator(descriptor), remotePort, remoteGraphTimeout,
+                                                  descriptor);
 
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
-		}
-	}
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
+        }
+    }
 }

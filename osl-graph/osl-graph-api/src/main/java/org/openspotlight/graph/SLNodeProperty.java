@@ -50,22 +50,21 @@ package org.openspotlight.graph;
 
 import java.io.Serializable;
 
+import org.openspotlight.common.concurrent.LockContainer;
+
 /**
  * The Interface SLNodeProperty.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLNodeProperty<V extends Serializable> {
-
-    public boolean equals( Object o );
+public interface SLNodeProperty<V extends Serializable> extends LockContainer {
 
     /**
      * Gets the name.
      * 
      * @return the name
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public String getName() throws SLGraphSessionException;
+    public String getName();
 
     /**
      * Gets the node.
@@ -78,33 +77,25 @@ public interface SLNodeProperty<V extends Serializable> {
      * Gets the value.
      * 
      * @return the value
-     * @throws SLInvalidNodePropertyTypeException the SL invalid node property type exception
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public V getValue() throws SLInvalidNodePropertyTypeException, SLGraphSessionException;
+    public V getValue();
 
     /**
      * Gets the value as string.
      * 
      * @return the value as string
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public String getValueAsString() throws SLGraphSessionException;
-
-    public int hashCode();
+    public String getValueAsString();
 
     /**
      * Removes the.
-     * 
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void remove() throws SLGraphSessionException;
+    public void remove();
 
     /**
      * Sets the value.
      * 
      * @param value the new value
-     * @throws SLGraphSessionException the SL graph session exception
      */
-    public void setValue( V value ) throws SLGraphSessionException;
+    public void setValue( V value );
 }

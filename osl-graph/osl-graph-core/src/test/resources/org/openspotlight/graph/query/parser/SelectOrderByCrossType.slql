@@ -1,7 +1,7 @@
 select **
 	where
-		org.openspotlight.graph.test.domain.JavaType.*
+		org.openspotlight.graph.test.domain.node.JavaType.*
 			property caption <*> "Set"
 	order by
-		org.openspotlight.graph.test.domain.JavaType
+		org.openspotlight.graph.test.domain.node.JavaType
 			property caption asc;

@@ -53,20 +53,46 @@ import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
  * Helper class to build equals methods in a secure and concise way.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * @author Vitor Hugo Chagas
  */
 public class Equals {
 
+    public static boolean eachEquality( final boolean of,
+                                        final boolean andOf ) {
+        return of == andOf;
+    }
+
+    public static boolean eachEquality( final boolean[] of,
+                                        final boolean[] andOf ) {
+        return Arrays.equals(of, andOf);
+    }
+
+    public static boolean eachEquality( final byte of,
+                                        final byte andOf ) {
+        return of == andOf;
+    }
+
+    public static boolean eachEquality( final byte[] of,
+                                        final byte[] andOf ) {
+        return Arrays.equals(of, andOf);
+    }
+
+    public static boolean eachEquality( final char of,
+                                        final char andOf ) {
+        return of == andOf;
+    }
+
     /**
      * Each equality.
-     *
+     * 
      * @param <T> Type of item been comparated
      * @param thisObjectType the this object type
      * @param thisObject the this object
@@ -107,9 +133,49 @@ public class Equals {
         return status;
     }
 
+    public static boolean eachEquality( final double of,
+                                        final double andOf ) {
+        return of == andOf;
+    }
+
+    public static boolean eachEquality( final double[] of,
+                                        final double[] andOf ) {
+        return Arrays.equals(of, andOf);
+    }
+
+    public static boolean eachEquality( final float of,
+                                        final float andOf ) {
+        return of == andOf;
+    }
+
+    public static boolean eachEquality( final float[] of,
+                                        final float[] andOf ) {
+        return Arrays.equals(of, andOf);
+    }
+
+    public static boolean eachEquality( final int of,
+                                        final int andOf ) {
+        return of == andOf;
+    }
+
+    public static boolean eachEquality( final int[] of,
+                                        final int[] andOf ) {
+        return Arrays.equals(of, andOf);
+    }
+
+    public static boolean eachEquality( final long of,
+                                        final long andOf ) {
+        return of == andOf;
+    }
+
+    public static boolean eachEquality( final long[] of,
+                                        final long[] andOf ) {
+        return Arrays.equals(of, andOf);
+    }
+
     /**
      * Method that call equals in a null pointer safe way.
-     *
+     * 
      * @param o1 the o1
      * @param o2 the o2
      * @return true if the two object are equal
@@ -130,14 +196,12 @@ public class Equals {
 
     /**
      * Equals method to be used like this:
-     *
+     * 
      * <pre>
      * import static org.openspotlight.common.util.Arrays.of;
      * import static org.openspotlight.common.util.Arrays.andOf;
      * import static org.openspotlight.common.util.Equals.equals;
-     *
      * //...
-     *
      * public void equals(Object o){
      * if(o==this)
      * return true;
@@ -147,9 +211,9 @@ public class Equals {
      * return eachEquality(of(this.attribute1,this.attribute2)
      * ,andOf(that.attribute1,that.attribute2));
      * }
-     *
+     * 
      * </pre>
-     *
+     * 
      * @param of the of
      * @param andOf the and of
      * @return true if all objects are equal
@@ -172,10 +236,16 @@ public class Equals {
         return true;
     }
 
+    public static boolean eachEquality( final short of,
+                                        final short andOf ) {
+        return of == andOf;
+    }
+
     /**
      * Should not be instantiated.
      */
     private Equals() {
         logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
+
 }

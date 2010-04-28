@@ -54,6 +54,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openspotlight.graph.query.SLQLVariable;
+import org.openspotlight.graph.query.SLQLVariableType;
 
 /**
  * The Class SLQLVariableFloat. This class is a float typed SLQLVariable.
@@ -143,5 +144,12 @@ public class SLQLVariableFloat extends SLQLVariable {
             return true;
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQLVariableType getType() {
+        return SLQLVariableType.FLOAT;
     }
 }

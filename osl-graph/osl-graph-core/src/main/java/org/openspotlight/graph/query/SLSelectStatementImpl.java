@@ -56,7 +56,6 @@ import static org.openspotlight.graph.query.SLSideType.B_SIDE;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotlight.graph.SLGraphSessionException;
 import org.openspotlight.graph.query.info.SLAllTypesInfo;
 import org.openspotlight.graph.query.info.SLOrderByStatementInfo;
 import org.openspotlight.graph.query.info.SLSelectByLinkInfo;
@@ -97,16 +96,16 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
         this.selectEnd = new EndImpl(selectFacade, selectInfo);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatement#allTypes()
+    /**
+     * {@inheritDoc}
      */
     public AllTypes allTypes() {
         SLAllTypesInfo allTypesInfo = selectInfo.addAllTypes();
         return new AllTypesImpl(this, allTypesInfo, byLinks);
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatement#type(java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public Type type( String typeName ) {
         SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
@@ -115,8 +114,8 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
         return type;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatement#byLink(java.lang.String)
+    /**
+     * {@inheritDoc}
      */
     public ByLink byLink( String typeName ) {
         SLSelectByLinkInfo byLinkInfo = selectInfo.addByLink(typeName);
@@ -125,36 +124,28 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
         return byLink;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatement#end()
+    /**
+     * {@inheritDoc}
      */
     public End end() {
         verifyIfLastItemTerminatedWithComma();
         return selectEnd;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatementInfoGetter#getSelectInfo()
-     */
     /**
-     * Gets the select info.
-     * 
-     * @return the select info
+     * {@inheritDoc}
      */
     public SLSelectInfo getSelectInfo() {
         return selectInfo;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.graph.query.SLSelectStatementInfoGetter#getSelectStatementInfo()
+    /**
+     * {@inheritDoc}
      */
     public SLSelectStatementInfo getSelectStatementInfo() {
         return selectInfo;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return selectInfo.toString();
@@ -200,16 +191,16 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             this.byLinks = byLinks;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.AllTypes#onWhere()
+        /**
+         * {@inheritDoc}
          */
         public AllTypes onWhere() {
             allTypesInfo.setOnWhere(true);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.AllTypes#byLink(java.lang.String)
+        /**
+         * {@inheritDoc}
          */
         public ByLink byLink( String typeName ) {
             SLSelectByLinkInfo byLinkInfo = allTypesInfo.getSelectStatementInfo().addByLink(typeName);
@@ -218,8 +209,8 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             return byLink;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.AllTypes#selectEnd()
+        /**
+         * {@inheritDoc}
          */
         public End selectEnd() {
             return selectStatement.end();
@@ -255,31 +246,31 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             this.byLinks = byLinks;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.Type#comma()
+        /**
+         * {@inheritDoc}
          */
         public SLSelectStatement comma() {
             typeInfo.setComma(true);
             return selectStatement;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.Type#selectEnd()
+        /**
+         * {@inheritDoc}
          */
         public End selectEnd() {
             return selectStatement.end();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.Type#subTypes()
+        /**
+         * {@inheritDoc}
          */
         public Type subTypes() {
             typeInfo.setSubTypes(true);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.Type#byLink(java.lang.String)
+        /**
+         * {@inheritDoc}
          */
         public ByLink byLink( String typeName ) {
             SLSelectByLinkInfo byLinkInfo = typeInfo.getSelectStatementInfo().addByLink(typeName);
@@ -319,11 +310,11 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
 
-            //this.orderBy = new SLOrderByStatementImpl();
+            // this.orderBy = new SLOrderByStatementImpl();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.End#where()
+        /**
+         * {@inheritDoc}
          */
         public SLWhereStatement where() {
             if (this.where == null) {
@@ -334,8 +325,8 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             return where;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.End#orderBy()
+        /**
+         * {@inheritDoc}
          */
         public SLOrderByStatement orderBy() {
             if (this.orderBy == null) {
@@ -346,8 +337,8 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             return orderBy;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.End#keepResult()
+        /**
+         * {@inheritDoc}
          */
         public End keepResult() {
             selectInfo.setKeepResult(true);
@@ -372,47 +363,47 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.End#executeXTimes()
+        /**
+         * {@inheritDoc}
          */
         public End executeXTimes() {
             selectInfo.setXTimes(0);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectStatement.End#executeXTimes(int)
+        /**
+         * {@inheritDoc}
          */
         public End executeXTimes( Integer x ) {
             selectInfo.setXTimes(x);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkType()
+        /**
+         * {@inheritDoc}
          */
-        public SLSelectByLinkType selectByLinkType() throws SLGraphSessionException {
+        public SLSelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectFacade#selectStatement()
+        /**
+         * {@inheritDoc}
          */
-        public SLSelectByNodeType selectByNodeType() throws SLGraphSessionException {
+        public SLSelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectFacade#selectByLinkCount()
+        /**
+         * {@inheritDoc}
          */
-        public SLSelectByLinkCount selectByLinkCount() throws SLGraphSessionException {
+        public SLSelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectFacade#select()
+        /**
+         * {@inheritDoc}
          */
-        public SLSelectStatement select() throws SLGraphSessionException {
+        public SLSelectStatement select() {
             return selectFacade.select();
         }
     }
@@ -442,24 +433,24 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             this.byLinkInfo = byLinkInfo;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkType.ByLink#a()
+        /**
+         * {@inheritDoc}
          */
         public ByLink a() {
             byLinkInfo.setSide(A_SIDE);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkType.ByLink#b()
+        /**
+         * {@inheritDoc}
          */
         public ByLink b() {
             byLinkInfo.setSide(B_SIDE);
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkType.ByLink#any()
+        /**
+         * {@inheritDoc}
          */
         public ByLink any() {
             byLinkInfo.setSide(ANY_SIDE);
@@ -476,20 +467,19 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
             return this;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkType.ByLink#comma()
+        /**
+         * {@inheritDoc}
          */
         public SLSelectStatement comma() {
             byLinkInfo.setComma(true);
             return select;
         }
 
-        /* (non-Javadoc)
-         * @see org.openspotlight.graph.query.SLSelectByLinkType.ByLink#selectEnd()
+        /**
+         * {@inheritDoc}
          */
         public End selectEnd() {
             return select.end();
         }
     }
-
 }

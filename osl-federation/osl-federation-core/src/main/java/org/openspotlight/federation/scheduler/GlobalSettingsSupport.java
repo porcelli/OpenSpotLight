@@ -48,20 +48,20 @@
  */
 package org.openspotlight.federation.scheduler;
 
-import org.openspotlight.federation.domain.ArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 
 public class GlobalSettingsSupport {
 
-	public static void initializeScheduleMap(final GlobalSettings settings) {
-		settings.getSchedulableCommandMap().put(Group.class,
-				GroupSchedulable.class);
-		settings.getSchedulableCommandMap().put(ArtifactSource.class,
-				ArtifactSourceSchedulable.class);
-	}
+    public static void initializeScheduleMap( final GlobalSettings settings ) {
+        settings.getSchedulableCommandMap().put(Group.class, GroupSchedulable.class);
+        settings.getSchedulableCommandMap().put(ArtifactSource.class, ArtifactSourceSchedulable.class);
+        settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
+    }
 
-	private GlobalSettingsSupport() {
-	}
+    private GlobalSettingsSupport() {
+    }
 
 }

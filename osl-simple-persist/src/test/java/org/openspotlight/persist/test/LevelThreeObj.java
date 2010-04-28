@@ -57,22 +57,22 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelThreeObj implements SimpleNodeType {
-    private String                    key;
+    private String               uuid;
 
-    private String                    property;
+    private String               key;
 
-    private LevelTwoObj               parentObj;
+    private String               property;
+    private LevelTwoObj          parentObj;
 
-    private Map<Double, Integer>      numberMap   = new HashMap<Double, Integer>();
+    private Map<Double, Integer> numberMap   = new HashMap<Double, Integer>();
 
-    private List<Boolean>             booleanList = new ArrayList<Boolean>();
+    private List<Boolean>        booleanList = new ArrayList<Boolean>();
 
-    private List<ListItemObj>         objList     = new ArrayList<ListItemObj>();
-
-    private Map<Integer, MapValueObj> objMap      = new HashMap<Integer, MapValueObj>();
+    private List<ListItemObj>    objList     = new ArrayList<ListItemObj>();
 
     public boolean equals( final Object o ) {
         if (o == this) {
@@ -82,37 +82,38 @@ public class LevelThreeObj implements SimpleNodeType {
             return false;
         }
         final LevelThreeObj that = (LevelThreeObj)o;
-        return Equals.eachEquality(Arrays.of(this.parentObj, this.key), Arrays.andOf(that.parentObj, that.key));
+        return Equals.eachEquality(Arrays.of(parentObj, key), Arrays.andOf(that.parentObj, that.key));
     }
 
     public List<Boolean> getBooleanList() {
-        return this.booleanList;
+        return booleanList;
     }
 
     @KeyProperty
     public String getKey() {
-        return this.key;
+        return key;
     }
 
     @ParentProperty
     public LevelTwoObj getLevelTwoObj() {
-        return this.parentObj;
+        return parentObj;
     }
 
     public Map<Double, Integer> getNumberMap() {
-        return this.numberMap;
+        return numberMap;
     }
 
     public List<ListItemObj> getObjList() {
-        return this.objList;
-    }
-
-    public Map<Integer, MapValueObj> getObjMap() {
-        return this.objMap;
+        return objList;
     }
 
     public String getProperty() {
-        return this.property;
+        return property;
+    }
+
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
     }
 
     public void setBooleanList( final List<Boolean> booleanList ) {
@@ -135,12 +136,12 @@ public class LevelThreeObj implements SimpleNodeType {
         this.objList = objList;
     }
 
-    public void setObjMap( final Map<Integer, MapValueObj> objMap ) {
-        this.objMap = objMap;
-    }
-
     public void setProperty( final String property ) {
         this.property = property;
+    }
+
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
     }
 
 }

@@ -49,30 +49,42 @@
 package org.openspotlight.persist.test;
 
 import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class ComposedKeyObject implements SimpleNodeType {
 
-	private String key1;
+    private String key1;
 
-	private int key2;
+    private int    key2;
 
-	@KeyProperty
-	public String getKey1() {
-		return this.key1;
-	}
+    private String uuid;
 
-	@KeyProperty
-	public int getKey2() {
-		return this.key2;
-	}
+    @KeyProperty
+    public String getKey1() {
+        return key1;
+    }
 
-	public void setKey1(final String key1) {
-		this.key1 = key1;
-	}
+    @KeyProperty
+    public int getKey2() {
+        return key2;
+    }
 
-	public void setKey2(final int key2) {
-		this.key2 = key2;
-	}
+    @SetUniqueIdOnThisProperty
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setKey1( final String key1 ) {
+        this.key1 = key1;
+    }
+
+    public void setKey2( final int key2 ) {
+        this.key2 = key2;
+    }
+
+    public void setUuid( final String uuid ) {
+        this.uuid = uuid;
+    }
 
 }

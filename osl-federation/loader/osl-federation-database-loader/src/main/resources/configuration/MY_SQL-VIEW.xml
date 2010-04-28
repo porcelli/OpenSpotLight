@@ -1,0 +1,21 @@
+<script>
+	<scriptType>VIEW</scriptType>
+	<database>MY_SQL</database>
+	<preferedType>SQL</preferedType>
+	<dataSelect><![CDATA[
+        select 
+			table_name as  name, 
+			table_catalog as catalog_name, 
+			table_schema as schema_name 
+		from 
+			information_schema.views
+      ]]></dataSelect>
+	<contentSelect><![CDATA[
+		select 
+			view_definition
+		from 
+			information_schema.views 
+		where table_name='$name$' 
+		  and table_schema='$schema_name$'
+ ]]></contentSelect>
+</script>

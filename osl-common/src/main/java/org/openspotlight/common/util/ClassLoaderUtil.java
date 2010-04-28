@@ -57,14 +57,14 @@ import java.util.List;
 
 /**
  * The Class ClassLoaderUtil.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public class ClassLoaderUtil {
 
     /**
      * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
-     *
+     * 
      * @param packageName The base package
      * @return The classes
      * @throws ClassNotFoundException the class not found exception
@@ -89,7 +89,7 @@ public class ClassLoaderUtil {
 
     /**
      * Recursive method used to find all classes in a given directory and subdirs.
-     *
+     * 
      * @param directory The base directory
      * @param packageName The package name for classes found inside the base directory
      * @return The classes
@@ -115,7 +115,7 @@ public class ClassLoaderUtil {
 
     /**
      * Method used to check is some class exists at JVM.
-     *
+     * 
      * @param className The class name to check if it is already lives on JVM.
      * @return True is class exists, False otherwise.
      */
@@ -130,7 +130,7 @@ public class ClassLoaderUtil {
 
     /**
      * Method used to return some class that exists at JVM.
-     *
+     * 
      * @param className The class name.
      * @return If class exists returns it, otherwise returns null.
      */

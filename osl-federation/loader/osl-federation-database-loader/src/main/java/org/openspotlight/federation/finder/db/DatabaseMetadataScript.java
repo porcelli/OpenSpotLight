@@ -57,7 +57,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import org.antlr.stringtemplate.StringTemplate;
-import org.openspotlight.federation.domain.DatabaseType;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 /**
  * Pojo class to store the script to get database metadata for a database type. This class should be getted by
@@ -70,7 +70,7 @@ public final class DatabaseMetadataScript {
 
     /**
      * The Interface DatabaseArtifactNameHandler is used to handle callback during the initial phases of Database
-     * {@link StreamArtifact} processing. This handler should be used as a filter also on situations where there's no possible to
+     * {@link StringArtifact} processing. This handler should be used as a filter also on situations where there's no possible to
      * filter the sql results.
      */
     public static interface DatabaseArtifactNameHandler {
@@ -99,13 +99,13 @@ public final class DatabaseMetadataScript {
     }
 
     /**
-     * The Interface DatabaseStreamHandler is used to handle callbacks during the {@link StreamArtifact} final loading phase. Here
+     * The Interface DatabaseStreamHandler is used to handle callbacks during the {@link StringArtifact} final loading phase. Here
      * is possible to reject or modify the input stream. There's also methods to add new variables to a template.
      */
     public static interface DatabaseStreamHandler {
 
         /**
-         * Calback method to modify or reject the byte array before the {@link StreamArtifact} loading.
+         * Calback method to modify or reject the byte array before the {@link StringArtifact} loading.
          * 
          * @param schema the schema
          * @param type the type
@@ -144,7 +144,7 @@ public final class DatabaseMetadataScript {
     }
 
     /**
-     * Type for describing the way for filling the {@link StreamArtifact} content for {@link DatabaseType database}
+     * Type for describing the way for filling the {@link StringArtifact} content for {@link DatabaseType database}
      * {@link ScriptType scripts}.
      * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
@@ -202,13 +202,13 @@ public final class DatabaseMetadataScript {
      * @return the column alias map
      */
     public synchronized Map<ColumnsNamesForMetadataSelect, String> getColumnAliasMap() {
-        if (this.columnAliasMap == null) {
-            this.columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(ColumnsNamesForMetadataSelect.class);
+        if (columnAliasMap == null) {
+            columnAliasMap = new EnumMap<ColumnsNamesForMetadataSelect, String>(ColumnsNamesForMetadataSelect.class);
         }
-        if (this.immutable) {
-            return unmodifiableMap(this.columnAliasMap);
+        if (immutable) {
+            return unmodifiableMap(columnAliasMap);
         }
-        return this.columnAliasMap;
+        return columnAliasMap;
     }
 
     /**
@@ -217,7 +217,7 @@ public final class DatabaseMetadataScript {
      * @return column number to use on content select
      */
     public Integer getContentColumnToUse() {
-        return this.contentColumnToUse;
+        return contentColumnToUse;
     }
 
     /**
@@ -226,7 +226,7 @@ public final class DatabaseMetadataScript {
      * @return the select for filling the stream content
      */
     public String getContentSelect() {
-        return this.contentSelect;
+        return contentSelect;
     }
 
     /**
@@ -235,7 +235,7 @@ public final class DatabaseMetadataScript {
      * @return the database type
      */
     public DatabaseType getDatabase() {
-        return this.database;
+        return database;
     }
 
     /**
@@ -244,7 +244,7 @@ public final class DatabaseMetadataScript {
      * @return the mandatory select for filling the basic common data for all stream artifacts loaded from database
      */
     public String getDataSelect() {
-        return this.dataSelect;
+        return dataSelect;
     }
 
     /**
@@ -254,7 +254,7 @@ public final class DatabaseMetadataScript {
      */
     public Class<? extends DatabaseArtifactNameHandler> getNameHandlerClass() {
 
-        return this.nameHandlerClass;
+        return nameHandlerClass;
     }
 
     /**
@@ -263,7 +263,7 @@ public final class DatabaseMetadataScript {
      * @return the prefered type
      */
     public PreferedType getPreferedType() {
-        return this.preferedType;
+        return preferedType;
     }
 
     /**
@@ -272,7 +272,7 @@ public final class DatabaseMetadataScript {
      * @return the script type
      */
     public ScriptType getScriptType() {
-        return this.scriptType;
+        return scriptType;
     }
 
     /**
@@ -281,7 +281,7 @@ public final class DatabaseMetadataScript {
      * @return the stream handler class
      */
     public Class<? extends DatabaseStreamHandler> getStreamHandlerClass() {
-        return this.streamHandlerClass;
+        return streamHandlerClass;
     }
 
     /**
@@ -290,7 +290,7 @@ public final class DatabaseMetadataScript {
      * @return the template for stream content
      */
     public String getTemplate() {
-        return this.template;
+        return template;
     }
 
     /**
@@ -299,7 +299,7 @@ public final class DatabaseMetadataScript {
      * @return the select to fill the template for stream content
      */
     public String getTemplatesSelect() {
-        return this.templatesSelect;
+        return templatesSelect;
     }
 
     /**
@@ -308,7 +308,7 @@ public final class DatabaseMetadataScript {
      * @return true, if is try again if no result
      */
     public boolean isTryAgainIfNoResult() {
-        return this.tryAgainIfNoResult;
+        return tryAgainIfNoResult;
     }
 
     /**
@@ -317,7 +317,7 @@ public final class DatabaseMetadataScript {
      * @param columnAliasMap the column alias map
      */
     public void setColumnAliasMap( final EnumMap<ColumnsNamesForMetadataSelect, String> columnAliasMap ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.columnAliasMap = columnAliasMap;
@@ -329,7 +329,7 @@ public final class DatabaseMetadataScript {
      * @param contentColumnToUse the content column to use
      */
     public void setContentColumnToUse( final Integer contentColumnToUse ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.contentColumnToUse = contentColumnToUse;
@@ -341,7 +341,7 @@ public final class DatabaseMetadataScript {
      * @param contentSelect the content select
      */
     public void setContentSelect( final String contentSelect ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.contentSelect = contentSelect;
@@ -353,7 +353,7 @@ public final class DatabaseMetadataScript {
      * @param database the database
      */
     public void setDatabase( final DatabaseType database ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.database = database;
@@ -365,7 +365,7 @@ public final class DatabaseMetadataScript {
      * @param dataSelect the data select
      */
     public void setDataSelect( final String dataSelect ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.dataSelect = dataSelect;
@@ -376,8 +376,8 @@ public final class DatabaseMetadataScript {
      * {@link UnsupportedOperationException} when called.
      */
     void setImmutable() {
-        if (!this.immutable) {
-            this.immutable = true;
+        if (!immutable) {
+            immutable = true;
         }
     }
 
@@ -387,7 +387,7 @@ public final class DatabaseMetadataScript {
      * @param nameHandlerClass the new name handler class
      */
     public void setNameHandlerClass( final Class<? extends DatabaseArtifactNameHandler> nameHandlerClass ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.nameHandlerClass = nameHandlerClass;
@@ -408,7 +408,7 @@ public final class DatabaseMetadataScript {
      * @param scriptType the script type
      */
     public void setScriptType( final ScriptType scriptType ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.scriptType = scriptType;
@@ -420,7 +420,7 @@ public final class DatabaseMetadataScript {
      * @param streamHandlerClass the new stream handler class
      */
     public void setStreamHandlerClass( final Class<? extends DatabaseStreamHandler> streamHandlerClass ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.streamHandlerClass = streamHandlerClass;
@@ -432,7 +432,7 @@ public final class DatabaseMetadataScript {
      * @param template the template
      */
     public void setTemplate( final String template ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.template = template;
@@ -444,7 +444,7 @@ public final class DatabaseMetadataScript {
      * @param templatesSelect the templates select
      */
     public void setTemplatesSelect( final String templatesSelect ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.templatesSelect = templatesSelect;
@@ -456,7 +456,7 @@ public final class DatabaseMetadataScript {
      * @param tryAgainIfNoResult the new try again if no result
      */
     public void setTryAgainIfNoResult( final boolean tryAgainIfNoResult ) {
-        if (this.immutable) {
+        if (immutable) {
             throw new UnsupportedOperationException();
         }
         this.tryAgainIfNoResult = tryAgainIfNoResult;

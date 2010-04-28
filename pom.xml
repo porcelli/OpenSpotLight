@@ -21,6 +21,10 @@
 			<name>Vitor Hugo Chagas</name>
 			<email>vitorhugo@caravelatech.com</email>
 		</developer>
+		<developer>
+			<name>Bruno Barbeti Figueiredo</name>
+			<email>bbf@caravelatech.com</email>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
@@ -72,6 +76,7 @@
 	</pluginRepositories>
 	<modules>
 		<module>osl-common</module>
+		<module>osl-persistence</module>
 		<module>osl-remote-support</module>
 		<module>osl-jcr</module>
 		<module>osl-simple-persist</module>
@@ -81,7 +86,10 @@
 		<module>osl-slql-console</module>
 		<module>osl-federation</module>
 		<module>osl-web</module>
-		<module>bundle-processor/osl-java-bundle</module>
+		<module>bundle-processor/osl-bundle-common</module>
+		<module>bundle-processor/osl-common-metamodel</module>
+		<module>bundle-processor/osl-bundle-java</module>
+		<module>bundle-processor/osl-bundle-db</module>
 	</modules>
 	<build>
 		<plugins>
@@ -107,10 +115,64 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.4.3</version>
 				<configuration>
 					<argLine>-Xmx256m</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.5</version>
+				<!--  <inherited>false</inherited> -->
+				<executions>
+					<execution>
+						<id>create-report</id>
+						<!-- do it after all tests have ran -->
+						<phase>package</phase>
+						<goals>
+							<goal>report-only</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<aggregate>tue</aggregate>
+					<outputName>surefire-report-${project.artifactId}</outputName>
+					<outputDirectory>${PROJECT_HOME}/target/site</outputDirectory>
+					<showSuccess>false</showSuccess>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>2.0.1</version>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>create-site</id>
+						<phase>test</phase>
+						<goals>
+							<goal>site</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<outputDirectory>${basedir}/target/site</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -121,6 +183,21 @@
 			<dependency>
 				<groupId>org.openspotlight</groupId>
 				<artifactId>osl-common</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-persistence-api</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-persistence-core</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-persistence-redis</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
@@ -215,12 +292,22 @@
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
-				<artifactId>osl-java-bundle</artifactId>
+				<artifactId>osl-bundle-common</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openspotlight</groupId>
-				<artifactId>osl-java-bundle-initial-import</artifactId>
+				<artifactId>osl-common-metamodel</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-bundle-db</artifactId>
+				<version>${pom.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openspotlight</groupId>
+				<artifactId>osl-bundle-java</artifactId>
 				<version>${pom.version}</version>
 			</dependency>
 			<dependency>
@@ -285,6 +372,27 @@
 				<artifactId>idm-core</artifactId>
 				<classifier>tests</classifier>
 				<version>1.0.0-Beta4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>google</groupId>
+				<artifactId>collect</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>google</groupId>
+				<artifactId>guice</artifactId>
+				<version>2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>aopalliance</groupId>
+				<artifactId>aopalliance</artifactId>
+				<version>guice-2.0-dep</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>jredis</groupId>
+				<artifactId>jredis</artifactId>
+				<version>1.0-rc1-java5</version>
 			</dependency>
 			<!-- parsing and code generation dependencies -->
 			<dependency>
@@ -368,6 +476,11 @@
 				<groupId>org.jasypt</groupId>
 				<artifactId>jasypt</artifactId>
 				<version>1.5</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>1.4</version>
 			</dependency>
 			<!-- Commons Lang util -->
 			<dependency>
@@ -477,9 +590,9 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-			  <groupId>org.apache.httpcomponents</groupId>
-			  <artifactId>httpclient</artifactId>
-			  <version>4.0</version>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>4.0</version>
 			</dependency>
 			<!-- JAAS implementation (and dependencies) for DNA security -->
 			<dependency>
@@ -562,6 +675,18 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.jackrabbit</groupId>
+				<artifactId>jackrabbit-jcr-rmi</artifactId>
+				<version>1.5.0</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>slf4j-api</artifactId>
+						<groupId>org.slf4j</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.jackrabbit</groupId>
 				<artifactId>jackrabbit-core</artifactId>
 				<version>1.6.0</version>
 				<!-- Exclude these since they are included in JDK 1.5 -->
@@ -575,11 +700,6 @@
 						<artifactId>xercesImpl</artifactId>
 					</exclusion>
 				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>antlr</groupId>
-				<artifactId>stringtemplate</artifactId>
-				<version>2.3b6</version>
 			</dependency>
 			<!-- Databases and JDBC Drivers -->
 			<dependency>
@@ -722,4 +842,35 @@
 
 		</dependencies>
 	</dependencyManagement>
+	<profiles>
+		<profile>
+			<id>setup</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.groovy.maven</groupId>
+						<artifactId>gmaven-plugin</artifactId>
+						<version>1.0</version>
+						<inherited>false</inherited> <!-- Works only if inheritance is deactivated -->
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<source> ${pom.basedir}/profiles.groovy</source>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<activation> <!-- Only create profiles.xml if there's no profiles.xml yet -->
+				<file>
+					<missing>profiles.xml</missing>
+				</file>
+			</activation>
+		</profile>
+	</profiles>
 </project>

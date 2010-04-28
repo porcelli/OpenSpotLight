@@ -48,9 +48,13 @@
  */
 package org.openspotlight.graph;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLMetaLinkTypeNotFoundException;
+import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
 
 /**
  * The Interface SLMetadata.
@@ -59,123 +63,144 @@ import org.openspotlight.common.concurrent.LockContainer;
  */
 public interface SLMetadata extends LockContainer {
 
-	/**
-	 * Find meta node type.
-	 * 
-	 * @param nodeClass
-	 *            the node class
-	 * 
-	 * @return the sL meta node type
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLMetaNodeType findMetaNodeType(Class<? extends SLNode> nodeClass)
-			throws SLGraphSessionException;
+    /**
+     * The Enum BooleanOperator.
+     * 
+     * @author porcelli
+     */
+    public enum BooleanOperator {
 
-	/**
-	 * Find meta node type.
-	 * 
-	 * @param typeName
-	 *            the type name
-	 * 
-	 * @return the sL meta node type
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLMetaNodeType findMetaNodeType(String typeName)
-			throws SLGraphSessionException;
+        /** The OR. */
+        OR,
 
-	/**
-	 * Find meta node type by description.
-	 * 
-	 * @param description
-	 *            the description
-	 * 
-	 * @return the sL meta node type
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLMetaNodeType findMetaNodeTypeByDescription(String description)
-			throws SLGraphSessionException;
+        /** The AND. */
+        AND
+    }
 
-	/**
-	 * Gets the meta link type.
-	 * 
-	 * @param linkType
-	 *            the link type
-	 * 
-	 * @return the meta link type
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLMetaLinkType getMetaLinkType(Class<? extends SLLink> linkType)
-			throws SLGraphSessionException;
+    /**
+     * The Enum LogicOperator.
+     * 
+     * @author porcelli
+     */
+    public enum LogicOperator {
 
-	/**
-	 * Gets the meta link type.
-	 * 
-	 * @param name
-	 *            the name
-	 * 
-	 * @return the meta link type
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLMetaLinkType getMetaLinkType(String name)
-			throws SLGraphSessionException;
+        /** The EQUALS. */
+        EQUALS,
 
-	/**
-	 * Gets the meta link type by description.
-	 * 
-	 * @param description
-	 *            the description
-	 * 
-	 * @return the meta link type by description
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public SLMetaLinkType getMetaLinkTypeByDescription(String description)
-			throws SLGraphSessionException;
+        /** The LIKE begins with. */
+        LIKE_BEGINS_WITH,
 
-	/**
-	 * Gets the meta link types.
-	 * 
-	 * @return the meta link types
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public Collection<SLMetaLinkType> getMetaLinkTypes()
-			throws SLGraphSessionException;
+        /** The LIKE ends with. */
+        LIKE_ENDS_WITH,
 
-	/**
-	 * Gets the meta nodes types.
-	 * 
-	 * @return the meta nodes types
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public Collection<SLMetaNodeType> getMetaNodesTypes()
-			throws SLGraphSessionException;
+        /** The LIKE contains. */
+        LIKE_CONTAINS
+    }
 
-	/**
-	 * Gets the meta nodes types.
-	 * 
-	 * @param recursiveMode
-	 *            the recursive mode
-	 * 
-	 * @return the meta nodes types
-	 * 
-	 * @throws SLGraphSessionException
-	 *             the SL graph session exception
-	 */
-	public Collection<SLMetaNodeType> getMetaNodesTypes(
-			SLRecursiveMode recursiveMode) throws SLGraphSessionException;
+    /**
+     * The Enum MetaNodeTypeProperty.
+     * 
+     * @author porcelli
+     */
+    public enum MetaNodeTypeProperty {
+
+        /** The NAME. */
+        NAME,
+
+        /** The DESCRIPTION. */
+        DESCRIPTION
+    }
+
+    /**
+     * Find meta node type.
+     * 
+     * @param nodeClass the node class
+     * @return the sL meta node type
+     */
+    public SLMetaNodeType getMetaNodeType( Class<? extends SLNode> nodeClass ) throws SLMetaNodeTypeNotFoundException;
+
+    /**
+     * Find meta node type.
+     * 
+     * @param typeName the type name
+     * @return the sL meta node type
+     */
+    public SLMetaNodeType getMetaNodeType( String typeName ) throws SLMetaNodeTypeNotFoundException;
+
+    /**
+     * Find meta node type by description.
+     * 
+     * @param description the description
+     * @return the sL meta node type
+     */
+    public SLMetaNodeType getMetaNodeTypeByDescription( String description ) throws SLMetaNodeTypeNotFoundException;
+
+    /**
+     * Gets the meta link type.
+     * 
+     * @param linkType the link type
+     * @return the meta link type
+     */
+    public SLMetaLinkType getMetaLinkType( Class<? extends SLLink> linkType ) throws SLMetaLinkTypeNotFoundException;
+
+    /**
+     * Gets the meta link type.
+     * 
+     * @param name the name
+     * @return the meta link type
+     */
+    public SLMetaLinkType getMetaLinkType( String name ) throws SLMetaLinkTypeNotFoundException;
+
+    /**
+     * Gets the meta link type by description.
+     * 
+     * @param description the description
+     * @return the meta link type by description
+     */
+    public SLMetaLinkType getMetaLinkTypeByDescription( String description ) throws SLMetaLinkTypeNotFoundException;
+
+    /**
+     * Gets the meta link types.
+     * 
+     * @return the meta link types
+     */
+    public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes();
+
+    /**
+     * Gets the meta nodes types.
+     * 
+     * @return the meta nodes types
+     */
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes();
+
+    /**
+     * Gets the meta nodes types.
+     * 
+     * @param recursiveMode the recursive mode
+     * @return the meta nodes types
+     */
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( SLRecursiveMode recursiveMode );
+
+    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( SLRecursiveMode recursiveMode,
+                                                                            final VisibilityLevel visibility );
+
+    /**
+     * Search meta node type.
+     * 
+     * @param recursiveMode the recursive mode
+     * @param visibility the visibility
+     * @param property2Find the property2 find
+     * @param logicOp the logic op
+     * @param booleanOp the boolean op
+     * @param values the values
+     * @return the collection< sl meta node type>
+     */
+    public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType( final SLRecursiveMode recursiveMode,
+                                                                             final VisibilityLevel visibility,
+                                                                             final MetaNodeTypeProperty property2Find,
+                                                                             final LogicOperator logicOp,
+                                                                             final BooleanOperator booleanOp,
+                                                                             final List<String> values );
+
+    // TODO implement searchMetaLinkType
 }

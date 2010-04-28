@@ -51,8 +51,8 @@ package org.openspotlight.federation.processing.internal.domain;
 import java.util.Collections;
 import java.util.Set;
 
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.processing.BundleProcessor.ArtifactProcessingResults;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.processing.ArtifactProcessingResults;
 
 /**
  * The Class ArtifactProcessingResultsImpl.
@@ -68,22 +68,31 @@ public class ArtifactProcessingResultsImpl<T extends Artifact> implements Artifa
     /** The processed arifacts. */
     private Set<T> processedArifacts;
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.ArtifactProcessingResults#getArtifactsWithError()
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.openspotlight.federation.processing.BundleProcessor.
+     * ArtifactProcessingResults#getArtifactsWithError()
      */
     public Set<T> getArtifactsWithError() {
         return this.artifactsWithError;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.ArtifactProcessingResults#getIgnoredArtifacts()
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.openspotlight.federation.processing.BundleProcessor.
+     * ArtifactProcessingResults#getIgnoredArtifacts()
      */
     public Set<T> getIgnoredArtifacts() {
         return this.ignoredArtifacts;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.ArtifactProcessingResults#getProcessedArifacts()
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.openspotlight.federation.processing.BundleProcessor.
+     * ArtifactProcessingResults#getProcessedArifacts()
      */
     public Set<T> getProcessedArifacts() {
         return this.processedArifacts;

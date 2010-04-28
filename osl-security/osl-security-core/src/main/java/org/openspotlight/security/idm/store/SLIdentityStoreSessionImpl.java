@@ -48,103 +48,95 @@
  */
 package org.openspotlight.security.idm.store;
 
-import java.text.MessageFormat;
-
-import javax.jcr.Node;
-import javax.jcr.Session;
-
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.jboss.identity.idm.common.exception.IdentityException;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
-import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.persist.support.SimplePersistSupport;
+import org.openspotlight.persist.support.SimplePersistCapable;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
+@Singleton
 public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
-	public static final String SECURITY_NODE = SharedConstants.DEFAULT_JCR_ROOT_NAME
-			+ "/{0}/securityStore";
+    private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-	private final Session session;
-	private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(
-			this);
+    public STNodeEntry getRootNode() {
+        return rootNode;
+    }
 
-	private final String rootNode;
+    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist() {
+        return simplePersist;
+    }
 
-	public SLIdentityStoreSessionImpl(final Session session,
-			final String repositoryName) {
-		this.session = session;
-		this.rootNode = MessageFormat.format(
-				SLIdentityStoreSessionImpl.SECURITY_NODE, repositoryName);
-	}
+    private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(this);
 
-	public void addNode(final SimpleNodeType node) throws Exception {
-		SimplePersistSupport
-				.convertBeanToJcr(this.rootNode, this.session, node);
-		this.session.save();
-	}
+    private final STNodeEntry                   rootNode;
 
-	public void clear() throws IdentityException {
-	}
+    @Inject
+    public SLIdentityStoreSessionImpl(
+                                       SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+        this.simplePersist = simplePersist;
+        this.rootNode = simplePersist.getCurrentSession().withPartition(simplePersist.getCurrentPartition()).createNewSimpleNode(
+                                                                                                                                 "security");
+        this.simplePersist.getCurrentSession().flushTransient();
+    }
 
-	public void close() throws IdentityException {
-		try {
-			this.session.logout();
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, IdentityException.class);
-		}
+    public void addNode( final SimpleNodeType node ) throws Exception {
+        simplePersist.convertBeanToNode(this.rootNode, node);
+        this.simplePersist.getCurrentSession().flushTransient();
+    }
 
-	}
+    public void clear() throws IdentityException {
+    }
 
-	public void commitTransaction() {
-	}
+    public void close() throws IdentityException {
 
-	public String getRootNode() {
-		return this.rootNode;
-	}
+    }
 
-	public Session getSession() {
-		return this.session;
-	}
+    public void commitTransaction() {
+    }
 
-	public Object getSessionContext() throws IdentityException {
-		return this.context;
-	}
+    public Object getSessionContext() throws IdentityException {
+        return this.context;
+    }
 
-	public boolean isOpen() {
-		return this.session.isLive();
-	}
+    public boolean isOpen() {
+        return true;
+    }
 
-	public boolean isTransactionActive() {
-		return false;
-	}
+    public boolean isTransactionActive() {
+        return false;
+    }
 
-	public boolean isTransactionSupported() {
-		return false;
-	}
+    public boolean isTransactionSupported() {
+        return false;
+    }
 
-	public void remove(final SimpleNodeType node) throws Exception {
-		final Node jcrNode = SimplePersistSupport.convertBeanToJcr(
-				this.rootNode, this.session, node);
-		jcrNode.remove();
+    public void remove( final SimpleNodeType bean ) throws Exception {
+        final STNodeEntry asNode = simplePersist.convertBeanToNode(this.rootNode, bean);
+        simplePersist.getCurrentSession().removeNode(asNode);
+        simplePersist.getCurrentSession().flushTransient();
 
-	}
+    }
 
-	public void rollbackTransaction() {
-	}
+    public void rollbackTransaction() {
+    }
 
-	public void save() throws IdentityException {
-		try {
+    public void save() throws IdentityException {
+        try {
 
-			this.session.save();
-		} catch (final Exception e) {
-			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-		}
+            simplePersist.getCurrentSession().flushTransient();
+        } catch (final Exception e) {
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+        }
 
-	}
+    }
 
-	public void startTransaction() {
+    public void startTransaction() {
 
-	}
+    }
 
 }

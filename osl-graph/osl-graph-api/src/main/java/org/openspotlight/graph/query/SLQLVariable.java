@@ -108,6 +108,9 @@ public abstract class SLQLVariable implements Serializable {
      */
     @Override
     public boolean equals( final Object obj ) {
+        if (obj == this) {
+            return true;
+        }
         if (obj instanceof SLQLVariable) {
             return this.name.equalsIgnoreCase(((SLQLVariable)obj).getName());
         }
@@ -190,4 +193,11 @@ public abstract class SLQLVariable implements Serializable {
             Exceptions.logAndThrow(new IllegalArgumentException("Variable value invalid data type."));
         }
     }
+
+    /**
+     * Returns the variable type.
+     * 
+     * @return parameter type
+     */
+    public abstract SLQLVariableType getType();
 }

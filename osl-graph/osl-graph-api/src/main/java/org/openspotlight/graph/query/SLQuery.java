@@ -60,288 +60,202 @@ import org.openspotlight.graph.SLNode;
  */
 public interface SLQuery extends LockContainer {
 
-	/**
-	 * The Enum SortMode.
-	 * 
-	 * @author Vitor Hugo Chagas
-	 */
-	public static enum SortMode {
+    /**
+     * The Enum SortMode.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static enum SortMode {
 
-		/** The SORTED mode. */
-		SORTED,
+        /** The SORTED mode. */
+        SORTED,
 
-		/** The NOT sorted mode. */
-		NOT_SORTED
-	}
+        /** The NOT sorted mode. */
+        NOT_SORTED
+    }
 
-	/**
-	 * Execute.
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute() throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute() throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param inputNodes
-	 *            the input nodes
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(Collection<SLNode> inputNodes)
-			throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param inputNodes the input nodes
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param inputNodes
-	 *            the input nodes
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(Collection<SLNode> inputNodes, Integer limit,
-			Integer offset) throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param inputNodes the input nodes
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param inputNodes
-	 *            the input nodes
-	 * @param sortMode
-	 *            the sort mode
-	 * @param showSLQL
-	 *            the show slql
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(Collection<SLNode> inputNodes,
-			SortMode sortMode, boolean showSLQL)
-			throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param inputNodes the input nodes
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  SortMode sortMode,
+                                  boolean showSLQL )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param inputNodes
-	 *            the input nodes
-	 * @param sortMode
-	 *            the sort mode
-	 * @param showSLQL
-	 *            the show slql
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(Collection<SLNode> inputNodes,
-			SortMode sortMode, boolean showSLQL, Integer limit, Integer offset)
-			throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param inputNodes the input nodes
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Collection<SLNode> inputNodes,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(Integer limit, Integer offset)
-			throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param sortMode
-	 *            the sort mode
-	 * @param showSLQL
-	 *            the show slql
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(SortMode sortMode, boolean showSLQL)
-			throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( SortMode sortMode,
+                                  boolean showSLQL )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param sortMode
-	 *            the sort mode
-	 * @param showSLQL
-	 *            the show slql
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(SortMode sortMode, boolean showSLQL,
-			Integer limit, Integer offset)
-			throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(String[] inputNodesIDs)
-			throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes i ds
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( String[] inputNodesIDs )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(String[] inputNodesIDs, Integer limit,
-			Integer offset) throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes i ds
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param showSLQL
-	 *            the show slql
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(String[] inputNodesIDs, SortMode sortMode,
-			boolean showSLQL) throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes i ds
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  SortMode sortMode,
+                                  boolean showSLQL )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
-	/**
-	 * Execute.
-	 * 
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param showSLQL
-	 *            the show slql
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * 
-	 * @return the sL query result
-	 * 
-	 * @throws SLInvalidQuerySyntaxException
-	 *             the SL invalid query syntax exception
-	 * @throws SLInvalidQueryElementException
-	 *             the SL invalid query element exception
-	 * @throws SLQueryException
-	 *             the SL query exception
-	 */
-	public SLQueryResult execute(String[] inputNodesIDs, SortMode sortMode,
-			boolean showSLQL, Integer limit, Integer offset)
-			throws SLInvalidQuerySyntaxException,
-			SLInvalidQueryElementException, SLQueryException;
+    /**
+     * Execute.
+     * 
+     * @param inputNodesIDs the input nodes i ds
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws SLQueryException the SL query exception
+     */
+    public SLQueryResult execute( String[] inputNodesIDs,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
 }

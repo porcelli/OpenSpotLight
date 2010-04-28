@@ -48,43 +48,86 @@
  */
 package org.openspotlight.federation.scheduler;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Schedulable.SchedulableCommandWithContextFactory;
-import org.openspotlight.federation.processing.BundleProcessorManagerImpl;
+import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.annotation.TransientProperty;
+import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
+import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class GroupSchedulable implements
-		SchedulableCommandWithContextFactory<Group> {
+public class GroupSchedulable implements SchedulableCommandWithContextFactory<Group> {
 
-	private ExecutionContextFactory factory;
+    private static class GroupVisitor implements SimpleNodeTypeVisitor<Group> {
 
-	private JcrConnectionDescriptor descriptor;
-	private String username;
-	private String password;
-	private GlobalSettings settings;
+        private final Set<Group> groupsWithBundles = new LinkedHashSet<Group>();
 
-	public void execute(GlobalSettings settigns,final ExecutionContext ctx, final Group schedulable)
-			throws Exception {
-		BundleProcessorManagerImpl.INSTANCE.executeBundles(username, password,
-				descriptor, factory, settings, schedulable);
-	}
+        public Set<Group> getGroupsWithBundles() {
+            return groupsWithBundles;
+        }
 
-	public String getRepositoryNameBeforeExecution(final Group schedulable) {
-		return schedulable.getRepository().getName();
-	}
+        public void visitBean( Group bean ) {
+            if (bean.getBundleTypes().size() != 0) {
+                groupsWithBundles.add(bean);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("adding group " + bean + " because it has " + bean.getBundleTypes().size() + "  bundles");
+                }
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("ignoring group " + bean + " because it has no bundles");
+                }
 
-	public void setContextFactoryBeforeExecution(final GlobalSettings settings,
-			final JcrConnectionDescriptor descriptor, final String username,
-			final String password, final String repository,
-			final ExecutionContextFactory factory) {
-		this.descriptor = descriptor;
-		this.username = username;
-		this.password = password;
-		this.factory = factory;
-		this.settings = settings;
-	}
+            }
+        }
+
+    }
+
+    private ExecutionContextFactory factory;
+
+    private JcrConnectionDescriptor descriptor;
+    private String                  username;
+    private String                  password;
+    private GlobalSettings          settings;
+
+    private static final Logger     logger = LoggerFactory.getLogger(GroupSchedulable.class);
+
+    @SuppressWarnings( "unchecked" )
+    public void execute( final GlobalSettings settigns,
+                         final ExecutionContext ctx,
+                         final Group schedulable ) throws Exception {
+        final GroupVisitor visitor = new GroupVisitor();
+        SimpleNodeTypeVisitorSupport.acceptVisitorOn(Group.class, schedulable, visitor, TransientProperty.class);
+        final Group[] groupsToExecute = visitor.getGroupsWithBundles().toArray(new Group[0]);
+        if (logger.isDebugEnabled()) {
+            logger.debug("about to execute bundles " + visitor.getGroupsWithBundles() + " found inside group " + schedulable);
+        }
+        DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password, descriptor, factory, settings, groupsToExecute);
+
+    }
+
+    public String getRepositoryNameBeforeExecution( final Group schedulable ) {
+        return schedulable.getRootRepository().getName();
+    }
+
+    public void setContextFactoryBeforeExecution( final GlobalSettings settings,
+                                                  final JcrConnectionDescriptor descriptor,
+                                                  final String username,
+                                                  final String password,
+                                                  final String repository,
+                                                  final ExecutionContextFactory factory ) {
+        this.descriptor = descriptor;
+        this.username = username;
+        this.password = password;
+        this.factory = factory;
+        this.settings = settings;
+    }
 
 }

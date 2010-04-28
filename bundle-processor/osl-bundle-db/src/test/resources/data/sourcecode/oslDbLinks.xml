@@ -1,0 +1,40 @@
+<root>
+	<package packageName="db">
+		<linkData linkName="Server - Database" linkType="A2B">
+			<description sideA="Server" sideB="Database" />
+		</linkData>
+		<linkData linkName="Database - Schema" linkType="A2B">
+			<description sideA="Database" sideB="Schema" />
+		</linkData>
+		<linkData linkName="Schema - Catalog" linkType="A2B">
+			<description sideA="Schema" sideB="Catalog" />
+		</linkData>
+		<linkData linkName="Schema - TableView" linkType="A2B">
+			<description sideA="Schema" sideB="TableView" />
+		</linkData>
+		<linkData linkName="Catalog - TableView" linkType="A2B">
+			<description sideA="Catalog" sideB="TableView" />
+		</linkData>
+		<linkData linkName="TableView - Columns" linkType="A2B">
+			<description sideA="TableView" sideB="Column" />
+		</linkData>
+		<linkData linkName="Column DataType" linkType="A2B">
+			<description sideA="Column" sideB="DataType" />
+		</linkData>
+		<linkData linkName="Foreign Key" linkType="A2B">
+			<description sideA="Column" sideB="Column" />
+		</linkData>
+		<linkData linkName="Abstract Type Bind" linkType="A2B">
+			<description sideA="TableView" sideB="TableView" />
+		</linkData>
+		<linkData linkName="Abstract Type Bind" linkType="A2B">
+			<description sideA="Column" sideB="Column" />
+		</linkData>
+		<linkData linkName="Group - Database" linkType="A2B">
+			<description sideA="Group" sideB="Database" />
+		</linkData>
+		<linkData linkName="Contraint - Database Column	" linkType="A2B">
+			<description sideA="Database Constraint" sideB="Column" />
+		</linkData>
+	</package>
+</root>

@@ -1,5 +1,5 @@
 select **
 	where
-		org.openspotlight.graph.test.domain.JavaInterface
+		org.openspotlight.graph.test.domain.node.JavaInterface
 			property caption == "java.util.\u00C7oll\u00E9cTION"
 	use collator level primary;

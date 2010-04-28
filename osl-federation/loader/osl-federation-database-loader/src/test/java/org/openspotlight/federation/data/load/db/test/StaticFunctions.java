@@ -50,61 +50,59 @@
 package org.openspotlight.federation.data.load.db.test;
 
 /**
- * This class is used to store static functions to be used by java functions and
- * procedures.
+ * This class is used to store static functions to be used by java functions and procedures.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 public class StaticFunctions {
     /**
-     * static variable to mark is the procedure was called. H2 doesn't support
-     * out parameters.
+     * static variable to mark is the procedure was called. H2 doesn't support out parameters.
      */
     public static boolean procedureCalled = false;
-    
+
     /**
-     * This dummy method just set a flag to true. H2 doesn't support out
-     * parameters.
+     * This dummy method just set a flag to true. H2 doesn't support out parameters.
      * 
      * @param i1
      * @param i2
      */
-    public static void anotherFlagProcedure(final int i1, final int i2) {
+    public static void anotherFlagProcedure( final int i1,
+                                             final int i2 ) {
         procedureCalled = true;
     }
-    
+
     /**
-     * This dummy method just set a flag to true. H2 doesn't support out
-     * parameters.
+     * This dummy method just set a flag to true. H2 doesn't support out parameters.
      * 
      * @param i1
      * @param i2
      */
-    public static void flagProcedure(final int i1, final int i2) {
+    public static void flagProcedure( final int i1,
+                                      final int i2 ) {
         procedureCalled = true;
     }
-    
+
     /**
      * This method increments its parameter.
      * 
      * @param i
      * @return the parameter plus one
      */
-    public static int increment(final int i) {
+    public static int increment( final int i ) {
         return i + 1;
     }
-    
+
     /**
-     * This method is used on derby tests. It sum the two first parameters and
-     * store its results on 3rd parameter.
+     * This method is used on derby tests. It sum the two first parameters and store its results on 3rd parameter.
      * 
      * @param i1
      * @param i2
      * @param result
      */
-    public static void sum(final int i1, final int i2, final int[] result) {
+    public static void sum( final int i1,
+                            final int i2,
+                            final int[] result ) {
         result[0] = i1 + i2;
     }
-    
+
 }

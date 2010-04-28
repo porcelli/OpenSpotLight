@@ -51,10 +51,10 @@ package org.openspotlight.federation.data.processing.test;
 
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.DatabaseType;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 /**
  * Class with some example valid configurations
@@ -81,6 +81,8 @@ public class ConfigurationExamples {
         repository.getGroups().add(group);
         group.setActive(true);
         final DbArtifactSource artifactSource = new DbArtifactSource();
+        artifactSource.setServerName("server name " + sourceName);
+        artifactSource.setDatabaseName("db name " + sourceName);
         repository.getArtifactSources().add(artifactSource);
         artifactSource.setRepository(repository);
         artifactSource.setName(sourceName);
@@ -95,10 +97,10 @@ public class ConfigurationExamples {
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
-        mapping.setFrom("*/");
+        mapping.setFrom("/PUBLIC");
         mapping.setTo("/databaseArtifacts");
         artifactSource.getMappings().add(mapping);
-        mapping.getIncludeds().add("*");
+        mapping.getIncludeds().add("**");
         final BundleProcessorType commonProcessor = new BundleProcessorType();
         commonProcessor.setActive(true);
         commonProcessor.setGroup(group);
@@ -121,7 +123,7 @@ public class ConfigurationExamples {
     }
 
     public static Repository createMySqlDbConfiguration() {
-        return createDatabaseRepository("mysql Repository", "mysql Group", "mysql Connection", "root", null, DatabaseType.MYSQL,
+        return createDatabaseRepository("mysql Repository", "mysql Group", "mysql Connection", "root", null, DatabaseType.MY_SQL,
                                         "jdbc:mysql://localhost:3306/test", "com.mysql.jdbc.Driver");
     }
 

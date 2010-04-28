@@ -1,13 +1,13 @@
 select **
 	where
-		org.openspotlight.graph.test.domain.JavaType.*
+		org.openspotlight.graph.test.domain.node.JavaType.*
 			property caption <*> "Set" 	||
 			property caption <*> "List" ||
 			property caption <*> "Map"
 
 select *
 	where
-		org.openspotlight.graph.test.domain.JavaType.*
+		org.openspotlight.graph.test.domain.node.JavaType.*
 			property caption !<*> "Sorted" &&
-			link org.openspotlight.graph.test.domain.TypeContainsMethod (a) > 3 &&
-			link org.openspotlight.graph.test.domain.TypeContainsMethod (a) <= 12;
+			link org.openspotlight.graph.test.domain.link.TypeContainsMethod (a) > 3 &&
+			link org.openspotlight.graph.test.domain.link.TypeContainsMethod (a) <= 12;

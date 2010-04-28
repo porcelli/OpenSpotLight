@@ -54,11 +54,10 @@ package org.openspotlight.graph;
  * @author Vitor Hugo Chagas
  */
 public enum SLPersistenceMode {
-	
-	/** The NORMAL. */
-	NORMAL,
-	
-	/** The TRANSIENT. */
-	TRANSIENT
-}
 
+    /** The NORMAL. */
+    NORMAL,
+
+    /** The TRANSIENT. */
+    TRANSIENT
+}

@@ -54,11 +54,11 @@ package org.openspotlight.web;
  */
 public interface OslDataConstants {
 
-	String SESSION__USER_NAME = "user_name";
+    String SESSION__USER_NAME      = "user_name";
 
-	String SESSION__PASSWORD = "password";
+    String SESSION__PASSWORD       = "password";
 
-	String SESSION__REPOSITORY = "repository";
+    String SESSION__REPOSITORY     = "repository";
 
-	String CONTEXT__JCR_DESCRIPTOR = "jcr_descriptor";
+    String CONTEXT__JCR_DESCRIPTOR = "jcr_descriptor";
 }

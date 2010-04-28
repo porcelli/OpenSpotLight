@@ -73,7 +73,7 @@ import org.openspotlight.common.exception.SLException;
 
 /**
  * Utility conversion class based on PrimitiveOrWrapperConverter from Dozer project http://dozer.sourceforge.net/
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Conversion {
@@ -112,37 +112,37 @@ public class Conversion {
             @SuppressWarnings( "unchecked" )
             public Object convert( final Class type,
                                    final Object value ) {
-                                  try {
-                                  if (type.equals(Date.class) && value instanceof String) {
-                                  final String newValue = (String)value;
-                                  return df.parse(newValue);
-                                  }
-                                  } catch (final Exception e) {
-                                  throw Exceptions.logAndReturn(new IllegalStateException(e));
-                                  }
-                                  throw Exceptions.logAndReturn(new IllegalArgumentException());
+                try {
+                    if (type.equals(Date.class) && value instanceof String) {
+                        final String newValue = (String)value;
+                        return df.parse(newValue);
+                    }
+                } catch (final Exception e) {
+                    throw Exceptions.logAndReturn(new IllegalStateException(e));
+                }
+                throw Exceptions.logAndReturn(new IllegalArgumentException());
 
             }
-                                          });
+        });
         Conversion.CONVERTERS.put(String.class, new Converter() {
 
             @SuppressWarnings( "unchecked" )
             public Object convert( final Class type,
                                    final Object value ) {
-                                  try {
-                                  if (value == null) {
-                                    return null;
-                                }
-                                  if (type.equals(String.class) && value instanceof Date) {
-                                  return df.format((Date)value);
-                                  }
-                                  return value.toString();
-                                  } catch (final Exception e) {
-                                  throw Exceptions.logAndReturn(new IllegalStateException(e));
-                                  }
+                try {
+                    if (value == null) {
+                        return null;
+                    }
+                    if (type.equals(String.class) && value instanceof Date) {
+                        return df.format((Date)value);
+                    }
+                    return value.toString();
+                } catch (final Exception e) {
+                    throw Exceptions.logAndReturn(new IllegalStateException(e));
+                }
 
             }
-                                          });
+        });
 
         Conversion.CONVERTERS.put(int.class, new IntegerConverter());
         Conversion.CONVERTERS.put(double.class, new DoubleConverter());
@@ -160,27 +160,26 @@ public class Conversion {
             @SuppressWarnings( "unchecked" )
             public Object convert( final Class type,
                                    final Object value ) {
-                                  try {
-                                  if (type.equals(Class.class) && value instanceof String) {
-                                  String newValue = (String)value;
-                                  if (newValue.startsWith("class ")) {
-                                  newValue = Strings.removeBegginingFrom("class ",
-                                                                         newValue);
-                                  }
-                                  return Class.forName(newValue);
-                                  }
-                                  } catch (final Exception e) {
-                                  throw Exceptions.logAndReturn(new IllegalStateException(e));
-                                  }
-                                  throw Exceptions.logAndReturn(new IllegalArgumentException());
+                try {
+                    if (type.equals(Class.class) && value instanceof String) {
+                        String newValue = (String)value;
+                        if (newValue.startsWith("class ")) {
+                            newValue = Strings.removeBegginingFrom("class ", newValue);
+                        }
+                        return Class.forName(newValue);
+                    }
+                } catch (final Exception e) {
+                    throw Exceptions.logAndReturn(new IllegalStateException(e));
+                }
+                throw Exceptions.logAndReturn(new IllegalArgumentException());
 
             }
-                                          });
+        });
     }
 
     /**
      * Returns a new converted type based on target type parameter.
-     *
+     * 
      * @param <E>
      * @param rawValue
      * @param targetType
@@ -189,11 +188,9 @@ public class Conversion {
      */
     @SuppressWarnings( "unchecked" )
     public static <E> E convert( final Object rawValue,
-                                 final Class<E> targetType )
-        throws SLException {
+                                 final Class<E> targetType ) throws SLException {
         Assertions.checkNotNull("targetType", targetType); //$NON-NLS-1$
-        Assertions
-                  .checkCondition(
+        Assertions.checkCondition(
                                   "validTargetType:" + targetType.getName(), Conversion.CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
         if (rawValue == null) {
             return null;
@@ -212,9 +209,8 @@ public class Conversion {
                         }
                     }
                 }
-                throw new IllegalStateException(MessageFormat.format(
-                                                                     "Invalid enum constant:{0} for type {1}",
-                                                                     rawValueAsString, targetType));
+                throw new IllegalStateException(MessageFormat.format("Invalid enum constant:{0} for type {1}", rawValueAsString,
+                                                                     targetType));
             }
             final Converter converter = Conversion.CONVERTERS.get(targetType);
             final E converted = (E)converter.convert(targetType, rawValue);
@@ -232,7 +228,6 @@ public class Conversion {
      * Should not be instantiated
      */
     private Conversion() {
-        Exceptions.logAndThrow(new IllegalStateException(Messages
-                                                                 .getString("invalidConstructor"))); //$NON-NLS-1$
+        Exceptions.logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 }

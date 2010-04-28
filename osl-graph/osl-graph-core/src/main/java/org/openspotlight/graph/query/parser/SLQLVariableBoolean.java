@@ -54,6 +54,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openspotlight.graph.query.SLQLVariable;
+import org.openspotlight.graph.query.SLQLVariableType;
 
 /**
  * The Class SLQLVariableBoolean. This class is a boolean typed SLQLVariable.
@@ -130,5 +131,12 @@ public class SLQLVariableBoolean extends SLQLVariable {
             return true;
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQLVariableType getType() {
+        return SLQLVariableType.BOOLEAN;
     }
 }

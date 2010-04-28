@@ -56,9 +56,12 @@ import java.util.Random;
 import jline.ConsoleReader;
 import jline.SimpleCompletor;
 
+import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.Pair;
+import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.query.console.command.Command;
 import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
 import org.openspotlight.graph.query.console.completor.SLQLFileNameCompletor;
@@ -104,7 +107,7 @@ public class SLQLPlus {
     private static Pair<Boolean, SLGraphSession> login( final ConsoleReader reader,
                                                         final PrintWriter out )
         throws IOException, SLException, ClassNotFoundException {
-        out.println("Please enter server name, user and password.");
+        out.println("Please enter server address, port number, repository, user and password.");
         out.println();
         out.flush();
 
@@ -113,11 +116,26 @@ public class SLQLPlus {
         int failCount = 0;
         start: while (true) {
             String serverName;
+            String tempPort;
+            int portNumber = -1;
             while (true) {
                 serverName = reader.readLine(Messages.getString("SLQLPlus.3")); //$NON-NLS-1$
                 if (serverName.trim().length() == 0) {
                     failCount++;
                 } else {
+                    if (serverName.contains(":")) {
+                        try {
+                            tempPort = StringUtils.substringAfter(serverName, ":");
+                            portNumber = Integer.parseInt(tempPort);
+                            serverName = StringUtils.substringBefore(serverName, ":");
+                        } catch (NumberFormatException e) {
+                            serverName = null;
+                            failCount++;
+                            out.println(Messages.getString("SLQLPlus.12")); //$NON-NLS-1$
+                            out.flush();
+                            break start;
+                        }
+                    }
                     failCount = 0;
                     break;
                 }
@@ -126,6 +144,34 @@ public class SLQLPlus {
                     out.flush();
                     break start;
                 }
+            }
+            if (portNumber == -1) {
+                while (true) {
+                    tempPort = reader.readLine(Messages.getString("SLQLPlus.14")); //$NON-NLS-1$
+                    if (tempPort.trim().length() == 0) {
+                        portNumber = RemoteGraphSessionFactory.DEFAULT_PORT;
+                        break;
+                    } else {
+                        try {
+                            portNumber = Integer.parseInt(tempPort);
+                            failCount = 0;
+                            break;
+                        } catch (NumberFormatException e) {
+                            failCount++;
+                            out.println(Messages.getString("SLQLPlus.12")); //$NON-NLS-1$
+                            out.flush();
+                        }
+                    }
+                    if (failCount == 3) {
+                        out.println(Messages.getString("SLQLPlus.12")); //$NON-NLS-1$
+                        out.flush();
+                        break start;
+                    }
+                }
+            }
+            String repositoryName = reader.readLine(Messages.getString("SLQLPlus.15")); //$NON-NLS-1$
+            if (repositoryName.trim().length() == 0) {
+                repositoryName = SharedConstants.DEFAULT_REPOSITORY_NAME;
             }
             String userName;
             while (true) {
@@ -143,7 +189,7 @@ public class SLQLPlus {
                 }
             }
             final String password = reader.readLine(Messages.getString("SLQLPlus.9"), '*'); //$NON-NLS-1$
-            result = validateCredentials(serverName, userName, password, out);
+            result = validateCredentials(serverName, portNumber, userName, password, repositoryName, out);
             loginAtemptsCount++;
             if (!result.getK1() && loginAtemptsCount == 3) {
                 out.println(Messages.getString("SLQLPlus.10")); //$NON-NLS-1$
@@ -197,21 +243,27 @@ public class SLQLPlus {
             final ConsoleState state = new ConsoleState(loginState.getK2());
             String input;
             while ((input = reader.readLine(getPrompt())) != null) {
-                state.setInput(input.trim());
-                boolean inputAccepted = false;
-                for (final Command activeCommand : commands) {
-                    if (activeCommand.accept(state)) {
-                        inputAccepted = true;
-                        activeCommand.execute(reader, out, state);
+                try {
+                    state.setInput(input.trim());
+                    boolean inputAccepted = false;
+                    for (final Command activeCommand : commands) {
+                        if (activeCommand.accept(state)) {
+                            inputAccepted = true;
+                            activeCommand.execute(reader, out, state);
+                            break;
+                        }
+                    }
+                    if (!inputAccepted && state.getInput().length() > 0) {
+                        out.println(Messages.getString("SLQLPlus.2")); //$NON-NLS-1$
+                        state.clearBuffer();
+                        out.flush();
+                    } else if (state.quitApplication()) {
                         break;
                     }
-                }
-                if (!inputAccepted && state.getInput().length() > 0) {
-                    out.println(Messages.getString("SLQLPlus.2")); //$NON-NLS-1$
-                    state.clearBuffer();
-                    out.flush();
-                } else if (state.quitApplication()) {
-                    break;
+                } catch (Exception ex) {
+                    out.print("ERROR: ");
+                    out.print(ex.getMessage());
+                    out.println(".");
                 }
             }
             loginState.getK2().close();
@@ -235,8 +287,10 @@ public class SLQLPlus {
      * Validate credentials.
      * 
      * @param serverName the server name
+     * @param portNumber the port number
      * @param userName the user name
      * @param password the password
+     * @param repositoryName the repository Name
      * @param out the out
      * @return the pair< boolean, sl graph session>
      * @throws SLException the SL exception
@@ -244,13 +298,16 @@ public class SLQLPlus {
      * @throws ClassNotFoundException the class not found exception
      */
     private static Pair<Boolean, SLGraphSession> validateCredentials( final String serverName,
+                                                                      final int portNumber,
                                                                       final String userName,
                                                                       final String password,
+                                                                      final String repositoryName,
                                                                       final PrintWriter out )
         throws SLException, IOException, ClassNotFoundException {
         if (userName.equalsIgnoreCase("sa")) { //$NON-NLS-1$
             final GraphConnection connection = new GraphConnection();
-            return new Pair<Boolean, SLGraphSession>(true, connection.connect(serverName, userName, password));
+            return new Pair<Boolean, SLGraphSession>(true, connection.connect(serverName, portNumber, userName, password,
+                                                                              repositoryName));
         }
 
         out.println(Messages.getString("SLQLPlus.13")); //$NON-NLS-1$

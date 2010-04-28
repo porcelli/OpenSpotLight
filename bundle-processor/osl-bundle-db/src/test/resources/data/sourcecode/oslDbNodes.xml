@@ -1,0 +1,63 @@
+<root>
+	<package packageName="db">
+		<nodes>	
+			<nodeData parentTypeName="" typeName="Server">
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Database">
+				<validParent>Server</validParent>
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Schema">
+				<validParent>Database</validParent>
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Catalog">
+				<validParent>Schema</validParent>
+			</nodeData>
+			<nodeData parentTypeName="" typeName="TableView">
+				<validParent>Catalog</validParent>
+				<validParent>Schema</validParent>
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Column">
+				<validParent>TableView</validParent>
+			</nodeData>
+			<nodeData parentTypeName="" typeName="DataType">
+				<validParent>Column</validParent>
+			</nodeData>
+			<nodeData parentTypeName="TableView" typeName="Table">
+				<validParent>Catalog</validParent>
+				<validParent>Schema</validParent>
+			</nodeData>
+			<nodeData parentTypeName="TableView" typeName="View">
+				<validParent>Catalog</validParent>
+				<validParent>Schema</validParent>
+			</nodeData>
+			<nodeData parentTypeName="TableView" typeName="Materialized View">
+				<validParent>Catalog</validParent>
+				<validParent>Schema</validParent>
+			</nodeData>
+			<nodeData parentTypeName="Column" typeName="Computed Column">
+				<validParent>TableView</validParent>
+				<property propertyName="order" propertyType="Integer" />
+				<property propertyName="dataType" propertyType="String" />
+				<property propertyName="pk" propertyType="String" />
+			</nodeData>
+			<nodeData parentTypeName="Column" typeName="Simple Column">
+				<validParent>TableView</validParent>
+			</nodeData>
+			<nodeData parentTypeName="DataType" typeName="Primitive">
+				<validParent>Column</validParent>
+			</nodeData>
+			<nodeData parentTypeName="DataType" typeName="UserDefinedType">
+				<validParent>Column</validParent>
+			</nodeData>
+			<nodeData parentTypeName="" typeName="Database Constraint">
+				<validParent>Column</validParent>
+			</nodeData>
+			<nodeData parentTypeName="Database Constraint" typeName="Primary Key">
+				<validParent>Column</validParent>
+			</nodeData>
+			<nodeData parentTypeName="Database Constraint" typeName="Foreign Key">
+				<validParent>Column</validParent>
+			</nodeData>
+		</nodes>
+	</package>
+</root>

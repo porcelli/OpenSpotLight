@@ -54,52 +54,59 @@ package org.openspotlight.graph.persistence;
  * @author Vitor Hugo Chagas
  */
 public class SLPersistentEventPosterImpl implements SLPersistentEventPoster {
-	
-	/** The listener. */
-	private SLPersistentEventListener listener;
-	
-	/**
-	 * Instantiates a new sL persistent event poster impl.
-	 * 
-	 * @param listener the listener
-	 */
-	public SLPersistentEventPosterImpl(SLPersistentEventListener listener) {
-		this.listener = listener;
-	}
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentEventPoster#post(org.openspotlight.graph.persistence.SLPersistentNodeEvent)
-	 */
-	public void post(SLPersistentNodeEvent event) throws SLPersistentTreeSessionException {
-		switch (event.getType()) {
-			case SLPersistentNodeEvent.TYPE_NODE_ADDED:
-				listener.nodeAdded(event);
-				break;
-			case SLPersistentNodeEvent.TYPE_NODE_REMOVED:
-				listener.nodeRemoved(event);
-				break;
-			default:
-				break;
-		}
-	}
+    /** The listener. */
+    private SLPersistentEventListener listener;
 
-	//@Override
-	/* (non-Javadoc)
-	 * @see org.openspotlight.graph.persistence.SLPersistentEventPoster#post(org.openspotlight.graph.persistence.SLPersistentPropertyEvent)
-	 */
-	public void post(SLPersistentPropertyEvent event) throws SLPersistentTreeSessionException {
-		switch (event.getType()) {
-			case SLPersistentPropertyEvent.TYPE_PROPERTY_SET:
-				listener.propertySet(event);
-				break;
-			case SLPersistentPropertyEvent.TYPE_PROPERTY_REMOVED:
-				listener.propertyRemoved(event);
-				break;
-			default:
-				break;
-		}
-	}
+    /**
+     * Instantiates a new sL persistent event poster impl.
+     * 
+     * @param listener the listener
+     */
+    public SLPersistentEventPosterImpl(
+                                        SLPersistentEventListener listener ) {
+        this.listener = listener;
+    }
+
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.persistence.SLPersistentEventPoster#post(org.
+     * openspotlight.graph.persistence.SLPersistentNodeEvent)
+     */
+    public void post( SLPersistentNodeEvent event ) throws SLPersistentTreeSessionException {
+        switch (event.getType()) {
+            case SLPersistentNodeEvent.TYPE_NODE_ADDED:
+                listener.nodeAdded(event);
+                break;
+            case SLPersistentNodeEvent.TYPE_NODE_REMOVED:
+                listener.nodeRemoved(event);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // @Override
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.graph.persistence.SLPersistentEventPoster#post(org.
+     * openspotlight.graph.persistence.SLPersistentPropertyEvent)
+     */
+    public void post( SLPersistentPropertyEvent event ) throws SLPersistentTreeSessionException {
+        switch (event.getType()) {
+            case SLPersistentPropertyEvent.TYPE_PROPERTY_SET:
+                listener.propertySet(event);
+                break;
+            case SLPersistentPropertyEvent.TYPE_PROPERTY_REMOVED:
+                listener.propertyRemoved(event);
+                break;
+            default:
+                break;
+        }
+    }
 }
-
-

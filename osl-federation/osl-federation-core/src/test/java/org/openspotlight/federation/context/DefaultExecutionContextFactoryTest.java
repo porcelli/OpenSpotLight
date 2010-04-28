@@ -48,68 +48,84 @@
  */
 package org.openspotlight.federation.context;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.StreamArtifact;
-import org.openspotlight.federation.domain.TableArtifact;
-import org.openspotlight.federation.finder.ArtifactFinder;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.DetailedLogger.LogEventType;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisServerDetail;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class DefaultExecutionContextFactoryTest {
 
-	private ExecutionContext context;
+    private ExecutionContext               context;
 
-	private final ExecutionContextFactory factory = DefaultExecutionContextFactory
-			.createFactory();
+    private static ExecutionContextFactory factory;
 
-	@After
-	public void closeResources() throws Exception {
-		factory.closeResources();
-	}
+    @BeforeClass
+    public static void setup() throws Exception {
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repository")),
+                                                 new SimplePersistModule(), new DetailedLoggerModule(),
+                                                 new DefaultExecutionContextFactoryModule());
+        factory = injector.getInstance(ExecutionContextFactory.class);
 
-	@Before
-	public void setupContext() throws Exception {
-		context = factory.createExecutionContext("testUser", "testPassword",
-				DefaultJcrDescriptor.TEMP_DESCRIPTOR, "test");
-	}
+    }
 
-	@Test
-	public void shouldUseAllResourcesInsideContext() throws Exception {
-		final ArtifactFinder<StreamArtifact> streamArtifactFinder = context
-				.getArtifactFinder(StreamArtifact.class);
-		Assert.assertThat(streamArtifactFinder, Is.is(IsNull.notNullValue()));
-		final ArtifactFinder<TableArtifact> tableArtifactFinder = context
-				.getArtifactFinder(TableArtifact.class);
-		Assert.assertThat(tableArtifactFinder, Is.is(IsNull.notNullValue()));
-		final ConfigurationManager configurationManager = context
-				.getDefaultConfigurationManager();
-		Assert.assertThat(configurationManager, Is.is(IsNull.notNullValue()));
-		final JcrConnectionProvider connectionProvider = context
-				.getDefaultConnectionProvider();
-		Assert.assertThat(connectionProvider, Is.is(IsNull.notNullValue()));
-		final SLGraphSession graphSession = context.getGraphSession();
-		Assert.assertThat(graphSession, Is.is(IsNull.notNullValue()));
-		final DetailedLogger logger = context.getLogger();
-		Assert.assertThat(logger, Is.is(IsNull.notNullValue()));
-		streamArtifactFinder.findByPath("/tmp");
-		tableArtifactFinder.findByPath("/tmp");
+    @After
+    public void closeResources() throws Exception {
+        factory.closeResources();
+    }
 
-		configurationManager.saveGlobalSettings(new GlobalSettings());
+    @Before
+    public void setupContext() throws Exception {
+        Repository repo = new Repository();
+        repo.setName("test");
+        repo.setActive(true);
 
-		graphSession.createContext("new context");
+        context = factory.createExecutionContext("testUser", "testPassword", DefaultJcrDescriptor.TEMP_DESCRIPTOR, repo);
+    }
 
-		logger.log(context.getUser(), LogEventType.DEBUG, "test");
+    @Test
+    public void shouldUseAllResourcesInsideContext() throws Exception {
+        final PersistentArtifactManager manager = context.getPersistentArtifactManager();
+        Assert.assertThat(manager, Is.is(IsNull.notNullValue()));
+        final ConfigurationManager configurationManager = context.getDefaultConfigurationManager();
+        Assert.assertThat(configurationManager, Is.is(IsNull.notNullValue()));
+        final JcrConnectionProvider connectionProvider = context.getDefaultConnectionProvider();
+        Assert.assertThat(connectionProvider, Is.is(IsNull.notNullValue()));
+        final SLGraphSession graphSession = context.getGraphSession();
+        Assert.assertThat(graphSession, Is.is(IsNull.notNullValue()));
+        final DetailedLogger logger = context.getLogger();
+        Assert.assertThat(logger, Is.is(IsNull.notNullValue()));
+        manager.findByPath(StringArtifact.class, "/tmp");
 
-	}
+        configurationManager.saveGlobalSettings(new GlobalSettings());
+
+        graphSession.createContext("new context");
+
+        logger.log(context.getUser(), LogEventType.DEBUG, "test");
+
+    }
 
 }

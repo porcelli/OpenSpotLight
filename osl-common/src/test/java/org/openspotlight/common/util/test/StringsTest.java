@@ -57,14 +57,22 @@ import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 import static org.openspotlight.common.util.Strings.replaceLast;
 
 import org.junit.Test;
+import org.openspotlight.common.util.Strings;
 
 /**
  * Test class for {@link Strings}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SuppressWarnings( "all" )
 public class StringsTest {
+
+    @Test
+    public void shouldConcatenatePathElements() {
+        assertThat(Strings.concatPaths("test/", "/test", "test/", "te/st", "/test", null, "lala"),
+                   is("test/test/test/te/st/test/lala"));
+        assertThat(Strings.concatPaths("test"), is("test"));
+    }
 
     @Test
     public void shouldConvertFirstCharToLowerCaseWhenLengthIsMoreThanOneCharacter() {

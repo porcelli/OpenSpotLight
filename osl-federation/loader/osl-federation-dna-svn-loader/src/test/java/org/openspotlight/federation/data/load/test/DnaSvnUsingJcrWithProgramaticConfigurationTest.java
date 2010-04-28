@@ -67,62 +67,56 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.DefaultSecurityContext;
 
 /**
- * Test class to validate a programatic example for DNA Svn System Connector
- * using JCR.
+ * Test class to validate a programatic example for DNA Svn System Connector using JCR.
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- * 
  */
 @Ignore
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DnaSvnUsingJcrWithProgramaticConfigurationTest {
-	private JcrEngine engine;
-	private Session session;
+    private JcrEngine engine;
+    private Session   session;
 
-	@Before
-	public void setup() throws Exception {
-		final String svnRepositorySource = "svnRepositorySource";
-		final String repositoryName = "svnRepository";
-		final JcrConfiguration configuration = new JcrConfiguration();
-		configuration
-				.repositorySource(svnRepositorySource)
-				.usingClass(SVNRepositorySource.class)
-				.setProperty("password", "")
-				.setProperty("username", "anonymous")
-				.setProperty(
-						"repositoryRootURL", "http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$
-						"creatingWorkspacesAllowed", true);
+    @Before
+    public void setup() throws Exception {
+        final String svnRepositorySource = "svnRepositorySource";
+        final String repositoryName = "svnRepository";
+        final JcrConfiguration configuration = new JcrConfiguration();
+        configuration.repositorySource(svnRepositorySource).usingClass(SVNRepositorySource.class).setProperty("password", "").setProperty(
+                                                                                                                                          "username",
+                                                                                                                                          "anonymous").setProperty(
+                                                                                                                                                                   "repositoryRootURL", "http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$
+                                                                                                                                                                                                                                                               "creatingWorkspacesAllowed",
+                                                                                                                                                                                                                                                               true);
 
-		configuration.repository(repositoryName).setSource(svnRepositorySource);
-		configuration.save();
-		this.engine = configuration.build();
-		this.engine.start();
+        configuration.repository(repositoryName).setSource(svnRepositorySource);
+        configuration.save();
+        this.engine = configuration.build();
+        this.engine.start();
 
-		this.session = this.engine.getRepository(repositoryName)
-				.login(
-						new SecurityContextCredentials(
-								DefaultSecurityContext.READ_ONLY));
+        this.session = this.engine.getRepository(repositoryName).login(
+                                                                       new SecurityContextCredentials(
+                                                                                                      DefaultSecurityContext.READ_ONLY));
 
-	}
+    }
 
-	@After
-	public void shutdown() throws Exception {
-		if (this.session != null) {
-			this.session.logout();
-		}
-		if (this.engine != null) {
-			this.engine.shutdown();
-		}
-	}
+    @After
+    public void shutdown() throws Exception {
+        if (this.session != null) {
+            this.session.logout();
+        }
+        if (this.engine != null) {
+            this.engine.shutdown();
+        }
+    }
 
-	@Test
-	public void test() throws Exception {
-		NodeIterator nodeIterator = this.session.getRootNode().getNodes();
+    @Test
+    public void test() throws Exception {
+        NodeIterator nodeIterator = this.session.getRootNode().getNodes();
 
-		while (nodeIterator.hasNext()) {
-			System.out.println(nodeIterator.nextNode());
-		}
-		assertThat(this.session.getRootNode().getNode("hamcrest-core"),
-				is(notNullValue()));
-	}
+        while (nodeIterator.hasNext()) {
+            System.out.println(nodeIterator.nextNode());
+        }
+        assertThat(this.session.getRootNode().getNode("hamcrest-core"), is(notNullValue()));
+    }
 }

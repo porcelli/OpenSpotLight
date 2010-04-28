@@ -66,24 +66,26 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 @Name( "bundle_source" )
 public class BundleSource implements SimpleNodeType, Serializable {
 
-    private static final long   serialVersionUID = -5266436076638737597L;
+    private static final long             serialVersionUID = -5266436076638737597L;
 
     /** The relative. */
-    private String              relative;
+    private String                        relative;
 
     /** The source. */
-    private BundleProcessorType bundleProcessorType;
+    private transient BundleProcessorType bundleProcessorType;
 
     /** The excludeds. */
-    private Set<String>         excludeds        = new HashSet<String>();
+    private Set<String>                   excludeds        = new HashSet<String>();
 
     /** The includeds. */
-    private Set<String>         includeds        = new HashSet<String>();
+    private Set<String>                   includeds        = new HashSet<String>();
 
     /** The hash code. */
-    private volatile int        hashCode;
+    private volatile transient int        hashCode;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals( final Object o ) {
@@ -91,7 +93,7 @@ public class BundleSource implements SimpleNodeType, Serializable {
             return false;
         }
         final BundleSource that = (BundleSource)o;
-        final boolean result = Equals.eachEquality(Arrays.of(this.bundleProcessorType, this.relative),
+        final boolean result = Equals.eachEquality(Arrays.of(bundleProcessorType, relative),
                                                    Arrays.andOf(that.bundleProcessorType, that.relative));
         return result;
     }
@@ -103,7 +105,7 @@ public class BundleSource implements SimpleNodeType, Serializable {
      */
     @ParentProperty
     public BundleProcessorType getBundleProcessorType() {
-        return this.bundleProcessorType;
+        return bundleProcessorType;
     }
 
     /**
@@ -112,7 +114,7 @@ public class BundleSource implements SimpleNodeType, Serializable {
      * @return the excludeds
      */
     public Set<String> getExcludeds() {
-        return this.excludeds;
+        return excludeds;
     }
 
     /**
@@ -121,7 +123,7 @@ public class BundleSource implements SimpleNodeType, Serializable {
      * @return the includeds
      */
     public Set<String> getIncludeds() {
-        return this.includeds;
+        return includeds;
     }
 
     /**
@@ -131,17 +133,19 @@ public class BundleSource implements SimpleNodeType, Serializable {
      */
     @KeyProperty
     public String getRelative() {
-        return this.relative;
+        return relative;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
-        int result = this.hashCode;
+        int result = hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(this.bundleProcessorType, this.relative);
-            this.hashCode = result;
+            result = HashCodes.hashOf(bundleProcessorType, relative);
+            hashCode = result;
         }
         return result;
     }

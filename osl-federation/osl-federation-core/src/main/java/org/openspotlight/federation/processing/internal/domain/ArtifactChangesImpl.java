@@ -49,10 +49,11 @@
 package org.openspotlight.federation.processing.internal.domain;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.openspotlight.federation.domain.Artifact;
-import org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.processing.ArtifactChanges;
 
 /**
  * The Class ArtifactChangesImpl.
@@ -60,40 +61,56 @@ import org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges;
 public class ArtifactChangesImpl<T extends Artifact> implements ArtifactChanges<T> {
 
     /** The changed artifacts. */
-    private Set<T> changedArtifacts;
+    private Set<T> changedArtifacts    = new LinkedHashSet<T>();
 
     /** The excluded artifacts. */
-    private Set<T> excludedArtifacts;
+    private Set<T> excludedArtifacts   = new LinkedHashSet<T>();
 
     /** The included artifacts. */
-    private Set<T> includedArtifacts;
+    private Set<T> includedArtifacts   = new LinkedHashSet<T>();
 
     /** The not changed artifacts. */
-    private Set<T> notChangedArtifacts;
+    private Set<T> notChangedArtifacts = new LinkedHashSet<T>();
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges#getChangedArtifacts()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges
+     * #getChangedArtifacts()
      */
     public Set<T> getChangedArtifacts() {
         return this.changedArtifacts;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges#getExcludedArtifacts()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges
+     * #getExcludedArtifacts()
      */
     public Set<T> getExcludedArtifacts() {
         return this.excludedArtifacts;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges#getIncludedArtifacts()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges
+     * #getIncludedArtifacts()
      */
     public Set<T> getIncludedArtifacts() {
         return this.includedArtifacts;
     }
 
-    /* (non-Javadoc)
-     * @see org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges#getNotChangedArtifacts()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges
+     * #getNotChangedArtifacts()
      */
     public Set<T> getNotChangedArtifacts() {
         return this.notChangedArtifacts;

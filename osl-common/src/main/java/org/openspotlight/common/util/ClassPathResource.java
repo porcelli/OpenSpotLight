@@ -58,27 +58,24 @@ import org.openspotlight.common.exception.SLException;
 
 /**
  * Class for resource loading.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class ClassPathResource {
 
     /**
      * Loads a resource from the current classpath.
-     *
+     * 
      * @param artifactName
      * @return a input stream from classpath
      * @throws SLException
      */
-    public static InputStream getResourceFromClassPath( final String artifactName )
-        throws SLException {
+    public static InputStream getResourceFromClassPath( final String artifactName ) throws SLException {
         checkNotEmpty("location", artifactName); //$NON-NLS-1$
         try {
-            InputStream stream = Thread.currentThread().getContextClassLoader()
-                                       .getResourceAsStream(artifactName);
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(artifactName);
             if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                                    .getResourceAsStream(artifactName);
+                stream = ClassLoader.getSystemClassLoader().getResourceAsStream(artifactName);
             }
             if (stream == null) {
                 stream = ClassPathResource.class.getResourceAsStream(artifactName);
@@ -91,21 +88,19 @@ public class ClassPathResource {
 
     /**
      * Loads a resource from the current classpath.
-     *
+     * 
      * @param clasz class that defines the correct place to search for resource
      * @param resourceName resource name
      * @return a input stream from classpath
      * @throws SLException
      */
     public static InputStream getResourceFromClassPath( final Class<?> clasz,
-                                                        final String resourceName )
-        throws SLException {
+                                                        final String resourceName ) throws SLException {
         checkNotEmpty("location", resourceName); //$NON-NLS-1$
         try {
             InputStream stream = clasz.getResourceAsStream(resourceName);
             if (stream == null) {
-                stream = ClassLoader.getSystemClassLoader()
-                                    .getResourceAsStream(resourceName);
+                stream = ClassLoader.getSystemClassLoader().getResourceAsStream(resourceName);
             }
             if (stream == null) {
                 stream = ClassPathResource.class.getResourceAsStream(resourceName);

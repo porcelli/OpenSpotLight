@@ -58,21 +58,20 @@ import java.lang.annotation.Target;
  * 
  * @author Vitor Hugo Chagas
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
 public @interface SLLinkAttribute {
-	
-	/** The Constant ALLOWS_CHANGE_TO_BIDIRECTIONAL. */
-	public static final int ALLOWS_CHANGE_TO_BIDIRECTIONAL = 1;
-	
-	/** The Constant ALLOWS_MULTIPLE. */
-	public static final int ALLOWS_MULTIPLE = 2;
-	
-	/**
-	 * Value.
-	 * 
-	 * @return the int[]
-	 */
-	int[] value();
-}
 
+    /** The Constant ALLOWS_CHANGE_TO_BIDIRECTIONAL. */
+    public static final int ALLOWS_CHANGE_TO_BIDIRECTIONAL = 1;
+
+    /** The Constant ALLOWS_MULTIPLE. */
+    public static final int ALLOWS_MULTIPLE                = 2;
+
+    /**
+     * Value.
+     * 
+     * @return the int[]
+     */
+    int[] value();
+}

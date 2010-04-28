@@ -61,7 +61,7 @@ import org.junit.Test;
 import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 /**
  * Test for class {@link DNASvnArtifactFinder}
@@ -69,55 +69,53 @@ import org.openspotlight.federation.domain.StreamArtifact;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class DnaSvnArtifactLoaderTest {
 
-	@Test
-	public void shouldLoadAFile() throws Exception {
-		final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
-		bundle.setActive(true);
-		bundle.setName("DNA SVN");
-		bundle
-				.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
-		bundle.setUserName("feuteston");
-		bundle.setPassword("jakadeed");
-		final Repository repository = new Repository();
-		repository.setName("repository");
-		bundle.setRepository(repository);
+    @Test
+    public void shouldLoadAFile() throws Exception {
+        final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
+        bundle.setActive(true);
+        bundle.setName("DNA SVN");
+        bundle.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
+        bundle.setUserName("feuteston");
+        bundle.setPassword("jakadeed");
+        final Repository repository = new Repository();
+        repository.setName("repository");
+        bundle.setRepository(repository);
 
-		final DNASvnArtifactFinder finder = new DNASvnArtifactFinder(bundle);
-		final StreamArtifact sa = finder.findByPath("source/osl/pom.xml");
+        final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
+        final StringArtifact sa = finder.findByPath(StringArtifact.class, bundle, "source/osl/pom.xml");
 
-		assertThat(sa, is(notNullValue()));
-		assertThat(sa.getContent(), is(notNullValue()));
+        assertThat(sa, is(notNullValue()));
+        assertThat(sa.getContent(), is(notNullValue()));
 
-		finder.closeResources();
-	}
+        finder.closeResources();
+    }
 
-	@Ignore
-	// this test is working, but it takes a long time
-	@Test
-	public void shouldRetrieveArtifactNames() throws Exception {
+    @Ignore
+    // this test is working, but it takes a long time
+    @Test
+    public void shouldRetrieveArtifactNames() throws Exception {
 
-		final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
-		bundle.setActive(true);
-		bundle.setName("DNA SVN");
-		bundle
-				.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
-		bundle.setUserName("feuteston");
-		bundle.setPassword("jakadeed");
-		final Repository repository = new Repository();
-		repository.setName("repository");
-		bundle.setRepository(repository);
-		final DNASvnArtifactFinder finder = new DNASvnArtifactFinder(bundle);
-		final Set<String> allNames = finder
-				.retrieveAllArtifactNames("source/osl/osl-common/src/main/java/org/openspotlight/common/");
-		assertThat(allNames.size(), is(not(0)));
+        final DnaSvnArtifactSource bundle = new DnaSvnArtifactSource();
+        bundle.setActive(true);
+        bundle.setName("DNA SVN");
+        bundle.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
+        bundle.setUserName("feuteston");
+        bundle.setPassword("jakadeed");
+        final Repository repository = new Repository();
+        repository.setName("repository");
+        bundle.setRepository(repository);
+        final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
+        final Set<String> allNames = finder.getInternalMethods().retrieveOriginalNames(StringArtifact.class, bundle,
+                                                                                       "source/osl/osl-common/src/main/java/org/openspotlight/common/");
+        assertThat(allNames.size(), is(not(0)));
 
-		finder.closeResources();
-		for (final String n : allNames) {
-			System.out.println(n);
-		}
-	}
+        finder.closeResources();
+        for (final String n : allNames) {
+            System.out.println(n);
+        }
+    }
 
 }

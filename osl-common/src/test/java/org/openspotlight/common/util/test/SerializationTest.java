@@ -65,11 +65,10 @@ import org.junit.Test;
 
 /**
  * Test class for {@link Serialization}
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- *
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class SerializationTest {
 
     @Test

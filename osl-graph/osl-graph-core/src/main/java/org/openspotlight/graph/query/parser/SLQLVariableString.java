@@ -54,6 +54,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.openspotlight.graph.query.SLQLVariable;
+import org.openspotlight.graph.query.SLQLVariableType;
 
 /**
  * The Class SLQLVariableString. This class is a String typed SLQLVariable.
@@ -145,5 +146,12 @@ public class SLQLVariableString extends SLQLVariable {
             return true;
         }
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public SLQLVariableType getType() {
+        return SLQLVariableType.STRING;
     }
 }

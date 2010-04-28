@@ -60,86 +60,83 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
-public class SLIdentityObject implements IdentityObject, SimpleNodeType,
-		Serializable {
+public class SLIdentityObject implements IdentityObject, SimpleNodeType, Serializable {
 
-    private static final long serialVersionUID = -4651245099086963026L;
+    private static final long     serialVersionUID = -4651245099086963026L;
 
-    private String typeAsString;
+    private String                typeAsString;
 
-	private Set<SLAttributeEntry> attributes = new HashSet<SLAttributeEntry>();
+    private Set<SLAttributeEntry> attributes       = new HashSet<SLAttributeEntry>();
 
-	private String id;
+    private String                id;
 
-	private SLIdentityObjectType typedIdentityType;
+    private SLIdentityObjectType  typedIdentityType;
 
-	private String name;
+    private String                name;
 
-	public Set<SLAttributeEntry> getAttributes() {
-		return this.attributes;
-	}
+    public Set<SLAttributeEntry> getAttributes() {
+        return this.attributes;
+    }
 
-	@TransientProperty
-	public Set<SLTransientIdentityObjectAttribute> getAttributesAsIdentityAttributes() {
-		final HashSet<SLTransientIdentityObjectAttribute> result = new HashSet<SLTransientIdentityObjectAttribute>();
-		for (final SLAttributeEntry entry : this.attributes) {
-			result.add(entry.asIdentityAttribute());
-		}
-		return result;
-	}
+    @TransientProperty
+    public Set<SLTransientIdentityObjectAttribute> getAttributesAsIdentityAttributes() {
+        final HashSet<SLTransientIdentityObjectAttribute> result = new HashSet<SLTransientIdentityObjectAttribute>();
+        for (final SLAttributeEntry entry : this.attributes) {
+            result.add(entry.asIdentityAttribute());
+        }
+        return result;
+    }
 
-	@KeyProperty
-	public String getId() {
-		return this.id;
-	}
+    @KeyProperty
+    public String getId() {
+        return this.id;
+    }
 
-	@TransientProperty
-	public IdentityObjectType getIdentityType() {
-		return this.typedIdentityType;
-	}
+    @TransientProperty
+    public IdentityObjectType getIdentityType() {
+        return this.typedIdentityType;
+    }
 
-	@KeyProperty
-	public String getName() {
-		return this.name;
-	}
+    @KeyProperty
+    public String getName() {
+        return this.name;
+    }
 
-	public String getTypeAsString() {
-		return this.typeAsString;
-	}
+    public String getTypeAsString() {
+        return this.typeAsString;
+    }
 
-	public SLIdentityObjectType getTypedIdentityType() {
-		return this.typedIdentityType;
-	}
+    public SLIdentityObjectType getTypedIdentityType() {
+        return this.typedIdentityType;
+    }
 
-	public void setAttributes(final Set<SLAttributeEntry> attributes) {
-		this.attributes = attributes;
-	}
+    public void setAttributes( final Set<SLAttributeEntry> attributes ) {
+        this.attributes = attributes;
+    }
 
-	public void setId(final String id) {
-		this.id = id;
-	}
+    public void setId( final String id ) {
+        this.id = id;
+    }
 
-	public void setIdentityType(final IdentityObjectType identityType) {
-		this.typedIdentityType = (SLIdentityObjectType) identityType;
-		this.typeAsString = identityType == null ? null : identityType
-				.getName();
-	}
+    public void setIdentityType( final IdentityObjectType identityType ) {
+        this.typedIdentityType = (SLIdentityObjectType)identityType;
+        this.typeAsString = identityType == null ? null : identityType.getName();
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public void setName( final String name ) {
+        this.name = name;
+    }
 
-	public void setTypeAsString(final String typeAsString) {
-		this.typeAsString = typeAsString;
-	}
+    public void setTypeAsString( final String typeAsString ) {
+        this.typeAsString = typeAsString;
+    }
 
-	public void setTypedIdentityType(
-			final SLIdentityObjectType typedIdentityType) {
-		this.typedIdentityType = typedIdentityType;
-	}
+    public void setTypedIdentityType( final SLIdentityObjectType typedIdentityType ) {
+        this.typedIdentityType = typedIdentityType;
+    }
 
-	public void validatePolicy() throws PolicyValidationException {
-		// TODO Auto-generated method stub
+    public void validatePolicy() throws PolicyValidationException {
+        // TODO Auto-generated method stub
 
-	}
+    }
 }

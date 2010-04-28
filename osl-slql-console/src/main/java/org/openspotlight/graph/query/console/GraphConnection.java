@@ -68,28 +68,24 @@ public class GraphConnection {
      * Connects at server and returns {@link SLGraphSession}.
      * 
      * @param serverName the server name
+     * @param portNumber the port number
      * @param userName the user name
      * @param passw the passw
+     * @param repositoryName the repository Name
      * @return the graph session
      * @throws SLException the SL exception
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws ClassNotFoundException the class not found exception
      */
-    @SuppressWarnings( "boxing" )
     public SLGraphSession connect( final String serverName,
+                                   final int portNumber,
                                    final String userName,
-                                   final String passw ) throws SLException, IOException, ClassNotFoundException {
-        int port = RemoteGraphSessionFactory.DEFAULT_PORT;
-        String realServerName = serverName;
-        if (serverName.indexOf(':') > 0) {
-            final String portStr = serverName.substring(serverName.indexOf(':') + 1);
-            port = Integer.valueOf(portStr);
-            realServerName = serverName.substring(0, serverName.indexOf(':'));
-        }
+                                   final String passw,
+                                   final String repositoryName ) throws SLException, IOException, ClassNotFoundException {
 
-        this.factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionDataImpl(realServerName, userName, passw,
-                                                                                              port));
-        return this.factory.createRemoteGraphSession(userName, passw);
+        this.factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionDataImpl(serverName, userName, passw,
+                                                                                              portNumber));
+        return this.factory.createRemoteGraphSession(userName, passw, repositoryName);
 
     }
 

@@ -49,21 +49,93 @@
 
 package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
+import java.awt.event.KeyEvent;
+import java.util.Collection;
+import java.util.Iterator;
+
+import static org.openspotlight.common.util.Assertions.*;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Helper class with convenient String methods.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Strings {
 
+    public static boolean containsNonPrintable( String s ) {
+        for (char c : s.toCharArray()) {
+            if (!isPrintableChar(c)) return true;
+        }
+        return false;
+    }
+
+    public static boolean isPrintableChar( char c ) {
+        Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+        return (!Character.isISOControl(c)) && c != KeyEvent.CHAR_UNDEFINED && block != null
+               && block != Character.UnicodeBlock.SPECIALS;
+    }
+
+    public static <T> String bigCollectionsToString( Collection<T> col ) {
+        if (col == null) return "[<null collection>]";
+        Iterator<T> it = col.iterator();
+        T first = null, second = null, third = null;
+        int size = col.size();
+        if (size == 0) return "[<empty collection>]";
+
+        if (size >= 1) {
+            first = it.next();
+            if (size == 1) {
+                return "[" + first + "]";
+            }
+        }
+        if (size >= 2) {
+            second = it.next();
+            if (size == 2) {
+                return "[" + first + ", " + second + "]";
+            }
+        }
+        third = it.next();
+        if (size == 3) {
+            return "[" + first + ", " + second + ", " + third + "]";
+        }
+        return "[" + first + ", " + second + ", " + third + "... + " + size + " items]";
+
+    }
+
+    public static String concatPaths( final String... paths ) {
+        if (paths == null) {
+            return null;
+        }
+        final StringBuilder sb = new StringBuilder();
+        for (final String path : paths) {
+            if (path == null) {
+                continue;
+            }
+            if (sb.toString().endsWith("/")) {
+                if (path.startsWith("/")) {
+                    sb.append(path.substring(1));
+                } else {
+                    sb.append(path);
+                }
+            } else {
+                if (sb.length() > 0) {
+                    if (path.startsWith("/")) {
+                        sb.append(path);
+                    } else {
+                        sb.append("/").append(path);
+                    }
+                } else {
+                    sb.append(path);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     /**
      * Converts the first character to lower case.
-     *
+     * 
      * @param toBeCorrected the to be corrected
      * @return a string that starts with lower case
      */
@@ -81,7 +153,7 @@ public class Strings {
 
     /**
      * Converts the first character to upper case.
-     *
+     * 
      * @param toBeCorrected the to be corrected
      * @return a string that starts with capital letter
      */
@@ -97,9 +169,13 @@ public class Strings {
         return newString;
     }
 
+    public static boolean isEmpty( final String s ) {
+        return s == null || s.trim().length() == 0;
+    }
+
     /**
      * Quote.
-     *
+     * 
      * @param value the value
      * @return the string
      */
@@ -109,7 +185,7 @@ public class Strings {
 
     /**
      * removes an starting string for a bigger string that starts with it.
-     *
+     * 
      * @param beginning the beginning
      * @param toBeCorrected the to be corrected
      * @return the string without the beggining
@@ -126,7 +202,7 @@ public class Strings {
     /**
      * It looks for the string toBeReplaced inside the string toChange from the last character to the first. When found the string
      * toBeReplaced it replaces with the string replacement.
-     *
+     * 
      * @param toChange
      * @param toBeReplaced
      * @param replacement
@@ -145,6 +221,31 @@ public class Strings {
         final String newString = toChange.substring(0, toChange.lastIndexOf(toBeReplaced)) + replacement
                                  + toChange.substring(toBeReplaced.length() + toChange.lastIndexOf(toBeReplaced));
         return newString;
+    }
+
+    public static String rootPath( final String paths ) {
+        if (paths.startsWith("/")) {
+            return paths;
+        }
+        return "/" + paths;
+    }
+
+    /**
+     * removes an starting string for a bigger string that starts with it.
+     * 
+     * @param beginning the beginning
+     * @param toBeCorrected the to be corrected
+     * @return the string without the beggining
+     */
+    public static String tryToRemoveBegginingFrom( final String beginning,
+                                                   final String toBeCorrected ) {
+        checkNotEmpty("beginning", beginning);//$NON-NLS-1$
+        checkNotEmpty("toBeCorrected", toBeCorrected);//$NON-NLS-1$
+        if (toBeCorrected.startsWith(beginning)) {
+            return toBeCorrected.substring(beginning.length());
+        } else {
+            return toBeCorrected;
+        }
     }
 
     /**

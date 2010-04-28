@@ -49,11 +49,9 @@
 
 package org.openspotlight.common.util;
 
-import static java.util.EnumSet.of;
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Equals.eachEquality;
+import com.google.common.collect.ImmutableMap;
+import org.openspotlight.common.Pair;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -63,62 +61,76 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.openspotlight.common.Pair;
+import static java.lang.Class.forName;
+import static java.util.EnumSet.of;
+import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 /**
  * This class has a set of static methods to use for reflection purposes.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Reflection {
 
     /**
      * This enum has the inheritance types between two classes.
-     *
+     * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static enum InheritanceType {
 
-        /** The two types are equals. */
+        /**
+         * The two types are equals.
+         */
         SAME_CLASS,
 
-        /** The first type are inherited from the second. */
+        /**
+         * The first type are inherited from the second.
+         */
         INHERITED_CLASS,
 
-        /** There's no realtion between two types in the given order. */
+        /**
+         * There's no realtion between two types in the given order.
+         */
         NO_INHERITANCE
     }
 
     /**
      * The Class UnwrappedCollectionTypeFromMethodReturn.
-     *
+     * 
      * @param <T>
      */
     public static class UnwrappedCollectionTypeFromMethodReturn<T> {
 
-        /** The collection type. */
+        /**
+         * The collection type.
+         */
         private final Class<? extends Collection<?>> collectionType;
 
-        /** The item type. */
+        /**
+         * The item type.
+         */
         private final Class<T>                       itemType;
 
         /**
          * Instantiates a new unwrapped collection type from method return.
-         *
+         * 
          * @param collectionType the collection type
          * @param itemType the item type
          */
         UnwrappedCollectionTypeFromMethodReturn(
                                                  final Class<? extends Collection<?>> collectionType, final Class<T> itemType ) {
             checkNotNull("collectionType", collectionType);
-            //            checkNotNull("itemType", itemType);
+            // checkNotNull("itemType", itemType);
             this.collectionType = collectionType;
             this.itemType = itemType;
         }
 
         /**
          * Gets the collection type.
-         *
+         * 
          * @return the collection type
          */
         public Class<? extends Collection<?>> getCollectionType() {
@@ -127,7 +139,7 @@ public class Reflection {
 
         /**
          * Gets the item type.
-         *
+         * 
          * @return the item type
          */
         public Class<T> getItemType() {
@@ -138,18 +150,20 @@ public class Reflection {
 
     /**
      * The Class UnwrappedMapTypeFromMethodReturn.
-     *
+     * 
      * @param <K>
      * @param <T>
      */
     public static class UnwrappedMapTypeFromMethodReturn<K, T> {
 
-        /** The item type. */
+        /**
+         * The item type.
+         */
         private final Pair<Class<K>, Class<T>> itemType;
 
         /**
          * Instantiates a new unwrapped map type from method return.
-         *
+         * 
          * @param itemType the item type
          */
         UnwrappedMapTypeFromMethodReturn(
@@ -160,7 +174,7 @@ public class Reflection {
 
         /**
          * Gets the item type.
-         *
+         * 
          * @return the item type
          */
         public Pair<Class<K>, Class<T>> getItemType() {
@@ -169,12 +183,14 @@ public class Reflection {
 
     }
 
-    /** Enum set of the inherited types. */
+    /**
+     * Enum set of the inherited types.
+     */
     public static final Set<InheritanceType> INHERITED_TYPES = of(InheritanceType.SAME_CLASS, InheritanceType.INHERITED_CLASS);
 
     /**
      * Search for inheritance type on the given type array.
-     *
+     * 
      * @param type the type
      * @param types the types
      * @return the inheritance type between the type and found type in a array
@@ -198,7 +214,7 @@ public class Reflection {
 
     /**
      * Search for a type on the given type array.
-     *
+     * 
      * @param type the type
      * @param types the types
      * @return the type (same or inherited) in the given array, or null if it was not found
@@ -222,7 +238,7 @@ public class Reflection {
 
     /**
      * Unwrap collection from method return.
-     *
+     * 
      * @param <T>
      * @param method the method
      * @return the unwrapped collection type from method return< t>
@@ -253,11 +269,10 @@ public class Reflection {
             } else if (theItemType instanceof Class<?>) {
                 itemType = (Class<T>)actualTypeArgs[0];
 
-            }else if(theItemType instanceof ParameterizedType){
-            	final ParameterizedType valueTypeTyped = (ParameterizedType)theItemType;
-            	itemType = (Class<T>) valueTypeTyped.getRawType();
+            } else if (theItemType instanceof ParameterizedType) {
+                final ParameterizedType valueTypeTyped = (ParameterizedType)theItemType;
+                itemType = (Class<T>)valueTypeTyped.getRawType();
             }
-
 
         }
 
@@ -271,7 +286,7 @@ public class Reflection {
 
     /**
      * Unwrap map from method return.
-     *
+     * 
      * @param <K>
      * @param <T>
      * @param method the method
@@ -303,9 +318,9 @@ public class Reflection {
             } else if (theItemTypeKey instanceof Class<?>) {
                 keyType = (Class<K>)theItemTypeKey;
 
-            }else if(theItemTypeKey instanceof ParameterizedType){
-            	final ParameterizedType theItemTypeKeyTyped = (ParameterizedType)theItemTypeKey;
-            	keyType = (Class<K>) theItemTypeKeyTyped.getRawType();
+            } else if (theItemTypeKey instanceof ParameterizedType) {
+                final ParameterizedType theItemTypeKeyTyped = (ParameterizedType)theItemTypeKey;
+                keyType = (Class<K>)theItemTypeKeyTyped.getRawType();
             }
             final Type theItemTypeValue = actualTypeArgs[1];
             if (theItemTypeValue instanceof WildcardType) {
@@ -321,9 +336,9 @@ public class Reflection {
             } else if (theItemTypeValue instanceof Class<?>) {
                 valueType = (Class<T>)theItemTypeValue;
 
-            }else if(theItemTypeValue instanceof ParameterizedType){
-            	final ParameterizedType valueTypeTyped = (ParameterizedType)theItemTypeValue;
-            	valueType = (Class<T>) valueTypeTyped.getRawType();
+            } else if (theItemTypeValue instanceof ParameterizedType) {
+                final ParameterizedType valueTypeTyped = (ParameterizedType)theItemTypeValue;
+                valueType = (Class<T>)valueTypeTyped.getRawType();
             }
 
         }
@@ -333,6 +348,34 @@ public class Reflection {
                                                                                                                                       valueType));
 
         return result;
+    }
+
+    private static final Map<String, Class<?>> primitiveTypes = ImmutableMap.<String, Class<?>>builder().put("byte", Byte.class).put(
+                                                                                                                                     "short",
+                                                                                                                                     Short.class).put(
+                                                                                                                                                      "int",
+                                                                                                                                                      Integer.class).put(
+                                                                                                                                                                         "long",
+                                                                                                                                                                         Long.class).put(
+                                                                                                                                                                                         "float",
+                                                                                                                                                                                         Float.class).put(
+                                                                                                                                                                                                          "double",
+                                                                                                                                                                                                          Double.class).put(
+                                                                                                                                                                                                                            "boolean",
+                                                                                                                                                                                                                            Boolean.class).build();
+
+    public static Class<?> findClassWithoutPrimitives( String name ) {
+        try {
+            if (primitiveTypes.containsKey(name)) return primitiveTypes.get(name);
+            return forName(name);
+        } catch (Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
+        }
+    }
+
+    public static Class<?> findClassWithoutPrimitives( Class<?> possiblePrimitive ) {
+        if (possiblePrimitive.isPrimitive()) return primitiveTypes.get(possiblePrimitive.getName());
+        return possiblePrimitive;
     }
 
 }
