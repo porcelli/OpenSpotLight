@@ -51,17 +51,37 @@ package org.openspotlight.bundle.language.java.bundle.test;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
 import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
 import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class MainClass {
 
     public static void main( final String... args ) throws Exception {
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+        SLGraph graph = injector.getInstance(SLGraph.class);
+
+
+
         final long start = System.currentTimeMillis();
         JcrConnectionProvider.createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR).openSession();
         final javax.jcr.Repository repository = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.DEFAULT_DESCRIPTOR).getRepository();
@@ -87,7 +107,7 @@ public class MainClass {
                 public boolean equals( final Object o ) {
                     return this.getClass().equals(o.getClass());
                 }
-            }, 7070, 60 * 1000 * 10L, DefaultJcrDescriptor.DEFAULT_DESCRIPTOR);
+            }, 7070, 60 * 1000 * 10L, DefaultJcrDescriptor.DEFAULT_DESCRIPTOR,graph);
             System.err.println("Server waiting connections on port 7070");
             while (true) {
                 Thread.sleep(5000);

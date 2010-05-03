@@ -48,7 +48,22 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.Files;
+import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.common.util.StringBuilderUtil;
+import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLMetadata;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.query.SLQuery.SortMode;
+import org.openspotlight.graph.test.domain.link.*;
+import org.openspotlight.graph.test.domain.node.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,82 +73,69 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.openspotlight.common.SharedConstants;
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.common.util.Files;
-import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.openspotlight.graph.test.domain.link.ClassImplementsInterface;
-import org.openspotlight.graph.test.domain.link.JavaClassHierarchy;
-import org.openspotlight.graph.test.domain.link.JavaInterfaceHierarchy;
-import org.openspotlight.graph.test.domain.link.PackageContainsType;
-import org.openspotlight.graph.test.domain.link.TypeContainsMethod;
-import org.openspotlight.graph.test.domain.node.JavaClass;
-import org.openspotlight.graph.test.domain.node.JavaInnerInterface;
-import org.openspotlight.graph.test.domain.node.JavaInterface;
-import org.openspotlight.graph.test.domain.node.JavaPackage;
-import org.openspotlight.graph.test.domain.node.JavaType;
-import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
+import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
 
-public class AbstractGeneralQueryTest {
+public abstract class AbstractGeneralQueryTest {
+
+    protected abstract Callable<Void> createStartUpHandler();
+
+    protected abstract Callable<Void> createShutdownHandler();
+
+    protected abstract SLGraphSession createSession() throws Exception;
+
+    private static Callable<Void> shutdownHandler;
+
+    private boolean didItRun = false;
+      
 
     /**
      * The Class NodeWrapper.
-     * 
+     *
      * @author Vitor Hugo Chagas
      */
     public class NodeWrapper {
 
-        /** The node. */
+        /**
+         * The node.
+         */
         private SLNode node;
 
-        /** The type name. */
+        /**
+         * The type name.
+         */
         private String typeName;
 
-        /** The name. */
+        /**
+         * The name.
+         */
         private String name;
 
-        /** The parent name. */
+        /**
+         * The parent name.
+         */
         private String parentName;
 
         /**
          * Instantiates a new node wrapper.
-         * 
+         *
          * @param node the node
          */
         public NodeWrapper(
-                            final SLNode node ) {
+                final SLNode node) {
             this.node = node;
         }
 
         /**
          * Instantiates a new node wrapper.
-         * 
-         * @param typeName the type name
+         *
+         * @param typeName   the type name
          * @param parentName the parent name
-         * @param name the name
+         * @param name       the name
          */
         public NodeWrapper(
-                            final String typeName, final String parentName, final String name ) {
+                final String typeName, final String parentName, final String name) {
             this.typeName = typeName;
             this.parentName = parentName;
             this.name = name;
@@ -144,14 +146,15 @@ public class AbstractGeneralQueryTest {
          * 
          * @see java.lang.Object#equals(java.lang.Object)
          */
+
         @Override
-        public boolean equals( final Object obj ) {
+        public boolean equals(final Object obj) {
             return hashCode() == obj.hashCode();
         }
 
         /**
          * Gets the name.
-         * 
+         *
          * @return the name
          */
         public String getName() {
@@ -163,7 +166,7 @@ public class AbstractGeneralQueryTest {
 
         /**
          * Gets the parent name.
-         * 
+         *
          * @return the parent name
          */
         public String getParentName() {
@@ -175,7 +178,7 @@ public class AbstractGeneralQueryTest {
 
         /**
          * Gets the type name.
-         * 
+         *
          * @return the type name
          */
         public String getTypeName() {
@@ -190,6 +193,7 @@ public class AbstractGeneralQueryTest {
          * 
          * @see java.lang.Object#hashCode()
          */
+
         @Override
         public int hashCode() {
             return HashCodes.hashOf(getTypeName(), getParentName(), getName());
@@ -197,55 +201,58 @@ public class AbstractGeneralQueryTest {
 
         /**
          * Sets the name.
-         * 
+         *
          * @param name the new name
          */
-        public void setName( final String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
         /**
          * Sets the parent name.
-         * 
+         *
          * @param parentName the new parent name
          */
-        public void setParentName( final String parentName ) {
+        public void setParentName(final String parentName) {
             this.parentName = parentName;
         }
 
         /**
          * Sets the type name.
-         * 
+         *
          * @param typeName the new type name
          */
-        public void setTypeName( final String typeName ) {
+        public void setTypeName(final String typeName) {
             this.typeName = typeName;
         }
     }
 
-    /** The LOGGER. */
-    protected static Logger            LOGGER   = Logger.getLogger(AbstractGeneralQueryTest.class);
-    /** The graph. */
-    protected static SLGraph           graph;
-    /** The session. */
-    protected static SLGraphSession    session;
+    /**
+     * The LOGGER.
+     */
+    protected static Logger LOGGER = Logger.getLogger(AbstractGeneralQueryTest.class);
 
-    /** The session. */
-    protected static AuthenticatedUser user;
+    /**
+     * The session.
+     */
+    protected SLGraphSession session;
 
-    /** The sort mode. */
-    protected static SortMode          sortMode = SortMode.NOT_SORTED;
+
+    /**
+     * The sort mode.
+     */
+    protected static SortMode sortMode = SortMode.NOT_SORTED;
 
     /**
      * Adds the class implements interface links.
-     * 
-     * @param root the root
-     * @param clazz the clazz
+     *
+     * @param root      the root
+     * @param clazz     the clazz
      * @param javaClass the java class
      */
-    private static void addClassImplementsInterfaceLinks( final SLNode root,
-                                                          final Class<?> clazz,
-                                                          final JavaClass javaClass ) {
+    private void addClassImplementsInterfaceLinks(final SLNode root,
+                                                  final Class<?> clazz,
+                                                  final JavaClass javaClass) {
         final Class<?>[] iFaces = clazz.getInterfaces();
         for (final Class<?> iFace : iFaces) {
             final Package iFacePack = iFace.getPackage();
@@ -260,12 +267,12 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Adds the java class contains java class method.
-     * 
-     * @param clazz the clazz
+     *
+     * @param clazz     the clazz
      * @param javaClass the java class
      */
-    private static void addJavaClassContainsJavaClassMethod( final Class<?> clazz,
-                                                             final JavaClass javaClass ) {
+    private void addJavaClassContainsJavaClassMethod(final Class<?> clazz,
+                                                     final JavaClass javaClass) {
         final Method[] methods = clazz.getDeclaredMethods();
         for (final Method method : methods) {
             final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
@@ -277,14 +284,14 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Adds the java class hirarchy links.
-     * 
-     * @param root the root
-     * @param clazz the clazz
+     *
+     * @param root      the root
+     * @param clazz     the clazz
      * @param javaClass the java class
      */
-    private static void addJavaClassHirarchyLinks( final SLNode root,
-                                                   final Class<?> clazz,
-                                                   final JavaClass javaClass ) {
+    private void addJavaClassHirarchyLinks(final SLNode root,
+                                           final Class<?> clazz,
+                                           final JavaClass javaClass) {
         final Class<?> superClass = clazz.getSuperclass();
         if (superClass != null) {
             final Package classPack = clazz.getPackage();
@@ -299,12 +306,12 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Adds the java interface contains java method.
-     * 
-     * @param iFace the i face
+     *
+     * @param iFace         the i face
      * @param javaInterface the java interface
      */
-    private static void addJavaInterfaceContainsJavaMethod( final Class<?> iFace,
-                                                            final JavaInterface javaInterface ) {
+    private void addJavaInterfaceContainsJavaMethod(final Class<?> iFace,
+                                                    final JavaInterface javaInterface) {
         final Method[] methods = iFace.getDeclaredMethods();
         for (final Method method : methods) {
             final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
@@ -316,14 +323,14 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Adds the java interface hirarchy links.
-     * 
-     * @param root the root
-     * @param iFace the i face
+     *
+     * @param root          the root
+     * @param iFace         the i face
      * @param javaInterface the java interface
      */
-    private static void addJavaInterfaceHirarchyLinks( final SLNode root,
-                                                       final Class<?> iFace,
-                                                       final JavaInterface javaInterface ) {
+    private void addJavaInterfaceHirarchyLinks(final SLNode root,
+                                               final Class<?> iFace,
+                                               final JavaInterface javaInterface) {
         final Class<?>[] superIFaces = iFace.getInterfaces();
         for (final Class<?> superIFace : superIFaces) {
             final Package iFacePack = iFace.getPackage();
@@ -341,22 +348,23 @@ public class AbstractGeneralQueryTest {
      * Finish.
      */
     @AfterClass
-    public static void finish() {
-        session.close();
-        shutdownTest();
+    public static void finish() throws Exception {
+
+        shutdownHandler.call();
+        shutdownHandler =null;
     }
 
     /**
      * Load classes.
-     * 
+     *
      * @param fileName the file name
      * @return the collection< class<?>>
-     * @throws SLException the SL exception
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws SLException            the SL exception
+     * @throws IOException            Signals that an I/O exception has occurred.
      * @throws ClassNotFoundException the class not found exception
      */
-    private static Collection<Class<?>> loadClasses( final String fileName )
-        throws SLException, IOException, ClassNotFoundException {
+    private static Collection<Class<?>> loadClasses(final String fileName)
+            throws SLException, IOException, ClassNotFoundException {
         final Collection<Class<?>> classes = new ArrayList<Class<?>>();
         final String packagePath = AbstractGeneralQueryTest.class.getPackage().getName().replace('.', '/');
         final String filePath = packagePath + '/' + fileName;
@@ -371,17 +379,17 @@ public class AbstractGeneralQueryTest {
         return classes;
     }
 
-    protected static void openNewSession() throws Exception {
-        session = graph.openSession(user, SharedConstants.DEFAULT_REPOSITORY_NAME);
-    }
+
 
     /**
      * Gets the resource content. Populate graph.
      */
-    @BeforeClass
-    public static void populateGraph() {
-        try {
-            setupSession();
+    @Before
+    public void populateGraph() throws Exception {
+        if (!didItRun) {
+            this.createStartUpHandler().call();
+            shutdownHandler = createShutdownHandler();
+            this.session = createSession();
 
             sortMode = SortMode.SORTED;
 
@@ -431,53 +439,38 @@ public class AbstractGeneralQueryTest {
             }
 
             final JavaInnerInterface javaInnerInterface = utilJavaPackage.addNode(JavaInnerInterface.class,
-                                                                                  java.util.Map.Entry.class.getName());
+                    java.util.Map.Entry.class.getName());
 
             session.save();
             session.close();
 
-            openNewSession();
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            session = createSession();
         }
+
     }
 
     /**
      * Random tag.
-     * 
+     *
      * @return the int
      */
     private static int randomTag() {
-        return (int)Math.round(Math.random() * 100.0);
+        return (int) Math.round(Math.random() * 100.0);
     }
 
-    protected static void setupSession() throws Exception {
 
-        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
-
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
-        final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
-
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        session = graph.openSession(user, SharedConstants.DEFAULT_REPOSITORY_NAME);
-    }
-
-    protected static void shutdownTest() {
-        graph.shutdown();
-    }
-
-    /** The print info. */
+    /**
+     * The print info.
+     */
     protected boolean printInfo = false;
 
     /**
      * Gets the resource content.
-     * 
+     *
      * @param resourceName the resource name
      * @return the resource content
      */
-    protected String getResourceContent( final String resourceName ) {
+    protected String getResourceContent(final String resourceName) {
         try {
             final InputStream in = this.getClass().getResourceAsStream(resourceName);
             final Reader reader = new InputStreamReader(in);
@@ -499,10 +492,10 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Prints the asserts.
-     * 
+     *
      * @param wrappers the wrappers
      */
-    void printAsserts( final NodeWrapper[] wrappers ) {
+    void printAsserts(final NodeWrapper[] wrappers) {
         final StringBuilder buffer = new StringBuilder();
         StringBuilderUtil.append(buffer, '\n', "assertThat(wrappers.length, is(", wrappers.length, "));", '\n');
         for (final NodeWrapper wrapper : wrappers) {
@@ -518,10 +511,10 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Prints the asserts in order.
-     * 
+     *
      * @param wrappers the wrappers
      */
-    void printAssertsInOrder( final NodeWrapper[] wrappers ) {
+    void printAssertsInOrder(final NodeWrapper[] wrappers) {
         final StringBuilder buffer = new StringBuilder();
         StringBuilderUtil.append(buffer, '\n', "assertThat(wrappers.length, is(", wrappers.length, "));", '\n');
         for (int i = 0; i < wrappers.length; i++) {
@@ -539,16 +532,16 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Prints the result.
-     * 
+     *
      * @param nodes the nodes
      */
-    protected void printResult( final Collection<SLNode> nodes ) {
+    protected void printResult(final Collection<SLNode> nodes) {
         if (printInfo && !nodes.isEmpty()) {
             final StringBuilder buffer = new StringBuilder();
             StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
             for (final SLNode node : nodes) {
                 StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60),
-                                         StringUtils.rightPad(node.getName(), 60), node.getParent().getName(), '\n');
+                        StringUtils.rightPad(node.getName(), 60), node.getParent().getName(), '\n');
             }
             LOGGER.info(buffer);
         }
@@ -556,11 +549,11 @@ public class AbstractGeneralQueryTest {
 
     /**
      * Wrap nodes.
-     * 
+     *
      * @param nodes the nodes
      * @return the node wrapper[]
      */
-    protected NodeWrapper[] wrapNodes( final List<SLNode> nodes ) {
+    protected NodeWrapper[] wrapNodes(final List<SLNode> nodes) {
         final NodeWrapper[] wrappers = new NodeWrapper[nodes.size()];
 
         for (int i = 0; i < wrappers.length; i++) {

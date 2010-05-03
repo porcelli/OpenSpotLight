@@ -78,7 +78,9 @@ import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
@@ -103,7 +105,15 @@ public class JavaBodyElementsPhaseTest {
 
         try {
             final javax.jcr.Repository repository = JcrConnectionProvider.createFromData(descriptor).getRepository();
+            Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                    repositoryPath("repository")),
+                    new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
+
+            SLGraph graph = injector.getInstance(SLGraph.class);
+
+            
             final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
             final RemoteRepository remote = saFactory.getRemoteRepository(repository);
 
@@ -123,7 +133,7 @@ public class JavaBodyElementsPhaseTest {
                     public boolean equals( final Object o ) {
                         return this.getClass().equals(o.getClass());
                     }
-                }, 7070, 60 * 1000 * 10L, descriptor);
+                }, 7070, 60 * 1000 * 10L, descriptor,graph);
                 System.err.println("Server waiting connections on port 7070");
             } finally {
                 if (server != null) {

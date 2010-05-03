@@ -78,7 +78,7 @@ public class ImediateBundleProcessingWebCommand implements WebCommand {
     public String execute( final ExecutionContext context,
                            final Map<String, String> parameters ) throws WebException {
         try {
-            final Set<Repository> allRepositories = context.getDefaultConfigurationManager().getAllRepositories();
+            final Iterable<Repository> allRepositories = context.getDefaultConfigurationManager().getAllRepositories();
             final RepositorySet repositorySet = new RepositorySet();
             repositorySet.setRepositories(allRepositories);
             final SLScheduler scheduler = DefaultScheduler.INSTANCE;

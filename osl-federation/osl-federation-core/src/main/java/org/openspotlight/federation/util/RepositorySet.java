@@ -55,13 +55,13 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class RepositorySet implements SimpleNodeType {
 
-    private Set<Repository> repositories;
+    private Iterable<Repository> repositories;
 
-    public Set<Repository> getRepositories() {
+    public Iterable<Repository> getRepositories() {
         return repositories;
     }
 
-    public void setRepositories( final Set<Repository> repositories ) {
+    public void setRepositories( final Iterable<Repository> repositories ) {
         this.repositories = repositories;
     }
 }

@@ -60,6 +60,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
@@ -307,12 +308,13 @@ public class GroupSupportTest {
     public void shouldPersistAndRetrieveProperties() throws Exception {
         final SessionWithLock session = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).openSession();
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repositoryName")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repositoryName")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(),
+                new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
         SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(
-                                                                                                                                                 SLPartition.FEDERATION);
+                SLPartition.FEDERATION);
 
         final GroupDifferences differences = new GroupDifferences();
         differences.setRepositoryName("repositoryName");

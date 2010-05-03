@@ -48,14 +48,16 @@
  */
 package org.openspotlight.graph;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLMetaLinkTypeNotFoundException;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.link.JavaClassHierarchy;
 import org.openspotlight.graph.test.domain.link.JavaClassHierarchyWithoutProperties;
@@ -64,27 +66,41 @@ import org.openspotlight.graph.test.domain.node.JavaClassNodeWithoutProperties;
 import org.openspotlight.graph.test.domain.node.JavaElementNode;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * The Class SLGraphMetadataPropertiesTest.
- * 
+ *
  * @author porcelli
  */
 public class SLGraphMetadataPropertiesTest {
 
-    /** The Constant LOGGER. */
-    static final Logger              LOGGER = Logger.getLogger(SLGraphQueryTest.class);
+    /**
+     * The Constant LOGGER.
+     */
+    static final Logger LOGGER = Logger.getLogger(SLGraphQueryTest.class);
 
-    /** The graph. */
-    private static SLGraph           graph;
+    /**
+     * The graph.
+     */
+    private static SLGraph graph;
 
-    /** The session. */
-    private static SLGraphSession    session;
+    /**
+     * The session.
+     */
+    private static SLGraphSession session;
 
-    /** The user. */
+    /**
+     * The user.
+     */
     private static AuthenticatedUser user;
 
     /**
@@ -105,14 +121,17 @@ public class SLGraphMetadataPropertiesTest {
 
             JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
 
-            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+            Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                    repositoryPath("repository")),
+                    new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
+
+            graph = injector.getInstance(SLGraph.class);
+
+            final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
-            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-                                                                                                            "password");
-
-            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
             session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -135,7 +154,7 @@ public class SLGraphMetadataPropertiesTest {
         Assert.assertEquals(VisibilityLevel.PUBLIC, metaLink.getMetaProperty("otherProp").getVisibility());
 
         final JavaClassHierarchyWithoutProperties link2 = session.addLink(JavaClassHierarchyWithoutProperties.class, testNode1,
-                                                                          testNode2, false);
+                testNode2, false);
         link2.setProperty(String.class, VisibilityLevel.PUBLIC, "otherProp", "something");
         link2.setProperty(String.class, VisibilityLevel.PRIVATE, "otherProp2", "something");
         session.save();

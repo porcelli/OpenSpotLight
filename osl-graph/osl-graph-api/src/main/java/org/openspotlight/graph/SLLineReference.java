@@ -51,12 +51,14 @@ package org.openspotlight.graph;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
+import java.io.Serializable;
+
 /**
  * The Interface SLLineReference.
  * 
  * @author Vitor Hugo Chagas
  */
-public final class SLLineReference implements SimpleNodeType {
+public final class SLLineReference implements SimpleNodeType, Serializable {
 
     private String nodeId;
     private int    startLine;

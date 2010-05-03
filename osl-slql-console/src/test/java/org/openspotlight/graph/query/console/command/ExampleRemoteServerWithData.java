@@ -48,7 +48,26 @@
  */
 package org.openspotlight.graph.query.console.command;
 
-import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.util.Files;
+import org.openspotlight.graph.*;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.graph.query.console.GraphConnection;
+import org.openspotlight.graph.query.console.test.domain.*;
+import org.openspotlight.graph.server.RemoteGraphSessionServer;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,49 +75,26 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.common.util.Files;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.query.console.GraphConnection;
-import org.openspotlight.graph.query.console.test.domain.ClassImplementsInterface;
-import org.openspotlight.graph.query.console.test.domain.JavaClass;
-import org.openspotlight.graph.query.console.test.domain.JavaClassHierarchy;
-import org.openspotlight.graph.query.console.test.domain.JavaInterface;
-import org.openspotlight.graph.query.console.test.domain.JavaInterfaceHierarchy;
-import org.openspotlight.graph.query.console.test.domain.JavaPackage;
-import org.openspotlight.graph.query.console.test.domain.JavaTypeMethod;
-import org.openspotlight.graph.query.console.test.domain.PackageContainsType;
-import org.openspotlight.graph.query.console.test.domain.TypeContainsMethod;
-import org.openspotlight.graph.server.RemoteGraphSessionServer;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
-import org.openspotlight.security.idm.auth.IdentityException;
+import static org.openspotlight.common.util.ClassPathResource.getResourceFromClassPath;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class ExampleRemoteServerWithData {
+    private static SLGraph graph;
 
     private static class ExampleDataSupport {
+
         /**
          * Adds the class implements interface links.
-         * 
-         * @param root the root
-         * @param clazz the clazz
+         *
+         * @param root      the root
+         * @param clazz     the clazz
          * @param javaClass the java class
-         * @param session the session
+         * @param session   the session
          */
-        private void addClassImplementsInterfaceLinks( final SLGraphSession session,
-                                                       final SLNode root,
-                                                       final Class<?> clazz,
-                                                       final JavaClass javaClass ) {
+        private void addClassImplementsInterfaceLinks(final SLGraphSession session,
+                                                      final SLNode root,
+                                                      final Class<?> clazz,
+                                                      final JavaClass javaClass) {
             final Class<?>[] iFaces = clazz.getInterfaces();
             for (final Class<?> iFace : iFaces) {
                 final Package iFacePack = iFace.getPackage();
@@ -112,14 +108,14 @@ public class ExampleRemoteServerWithData {
 
         /**
          * Adds the java class contains java class method.
-         * 
-         * @param clazz the clazz
+         *
+         * @param clazz     the clazz
          * @param javaClass the java class
-         * @param session the session
+         * @param session   the session
          */
-        private void addJavaClassContainsJavaClassMethod( final SLGraphSession session,
-                                                          final Class<?> clazz,
-                                                          final JavaClass javaClass ) {
+        private void addJavaClassContainsJavaClassMethod(final SLGraphSession session,
+                                                         final Class<?> clazz,
+                                                         final JavaClass javaClass) {
             final Method[] methods = clazz.getDeclaredMethods();
             for (final Method method : methods) {
                 final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
@@ -130,16 +126,16 @@ public class ExampleRemoteServerWithData {
 
         /**
          * Adds the java class hirarchy links.
-         * 
-         * @param root the root
-         * @param clazz the clazz
+         *
+         * @param root      the root
+         * @param clazz     the clazz
          * @param javaClass the java class
-         * @param session the session
+         * @param session   the session
          */
-        private void addJavaClassHirarchyLinks( final SLGraphSession session,
-                                                final SLNode root,
-                                                final Class<?> clazz,
-                                                final JavaClass javaClass ) {
+        private void addJavaClassHirarchyLinks(final SLGraphSession session,
+                                               final SLNode root,
+                                               final Class<?> clazz,
+                                               final JavaClass javaClass) {
             final Class<?> superClass = clazz.getSuperclass();
             if (superClass != null) {
                 final Package classPack = clazz.getPackage();
@@ -154,14 +150,14 @@ public class ExampleRemoteServerWithData {
 
         /**
          * Adds the java interface contains java method.
-         * 
-         * @param iFace the i face
+         *
+         * @param iFace         the i face
          * @param javaInterface the java interface
-         * @param session the session
+         * @param session       the session
          */
-        private void addJavaInterfaceContainsJavaMethod( final SLGraphSession session,
-                                                         final Class<?> iFace,
-                                                         final JavaInterface javaInterface ) {
+        private void addJavaInterfaceContainsJavaMethod(final SLGraphSession session,
+                                                        final Class<?> iFace,
+                                                        final JavaInterface javaInterface) {
             final Method[] methods = iFace.getDeclaredMethods();
             for (final Method method : methods) {
                 final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
@@ -172,16 +168,16 @@ public class ExampleRemoteServerWithData {
 
         /**
          * Adds the java interface hirarchy links.
-         * 
-         * @param root the root
-         * @param iFace the i face
+         *
+         * @param root          the root
+         * @param iFace         the i face
          * @param javaInterface the java interface
-         * @param session the session
+         * @param session       the session
          */
-        private void addJavaInterfaceHirarchyLinks( final SLGraphSession session,
-                                                    final SLNode root,
-                                                    final Class<?> iFace,
-                                                    final JavaInterface javaInterface ) {
+        private void addJavaInterfaceHirarchyLinks(final SLGraphSession session,
+                                                   final SLNode root,
+                                                   final Class<?> iFace,
+                                                   final JavaInterface javaInterface) {
             final Class<?>[] superIFaces = iFace.getInterfaces();
             for (final Class<?> superIFace : superIFaces) {
                 final Package iFacePack = iFace.getPackage();
@@ -197,14 +193,14 @@ public class ExampleRemoteServerWithData {
 
         /**
          * Load classes.
-         * 
+         *
          * @param fileName the file name
          * @return the collection< class<?>>
-         * @throws SLException the SL exception
-         * @throws IOException Signals that an I/O exception has occurred.
+         * @throws SLException            the SL exception
+         * @throws IOException            Signals that an I/O exception has occurred.
          * @throws ClassNotFoundException the class not found exception
          */
-        private Collection<Class<?>> loadClasses( final String fileName ) throws SLException, IOException, ClassNotFoundException {
+        private Collection<Class<?>> loadClasses(final String fileName) throws SLException, IOException, ClassNotFoundException {
             final Collection<Class<?>> classes = new ArrayList<Class<?>>();
             final String packagePath = GraphConnection.class.getPackage().getName().replace('.', '/');
             final String filePath = packagePath + '/' + fileName;
@@ -221,21 +217,26 @@ public class ExampleRemoteServerWithData {
 
         /**
          * Gets the populated graph. This method is temporary and used just for testing purpose!
-         * 
+         *
          * @return the populated graph
-         * @throws SLException the SL exception
-         * @throws IOException Signals that an I/O exception has occurred.
+         * @throws SLException            the SL exception
+         * @throws IOException            Signals that an I/O exception has occurred.
          * @throws ClassNotFoundException the class not found exception
          */
         public void populateGraph() throws SLException, IOException, ClassNotFoundException, IdentityException {
-            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
-            final User simpleUser = securityFactory.createUser("testUser");
-            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                                                                                                                              simpleUser,
-                                                                                                                              "password");
 
-            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+            Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                    repositoryPath("repository")),
+                    new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+            graph = injector.getInstance(SLGraph.class);
+            final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
+            final User simpleUser = securityFactory.createUser("testUser");
+            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
             final SLGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");
@@ -287,7 +288,7 @@ public class ExampleRemoteServerWithData {
 
     }
 
-    public static void main( final String... args ) throws Exception {
+    public static void main(final String... args) throws Exception {
 
         RemoteGraphSessionServer server = null;
         try {
@@ -308,16 +309,16 @@ public class ExampleRemoteServerWithData {
 
         return new RemoteGraphSessionServer(new UserAuthenticator() {
 
-            public boolean canConnect( final String userName,
-                                       final String password,
-                                       final String clientHost ) {
+            public boolean canConnect(final String userName,
+                                      final String password,
+                                      final String clientHost) {
                 return true;
             }
 
-            public boolean equals( final Object o ) {
+            public boolean equals(final Object o) {
                 return this.getClass().equals(o.getClass());
             }
-        }, 7070, 60 * 1000 * 10L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        }, 7070, 60 * 1000 * 10L, DefaultJcrDescriptor.TEMP_DESCRIPTOR, graph);
 
     }
 

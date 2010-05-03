@@ -63,6 +63,7 @@ import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -106,6 +107,8 @@ public abstract class AbstractTestServerClass {
         }
     }
 
+    protected abstract SLGraph getGraph();
+
     protected final void exposeGraphServerAndStillWaiting() {
         RemoteGraphSessionServer server = null;
         try {
@@ -121,7 +124,7 @@ public abstract class AbstractTestServerClass {
                     public boolean equals( final Object o ) {
                         return this.getClass().equals(o.getClass());
                     }
-                }, 7070, 60 * 1000 * 10L, getDescriptor());
+                }, 7070, 60 * 1000 * 10L, getDescriptor(),getGraph());
                 System.err.println("Server waiting connections on port 7070");
                 if (!shutdownAtFinish()) {
                     while (true) {

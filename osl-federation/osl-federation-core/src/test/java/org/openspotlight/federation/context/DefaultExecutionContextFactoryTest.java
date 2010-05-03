@@ -48,7 +48,6 @@
  */
 package org.openspotlight.federation.context;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
@@ -61,15 +60,13 @@ import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -77,17 +74,18 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class DefaultExecutionContextFactoryTest {
 
-    private ExecutionContext               context;
+    private ExecutionContext context;
 
     private static ExecutionContextFactory factory;
 
     @BeforeClass
     public static void setup() throws Exception {
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(),
+                new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
         factory = injector.getInstance(ExecutionContextFactory.class);
 
     }

@@ -47,35 +47,40 @@
  * Boston, MA  02110-1301  USA
  */
 /**
- * 
+ *
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.IncludedResult;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.ResultOrder;
-import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphFactoryImpl;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.User;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * Test class for {@link JavaTypeResolver}.
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 
@@ -84,18 +89,19 @@ public class CachedJavaTypeResolverTest extends JavaTypeResolverTest {
 
     /**
      * Setup java finder.
-     * 
+     *
      * @throws Exception the exception
      */
     @BeforeClass
     public static void setupJavaFinder() throws Exception {
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
-        final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        final SLGraphFactory factory = new SLGraphFactoryImpl();
 
-        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        SLGraph graph = injector.getInstance(SLGraph.class);
+
         session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         SLContext abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT);
         SLContext jre14ctx = session.createContext("JRE-util-1.4");
@@ -103,18 +109,18 @@ public class CachedJavaTypeResolverTest extends JavaTypeResolverTest {
         SLContext crudFrameworkCtx = session.createContext("Crud-1.2");
         final SLContext crudFrameworkLegacyCtx = session.createContext("Crud-0.5-legacy");
         final JavaGraphNodeSupport jre5support = new JavaGraphNodeSupport(session, jre15ctx.getRootNode(),
-                                                                          abstractContext.getRootNode());
+                abstractContext.getRootNode());
         final JavaGraphNodeSupport jre4support = new JavaGraphNodeSupport(session, jre14ctx.getRootNode(),
-                                                                          abstractContext.getRootNode());
+                abstractContext.getRootNode());
 
         createJavaNodes(jre4support);
         createJavaNodes(jre5support);
 
         final JavaGraphNodeSupport crudFrameworkSupport = new JavaGraphNodeSupport(session, crudFrameworkCtx.getRootNode(),
-                                                                                   abstractContext.getRootNode());
+                abstractContext.getRootNode());
         final JavaGraphNodeSupport crudFrameworkLegacySupport = new JavaGraphNodeSupport(session,
-                                                                                         crudFrameworkLegacyCtx.getRootNode(),
-                                                                                         abstractContext.getRootNode());
+                crudFrameworkLegacyCtx.getRootNode(),
+                abstractContext.getRootNode());
         createCrudNodes(crudFrameworkSupport);
         createCrudNodes(crudFrameworkLegacySupport);
         session.save();
@@ -138,13 +144,13 @@ public class CachedJavaTypeResolverTest extends JavaTypeResolverTest {
         final long start1 = System.currentTimeMillis();
         final JavaType type1 = anotherCachedJavaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
         final List<? extends JavaType> result1 = javaTypeFinder.getAllParents(type1, ResultOrder.DESC,
-                                                                              IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+                IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         final long end1 = System.currentTimeMillis();
         final long diff1 = end1 - start1;
         final long start2 = System.currentTimeMillis();
         final JavaType type2 = anotherCachedJavaTypeFinder.getType("com.crud.dao.CustomerDaoImpl");
         final List<? extends JavaType> result2 = javaTypeFinder.getAllParents(type2, ResultOrder.DESC,
-                                                                              IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
+                IncludedResult.INCLUDE_ACTUAL_TYPE_ON_RESULT);
         final long end2 = System.currentTimeMillis();
         final long diff2 = end2 - start2;
         // faster

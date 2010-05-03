@@ -48,33 +48,43 @@
  */
 package org.openspotlight.graph;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.common.exception.AbstractFactoryException;
-import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 @Ignore
 public class GraphSavingTest {
 
-    /** The Constant LOGGER. */
-    static final Logger              LOGGER = Logger.getLogger(SLGraphTest.class);
+    /**
+     * The Constant LOGGER.
+     */
+    static final Logger LOGGER = Logger.getLogger(SLGraphTest.class);
 
-    /** The graph. */
-    private static SLGraph           graph;
+    /**
+     * The graph.
+     */
+    private static SLGraph graph;
 
-    /** The session. */
-    private static SLGraphSession    session;
+    /**
+     * The session.
+     */
+    private static SLGraphSession session;
 
     private static AuthenticatedUser user;
 
@@ -89,19 +99,24 @@ public class GraphSavingTest {
 
     /**
      * Inits the.
-     * 
+     *
      * @throws AbstractFactoryException the abstract factory exception
      */
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        GraphSavingTest.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+
+        graph = injector.getInstance(SLGraph.class);
+
+        final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         GraphSavingTest.user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                                                                                                                        simpleUser,
-                                                                                                                        "password");
+                simpleUser,
+                "password");
     }
 
     @Test
@@ -139,14 +154,14 @@ public class GraphSavingTest {
     public void shouldSaveChangesOnOneSessionAndDontSaveOnAnother() throws Exception {
 
         final SLGraphSession sessionToSave = GraphSavingTest.graph.openSession(GraphSavingTest.user,
-                                                                               SLConsts.DEFAULT_REPOSITORY_NAME);
+                SLConsts.DEFAULT_REPOSITORY_NAME);
         sessionToSave.createContext("new saved context").getRootNode().addNode("node 1 saved").addNode("node 2 saved");
         sessionToSave.save();
         sessionToSave.close();
         final SLGraphSession sessionToDismiss = GraphSavingTest.graph.openSession(GraphSavingTest.user,
-                                                                                  SLConsts.DEFAULT_REPOSITORY_NAME);
+                SLConsts.DEFAULT_REPOSITORY_NAME);
         sessionToDismiss.createContext("new context not saved").getRootNode().addNode("node 1 not saved").addNode(
-                                                                                                                  "node 2 not saved");
+                "node 2 not saved");
         sessionToDismiss.close();
 
         final SLGraphSession session1 = GraphSavingTest.graph.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);

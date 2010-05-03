@@ -53,6 +53,8 @@ import java.util.Set;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
@@ -65,12 +67,20 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
 import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.DefaultUserAuthenticator;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.openspotlight.web.command.InitialImportWebCommand;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * The listener interface for receiving oslContext events. The class that is interested in processing a oslContext event
@@ -99,6 +109,15 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
     public void contextInitialized( final ServletContextEvent sce ) {
         try {
             JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
+            Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                    repositoryPath("repository")),
+                    new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+            SLGraph graph = injector.getInstance(SLGraph.class);
+
+            
             final String jcrDescriptorName = sce.getServletContext().getInitParameter("JCR_DESCRIPTOR");
             final String remotePortAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_PORT");
             final String remoteGraphTimeoutAsString = sce.getServletContext().getInitParameter("REMOTE_GRAPH_TIMEOUT");
@@ -123,23 +142,23 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
                                                                             descriptor, dummyRepo);
 
             GlobalSettings settings = context.getDefaultConfigurationManager().getGlobalSettings();
-            Set<Repository> repositories = context.getDefaultConfigurationManager().getAllRepositories();
+            Iterable<Repository> repositories = context.getDefaultConfigurationManager().getAllRepositories();
 
-            if (settings == null || repositories == null || repositories.size() == 0) {
+            if (settings == null || repositories == null || !repositories.iterator().hasNext()) {
                 // needs to load the xml again
                 new InitialImportWebCommand().execute(context, Arrays.map(Arrays.of("forceReload"), Arrays.andOf("true")));
                 settings = context.getDefaultConfigurationManager().getGlobalSettings();
                 repositories = context.getDefaultConfigurationManager().getAllRepositories();
                 Assertions.checkNotNull("settings", settings);
                 Assertions.checkNotNull("repositories", repositories);
-                Assertions.checkCondition("repositoriesSizePositive", repositories.size() > 0);
+                Assertions.checkCondition("repositoriesSizePositive", repositories.iterator().hasNext());
             }
             final SLScheduler scheduler = DefaultScheduler.INSTANCE;
             scheduler.initializeSettings(factory, SLConsts.SYSTEM_USER, SLConsts.SYSTEM_PASSWORD, descriptor);
             scheduler.refreshJobs(settings, repositories);
 
             server = new RemoteGraphSessionServer(new DefaultUserAuthenticator(descriptor), remotePort, remoteGraphTimeout,
-                                                  descriptor);
+                                                  descriptor,graph);
 
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, ConfigurationException.class);

@@ -117,13 +117,12 @@ public class SLCollections {
      * Creates the new collection.
      * 
      * @param <I>
-     * @param <C>
      * @param collectionType the collection type
      * @param initialSize the initial size
      * @return the c
      */
     @SuppressWarnings( "unchecked" )
-    public static <I> Collection<I> createNewCollection( final Class<? extends Collection> collectionType,
+    public static <I> Collection<I> createNewCollection( final Class<? extends Iterable> collectionType,
                                                          final int initialSize ) {
         if (NeedsSyncronizationSet.class.isAssignableFrom(collectionType)) {
             return LockedCollections.createSetWithLock(new UnsafeDummyLockContainer(), new HashSet<I>(initialSize));

@@ -56,7 +56,6 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.support.SimplePersistFactory;
@@ -68,23 +67,26 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SingleGraphSessionExecutionContextFactory
-    implements ExecutionContextFactory, DisposingListener<DefaultExecutionContext> {
+        implements ExecutionContextFactory, DisposingListener<DefaultExecutionContext> {
+
+    private final SLGraph graph;
 
     private final CopyOnWriteArrayList<SingleGraphSessionExecutionContext> openedContexts = new CopyOnWriteArrayList<SingleGraphSessionExecutionContext>();
-    private AuthenticatedUser                                              user;
+    private AuthenticatedUser user;
 
-    private final ConcurrentHashMap<String, SLGraphSession>                sessionMap     = new ConcurrentHashMap<String, SLGraphSession>();
+    private final ConcurrentHashMap<String, SLGraphSession> sessionMap = new ConcurrentHashMap<String, SLGraphSession>();
 
-    private final SimplePersistFactory                                     simplePersistFactory;
+    private final SimplePersistFactory simplePersistFactory;
 
-    private final DetailedLoggerProvider                                   detailedLoggerProvider;
+    private final DetailedLoggerProvider detailedLoggerProvider;
 
     @Inject
     public SingleGraphSessionExecutionContextFactory(
-                                                      SimplePersistFactory simplePersistFactory,
-                                                      DetailedLoggerProvider detailedLoggerProvider ) {
+            SimplePersistFactory simplePersistFactory,
+            DetailedLoggerProvider detailedLoggerProvider, SLGraph graph) {
         this.simplePersistFactory = simplePersistFactory;
         this.detailedLoggerProvider = detailedLoggerProvider;
+        this.graph = graph;
     }
 
     public synchronized void closeResources() {
@@ -97,10 +99,10 @@ public class SingleGraphSessionExecutionContextFactory
         sessionMap.clear();
     }
 
-    public synchronized ExecutionContext createExecutionContext( final String username,
-                                                                 final String password,
-                                                                 final JcrConnectionDescriptor descriptor,
-                                                                 final Repository repository ) {
+    public synchronized ExecutionContext createExecutionContext(final String username,
+                                                                final String password,
+                                                                final JcrConnectionDescriptor descriptor,
+                                                                final Repository repository) {
 
         try {
             SLGraphSession graphSession = sessionMap.get(repository.getName());
@@ -108,16 +110,16 @@ public class SingleGraphSessionExecutionContextFactory
                 final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
                 final User simpleUser = securityFactory.createUser(username);
                 user = securityFactory.createIdentityManager(descriptor).authenticate(simpleUser, password);
-                final SLGraph graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(descriptor);
+
                 graphSession = graph.openSession(user, repository.getName());
                 sessionMap.put(repository.getName(), graphSession);
             }
             final SingleGraphSessionExecutionContext newContext = new SingleGraphSessionExecutionContext(username, password,
-                                                                                                         descriptor, repository,
-                                                                                                         this, user,
-                                                                                                         graphSession,
-                                                                                                         simplePersistFactory,
-                                                                                                         detailedLoggerProvider);
+                    descriptor, repository,
+                    this, user,
+                    graphSession,
+                    simplePersistFactory,
+                    detailedLoggerProvider, graph);
             openedContexts.add(newContext);
             return newContext;
         } catch (final Exception e) {
@@ -125,7 +127,7 @@ public class SingleGraphSessionExecutionContextFactory
         }
     }
 
-    public void didCloseResource( final DefaultExecutionContext context ) {
+    public void didCloseResource(final DefaultExecutionContext context) {
         openedContexts.remove(context);
     }
 

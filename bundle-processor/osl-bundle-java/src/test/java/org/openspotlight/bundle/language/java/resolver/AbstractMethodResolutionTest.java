@@ -51,6 +51,8 @@ package org.openspotlight.bundle.language.java.resolver;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -73,17 +75,23 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public abstract class AbstractMethodResolutionTest {
 
@@ -102,12 +110,14 @@ public abstract class AbstractMethodResolutionTest {
      */
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
-        final User simpleUser = securityFactory.createUser("testUser");
-        user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+
+        SLGraph graph = injector.getInstance(SLGraph.class);
+
     }
 
     protected MethodResolver<JavaType, JavaMethod> methodResolver = null;

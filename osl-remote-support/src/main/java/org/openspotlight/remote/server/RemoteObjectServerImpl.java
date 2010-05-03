@@ -79,6 +79,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
@@ -359,7 +360,11 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
     public synchronized void closeAllObjects() {
         for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> e : remoteReferences.entrySet()) {
-            removeDeathEntry(e.getValue());
+            try{
+                removeDeathEntry(e.getValue());
+            }catch(Exception ex){
+                Exceptions.catchAndLog("error on closing death object entry",ex);
+            }
         }
     }
 
@@ -431,7 +436,6 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     /**
      * Garbage collection.
      * 
-     * @param acceptableDiff the acceptable diff
      */
     private void garbageCollection() {
         while (true) {
@@ -824,10 +828,9 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                                                                                                 final R collection )
         throws Exception {
         final UnwrappedCollectionTypeFromMethodReturn<Object> metadata = Reflection.unwrapCollectionFromMethodReturn(method);
-        final Class<? extends Collection<?>> collectionType = metadata.getCollectionType();
+        final Class<? extends Iterable<?>> collectionType = metadata.getCollectionType();
         final Class<W> remoteReferenceType = (Class<W>)metadata.getItemType();
-        final Collection<RemoteReference<W>> remoteReferencesCollection = SLCollections.createNewCollection(collectionType,
-                                                                                                            collection.size());
+        final Collection<RemoteReference<W>> remoteReferencesCollection = SLCollections.createNewCollection(collectionType,0);
 
         for (final W o : collection) {
             final RemoteReference<W> remoteRef = this.internalCreateRemoteReference(userToken, remoteReferenceType, o);

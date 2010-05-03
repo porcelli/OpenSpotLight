@@ -267,7 +267,7 @@ public enum DefaultScheduler implements SLScheduler {
 
     @SuppressWarnings( "unchecked" )
     private Map<String, OslInternalSchedulerCommand> groupJobsByCronInformation( final GlobalSettings settings,
-                                                                                 final Set<Repository> repositories ) {
+                                                                                 final Iterable<Repository> repositories ) {
         @SuppressWarnings( "unused" )
         final Map<Class<? extends Schedulable>, Class<? extends SchedulableCommand>> commandMap = settings.getSchedulableCommandMap();
 
@@ -359,7 +359,7 @@ public enum DefaultScheduler implements SLScheduler {
     }
 
     public synchronized void refreshJobs( final GlobalSettings settings,
-                                          final Set<Repository> repositories ) {
+                                          final Iterable<Repository> repositories ) {
         Assertions.checkNotNull("settings", settings);
         Assertions.checkNotNull("repositories", repositories);
         Assertions.checkNotNull("internalData", internalData.get());

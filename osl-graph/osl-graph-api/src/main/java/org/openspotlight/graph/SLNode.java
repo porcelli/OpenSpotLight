@@ -59,7 +59,6 @@ import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLPropertyNotFoundException;
 import org.openspotlight.graph.exception.SLPropertyTypeInvalidException;
 import org.openspotlight.log.LogableObject;
-import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.remote.annotation.DisposeMethod;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
@@ -83,8 +82,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * @param artifactVersion the artifact version
      * @return the sL line reference
      */
-    public SLLineReference addLineReference( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
-                                             int startLine,
+    public SLLineReference addLineReference( int startLine,
                                              int endLine,
                                              int startColumn,
                                              int endColumn,
@@ -271,7 +269,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * 
      * @return the line references
      */
-    public NeedsSyncronizationCollection<SLLineReference> getLineReferences( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist );
+    public Collection<SLLineReference> getLineReferences();
 
     /**
      * Gets the line references for a specific artifactId.
@@ -279,8 +277,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * @param artifactId the artifact id
      * @return the line references
      */
-    public NeedsSyncronizationCollection<SLLineReference> getLineReferences( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
-                                                                             String artifactId );
+    public Collection<SLLineReference> getLineReferences( String artifactId );
 
     /**
      * Gets the meta type.
@@ -396,7 +393,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * 
      * @return the tree line references
      */
-    public SLTreeLineReference getTreeLineReferences( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist );
+    public SLTreeLineReference getTreeLineReferences( );
 
     /**
      * Gets line references in tree format for a specific artifact.
@@ -404,8 +401,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * @param artifactId the artifact id
      * @return the tree line references
      */
-    public SLTreeLineReference getTreeLineReferences( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
-                                                      String artifactId );
+    public SLTreeLineReference getTreeLineReferences( String artifactId );
 
     /**
      * Gets the type name.

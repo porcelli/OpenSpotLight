@@ -64,6 +64,7 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl;
 import org.openspotlight.federation.log.DetailedLoggerModule;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.STStorageSession;
@@ -84,10 +85,10 @@ public class ArtifactLoaderManagerTest {
     @Test
     public void shouldLoad() throws Exception {
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
         final GlobalSettings settings = new GlobalSettings();
         settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
@@ -113,12 +114,12 @@ public class ArtifactLoaderManagerTest {
         source.setInitialLookup(initial);
         source.setName("sourceName");
         ExecutionContext ctx = injector.getInstance(ExecutionContextFactory.class).createExecutionContext(
-                                                                                                          "",
-                                                                                                          "",
-                                                                                                          DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                                          repository);
+                "",
+                "",
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                repository);
         PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
-                                                                                                   repository);
+                repository);
 
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, source, provider);
         Set<StringArtifact> artifacts = provider.get().listByPath(StringArtifact.class, null);

@@ -47,54 +47,66 @@
  * Boston, MA  02110-1301  USA
  */
 /**
- * 
+ *
  */
 package org.openspotlight.graph;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.AbstractFactoryException;
-import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.test.domain.node.JavaClass;
 import org.openspotlight.graph.test.domain.node.JavaPackage;
 import org.openspotlight.graph.test.domain.node.JavaType;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class DuplicateTest {
 
-    SLGraph           graph   = null;
-    SLGraphSession    session = null;
-    AuthenticatedUser user    = null;
+    SLGraph graph = null;
+    SLGraphSession session = null;
+    AuthenticatedUser user = null;
 
     @Before
     public void setup() throws AbstractFactoryException, SLGraphException, IdentityException {
 
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+        graph = injector.getInstance(SLGraph.class);
+
+        final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
-
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 
@@ -157,9 +169,9 @@ public class DuplicateTest {
         final SLQueryApi query = session.createQueryApi();
         query
 
-        .select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                          "caption").equalsTo().value(
-                                                                                                                                                                      "someName").typeEnd().whereEnd();
+                .select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
+                "caption").equalsTo().value(
+                "someName").typeEnd().whereEnd();
 
         final SLQueryResult result = query.execute();
         // aqui o map possui uma lista de nodes para cada id de contexto.
@@ -208,9 +220,9 @@ public class DuplicateTest {
         final SLQueryApi query = session.createQueryApi();
         query
 
-        .select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                          "caption").equalsTo().value(
-                                                                                                                                                                      "someName").typeEnd().whereEnd();
+                .select().type(JavaType.class.getName()).subTypes().selectEnd().where().type(JavaType.class.getName()).subTypes().each().property(
+                "caption").equalsTo().value(
+                "someName").typeEnd().whereEnd();
 
         final SLQueryResult result = query.execute();
         // aqui o map possui uma lista de nodes para cada id de contexto.

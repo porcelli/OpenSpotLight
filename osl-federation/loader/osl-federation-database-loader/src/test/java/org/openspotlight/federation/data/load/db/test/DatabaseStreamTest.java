@@ -63,6 +63,8 @@ import org.openspotlight.federation.finder.PersistentArtifactManagerProviderImpl
 import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.loader.ArtifactLoaderManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
+import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
@@ -93,10 +95,10 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
  * This test is intended to be used to test scripts to retrieve stream artifacts for a given {@link }. Most of the environments
  * used to run <code>mvn clean install</code> would not have all the database types. But there's a need to have a test for each
  * type on the source code. On this cases, the tests will be annotated with {@link } annotation.
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public abstract class DatabaseStreamTest {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -109,28 +111,28 @@ public abstract class DatabaseStreamTest {
     /**
      * Here a valid configuration to connect on the target database should be created. The necessary data to be created here are
      * the database connection and also the artifact mappings to load all artifacts been tested for a given type.
-     * 
+     *
      * @return a valid database configuration
      */
     protected abstract DbArtifactSource createValidConfigurationWithMappings();
 
     /**
      * Fill the data necessary to run the database tests. For example, here it could be created procedure, triggers and so on.
-     * 
+     *
      * @param conn
      * @throws Exception
      */
-    protected void fillDatabase( final Connection conn ) throws Exception {
+    protected void fillDatabase(final Connection conn) throws Exception {
         //
     }
 
     /**
      * Here's an option to reset all filled data on the database.
-     * 
+     *
      * @param conn
      * @throws Exception
      */
-    protected void resetDatabase( final Connection conn ) throws Exception {
+    protected void resetDatabase(final Connection conn) throws Exception {
         //
     }
 
@@ -139,7 +141,7 @@ public abstract class DatabaseStreamTest {
     /**
      * This test method will load all artifacts from the configuration and assert if all artifacts of the {@link #typesToAssert()}
      * are loaded.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -150,7 +152,7 @@ public abstract class DatabaseStreamTest {
                 validateAllTypes();
             } else {
                 logger.warn(format("Ignoring test {0} because system property {1} isn't set to true.",
-                                   this.getClass().getSimpleName(), "runDatabaseVendorTests"));
+                        this.getClass().getSimpleName(), "runDatabaseVendorTests"));
             }
         } else {
             validateAllTypes();
@@ -181,26 +183,27 @@ public abstract class DatabaseStreamTest {
         }
 
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
         injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
 
         SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(
-                                                                                                                                                 SLPartition.FEDERATION);
+                SLPartition.FEDERATION);
 
         PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
-                                                                                               injector.getInstance(SimplePersistFactory.class),
-                                                                                               bundle.getRepository());
+                injector.getInstance(SimplePersistFactory.class),
+                bundle.getRepository());
 
         ArtifactLoaderManager.INSTANCE.refreshResources(configuration, bundle, provider);
 
         Set<StringArtifact> loadedArtifacts = provider.get().listByPath(StringArtifact.class, null);
         final Set<String> failMessages = new HashSet<String>();
-        lookingTypes: for (final ScriptType typeToAssert : typesToAssert()) {
+        lookingTypes:
+        for (final ScriptType typeToAssert : typesToAssert()) {
             for (final Artifact artifact : loadedArtifacts) {
-                final StringArtifact streamArtifact = (StringArtifact)artifact;
+                final StringArtifact streamArtifact = (StringArtifact) artifact;
                 final String relativeName = streamArtifact.getArtifactCompleteName();
                 if (relativeName.contains(typeToAssert.name())) {
                     assertThat(streamArtifact.getContent(), is(notNullValue()));
@@ -208,15 +211,15 @@ public abstract class DatabaseStreamTest {
                 }
             }
             failMessages.add(format("Type {0} was not found in any of strings: {1}", //$NON-NLS-1$
-                                    typeToAssert, loadedArtifacts));
+                    typeToAssert, loadedArtifacts));
         }
         if (!failMessages.isEmpty()) {
             fail(failMessages.toString());
         }
         for (final Artifact artifact : loadedArtifacts) {
-            final StringArtifact streamArtifact = (StringArtifact)artifact;
+            final StringArtifact streamArtifact = (StringArtifact) artifact;
             final String name = "./target/test-data/" + this.getClass().getSimpleName() + "/"
-                                + streamArtifact.getArtifactCompleteName().replaceAll(" ", "");// DB2 has
+                    + streamArtifact.getArtifactCompleteName().replaceAll(" ", "");// DB2 has
             // some
             // spaces
             final String dirName = name.substring(0, name.lastIndexOf('/'));

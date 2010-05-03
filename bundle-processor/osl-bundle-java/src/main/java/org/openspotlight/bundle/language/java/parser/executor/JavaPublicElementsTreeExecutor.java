@@ -160,7 +160,7 @@ public class JavaPublicElementsTreeExecutor {
             Assertions.checkCondition("validEndCharOffset:" + typed.getEndCharOffset(),
                                       typed.getEndCharOffset() > 0 && typed.getEndCharOffset() >= typed.getStartCharOffset());
             Assertions.checkNotEmpty("text", typed.getText());
-            node.addLineReference(simplePersist, typed.getLine(), typed.getLine(), typed.getStartCharOffset(),
+            node.addLineReference( typed.getLine(), typed.getLine(), typed.getStartCharOffset(),
                                   typed.getEndCharOffset(), typed.getText(), completeArtifactName, artifactVersion);
             typed.setNode(node);
         } catch (final Exception e) {

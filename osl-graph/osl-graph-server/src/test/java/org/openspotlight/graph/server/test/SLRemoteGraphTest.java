@@ -48,47 +48,70 @@
  */
 package org.openspotlight.graph.server.test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
 import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.graph.test.BaseGraphTest;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * The Class SLGraphTest.
- * 
+ *
  * @author Vitor Hugo Chagas
  */
 
 public class SLRemoteGraphTest extends BaseGraphTest {
+    @Override
+    protected void clearSession() {
+        session.close();
+        session = null;
 
-    private static final String              userName = "testUser";
+    }
 
-    private static final String              pass     = "password";
+    private static final String userName = "testUser";
+
+    private static final String pass = "password";
 
     private static RemoteGraphSessionFactory client;
 
-    private static RemoteGraphSessionServer  server;
+    private static RemoteGraphSessionServer server;
 
     @BeforeClass
     public static void init() throws Exception {
         JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+        SLGraph graph = injector.getInstance(SLGraph.class);
 
         server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
-            public boolean canConnect( final String userName,
-                                       final String password,
-                                       final String clientHost ) {
+            public boolean canConnect(final String userName,
+                                      final String password,
+                                      final String clientHost) {
                 return true;
             }
-        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR, graph);
 
     }
 
@@ -97,25 +120,10 @@ public class SLRemoteGraphTest extends BaseGraphTest {
         return client.createRemoteGraphSession(userName, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 
-    /**
-     * Before test.
-     * 
-     * @throws org.openspotlight.graph.exception.SLGraphException the SL graph exception
-     */
-    @Before
-    public void beforeTest() throws Exception {
-        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
-        if (session == null) {
-            session = client.createRemoteGraphSession(userName, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
-        }
-    }
-
     @Before
     public void setupClient() throws Exception {
-        if (session != null) {
-            session.clear();
-        }
         server.removeAllObjectsFromServer();
+
         client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
 
             public String getHost() {
@@ -134,5 +142,11 @@ public class SLRemoteGraphTest extends BaseGraphTest {
                 return "***";
             }
         });
+        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+        if (session == null) {
+            session = client.createRemoteGraphSession(userName, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
+        }
+
+
     }
 }

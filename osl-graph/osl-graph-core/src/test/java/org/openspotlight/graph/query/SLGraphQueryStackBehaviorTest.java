@@ -48,21 +48,35 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isOneOf;
-import static org.hamcrest.Matchers.not;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.test.domain.link.PackageContainsType;
 import org.openspotlight.graph.test.domain.node.JavaInterface;
 import org.openspotlight.graph.test.domain.node.JavaPackage;
 import org.openspotlight.graph.test.domain.node.JavaType;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.concurrent.Callable;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
+    private static AuthenticatedUser user;
 
     /**
      * Instantiates a new sL graph query test.
@@ -72,8 +86,8 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
     }
 
     public SLGraphQueryStackBehaviorTest(
-                                          final SLGraphSession sessionParam, final SortMode sortModeParam,
-                                          final boolean printInfoParam ) {
+            final SLGraphSession sessionParam, final SortMode sortModeParam,
+            final boolean printInfoParam) {
         session = sessionParam;
         sortMode = sortModeParam;
         printInfo = printInfoParam;
@@ -86,8 +100,8 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
         final SLQueryApi query2Input = session.createQueryApi();
 
         query2Input.select().type(JavaPackage.class.getName()).selectEnd().where().type(JavaPackage.class.getName()).each().property(
-                                                                                                                                     "caption").equalsTo().value(
-                                                                                                                                                                 "java.util").typeEnd().whereEnd();
+                "caption").equalsTo().value(
+                "java.util").typeEnd().whereEnd();
 
         final SLQueryResult inputResult = query2Input.execute(sortMode, true);
         final NodeWrapper[] inputWrappers = wrapNodes(inputResult.getNodes());
@@ -105,9 +119,9 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
         final SLQueryApi query = session.createQueryApi();
 
         query.select().type(JavaInterface.class.getName()).comma().byLink(PackageContainsType.class.getName()).b().selectEnd().select().allTypes().selectEnd().where().type(
-                                                                                                                                                                            JavaType.class.getName()).subTypes().each().property(
-                                                                                                                                                                                                                                 "caption").contains().value(
-                                                                                                                                                                                                                                                             "Map").typeEnd().whereEnd();
+                JavaType.class.getName()).subTypes().each().property(
+                "caption").contains().value(
+                "Map").typeEnd().whereEnd();
 
         final SLQueryResult initialData = query.execute(inputResult.getNodes(), sortMode, printInfo);
         final NodeWrapper[] wrappers = wrapNodes(initialData.getNodes());
@@ -129,8 +143,8 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
         final SLQueryApi query2Input = session.createQueryApi();
 
         query2Input.select().type(JavaPackage.class.getName()).selectEnd().where().type(JavaPackage.class.getName()).each().property(
-                                                                                                                                     "caption").equalsTo().value(
-                                                                                                                                                                 "java.util").typeEnd().whereEnd();
+                "caption").equalsTo().value(
+                "java.util").typeEnd().whereEnd();
 
         final SLQueryResult inputResult = query2Input.execute(sortMode, true);
         final NodeWrapper[] inputWrappers = wrapNodes(inputResult.getNodes());
@@ -194,6 +208,47 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
         final SLQueryResult resultData2 = query2.execute(sortMode, printInfo);
 
         assertThat(resultData2.getNodes().size(), is(resultData.getNodes().size()));
+    }
+
+
+    private static SLGraph graph;
+
+    @Override
+    protected Callable<Void> createStartUpHandler() {
+        return new Callable<Void>() {
+
+            public Void call() throws Exception {
+                Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                        repositoryPath("repository")),
+                        new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+                graph = injector.getInstance(SLGraph.class);
+
+                final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
+                final User simpleUser = securityFactory.createUser("testUser");
+                user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+                return null;
+
+            }
+        };
+    }
+
+    @Override
+    protected Callable<Void> createShutdownHandler() {
+        return new Callable<Void>() {
+
+            public Void call() throws Exception {
+                graph.shutdown();
+                return null;
+            }
+        };
+    }
+
+    @Override
+    protected SLGraphSession createSession() throws Exception {
+        return graph.openSession(user, "repository");
     }
 
 }

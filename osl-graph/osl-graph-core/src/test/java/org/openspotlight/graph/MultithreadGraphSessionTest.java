@@ -48,6 +48,25 @@
  */
 package org.openspotlight.graph;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.hamcrest.core.Is;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.common.exception.AbstractFactoryException;
+import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.security.idm.auth.IdentityException;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -55,18 +74,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.hamcrest.core.Is;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openspotlight.common.exception.AbstractFactoryException;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.security.SecurityFactory;
-import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
-import org.openspotlight.security.idm.auth.IdentityException;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class MultithreadGraphSessionTest {
     private static enum State {
@@ -95,17 +103,21 @@ public class MultithreadGraphSessionTest {
         }
     }
 
-    /** The graph. */
-    private static SLGraph           graph;
+    /**
+     * The graph.
+     */
+    private static SLGraph graph;
 
-    /** The session. */
-    private static SLGraphSession    session;
+    /**
+     * The session.
+     */
+    private static SLGraphSession session;
 
     private static AuthenticatedUser user;
 
-    private static SLNode            rootNode;
+    private static SLNode rootNode;
 
-    private static SLNode            newNode;
+    private static SLNode newNode;
 
     /**
      * Finish.
@@ -117,25 +129,30 @@ public class MultithreadGraphSessionTest {
 
     /**
      * Inits the.
-     * 
+     *
      * @throws AbstractFactoryException the abstract factory exception
      */
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        MultithreadGraphSessionTest.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+
+        graph = injector.getInstance(SLGraph.class);
+
+        final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         MultithreadGraphSessionTest.user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                                                                                                                                    simpleUser,
-                                                                                                                                    "password");
+                simpleUser,
+                "password");
     }
 
     @Test
     public void startExecutorAndSaveAllChangedGraphSessions() throws Exception {
         MultithreadGraphSessionTest.session = MultithreadGraphSessionTest.graph.openSession(MultithreadGraphSessionTest.user,
-                                                                                            SLConsts.DEFAULT_REPOSITORY_NAME);
+                SLConsts.DEFAULT_REPOSITORY_NAME);
         MultithreadGraphSessionTest.rootNode = MultithreadGraphSessionTest.session.createContext("new context").getRootNode();
         MultithreadGraphSessionTest.newNode = MultithreadGraphSessionTest.rootNode.addNode("abc");
         MultithreadGraphSessionTest.session.save();

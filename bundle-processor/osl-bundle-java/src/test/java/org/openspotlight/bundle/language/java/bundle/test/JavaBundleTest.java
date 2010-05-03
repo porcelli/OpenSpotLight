@@ -73,6 +73,8 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -97,6 +99,8 @@ public class JavaBundleTest extends AbstractTestServerClass {
     private final String            username = "sa";
     private final String            password = "sa";
 
+    private SLGraph graph;
+
     @Override
     protected void doWork( final JcrConnectionProvider provider ) throws Exception {
         final Repository repo = new Repository();
@@ -104,10 +108,11 @@ public class JavaBundleTest extends AbstractTestServerClass {
         repo.setActive(true);
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
                                                                          ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
+                                                                         repositoryPath("name")),
                                                  new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
-
+                                                 new DefaultExecutionContextFactoryModule(),
+                new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+        graph = injector.getInstance(SLGraph.class);
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ArtifactSource artifactSource = new ArtifactSource();
@@ -179,6 +184,11 @@ public class JavaBundleTest extends AbstractTestServerClass {
         DefaultScheduler.INSTANCE.fireSchedulable("username", "password", artifactSource);
         DefaultScheduler.INSTANCE.fireSchedulable("username", "password", group);
 
+    }
+
+    @Override
+    protected SLGraph getGraph() {
+        return graph;  
     }
 
     @Override

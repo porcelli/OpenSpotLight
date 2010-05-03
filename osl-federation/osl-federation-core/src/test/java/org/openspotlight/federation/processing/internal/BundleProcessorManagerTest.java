@@ -79,6 +79,7 @@ import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
@@ -101,14 +102,14 @@ public class BundleProcessorManagerTest {
 
         public static AtomicInteger count = new AtomicInteger();
 
-        public ListenerAction groupAdded( final SLNode groupNode,
-                                          final ExecutionContext context ) {
+        public ListenerAction groupAdded(final SLNode groupNode,
+                                         final ExecutionContext context) {
             count.incrementAndGet();
             return ListenerAction.CONTINUE;
         }
 
-        public ListenerAction groupRemoved( final SLNode groupNode,
-                                            final ExecutionContext context ) {
+        public ListenerAction groupRemoved(final SLNode groupNode,
+                                           final ExecutionContext context) {
             return null;
         }
 
@@ -129,10 +130,10 @@ public class BundleProcessorManagerTest {
         ExampleBundleProcessor.allStatus.clear();
 
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new SingleGraphSessionExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new SingleGraphSessionExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
         JRedis jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
         jredis.flushall();
@@ -176,22 +177,22 @@ public class BundleProcessorManagerTest {
         bundleSource.getIncludeds().add("**/ConfigurationManagerProvider.java");
         final ExecutionContextFactory contextFactory = injector.getInstance(ExecutionContextFactory.class);
         PersistentArtifactManagerProviderImpl provider = new PersistentArtifactManagerProviderImpl(
-                                                                                                   injector.getInstance(SimplePersistFactory.class),
-                                                                                                   repository);
+                injector.getInstance(SimplePersistFactory.class),
+                repository);
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, source, provider);
 
         final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
-                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
         context.getDefaultConfigurationManager().saveGlobalSettings(settings);
         context.getDefaultConfigurationManager().saveRepository(repository);
         contextFactory.closeResources();
 
         final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE.executeBundles(
-                                                                                                   "username",
-                                                                                                   "password",
-                                                                                                   DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                                   contextFactory, settings,
-                                                                                                   group);
+                "username",
+                "password",
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                contextFactory, settings,
+                group);
         Assert.assertThat(ExampleBundleProcessor.allStatus.contains(LastProcessStatus.ERROR), Is.is(false));
         Assert.assertThat(ExampleBundleProcessor.allStatus.contains(LastProcessStatus.EXCEPTION_DURRING_PROCESS), Is.is(false));
         Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
@@ -200,22 +201,22 @@ public class BundleProcessorManagerTest {
         xmlManager.saveGlobalSettings(settings);
         xmlManager.saveRepository(repository);
         final ExecutionContext context1 = contextFactory.createExecutionContext("username", "password",
-                                                                                DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
         final String nodeName = "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java1";
         final SLNode node = context1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
-                                                                                                                        group.getUniqueName()).getNode(
-                                                                                                                                                       nodeName);
+                group.getUniqueName()).getNode(
+                nodeName);
         Assert.assertThat(node, Is.is(IsNull.notNullValue()));
         final SLNode node2 = node.getNode(nodeName);
         Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
         final NeedsSyncronizationCollection<SLLink> links = context1.getGraphSession().getLinks(node, node2);
         Assert.assertThat(links.size(), Is.is(IsNot.not(0)));
         final StringArtifact sourceFile = context1.getPersistentArtifactManager().findByPath(StringArtifact.class,
-                                                                                             "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
+                "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");
         Assert.assertThat(sourceFile, Is.is(IsNull.notNullValue()));
         Assert.assertThat(
-                          sourceFile.getUnwrappedSyntaxInformation(context1.getPersistentArtifactManager().getSimplePersist()).size(),
-                          Is.is(IsNot.not(0)));
+                sourceFile.getUnwrappedSyntaxInformation(context1.getPersistentArtifactManager().getSimplePersist()).size(),
+                Is.is(IsNot.not(0)));
 
     }
 

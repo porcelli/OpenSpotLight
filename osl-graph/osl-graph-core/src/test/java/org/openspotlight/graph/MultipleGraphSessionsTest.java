@@ -48,24 +48,28 @@
  */
 package org.openspotlight.graph;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.junit.*;
 import org.openspotlight.common.exception.AbstractFactoryException;
-import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class MultipleGraphSessionsTest {
 
-    private static SLGraph           graph   = null;
-    private static SLGraphSession    session = null;
+    private static SLGraph graph = null;
+    private static SLGraphSession session = null;
     private static AuthenticatedUser user;
 
     @AfterClass
@@ -76,14 +80,19 @@ public class MultipleGraphSessionsTest {
 
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        MultipleGraphSessionsTest.graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+
+        graph = injector.getInstance(SLGraph.class);
+
+        final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         MultipleGraphSessionsTest.user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                                                                                                                                  simpleUser,
-                                                                                                                                  "password");
+                simpleUser,
+                "password");
     }
 
     @Ignore
@@ -91,9 +100,9 @@ public class MultipleGraphSessionsTest {
     @Test
     public void testMultipleSessions() throws AbstractFactoryException, Exception {
         final SLGraphSession session = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
-                                                                                   SLConsts.DEFAULT_REPOSITORY_NAME);
+                SLConsts.DEFAULT_REPOSITORY_NAME);
         final SLGraphSession session2 = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
-                                                                                    SLConsts.DEFAULT_REPOSITORY_NAME);
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
         final SLNode abstractTestNode = session.createContext("abstractTest").getRootNode();
         final SLNode node1 = abstractTestNode.addNode("teste!");
@@ -129,7 +138,7 @@ public class MultipleGraphSessionsTest {
     @Test
     public void testOpenCloseSessions() throws AbstractFactoryException, SLGraphException {
         MultipleGraphSessionsTest.session = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
-                                                                                        SLConsts.DEFAULT_REPOSITORY_NAME);
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
         SLNode abstractTestNode = MultipleGraphSessionsTest.session.createContext("abstractTest").getRootNode();
         SLNode node1 = abstractTestNode.addNode("teste!");
@@ -139,7 +148,7 @@ public class MultipleGraphSessionsTest {
         Assert.assertEquals(false, node1.getID().equals(node2.getID()));
         MultipleGraphSessionsTest.session.close();
         MultipleGraphSessionsTest.session = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
-                                                                                        SLConsts.DEFAULT_REPOSITORY_NAME);
+                SLConsts.DEFAULT_REPOSITORY_NAME);
 
         abstractTestNode = MultipleGraphSessionsTest.session.createContext("abstractTest").getRootNode();
         node1 = abstractTestNode.addNode("teste!");

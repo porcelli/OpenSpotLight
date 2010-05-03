@@ -48,41 +48,87 @@
  */
 package org.openspotlight.graph.query.parser;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isOneOf;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.AbstractGeneralQueryTest;
-import org.openspotlight.graph.query.AssertResult;
-import org.openspotlight.graph.query.SLInvalidQueryElementException;
-import org.openspotlight.graph.query.SLQLVariable;
-import org.openspotlight.graph.query.SLQueryResult;
-import org.openspotlight.graph.query.SLQueryText;
-import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.graph.query.*;
 import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.openspotlight.graph.test.domain.node.JavaClass;
-import org.openspotlight.graph.test.domain.node.JavaInnerInterface;
-import org.openspotlight.graph.test.domain.node.JavaInterface;
-import org.openspotlight.graph.test.domain.node.JavaPackage;
-import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
+import org.openspotlight.graph.test.domain.node.*;
+import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.security.SecurityFactory;
+import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isOneOf;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * The Class SLQLQueryTest.
- * 
+ *
  * @author porcelli
  */
 
 public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
     private final SLQueryTextInternalBuilder queryBuilder = new SLQueryTextInternalBuilder();
+
+
+    private static SLGraph graph;
+    private static AuthenticatedUser user;
+
+    @Override
+    protected Callable<Void> createStartUpHandler() {
+        return new Callable<Void>() {
+
+            public Void call() throws Exception {
+                Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                        ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                        repositoryPath("repository")),
+                        new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+                graph = injector.getInstance(SLGraph.class);
+
+                final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
+                final User simpleUser = securityFactory.createUser("testUser");
+                user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+                return null;
+
+            }
+        };
+    }
+
+    @Override
+    protected Callable<Void> createShutdownHandler() {
+        return new Callable<Void>() {
+
+            public Void call() throws Exception {
+                graph.shutdown();
+                return null;
+            }
+        };
+    }
+
+    @Override
+    protected SLGraphSession createSession() throws Exception {
+        return graph.openSession(user, "repository");
+    }
 
     /**
      * Instantiates a new sL graph query test.
@@ -91,16 +137,6 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         LOGGER = Logger.getLogger(TestSLQueryTextInternal.class);
     }
 
-    /**
-     * Instantiates a new sL graph query test.
-     * 
-     * @param session the session
-     */
-    public TestSLQueryTextInternal(
-                                    final SLGraphSession session ) {
-        TestSLQueryTextInternal.session = session;
-        LOGGER = Logger.getLogger(TestSLQueryTextInternal.class);
-    }
 
     @Test
     public void testCheckDefineMessage() throws Throwable {
@@ -122,7 +158,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         }
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testInvalidSelectWithTarget() throws Throwable {
         final String slqlInput = this.getResourceContent("SelectWithTarget.slql");
         final SLQueryText query = session.createQueryText(slqlInput);
@@ -177,14 +213,14 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.io", "java.io.Serializable"), isOneOf(wrappers));
@@ -235,39 +271,39 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.security.BasicPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.security.Permission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
@@ -279,12 +315,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
@@ -317,14 +353,14 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.io", "java.io.Serializable"), isOneOf(wrappers));
@@ -354,28 +390,28 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(65));
                 assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.security.BasicPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
@@ -386,38 +422,38 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.security.Permission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.io", "java.io.Serializable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Runnable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
@@ -426,12 +462,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
@@ -442,8 +478,6 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
     /**
      * Test select all packages.
-     * 
-     * @throws SLInvalidQuerySyntaxException
      */
     @Test
     public void testSelectAllPackages() throws Throwable {
@@ -484,8 +518,6 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 
     /**
      * Test select all packages.
-     * 
-     * @throws SLInvalidQuerySyntaxException
      */
     @Test
     public void testSelectAllPackagesUserWay() throws Throwable {
@@ -546,42 +578,42 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(37));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "isExternallySet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.AbstractMap", "keySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getSetStateFields"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collections", "checkedSortedSet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "entrySet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "headSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collections", "synchronizedSortedSet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collections", "unmodifiableSet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "readTreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Hashtable", "entrySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collections", "synchronizedSet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.HashMap", "keySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "keySet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "isFieldSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "isSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.AbstractMap", "entrySet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "keySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "subSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "tailSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "entrySet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.HashMap", "entrySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "internalSet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collections", "checkedSet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeSet", "headSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.BitSet", "nextSetBit"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "entrySet"), isOneOf(wrappers));
@@ -591,11 +623,11 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeSet", "tailSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeSet", "subSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collections", "unmodifiableSortedSet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collections", "emptySet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "addAllForTreeSet"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
         }.execute();
@@ -798,12 +830,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(4));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
             }
         }.execute();
 
@@ -852,18 +884,18 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "lastIndexOf"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "subList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasNext"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "previous"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "toArray"), isOneOf(wrappers));
@@ -873,12 +905,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "contains"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "firstKey"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "comparator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "clear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "previousIndex"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
@@ -891,7 +923,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "lastKey"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "contains"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "comparator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "set"), isOneOf(wrappers));
@@ -911,25 +943,25 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "put"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "nextIndex"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "values"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "tailMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "first"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Iterator", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "retainAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Enumeration", "hasMoreElements"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Iterator", "hasNext"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "next"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
@@ -937,7 +969,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "containsAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "subMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "containsValue"), isOneOf(wrappers));
@@ -946,7 +978,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "entrySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "clear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasPrevious"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "headMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
@@ -958,22 +990,22 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "retainAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Iterator", "next"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "removeAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "containsAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Enumeration", "nextElement"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "toArray"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "toArray"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
@@ -983,9 +1015,9 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equals"), isOneOf(wrappers));
             }
         }.execute();
@@ -1016,18 +1048,18 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "lastIndexOf"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "subList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasNext"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "previous"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "toArray"), isOneOf(wrappers));
@@ -1037,12 +1069,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "contains"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "firstKey"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "comparator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "clear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "previousIndex"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
@@ -1055,7 +1087,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "lastKey"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "contains"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "comparator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "set"), isOneOf(wrappers));
@@ -1075,25 +1107,25 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "put"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "nextIndex"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "values"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "tailMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "first"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Iterator", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "retainAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Enumeration", "hasMoreElements"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Iterator", "hasNext"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "next"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
@@ -1101,7 +1133,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "containsAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "subMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "containsValue"), isOneOf(wrappers));
@@ -1110,7 +1142,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "entrySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "clear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasPrevious"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "headMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
@@ -1122,22 +1154,22 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "retainAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Iterator", "next"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "removeAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "containsAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Enumeration", "nextElement"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "toArray"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "toArray"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
@@ -1147,9 +1179,9 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equals"), isOneOf(wrappers));
             }
         }.execute();
@@ -1176,13 +1208,13 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "containsAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "removeAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "clear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"), isOneOf(wrappers));
@@ -1215,13 +1247,13 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "containsAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "removeAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "clear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"), isOneOf(wrappers));
@@ -1254,7 +1286,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setSeconds"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), isOneOf(wrappers));
@@ -1262,9 +1294,9 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setHours"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "after"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"), isOneOf(wrappers));
@@ -1275,7 +1307,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "UTC"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setTime"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), isOneOf(wrappers));
@@ -1314,12 +1346,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
-                               is(wrappers[6]));
+                            is(wrappers[6]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
-                               is(wrappers[8]));
+                            is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
-                               is(wrappers[9]));
+                            is(wrappers[9]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
                 }
             }.execute();
@@ -1350,17 +1382,17 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
-                               is(wrappers[6]));
+                            is(wrappers[6]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
-                               is(wrappers[8]));
+                            is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
-                               is(wrappers[9]));
+                            is(wrappers[9]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[11]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[12]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"),
-                               is(wrappers[13]));
+                            is(wrappers[13]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[14]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[15]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[16]));
@@ -1368,7 +1400,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[18]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[19]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"),
-                               is(wrappers[20]));
+                            is(wrappers[20]));
                 }
             }.execute();
 
@@ -1399,12 +1431,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
-                               is(wrappers[6]));
+                            is(wrappers[6]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
-                               is(wrappers[8]));
+                            is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
-                               is(wrappers[9]));
+                            is(wrappers[9]));
                 }
             }.execute();
         } catch (final SLException e) {
@@ -1435,17 +1467,17 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "clone"), is(wrappers[4]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
-                               is(wrappers[6]));
+                            is(wrappers[6]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
-                               is(wrappers[8]));
+                            is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
-                               is(wrappers[9]));
+                            is(wrappers[9]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), is(wrappers[10]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[11]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[12]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"),
-                               is(wrappers[13]));
+                            is(wrappers[13]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[14]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[15]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[16]));
@@ -1482,7 +1514,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[1]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[2]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"),
-                               is(wrappers[3]));
+                            is(wrappers[3]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[4]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[6]));
@@ -1490,7 +1522,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), is(wrappers[9]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"),
-                               is(wrappers[10]));
+                            is(wrappers[10]));
                 }
             }.execute();
 
@@ -1533,7 +1565,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), is(wrappers[12]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), is(wrappers[13]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"),
-                               is(wrappers[14]));
+                            is(wrappers[14]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toString"), is(wrappers[15]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "writeObject"), is(wrappers[16]));
                 }
@@ -1563,7 +1595,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), is(wrappers[1]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), is(wrappers[2]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"),
-                               is(wrappers[3]));
+                            is(wrappers[3]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), is(wrappers[4]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), is(wrappers[6]));
@@ -1594,7 +1626,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 public void execute() {
                     assertThat(wrappers.length, is(17));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"),
-                               is(wrappers[0]));
+                            is(wrappers[0]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getYear"), is(wrappers[1]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "hashCode"), is(wrappers[2]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "normalize"), is(wrappers[3]));
@@ -1609,7 +1641,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setYear"), is(wrappers[12]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), is(wrappers[13]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toLocaleString"),
-                               is(wrappers[14]));
+                            is(wrappers[14]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toString"), is(wrappers[15]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "writeObject"), is(wrappers[16]));
                 }
@@ -1624,7 +1656,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select date methods with tag between30 and70.
      */
-    @Test( )
+    @Test()
     @Ignore
     public void testSelectDateMethodsWithTagBetween30And70() throws Throwable {
         // FIXME where no link... ainda não suportado na syntax
@@ -1646,7 +1678,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select date methods with tag greater than50.
      */
-    @Test( )
+    @Test()
     @Ignore
     public void testSelectDateMethodsWithTagGreaterThan50() throws Throwable {
 
@@ -1669,7 +1701,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select date methods with tag lesser or equal to30 or greater or equal to70.
      */
-    @Test( )
+    @Test()
     @Ignore
     public void testSelectDateMethodsWithTagLesserOrEqualTo30OrGreaterOrEqualTo70() throws Throwable {
 
@@ -1692,7 +1724,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select date methods with tag lesser or equal to50.
      */
-    @Test( )
+    @Test()
     @Ignore
     public void testSelectDateMethodsWithTagLesserOrEqualTo50() throws Throwable {
 
@@ -1728,12 +1760,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(9));
                 assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
@@ -1781,24 +1813,24 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(56));
                 assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
@@ -1808,32 +1840,32 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
@@ -1842,12 +1874,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
@@ -2040,7 +2072,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select sorted set hierarchy execute3 times.
      */
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectSortedSetHierarchyExecuteVariableTimesWithIncorrectDomain() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectSortedSetHierarchyExecuteVariableTimesWithDomain.slql");
@@ -2055,7 +2087,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select sorted set hierarchy execute3 times.
      */
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectSortedSetHierarchyExecuteVariableTimesWithIncorrectValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectSortedSetHierarchyExecuteVariableTimesWithDomain.slql");
@@ -2070,7 +2102,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select sorted set hierarchy execute3 times.
      */
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectSortedSetHierarchyExecuteVariableTimesWithNullValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectSortedSetHierarchyExecuteVariableTimesWithDomain.slql");
@@ -2085,7 +2117,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectSortedSetHierarchyExecuteVariableTimesWithoutCorrectVariable() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
@@ -2210,24 +2242,24 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(56));
                 assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
@@ -2237,32 +2269,32 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
@@ -2271,12 +2303,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
@@ -2305,24 +2337,24 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(56));
                 assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
@@ -2332,32 +2364,32 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
@@ -2366,12 +2398,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
@@ -2400,24 +2432,24 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(56));
                 assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
@@ -2427,32 +2459,32 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
@@ -2461,12 +2493,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
@@ -2477,7 +2509,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectTypesFromJavaUtilPackageUsingVariablesAndIncorrectDomain() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectTypesFromPackageUsingVariablesAndDomain.slql");
@@ -2492,7 +2524,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testSelectTypesFromJavaUtilPackageUsingVariablesWithIncorrectValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
@@ -2507,7 +2539,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testSelectTypesFromJavaUtilPackageUsingVariablesWithNullValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
@@ -2522,7 +2554,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectTypesFromJavaUtilPackageUsingVariablesWithoutCorrectVariable() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
@@ -2537,7 +2569,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
     /**
      * Test select types from java util package.
      */
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testSelectTypesFromJavaUtilPackageUsingVariablesWithoutValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectTypesFromJavaUtilPackageUsingVariables.slql");
@@ -2564,26 +2596,26 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
@@ -2593,9 +2625,9 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
@@ -2621,276 +2653,276 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(169));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getMaximum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.LinkedList", "getLast"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getSetStateFields"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getLastJulianDate"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getDisplayVariantArray"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getTime"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SimpleTimeZone", "getTransition"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getSeconds"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getMillisOf"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMonth"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTimeImpl"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar",
-                                           "getJulianCalendarSystem"), isOneOf(wrappers));
+                        "getJulianCalendarSystem"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SimpleTimeZone", "getStart"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getClassContext"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getActualMinimum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTime"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.HashMap", "getEntry"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getRawOffset"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Hashtable", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getLeastMaximum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getCurrentFixedDate"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getJulianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getGreatestMinimum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMinutes"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getCountry"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SimpleTimeZone", "getOffset"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SimpleTimeZone", "getDSTSavings"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SimpleTimeZone", "getEnd"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ArrayList", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getYear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getSystemGMTOffsetID"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Dictionary", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getTimeZone"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getLoader"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getFixedDate"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getDisplayLanguage"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getWeekNumber"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getDefaultRef"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getTimezoneOffset"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getTimeInMillis"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getActualMaximum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getISO3Country"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar",
-                                           "getCutoverCalendarSystem"), isOneOf(wrappers));
+                        "getCutoverCalendarSystem"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getFieldName"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.LinkedList", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getDSTSavings"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.IdentityHashMap", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getMinimum"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getISOCountries"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Currency", "getCurrencyCode"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "getEntry"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.PropertyResourceBundle", "getKeys"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getMinimalDaysInFirstWeek"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getVariant"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.LinkedList", "getFirst"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.HashMap", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListResourceBundle", "getContents"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getDefault"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getActualMinimum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Currency", "getMainTableEntry"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getLeastMaximum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "getEntry"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getTimeZone"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collections", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.PropertyPermission", "getMask"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getAvailableIDs"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getFixedDateMonth1"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getLocale"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getOffsets"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.BitSet", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDate"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Currency", "getDefaultFractionDigits"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "getPrecedingEntry"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "getCeilEntry"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getOffset"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Currency", "getSymbol"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getAvailableLocales"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getActualMaximum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getKeys"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getISO3Language"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getCalendarDate"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getDefault"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListResourceBundle", "getKeys"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getRolledValue"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getStringArray"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Hashtable", "getIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getISOLanguages"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.AbstractList", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getFirstDayOfWeek"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar",
-                                           "getGregorianCutoverDate"), isOneOf(wrappers));
+                        "getGregorianCutoverDate"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getDisplayName"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.EventObject", "getSource"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.HashMap", "getForNullKey"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getDisplayName"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(
-                           new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getYearOffsetInMillis"),
-                           isOneOf(wrappers));
+                        new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getYearOffsetInMillis"),
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getGregorianChange"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getMinimum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getAvailableLocales"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Hashtable", "getEnumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Properties", "getProperty"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.WeakHashMap", "getTable"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.PropertyPermission", "getActions"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.LinkedHashMap", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.AbstractMap", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getTimeZone"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.AbstractSequentialList", "get"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getDisplayCountry"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getDay"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getDisplayVariant"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(
-                           new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getNormalizedCalendar"),
-                           isOneOf(wrappers));
+                        new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getNormalizedCalendar"),
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getGreatestMinimum"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.EventListenerProxy", "getListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getString"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getMaximum"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getID"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getSystemTimeZoneID"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getHours"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SimpleTimeZone", "getRawOffset"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SimpleTimeZone", "getOffsets"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Locale", "getLanguage"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Currency", "getInstance"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getInstance"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.BitSet", "getBits"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getBundleImpl"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getDisplayNames"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ResourceBundle", "getObject"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Vector", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getFixedDateJan1"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
             }
         }.execute();
 
@@ -2950,29 +2982,29 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
         }.execute();
@@ -2998,22 +3030,22 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
         }.execute();
@@ -3043,7 +3075,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         this.printResult(result.getNodes());
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testSelectUsingBoolVariableIncorrectDataType() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingBoolVariable.slql");
@@ -3055,7 +3087,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingBoolVariableIncorrectVariable() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingBoolVariable.slql");
@@ -3067,7 +3099,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testSelectUsingBoolVariableNullValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingBoolVariable.slql");
@@ -3100,7 +3132,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         this.printResult(result.getNodes());
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingDecVariableIncorrectDataType() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingDecVariable.slql");
@@ -3112,7 +3144,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingDecVariableIncorrectVariable() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingDecVariable.slql");
@@ -3124,7 +3156,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testSelectUsingDecVariableNullValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingDecVariable.slql");
@@ -3157,7 +3189,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         this.printResult(result.getNodes());
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingDecVariableWithDomainIncorrectDataType() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingDecVariableWithDomain.slql");
@@ -3169,7 +3201,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingDecVariableWithDomainIncorrectDomain() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingDecVariableWithDomain.slql");
@@ -3181,7 +3213,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingDecVariableWithDomainIncorrectVariable() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingDecVariableWithDomain.slql");
@@ -3193,7 +3225,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingDecVariableWithDomainNullValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingDecVariableWithDomain.slql");
@@ -3226,7 +3258,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         this.printResult(result.getNodes());
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingIntVariableIncorrectDataType() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingIntVariable.slql");
@@ -3238,7 +3270,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingIntVariableIncorrectVariable() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingIntVariable.slql");
@@ -3250,7 +3282,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = IllegalArgumentException.class )
+    @Test(expected = IllegalArgumentException.class)
     public void testSelectUsingIntVariableNullValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingIntVariable.slql");
@@ -3283,7 +3315,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         this.printResult(result.getNodes());
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingIntVariableWithDomainIncorrectDataType() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingIntVariableWithDomain.slql");
@@ -3295,7 +3327,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingIntVariableWithDomainIncorrectDomain() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingIntVariableWithDomain.slql");
@@ -3307,7 +3339,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingIntVariableWithDomainIncorrectVariable() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingIntVariableWithDomain.slql");
@@ -3319,7 +3351,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         query.execute(variableValues);
     }
 
-    @Test( expected = SLInvalidQueryElementException.class )
+    @Test(expected = SLInvalidQueryElementException.class)
     public void testSelectUsingIntVariableWithDomainNullValue() throws Throwable {
 
         final String slqlInput = this.getResourceContent("SelectUsingIntVariableWithDomain.slql");
@@ -3349,25 +3381,25 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.security.BasicPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
@@ -3376,14 +3408,14 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "containsAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.SimpleTimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
@@ -3393,30 +3425,30 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "size"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "removeAll"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.security.Permission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "toArray"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
@@ -3428,12 +3460,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "clear"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "remove"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
@@ -3455,28 +3487,28 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
             public void execute() {
                 assertThat(wrappers.length, is(65));
                 assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util", java.util.Map.Entry.class.getName()),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.ListIterator"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.security.BasicPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Observer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.lang.Iterable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
@@ -3487,38 +3519,38 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.RandomAccess"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Enumeration"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.List"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Iterator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Collection"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.EventListener"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Comparable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Queue"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.security.Permission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.io", "java.io.Serializable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Runnable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Dictionary"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Arrays"), isOneOf(wrappers));
@@ -3527,12 +3559,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Comparator"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"), isOneOf(wrappers));
             }
@@ -3553,39 +3585,39 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.security.BasicPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.security.Permission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
@@ -3597,12 +3629,12 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
@@ -3624,39 +3656,39 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimerTask"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Calendar"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.IdentityHashMap"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Timer"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.lang.Object"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Currency"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Stack"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Random"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.security.BasicPermission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.security.Permission"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventListenerProxy"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.StringTokenizer"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.EventObject"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Hashtable"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashMap"), isOneOf(wrappers));
@@ -3668,19 +3700,19 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Locale"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.PropertyResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractCollection"),
-                           isOneOf(wrappers));
+                        isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ResourceBundle"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Properties"), isOneOf(wrappers));
             }
         }.execute();
 
-        final SLQueryResult result2 = query.execute(new String[] {result.getNodes().get(20).getID()}, SortMode.SORTED, false);
+        final SLQueryResult result2 = query.execute(new String[]{result.getNodes().get(20).getID()}, SortMode.SORTED, false);
         final NodeWrapper[] wrappers2 = this.wrapNodes(result2.getNodes());
 
         new AssertResult() {

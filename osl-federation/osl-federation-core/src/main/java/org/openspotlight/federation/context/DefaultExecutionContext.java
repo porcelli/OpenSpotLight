@@ -61,7 +61,6 @@ import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.ConfigurationManagerFactoryImpl;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -87,6 +86,8 @@ import static com.google.common.collect.Maps.newHashMap;
  * @author feu
  */
 public class DefaultExecutionContext implements ExecutionContext, LockContainer {
+
+    protected final SLGraph graph;
 
     private final SimplePersistFactory   simplePersistFactory;
 
@@ -126,7 +127,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
 
         @Override
         protected SLGraphSession createReference() throws Exception {
-            final SLGraph graph = AbstractFactory.getDefaultInstance(SLGraphFactory.class).createGraph(descriptor);
+
             return graph.openSession(getUser(), repositoryName);
         }
     }
@@ -194,14 +195,15 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
                                                                                                                                           this);
 
     DefaultExecutionContext(
-                             final String username, final String password, final JcrConnectionDescriptor descriptor,
-                             final DisposingListener<DefaultExecutionContext> listener, Repository repository,
-                             SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider ) {
+            final String username, final String password, final JcrConnectionDescriptor descriptor,
+            final DisposingListener<DefaultExecutionContext> listener, Repository repository,
+            SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider, SLGraph graph) {
         this.username = username;
         this.password = password;
         this.descriptor = descriptor;
         this.simplePersistFactory = simplePersistFactory;
         this.detailedLoggerProvider = detailedLoggerProvider;
+        this.graph = graph;
         this.repositoryName = repository.getName();
         this.repository = repository;
         this.listener = listener;

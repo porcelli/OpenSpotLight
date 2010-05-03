@@ -72,7 +72,7 @@ public interface SLScheduler {
                                     JcrConnectionDescriptor descriptor );
 
     public void refreshJobs( GlobalSettings settings,
-                             Set<Repository> repositories );
+                             Iterable<Repository> repositories );
 
     public void startScheduler();
 

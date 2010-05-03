@@ -54,9 +54,12 @@ import org.openspotlight.graph.exception.SLNodeNotFoundException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryText;
+import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.remote.annotation.DisposeMethod;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 /**
  * The Interface SLGraphSession. All methods in this interface throw a
@@ -66,6 +69,9 @@ import org.openspotlight.security.idm.User;
  * @author Vitor Hugo Chagas
  */
 public interface SLGraphSession extends LockContainer {
+
+    public SimplePersistCapable<STNodeEntry, STStorageSession> getLineReferenceSimplePersist();
+
 
     /**
      * Adds the link.

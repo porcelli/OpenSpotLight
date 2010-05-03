@@ -48,78 +48,78 @@
  */
 package org.openspotlight.graph;
 
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
-
-import org.openspotlight.common.util.AbstractFactory;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.SLGraphFactoryImpl.SLGraphClosingListener;
 import org.openspotlight.graph.exception.SLGraphException;
 import org.openspotlight.graph.exception.SLGraphRuntimeException;
 import org.openspotlight.graph.persistence.SLPersistentTree;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.SLInvalidCredentialException;
-import org.openspotlight.security.authz.Action;
-import org.openspotlight.security.authz.EnforcementContext;
-import org.openspotlight.security.authz.EnforcementException;
-import org.openspotlight.security.authz.EnforcementResponse;
-import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.authz.*;
 import org.openspotlight.security.authz.graph.GraphElement;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.SystemUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityManager;
 
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+
 /**
  * The Class SLGraphImpl.
- * 
+ *
  * @author Vitor Hugo Chagas
  */
+@Singleton
 public class SLGraphImpl implements SLGraph {
 
-    /** The tree. */
-    private final SLPersistentTree       tree;
+    /**
+     * The tree.
+     */
+    private final SLPersistentTree tree;
 
-    /** The graph state. */
-    private GraphState                   graphState;
+    /**
+     * The graph state.
+     */
+    private GraphState graphState;
 
-    /** The listener. */
-    private final SLGraphClosingListener listener;
+    private final SimplePersistFactory simplePersistFactory;
 
-    /** The user. */
-    private final SystemUser             user;
+    /**
+     * The user.
+     */
+    private final SystemUser user;
 
-    /** The policy enforcement. */
-    private final PolicyEnforcement      policyEnforcement;
+    /**
+     * The policy enforcement.
+     */
+    private final PolicyEnforcement policyEnforcement;
 
-    private final IdentityManager        identityManager;
+    private final IdentityManager identityManager;
 
     /**
      * Instantiates a new sL graph impl.
-     * 
-     * @param tree the tree
-     * @param listener the listener
-     * @param policyEnforcement the policy enforcement
-     * @param user the user
-     * @param identityManager the identity manager
      */
-    public SLGraphImpl(
-                        final SLPersistentTree tree, final SLGraphClosingListener listener,
-                        final IdentityManager identityManager, final PolicyEnforcement policyEnforcement, final SystemUser user ) {
-        Assertions.checkNotNull("tree", tree);
-        Assertions.checkNotNull("identityManager", identityManager);
-        Assertions.checkNotNull("policyEnforcement", policyEnforcement);
-        Assertions.checkNotNull("user", user);
+    @Inject
+    public SLGraphImpl(final SLPersistentTree tree, SystemUser systemUser, IdentityManager identityManager,
+                       PolicyEnforcement graphPolicyEnforcement, SimplePersistFactory simplePersistFactory) {
+        try {
+            this.simplePersistFactory = simplePersistFactory;
+            if (!identityManager.isValid(systemUser)) {
+                throw new SLInvalidCredentialException("SystemUser is not valid.");
+            }
 
-        if (!identityManager.isValid(user)) {
-            throw new SLInvalidCredentialException("SystemUser is not valid.");
+            this.tree = tree;
+            graphState = GraphState.OPENED;
+            this.identityManager = identityManager;
+            this.policyEnforcement = graphPolicyEnforcement;
+            this.user = systemUser;
+        } catch (Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
         }
-
-        this.tree = tree;
-        graphState = GraphState.OPENED;
-        this.listener = listener;
-        this.identityManager = identityManager;
-        this.policyEnforcement = policyEnforcement;
-        this.user = user;
     }
 
     /**
@@ -131,15 +131,15 @@ public class SLGraphImpl implements SLGraph {
 
     /**
      * Checks for privileges.
-     * 
-     * @param user the user
+     *
+     * @param user           the user
      * @param repositoryName the repository name
-     * @param action the action
+     * @param action         the action
      * @return true, if successful
      */
-    private boolean hasPrivileges( final AuthenticatedUser user,
-                                   final String repositoryName,
-                                   final Action action ) {
+    private boolean hasPrivileges(final AuthenticatedUser user,
+                                  final String repositoryName,
+                                  final Action action) {
         final EnforcementContext enforcementContext = new EnforcementContext();
         enforcementContext.setAttribute("user", user);
         enforcementContext.setAttribute("graphElement", GraphElement.REPOSITORY);
@@ -162,8 +162,8 @@ public class SLGraphImpl implements SLGraph {
     /**
      * {@inheritDoc}
      */
-    public SLGraphSession openSession( final AuthenticatedUser user,
-                                       final String repositoryName ) throws SLGraphException {
+    public SLGraphSession openSession(final AuthenticatedUser user,
+                                      final String repositoryName) throws SLGraphException {
         if (graphState == GraphState.SHUTDOWN) {
             throw new SLGraphException("Could not open graph session. Graph is shutdown.");
         }
@@ -181,8 +181,7 @@ public class SLGraphImpl implements SLGraph {
 
         try {
             final SLPersistentTreeSession treeSession = tree.openSession(repositoryName);
-            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            return factory.createGraphSession(treeSession, policyEnforcement, user);
+            return new SLGraphSessionImpl(treeSession, policyEnforcement, user, simplePersistFactory);
         } catch (final Exception e) {
             throw new SLGraphRuntimeException("Could not open graph session.", e);
         }
@@ -194,6 +193,5 @@ public class SLGraphImpl implements SLGraph {
     public void shutdown() {
         tree.shutdown();
         graphState = GraphState.SHUTDOWN;
-        listener.graphClosed(this);
     }
 }

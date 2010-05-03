@@ -88,7 +88,7 @@ public class ParsingSupport {
                 for (final SLNode node : nodes) {
                     if (node != null) {
                         try {
-                            node.addLineReference(simplePersist, lineInfo.getStartLine(), lineInfo.getEndLine(),
+                            node.addLineReference(lineInfo.getStartLine(), lineInfo.getEndLine(),
                                                   lineInfo.getStartCharPositionInLine(), lineInfo.getEndCharPositionInLine(),
                                                   statement, lineInfo.getArtifact().getSourceName(),
                                                   lineInfo.getArtifact().getVersion());

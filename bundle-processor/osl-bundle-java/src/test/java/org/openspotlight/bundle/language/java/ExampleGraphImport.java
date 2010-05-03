@@ -48,24 +48,27 @@
  */
 package org.openspotlight.bundle.language.java;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.junit.Test;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
-import org.openspotlight.graph.SLGraphFactoryImpl;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class ExampleGraphImport {
 
@@ -74,11 +77,18 @@ public class ExampleGraphImport {
         final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         final AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(
-                                                                                                                                simpleUser,
-                                                                                                                                "password");
+                simpleUser,
+                "password");
 
-        final SLGraphFactory factory = new SLGraphFactoryImpl();
-        final SLGraph graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+        SLGraph graph = injector.getInstance(SLGraph.class);
+
+
         final SLGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         final SLNode currentContextRootNode = session.createContext("Dynamo-1.0.1").getRootNode();
         final SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
@@ -87,7 +97,7 @@ public class ExampleGraphImport {
         JavaMethod method;
 
         newType = helper.addTypeOnAbstractContext(JavaTypeInterface.class, "dynamo.file.util",
-                                                  "FileDescriptorManager$FileSavingListener");
+                "FileDescriptorManager$FileSavingListener");
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.file.util", "FileDescriptorManager");
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.file.util", "FileUtil");
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.file.vo", "FileCollection");
@@ -99,7 +109,7 @@ public class ExampleGraphImport {
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.runner", "RunningParametersFactory");
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.string", "StringTool");
         newType = helper.addTypeOnAbstractContext(JavaTypeInterface.class, "dynamo.file.util",
-                                                  "FileDescriptorManager$FileSavingListener");
+                "FileDescriptorManager$FileSavingListener");
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.file.util", "FileDescriptorManager");
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.file.util", "FileUtil");
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.file.vo", "FileCollection");
@@ -111,7 +121,7 @@ public class ExampleGraphImport {
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.runner", "RunningParametersFactory");
         newType = helper.addTypeOnAbstractContext(JavaTypeClass.class, "dynamo.string", "StringTool");
         newType = helper.addTypeOnCurrentContext(JavaTypeInterface.class, "dynamo.file.util",
-                                                 "FileDescriptorManager$FileSavingListener", 1537);
+                "FileDescriptorManager$FileSavingListener", 1537);
         helper.addExtendsLinks("dynamo.file.util", "FileDescriptorManager$FileSavingListener", "java.lang", "Object");
         method = helper.createMethod(newType, "fileSaved(dynamo.file.vo.FileDescriptor)", "fileSaved", false, 1025);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "void", false, 0);
@@ -124,7 +134,7 @@ public class ExampleGraphImport {
         helper.createMethodReturnType(method, JavaType.class, "java.util", "List", false, 0);
         helper.addThrowsOnMethod(method, "java.lang", "Exception");
         method = helper.createMethod(newType, "saveToFile(dynamo.runner.RunningParameters, dynamo.file.vo.FileDescriptor[])",
-                                     "saveToFile", false, 129);
+                "saveToFile", false, 129);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "void", false, 0);
         helper.addThrowsOnMethod(method, "java.lang", "Exception");
         // #########################################################
@@ -194,10 +204,10 @@ public class ExampleGraphImport {
         method = helper.createMethod(newType, "setListeners(java.util.List)", "setListeners", false, 1);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "void", false, 0);
         method = helper.createMethod(newType, "addListener(dynamo.file.util.FileDescriptorManager$FileSavingListener)",
-                                     "addListener", false, 1);
+                "addListener", false, 1);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "boolean", false, 0);
         method = helper.createMethod(newType, "removeListener(dynamo.file.util.FileDescriptorManager$FileSavingListener)",
-                                     "removeListener", false, 1);
+                "removeListener", false, 1);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "boolean", false, 0);
         method = helper.createMethod(newType, "RunningParameters()", "RunningParameters", true, 1);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "void", false, 0);
@@ -269,7 +279,7 @@ public class ExampleGraphImport {
         helper.createMethodReturnType(method, JavaType.class, "java.lang", "String", false, 0);
         // #########################################################
         newType = helper.addTypeOnCurrentContext(JavaTypeInterface.class, "dynamo.file.util",
-                                                 "FileDescriptorManager$FileSavingListener", 1537);
+                "FileDescriptorManager$FileSavingListener", 1537);
         helper.addExtendsLinks("dynamo.file.util", "FileDescriptorManager$FileSavingListener", "java.lang", "Object");
         method = helper.createMethod(newType, "fileSaved(dynamo.file.vo.FileDescriptor)", "fileSaved", false, 1025);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "void", false, 0);
@@ -282,7 +292,7 @@ public class ExampleGraphImport {
         helper.createMethodReturnType(method, JavaType.class, "java.util", "List", false, 0);
         helper.addThrowsOnMethod(method, "java.lang", "Exception");
         method = helper.createMethod(newType, "saveToFile(dynamo.runner.RunningParameters, dynamo.file.vo.FileDescriptor[])",
-                                     "saveToFile", false, 129);
+                "saveToFile", false, 129);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "void", false, 0);
         helper.addThrowsOnMethod(method, "java.lang", "Exception");
         // #########################################################
@@ -352,10 +362,10 @@ public class ExampleGraphImport {
         method = helper.createMethod(newType, "setListeners(java.util.List)", "setListeners", false, 1);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "void", false, 0);
         method = helper.createMethod(newType, "addListener(dynamo.file.util.FileDescriptorManager$FileSavingListener)",
-                                     "addListener", false, 1);
+                "addListener", false, 1);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "boolean", false, 0);
         method = helper.createMethod(newType, "removeListener(dynamo.file.util.FileDescriptorManager$FileSavingListener)",
-                                     "removeListener", false, 1);
+                "removeListener", false, 1);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "boolean", false, 0);
         method = helper.createMethod(newType, "RunningParameters()", "RunningParameters", true, 1);
         helper.createMethodReturnType(method, JavaTypePrimitive.class, "", "void", false, 0);

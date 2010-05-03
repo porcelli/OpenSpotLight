@@ -54,6 +54,7 @@ import com.google.inject.Inject;
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
+import org.openspotlight.graph.SLGraph;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.support.SimplePersistFactory;
 
@@ -62,14 +63,18 @@ public class DefaultExecutionContextFactory implements ExecutionContextFactory, 
     private final SimplePersistFactory                          simplePersistFactory;
     private final DetailedLoggerProvider                        detailedLoggerProvider;
 
+    private final SLGraph graph;
+
     private final CopyOnWriteArrayList<DefaultExecutionContext> openedContexts = new CopyOnWriteArrayList<DefaultExecutionContext>();
 
     @Inject
     public DefaultExecutionContextFactory(
-                                           DetailedLoggerProvider detailedLoggerProvider,
-                                           SimplePersistFactory simplePersistFactory ) {
+            DetailedLoggerProvider detailedLoggerProvider,
+            SimplePersistFactory simplePersistFactory, SLGraph graph) {
         this.detailedLoggerProvider = detailedLoggerProvider;
         this.simplePersistFactory = simplePersistFactory;
+        this.graph = graph;
+        
     }
 
     public void closeResources() {
@@ -83,7 +88,7 @@ public class DefaultExecutionContextFactory implements ExecutionContextFactory, 
                                                     final JcrConnectionDescriptor descriptor,
                                                     final Repository repository ) {
         final DefaultExecutionContext newContext = new DefaultExecutionContext(username, password, descriptor, this, repository,
-                                                                               simplePersistFactory, detailedLoggerProvider);
+                                                                               simplePersistFactory, detailedLoggerProvider, graph);
         openedContexts.add(newContext);
         return newContext;
     }

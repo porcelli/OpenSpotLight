@@ -59,6 +59,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
@@ -81,21 +82,21 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
  */
 public class JcrSessionConfigurationManagerTest extends AbstractConfigurationManagerTest {
 
-    private static JcrConnectionProvider                               provider;
+    private static JcrConnectionProvider provider;
 
-    private static Injector                                            injector;
     private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
 
-    private static JRedis                                              jredis;
+    private static JRedis jredis;
 
     @BeforeClass
     public static void setupJcrRepo() throws Exception {
         provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(),
+                new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
         simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.FEDERATION);
         jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
     }

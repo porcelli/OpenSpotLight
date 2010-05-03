@@ -48,14 +48,23 @@
  */
 package org.openspotlight.web;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public enum WebExecutionContextFactory {
     INSTANCE;
@@ -63,7 +72,12 @@ public enum WebExecutionContextFactory {
     private ExecutionContextFactory factory;
 
     public synchronized void contextStarted() {
-        factory = DefaultExecutionContextFactory.createFactory();
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("name")), new SimplePersistModule(),
+                new DetailedLoggerModule(), new DefaultExecutionContextFactoryModule());
+
+        factory = injector.getInstance(ExecutionContextFactory.class);
     }
 
     public synchronized void contextStopped() {
@@ -71,8 +85,8 @@ public enum WebExecutionContextFactory {
         factory = null;
     }
 
-    public ExecutionContext createExecutionContext( final ServletContext ctx,
-                                                    final HttpServletRequest request ) {
+    public ExecutionContext createExecutionContext(final ServletContext ctx,
+                                                   final HttpServletRequest request) {
         final String repositoryName = OslServletDataSupport.getCurrentRepository(ctx, request);
         Repository repo = new Repository();
         repo.setActive(true);

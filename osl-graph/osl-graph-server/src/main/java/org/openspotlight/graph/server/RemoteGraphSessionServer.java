@@ -52,11 +52,8 @@ import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
-import org.openspotlight.common.exception.AbstractFactoryException;
-import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphFactory;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -79,20 +76,15 @@ public class RemoteGraphSessionServer {
     private static class InternalGraphSessionFactory implements InternalObjectFactory<SLGraphSession> {
 
         private final SLGraph                 graph;
-        private final JcrConnectionDescriptor descriptor;
 
+        private final JcrConnectionDescriptor descriptor;
+        
         /**
          * Instantiates a new internal graph session factory.
          */
-        public InternalGraphSessionFactory(
-                                            final JcrConnectionDescriptor descriptor ) {
-            try {
-                this.descriptor = descriptor;
-                final SLGraphFactory graphFactory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-                graph = graphFactory.createGraph(descriptor);
-            } catch (final AbstractFactoryException e) {
-                throw logAndReturnNew(e, ConfigurationException.class);
-            }
+        public InternalGraphSessionFactory(SLGraph graph, JcrConnectionDescriptor descriptor) {
+                this.graph = graph;
+            this.descriptor = descriptor;
         }
 
         /*
@@ -158,13 +150,13 @@ public class RemoteGraphSessionServer {
      */
     public RemoteGraphSessionServer(
                                      final UserAuthenticator userAutenticator, final Integer portToUse,
-                                     final Long timeoutInMilliseconds, final JcrConnectionDescriptor descriptor ) {
+                                     final Long timeoutInMilliseconds, final JcrConnectionDescriptor descriptor, SLGraph graph ) {
         checkNotNull("userAutenticator", userAutenticator);
         checkNotNull("portToUse", portToUse);
         checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);
         checkNotNull("descriptor", descriptor);
         remoteObjectServer = RemoteObjectServerImpl.getDefault(userAutenticator, portToUse, timeoutInMilliseconds);
-        remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class, new InternalGraphSessionFactory(descriptor));
+        remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class, new InternalGraphSessionFactory(graph, descriptor));
     }
 
     public void removeAllObjectsFromServer() {

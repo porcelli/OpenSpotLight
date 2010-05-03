@@ -48,12 +48,6 @@
  */
 package org.openspotlight.federation.scheduler.test;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.number.IsCloseTo;
@@ -62,7 +56,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.context.*;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
@@ -71,11 +67,18 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.SLScheduler;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
@@ -83,13 +86,13 @@ public class DefaultSchedulerTest {
 
     public static class SampleArtifactSourceSchedulableCommand implements SchedulableCommand<ArtifactSource> {
 
-        public void execute( final GlobalSettings settigns,
-                             final ExecutionContext ctx,
-                             final ArtifactSource schedulable ) {
+        public void execute(final GlobalSettings settigns,
+                            final ExecutionContext ctx,
+                            final ArtifactSource schedulable) {
             ctx.getUser();
         }
 
-        public String getRepositoryNameBeforeExecution( final ArtifactSource schedulable ) {
+        public String getRepositoryNameBeforeExecution(final ArtifactSource schedulable) {
             return schedulable.getRepository().getName();
         }
 
@@ -99,36 +102,36 @@ public class DefaultSchedulerTest {
 
         private static AtomicBoolean wasExecuted = new AtomicBoolean();
 
-        private static AtomicInteger counter     = new AtomicInteger();
+        private static AtomicInteger counter = new AtomicInteger();
 
-        public void execute( final GlobalSettings settigns,
-                             final ExecutionContext ctx,
-                             final Group schedulable ) {
+        public void execute(final GlobalSettings settigns,
+                            final ExecutionContext ctx,
+                            final Group schedulable) {
             ctx.getUser();
             System.out.println(schedulable.getName());
             wasExecuted.set(true);
             counter.incrementAndGet();
         }
 
-        public String getRepositoryNameBeforeExecution( final Group schedulable ) {
+        public String getRepositoryNameBeforeExecution(final Group schedulable) {
             return schedulable.getRepository().getName();
         }
 
     }
 
-    private static SLScheduler     scheduler    = DefaultScheduler.INSTANCE;
+    private static SLScheduler scheduler = DefaultScheduler.INSTANCE;
 
     private static Set<Repository> repositories = new HashSet<Repository>();
 
-    private static GlobalSettings  settings     = new GlobalSettings();
+    private static GlobalSettings settings = new GlobalSettings();
 
     @BeforeClass
     public static void setupScheduler() {
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
         final ArtifactSource source = new ArtifactSource();
         final String initialRawPath = Files.getNormalizedFileName(new File(".."));
@@ -154,7 +157,7 @@ public class DefaultSchedulerTest {
         group.setType("types");
         repository.getGroups().add(group);
         scheduler.initializeSettings(injector.getInstance(ExecutionContextFactory.class), "user", "password",
-                                     DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR);
         scheduler.refreshJobs(settings, repositories);
         scheduler.startScheduler();
     }
@@ -172,7 +175,7 @@ public class DefaultSchedulerTest {
             group.getCronInformation().add("0/1 * * * * ?");
             scheduler.refreshJobs(settings, repositories);
             Thread.sleep(10000);
-            Assert.assertThat((double)SampleGroupSchedulableCommand.counter.get(), IsCloseTo.closeTo(10d, 1d));
+            Assert.assertThat((double) SampleGroupSchedulableCommand.counter.get(), IsCloseTo.closeTo(10d, 1d));
 
         } finally {
             group.getCronInformation().clear();

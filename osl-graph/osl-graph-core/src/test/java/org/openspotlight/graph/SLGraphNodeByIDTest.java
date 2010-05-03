@@ -48,38 +48,51 @@
  */
 package org.openspotlight.graph;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.common.util.AbstractFactory;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.node.JavaInterface;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * The Class SLGraphNodeByIDTest.
- * 
+ *
  * @author Vitor Hugo Chagas
  */
 
 public class SLGraphNodeByIDTest {
 
-    /** The Constant LOGGER. */
-    static final Logger              LOGGER = Logger.getLogger(SLGraphQueryTest.class);
+    /**
+     * The Constant LOGGER.
+     */
+    static final Logger LOGGER = Logger.getLogger(SLGraphQueryTest.class);
 
-    /** The graph. */
-    private static SLGraph           graph;
+    /**
+     * The graph.
+     */
+    private static SLGraph graph;
 
-    /** The session. */
-    private static SLGraphSession    session;
+    /**
+     * The session.
+     */
+    private static SLGraphSession session;
 
     private static AuthenticatedUser user;
 
@@ -100,15 +113,17 @@ public class SLGraphNodeByIDTest {
         try {
 
             JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+            Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                    repositoryPath("repository")),
+                    new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-            final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
 
+            graph = injector.getInstance(SLGraph.class);
+
+            final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
-            user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser,
-                                                                                                            "password");
-
-            final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-            graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+            AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
             session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         } catch (final Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -126,7 +141,7 @@ public class SLGraphNodeByIDTest {
             final SLNode root = context.getRootNode();
 
             final JavaInterface javaInterface = root.addNode(JavaInterface.class, "javaInterface");
-            final JavaInterface javaInterface2 = (JavaInterface)session.getNodeByID(javaInterface.getID());
+            final JavaInterface javaInterface2 = (JavaInterface) session.getNodeByID(javaInterface.getID());
 
             assertThat(javaInterface, is(javaInterface2));
         } catch (final Exception e) {

@@ -107,7 +107,7 @@ public class Reflection {
         /**
          * The collection type.
          */
-        private final Class<? extends Collection<?>> collectionType;
+        private final Class<? extends Iterable<?>> collectionType;
 
         /**
          * The item type.
@@ -121,7 +121,7 @@ public class Reflection {
          * @param itemType the item type
          */
         UnwrappedCollectionTypeFromMethodReturn(
-                                                 final Class<? extends Collection<?>> collectionType, final Class<T> itemType ) {
+                                                 final Class<? extends Iterable<?>> collectionType, final Class<T> itemType ) {
             checkNotNull("collectionType", collectionType);
             // checkNotNull("itemType", itemType);
             this.collectionType = collectionType;
@@ -133,7 +133,7 @@ public class Reflection {
          * 
          * @return the collection type
          */
-        public Class<? extends Collection<?>> getCollectionType() {
+        public Class<? extends Iterable<?>> getCollectionType() {
             return this.collectionType;
         }
 
@@ -248,7 +248,7 @@ public class Reflection {
     public static <T> UnwrappedCollectionTypeFromMethodReturn<T> unwrapCollectionFromMethodReturn( final Method method )
         throws Exception {
         checkNotNull("method", method);
-        checkCondition("correctReturnType", Collection.class.isAssignableFrom(method.getReturnType()));
+        checkCondition("correctReturnType", Iterable.class.isAssignableFrom(method.getReturnType()));
         Class<T> itemType = null;
         final Type genType = method.getGenericReturnType();
 
@@ -276,7 +276,7 @@ public class Reflection {
 
         }
 
-        final Class<? extends Collection<?>> retType = (Class<? extends Collection<?>>)method.getReturnType();
+        final Class<? extends Iterable<?>> retType = (Class<? extends Collection<?>>)method.getReturnType();
 
         final UnwrappedCollectionTypeFromMethodReturn<T> result = new UnwrappedCollectionTypeFromMethodReturn<T>(retType,
                                                                                                                  itemType);

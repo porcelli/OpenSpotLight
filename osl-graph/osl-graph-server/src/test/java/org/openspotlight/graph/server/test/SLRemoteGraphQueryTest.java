@@ -51,17 +51,24 @@ package org.openspotlight.graph.server.test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isOneOf;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.text.Collator;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLConsts;
+import org.openspotlight.graph.SLGraph;
+import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.query.AbstractGeneralQueryTest;
 import org.openspotlight.graph.query.AssertResult;
 import org.openspotlight.graph.query.SLQueryApi;
@@ -77,7 +84,11 @@ import org.openspotlight.graph.test.domain.node.JavaPackage;
 import org.openspotlight.graph.test.domain.node.JavaType;
 import org.openspotlight.graph.test.domain.node.JavaTypeMethod;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 /**
  * The Class SLGraphQueryTest.
@@ -97,47 +108,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
     private static final String              repository = "repository";
 
-    protected static void openNewSession() throws Exception {
-        session = factory.createRemoteGraphSession(user, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
-    }
 
-    protected static void setupSession() throws Exception {
-
-        // Files.delete(DefaultJcrDescriptor.TEMP_DESCRIPTOR.getConfigurationDirectory());
-
-        server = new RemoteGraphSessionServer(new UserAuthenticator() {
-
-            public boolean canConnect( final String userName,
-                                       final String password,
-                                       final String clientHost ) {
-                return true;
-            }
-        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-
-        factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
-
-            public String getHost() {
-                return "localhost";
-            }
-
-            public String getPassword() {
-                return "***";
-            }
-
-            public int getPort() {
-                return 7070;
-            }
-
-            public String getUserName() {
-                return "***";
-            }
-        });
-        session = factory.createRemoteGraphSession(user, pass, repository);
-    }
-
-    protected static void shutdownTest() {
-
-    }
 
     public SLRemoteGraphQueryTest() {
         LOGGER = Logger.getLogger(this.getClass());
@@ -3604,4 +3575,76 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
         }
     }
 
+    private static SLGraph graph;
+
+    @Override
+    protected Callable<Void> createStartUpHandler() {
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+
+        graph = injector.getInstance(SLGraph.class);
+
+
+        return new Callable<Void>(){
+
+            public Void call() throws Exception {
+                
+                server = new RemoteGraphSessionServer(new UserAuthenticator() {
+
+                                    public boolean canConnect( final String userName,
+                                                               final String password,
+                                                               final String clientHost ) {
+                                        return true;
+                                    }
+
+                    @Override
+                    public boolean equals(Object obj) {
+                        return true;
+                    }
+                }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR, graph);
+
+                factory = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
+
+                    public String getHost() {
+                        return "localhost";
+                    }
+
+                    public String getPassword() {
+                        return "***";
+                    }
+
+                    public int getPort() {
+                        return 7070;
+                    }
+
+                    public String getUserName() {
+                        return "***";
+                    }
+                });
+                return null;
+            }
+        };  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected Callable<Void> createShutdownHandler() {
+        return new Callable<Void>(){
+
+            public Void call() throws Exception {
+                server.shutdown(); 
+                graph.shutdown();
+
+                return null;
+            }
+        };
+    }
+
+    @Override
+    protected SLGraphSession createSession() throws Exception {
+        return factory.createRemoteGraphSession(user, pass, repository);
+
+    }
 }

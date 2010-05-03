@@ -51,6 +51,7 @@ package org.openspotlight.federation.context;
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
+import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.support.SimplePersistFactory;
@@ -70,8 +71,8 @@ public class SingleGraphSessionExecutionContext extends DefaultExecutionContext 
                                         final String username, final String password, final JcrConnectionDescriptor descriptor,
                                         final Repository repository, final DisposingListener<DefaultExecutionContext> listener,
                                         final AuthenticatedUser user, final SLGraphSession uniqueGraphSession,
-                                        SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider ) {
-        super(username, password, descriptor, listener, repository, simplePersistFactory, detailedLoggerProvider);
+                                        SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider, SLGraph graph ) {
+        super(username, password, descriptor, listener, repository, simplePersistFactory, detailedLoggerProvider, graph);
         this.uniqueGraphSession = uniqueGraphSession;
         this.user = user;
 

@@ -52,7 +52,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.jredis.JRedis;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
@@ -62,9 +61,8 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;
 import org.openspotlight.federation.log.DetailedLoggerModule;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.STStorageSession;
@@ -86,24 +84,25 @@ public class JcrPersistentArtifactManagerTest {
      * The provider.
      */
 
-    private static ArtifactSource                artifactSource;
+    private static ArtifactSource artifactSource;
 
-    private static Repository                    repository;
+    private static Repository repository;
 
     private static PersistentArtifactManagerImpl persistenArtifactManager;
-    private static JRedis                        jredis;
+    private static JRedis jredis;
 
     /**
      * Setup.
-     * 
+     *
      * @throws Exception the exception
      */
     @BeforeClass
     public static void setup() throws Exception {
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("name")), new SimplePersistModule(),
-                                                 new DetailedLoggerModule(), new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("name")), new SimplePersistModule(),
+                new DetailedLoggerModule(), new DefaultExecutionContextFactoryModule(),
+                new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
         jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
         jredis.flushall();
 
@@ -130,7 +129,7 @@ public class JcrPersistentArtifactManagerTest {
     @Test
     public void shouldFindArtifacts() throws Exception {
         final StringArtifact sa = persistenArtifactManager.findByPath(StringArtifact.class,
-                                                                      "/test/resources/artifacts/included/folder/file_included2");
+                "/test/resources/artifacts/included/folder/file_included2");
         assertThat(sa, is(notNullValue()));
         assertThat(sa.getContent(), is(notNullValue()));
 
@@ -150,7 +149,7 @@ public class JcrPersistentArtifactManagerTest {
     @Test
     public void shouldListArtifacts() throws Exception {
         final Set<StringArtifact> artifacts = persistenArtifactManager.listByPath(StringArtifact.class,
-                                                                                  "/main/java/org/openspotlight/federation");
+                "/main/java/org/openspotlight/federation");
 
         assertThat(artifacts, is(notNullValue()));
         assertThat(artifacts.size(), is(not(0)));

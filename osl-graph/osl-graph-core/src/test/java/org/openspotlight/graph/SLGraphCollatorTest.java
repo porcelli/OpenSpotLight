@@ -48,43 +48,46 @@
  */
 package org.openspotlight.graph;
 
-import java.text.Collator;
-import java.util.Locale;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.common.exception.AbstractFactoryException;
-import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLGraphException;
 import org.openspotlight.graph.exception.SLPropertyNotFoundException;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.test.domain.link.JavaClassJavaMethodSimpleLink;
 import org.openspotlight.graph.test.domain.node.JavaClassNode;
 import org.openspotlight.graph.test.domain.node.JavaMethodNode;
 import org.openspotlight.graph.test.domain.node.SQLElement;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.text.Collator;
+import java.util.Locale;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class SLGraphCollatorTest {
 
-    static final Logger              LOGGER = Logger.getLogger(SLGraphTest.class);
+    static final Logger LOGGER = Logger.getLogger(SLGraphTest.class);
 
-    private static SLGraph           graph;
+    private static SLGraph graph;
 
-    private static SLGraphSession    session;
+    private static SLGraphSession session;
 
     private static AuthenticatedUser user;
 
-    @AfterClass( )
+    @AfterClass()
     public static void finish() {
         session.close();
         graph.shutdown();
@@ -93,13 +96,18 @@ public class SLGraphCollatorTest {
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
         JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        final SLGraphFactory factory = AbstractFactory.getDefaultInstance(SLGraphFactory.class);
-        graph = factory.createGraph(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
 
-        final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
+        graph = injector.getInstance(SLGraph.class);
+
+        final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
         final User simpleUser = securityFactory.createUser("testUser");
         user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
+
     }
 
     @After
@@ -121,7 +129,7 @@ public class SLGraphCollatorTest {
         final JavaMethodNode javaMethodNode1 = javaClassNode1.addNode(JavaMethodNode.class, "javaMethodNode1");
 
         final JavaClassJavaMethodSimpleLink link = session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-                                                                   javaMethodNode1, false);
+                javaMethodNode1, false);
 
         final SLLinkProperty<String> prop1 = link.setProperty(String.class, VisibilityLevel.PUBLIC, "selecao", "great");
         final SLLinkProperty<String> prop2 = link.getProperty(String.class, "sele\u00E7\u00E3o");

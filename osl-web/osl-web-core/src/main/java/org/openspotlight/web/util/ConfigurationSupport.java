@@ -67,15 +67,11 @@ public class ConfigurationSupport {
 
     /**
      * Initialize configuration.
-     * 
-     * @param forceReload the force reload
-     * @param jcrSession the jcr session
-     * @return true, if successful
-     * @throws SLException the SL exception
+     *
      */
     public static boolean initializeConfiguration( final boolean forceReload,
                                                    final ConfigurationManager jcrConfigurationManager ) throws Exception {
-        final boolean firstTime = jcrConfigurationManager.getAllRepositories().size() == 0;
+        final boolean firstTime = jcrConfigurationManager.getAllRepositories().iterator().hasNext();
         boolean reloaded = false;
         if (firstTime || forceReload) {
             saveXmlOnJcr(jcrConfigurationManager);
@@ -89,11 +85,10 @@ public class ConfigurationSupport {
      * 
      * @param manager the manager
      * @return the configuration
-     * @throws SLException the SL exception
      */
     private static void saveXmlOnJcr( final ConfigurationManager manager ) throws Exception {
         GlobalSettings settings;
-        Set<Repository> repositories;
+        Iterable<Repository> repositories;
         final InputStream is = ClassPathResource.getResourceFromClassPath("osl-configuration.xml");
         final StringWriter writter = new StringWriter();
         IOUtils.copy(is, writter);
