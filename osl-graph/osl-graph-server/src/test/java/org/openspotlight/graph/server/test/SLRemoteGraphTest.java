@@ -82,7 +82,6 @@ public class SLRemoteGraphTest extends BaseGraphTest {
     protected void clearSession() {
         session.close();
         session = null;
-
     }
 
     private static final String userName = "testUser";

@@ -456,7 +456,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(64));
+                    assertThat(wrappers.length, is(65));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"),
                                isOneOf(wrappers));
@@ -2210,7 +2210,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(8));
+                    assertThat(wrappers.length, is(9));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.WeakHashMap"),
@@ -2295,7 +2295,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(55));
+                    assertThat(wrappers.length, is(56));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
                                isOneOf(wrappers));
@@ -2781,7 +2781,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(55));
+                    assertThat(wrappers.length, is(56));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSequentialList"),
                                isOneOf(wrappers));
@@ -3315,7 +3315,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(24));
+                    assertThat(wrappers.length, is(25));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"),

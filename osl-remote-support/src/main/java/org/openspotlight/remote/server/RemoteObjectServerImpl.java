@@ -75,6 +75,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -119,7 +120,11 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     /**
      * The Class RemoteReferenceInternalData.
      */
-    private static class RemoteReferenceInternalData<T> implements TimeoutAble {
+    private static class RemoteReferenceInternalData<T> implements TimeoutAble, Comparable<RemoteReferenceInternalData<T>> {
+
+        final CopyOnWriteArraySet<RemoteReferenceInternalData<?>> children = new CopyOnWriteArraySet<RemoteReferenceInternalData<?>>();
+
+        final RemoteReferenceInternalData<?> parentInternalData;
 
         /** The object. */
         private final T                  object;
@@ -138,11 +143,13 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
          * 
          * @param remoteReference the remote reference
          * @param object the object
+         * @param parentInternalData
          */
         public RemoteReferenceInternalData(
-                                            final RemoteReference<T> remoteReference, final T object ) {
+                final RemoteReference<T> remoteReference, final T object, RemoteReferenceInternalData<?> parentInternalData) {
             super();
             this.remoteReference = remoteReference;
+            this.parentInternalData = parentInternalData;
             this.lastDateAccess = new AtomicLong(System.currentTimeMillis());
             this.object = object;
             this.hashcode = hashOf(this.remoteReference, this.lastDateAccess);
@@ -202,6 +209,11 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             return this.hashcode;
         }
 
+        public int compareTo(RemoteReferenceInternalData<T> o) {
+            int thisSize = this.children.size();
+            int anotherSize = o.children.size();
+            return thisSize<anotherSize ? -1 : (thisSize==anotherSize ? 0 : 1);
+        }
     }
 
     /**
@@ -306,7 +318,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     private final Map<Class<?>, InternalObjectFactory<?>>                 internalObjectFactoryMap = new HashMap<Class<?>, InternalObjectFactory<?>>();
 
     /** The remote references. */
-    private final Map<RemoteReference<?>, RemoteReferenceInternalData<?>> remoteReferences         = new ConcurrentHashMap<RemoteReference<?>, RemoteReferenceInternalData<?>>();
+    private final Map<RemoteReference<?>, RemoteReferenceInternalData<?>> activeRemoteReferences = new ConcurrentHashMap<RemoteReference<?>, RemoteReferenceInternalData<?>>();
 
     /** The timeout in milliseconds. */
     private final long                                                    timeoutInMilliseconds;
@@ -359,7 +371,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     public synchronized void closeAllObjects() {
-        for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> e : remoteReferences.entrySet()) {
+        for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> e : activeRemoteReferences.entrySet()) {
             try{
                 removeDeathEntry(e.getValue());
             }catch(Exception ex){
@@ -392,7 +404,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
             final T newObject = internalFactory.createNewInstance(parameters);
 
-            final RemoteReference<T> reference = this.internalCreateRemoteReference(userToken, remoteReferenceType, newObject);
+            final RemoteReference<T> reference = this.internalCreateRemoteReference(null,userToken, remoteReferenceType, newObject);
 
             return reference;
         } catch (final Exception e) {
@@ -465,7 +477,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                                    deathUserEntry.getUserToken().getToken()));
 
                 userTokenDataMap.remove(deathUserEntry.getUserToken());
-                final Set<Entry<RemoteReference<?>, RemoteReferenceInternalData<?>>> remoteObjectsEntries = remoteReferences.entrySet();
+                final Set<Entry<RemoteReference<?>, RemoteReferenceInternalData<?>>> remoteObjectsEntries = activeRemoteReferences.entrySet();
                 for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : remoteObjectsEntries) {
                     final Set<RemoteReferenceInternalData<?>> deathEntries = new HashSet<RemoteReferenceInternalData<?>>();
                     if (entry.getKey().getUserToken().equals(deathUserEntry)) {
@@ -478,7 +490,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             }
 
             final Set<RemoteReferenceInternalData<?>> deathEntries = new HashSet<RemoteReferenceInternalData<?>>();
-            final Set<Entry<RemoteReference<?>, RemoteReferenceInternalData<?>>> remoteObjectsEntries = remoteReferences.entrySet();
+            final Set<Entry<RemoteReference<?>, RemoteReferenceInternalData<?>>> remoteObjectsEntries = activeRemoteReferences.entrySet();
             for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : remoteObjectsEntries) {
                 if (entry.getValue().getLastDateAccess().get() < acceptableDiff) {
                     deathEntries.add(entry.getValue());
@@ -506,7 +518,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * @return the remote reference< t>
      */
     @SuppressWarnings( "unchecked" )
-    private <T> RemoteReference<T> internalCreateRemoteReference( final UserToken userToken,
+    private <T> RemoteReference<T> internalCreateRemoteReference( RemoteReferenceInternalData<?> parentInternalData,
+                                                                  final UserToken userToken,
                                                                   final Class<T> remoteReferenceType,
                                                                   final T newObject ) {
         if (newObject == null) {
@@ -514,7 +527,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         }
         RemoteReference<T> reference;
         if (newObject != null) {
-            for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : remoteReferences.entrySet()) {
+            for (final Entry<RemoteReference<?>, RemoteReferenceInternalData<?>> entry : activeRemoteReferences.entrySet()) {
                 if (newObject == entry.getValue().getObject()) {
                     if (userToken.equals(entry.getKey().getUserToken())) {
                         reference = (RemoteReference<T>)entry.getKey();
@@ -528,7 +541,10 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
 
         reference = new RemoteReference<T>(remoteReferenceType, newObject.getClass().getInterfaces(), remoteReferenceId,
                                            userToken);
-        remoteReferences.put(reference, new RemoteReferenceInternalData<T>(reference, newObject));
+        RemoteReferenceInternalData<T> internalData = new RemoteReferenceInternalData<T>(reference, newObject, parentInternalData);
+        if(parentInternalData!=null)
+            parentInternalData.children.add(internalData);
+        activeRemoteReferences.put(reference, internalData);
         updateRemoteReferenceIfNecessary(reference);
         return reference;
     }
@@ -548,7 +564,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                        isRemoteReferenceValid(invocation.getRemoteReference()));
 
         try {
-            final RemoteReferenceInternalData<T> remoteReferenceData = (RemoteReferenceInternalData<T>)remoteReferences.get(invocation.getRemoteReference());
+            final RemoteReferenceInternalData<T> remoteReferenceData = (RemoteReferenceInternalData<T>) activeRemoteReferences.get(invocation.getRemoteReference());
             final T object = remoteReferenceData.getObject();
             Method method = null;
 
@@ -579,7 +595,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             for (int i = 0, size = args.length; i < size; i++) {
                 if (args[i] instanceof RemoteReference<?>) {
                     final RemoteReference<?> ref = (RemoteReference<?>)args[i];
-                    args[i] = remoteReferences.get(ref).getObject();
+                    args[i] = activeRemoteReferences.get(ref).getObject();
                 } else if (args[i] instanceof Collection<?>) {
                     final Collection<Object> collection = (Collection<Object>)args[i];
                     final Iterator<?> it = collection.iterator();
@@ -595,7 +611,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                         for (final Object item : collection) {
                             if (item instanceof RemoteReference<?>) {
                                 final RemoteReference<Object> remoteRef = (RemoteReference<Object>)item;
-                                final Object correctInstance = remoteReferences.get(remoteRef).getObject();
+                                final Object correctInstance = activeRemoteReferences.get(remoteRef).getObject();
                                 newCollection.add(correctInstance);
                             } else {
                                 newCollection.add(item);
@@ -617,7 +633,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
                         for (final Entry<Object, Object> entry : map.entrySet()) {
                             if (entry.getValue() instanceof RemoteReference<?>) {
                                 final RemoteReference<Object> remoteRef = (RemoteReference<Object>)entry.getValue();
-                                final Object correctInstance = remoteReferences.get(remoteRef).getObject();
+                                final Object correctInstance = activeRemoteReferences.get(remoteRef).getObject();
                                 newMap.put(entry.getKey(), correctInstance);
                             } else {
                                 newMap.put(entry.getKey(), entry.getValue());
@@ -636,21 +652,21 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
             if (isRemote(method)) {
                 if (result instanceof Collection) {
 
-                    final AbstractInvocationResponse<R> response = (AbstractInvocationResponse<R>)this.wrapResultIntoCollection(
+                    final AbstractInvocationResponse<R> response = (AbstractInvocationResponse<R>)this.wrapResultIntoCollection(remoteReferenceData,
                                                                                                                                 method,
                                                                                                                                 invocation.getUserToken(),
                                                                                                                                 (Collection<?>)result);
                     return response;
                 }
                 if (result instanceof Map) {
-                    final AbstractInvocationResponse<R> response = (AbstractInvocationResponse<R>)this.wrapResultIntoMap(
+                    final AbstractInvocationResponse<R> response = (AbstractInvocationResponse<R>)this.wrapResultIntoMap(remoteReferenceData,
                                                                                                                          method,
                                                                                                                          invocation.getUserToken(),
                                                                                                                          (Map<?, ?>)result);
 
                     return response;
                 }
-                final RemoteReference<R> remoteReference = this.internalCreateRemoteReference(
+                final RemoteReference<R> remoteReference = this.internalCreateRemoteReference(remoteReferenceData,
                                                                                               invocation.getUserToken(),
                                                                                               (Class<R>)invocation.getReturnType(),
                                                                                               result);
@@ -699,7 +715,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         throws RemoteReferenceInvalid, UserTokenInvalid {
         checkNotNull("remoteReference", remoteReference);
         checkCondition("userTokenValid", isUserTokenValid(remoteReference.getUserToken()));
-        final boolean contains = remoteReferences.containsKey(remoteReference);
+        final boolean contains = activeRemoteReferences.containsKey(remoteReference);
         if (!contains) {
             throw logAndReturn(new RemoteReferenceInvalid(remoteReference.getRemoteType()
                                                           + remoteReference.getRemoteReferenceId()
@@ -760,14 +776,12 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      * @param deathEntry the death entry
      */
     private void removeDeathEntry( final RemoteReferenceInternalData<?> deathEntry ) {
-        try {
-            logger.info(format("removing reference {0} id {1}", deathEntry.getObject().toString(),
-                               deathEntry.getRemoteReference().getRemoteReferenceId()));
-
-        } catch (final Exception e) {
-            logger.warn("error printing log for death entry " + deathEntry.getRemoteReference().getRemoteReferenceId(), e);
+        if(deathEntry==null) return;
+        for(RemoteReferenceInternalData<?>  toRemoveBefore: deathEntry.children){
+            removeDeathEntry(toRemoveBefore);
         }
-        remoteReferences.remove(deathEntry.getRemoteReference());
+
+        activeRemoteReferences.remove(deathEntry.getRemoteReference());
         final Method[] methods = deathEntry.getObject().getClass().getMethods();
         for (final Method m : methods) {
             if (m.isAnnotationPresent(DisposeMethod.class) && m.getParameterTypes().length == 0) {
@@ -805,8 +819,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
      */
     private void updateRemoteReferenceIfNecessary( final RemoteReference<?> remoteReference ) {
         checkNotNull("remoteReference", remoteReference);
-        if (remoteReferences.containsKey(remoteReference)) {
-            remoteReferences.get(remoteReference).getLastDateAccess().set(System.currentTimeMillis());
+        if (activeRemoteReferences.containsKey(remoteReference)) {
+            activeRemoteReferences.get(remoteReference).getLastDateAccess().set(System.currentTimeMillis());
             updateUserToken(remoteReference.getUserToken());
         }
     }
@@ -823,7 +837,8 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     @SuppressWarnings( "unchecked" )
-    public <W, R extends Collection<W>> AbstractInvocationResponse<R> wrapResultIntoCollection( final Method method,
+    public <W, R extends Collection<W>> AbstractInvocationResponse<R> wrapResultIntoCollection( RemoteReferenceInternalData<?> parentInternalData,
+                                                                                                final Method method,
                                                                                                 final UserToken userToken,
                                                                                                 final R collection )
         throws Exception {
@@ -833,7 +848,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         final Collection<RemoteReference<W>> remoteReferencesCollection = SLCollections.createNewCollection(collectionType,0);
 
         for (final W o : collection) {
-            final RemoteReference<W> remoteRef = this.internalCreateRemoteReference(userToken, remoteReferenceType, o);
+            final RemoteReference<W> remoteRef = this.internalCreateRemoteReference(parentInternalData,userToken, remoteReferenceType, o);
             remoteReferencesCollection.add(remoteRef);
         }
 
@@ -844,14 +859,15 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     @SuppressWarnings( "unchecked" )
-    public <K, W, R extends Map<K, W>> AbstractInvocationResponse<R> wrapResultIntoMap( final Method method,
+    public <K, W, R extends Map<K, W>> AbstractInvocationResponse<R> wrapResultIntoMap( RemoteReferenceInternalData<?> parentInternalData,
+                                                                                        final Method method,
                                                                                         final UserToken userToken,
                                                                                         final R map ) throws Exception {
         final UnwrappedMapTypeFromMethodReturn<Object, Object> metadata = Reflection.unwrapMapFromMethodReturn(method);
         final Class<W> remoteReferenceType = (Class<W>)metadata.getItemType().getK2();
         final Map<K, RemoteReference<W>> remoteReferencesMap = new HashMap<K, RemoteReference<W>>(map.size());
         for (final Entry<K, W> o : map.entrySet()) {
-            final RemoteReference<W> remoteRef = this.internalCreateRemoteReference(userToken, remoteReferenceType, o.getValue());
+            final RemoteReference<W> remoteRef = this.internalCreateRemoteReference(parentInternalData,userToken, remoteReferenceType, o.getValue());
             remoteReferencesMap.put(o.getKey(), remoteRef);
         }
 
