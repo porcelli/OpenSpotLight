@@ -161,6 +161,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
         Set<String> names = newHashSet();
         for (STNodeEntry nodeEntry : foundNodes) {
             String name = nodeEntry.<String>getPropertyValue(simplePersist.getCurrentSession(), propertyName);
+            if(name==null) throw new IllegalStateException("Mandatory property " + propertyName + " from node " + nodeEntry + " with null value");
             names.add(name);
         }
 

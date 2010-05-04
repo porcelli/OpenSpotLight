@@ -701,10 +701,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             checkNotNull("propertyValues", propertyValues);
             checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
 
-            STStorageSession.STCriteriaBuilder builder = currentSession.withPartition(currentPartition).createCriteria().withProperty(
-                                                                                                                                      NODE_ENTRY_TYPE).equals(
-                                                                                                                                                              String.class,
-                                                                                                                                                              internalGetNodeType(beanType));
+            STStorageSession.STCriteriaBuilder builder = currentSession.withPartition(currentPartition).createCriteria().withNodeEntry(internalGetNodeName(beanType));
             Map<String, PropertyDescriptor> allDescriptors = createMapWith(PropertyUtils.getPropertyDescriptors(beanType));
 
             for (int i = 0, size = propertyNames.length; i < size; i++) {
@@ -726,17 +723,28 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 foundItems = children;
             }
 
-            List<T> result = this.<T>internalConvertNodesToBeans(foundItems);
+            List<?> result = this.<T>internalConvertNodesToBeans(foundItems);
+            List<T> filteredResult = filterOnlyThisType(beanType,result);
 
             if (Comparable.class.isAssignableFrom(beanType)) {
                 sort((List<Comparable<? super Comparable<?>>>)result);
             }
-            return result;
+            return filteredResult;
         } catch (Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
 
         }
 
+    }
+
+    private <T> List<T> filterOnlyThisType(Class<T> beanType, List<?> result) {
+        ImmutableList.Builder<T> builder = ImmutableList.builder();
+        for(Object o: result){
+            if(beanType.isInstance(o)){
+                builder.add((T)o);
+            }
+        }
+        return builder.build();  
     }
 
     private Map<String, PropertyDescriptor> createMapWith( PropertyDescriptor[] propertyDescriptors ) {

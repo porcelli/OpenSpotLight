@@ -48,40 +48,22 @@
  */
 package org.openspotlight.bundle.db.processor;
 
-import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
-
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.Random;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.log.DetailedLoggerModule;
@@ -91,6 +73,7 @@ import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
@@ -98,17 +81,24 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Random;
+
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+
 public class DbTableArtifactBundleProcessorTest {
 
     private static class RepositoryData {
-        public final GlobalSettings   settings;
-        public final Repository       repository;
-        public final Group            group;
+        public final GlobalSettings settings;
+        public final Repository repository;
+        public final Group group;
         public final DbArtifactSource artifactSource;
 
         public RepositoryData(
-                               final GlobalSettings settings, final Repository repository, final Group group,
-                               final DbArtifactSource artifactSource ) {
+                final GlobalSettings settings, final Repository repository, final Group group,
+                final DbArtifactSource artifactSource) {
             this.settings = settings;
             this.repository = repository;
             this.group = group;
@@ -117,8 +107,8 @@ public class DbTableArtifactBundleProcessorTest {
     }
 
     private static ExecutionContextFactory contextFactory;
-    private static RepositoryData          data;
-    private static DefaultScheduler        scheduler;
+    private static RepositoryData data;
+    private static DefaultScheduler scheduler;
 
     @AfterClass
     public static void closeResources() throws Exception {
@@ -186,16 +176,16 @@ public class DbTableArtifactBundleProcessorTest {
         data = createRepositoryData();
 
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
-                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                               data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
 
         context.getDefaultConfigurationManager().saveGlobalSettings(data.settings);
         context.getDefaultConfigurationManager().saveRepository(data.repository);
@@ -224,14 +214,14 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                                     "create table exampleTable2(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "create table exampleTable2(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
@@ -250,8 +240,8 @@ public class DbTableArtifactBundleProcessorTest {
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
@@ -272,14 +262,14 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                                     "create table exampleTable3(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "create table exampleTable3(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
@@ -298,8 +288,8 @@ public class DbTableArtifactBundleProcessorTest {
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
@@ -319,14 +309,14 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                                     "create table exampleTable4(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "create table exampleTable4(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
@@ -342,8 +332,8 @@ public class DbTableArtifactBundleProcessorTest {
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
@@ -359,14 +349,14 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                                     "create table exampleTable7(i int , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "create table exampleTable7(i int , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
@@ -393,14 +383,14 @@ public class DbTableArtifactBundleProcessorTest {
 
         connection2.prepareStatement("drop table exampleTable7 ").execute();
         connection2.prepareStatement(
-                                     "create table exampleTable7(i varchar(10) not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "create table exampleTable7(i varchar(10) not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection2.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
@@ -433,21 +423,21 @@ public class DbTableArtifactBundleProcessorTest {
         final Random r = new Random();
         final String tableSufix = r.nextInt(50) + "_" + r.nextInt(50) + "_" + r.nextInt(50);
         connection1.prepareStatement(
-                                     "create table exampleTable"
-                                     + tableSufix
-                                     + "(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "create table exampleTable"
+                        + tableSufix
+                        + "(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.prepareStatement("create table anotherTable" + tableSufix + "(i int not null , i_fk int)").execute();
 
         connection1.prepareStatement(
-                                     "alter table anotherTable" + tableSufix + " add constraint example_fk" + tableSufix
-                                     + " foreign key(i_fk) references exampleTable" + tableSufix + "(i)").execute();
+                "alter table anotherTable" + tableSufix + " add constraint example_fk" + tableSufix
+                        + " foreign key(i_fk) references exampleTable" + tableSufix + "(i)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
@@ -471,8 +461,8 @@ public class DbTableArtifactBundleProcessorTest {
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
@@ -499,14 +489,14 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                                     "create table exampleTable6(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "create table exampleTable6(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
@@ -531,14 +521,14 @@ public class DbTableArtifactBundleProcessorTest {
 
         connection2.prepareStatement("drop table exampleTable6 ").execute();
         connection2.prepareStatement(
-                                     "create table exampleTable6(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "create table exampleTable6(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection2.close();
 
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
-                                                                                         DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                                         data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");

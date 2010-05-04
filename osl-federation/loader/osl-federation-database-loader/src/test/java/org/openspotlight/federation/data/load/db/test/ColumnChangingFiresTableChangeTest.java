@@ -136,7 +136,8 @@ public class ColumnChangingFiresTableChangeTest {
         conn.prepareStatement("create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
                 .execute();
         conn.close();
-
+        ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings, dbBundle, provider);
+        
         Set<DatabaseCustomArtifact> lastLoadedItems = provider.get().listByPath(DatabaseCustomArtifact.class, null);
         conn = DatabaseSupport.createConnection(dbBundle);
 
