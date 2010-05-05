@@ -727,9 +727,9 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             List<T> filteredResult = filterOnlyThisType(beanType,result);
 
             if (Comparable.class.isAssignableFrom(beanType)) {
-                sort((List<Comparable<? super Comparable<?>>>)result);
+                sort((List<Comparable<? super Comparable<?>>>)filteredResult);
             }
-            return filteredResult;
+            return ImmutableList.copyOf(filteredResult);
         } catch (Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
 
@@ -738,13 +738,13 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
     private <T> List<T> filterOnlyThisType(Class<T> beanType, List<?> result) {
-        ImmutableList.Builder<T> builder = ImmutableList.builder();
+        List<T> list = newLinkedList();
         for(Object o: result){
             if(beanType.isInstance(o)){
-                builder.add((T)o);
+                list.add((T)o);
             }
         }
-        return builder.build();  
+        return list;
     }
 
     private Map<String, PropertyDescriptor> createMapWith( PropertyDescriptor[] propertyDescriptors ) {

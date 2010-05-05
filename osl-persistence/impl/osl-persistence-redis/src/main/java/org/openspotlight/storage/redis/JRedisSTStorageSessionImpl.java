@@ -250,6 +250,13 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
                 throw new IllegalArgumentException("invalid criteria");
             }
         }
+        if (criteria.getCriteriaItems().size() == 0) {
+            List<String> keys = jredis.keys(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, criteria.getNodeName()));
+            for (String key : keys) {
+                uniqueIds.addAll(listBytesToListString(jredis.smembers(key)));
+            }
+        }
+
         if (!uniqueIds.isEmpty() && !propertiesIntersection.isEmpty())
             throw new IllegalArgumentException("criteria with unique ids can't be used with other criteria types");
 
