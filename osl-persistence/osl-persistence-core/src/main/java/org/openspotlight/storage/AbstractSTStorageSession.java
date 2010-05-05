@@ -678,9 +678,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             if (o == null) throw new IllegalStateException();
         }
 
-        private void breakHere() {
-            throw new IllegalStateException();
-        }
 
         public STCriteriaBuilder withProperty(String propertyName) {
             breakIfNotNull(transientUniqueKey);
@@ -790,7 +787,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
         public STCriteria buildCriteria() {
-            if (this.items.size() == 0) breakHere();
 
             STCriteriaImpl result = new STCriteriaImpl(transientNodeEntryName, this.items, partition);
             and();
