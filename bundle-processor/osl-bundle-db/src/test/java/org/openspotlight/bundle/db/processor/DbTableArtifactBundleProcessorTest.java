@@ -54,6 +54,7 @@ import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
 import org.junit.*;
+import org.openspotlight.bundle.db.DBConstants;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
@@ -65,6 +66,7 @@ import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
+import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
@@ -120,6 +122,7 @@ public class DbTableArtifactBundleProcessorTest {
         settings.setDefaultSleepingIntervalInMilliseconds(1000);
 
         GlobalSettingsSupport.initializeScheduleMap(settings);
+        settings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
         final Repository repository = new Repository();
         repository.setName("sampleRepository");
         repository.setActive(true);
@@ -222,9 +225,9 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
-        final SLNode exampleServerNode1 = groupNode1.getNode("server name");
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode exampleServerNode1 = groupContext1.getRootNode().getNode("server name");
+        for(SLNode n: groupContext1.getRootNode().getNodes()) System.out.println(n.getName());
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
         final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
