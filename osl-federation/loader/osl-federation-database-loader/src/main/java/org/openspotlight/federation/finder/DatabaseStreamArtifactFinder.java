@@ -48,9 +48,14 @@
  */
 package org.openspotlight.federation.finder;
 
+import static com.google.common.collect.Lists.newLinkedList;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -142,13 +147,24 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
             if (streamHandler != null) {
                 content = streamHandler.afterStreamProcessing(schema, scriptType, catalog, name, content, conn);
             }
-            final String contentAsString = new String(content);
+            final List<String> contentAsStringList = asStringList(content);
             final StringArtifact sa = Artifact.createArtifact(StringArtifact.class, path, ChangeType.INCLUDED);
-            sa.getContent().setTransient(contentAsString);
+            sa.getContent().setTransient(contentAsStringList);
             @SuppressWarnings( "unchecked" )
             A a = (A)sa;
             return a;
         }
+    }
+
+    private List<String> asStringList(byte[] content) throws IOException{
+        List<String> lines = newLinkedList();
+        BufferedReader reader = new BufferedReader(new StringReader(new String(content)));
+        String line;
+        while((line = reader.readLine())!=null){
+            lines.add(line);
+        }
+
+        return lines;
     }
 
     @SuppressWarnings( "unchecked" )

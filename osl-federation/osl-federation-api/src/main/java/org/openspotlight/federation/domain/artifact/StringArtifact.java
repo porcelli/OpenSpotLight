@@ -52,6 +52,8 @@ import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.internal.LazyProperty;
 
+import java.util.List;
+
 // TODO: Auto-generated Javadoc
 /**
  * This is the {@link StringArtifact} class 'on steroids'. It has a lot of {@link PathElement path elements} used to locate a new
@@ -62,7 +64,7 @@ public class StringArtifact extends ArtifactWithSyntaxInformation {
 
     private static final long    serialVersionUID = -8912205023568005794L;
 
-    private LazyProperty<String> content          = LazyProperty.Factory.create(String.class, this);
+    private final LazyProperty<List<String>> content          = LazyProperty.Factory.create(List.class, this);
 
     @Override
     public boolean contentEquals( final Artifact other ) {
@@ -74,12 +76,9 @@ public class StringArtifact extends ArtifactWithSyntaxInformation {
         return false;
     }
 
-    public LazyProperty<String> getContent() {
+    public LazyProperty<List<String>> getContent() {
         return content;
     }
 
-    public void setContent( final LazyProperty<String> content ) {
-        this.content = content;
-    }
 
 }

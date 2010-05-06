@@ -49,12 +49,16 @@
 
 package org.openspotlight.federation.data.load;
 
+import static com.google.common.collect.Lists.newLinkedList;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.jcr.util.JcrNodeVisitor.withVisitor;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -117,8 +121,14 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
         while ((available = is.read()) != -1) {
             baos.write(available);
         }
+        BufferedReader reader = new BufferedReader(new StringReader(new String(baos.toByteArray())));
+        List<String> list = newLinkedList();
+        String line;
+        while((line=reader.readLine())!=null){
+            list.add(line);
+        }
         final StringArtifact artifact = Artifact.createArtifact(StringArtifact.class, path, ChangeType.INCLUDED);
-        artifact.getContent().setTransient(new String(baos.toByteArray()));
+        artifact.getContent().setTransient(list);
         @SuppressWarnings( "unchecked" )
         A typed = (A)artifact;
         return typed;
@@ -206,7 +216,6 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
                                                  ArtifactSource source );
 
     /**
-     * @param name
      * @return the jcr session
      * @throws Exception
      */

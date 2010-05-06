@@ -225,7 +225,11 @@ public abstract class DatabaseStreamTest {
             final String dirName = name.substring(0, name.lastIndexOf('/'));
             new File(dirName).mkdirs();
             final OutputStream fos = new BufferedOutputStream(new FileOutputStream(name + ".sql"));
-            final InputStream is = new ByteArrayInputStream(streamArtifact.getContent().get(simplePersist).getBytes());
+            StringBuilder sb = new StringBuilder();
+            for(String s: streamArtifact.getContent().get(simplePersist)){
+                sb.append(s);
+            }
+            final InputStream is = new ByteArrayInputStream(sb.toString().getBytes());
             while (true) {
                 final int data = is.read();
                 if (data == -1) {

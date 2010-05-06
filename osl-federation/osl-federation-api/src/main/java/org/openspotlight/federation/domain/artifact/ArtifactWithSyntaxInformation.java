@@ -64,7 +64,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
     private static final long                    serialVersionUID     = -3359480990669655877L;
 
     /** The syntax information set. */
-    private LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory.create(Set.class, this);
+    private final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet = LazyProperty.Factory.create(Set.class, this);
 
     public ArtifactWithSyntaxInformation() {
         super();
@@ -132,10 +132,6 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
         syntaxInformation.setParent(this);
         syntaxInformation.setType(type);
         getUnwrappedSyntaxInformation(simplePersist).remove(syntaxInformation);
-    }
-
-    public void setSyntaxInformationSet( final LazyProperty<Set<SyntaxInformation>> syntaxInformationSet ) {
-        this.syntaxInformationSet = syntaxInformationSet;
     }
 
 }

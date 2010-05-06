@@ -67,9 +67,11 @@ import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import static com.google.common.collect.Lists.newLinkedList;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class ArtifactWithSyntaxPersisting {
@@ -88,7 +90,7 @@ public class ArtifactWithSyntaxPersisting {
 
     int            maxPath     = 16;
 
-    private String content     = null;
+    private List<String> content     = null;
 
     Set<StringArtifact> createLotsOfStuff() {
         final Set<StringArtifact> stuffList = new HashSet<StringArtifact>();
@@ -118,15 +120,15 @@ public class ArtifactWithSyntaxPersisting {
         return sa;
     }
 
-    private String getContent() {
+    private List<String> getContent() {
 
         if (content == null) {
-            final StringBuilder builder = new StringBuilder();
+            final List<String> list = newLinkedList();
             for (int i = 0; i < 4000; i++) {
                 final String line = sampleLines[r.nextInt(sampleLines.length)];
-                builder.append(line);
+                list.add(line);
             }
-            content = builder.toString();
+            content = list;
         }
         return content;
     }

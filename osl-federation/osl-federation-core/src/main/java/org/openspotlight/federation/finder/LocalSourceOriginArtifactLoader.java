@@ -55,6 +55,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -69,6 +70,8 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
+
+import static com.google.common.collect.Lists.newLinkedList;
 
 public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoader {
 
@@ -95,16 +98,14 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
                 if (StringArtifact.class.equals(type)) {
                     final FileInputStream resource = new FileInputStream(file);
                     final BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
-                    final StringBuilder buffer = new StringBuilder();
-                    String line = null;
+                    List<String> lines = newLinkedList();
+                    String line=null;
                     while ((line = reader.readLine()) != null) {
-                        buffer.append(line);
-                        buffer.append('\n');
+                        lines.add(line);
                     }
-                    final String content = buffer.toString();
                     final StringArtifact artifact = Artifact.createArtifact(StringArtifact.class, "/" + rawPath,
                                                                             ChangeType.INCLUDED);
-                    artifact.getContent().setTransient(content);
+                    artifact.getContent().setTransient(lines);
                     artifact.setChangeType(changeType);
                     return (A)artifact;
                 } else {// StreamArtifact

@@ -49,6 +49,7 @@
 package org.openspotlight.bundle.common.parser;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.antlr.runtime.CharStream;
 
@@ -62,14 +63,14 @@ public class SLArtifactStreamCaseInsensitiveImpl extends SLArtifactStreamBasicIm
     private final CaseMode caseMode;
 
     public SLArtifactStreamCaseInsensitiveImpl(
-                                                final String fedaratedArtifactPath, final String artifactContent,
+                                                final String fedaratedArtifactPath, final List<String> artifactContent,
                                                 final String version ) throws IOException {
         super(fedaratedArtifactPath, artifactContent, version);
         this.caseMode = CaseMode.LOWER;
     }
 
     public SLArtifactStreamCaseInsensitiveImpl(
-                                                final String fedaratedArtifactPath, final String artifactContent,
+                                                final String fedaratedArtifactPath, final List<String> artifactContent,
                                                 final String version, final CaseMode mode ) throws IOException {
         super(fedaratedArtifactPath, artifactContent, version);
         this.caseMode = mode;
