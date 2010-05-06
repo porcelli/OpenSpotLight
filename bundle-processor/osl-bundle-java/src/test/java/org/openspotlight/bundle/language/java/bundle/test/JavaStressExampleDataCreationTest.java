@@ -57,12 +57,10 @@ import org.junit.Ignore;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
@@ -78,6 +76,8 @@ import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.slf4j.Logger;
@@ -126,6 +126,7 @@ public class JavaStressExampleDataCreationTest {
                 repositoryPath("repository")),
                 new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
 
         SLGraph graph = injector.getInstance(SLGraph.class);
 
@@ -152,7 +153,7 @@ public class JavaStressExampleDataCreationTest {
         includedSource.setRepository(repo);
         includedSource.setName("classpath");
         includedSource.setInitialLookup("./src/test/resources/stringArtifacts/stressData");
-        
+
         includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         settings = new GlobalSettings();

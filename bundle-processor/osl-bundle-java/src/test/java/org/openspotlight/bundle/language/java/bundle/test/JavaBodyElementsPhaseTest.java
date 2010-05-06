@@ -88,6 +88,8 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.slf4j.Logger;
@@ -100,7 +102,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class JavaBodyElementsPhaseTest {
 
-    public static void main( final String... args ) throws Exception {
+    public static void main(final String... args) throws Exception {
         final JavaBodyElementsPhaseTest test = new JavaBodyElementsPhaseTest();
 
         try {
@@ -110,10 +112,11 @@ public class JavaBodyElementsPhaseTest {
                     repositoryPath("repository")),
                     new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
+            injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
 
             SLGraph graph = injector.getInstance(SLGraph.class);
 
-            
+
             final RemoteAdapterFactory saFactory = new ServerAdapterFactory();
             final RemoteRepository remote = saFactory.getRemoteRepository(repository);
 
@@ -124,16 +127,16 @@ public class JavaBodyElementsPhaseTest {
             try {
                 server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
-                    public boolean canConnect( final String userName,
-                                               final String password,
-                                               final String clientHost ) {
+                    public boolean canConnect(final String userName,
+                                              final String password,
+                                              final String clientHost) {
                         return true;
                     }
 
-                    public boolean equals( final Object o ) {
+                    public boolean equals(final Object o) {
                         return this.getClass().equals(o.getClass());
                     }
-                }, 7070, 60 * 1000 * 10L, descriptor,graph);
+                }, 7070, 60 * 1000 * 10L, descriptor, graph);
                 System.err.println("Server waiting connections on port 7070");
             } finally {
                 if (server != null) {
@@ -159,21 +162,21 @@ public class JavaBodyElementsPhaseTest {
         }
     }
 
-    private ExecutionContextFactory              includedFilesContextFactory;
+    private ExecutionContextFactory includedFilesContextFactory;
 
-    private GlobalSettings                       settings;
-    private final Logger                         logger     = LoggerFactory.getLogger(getClass());
+    private GlobalSettings settings;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Group                                group;
+    private Group group;
 
-    private final String                         username   = "username";
+    private final String username = "username";
 
-    private final String                         password   = "password";
+    private final String password = "password";
     private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 
     @After
     public void closeResources() {
-        final RepositoryImpl repo = (RepositoryImpl)JcrConnectionProvider.createFromData(descriptor).getRepository();
+        final RepositoryImpl repo = (RepositoryImpl) JcrConnectionProvider.createFromData(descriptor).getRepository();
         repo.shutdown();
     }
 
@@ -190,10 +193,10 @@ public class JavaBodyElementsPhaseTest {
         includedSource.setInitialLookup("src/test/resources/stringArtifacts/junit-4.3.1");
 
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule());
 
         includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
@@ -236,7 +239,7 @@ public class JavaBodyElementsPhaseTest {
         bundleSource.setRelative("/src/");
         bundleSource.getIncludeds().add("/src/**/*.java");
         final ExecutionContext ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
-                                                                                        group.getRootRepository());
+                group.getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
         ctx.closeResources();
@@ -246,14 +249,14 @@ public class JavaBodyElementsPhaseTest {
     public void shouldResoulveExpectedTokens() throws Exception {
         logger.info("about to execute bundle");
         final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password,
-                                                                                                   descriptor,
-                                                                                                   includedFilesContextFactory,
-                                                                                                   settings, group);
+                descriptor,
+                includedFilesContextFactory,
+                settings, group);
         logger.info("bundle executed");
         Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
 
         final ExecutionContext context = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
-                                                                                            group.getRootRepository());
+                group.getRootRepository());
         final SLContext ctx = context.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode = ctx.getRootNode().getNode(group.getUniqueName());
 

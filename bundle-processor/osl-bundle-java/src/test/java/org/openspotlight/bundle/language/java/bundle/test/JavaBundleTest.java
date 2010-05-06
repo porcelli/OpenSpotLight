@@ -53,22 +53,12 @@ import com.google.inject.Injector;
 import org.junit.Ignore;
 import org.openspotlight.bundle.common.AbstractTestServerClass;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
-import org.openspotlight.bundle.language.java.bundle.JavaBodyElementsPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
-import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
+import org.openspotlight.bundle.language.java.bundle.*;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
@@ -80,6 +70,8 @@ import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -88,30 +80,31 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 @Ignore
 public class JavaBundleTest extends AbstractTestServerClass {
 
-    public static void main( final String... args ) {
+    public static void main(final String... args) {
         final JavaBundleTest test = new JavaBundleTest();
         test.doWorkAndExposeServers();
     }
 
     private ExecutionContextFactory contextFactory;
-    private GlobalSettings          settings;
-    private Group                   group;
-    private final String            username = "sa";
-    private final String            password = "sa";
+    private GlobalSettings settings;
+    private Group group;
+    private final String username = "sa";
+    private final String password = "sa";
 
     private SLGraph graph;
 
     @Override
-    protected void doWork( final JcrConnectionProvider provider ) throws Exception {
+    protected void doWork(final JcrConnectionProvider provider) throws Exception {
         final Repository repo = new Repository();
         repo.setName("name");
         repo.setActive(true);
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("name")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule(),
-                new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("name")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
         graph = injector.getInstance(SLGraph.class);
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
@@ -173,7 +166,7 @@ public class JavaBundleTest extends AbstractTestServerClass {
         bundleSource.setRelative("src/");
         bundleSource.getIncludeds().add("**/*.java");
         final ExecutionContext ctx = contextFactory.createExecutionContext(username, password, getDescriptor(),
-                                                                           group.getRootRepository());
+                group.getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
 
@@ -188,7 +181,7 @@ public class JavaBundleTest extends AbstractTestServerClass {
 
     @Override
     protected SLGraph getGraph() {
-        return graph;  
+        return graph;
     }
 
     @Override

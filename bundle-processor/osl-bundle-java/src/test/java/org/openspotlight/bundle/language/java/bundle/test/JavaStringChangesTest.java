@@ -60,15 +60,10 @@ import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaLexerAndParserTypesPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaParserPublicElementsPhase;
 import org.openspotlight.bundle.language.java.bundle.JavaTreePhase;
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
@@ -76,10 +71,13 @@ import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -87,15 +85,15 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class JavaStringChangesTest {
 
-    private ExecutionContextFactory       includedFilesContextFactory;
-    private ExecutionContextFactory       changedFilesContextFactory;
-    private ExecutionContextFactory       removedFilesContextFactory;
-    private GlobalSettings                settings;
-    private Group                         group;
+    private ExecutionContextFactory includedFilesContextFactory;
+    private ExecutionContextFactory changedFilesContextFactory;
+    private ExecutionContextFactory removedFilesContextFactory;
+    private GlobalSettings settings;
+    private Group group;
 
-    private final String                  username   = "username";
+    private final String username = "username";
 
-    private final String                  password   = "password";
+    private final String password = "password";
     private final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 
     @Before
@@ -105,10 +103,12 @@ public class JavaStringChangesTest {
         repo.setActive(true);
 
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
 
         final ArtifactSource includedSource = new ArtifactSource();
         includedSource.setRepository(repo);
@@ -151,7 +151,7 @@ public class JavaStringChangesTest {
         bundleSource.setRelative("tests/");
         bundleSource.getIncludeds().add("**/*.java");
         final ExecutionContext ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
-                                                                                        group.getRootRepository());
+                group.getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
         ctx.closeResources();
@@ -168,9 +168,9 @@ public class JavaStringChangesTest {
     public void shouldRemoveDeletedPublicClassWhenItsFileIsRemoved() throws Exception {
         // FIXME write this test!
         DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password, descriptor, includedFilesContextFactory,
-                                                              settings, group);
+                settings, group);
         final ExecutionContext context = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
-                                                                                            group.getRootRepository());
+                group.getRootRepository());
         final SLContext ctx = context.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
         final SLNode groupNode = ctx.getRootNode().getNode(group.getUniqueName());
         final SLNode packageNode = groupNode.getNode("org.openspotlight.test");

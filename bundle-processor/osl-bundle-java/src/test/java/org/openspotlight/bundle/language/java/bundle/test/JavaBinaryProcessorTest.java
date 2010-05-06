@@ -49,57 +49,50 @@
 
 package org.openspotlight.bundle.language.java.bundle.test;
 
-import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
-
-import java.util.Set;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.Set;
+
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class JavaBinaryProcessorTest {
 
     private static class RepositoryData {
         public final GlobalSettings settings;
-        public final Repository     repository;
-        public final Group          group;
+        public final Repository repository;
+        public final Group group;
         public final ArtifactSource artifactSource;
 
         public RepositoryData(
-                               final GlobalSettings settings, final Repository repository, final Group group,
-                               final ArtifactSource artifactSource ) {
+                final GlobalSettings settings, final Repository repository, final Group group,
+                final ArtifactSource artifactSource) {
             this.settings = settings;
             this.repository = repository;
             this.group = group;
@@ -108,8 +101,8 @@ public class JavaBinaryProcessorTest {
     }
 
     private static ExecutionContextFactory contextFactory;
-    private static RepositoryData          data;
-    private static DefaultScheduler        scheduler;
+    private static RepositoryData data;
+    private static DefaultScheduler scheduler;
 
     @AfterClass
     public static void closeResources() throws Exception {
@@ -166,18 +159,18 @@ public class JavaBinaryProcessorTest {
 
         JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
         data = createRepositoryData();
-
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
-                                                                               DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                               data.repository);
+                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                data.repository);
 
         context.getDefaultConfigurationManager().saveGlobalSettings(data.settings);
         context.getDefaultConfigurationManager().saveRepository(data.repository);
@@ -205,12 +198,12 @@ public class JavaBinaryProcessorTest {
         reloadArtifactsAndCallBundleProcessor();
 
         final ExecutionContext context = contextFactory.createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                                                                               data.repository);
+                data.repository);
         Set<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StreamArtifact.class, null);
         for (String s : list)
             System.err.println(s);
         final StreamArtifact jarArtifact = context.getPersistentArtifactManager().findByPath(StreamArtifact.class,
-                                                                                             "/jars/resources/dynamo-file-gen-1.0.1.jar");
+                "/jars/resources/dynamo-file-gen-1.0.1.jar");
         Assert.assertThat(jarArtifact.getLastProcessStatus(), Is.is(LastProcessStatus.PROCESSED));
         Assert.assertThat(jarArtifact.getUniqueContextName(), Is.is(IsNull.notNullValue()));
     }

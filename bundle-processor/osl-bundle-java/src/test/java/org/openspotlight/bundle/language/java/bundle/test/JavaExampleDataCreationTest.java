@@ -48,12 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.bundle.test;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-
-import javax.jcr.Node;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
@@ -63,37 +57,40 @@ import org.junit.Ignore;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.federation.context.DefaultExecutionContextFactory;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.BundleSource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
+import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import javax.jcr.Node;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 @Ignore
 public class JavaExampleDataCreationTest {
 
-    public static void main( final String... args ) throws Exception {
+    public static void main(final String... args) throws Exception {
         final JavaExampleDataCreationTest test = new JavaExampleDataCreationTest();
         try {
             test.setupResourcesAndCreateData();
@@ -108,13 +105,13 @@ public class JavaExampleDataCreationTest {
 
     }
 
-    private ExecutionContextFactory              includedFilesContextFactory;
-    private GlobalSettings                       settings;
+    private ExecutionContextFactory includedFilesContextFactory;
+    private GlobalSettings settings;
 
-    private Group                                group;
+    private Group group;
 
-    private final String                         username   = "username";
-    private final String                         password   = "password";
+    private final String username = "username";
+    private final String password = "password";
     private static final JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.TEMP_DESCRIPTOR;
 
     public void setupResourcesAndCreateData() throws Exception {
@@ -128,10 +125,12 @@ public class JavaExampleDataCreationTest {
         includedSource.setInitialLookup("./src/test/resources/stringArtifacts/exampleFiles");
 
         Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                                                                         repositoryPath("repository")),
-                                                 new SimplePersistModule(), new DetailedLoggerModule(),
-                                                 new DefaultExecutionContextFactoryModule());
+                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                repositoryPath("repository")),
+                new SimplePersistModule(), new DetailedLoggerModule(),
+                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
 
         includedFilesContextFactory = injector.getInstance(ExecutionContextFactory.class);
 
@@ -158,13 +157,13 @@ public class JavaExampleDataCreationTest {
         bundleJarSource.setRelative("jar/");
         bundleJarSource.getIncludeds().add("**/luni-few-classes.jar");
         ExecutionContext ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
-                                                                                  group.getRootRepository());
+                group.getRootRepository());
         ctx.getDefaultConfigurationManager().saveGlobalSettings(settings);
         ctx.getDefaultConfigurationManager().saveRepository(repo);
         final GlobalExecutionStatus result = DefaultBundleProcessorManager.INSTANCE.executeBundles(username, password,
-                                                                                                   descriptor,
-                                                                                                   includedFilesContextFactory,
-                                                                                                   settings, group);
+                descriptor,
+                includedFilesContextFactory,
+                settings, group);
         Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
         ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor, group.getRootRepository());
         final SLNode ctxRoot = ctx.getGraphSession().getContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
@@ -175,8 +174,8 @@ public class JavaExampleDataCreationTest {
         final Node node = session.getRootNode().getNode(SLConsts.DEFAULT_JCR_ROOT_NAME);
         new File("target/test-data/").mkdirs();
         final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
-                                                                                   new FileOutputStream(
-                                                                                                        "target/test-data/exportedData.xml"));
+                new FileOutputStream(
+                        "target/test-data/exportedData.xml"));
         session.exportSystemView(node.getPath(), bufferedOutputStream, false, false);
         bufferedOutputStream.flush();
         bufferedOutputStream.close();
