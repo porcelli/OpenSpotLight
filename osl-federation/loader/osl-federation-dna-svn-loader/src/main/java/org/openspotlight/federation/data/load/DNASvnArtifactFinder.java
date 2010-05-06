@@ -49,9 +49,9 @@
 
 package org.openspotlight.federation.data.load;
 
-import org.jboss.dna.connector.svn.SVNRepositorySource;
-import org.jboss.dna.jcr.JcrConfiguration;
-import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
+import org.modeshape.connector.svn.SvnRepositorySource;
+import org.modeshape.jcr.JcrConfiguration;
+import org.modeshape.repository.ModeShapeConfiguration;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
@@ -65,10 +65,10 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 public class DNASvnArtifactFinder extends DnaArtifactFinder {
 
     @Override
-    protected void configureWithBundle( final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+    protected void configureWithBundle( final ModeShapeConfiguration.RepositorySourceDefinition<JcrConfiguration> repositorySource2,
                                         final ArtifactSource source ) {
         final DnaSvnArtifactSource svnBundle = (DnaSvnArtifactSource)source;
-        repositorySource2.usingClass(SVNRepositorySource.class).setProperty("password", svnBundle.getPassword()).setProperty(
+        repositorySource2.usingClass(SvnRepositorySource.class).setProperty("password", svnBundle.getPassword()).setProperty(
                                                                                                                              "username",
                                                                                                                              svnBundle.getUserName()).setProperty(
                                                                                                                                                                   "repositoryRootURL", svnBundle.getInitialLookup()).setProperty( //$NON-NLS-1$ //$NON-NLS-2$

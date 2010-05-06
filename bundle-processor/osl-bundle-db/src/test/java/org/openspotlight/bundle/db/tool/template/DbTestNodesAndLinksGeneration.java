@@ -65,7 +65,6 @@ public class DbTestNodesAndLinksGeneration {
     public void shouldCreateClassFiles() throws Exception {
         final TemplateTask task = new TemplateTask();
         task.setProject(new Project());
-        task.setExecuteBeanShellScript(false);
         task.setTemplatePath("src/test/resources/template/sourcecode/");
         task.addTemplateFiles("OslNode.ftl", "OslLink.ftl");
         final FileSet xmls = new FileSet();

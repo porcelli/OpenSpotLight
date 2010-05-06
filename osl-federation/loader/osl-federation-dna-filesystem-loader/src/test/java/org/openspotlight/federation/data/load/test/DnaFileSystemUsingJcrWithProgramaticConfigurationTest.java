@@ -55,13 +55,13 @@ import static org.junit.Assert.assertThat;
 
 import javax.jcr.Session;
 
-import org.jboss.dna.connector.filesystem.FileSystemSource;
-import org.jboss.dna.jcr.JcrConfiguration;
-import org.jboss.dna.jcr.JcrEngine;
-import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.modeshape.connector.filesystem.FileSystemSource;
+import org.modeshape.jcr.JcrConfiguration;
+import org.modeshape.jcr.JcrEngine;
+import org.modeshape.jcr.SecurityContextCredentials;
 import org.openspotlight.federation.data.load.DefaultSecurityContext;
 
 /**

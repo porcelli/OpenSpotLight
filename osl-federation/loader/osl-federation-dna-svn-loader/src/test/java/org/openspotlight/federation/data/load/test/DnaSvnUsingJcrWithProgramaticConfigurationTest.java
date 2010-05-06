@@ -56,14 +56,14 @@ import static org.junit.Assert.assertThat;
 import javax.jcr.NodeIterator;
 import javax.jcr.Session;
 
-import org.jboss.dna.connector.svn.SVNRepositorySource;
-import org.jboss.dna.jcr.JcrConfiguration;
-import org.jboss.dna.jcr.JcrEngine;
-import org.jboss.dna.jcr.SecurityContextCredentials;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.modeshape.connector.svn.SvnRepositorySource;
+import org.modeshape.jcr.JcrConfiguration;
+import org.modeshape.jcr.JcrEngine;
+import org.modeshape.jcr.SecurityContextCredentials;
 import org.openspotlight.federation.data.load.DefaultSecurityContext;
 
 /**
@@ -82,7 +82,7 @@ public class DnaSvnUsingJcrWithProgramaticConfigurationTest {
         final String svnRepositorySource = "svnRepositorySource";
         final String repositoryName = "svnRepository";
         final JcrConfiguration configuration = new JcrConfiguration();
-        configuration.repositorySource(svnRepositorySource).usingClass(SVNRepositorySource.class).setProperty("password", "").setProperty(
+        configuration.repositorySource(svnRepositorySource).usingClass(SvnRepositorySource.class).setProperty("password", "").setProperty(
                                                                                                                                           "username",
                                                                                                                                           "anonymous").setProperty(
                                                                                                                                                                    "repositoryRootURL", "http://hamcrest.googlecode.com/svn/trunk/hamcrest-java/").setProperty( //$NON-NLS-1$ //$NON-NLS-2$

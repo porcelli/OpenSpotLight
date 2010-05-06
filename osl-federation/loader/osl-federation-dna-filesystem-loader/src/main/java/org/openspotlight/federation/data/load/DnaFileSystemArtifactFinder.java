@@ -49,9 +49,9 @@
 
 package org.openspotlight.federation.data.load;
 
-import org.jboss.dna.connector.filesystem.FileSystemSource;
-import org.jboss.dna.jcr.JcrConfiguration;
-import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
+import org.modeshape.connector.filesystem.FileSystemSource;
+import org.modeshape.jcr.JcrConfiguration;
+import org.modeshape.repository.ModeShapeConfiguration;
 import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
@@ -65,9 +65,9 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 public class DnaFileSystemArtifactFinder extends DnaArtifactFinder {
 
     @Override
-    protected void configureWithBundle( final RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+    protected void configureWithBundle( final ModeShapeConfiguration.RepositorySourceDefinition<JcrConfiguration> repositorySource2,
                                         final ArtifactSource source ) {
-        repositorySource2.usingClass(FileSystemSource.class).setProperty("workspaceRootPath", source.getInitialLookup()).setProperty( //$NON-NLS-1$ 
+        repositorySource2.usingClass(FileSystemSource.class).setProperty("workspaceRootPath", source.getInitialLookup()).setProperty( //$NON-NLS-1$
                                                                                                                                      "creatingWorkspacesAllowed",
                                                                                                                                      true).setProperty(
                                                                                                                                                        //$NON-NLS-1$

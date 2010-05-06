@@ -559,7 +559,7 @@ public class JavaPublicElementsTreeExecutor {
             JavaType arrayNode = (JavaType)parent.getNode(arrayName);
             if (arrayNode == null) {
                 @SuppressWarnings( "unchecked" )
-                final Class<? extends JavaType> sameType = simpleOne.getClass().getInterfaces()[0];
+                final Class<? extends JavaType> sameType = (Class<? extends JavaType>) simpleOne.getClass().getInterfaces()[0];
                 arrayNode = parent.addNode(sameType, arrayName);
                 arrayNode.setArray(true);
                 arrayNode.setQualifiedName(simpleOne.getQualifiedName() + "[]");

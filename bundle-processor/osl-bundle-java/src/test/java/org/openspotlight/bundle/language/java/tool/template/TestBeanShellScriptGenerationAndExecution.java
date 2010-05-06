@@ -61,7 +61,6 @@ public class TestBeanShellScriptGenerationAndExecution {
     public void shouldCreateBeanShellScript() throws Exception {
         final TemplateTask task = new TemplateTask();
         task.setProject(new Project());
-        task.setExecuteBeanShellScript(false);
         task.setTemplatePath("src/test/resources/template/beanshell/");
         task.addTemplateFiles("JavaInitialData.ftl");
         final FileSet xmls = new FileSet();
@@ -74,20 +73,4 @@ public class TestBeanShellScriptGenerationAndExecution {
         // assertThat(new File(linkDir).list().length, is(not(0)));
     }
 
-    @Test
-    public void shouldExecuteBeanShell() throws Exception {
-        final TemplateTask task = new TemplateTask();
-        task.setProject(new Project());
-        task.setExecuteBeanShellScript(true);
-        task.setTemplatePath("src/test/resources/template/beanshell/");
-        task.addTemplateFiles("JavaInitialData.ftl");
-        final FileSet xmls = new FileSet();
-        xmls.setDir(new File("src/test/resources/data/beanshell/"));
-        xmls.setIncludes("big*.xml");
-        task.addXmlFiles(xmls);
-        task.setOutputDirectory("./target/test-data/TestBeanShellScriptGenerationAndExecution/output/");
-        task.execute();
-        // assertThat(new File(linkDir).exists(), is(true));
-        // assertThat(new File(linkDir).list().length, is(not(0)));
-    }
 }

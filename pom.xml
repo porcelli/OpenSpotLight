@@ -762,11 +762,6 @@
                 <version>1.7.0</version>
             </dependency>
             <dependency>
-                <groupId>org.beanshell</groupId>
-                <artifactId>bsh</artifactId>
-                <version>2.0b4</version>
-            </dependency>
-            <dependency>
                 <groupId>asm</groupId>
                 <artifactId>asm</artifactId>
                 <version>3.2</version>
@@ -797,7 +792,20 @@
                 <artifactId>cajo</artifactId>
                 <version>1.127</version>
             </dependency>
-
+            <!--
+                not in central repo yet: download it from
+                http://cloud.github.com/downloads/FeuTeston/dynamo-effective-tools/dynamo-file-gen-1.0.jar
+            -->
+            <!--
+                mvn install:install-file -DgroupId=dynamo
+                -DartifactId=dynamo-file-gen -Dversion=1.0.1 -Dpackaging=jar
+                -Dfile=dynamo-file-gen-1.0.1.jar
+            -->
+            <dependency>
+                <groupId>dynamo</groupId>
+                <artifactId>dynamo-file-gen</artifactId>
+                <version>1.0.1</version>
+            </dependency>
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
