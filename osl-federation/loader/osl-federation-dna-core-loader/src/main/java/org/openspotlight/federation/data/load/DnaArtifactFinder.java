@@ -68,10 +68,10 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import org.jboss.dna.jcr.JcrConfiguration;
-import org.jboss.dna.jcr.JcrEngine;
-import org.jboss.dna.jcr.SecurityContextCredentials;
-import org.jboss.dna.repository.DnaConfiguration.RepositorySourceDefinition;
+import org.modeshape.jcr.JcrConfiguration;
+import org.modeshape.jcr.JcrEngine;
+import org.modeshape.jcr.SecurityContextCredentials;
+import org.modeshape.repository.ModeShapeConfiguration;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.domain.artifact.Artifact;
@@ -212,7 +212,7 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
 
     private final Map<ArtifactSource, Session>   mappingSessions  = new ConcurrentHashMap<ArtifactSource, Session>();
 
-    protected abstract void configureWithBundle( RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+    protected abstract void configureWithBundle( ModeShapeConfiguration.RepositorySourceDefinition<JcrConfiguration> repositorySource2,
                                                  ArtifactSource source );
 
     /**

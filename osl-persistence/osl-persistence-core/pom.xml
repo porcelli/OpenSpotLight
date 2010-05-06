@@ -30,8 +30,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>google</groupId>
-			<artifactId>collect</artifactId>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		

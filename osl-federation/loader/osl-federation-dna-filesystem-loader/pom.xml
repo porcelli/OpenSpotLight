@@ -23,8 +23,8 @@
 		</dependency>
 		<!-- External dependencies -->
         <dependency>
-            <groupId>org.jboss.dna</groupId>
-            <artifactId>dna-connector-filesystem</artifactId>
+            <groupId>org.modeshape</groupId>
+            <artifactId>modeshape-connector-filesystem</artifactId>
         </dependency>
 		<!-- Test dependencies -->
 		<dependency>

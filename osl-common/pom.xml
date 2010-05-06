@@ -65,8 +65,8 @@
             <artifactId>jcr</artifactId>
         </dependency>
         <dependency>
-            <groupId>google</groupId>
-            <artifactId>collect</artifactId>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
         </dependency>
         <dependency>
             <groupId>cglib</groupId>
