@@ -49,27 +49,26 @@
 
 package org.openspotlight.federation.data.load.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.Set;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.federation.data.load.DNASvnArtifactFinder;
 import org.openspotlight.federation.domain.DnaSvnArtifactSource;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 
+import java.util.Set;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
 /**
  * Test for class {@link DNASvnArtifactFinder}
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class DnaSvnArtifactLoaderTest {
 
     @Test
@@ -80,12 +79,13 @@ public class DnaSvnArtifactLoaderTest {
         bundle.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
         bundle.setUserName("feuteston");
         bundle.setPassword("jakadeed");
+        bundle.setRootFolder("source");
         final Repository repository = new Repository();
         repository.setName("repository");
         bundle.setRepository(repository);
 
         final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
-        final StringArtifact sa = finder.findByPath(StringArtifact.class, bundle, "source/osl/pom.xml");
+        final StringArtifact sa = finder.findByPath(StringArtifact.class, bundle, "osl/pom.xml");
 
         assertThat(sa, is(notNullValue()));
         assertThat(sa.getContent(), is(notNullValue()));
@@ -93,8 +93,6 @@ public class DnaSvnArtifactLoaderTest {
         finder.closeResources();
     }
 
-    @Ignore
-    // this test is working, but it takes a long time
     @Test
     public void shouldRetrieveArtifactNames() throws Exception {
 
@@ -104,12 +102,13 @@ public class DnaSvnArtifactLoaderTest {
         bundle.setInitialLookup("https://openspotlight.dev.java.net/svn/openspotlight/trunk/");
         bundle.setUserName("feuteston");
         bundle.setPassword("jakadeed");
+        bundle.setRootFolder("source");
         final Repository repository = new Repository();
         repository.setName("repository");
         bundle.setRepository(repository);
         final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
         final Set<String> allNames = finder.getInternalMethods().retrieveOriginalNames(StringArtifact.class, bundle,
-                                                                                       "source/osl/osl-common/src/main/java/org/openspotlight/common/");
+                "osl/osl-common/src/main/java/org/openspotlight/common/");
         assertThat(allNames.size(), is(not(0)));
 
         finder.closeResources();

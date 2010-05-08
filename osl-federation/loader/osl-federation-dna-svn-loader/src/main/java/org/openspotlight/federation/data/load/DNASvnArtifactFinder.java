@@ -59,27 +59,27 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System Connector.
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class DNASvnArtifactFinder extends DnaArtifactFinder {
 
     @Override
-    protected void configureWithBundle( final ModeShapeConfiguration.RepositorySourceDefinition<JcrConfiguration> repositorySource2,
-                                        final ArtifactSource source ) {
-        final DnaSvnArtifactSource svnBundle = (DnaSvnArtifactSource)source;
-        repositorySource2.usingClass(SvnRepositorySource.class).setProperty("password", svnBundle.getPassword()).setProperty(
-                                                                                                                             "username",
-                                                                                                                             svnBundle.getUserName()).setProperty(
-                                                                                                                                                                  "repositoryRootURL", svnBundle.getInitialLookup()).setProperty( //$NON-NLS-1$ //$NON-NLS-2$
-                                                                                                                                                                                                                                 "creatingWorkspacesAllowed",
-                                                                                                                                                                                                                                 true);
+    protected void configureWithBundle(final ModeShapeConfiguration.RepositorySourceDefinition<JcrConfiguration> repositorySource2,
+                                       final ArtifactSource source) {
+        final DnaSvnArtifactSource svnBundle = (DnaSvnArtifactSource) source;
+        repositorySource2.usingClass(SvnRepositorySource.class)
+                .setProperty("password", svnBundle.getPassword())
+                .setProperty("username",svnBundle.getUserName())
+                .setProperty("repositoryRootURL", svnBundle.getInitialLookup())
+                .setProperty( "creatingWorkspacesAllowed",true)
+                .setProperty( "defaultWorkspaceName",svnBundle.getRootFolder());
 
     }
 
     @Override
-    protected <A extends Artifact> boolean internalAccept( ArtifactSource source,
-                                                           Class<A> type ) throws Exception {
+    protected <A extends Artifact> boolean internalAccept(ArtifactSource source,
+                                                          Class<A> type) throws Exception {
         return source instanceof DnaSvnArtifactSource && StringArtifact.class.equals(type);
     }
 

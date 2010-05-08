@@ -55,7 +55,7 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 
 /**
  * The Class SLSelectCommandDO.
- * 
+ *
  * @author Vitor Hugo Chagas
  */
 public class SLSelectCommandDO {
@@ -77,7 +77,7 @@ public class SLSelectCommandDO {
 
     /**
      * Gets the metadata.
-     * 
+     *
      * @return the metadata
      */
     public SLMetadata getMetadata() {
@@ -86,7 +86,7 @@ public class SLSelectCommandDO {
 
     /**
      * Sets the metadata.
-     * 
+     *
      * @param metadata the new metadata
      */
     public void setMetadata( SLMetadata metadata ) {
@@ -95,7 +95,7 @@ public class SLSelectCommandDO {
 
     /**
      * Gets the node wrappers.
-     * 
+     *
      * @return the node wrappers
      */
     public Collection<PNodeWrapper> getNodeWrappers() {
@@ -104,7 +104,7 @@ public class SLSelectCommandDO {
 
     /**
      * Sets the node wrappers.
-     * 
+     *
      * @param nodeWrappers the new node wrappers
      */
     public void setNodeWrappers( Collection<PNodeWrapper> nodeWrappers ) {
@@ -113,7 +113,7 @@ public class SLSelectCommandDO {
 
     /**
      * Gets the tree session.
-     * 
+     *
      * @return the tree session
      */
     public SLPersistentTreeSession getTreeSession() {
@@ -122,7 +122,7 @@ public class SLSelectCommandDO {
 
     /**
      * Sets the tree session.
-     * 
+     *
      * @param treeSession the new tree session
      */
     public void setTreeSession( SLPersistentTreeSession treeSession ) {
@@ -131,7 +131,7 @@ public class SLSelectCommandDO {
 
     /**
      * Gets the previous node wrappers.
-     * 
+     *
      * @return the previous node wrappers
      */
     public Collection<PNodeWrapper> getPreviousNodeWrappers() {
@@ -140,7 +140,7 @@ public class SLSelectCommandDO {
 
     /**
      * Sets the previous node wrappers.
-     * 
+     *
      * @param previousNodeWrappers the new previous node wrappers
      */
     public void setPreviousNodeWrappers( Collection<PNodeWrapper> previousNodeWrappers ) {
@@ -149,7 +149,7 @@ public class SLSelectCommandDO {
 
     /**
      * Gets the collator strength.
-     * 
+     *
      * @return the collator strength
      */
     public int getCollatorStrength() {
@@ -158,7 +158,7 @@ public class SLSelectCommandDO {
 
     /**
      * Sets the collator strength.
-     * 
+     *
      * @param collatorStrength the new collator strength
      */
     public void setCollatorStrength( int collatorStrength ) {

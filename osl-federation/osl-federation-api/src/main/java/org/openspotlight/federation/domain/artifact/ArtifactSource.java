@@ -181,6 +181,16 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
         this.active = active;
     }
 
+    private String rootFolder;
+
+    public String getRootFolder() {
+        return rootFolder;
+    }
+
+    public void setRootFolder(String rootFolder) {
+        this.rootFolder = rootFolder;
+    }
+
     public void setBinary( final boolean binary ) {
         this.binary = binary;
     }
