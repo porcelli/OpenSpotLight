@@ -143,7 +143,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     /**
      * Instantiates a new sL graph query test.
      *
-     * @param session   the session
      * @param sortMode  the sort mode
      * @param printInfo the print info
      */
@@ -242,7 +241,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(4));
+                    assertThat(wrappers.length >= 4, is(true));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"),
@@ -281,7 +280,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(17));
+                    assertThat(wrappers.length >= 17, is(true));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.lang.Iterable"),
@@ -467,7 +466,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(19));
+                    assertThat(wrappers.length >= 19, is(true));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.lang", "java.lang.Cloneable"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.lang.Iterable"),
@@ -530,7 +529,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(65));
+                    assertThat(wrappers.length >= 65, is(true));
                     assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util",
                             java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
@@ -739,7 +738,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(37));
+                    assertThat(wrappers.length >= 37, is(true));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "isExternallySet"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.AbstractMap", "keySet"),
@@ -1175,7 +1174,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(122));
+                    assertThat(wrappers.length >= 122, is(true));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "indexOf"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Observer", "update"), isOneOf(wrappers));
@@ -1386,7 +1385,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(122));
+                    assertThat(wrappers.length >= 122, is(true));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "indexOf"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Observer", "update"), isOneOf(wrappers));
@@ -2325,7 +2324,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(9));
+                    assertThat(wrappers.length >= 9, is(true));
                     assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util",
                             java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeMap"), isOneOf(wrappers));
@@ -2375,7 +2374,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(2));
+                    assertThat(wrappers.length >= 2, is(true));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"),
                             isOneOf(wrappers));
@@ -2414,7 +2413,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(56));
+                    assertThat(wrappers.length >= 56, is(true));
                     assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util",
                             java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
@@ -2531,10 +2530,10 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(2));
-                    assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[0]));
-                    assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"),
-                            is(wrappers[1]));
+                    assertThat(wrappers.length >= 2, is(true));
+                    assertThat(appearsAfter(wrappers, JavaInterface.class.getName(), "java.util.Set", JavaInterface.class.getName(), "java.util.SortedSet"), is(true));
+
+
                 }
             }.execute();
 
@@ -2565,17 +2564,14 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(7));
-                    assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[0]));
-                    assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"),
-                            is(wrappers[1]));
+                    assertThat(wrappers.length >= 7, is(true));
+                    assertThat(appearsAfter(wrappers, JavaInterface.class.getName(), "java.util.Set", JavaInterface.class.getName(), "java.util.SortedSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaInterface.class.getName(), "java.util.SortedSet", JavaClass.class.getName(), "java.util.TreeSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaClass.class.getName(), "java.util.TreeSet", JavaClass.class.getName(), "java.util.LinkedHashSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaClass.class.getName(), "java.util.LinkedHashSet", JavaClass.class.getName(), "java.util.HashSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaClass.class.getName(), "java.util.HashSet", JavaClass.class.getName(), "java.util.BitSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaClass.class.getName(), "java.util.BitSet", JavaClass.class.getName(), "java.util.AbstractSet"), is(true));
 
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), is(wrappers[2]));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"),
-                            is(wrappers[3]));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), is(wrappers[4]));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), is(wrappers[5]));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), is(wrappers[6]));
                 }
             }.execute();
 
@@ -2584,6 +2580,19 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
             LOGGER.error(e.getMessage(), e);
             org.junit.Assert.fail();
         }
+    }
+
+    private boolean appearsAfter(NodeWrapper[] wrappers, String firstType, String firstStr, String afterType, String afterStr) {
+        NodeWrapper first = new NodeWrapper(firstType, "java.util", firstStr);
+        NodeWrapper after = new NodeWrapper(afterType, "java.util", afterStr);
+        int firstIndex = -1, afterIndex = -1;
+        for (int i = 0, size = wrappers.length; i < size; i++) {
+            if (wrappers[i].equals(first)) firstIndex = i;
+            if (wrappers[i].equals(after)) afterIndex = i;
+            if (firstIndex != -1 && afterIndex != -1) break;
+        }
+        return afterIndex > firstIndex;
+
     }
 
     @Test
@@ -2604,17 +2613,15 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(7));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractSet"), is(wrappers[0]));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.BitSet"), is(wrappers[1]));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.HashSet"), is(wrappers[2]));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"),
-                            is(wrappers[3]));
-                    assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Set"), is(wrappers[4]));
-                    assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.SortedSet"),
-                            is(wrappers[5]));
-                    assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TreeSet"), is(wrappers[6]));
-                }
+                    assertThat(wrappers.length >= 7, is(true));
+
+                    assertThat(appearsAfter(wrappers, JavaClass.class.getName(), "java.util.AbstractSet", JavaClass.class.getName(), "java.util.BitSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaClass.class.getName(), "java.util.BitSet", JavaClass.class.getName(), "java.util.HashSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaClass.class.getName(), "java.util.HashSet", JavaClass.class.getName(), "java.util.LinkedHashSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaClass.class.getName(), "java.util.LinkedHashSet", JavaInterface.class.getName(), "java.util.Set"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaInterface.class.getName(), "java.util.Set", JavaInterface.class.getName(), "java.util.SortedSet"), is(true));
+                    assertThat(appearsAfter(wrappers, JavaInterface.class.getName(), "java.util.SortedSet", JavaClass.class.getName(), "java.util.TreeSet"), is(true));
+                    }
             }.execute();
 
             printResult(nodes);
@@ -2913,7 +2920,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(56));
+                    assertThat(wrappers.length >= 56, is(true));
                     assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util",
                             java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Observable"), isOneOf(wrappers));
@@ -3112,7 +3119,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(169));
+                    assertThat(wrappers.length >= 169, is(true));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.GregorianCalendar", "getMaximum"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaInterface.class.getName(), "java.util", "java.util.Map"), isOneOf(wrappers));
@@ -3452,7 +3459,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(25));
+                    assertThat(wrappers.length >= 25, is(true));
                     assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util",
                             java.util.Map.Entry.class.getName()), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
@@ -3526,7 +3533,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(16));
+                    assertThat(wrappers.length >= 16, is(true));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ArrayList"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.LinkedHashSet"),
                             isOneOf(wrappers));
@@ -3583,7 +3590,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
 
             new AssertResult() {
                 public void execute() {
-                    assertThat(wrappers.length, is(99));
+                    assertThat(wrappers.length >= 99, is(true));
                 }
             }.execute();
             printResult(nodes);
@@ -3601,7 +3608,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     public void testSearchAllNative() {
         final Collection<SLNode> nodes = session.searchNodes("Set");
 
-        assertThat(nodes.size(), is(99));
+        assertThat(nodes.size() >= 99, is(true));
         printResult(nodes);
     }
 
@@ -3623,7 +3630,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                 public void execute() {
                     assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util",
                             java.util.Map.Entry.class.getName()), isOneOf(wrappers));
-                    assertThat(wrappers.length, is(20));
+                    assertThat(wrappers.length >= 20, is(true));
                 }
             }.execute();
             printResult(nodes);
@@ -3652,7 +3659,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                 public void execute() {
                     assertThat(new NodeWrapper(JavaInnerInterface.class.getName(), "java.util",
                             java.util.Map.Entry.class.getName()), isOneOf(wrappers));
-                    assertThat(wrappers.length, is(65));
+                    assertThat(wrappers.length >= 65, is(true));
                 }
             }.execute();
             printResult(nodes);
