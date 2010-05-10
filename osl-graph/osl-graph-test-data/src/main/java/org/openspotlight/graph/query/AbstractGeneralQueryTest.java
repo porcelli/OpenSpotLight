@@ -88,7 +88,25 @@ public abstract class AbstractGeneralQueryTest {
     private static Callable<Void> shutdownHandler;
 
     private boolean didItRun = false;
-      
+
+
+    protected boolean appearsAfter(NodeWrapper[] wrappers, String firstType, String firstStr, String afterType, String afterStr) {
+        return appearsAfter(wrappers, firstType, "java.util", firstStr, afterType, "java.util", afterStr);
+    }
+
+    protected boolean appearsAfter(NodeWrapper[] wrappers, String firstType, String firstParent, String firstStr, String afterType, String afterParent, String afterStr) {
+        NodeWrapper first = new NodeWrapper(firstType, firstParent, firstStr);
+        NodeWrapper after = new NodeWrapper(afterType, afterParent, afterStr);
+        int firstIndex = -1, afterIndex = -1;
+        for (int i = 0, size = wrappers.length; i < size; i++) {
+            if (wrappers[i].equals(first)) firstIndex = i;
+            if (wrappers[i].equals(after)) afterIndex = i;
+            if (firstIndex != -1 && afterIndex != -1) break;
+        }
+        return afterIndex > firstIndex;
+
+    }
+
 
     /**
      * The Class NodeWrapper.
@@ -351,7 +369,7 @@ public abstract class AbstractGeneralQueryTest {
     public static void finish() throws Exception {
 
         shutdownHandler.call();
-        shutdownHandler =null;
+        shutdownHandler = null;
     }
 
     /**
@@ -378,7 +396,6 @@ public abstract class AbstractGeneralQueryTest {
         }
         return classes;
     }
-
 
 
     /**

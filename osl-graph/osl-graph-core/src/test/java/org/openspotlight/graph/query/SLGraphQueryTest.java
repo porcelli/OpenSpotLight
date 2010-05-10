@@ -2582,18 +2582,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
         }
     }
 
-    private boolean appearsAfter(NodeWrapper[] wrappers, String firstType, String firstStr, String afterType, String afterStr) {
-        NodeWrapper first = new NodeWrapper(firstType, "java.util", firstStr);
-        NodeWrapper after = new NodeWrapper(afterType, "java.util", afterStr);
-        int firstIndex = -1, afterIndex = -1;
-        for (int i = 0, size = wrappers.length; i < size; i++) {
-            if (wrappers[i].equals(first)) firstIndex = i;
-            if (wrappers[i].equals(after)) afterIndex = i;
-            if (firstIndex != -1 && afterIndex != -1) break;
-        }
-        return afterIndex > firstIndex;
-
-    }
 
     @Test
     public void testSelectOrderByCrossType() {
@@ -3285,10 +3273,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Currency", "getDefaultFractionDigits"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.TimeZone"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "getPrecedingEntry"),
-                            isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TreeMap", "getCeilEntry"),
-                            isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.TimeZone", "getOffset"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.AbstractList"),
@@ -3403,7 +3387,6 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Calendar", "getInstance"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.BitSet", "getBits"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getMillisOf"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Collections"),
