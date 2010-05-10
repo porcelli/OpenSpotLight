@@ -71,7 +71,7 @@ import org.openspotlight.federation.data.load.DefaultSecurityContext;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@Ignore
+@Ignore // TODO Very very slow. I need to take a look on this
 @SuppressWarnings( "all" )
 public class DnaSvnUsingJcrWithProgramaticConfigurationTest {
     private JcrEngine engine;

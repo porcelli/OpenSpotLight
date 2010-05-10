@@ -66,6 +66,8 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -90,7 +92,7 @@ public class SLRemoteGraphTest extends BaseGraphTest {
 
     private static RemoteGraphSessionFactory client;
 
-    private static RemoteGraphSessionServer server;
+    public static RemoteGraphSessionServer server;
 
     @BeforeClass
     public static void init() throws Exception {
@@ -99,6 +101,7 @@ public class SLRemoteGraphTest extends BaseGraphTest {
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
 
 
         SLGraph graph = injector.getInstance(SLGraph.class);
@@ -108,6 +111,11 @@ public class SLRemoteGraphTest extends BaseGraphTest {
             public boolean canConnect(final String userName,
                                       final String password,
                                       final String clientHost) {
+                return true;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
                 return true;
             }
         }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR, graph);
