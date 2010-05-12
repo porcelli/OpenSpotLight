@@ -451,8 +451,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         Set<STProperty> result = newHashSet();
         for (String propertyName : propertyNames) {
             STProperty property = loadProperty(partition, stNodeEntry, parentKey, propertyName);
-
-            result.add(property);
+            if(property!=null) result.add(property);
 
         }
 
@@ -478,6 +477,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         JRedis jredis = factory.getFrom(partition);
 
         String typeName = toStr(jredis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, propertyName)));
+        if(typeName==null) return null;
         String descriptionAsString = toStr(jredis.get(format(KEY_WITH_PROPERTY_DESCRIPTION, parentKey, propertyName)));
         STProperty.STPropertyDescription description = STProperty.STPropertyDescription.valueOf(descriptionAsString);
         Class<?> type = findClassWithoutPrimitives(typeName);

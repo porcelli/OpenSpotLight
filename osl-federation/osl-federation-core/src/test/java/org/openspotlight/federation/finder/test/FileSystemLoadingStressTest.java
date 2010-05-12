@@ -133,9 +133,9 @@ public class FileSystemLoadingStressTest {
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
-        mapping.setFrom("OpenSpotLight-new");
+        //mapping.setFrom("OpenSpotLight-new");
         mapping.setFrom("src");
-        //mapping.setTo("OSL");
+        mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("**/*.java");
 
