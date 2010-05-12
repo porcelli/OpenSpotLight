@@ -64,6 +64,8 @@ public interface STLocalKey extends STAData, Comparable<STLocalKey> {
 
     Set<STKeyEntry<?>> getEntries();
 
+    Set<String> getEntryNames();
+
     String getNodeEntryName();
 
 }

@@ -51,10 +51,10 @@ package org.openspotlight.storage.redis;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
+import com.google.inject.internal.ImmutableList;
 import org.apache.commons.io.IOUtils;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
-import org.openspotlight.common.util.Strings;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STRepositoryPath;
@@ -66,7 +66,7 @@ import org.openspotlight.storage.domain.node.STPropertyImpl;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -74,6 +74,7 @@ import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.lang.Class.forName;
 import static java.text.MessageFormat.format;
+import static java.util.Collections.emptyList;
 import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
 import static org.openspotlight.common.util.Conversion.convert;
 import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
@@ -83,23 +84,28 @@ import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitive
  */
 public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
-    private static final String NULL_VALUE_AS_STRING = "__NULL__";
-    private static final String SET_WITH_ALL_KEYS_CONTAINING = "*{0}*";
-    private static final String SET_WITH_ALL_KEYS = "all-unique-keys";
-    private static final String SET_WITH_ALL_NODE_KEYS_FOR_NAME = "name:{0}:unique-keys";
-    private static final String SET_WITH_ALL_LOCAL_KEYS = "local-keys:{0}:unique-keys";
-    private static final String SET_WITH_NODE_KEYS_NAMES = "node-unique-key:{0}:key-names";
-    private static final String SET_WITH_NODE_CHILDREN_KEYS = "node-unique-key:{0}:children-unique-keys";
-    private static final String SET_WITH_NODE_CHILDREN_NAMED_KEYS = "node-unique-key:{0}:node-name:{1}:children-unique-keys";
-    private static final String SET_WITH_NODE_PROPERTY_NAMES = "node-unique-key:{0}:property-names";
-    private static final String KEY_WITH_PROPERTY_NODE_ID = "property-name:{0}:property-type:{1}:property-value:{2}:node-unique-keys:{3}";
-    private static final String KEY_WITH_PROPERTY_VALUE = "node-unique-key:{0}:property-name:{1}:value";
-    private static final String KEY_WITH_PROPERTY_DESCRIPTION = "node-unique-key:{0}:property-name:{1}:description";
-    private static final String KEY_WITH_PROPERTY_PARAMETERIZED_1 = "node-unique-key:{0}:property-name:{1}:parameterized-1";
-    private static final String KEY_WITH_PROPERTY_PARAMETERIZED_2 = "node-unique-key:{0}:property-name:{1}:parameterized-2";
-    private static final String KEY_WITH_PROPERTY_TYPE = "node-unique-key:{0}:property-name:{1}:type";
-    private static final String KEY_WITH_PARENT_UNIQUE_ID = "node-unique-key:{0}:parent-unique-id";
-    private static final String KEY_WITH_NODE_ENTRY_NAME = "node-unique-key:{0}:node-entry-name";
+    private static final String SET_WITH_ALL_KEYS_CONTAINING = "*:{0}:*";
+    private static final String SET_WITH_ALL_KEYS = "uids";
+    private static final String SET_WITH_ALL_NODE_KEYS_FOR_NAME = "name:{0}:uids";
+    private static final String SET_WITH_ALL_LOCAL_KEYS = "lkeys:{0}:uids";
+    private static final String SET_WITH_NODE_KEYS_NAMES = "nuid:{0}:key-names";
+    private static final String SET_WITH_NODE_CHILDREN_KEYS = "nuid:{0}:cld-uids";
+    private static final String SET_WITH_NODE_CHILDREN_NAMED_KEYS = "nuid:{0}:nname:{1}:cld-uids";
+    private static final String SET_WITH_NODE_PROPERTY_NAMES = "nuid:{0}:pnames";
+    private static final String KEY_WITH_PROPERTY_VALUE = "nuid:{0}:pname:{1}:value";
+    private static final String KEY_WITH_PROPERTY_DESCRIPTION = "nuid:{0}:pname:{1}:desc";
+    private static final String KEY_WITH_PROPERTY_PARAMETERIZED_1 = "nuid:{0}:pname:{1}:prt1";
+    private static final String KEY_WITH_PROPERTY_PARAMETERIZED_2 = "nuid:{0}:pname:{1}:prt2";
+    private static final String KEY_WITH_PROPERTY_TYPE = "nuid:{0}:pname:{1}:type";
+    private static final String KEY_WITH_PARENT_UNIQUE_ID = "nuid:{0}:prt-uid";
+    private static final String SET_WITH_NODE_ENTRY_NAME_AND_PROPERTY_VALUE = "name:{0}:ptype:{1}:pname:{2}";
+    private static final String VALUE_WITH_NODE_KEY_AND_PROPERTY_VALUE = "{0}:{1}";
+    private static final String SET_WITH_PROPERTY_VALUE = "ptype:{1}:pname:{2}";
+    private static final String KEY_WITH_NODE_ENTRY_NAME = "nuid:{0}:nname";
+
+    private static enum SearchType {
+        EQUAL, STRING_STARTS_WITH, STRING_ENDS_WITH, STRING_CONTAINS
+    }
 
 
     private final JRedisFactory factory;
@@ -110,94 +116,6 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         this.factory = factory;
     }
 
-    private static String getPropertyKey(String propertyName, Class<?> type, Object value, String nodeId) throws Exception {
-        String valueAsString = convert(value, String.class);
-        if (valueAsString != null) {
-            valueAsString = valueAsString.replaceAll(" ", "").replaceAll("\t", "").replaceAll("\n", "").replaceAll("\r", "");
-        } else {
-            valueAsString = NULL_VALUE_AS_STRING;
-        }
-        String proposedKey = format(KEY_WITH_PROPERTY_NODE_ID, propertyName, type.getName(), valueAsString, nodeId);
-        return proposedKey;
-
-
-    }
-
-    private static interface FindPropertyByTwoParameters {
-        String find(String name, String value) throws Exception;
-    }
-
-    private final FindPropertyByTwoParameters propertyStartingWith = new FindPropertyByTwoParameters() {
-        public String find(String name, String value) throws Exception {
-            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(), value + "*", "*");
-        }
-    };
-
-    private final FindPropertyByTwoParameters propertyEndsWith = new FindPropertyByTwoParameters() {
-        public String find(String name, String value) throws Exception {
-            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(), "*" + value, "*");
-        }
-    };
-
-    private final FindPropertyByTwoParameters propertyContains = new FindPropertyByTwoParameters() {
-        public String find(String name, String value) throws Exception {
-            return format(KEY_WITH_PROPERTY_NODE_ID, name, String.class.getName(), "*" + value + "*", "*");
-        }
-    };
-
-    private static String getPropertyOldKey(String propertyName, String nodeId) throws Exception {
-        return format(KEY_WITH_PROPERTY_NODE_ID, propertyName, "*", "*", nodeId);
-    }
-
-    private static List<String> keysFrom(JRedis jRedis, String nodeEntryName, FindPropertyByTwoParameters function, String name, String value) throws Exception {
-        String proposedKey = function.find(name, value);
-        List<String> propertyKeys = jRedis.keys(proposedKey);
-        List<String> keys = new ArrayList<String>(propertyKeys.size());
-        loopingIntoProperties:
-        for (String key : propertyKeys) {
-            String foundKey = toStr(jRedis.get(key));
-            if (nodeEntryName != null) {
-                if (jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, nodeEntryName), foundKey)) {
-                    keys.add(foundKey);
-                }
-            } else {
-                List<String> foundKeys = jRedis.keys(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, "*"));
-                for (String s : foundKeys) {
-                    if (jRedis.sismember(s, foundKey)) {
-                        keys.add(foundKey);
-                        continue loopingIntoProperties;
-                    }
-                }
-            }
-        }
-        return keys;
-    }
-
-
-    private static List<String> keysFromProperty(JRedis jRedis, String nodeEntryName, String propertyName, Class<?> type, Object value) throws Exception {
-        String proposedKey = getPropertyKey(propertyName, type, value, "*");
-        List<String> propertyKeys = jRedis.keys(proposedKey);
-        List<String> keys = new ArrayList<String>(propertyKeys.size());
-        loopingIntoProperties:
-        for (String key : propertyKeys) {
-            String foundKey = toStr(jRedis.get(key));
-            if (nodeEntryName != null) {
-                if (jRedis.sismember(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, nodeEntryName), foundKey)) {
-                    keys.add(foundKey);
-                }
-            } else {
-                List<String> foundKeys = jRedis.keys(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, "*"));
-                for (String s : foundKeys) {
-                    if (jRedis.sismember(s, foundKey)) {
-                        keys.add(foundKey);
-                        continue loopingIntoProperties;
-                    }
-                }
-            }
-
-        }
-        return keys;
-    }
 
     @Override
     protected Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception {
@@ -210,44 +128,49 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             if (c instanceof STPropertyCriteriaItem) {
                 STPropertyCriteriaItem p = (STPropertyCriteriaItem) c;
                 if (first) {
-                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), p.getType(), p.getValue()));
+                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), p.getType(), SearchType.EQUAL, p.getValue()));
                     first = false;
                 } else {
-                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), p.getType(), p.getValue()));
+                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), p.getType(), SearchType.EQUAL, p.getValue()));
                 }
-            } else if (c instanceof STPropertyContainsString) {
+            }
+            if (c instanceof STPropertyContainsString) {
                 STPropertyContainsString p = (STPropertyContainsString) c;
                 if (first) {
-                    propertiesIntersection.addAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyContains, p.getPropertyName(), p.getValue()));
+                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), String.class, SearchType.STRING_CONTAINS, p.getValue()));
                     first = false;
                 } else {
-                    propertiesIntersection.retainAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyContains, p.getPropertyName(), p.getValue()));
+                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), String.class, SearchType.STRING_CONTAINS, p.getValue()));
                 }
-            } else if (c instanceof STPropertyStartsWithString) {
+            }
+            if (c instanceof STPropertyStartsWithString) {
                 STPropertyStartsWithString p = (STPropertyStartsWithString) c;
                 if (first) {
-                    propertiesIntersection.addAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyStartingWith, p.getPropertyName(), p.getValue()));
+                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), String.class, SearchType.STRING_STARTS_WITH, p.getValue()));
                     first = false;
                 } else {
-                    propertiesIntersection.retainAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyStartingWith, p.getPropertyName(), p.getValue()));
+                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), String.class, SearchType.STRING_STARTS_WITH, p.getValue()));
                 }
-            } else if (c instanceof STPropertyEndsWithString) {
+            }
+            if (c instanceof STPropertyEndsWithString) {
                 STPropertyEndsWithString p = (STPropertyEndsWithString) c;
                 if (first) {
-                    propertiesIntersection.addAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyEndsWith, p.getPropertyName(), p.getValue()));
+                    propertiesIntersection.addAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), String.class, SearchType.STRING_ENDS_WITH, p.getValue()));
                     first = false;
                 } else {
-                    propertiesIntersection.retainAll(keysFrom(jredis, p.getNodeEntryName(), this.propertyEndsWith, p.getPropertyName(), p.getValue()));
+                    propertiesIntersection.retainAll(keysFromProperty(jredis, p.getNodeEntryName(), p.getPropertyName(), String.class, SearchType.STRING_ENDS_WITH, p.getValue()));
                 }
-            } else if (c instanceof STUniqueKeyCriteriaItem) {
+            }
+            if (c instanceof STUniqueKeyCriteriaItem) {
                 STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;
                 uniqueIds.add(supportMethods.getUniqueKeyAsStringHash(uniqueCriteria.getValue()));
-            } else if (c instanceof STLocalKeyCriteriaItem) {
+
+            }
+            if (c instanceof STLocalKeyCriteriaItem) {
                 STLocalKeyCriteriaItem uniqueCriteria = (STLocalKeyCriteriaItem) c;
                 String localHash = supportMethods.getLocalKeyAsStringHash(uniqueCriteria.getValue());
                 uniqueIdsFromLocalOnes.addAll(listBytesToListString(jredis.smembers(format(SET_WITH_ALL_LOCAL_KEYS, localHash))));
-            } else {
-                throw new IllegalArgumentException("invalid criteria");
+
             }
         }
         if (criteria.getCriteriaItems().size() == 0) {
@@ -286,10 +209,43 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         return ImmutableSet.copyOf(nodeEntries);
     }
 
-    @Override
-    public void flushTransient() {
-        super.flushTransient();    //To change body of overridden methods use File | Settings | File Templates.
+    private Collection<String> keysFromProperty(JRedis jredis, String nodeEntryName, String propertyName, Class type, SearchType equal, Serializable value) throws Exception {
+
+        String setWithPropertyInformation = nodeEntryName == null ? format(SET_WITH_PROPERTY_VALUE, type.getName(), propertyName) : format(SET_WITH_NODE_ENTRY_NAME_AND_PROPERTY_VALUE, nodeEntryName, type.getName(), propertyName);
+        if (!jredis.exists(setWithPropertyInformation)) {
+            return emptyList();
+        }
+        String transientValueAsString = convert(value, String.class);
+        if (transientValueAsString == null) transientValueAsString = "null";
+
+        List<String> members = listBytesToListString(jredis.smembers(setWithPropertyInformation));
+        ImmutableList.Builder<String> builder = ImmutableList.builder();
+        for (String member : members) {
+            int idx = member.indexOf(':');
+            String nodeKey = member.substring(0, idx);
+            String propertyValue = member.substring(idx + 1);
+            boolean needsToAdd = false;
+            switch (equal) {
+                case EQUAL:
+                    needsToAdd = propertyValue.equals(transientValueAsString);
+                    break;
+                case STRING_CONTAINS:
+                    needsToAdd = propertyValue.contains(transientValueAsString);
+                    break;
+                case STRING_ENDS_WITH:
+                    needsToAdd = propertyValue.endsWith(transientValueAsString);
+                    break;
+                case STRING_STARTS_WITH:
+                    needsToAdd = propertyValue.startsWith(transientValueAsString);
+                    break;
+            }
+            if (needsToAdd) {
+                builder.add(nodeKey);
+            }
+        }
+        return builder.build();
     }
+
 
     private STNodeEntry loadNodeOrReturnNull(String parentKey, STPartition partition) throws Exception {
         STUniqueKeyBuilder keyBuilder = null;
@@ -352,16 +308,19 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         jredis.sadd(format(SET_WITH_ALL_LOCAL_KEYS, localKey), uniqueKey);
 
         for (STKeyEntry<?> k : entry.getLocalKey().getEntries()) {
+            internalFlushSimplePropertyAndCreateIndex(
+                    partition, k.getPropertyName(),
+                    k.getType(),
+                    k.getValue(),
+                    uniqueKey,
+                    entry.getNodeEntryName());
+
+
             jredis.sadd(format(SET_WITH_NODE_KEYS_NAMES, uniqueKey), k.getPropertyName());
-            jredis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), k.getPropertyName());
-            String propertyKeyWithValue = getPropertyKey(k.getPropertyName(), k.getType(), k.getValue(), uniqueKey);
-            if (!Strings.containsNonPrintable(propertyKeyWithValue))
-                jredis.set(propertyKeyWithValue, uniqueKey);
             jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, k.getPropertyName()), findClassWithoutPrimitives(k.getType()).getName());
             String valueAsString = convert(k.getValue(), String.class);
             if (valueAsString != null)
                 jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, k.getPropertyName()), valueAsString);
-            jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, k.getPropertyName()), convert(STProperty.STPropertyDescription.KEY, String.class));
         }
 
     }
@@ -373,10 +332,14 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         String uniqueKey = supportMethods.getUniqueKeyAsStringHash(entry.getUniqueKey());
         jredis.srem(SET_WITH_ALL_KEYS, uniqueKey);
         jredis.srem(format(SET_WITH_ALL_NODE_KEYS_FOR_NAME, entry.getNodeEntryName()), uniqueKey);
+
         List<String> keys = jredis.keys(format(SET_WITH_ALL_KEYS_CONTAINING, uniqueKey));
 
         for (String key : keys) {
             jredis.del(key);
+
+//        internalCleanPropertyIndexes(partition, propertyName, propertyType,
+//                                                           uniqueKey, nodeEntryName) ;
         }
     }
 
@@ -625,32 +588,119 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     @Override
     protected void internalFlushSimpleProperty(STPartition partition, STProperty dirtyProperty) throws Exception {
 
+        internalFlushSimplePropertyAndCreateIndex(partition, dirtyProperty.getPropertyName(),
+                dirtyProperty.getInternalMethods().getPropertyType(),
+                dirtyProperty.getInternalMethods().<Object>getTransientValue(),
+                getSupportMethods().getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey()),
+                dirtyProperty.getParent().getNodeEntryName());
 
-        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+
+    }
+
+    private void internalFlushSimplePropertyAndCreateIndex(STPartition partition, String propertyName, Class<?> propertyType,
+                                                           Object propertyValue, String uniqueKey, String nodeEntryName) throws Exception {
 
         JRedis jredis = factory.getFrom(partition);
 
 
-        List<String> keysToBeRemoved = jredis.keys(getPropertyOldKey(dirtyProperty.getPropertyName(), uniqueKey));
-        for (String key : keysToBeRemoved) jredis.del(key);
+        String transientValueAsString = convert(propertyValue, String.class);
 
-        String transientValueAsString = convert(dirtyProperty.getInternalMethods().<Object>getTransientValue(), String.class);
+        jredis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), propertyName);
+        String setWithPropertyInformation = format(SET_WITH_NODE_ENTRY_NAME_AND_PROPERTY_VALUE, nodeEntryName,
+                propertyType.getName(), propertyName);
+        String setWithPropertyInformationWithoutName = format(SET_WITH_PROPERTY_VALUE,
+                propertyType.getName(), propertyName);
 
-        jredis.sadd(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), dirtyProperty.getPropertyName());
-        String propertyKeyWithValue = getPropertyKey(dirtyProperty.getPropertyName(), dirtyProperty.getInternalMethods().getPropertyType(), transientValueAsString, uniqueKey);
-        if (!Strings.containsNonPrintable(propertyKeyWithValue))
-            jredis.set(propertyKeyWithValue, uniqueKey);
 
-        jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, dirtyProperty.getPropertyName()), dirtyProperty.getInternalMethods().<Object>getPropertyType().getName());
-        if (transientValueAsString != null) {
-            jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()), transientValueAsString);
+        String valueFromSetPropertyInformation = format(VALUE_WITH_NODE_KEY_AND_PROPERTY_VALUE, uniqueKey, transientValueAsString);
+        if (jredis.exists(setWithPropertyInformation)) {
+            List<String> existentValues = listBytesToListString(jredis.smembers(setWithPropertyInformation));
+            boolean found = false;
+            for (String value : existentValues) {
+                if (value.startsWith(uniqueKey)) {
+                    if (value.equals(valueFromSetPropertyInformation)) {
+                        found = true;
+                        break;
+                    } else {
+                        jredis.srem(setWithPropertyInformation, value);
+                    }
+                }
+            }
+            if (!found) {
+                jredis.sadd(setWithPropertyInformation, valueFromSetPropertyInformation);
+            }
         } else {
-            jredis.del(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, dirtyProperty.getPropertyName()));
+            jredis.sadd(setWithPropertyInformation, valueFromSetPropertyInformation);
         }
-        jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, dirtyProperty.getPropertyName()), convert(STProperty.STPropertyDescription.SIMPLE, String.class));
-        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
-        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
+        if (jredis.exists(setWithPropertyInformationWithoutName)) {
+            List<String> existentValues = listBytesToListString(jredis.smembers(setWithPropertyInformationWithoutName));
+            boolean found = false;
+            for (String value : existentValues) {
+                if (value.startsWith(uniqueKey)) {
+                    if (value.equals(valueFromSetPropertyInformation)) {
+                        found = true;
+                        break;
+                    } else {
+                        jredis.srem(setWithPropertyInformation, value);
+                    }
+                }
+            }
+            if (!found) {
+                jredis.sadd(setWithPropertyInformationWithoutName, valueFromSetPropertyInformation);
+            }
+        } else {
+            jredis.sadd(setWithPropertyInformationWithoutName, valueFromSetPropertyInformation);
+        }
+
+        jredis.set(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, propertyName), propertyType.getName());
+        if (transientValueAsString != null) {
+            jredis.set(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, propertyName), transientValueAsString);
+        } else {
+            jredis.del(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, propertyName));
+        }
+        jredis.set(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, propertyName), convert(STProperty.STPropertyDescription.SIMPLE, String.class));
+//        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
+//        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
+    }
 
 
+
+    private void internalCleanPropertyIndexes(STPartition partition, String propertyName, Class<?> propertyType,
+                                                           String uniqueKey, String nodeEntryName) throws Exception {
+        JRedis jredis = factory.getFrom(partition);
+
+        jredis.srem(format(SET_WITH_NODE_PROPERTY_NAMES, uniqueKey), propertyName);
+        String setWithPropertyInformation = format(SET_WITH_NODE_ENTRY_NAME_AND_PROPERTY_VALUE, nodeEntryName,
+                propertyType.getName(), propertyName);
+        String setWithPropertyInformationWithoutName = format(SET_WITH_PROPERTY_VALUE,
+                propertyType.getName(), propertyName);
+        if (jredis.exists(setWithPropertyInformation)) {
+            List<String> existentValues = listBytesToListString(jredis.smembers(setWithPropertyInformation));
+            boolean found = false;
+            for (String value : existentValues) {
+                if (value.startsWith(uniqueKey)) {
+                    jredis.srem(setWithPropertyInformation, value);
+
+                }
+            }
+
+        }if (jredis.exists(setWithPropertyInformationWithoutName)) {
+            List<String> existentValues = listBytesToListString(jredis.smembers(setWithPropertyInformationWithoutName));
+            boolean found = false;
+            for (String value : existentValues) {
+                if (value.startsWith(uniqueKey)) {
+                    jredis.srem(setWithPropertyInformation, value);
+
+                }
+            }
+
+        }
+
+
+        jredis.del(format(KEY_WITH_PROPERTY_TYPE, uniqueKey, propertyName));
+            jredis.del(format(KEY_WITH_PROPERTY_VALUE, uniqueKey, propertyName));
+        jredis.del(format(KEY_WITH_PROPERTY_DESCRIPTION, uniqueKey, propertyName));
+//        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
+//        jredis.del(format(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
     }
 }

@@ -48,12 +48,7 @@
  */
 package org.openspotlight.federation.finder;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -103,7 +98,7 @@ public class FileSystemOriginArtifactLoader extends AbstractOriginArtifactLoader
                 return null;
             }
             if (StringArtifact.class.equals(type)) {
-                final FileInputStream resource = new FileInputStream(file);
+                final InputStream resource = new BufferedInputStream(new FileInputStream(file));
                 final BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
                 List<String> lines = newLinkedList();
                 String line=null;
@@ -114,7 +109,7 @@ public class FileSystemOriginArtifactLoader extends AbstractOriginArtifactLoader
                 artifact.getContent().setTransient(lines);
                 return (A)artifact;
             } else {// StreamArtifact
-                final FileInputStream resource = new FileInputStream(file);
+                final InputStream resource = new BufferedInputStream(new FileInputStream(file));
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 IOUtils.copy(resource, baos);
                 final StreamArtifact artifact = Artifact.createArtifact(StreamArtifact.class, "/" + path, ChangeType.INCLUDED);

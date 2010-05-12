@@ -69,7 +69,7 @@ public class ArtifactSourceSchedulable implements SchedulableCommand<ArtifactSou
                          final ExecutionContext ctx,
                          final ArtifactSource schedulable ) {
         if (logger.isDebugEnabled()) {
-            logger.debug(" >>>> Executing artifact loadgin from source" + schedulable.toUniqueJobString());
+            logger.debug(" >>>> Executing artifact loading from source" + schedulable.toUniqueJobString());
         }
         PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(ctx.getSimplePersistFactory(),
                                                                                                schedulable.getRepository());

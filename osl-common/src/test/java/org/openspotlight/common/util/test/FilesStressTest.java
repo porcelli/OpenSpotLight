@@ -46,38 +46,35 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.finder;
 
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.persist.support.SimplePersistFactory;
+package org.openspotlight.common.util.test;
 
-public class PersistentArtifactManagerProviderImpl extends PersistentArtifactManagerProvider {
+import org.junit.Before;
+import org.junit.Test;
+import org.openspotlight.common.util.Files;
 
-    private static class PersistentArtifactManagerItemFactoryImpl implements ItemFactory<PersistentArtifactManager> {
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Set;
 
-        private final Repository           repository;
-        private final SimplePersistFactory simplePersistFactory;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Files.*;
+import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
-        private PersistentArtifactManagerItemFactoryImpl(
-                                                          Repository repository, SimplePersistFactory simplePersistFactory ) {
-            this.repository = repository;
-            this.simplePersistFactory = simplePersistFactory;
-        }
+/**
+ * Test class for {@link org.openspotlight.common.util.Files}
+ *
+ * @author Luiz Fernando Teston - feu.teston@caravelatech.com
+ */
+public class FilesStressTest {
 
-        public PersistentArtifactManager createNew() {
-            PersistentArtifactManagerImpl manager = new PersistentArtifactManagerImpl(repository, simplePersistFactory);
-            return manager;
-        }
 
-        public boolean useOnePerThread() {
-            return false;
-        }
-
-    }
-
-    public PersistentArtifactManagerProviderImpl(
-                                                  SimplePersistFactory simplePersistFactory, Repository repository ) {
-        super(new PersistentArtifactManagerItemFactoryImpl(repository, simplePersistFactory));
+    @Test
+    public void shouldLoadFileNamesFaster() throws Exception {
+        Files.listFileNamesFrom("../",false);
     }
 
 }

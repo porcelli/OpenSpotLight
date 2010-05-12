@@ -53,6 +53,7 @@ import com.google.inject.internal.ImmutableSet;
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 
@@ -279,6 +280,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         }
 
         public <T extends Serializable> STProperty setSimpleProperty(STStorageSession session, String name, Class<? super T> rawPropertyType, T value) {
+            if(parent.localKey.getEntryNames().contains(name)) throw new IllegalStateException();
             STProperty currentProperty = parent.getProperty(session, name);
             Class<?> propertyType = findClassWithoutPrimitives(rawPropertyType);
             if (currentProperty != null) {
