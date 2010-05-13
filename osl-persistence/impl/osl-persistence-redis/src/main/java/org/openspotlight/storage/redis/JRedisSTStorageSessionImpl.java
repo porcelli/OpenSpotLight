@@ -541,6 +541,8 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         String typeName = toStr(jredis.get(format(KEY_WITH_PROPERTY_TYPE, parentKey, propertyName)));
         if (typeName == null) return null;
         String descriptionAsString = toStr(jredis.get(format(KEY_WITH_PROPERTY_DESCRIPTION, parentKey, propertyName)));
+        if (descriptionAsString == null) return null;
+
         STProperty.STPropertyDescription description = STProperty.STPropertyDescription.valueOf(descriptionAsString);
         Class<?> type = findClassWithoutPrimitives(typeName);
 

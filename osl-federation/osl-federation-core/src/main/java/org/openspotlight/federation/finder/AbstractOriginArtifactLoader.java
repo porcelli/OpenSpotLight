@@ -200,11 +200,20 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
                 tasks.add(callable);
             }
             List<Future<A>> futures = ExecutorInstance.INSTANCE.invokeAll(tasks);
-            for (Future<A> f : futures)
-                result.add(f.get());
+            for (Future<A> f : futures){
+                A a = f.get();
+                if(a!=null){
+                    result.add(a);
+                }
+            }
+
+
         } else {
             for (final String path : paths) {
-                result.add(internalFindByPath(type, source, path));
+                A a = internalFindByPath(type, source, path);
+                if(a!=null){
+                    result.add(a);
+                }
             }
         }
         if (logger.isDebugEnabled()) {

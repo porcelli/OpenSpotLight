@@ -164,7 +164,6 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
             if(name==null) throw new IllegalStateException("Mandatory property " + propertyName + " from node " + nodeEntry + " with null value");
             names.add(name);
         }
-
         return ImmutableSet.copyOf(names);
 
     }

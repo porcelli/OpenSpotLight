@@ -131,12 +131,12 @@ public class FileSystemLoadingStressTest {
         artifactSource.setName("lots of files");
         artifactSource.setActive(true);
         artifactSource.setBinary(false);
-        //artifactSource.setInitialLookup("../../..");
+        artifactSource.setInitialLookup("../../..");
         artifactSource.setInitialLookup("./");
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
-        //mapping.setFrom("OpenSpotLight-new");
+        mapping.setFrom("OpenSpotLight-new");
         mapping.setFrom("src");
         mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);

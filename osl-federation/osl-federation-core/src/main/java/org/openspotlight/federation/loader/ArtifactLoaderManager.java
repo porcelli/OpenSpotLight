@@ -48,20 +48,11 @@
  */
 package org.openspotlight.federation.loader;
 
-import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.common.util.Strings;
 import org.openspotlight.common.util.PatternMatcher.FilterResult;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.Artifact;
@@ -75,9 +66,18 @@ import org.openspotlight.task.ExecutorInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
+import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
+
 /**
  * Class responsible to load artifacts. It has a public method read its javadoc.
- * 
+ *
  * @author feu
  */
 public enum ArtifactLoaderManager {
@@ -88,16 +88,16 @@ public enum ArtifactLoaderManager {
 
     /**
      * It groups the name and type just to perform the artifact cleanup (mark as excluded) after the load task creation.
-     * 
+     *
      * @author feu
      */
     private static class ArtifactTypeCleanupResources {
 
         public final Class<? extends Artifact> type;
-        public final Set<String>               names;
+        public final Set<String> names;
 
         public ArtifactTypeCleanupResources(
-                                             Class<? extends Artifact> type, Set<String> names ) {
+                Class<? extends Artifact> type, Set<String> names) {
             this.type = type;
             this.names = names;
         }
@@ -105,19 +105,19 @@ public enum ArtifactLoaderManager {
 
     /**
      * It maps the necessary data to perform the artifact loading.
-     * 
+     *
      * @author feu
      */
     private static class ArtifactTypeResources {
-        public final String                       name;
-        public final OriginArtifactLoader         loader;
-        public final Class<? extends Artifact>    type;
-        public final ArtifactSourceMapping        acceptedMapping;
+        public final String name;
+        public final OriginArtifactLoader loader;
+        public final Class<? extends Artifact> type;
+        public final ArtifactSourceMapping acceptedMapping;
         public final ArtifactTypeCleanupResources cleanupResources;
 
         public ArtifactTypeResources(
-                                      String name, OriginArtifactLoader loader, Class<? extends Artifact> type,
-                                      ArtifactSourceMapping acceptedMapping, ArtifactTypeCleanupResources cleanupResources ) {
+                String name, OriginArtifactLoader loader, Class<? extends Artifact> type,
+                ArtifactSourceMapping acceptedMapping, ArtifactTypeCleanupResources cleanupResources) {
             this.name = name;
             this.loader = loader;
             this.type = type;
@@ -128,14 +128,14 @@ public enum ArtifactLoaderManager {
 
     /**
      * Static class responsible to set the new change type as excluded.
-     * 
+     *
      * @author feu
      */
     private static class SetChangeTypeAsExcludedTask implements Callable<Void> {
 
         public SetChangeTypeAsExcludedTask(
-                                            String name, ArtifactTypeCleanupResources resources,
-                                            PersistentArtifactManagerProvider provider, ArtifactSource source ) {
+                String name, ArtifactTypeCleanupResources resources,
+                PersistentArtifactManagerProvider provider, ArtifactSource source) {
             super();
             this.name = name;
             this.resources = resources;
@@ -143,13 +143,13 @@ public enum ArtifactLoaderManager {
             this.source = source;
         }
 
-        private final String                            name;
+        private final String name;
 
-        private final ArtifactTypeCleanupResources      resources;
+        private final ArtifactTypeCleanupResources resources;
 
         private final PersistentArtifactManagerProvider provider;
 
-        private final ArtifactSource                    source;
+        private final ArtifactSource source;
 
         public Void call() throws Exception {
             try {
@@ -170,15 +170,15 @@ public enum ArtifactLoaderManager {
     /**
      * Static class responsible to find the change type of each artifact, to reload or load its contents if this is necessary, and
      * also to map its new name, and preserve the old one as another property.
-     * 
+     *
      * @author feu
      */
     private static class LoadAndMapTask implements Callable<Void> {
         final PersistentArtifactManagerProvider provider;
-        final ArtifactSource                    source;
+        final ArtifactSource source;
 
         public LoadAndMapTask(
-                               PersistentArtifactManagerProvider provider, ArtifactSource source, ArtifactTypeResources r ) {
+                PersistentArtifactManagerProvider provider, ArtifactSource source, ArtifactTypeResources r) {
             super();
             this.provider = provider;
             this.source = source;
@@ -231,13 +231,13 @@ public enum ArtifactLoaderManager {
      * loaders}. This loaders must have default constructors, since it was projected to receive the necessary state classes on
      * load methods. It should work on a multi threaded environment. It should be very easy to do, since there's no need to store
      * any state on this class.
-     * 
+     *
      * @param settings
      * @param source
      */
-    public void refreshResources( final GlobalSettings settings,
-                                  final ArtifactSource source,
-                                  final PersistentArtifactManagerProvider provider ) {
+    public void refreshResources(final GlobalSettings settings,
+                                 final ArtifactSource source,
+                                 final PersistentArtifactManagerProvider provider) {
         try {
             Pair<Set<ArtifactTypeResources>, Set<ArtifactTypeCleanupResources>> result = loadBaseData(settings, source, provider);
 
@@ -270,16 +270,16 @@ public enum ArtifactLoaderManager {
 
     /**
      * Loads in single thread only the data needed to process all artifacts: the names itself
-     * 
+     *
      * @param settings
      * @param source
      * @return
      * @throws Exception
      */
-    private Pair<Set<ArtifactTypeResources>, Set<ArtifactTypeCleanupResources>> loadBaseData( GlobalSettings settings,
-                                                                                              ArtifactSource source,
-                                                                                              PersistentArtifactManagerProvider provider )
-        throws Exception {
+    private Pair<Set<ArtifactTypeResources>, Set<ArtifactTypeCleanupResources>> loadBaseData(GlobalSettings settings,
+                                                                                             ArtifactSource source,
+                                                                                             PersistentArtifactManagerProvider provider)
+            throws Exception {
         Set<ArtifactTypeResources> resources = new HashSet<ArtifactTypeResources>();
         Set<ArtifactTypeCleanupResources> loadedTypes = new HashSet<ArtifactTypeCleanupResources>();
 
@@ -288,38 +288,41 @@ public enum ArtifactLoaderManager {
             Set<Class<? extends Artifact>> types = loader.getInternalMethods().getAvailableTypes();
             for (Class<? extends Artifact> type : types) {
                 if (loader.getInternalMethods().accept(source, type)) {
-                    Set<String> rawNames = new HashSet<String>(loader.getInternalMethods().retrieveOriginalNames(type, source,
-                                                                                                                 null));
-                    if (logger.isDebugEnabled()) logger.debug("for type " + type.getSimpleName() + " on artifact source "
-                                                              + source.getName() + " was loaded "
-                                                              + Strings.bigCollectionsToString(rawNames));
-
-                    Set<String> names = new HashSet<String>();
-                    ArtifactTypeCleanupResources cleanupResources = new ArtifactTypeCleanupResources(type, names);
-                    loadedTypes.add(cleanupResources);
-
                     for (ArtifactSourceMapping mapping : source.getMappings()) {
+
+                        Set<String> rawNames = new HashSet<String>(loader.getInternalMethods().retrieveOriginalNames(type, source,
+                                mapping.getFrom()));
+                        if (logger.isDebugEnabled())
+                            logger.debug("for type " + type.getSimpleName() + " on artifact source "
+                                    + source.getName() + " was loaded "
+                                    + Strings.bigCollectionsToString(rawNames));
+
+                        Set<String> names = new HashSet<String>();
+                        ArtifactTypeCleanupResources cleanupResources = new ArtifactTypeCleanupResources(type, names);
+                        loadedTypes.add(cleanupResources);
+
                         FilterResult result = filterNamesByPattern(Strings.rootPath(mapping.getFrom()), rawNames,
-                                                                   mapping.getIncludeds(), mapping.getExcludeds(), false);
+                                mapping.getIncludeds(), mapping.getExcludeds(), false);
                         names.addAll(result.getIncludedNames());
                         rawNames.removeAll(result.getIncludedNames());
                         for (String s : result.getIncludedNames()) {
                             ArtifactTypeResources resourcesByType = new ArtifactTypeResources(s, loader, type, mapping,
-                                                                                              cleanupResources);
+                                    cleanupResources);
                             resources.add(resourcesByType);
                         }
                         if (logger.isDebugEnabled()) {
                             logger.debug("for type " + type.getSimpleName() + " on artifact source " + source.getName()
-                                         + " was included " + Strings.bigCollectionsToString(result.getIncludedNames()));
+                                    + " was included " + Strings.bigCollectionsToString(result.getIncludedNames()));
                             logger.debug("for type " + type.getSimpleName() + " on artifact source " + source.getName()
-                                         + " was ignored " + Strings.bigCollectionsToString(result.getIgnoredNames()));
+                                    + " was ignored " + Strings.bigCollectionsToString(result.getIgnoredNames()));
                             logger.debug("for type " + type.getSimpleName() + " on artifact source " + source.getName()
-                                         + " was excluded " + Strings.bigCollectionsToString(result.getExcludedNames()));
+                                    + " was excluded " + Strings.bigCollectionsToString(result.getExcludedNames()));
                         }
                     }
                 } else {
-                    if (logger.isDebugEnabled()) logger.debug("ignoring " + type.getSimpleName() + " on artifact source "
-                                                              + source.getName());
+                    if (logger.isDebugEnabled())
+                        logger.debug("ignoring " + type.getSimpleName() + " on artifact source "
+                                + source.getName());
                 }
             }
         }
@@ -329,12 +332,12 @@ public enum ArtifactLoaderManager {
 
     /**
      * Map the old name to a new name
-     * 
+     *
      * @param r
      * @param newOne
      */
-    static void mapNewName( final ArtifactTypeResources r,
-                            Artifact newOne ) {
+    static void mapNewName(final ArtifactTypeResources r,
+                           Artifact newOne) {
         String currentPathString = newOne.getParent().getCompletePath();
         if (!currentPathString.startsWith("/")) {
             currentPathString = "/" + currentPathString;
