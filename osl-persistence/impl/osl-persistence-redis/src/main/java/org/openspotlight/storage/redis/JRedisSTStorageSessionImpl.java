@@ -396,7 +396,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
                 List<String> possibleValues = listBytesToListString(jredis.smembers(key));
                 for (String possibleValue : possibleValues) {
                     if (possibleValue.contains(uniqueKey)) {
-                        jredis.srem(key,possibleValue);
+                        jredis.srem(key, possibleValue);
                     }
                 }
 
@@ -507,16 +507,19 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     @Override
     protected Set<STProperty> internalNodeEntryLoadProperties(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
         JRedis jredis = factory.getFrom(partition);
+        Set<STProperty> result = newHashSet();
 
         String parentKey = supportMethods.getUniqueKeyAsStringHash(stNodeEntry.getUniqueKey());
-        List<String> propertyNames = listBytesToListString(jredis.smembers(format(SET_WITH_NODE_PROPERTY_NAMES, parentKey)));
-        Set<STProperty> result = newHashSet();
-        for (String propertyName : propertyNames) {
-            STProperty property = loadProperty(partition, stNodeEntry, parentKey, propertyName);
-            if (property != null) result.add(property);
+        String properties = format(SET_WITH_NODE_PROPERTY_NAMES, parentKey);
+        if (jredis.exists(properties)) {
+            List<String> propertyNames = listBytesToListString(jredis.smembers(properties));
+            for (String propertyName : propertyNames) {
+                STProperty property = loadProperty(partition, stNodeEntry, parentKey, propertyName);
+                if (property != null) result.add(property);
+
+            }
 
         }
-
         return result;
     }
 

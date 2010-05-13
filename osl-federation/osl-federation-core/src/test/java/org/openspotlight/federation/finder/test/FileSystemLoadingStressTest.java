@@ -77,6 +77,8 @@ import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Set;
@@ -86,6 +88,8 @@ import static org.junit.Assert.assertThat;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class FileSystemLoadingStressTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(FileSystemLoadingStressTest.class);
 
     private static class RepositoryData {
         public final GlobalSettings settings;
@@ -132,12 +136,12 @@ public class FileSystemLoadingStressTest {
         artifactSource.setActive(true);
         artifactSource.setBinary(false);
         artifactSource.setInitialLookup("../../..");
-        artifactSource.setInitialLookup("./");
+        //artifactSource.setInitialLookup("./");
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
         mapping.setFrom("OpenSpotLight-new");
-        mapping.setFrom("src");
+        //mapping.setFrom("src");
         mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("**/*.java");
@@ -190,7 +194,10 @@ public class FileSystemLoadingStressTest {
 
         final ExecutionContext context = contextFactory.createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
+        logger.debug("about to load item names from persistent storage");
         Set<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StringArtifact.class, null);
+        logger.debug("finished to load item names from persistent storage");
+
         assertThat(list.size()>50,is(true));
     }
 
