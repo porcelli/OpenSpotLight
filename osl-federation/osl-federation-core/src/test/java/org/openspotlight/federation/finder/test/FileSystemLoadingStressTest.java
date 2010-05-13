@@ -65,6 +65,7 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
@@ -80,6 +81,8 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import java.io.File;
 import java.util.Set;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class FileSystemLoadingStressTest {
@@ -187,13 +190,8 @@ public class FileSystemLoadingStressTest {
 
         final ExecutionContext context = contextFactory.createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        Set<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StreamArtifact.class, null);
-        for (String s : list)
-            System.err.println(s);
-//        final StreamArtifact jarArtifact = context.getPersistentArtifactManager().findByPath(StreamArtifact.class,
-//                "/jars/resources/dynamo-file-gen-1.0.1.jar");
-//        Assert.assertThat(jarArtifact.getLastProcessStatus(), Is.is(LastProcessStatus.PROCESSED));
-//        Assert.assertThat(jarArtifact.getUniqueContextName(), Is.is(IsNull.notNullValue()));
+        Set<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StringArtifact.class, null);
+        assertThat(list.size()>50,is(true));
     }
 
 }
