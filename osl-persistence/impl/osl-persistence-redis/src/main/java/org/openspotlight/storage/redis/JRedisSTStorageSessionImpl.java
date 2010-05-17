@@ -304,7 +304,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             boolean needsToAdd = false;
             switch (equal) {
                 case EQUAL:
-                    needsToAdd = propertyValue.equals(transientValueAsString);
+                    needsToAdd = stripString(propertyValue).equals(transientValueAsString);
                     break;
 
             }
