@@ -127,7 +127,7 @@ public class ColumnChangingFiresTableChangeTest {
 
         ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings, dbBundle, provider);
 
-        Set<DatabaseCustomArtifact> firstLoadedItems = provider.get().listByPath(DatabaseCustomArtifact.class, null);
+        Set<DatabaseCustomArtifact> firstLoadedItems = provider.get().listByInitialPath(DatabaseCustomArtifact.class, null);
         conn = DatabaseSupport.createConnection(dbBundle);
 
         conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
@@ -138,7 +138,7 @@ public class ColumnChangingFiresTableChangeTest {
         conn.close();
         ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings, dbBundle, provider);
         
-        Set<DatabaseCustomArtifact> lastLoadedItems = provider.get().listByPath(DatabaseCustomArtifact.class, null);
+        Set<DatabaseCustomArtifact> lastLoadedItems = provider.get().listByInitialPath(DatabaseCustomArtifact.class, null);
         conn = DatabaseSupport.createConnection(dbBundle);
 
         boolean found = false;

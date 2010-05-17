@@ -122,7 +122,7 @@ public class ArtifactLoaderManagerTest {
                 repository);
 
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, source, provider);
-        Set<StringArtifact> artifacts = provider.get().listByPath(StringArtifact.class, null);
+        Set<StringArtifact> artifacts = provider.get().listByInitialPath(StringArtifact.class, null);
         provider.closeResources();
         boolean hasAny = false;
 

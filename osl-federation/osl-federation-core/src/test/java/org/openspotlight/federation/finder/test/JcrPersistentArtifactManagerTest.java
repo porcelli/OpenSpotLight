@@ -148,8 +148,8 @@ public class JcrPersistentArtifactManagerTest {
 
     @Test
     public void shouldListArtifacts() throws Exception {
-        final Set<StringArtifact> artifacts = persistenArtifactManager.listByPath(StringArtifact.class,
-                "/main/java/org/openspotlight/federation");
+        final Set<StringArtifact> artifacts = persistenArtifactManager.listByInitialPath(StringArtifact.class,
+                "/src");
 
         assertThat(artifacts, is(notNullValue()));
         assertThat(artifacts.size(), is(not(0)));

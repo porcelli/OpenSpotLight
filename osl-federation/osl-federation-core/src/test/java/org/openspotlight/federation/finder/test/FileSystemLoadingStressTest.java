@@ -135,13 +135,13 @@ public class FileSystemLoadingStressTest {
         artifactSource.setName("lots of files");
         artifactSource.setActive(true);
         artifactSource.setBinary(false);
-        artifactSource.setInitialLookup("/Users/feu/much-data");
-        //artifactSource.setInitialLookup("./");
+        //artifactSource.setInitialLookup("/Users/feu/much-data");
+        artifactSource.setInitialLookup("./");
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
-        mapping.setFrom("files");
-        //mapping.setFrom("src");
+        //mapping.setFrom("files");
+        mapping.setFrom("src");
         mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("**/*");

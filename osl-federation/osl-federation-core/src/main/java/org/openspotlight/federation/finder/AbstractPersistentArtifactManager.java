@@ -140,7 +140,7 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
         return internalMethods;
     }
 
-    public <A extends Artifact> Set<A> listByPath( Class<A> type,
+    public <A extends Artifact> Set<A> listByInitialPath( Class<A> type,
                                                    String path ) {
         try {
             return internalListByPath(type, path);

@@ -168,7 +168,7 @@ public interface PersistentArtifactManager extends Disposable {
      * @param path
      * @return
      */
-    public <A extends Artifact> Set<A> listByPath( Class<A> type,
+    public <A extends Artifact> Set<A> listByInitialPath( Class<A> type,
                                                    String path );
 
     /**
