@@ -163,15 +163,17 @@ public class JRedisStorageSessionTest {
         JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
         autoFlushFactory.getFrom(ExamplePartition.DEFAULT).flushall();
     }
+
     @Test
     public void shouldSaveSimpleNodesOnAutoFlush() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         session.withPartition(ExamplePartition.DEFAULT)
-                .createNewSimpleNode("a","b","c");
+                .createNewSimpleNode("a", "b", "c");
         Iterable<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("c");
-        assertThat(result.iterator().hasNext(),is(true));
+        assertThat(result.iterator().hasNext(), is(true));
 
     }
+
     @Test
     public void shouldInstantiateOneSessionPerThread() throws Exception {
         STStorageSession session1 = autoFlushInjector.getInstance(STStorageSession.class);
@@ -260,10 +262,10 @@ public class JRedisStorageSessionTest {
                 .withKey("name", String.class, "name").withParent(root1).andCreate();
         STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value1");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value2");
+        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
+        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
+        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value1");
+        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value2");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
                 .withProperty("parameter").equals(String.class, "value").buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
@@ -281,8 +283,7 @@ public class JRedisStorageSessionTest {
     }
 
 
-
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesContainingString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
@@ -307,7 +308,6 @@ public class JRedisStorageSessionTest {
     }
 
 
-
     @Test
     public void shouldFindByPropertiesWithNullValue() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
@@ -319,19 +319,20 @@ public class JRedisStorageSessionTest {
                 .withKey("name", String.class, "name1").withParent(root1).andCreate();
         STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name2").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "aeiou");
-        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, null);
-        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, null);
+        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "io");
+        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "aeiou");
+        root1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, null);
+        root2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, null);
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                .withProperty("parameter").equals(String.class,null).buildCriteria().andFind(session);
+                .withProperty("parameter").equals(String.class, null).buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(root1), is(true));
         assertThat(theSameNodes.contains(root2), is(true));
         assertThat(theSameNodes.contains(aNode1), is(false));
         assertThat(theSameNodes.contains(aNode2), is(false));
     }
-    @Test
+
+    @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesStartingWithString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
@@ -355,7 +356,7 @@ public class JRedisStorageSessionTest {
         assertThat(theSameNodes.size(), is(2));
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesEndingWithString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
@@ -391,10 +392,10 @@ public class JRedisStorageSessionTest {
                 .withKey("name", String.class, "name").withParent(root1).andCreate();
         STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value1");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value2");
+        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
+        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
+        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value1");
+        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value2");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter").equals(String.class, "value").buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
@@ -1358,7 +1359,7 @@ public class JRedisStorageSessionTest {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").andCreate();
-        newNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "firstValue");
+        newNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "firstValue");
         Set<STNodeEntry> found = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withNodeEntry("newNode1").withProperty("parameter").equals(String.class, "firstValue")
                 .buildCriteria().andFind(session);
@@ -1449,10 +1450,10 @@ public class JRedisStorageSessionTest {
                 .withKey("name", String.class, "name").withParent(root1).andCreate();
         STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", Integer.class, 1)
                 .withKey("name", String.class, "name").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "value");
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value1");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter1", String.class, "value2");
+        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
+        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
+        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value1");
+        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value2");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withProperty("parameter").equals(String.class, "value").buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
@@ -1470,8 +1471,7 @@ public class JRedisStorageSessionTest {
     }
 
 
-
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesContainingStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", Integer.class, 1)
@@ -1495,7 +1495,7 @@ public class JRedisStorageSessionTest {
         assertThat(theSameNodes.size(), is(2));
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesStartingWithStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", Integer.class, 1)
@@ -1519,7 +1519,7 @@ public class JRedisStorageSessionTest {
         assertThat(theSameNodes.size(), is(2));
     }
 
-    @Test
+    @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesEndingWithStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", Integer.class, 1)
@@ -1542,7 +1542,6 @@ public class JRedisStorageSessionTest {
         assertThat(theSameNodes.contains(root2), is(false));
         assertThat(theSameNodes.size(), is(2));
     }
-
 
 
 }

@@ -119,7 +119,7 @@ public class FileSystemLoadingStressTest {
     private static RepositoryData createRepositoryData() {
         final GlobalSettings settings = new GlobalSettings();
         settings.setDefaultSleepingIntervalInMilliseconds(300);
-
+        
         GlobalSettingsSupport.initializeScheduleMap(settings);
         final Repository repository = new Repository();
         repository.setName("sampleRepository");
@@ -135,16 +135,16 @@ public class FileSystemLoadingStressTest {
         artifactSource.setName("lots of files");
         artifactSource.setActive(true);
         artifactSource.setBinary(false);
-        artifactSource.setInitialLookup("../../..");
+        artifactSource.setInitialLookup("/Users/feu/much-data");
         //artifactSource.setInitialLookup("./");
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
-        mapping.setFrom("OpenSpotLight-new");
+        mapping.setFrom("files");
         //mapping.setFrom("src");
         mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);
-        mapping.getIncludeds().add("**/*.java");
+        mapping.getIncludeds().add("**/*");
 
         return new RepositoryData(settings, repository, group, artifactSource);
     }

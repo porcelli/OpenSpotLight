@@ -134,9 +134,12 @@ public class Conversion {
                         return null;
                     }
                     if (type.equals(String.class) && value instanceof Date) {
-                        return df.format((Date)value);
-                    }
-                    return value.toString();
+                                            return df.format((Date)value);
+                                        }
+                    if (type.equals(String.class) && value instanceof Class) {
+                                            return ((Class)value).getName();
+                                        }
+                                                            return value.toString();
                 } catch (final Exception e) {
                     throw Exceptions.logAndReturn(new IllegalStateException(e));
                 }

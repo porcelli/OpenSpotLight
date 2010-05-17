@@ -196,12 +196,14 @@ public enum ArtifactLoaderManager {
                 if (original == null) {
                     change = ChangeType.INCLUDED;
                     newOne = r.loader.findByPath(r.type, source, r.name);
+                    if(newOne==null) return null;
 
                 } else {
                     if (!r.loader.getInternalMethods().isMaybeChanged(source, r.name, original)) {
                         change = ChangeType.NOT_CHANGED;
                     } else {
                         newOne = r.loader.findByPath(r.type, source, r.name);
+                        if(newOne==null) return null;
                         if (newOne.contentEquals(original)) {
                             change = ChangeType.NOT_CHANGED;
                         } else {

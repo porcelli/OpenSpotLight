@@ -63,8 +63,7 @@ import org.openspotlight.persist.annotation.TransientProperty;
 /**
  * The Class PathElement.
  */
-@Name( "path_element" )
-public class PathElement implements Comparable<PathElement>, SimpleNodeType, Serializable {
+public class PathElement implements Comparable<PathElement>, Serializable {
 
     private static final long serialVersionUID = -6520096568789344933L;
 

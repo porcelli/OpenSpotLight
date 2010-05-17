@@ -8,10 +8,10 @@
 			<param name="ConversionPattern" value="%d{yy/MM/dd HH:mm:ss:SSS} %p %c{2}: %m%n" />
 		</layout>
 	</appender>
-	<logger name="org.openspotlight.federation">
+	<!--logger name="org.openspotlight.federation">
 		<priority value="debug" />
 		<appender-ref ref="console" />
-	</logger>
+	</logger-->
 	<logger name="org.openspotlight.common.util.Exceptions">
 		<priority value="debug" />
 		<appender-ref ref="console" />

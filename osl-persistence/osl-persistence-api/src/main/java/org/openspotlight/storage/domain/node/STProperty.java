@@ -49,28 +49,32 @@ public interface STProperty {
     }
 
     enum STPropertyDescription {
-        KEY(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
-        SIMPLE(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY),
-        SERIALIZED_LIST(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 1),
-        SERIALIZED_SET(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 1),
-        SERIALIZED_MAP(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 2),
-        SERIALIZED_POJO(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT),
-        INPUT_STREAM(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT);
+        KEY(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY,true),
+        SIMPLE(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY,false),
+        SIMPLE_INDEXED(STSerializedType.NOT_SERIALIZED, STLoadWeight.EASY,true),
+        SERIALIZED_LIST(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 1,false),
+        SERIALIZED_SET(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 1,false),
+        SERIALIZED_MAP(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT, 2,false),
+        SERIALIZED_POJO(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT,false),
+        INPUT_STREAM(STSerializedType.SERIALIZED, STLoadWeight.DIFFICULT,false);
 
         private final STSerializedType serialized;
         private final STLoadWeight loadWeight;
         private final int parameterizedLevel;
+        private final boolean indexed;
 
-        STPropertyDescription(STSerializedType serialized, STLoadWeight loadWeight) {
+        STPropertyDescription(STSerializedType serialized, STLoadWeight loadWeight, boolean indexed) {
             this.serialized = serialized;
             this.loadWeight = loadWeight;
             this.parameterizedLevel = 0;
+            this.indexed = indexed;
         }
 
-        STPropertyDescription(STSerializedType serialized, STLoadWeight loadWeight, int parameterizedLevel) {
+        STPropertyDescription(STSerializedType serialized, STLoadWeight loadWeight, int parameterizedLevel, boolean indexed) {
             this.serialized = serialized;
             this.loadWeight = loadWeight;
             this.parameterizedLevel = parameterizedLevel;
+            this.indexed = indexed;
         }
 
         public STSerializedType getSerialized() {
@@ -97,6 +101,9 @@ public interface STProperty {
             return parameterizedLevel > 1;
         }
 
+        public boolean isIndexed() {
+            return indexed;
+        }
     }
 
 

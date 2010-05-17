@@ -179,7 +179,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             for (String nodePath : nodePaths) {
                 parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry<?>>emptySet(), nodePath),
                         parentKey, partition, repositoryPath);
-                parent = new STNodeEntryImpl(parentKey);
+                parent = new STNodeEntryImpl(parentKey,false);
                 handleNewItem(parent);
             }
 
@@ -205,8 +205,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         return supportMethods;
     }
 
-    protected final STNodeEntry createEntryWithKey(STUniqueKey uniqueKey) {
-        return new STNodeEntryImpl(uniqueKey);
+    protected final STNodeEntry createFoundEntryWithKey(STUniqueKey uniqueKey) {
+        return new STNodeEntryImpl(uniqueKey,true);
     }
 
     public final class STStorageSessionSupportMethodsImpl implements STStorageSessionSupportMethods {
@@ -910,6 +910,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                     switch (stProperty.getInternalMethods().getDescription()) {
                         case SIMPLE:
                             return internalPropertyGetSimplePropertyAs(partition, stProperty, type);
+                        case SIMPLE_INDEXED:
+                            return internalPropertyGetSimplePropertyAs(partition, stProperty, type);
                         case KEY:
                             return internalPropertyGetKeyPropertyAs(partition, stProperty, type);
                         case SERIALIZED_LIST:
@@ -1055,7 +1057,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
             STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parentKey, partition, repositoryPath);
-            STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey);
+            STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey,false);
             AbstractSTStorageSession.this.handleNewItem(result);
             return result;
         }
@@ -1099,6 +1101,9 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             switch (dirtyProperty.getInternalMethods().getDescription()) {
 
                 case SIMPLE:
+                    internalFlushSimpleProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
+                    break;
+                case SIMPLE_INDEXED:
                     internalFlushSimpleProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
                     break;
                 case SERIALIZED_LIST:
@@ -1182,6 +1187,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                 case KEY:
                     return this.<T>internalPropertyGetKeyPropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
                 case SIMPLE:
+                    return this.<T>internalPropertyGetSimplePropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
+                case SIMPLE_INDEXED:
                     return this.<T>internalPropertyGetSimplePropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
                 case SERIALIZED_LIST:
                     return this.<T>internalPropertyGetSerializedListPropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
