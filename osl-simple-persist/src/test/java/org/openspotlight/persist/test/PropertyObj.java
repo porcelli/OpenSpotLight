@@ -48,6 +48,7 @@
  */
 package org.openspotlight.persist.test;
 
+import org.openspotlight.persist.annotation.IndexedProperty;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
@@ -59,6 +60,7 @@ public class PropertyObj implements SimpleNodeType {
 
     private int    value;
 
+    @IndexedProperty
     public String getName() {
         return name;
     }
@@ -72,6 +74,7 @@ public class PropertyObj implements SimpleNodeType {
     public int getValue() {
         return value;
     }
+
 
     public void setName( final String name ) {
         this.name = name;

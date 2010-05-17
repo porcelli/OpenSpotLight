@@ -50,10 +50,7 @@ package org.openspotlight.persist.test;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
-import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.ParentProperty;
-import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
-import org.openspotlight.persist.annotation.SimpleNodeType;
+import org.openspotlight.persist.annotation.*;
 
 public class LevelOneObj implements SimpleNodeType {
     private String  uuid;
@@ -80,6 +77,7 @@ public class LevelOneObj implements SimpleNodeType {
         return key;
     }
 
+    @IndexedProperty
     public String getProperty() {
         return property;
     }
