@@ -121,6 +121,11 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     private final STUniqueKey uniqueKey;
 
+    public void forceReload(){
+        this.propertiesByName.clear();
+        this.lastLoad = -1;
+    }
+
     public boolean isChildOf(STNodeEntry possibleParent) {
         STUniqueKey parentKey = this.getUniqueKey();
         STUniqueKey possibleParentKey = possibleParent.getUniqueKey();
@@ -228,6 +233,7 @@ public class STNodeEntryImpl implements STNodeEntry {
             for (STProperty property : result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
+            this.lastLoad = System.currentTimeMillis();
         }
     }
 

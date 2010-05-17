@@ -64,6 +64,8 @@ import java.util.Set;
 public interface STNodeEntry extends STAData, STNodeEntryFactory,
         Comparable<STNodeEntry> {
 
+    public void forceReload();
+
     public boolean isChildOf(STNodeEntry possibleParent);
 
     String getNodeEntryName();

@@ -719,16 +719,17 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             } else {
                 exec.sadd(SET_WITH_INDEX_ENTRY.format(stripped, propertyName), uniqueKey);
             }
-            exec.set(KEY_WITH_PROPERTY_TYPE.format(uniqueKey, propertyName), propertyType.getName());
-            if (transientValueAsString != null) {
-                exec.set(KEY_WITH_PROPERTY_VALUE.format(uniqueKey, propertyName), transientValueAsString);
-            } else {
-                jredis.del(KEY_WITH_PROPERTY_VALUE.format(uniqueKey, propertyName));
-            }
-            exec.set(KEY_WITH_PROPERTY_DESCRIPTION.format(uniqueKey, propertyName), convert(description, String.class));
+        }
+        exec.set(KEY_WITH_PROPERTY_TYPE.format(uniqueKey, propertyName), propertyType.getName());
+        if (transientValueAsString != null) {
+            exec.set(valueKey, transientValueAsString);
+        } else {
+            jredis.del(valueKey);
+        }
+        exec.set(KEY_WITH_PROPERTY_DESCRIPTION.format(uniqueKey, propertyName), convert(description, String.class));
 //        jredis.del(KEY_WITH_PROPERTY_PARAMETERIZED_1, uniqueKey, dirtyProperty.getPropertyName()));
 //        jredis.del(KEY_WITH_PROPERTY_PARAMETERIZED_2, uniqueKey, dirtyProperty.getPropertyName()));
-        }
+
     }
 
     private String stripString(String transientValueAsString) {

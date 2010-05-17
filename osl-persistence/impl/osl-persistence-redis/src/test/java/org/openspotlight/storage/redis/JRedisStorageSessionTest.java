@@ -664,7 +664,7 @@ public class JRedisStorageSessionTest {
 
         newNode.getVerifiedOperations().setSimpleProperty(session, "classProperty", Class.class, String.class);
         newNode.getVerifiedOperations().setSimpleProperty(session, "enumProperty", ExampleEnum.class, ExampleEnum.FIRST);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "stringProperty", String.class, "value");
+        newNode.getVerifiedOperations().setIndexedProperty(session, "stringProperty", String.class, "value");
         newNode.getVerifiedOperations().setSimpleProperty(session, "dateProperty", Date.class, newDate);
         newNode.getVerifiedOperations().setSimpleProperty(session, "integerProperty", Integer.class, 2);
         newNode.getVerifiedOperations().setSimpleProperty(session, "floatProperty", Float.class, 2.1f);
@@ -738,6 +738,7 @@ public class JRedisStorageSessionTest {
                 is(nullValue()));
 
         session.flushTransient();
+        loadedNode1.forceReload();
 
 
         assertThat(loadedNode1.<String>getPropertyValue(session, "stringProperty"),
@@ -825,7 +826,7 @@ public class JRedisStorageSessionTest {
                 .withKey("name", String.class, "name").andCreate();
         newNode.getVerifiedOperations().setSimpleProperty(session, "classProperty", Class.class, String.class);
         newNode.getVerifiedOperations().setSimpleProperty(session, "enumProperty", ExampleEnum.class, ExampleEnum.FIRST);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "stringProperty", String.class, "value");
+        newNode.getVerifiedOperations().setIndexedProperty(session, "stringProperty", String.class, "value");
         newNode.getVerifiedOperations().setSimpleProperty(session, "dateProperty", Date.class, newDate);
         newNode.getVerifiedOperations().setSimpleProperty(session, "integerProperty", Integer.class, 2);
         newNode.getVerifiedOperations().setSimpleProperty(session, "floatProperty", Float.class, 2.1f);
