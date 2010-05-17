@@ -361,6 +361,7 @@ public enum ArtifactLoaderManager {
         newOne.setMappedTo(r.acceptedMapping.getTo());
         final PathElement newPath = PathElement.createFromPathString(newPathString);
         newOne.setParent(newPath);
+        newOne.getArtifactCompleteName();
     }
 
 }

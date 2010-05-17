@@ -223,7 +223,6 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      */
     @KeyProperty
     public String getArtifactCompleteName() {
-        setArtifactCompleteName(Strings.concatPaths(parent.getCompletePath(), artifactName));
         return artifactCompleteName;
     }
 
@@ -341,7 +340,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      */
     public void setParent(final PathElement parent) {
         this.parent = parent;
-        artifactCompleteName = null;
+        setArtifactCompleteName(Strings.concatPaths(parent.getCompletePath(), artifactName));
     }
 
     public void setRepositoryName(final String repositoryName) {

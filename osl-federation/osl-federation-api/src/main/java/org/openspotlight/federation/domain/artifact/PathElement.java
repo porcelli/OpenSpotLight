@@ -111,7 +111,7 @@ public class PathElement implements Comparable<PathElement>, Serializable {
     private String                    name;
 
     /** The parent. */
-    private transient PathElement     parent;
+    private PathElement     parent;
 
     /** The hashcode. */
     private volatile transient int    hashcode;

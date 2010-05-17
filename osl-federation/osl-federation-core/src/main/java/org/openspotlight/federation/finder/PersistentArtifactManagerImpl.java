@@ -64,19 +64,19 @@ import static com.google.common.collect.Sets.newHashSet;
 
 public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactManager {
 
-    private final String                                              repositoryName;
+    private final String repositoryName;
     private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
-    private final STNodeEntry                                         rootPath;
+    private final STNodeEntry rootPath;
 
     public PersistentArtifactManagerImpl(
-                                          Repository repository, SimplePersistFactory factory ) {
+            Repository repository, SimplePersistFactory factory) {
         this.simplePersist = factory.createSimplePersist(SLPartition.FEDERATION);
         this.repositoryName = repository.getName();
         this.rootPath = simplePersist.getPartitionMethods().createNewSimpleNode("artifacts");
     }
 
     @Override
-    protected <A extends Artifact> void internalAddTransient( A artifact ) throws Exception {
+    protected <A extends Artifact> void internalAddTransient(A artifact) throws Exception {
         artifact.setRepositoryName(repositoryName);
         simplePersist.convertBeanToNode(this.rootPath, artifact);
     }
@@ -87,45 +87,45 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
     }
 
     @Override
-    protected <A extends Artifact> A internalFindByOriginalName( ArtifactSource source,
-                                                                 Class<A> type,
-                                                                 String originName ) throws Exception {
-        return internalFind(type, createOriginName(source, originName), PROPERTY_NAME_OLD_ARTIFACT_PATH);
+    protected <A extends Artifact> A internalFindByOriginalName(ArtifactSource source,
+                                                                Class<A> type,
+                                                                String originName) throws Exception {
+        return internalFind(type, createOriginName(source, originName), PROPERTY_NAME_OLD_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
     }
 
-    private String createOriginName( ArtifactSource source,
-                                     String originName ) {
+    private String createOriginName(ArtifactSource source,
+                                    String originName) {
         return source.getName() + ":" + (originName != null ? originName : "");
     }
 
     @Override
-    protected <A extends Artifact> A internalFindByPath( Class<A> type,
-                                                         String path ) throws Exception {
-        return internalFind(type, path, PROPERTY_NAME_ARTIFACT_PATH);
+    protected <A extends Artifact> A internalFindByPath(Class<A> type,
+                                                        String path) throws Exception {
+        return internalFind(type, path, PROPERTY_NAME_ARTIFACT_PATH[IDX_ARTIFACT_NAME]);
     }
 
-    private <A> A internalFind( Class<A> type,
-                                String path,
-                                String propertyName ) throws Exception {
-        return simplePersist.findUniqueByProperties(this.rootPath, type, new String[] {propertyName}, new Object[] {path});
+    private <A> A internalFind(Class<A> type,
+                               String path,
+                               String propertyName) throws Exception {
+        return simplePersist.findUniqueByProperties(this.rootPath, type, new String[]{propertyName}, new Object[]{path});
 
     }
 
     @Override
-    protected <A extends Artifact> boolean internalIsTypeSupported( Class<A> type ) throws Exception {
+    protected <A extends Artifact> boolean internalIsTypeSupported(Class<A> type) throws Exception {
         return true;
     }
 
     @Override
-    protected <A extends Artifact> void internalMarkAsRemoved( A artifact ) throws Exception {
+    protected <A extends Artifact> void internalMarkAsRemoved(A artifact) throws Exception {
         final STNodeEntry node = simplePersist.convertBeanToNode(this.rootPath, artifact);
         simplePersist.getCurrentSession().removeNode(node);
     }
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames( ArtifactSource source,
-                                                                              Class<A> type,
-                                                                              String initialPath ) throws Exception {
+    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(ArtifactSource source,
+                                                                             Class<A> type,
+                                                                             String initialPath) throws Exception {
         return privateRetrieveNames(type, createOriginName(source, initialPath), PROPERTY_NAME_OLD_ARTIFACT_PATH);
     }
 
@@ -135,34 +135,36 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
     }
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveNames( Class<A> type,
-                                                                      String initialPath ) throws Exception {
+    protected <A extends Artifact> Set<String> internalRetrieveNames(Class<A> type,
+                                                                     String initialPath) throws Exception {
         return privateRetrieveNames(type, initialPath, PROPERTY_NAME_ARTIFACT_PATH);
 
     }
 
-    public static final String PROPERTY_NAME_ARTIFACT_PATH     = "artifactCompleteName";
+    private static final String[] PROPERTY_NAME_ARTIFACT_PATH = {"artifactCompleteName", "mappedTo"};
 
-    public static final String PROPERTY_NAME_OLD_ARTIFACT_PATH = "originalName";
+    private static final String[] PROPERTY_NAME_OLD_ARTIFACT_PATH = {"originalName", "mappedFrom"};
 
-    private <A> Set<String> privateRetrieveNames( Class<A> type,
-                                                  String initialPath,
-                                                  String propertyName ) throws Exception {
+    private static final int IDX_ARTIFACT_NAME = 0, IDX_MAPPED = 1;
+
+    private <A> Set<String> privateRetrieveNames(Class<A> type,
+                                                 String initialPath,
+                                                 String[] propertyNameAndPath) throws Exception {
         Set<STNodeEntry> foundNodes;
         String nodeName = simplePersist.getInternalMethods().getNodeName(type);
         if (initialPath != null) {
-            foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName).withProperty(propertyName).containsString(
-                                                                                                                                                initialPath).buildCriteria().andFind(
-                                                                                                                                                                                     simplePersist.getCurrentSession());
+            foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName).withProperty(propertyNameAndPath[IDX_MAPPED]).equals(String.class,
+                    initialPath).buildCriteria().andFind(
+                    simplePersist.getCurrentSession());
         } else {
             foundNodes = simplePersist.getPartitionMethods().findNamed(nodeName);
 
         }
         Set<String> names = newHashSet();
         for (STNodeEntry nodeEntry : foundNodes) {
-            String name = nodeEntry.<String>getPropertyValue(simplePersist.getCurrentSession(), propertyName);
-            if(name==null){
-                throw new IllegalStateException("Mandatory property " + propertyName + " from node " + nodeEntry + " with null value");
+            String name = nodeEntry.<String>getPropertyValue(simplePersist.getCurrentSession(), propertyNameAndPath[IDX_ARTIFACT_NAME]);
+            if (name == null) {
+                throw new IllegalStateException("Mandatory property " + propertyNameAndPath[IDX_ARTIFACT_NAME] + " from node " + nodeEntry + " with null value");
             }
             names.add(name);
         }

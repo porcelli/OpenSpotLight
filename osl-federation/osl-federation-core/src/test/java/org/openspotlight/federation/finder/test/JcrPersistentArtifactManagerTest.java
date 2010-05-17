@@ -115,8 +115,10 @@ public class JcrPersistentArtifactManagerTest {
         final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
         final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(StringArtifact.class, artifactSource, null);
         persistenArtifactManager = new PersistentArtifactManagerImpl(repository, injector.getInstance(SimplePersistFactory.class));
-        for (StringArtifact artifact : artifacts)
+        for (StringArtifact artifact : artifacts){
+            artifact.setMappedTo("/src");
             persistenArtifactManager.addTransient(artifact);
+        }
         persistenArtifactManager.saveTransientData();
 
     }
