@@ -61,6 +61,7 @@ import org.jboss.identity.idm.spi.model.IdentityObject;
 import org.jboss.identity.idm.spi.model.IdentityObjectCredential;
 import org.jboss.identity.idm.spi.model.IdentityObjectCredentialType;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.persist.annotation.IndexedProperty;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
@@ -143,10 +144,12 @@ public class SLPasswordEntry implements SimpleNodeType, Serializable {
         return this.credentialTypeClass;
     }
 
+    @IndexedProperty
     public String getCredentialTypeName() {
         return this.credentialTypeName;
     }
-
+    
+    @IndexedProperty
     public String getPasswordValue() {
         return this.passwordValue;
     }

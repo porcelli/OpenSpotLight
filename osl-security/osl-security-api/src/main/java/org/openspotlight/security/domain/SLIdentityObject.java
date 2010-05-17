@@ -56,6 +56,7 @@ import java.util.Set;
 import org.jboss.identity.idm.common.exception.PolicyValidationException;
 import org.jboss.identity.idm.spi.model.IdentityObject;
 import org.jboss.identity.idm.spi.model.IdentityObjectType;
+import org.openspotlight.persist.annotation.IndexedProperty;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
@@ -102,6 +103,7 @@ public class SLIdentityObject implements IdentityObject, SimpleNodeType, Seriali
         return this.name;
     }
 
+    @IndexedProperty
     public String getTypeAsString() {
         return this.typeAsString;
     }

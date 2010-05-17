@@ -54,6 +54,7 @@ import java.util.Set;
 
 import org.jboss.identity.idm.spi.model.IdentityObjectAttribute;
 import org.openspotlight.common.util.Assertions;
+import org.openspotlight.persist.annotation.IndexedProperty;
 
 public class SLTransientIdentityObjectAttribute implements IdentityObjectAttribute {
 
@@ -68,11 +69,13 @@ public class SLTransientIdentityObjectAttribute implements IdentityObjectAttribu
 
     }
 
+    @IndexedProperty
     public String getName() {
         return this.name;
     }
 
-    public int getSize() {
+    @IndexedProperty
+        public int getSize() {
         return this.values.size();
     }
 
