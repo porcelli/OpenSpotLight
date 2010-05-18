@@ -255,7 +255,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
             }
         }
         if (criteria.getCriteriaItems().size() == 0) {
-            List<String> keys = jredis.keys(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(criteria.getNodeName()));
+            List<String> keys = listBytesToListString(jredis.smembers(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(criteria.getNodeName())));
             for (String key : keys) {
                 uniqueIds.addAll(listBytesToListString(jredis.smembers(key)));
             }

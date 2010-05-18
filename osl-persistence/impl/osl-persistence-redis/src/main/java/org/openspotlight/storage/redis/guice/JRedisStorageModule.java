@@ -51,7 +51,6 @@ package org.openspotlight.storage.redis.guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
-import org.jredis.JRedis;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
@@ -64,10 +63,11 @@ import java.util.Map;
 public class JRedisStorageModule extends AbstractModule {
 
     private final STStorageSession.STFlushMode flushMode;
-    
+
     private final Map<STPartition, JRedisServerDetail> mappedServerConfig;
 
     private final STRepositoryPath repositoryPath;
+
     public JRedisStorageModule(STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig, STRepositoryPath repositoryPath) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
@@ -78,9 +78,11 @@ public class JRedisStorageModule extends AbstractModule {
     protected void configure() {
         bind(STStorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
         bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
-        bind(new TypeLiteral<Map<STPartition, JRedisServerDetail>>() {})
+        bind(new TypeLiteral<Map<STPartition, JRedisServerDetail>>() {
+        })
                 .toInstance(mappedServerConfig);
         bind(STRepositoryPath.class).toInstance(repositoryPath);
         bind(JRedisFactory.class).to(JRedisFacoryImpl.class);
+        bind(boolean.class).annotatedWith(StartRedisLocally.class).toInstance(true);
     }
 }

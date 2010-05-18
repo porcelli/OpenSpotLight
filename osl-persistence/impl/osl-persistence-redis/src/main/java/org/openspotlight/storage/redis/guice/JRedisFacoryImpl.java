@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import org.jredis.JRedis;
 import org.jredis.ri.alphazero.JRedisClient;
 import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.redis.RedisServerExecutor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,9 +28,14 @@ public class JRedisFacoryImpl implements JRedisFactory {
 
     private ThreadLocal<Map<STPartition, JRedis>> threadLocalCache = new ThreadLocal<Map<STPartition, JRedis>>();
 
+
     @Inject
-    JRedisFacoryImpl(Map<STPartition, JRedisServerDetail> mappedServerConfig) {
+    JRedisFacoryImpl(Map<STPartition, JRedisServerDetail> mappedServerConfig, @StartRedisLocally boolean needsToStart) {
         this.mappedServerConfig = mappedServerConfig;
+        if (needsToStart) {
+            STPartition samplePartition = mappedServerConfig.keySet().iterator().next();
+            RedisServerExecutor.INSTANCE.startServerIfNecessary(samplePartition,this);
+        }
     }
 
 
@@ -51,9 +57,9 @@ public class JRedisFacoryImpl implements JRedisFactory {
     public Set<JRedis> getAllActive() {
         Set<JRedis> result;
         Map<STPartition, JRedis> cache = threadLocalCache.get();
-        if(cache!=null){
+        if (cache != null) {
             result = ImmutableSet.copyOf(cache.values());
-        }else{
+        } else {
             result = emptySet();
         }
         return result;
