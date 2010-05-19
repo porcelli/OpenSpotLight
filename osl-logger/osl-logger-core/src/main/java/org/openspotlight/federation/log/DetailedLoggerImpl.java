@@ -50,16 +50,13 @@ package org.openspotlight.federation.log;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.log.DetailedLoggerProvider.LogEntry;
-import org.openspotlight.federation.log.DetailedLoggerProvider.LoggedObjectInformation;
+import org.openspotlight.federation.log.LoggedObjectInformation;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
-
-import java.util.Date;
 
 public final class DetailedLoggerImpl implements DetailedLogger {
 
@@ -132,8 +129,8 @@ public final class DetailedLoggerImpl implements DetailedLogger {
                      final String message,
                      final String detailedMessage,
                      final LogableObject... anotherNodes ) {
-        final LogEntry entry = new LogEntry(errorCode, System.currentTimeMillis(), type, message, detailedMessage,
-                                            LoggedObjectInformation.getHierarchyFrom(anotherNodes));
+        final org.openspotlight.federation.log.LogEntry entry = new org.openspotlight.federation.log.LogEntry(errorCode, System.currentTimeMillis(), type, message, detailedMessage,
+                LoggedObjectInformation.getHierarchyFrom(anotherNodes));
 
         simplePersist.convertBeanToNode(rootNode, entry);
         simplePersist.getCurrentSession().flushTransient();

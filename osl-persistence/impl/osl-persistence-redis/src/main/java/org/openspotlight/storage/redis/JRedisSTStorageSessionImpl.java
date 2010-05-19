@@ -256,9 +256,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         }
         if (criteria.getCriteriaItems().size() == 0) {
             List<String> keys = listBytesToListString(jredis.smembers(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(criteria.getNodeName())));
-            for (String key : keys) {
-                uniqueIds.addAll(listBytesToListString(jredis.smembers(key)));
-            }
+            uniqueIds.addAll(keys);
         }
 
         if (!uniqueIds.isEmpty() && !propertiesIntersection.isEmpty())
@@ -297,10 +295,10 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
         ImmutableList.Builder<String> builder = ImmutableList.builder();
         String transientValueAsString = stripString(convert(value, String.class));
-        List<String> ids = listBytesToListString(jredis.smembers(SET_WITH_INDEX_ENTRY.format(transientValueAsString,propertyName)));
+        List<String> ids = listBytesToListString(jredis.smembers(SET_WITH_INDEX_ENTRY.format(transientValueAsString, propertyName)));
         for (String id : ids) {
             String propertyValue = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE.format(id, propertyName)));
-            if(propertyValue==null) propertyValue = "null";
+            if (propertyValue == null) propertyValue = "null";
             boolean needsToAdd = false;
             switch (equal) {
                 case EQUAL:

@@ -53,12 +53,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
+import org.openspotlight.federation.log.LogEntry;
+import org.openspotlight.federation.log.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
@@ -77,7 +78,6 @@ import org.openspotlight.security.idm.User;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
-import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisSTStorageSessionProvider;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -180,13 +180,13 @@ public class DetailedLoggerTest {
         logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "secondEntry", artifact);
         logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "thirdEntry", node3);
 
-        final Iterable<DetailedLoggerProvider.LogEntry> foundEntries = simplePersist.findAll(DetailedLoggerProvider.LogEntry.class);
+        final Iterable<LogEntry> foundEntries = simplePersist.findAll(LogEntry.class);
 
         boolean hasAnyEntry = false;
         boolean hasAnyObject = false;
-        for (final DetailedLoggerProvider.LogEntry entry : foundEntries) {
+        for (final LogEntry entry : foundEntries) {
             hasAnyEntry = true;
-            for (final DetailedLoggerProvider.LoggedObjectInformation info : entry.getNodes()) {
+            for (final LoggedObjectInformation info : entry.getNodes()) {
                 hasAnyObject = true;
                 assertThat(info.getClassName(), is(notNullValue()));
                 assertThat(info.getFriendlyDescription(), is(notNullValue()));
