@@ -166,8 +166,6 @@ public class SLIdentityStoreImplTest {
     }
 
     @Test
-    @Ignore
-    // needs to verify its strange behavior on maven
     public void testAttributes() throws Exception {
         this.test.testAttributes();
     }

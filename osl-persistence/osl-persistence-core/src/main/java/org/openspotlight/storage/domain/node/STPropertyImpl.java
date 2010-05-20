@@ -17,6 +17,7 @@ import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitive
  */
 public class STPropertyImpl implements STProperty {
 
+
     @Override
     public String toString() {
         return "STPropertyImpl{" +

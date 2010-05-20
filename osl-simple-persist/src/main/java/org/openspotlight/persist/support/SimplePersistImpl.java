@@ -106,6 +106,8 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return result;
     }
 
+
+
     private <T> STNodeEntry internalConvertBeanToNode(ConversionToNodeContext context,
                                                       String propertyName,
                                                       SimpleNodeType bean,

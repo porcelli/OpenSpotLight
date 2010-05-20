@@ -5,14 +5,20 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.jredis.JRedis;
 import org.jredis.ri.alphazero.JRedisClient;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.redis.RedisServerExecutor;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,22 +40,38 @@ public class JRedisFacoryImpl implements JRedisFactory {
         this.mappedServerConfig = mappedServerConfig;
         if (needsToStart) {
             STPartition samplePartition = mappedServerConfig.keySet().iterator().next();
-            RedisServerExecutor.INSTANCE.startServerIfNecessary(samplePartition,this);
+            RedisServerExecutor.INSTANCE.startServerIfNecessary(samplePartition, this);
         }
     }
 
 
     public JRedis getFrom(STPartition partition) {
-        JRedisServerDetail serverDetail = mappedServerConfig.get(partition);
+        final JRedisServerDetail serverDetail = mappedServerConfig.get(partition);
         Map<STPartition, JRedis> cache = threadLocalCache.get();
         if (cache == null) {
             cache = new HashMap();
             threadLocalCache.set(cache);
         }
         JRedis jRedis = cache.get(partition);
-        if (jRedis == null) {
-            jRedis = new JRedisClient(serverDetail.getServerName(), serverDetail.getServerPort(), serverDetail.getPassword(), serverDetail.getDb());
-            cache.put(partition, jRedis);
+        try {
+            if (jRedis == null) {
+
+
+                jRedis = (JRedis) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{JRedis.class}, new InvocationHandler() {
+
+                    private final JRedis redis = new JRedisClient(serverDetail.getServerName(), serverDetail.getServerPort(), serverDetail.getPassword(), serverDetail.getDb());
+
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+//                        System.out.println(">>> " + method.getName() + " " + Arrays.toString(args));
+                        return method.invoke(redis, args);
+
+                    }
+                });
+                cache.put(partition, jRedis);
+            }
+        } catch (Exception e) {
+            throw logAndReturnNew(e, SLRuntimeException.class);
         }
         return jRedis;
     }
@@ -64,4 +86,5 @@ public class JRedisFacoryImpl implements JRedisFactory {
         }
         return result;
     }
+
 }
