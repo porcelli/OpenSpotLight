@@ -64,7 +64,6 @@ import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
@@ -80,10 +79,11 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
@@ -119,7 +119,7 @@ public class FileSystemLoadingStressTest {
     private static RepositoryData createRepositoryData() {
         final GlobalSettings settings = new GlobalSettings();
         settings.setDefaultSleepingIntervalInMilliseconds(300);
-        
+
         GlobalSettingsSupport.initializeScheduleMap(settings);
         final Repository repository = new Repository();
         repository.setName("sampleRepository");
@@ -188,9 +188,9 @@ public class FileSystemLoadingStressTest {
 
     @Test
     public void shouldProcessJarFile() throws Exception {
-        System.err.println(new File("./").getCanonicalPath());
-
+        logger.debug("about to load all items from its origin");
         reloadArtifacts();
+        logger.debug("finished to load all items from its origin");
 
         final ExecutionContext context = contextFactory.createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
@@ -198,7 +198,22 @@ public class FileSystemLoadingStressTest {
         Set<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StringArtifact.class, null);
         logger.debug("finished to load item names from persistent storage");
 
-        assertThat(list.size()>50,is(true));
+        assertThat(list.size() > 50, is(true));
+        int loadedSize = 0;
+        logger.debug("about to load item contents from persistent storage");
+        for (String s : list) {
+            StringArtifact file = context.getPersistentArtifactManager().findByPath(StringArtifact.class, s);
+            assertThat(file, is(notNullValue()));
+            List<String> lazyLoadedContent = file.getContent().get(context.getPersistentArtifactManager().getSimplePersist());
+            assertThat(lazyLoadedContent, is(notNullValue()));
+
+            if (lazyLoadedContent.size() != 0) {
+                loadedSize++;
+            }
+        }
+        logger.debug("finished to load item contents from persistent storage");
+        assertThat(loadedSize > 50, is(true));
+
     }
 
 }

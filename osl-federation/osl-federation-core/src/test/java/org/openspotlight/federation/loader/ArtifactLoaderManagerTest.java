@@ -94,7 +94,7 @@ public class ArtifactLoaderManagerTest {
         injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
         final GlobalSettings settings = new GlobalSettings();
         settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
-        settings.setDefaultSleepingIntervalInMilliseconds(500);
+        settings.setDefaultSleepingIntervalInMilliseconds(250);
         final String initialRawPath = Files.getNormalizedFileName(new File("."));
         final String initial = initialRawPath.substring(0, initialRawPath.lastIndexOf('/'));
         final String finalStr = initialRawPath.substring(initial.length());

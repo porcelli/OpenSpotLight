@@ -78,7 +78,7 @@ public class TimeOutTest {
 
     @Test
     public void shouldExecuteWhenTheresNoTimeOut() throws Exception {
-        final ExampleInterface newInstance = TimeOutFactory.createTimedOutObject(ExampleInterface.class, 500,
+        final ExampleInterface newInstance = TimeOutFactory.createTimedOutObject(ExampleInterface.class, 250,
                                                                                  new ExampleImplementation(),
                                                                                  new TaskFinalizer<ExampleInterface>() {
 
@@ -94,7 +94,7 @@ public class TimeOutTest {
 
     @Test( expected = IllegalStateException.class )
     public void shouldNotExecuteWhenTheresATimeOut() throws Exception {
-        final ExampleInterface newInstance = TimeOutFactory.createTimedOutObject(ExampleInterface.class, 500,
+        final ExampleInterface newInstance = TimeOutFactory.createTimedOutObject(ExampleInterface.class, 250,
                                                                                  new ExampleImplementation(),
                                                                                  new TaskFinalizer<ExampleInterface>() {
 
@@ -103,7 +103,7 @@ public class TimeOutTest {
                                                                                      }
 
                                                                                  });
-        Thread.sleep(1000);
+        Thread.sleep(500);
         try {
             newInstance.returnsTrue();
         } finally {

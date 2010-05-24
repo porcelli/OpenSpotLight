@@ -81,6 +81,7 @@
         <dependency>
             <groupId>org.openspotlight</groupId>
             <artifactId>osl-bundle-java</artifactId>
+            <optional>true</optional>
         </dependency>
         <!-- Apache Jackrabbit (JCR Implementation) -->
         <dependency>

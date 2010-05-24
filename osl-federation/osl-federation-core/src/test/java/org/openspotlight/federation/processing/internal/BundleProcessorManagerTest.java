@@ -155,7 +155,7 @@ public class BundleProcessorManagerTest {
 
         final GlobalSettings settings = new GlobalSettings();
         settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
-        settings.setDefaultSleepingIntervalInMilliseconds(1000);
+        settings.setDefaultSleepingIntervalInMilliseconds(250);
         final Repository repository = new Repository();
         repository.setActive(true);
         repository.setName("repository");
@@ -222,7 +222,7 @@ public class BundleProcessorManagerTest {
 
     @After
     public void sleepAndGc() throws Exception {
-        Thread.sleep(500);
+        Thread.sleep(100);
         System.gc();
     }
 

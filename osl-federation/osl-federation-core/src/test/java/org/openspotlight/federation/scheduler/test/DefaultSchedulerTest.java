@@ -174,8 +174,8 @@ public class DefaultSchedulerTest {
         try {
             group.getCronInformation().add("0/1 * * * * ?");
             scheduler.refreshJobs(settings, repositories);
-            Thread.sleep(10000);
-            Assert.assertThat((double) SampleGroupSchedulableCommand.counter.get(), IsCloseTo.closeTo(10d, 1d));
+            Thread.sleep(3000);
+            Assert.assertThat((double) SampleGroupSchedulableCommand.counter.get(), IsCloseTo.closeTo(4d, 1d));
 
         } finally {
             group.getCronInformation().clear();
@@ -190,7 +190,7 @@ public class DefaultSchedulerTest {
             if (SampleGroupSchedulableCommand.wasExecuted.get()) {
                 return;
             }
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
         Assert.fail("Didn't execute in 20 seconds!");
     }

@@ -81,7 +81,7 @@ public class TaskManagerTest {
         public void run() throws Exception {
             if (sleeping) {
                 Thread.currentThread();
-                Thread.sleep(random.nextInt(500));
+                Thread.sleep(random.nextInt(100));
             }
             list.add(description);
         }
@@ -444,7 +444,7 @@ public class TaskManagerTest {
 
     @After
     public void sleep() throws Exception {
-        Thread.sleep(1000);
+        Thread.sleep(250);
     }
 
 }
