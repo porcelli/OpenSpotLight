@@ -218,7 +218,7 @@ public class FileChangingUnderBundleProcessorTest {
 
     private static RepositoryData createRepositoryData() {
         final GlobalSettings settings = new GlobalSettings();
-        settings.setDefaultSleepingIntervalInMilliseconds(250);
+        settings.setDefaultSleepingIntervalInMilliseconds(50);
 
         GlobalSettingsSupport.initializeScheduleMap(settings);
         final Repository repository = new Repository();
@@ -310,7 +310,7 @@ public class FileChangingUnderBundleProcessorTest {
 
     @Test
     public void shouldStoreTheCorrectChanges() throws Exception {
-        int size = 100;
+        int size = 10;
         for (int i = 0; i < size; i++) {
             storeOrChangeFile(FROM_COMPLETE_ROOT_PATH, "included_on_1st_running/" + i, Integer.toString(i), "2", "3");
         }
@@ -327,11 +327,6 @@ public class FileChangingUnderBundleProcessorTest {
 
         reloadArtifactsAndCallBundleProcessor();
         reloadArtifactsAndCallBundleProcessor();
-        for (Map.Entry<Integer, GroupedChanges> entry : FileChangingProcessor.currentChanges.entrySet()) {
-            System.err.println("ID: " + entry.getKey() + " " + entry.getValue());
-        }
-
-
         assertThat("got the 0 processing ", FileChangingProcessor.currentChanges.containsKey(0), is(true));
         assertThat("got the 1 processing ", FileChangingProcessor.currentChanges.containsKey(1), is(true));
         assertThat("got the 2 processing ", FileChangingProcessor.currentChanges.containsKey(2), is(true));
