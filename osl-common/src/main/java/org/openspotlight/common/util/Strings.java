@@ -194,7 +194,7 @@ public class Strings {
                                               final String toBeCorrected ) {
         checkNotEmpty("beginning", beginning);//$NON-NLS-1$
         checkNotEmpty("toBeCorrected", toBeCorrected);//$NON-NLS-1$
-        checkCondition("startsWithBeginning", toBeCorrected//$NON-NLS-1$
+        checkCondition("startsWithBeginning:" + beginning + " -> " + toBeCorrected, toBeCorrected//$NON-NLS-1$
         .startsWith(beginning));
         return toBeCorrected.substring(beginning.length());
     }

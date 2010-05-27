@@ -157,7 +157,7 @@ public enum ArtifactLoaderManager {
         public Void call() throws Exception {
             try {
                 PersistentArtifactManager manager = provider.get();
-                Artifact loaded = manager.getInternalMethods().findByOriginalName(source, resources.type, removeBegginingFrom(source.getInitialLookup(), name));
+                Artifact loaded = manager.getInternalMethods().findByOriginalName(source, resources.type, name);
                 loaded.setChangeType(ChangeType.EXCLUDED);
                 manager.addTransient(loaded);
                 manager.saveTransientData();
@@ -301,14 +301,17 @@ public enum ArtifactLoaderManager {
                                     + source.getName() + " was loaded "
                                     + Strings.bigCollectionsToString(namesFromOrigin));
 
-                        Set<String> namesToExclude = new HashSet<String>();
 
                         FilterResult result = filterNamesByPattern(Strings.rootPath(mapping.getFrom()), namesFromOrigin,
                                 mapping.getIncludeds(), mapping.getExcludeds(), false);
-                        namesToExclude.addAll(provider.get().getInternalMethods().retrieveOriginalNames(source, type, mapping.getFrom()));
+                        HashSet<String> namesToExclude = new HashSet<String>();
+                        HashSet<String> rawNamesToExclude = new HashSet<String>(provider.get().getInternalMethods().retrieveOriginalNames(source, type, mapping.getFrom()));
+                        for (String raw : rawNamesToExclude) {
+                            namesToExclude.add(removeBegginingFrom(source.getInitialLookup(), raw));
+                        }
 
-                        namesFromOrigin.removeAll(result.getIncludedNames());
                         namesToExclude.removeAll(namesFromOrigin);
+                        
                         ArtifactTypeCleanupResources cleanupResources = new ArtifactTypeCleanupResources(type, namesToExclude);
                         resourcesToClean.add(cleanupResources);
                         for (String s : result.getIncludedNames()) {

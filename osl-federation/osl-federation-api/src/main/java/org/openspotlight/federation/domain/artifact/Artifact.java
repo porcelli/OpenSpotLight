@@ -95,6 +95,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
     public void updateOriginalName(ArtifactSource source,
                                    String originalName) {
         this.originalName = concatPaths(source.getInitialLookup(),originalName);
+
     }
 
     @IndexedProperty

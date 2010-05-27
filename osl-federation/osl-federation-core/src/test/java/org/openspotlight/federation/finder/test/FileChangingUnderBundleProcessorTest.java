@@ -31,16 +31,13 @@ import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.collect.Lists.newLinkedList;
+import static java.lang.Thread.sleep;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;
@@ -313,12 +310,21 @@ public class FileChangingUnderBundleProcessorTest {
 
     @Test
     public void shouldStoreTheCorrectChanges() throws Exception {
-        storeOrChangeFile(FROM_COMPLETE_ROOT_PATH, "included_on_1st_running/1", "1", "2", "3");
+        int size = 100;
+        for (int i = 0; i < size; i++) {
+            storeOrChangeFile(FROM_COMPLETE_ROOT_PATH, "included_on_1st_running/" + i, Integer.toString(i), "2", "3");
+        }
         reloadArtifactsAndCallBundleProcessor();
         reloadArtifactsAndCallBundleProcessor();
-        storeOrChangeFile(FROM_COMPLETE_ROOT_PATH, "included_on_1st_running/1", "1", "2", "4");
+        for (int i = 0; i < size; i++) {
+            storeOrChangeFile(FROM_COMPLETE_ROOT_PATH, "included_on_1st_running/" + i, Integer.toString(i), "2", "4");
+        }
+
         reloadArtifactsAndCallBundleProcessor();
-        deleteFile(FROM_COMPLETE_ROOT_PATH, "included_on_1st_running/1");
+        for (int i = 0; i < size; i++) {
+            deleteFile(FROM_COMPLETE_ROOT_PATH, "included_on_1st_running/" + i);
+        }
+
         reloadArtifactsAndCallBundleProcessor();
         reloadArtifactsAndCallBundleProcessor();
         for (Map.Entry<Integer, GroupedChanges> entry : FileChangingProcessor.currentChanges.entrySet()) {
@@ -331,10 +337,13 @@ public class FileChangingUnderBundleProcessorTest {
         assertThat("got the 2 processing ", FileChangingProcessor.currentChanges.containsKey(2), is(true));
         assertThat("got the 3 processing ", FileChangingProcessor.currentChanges.containsKey(3), is(true));
         assertThat("got the 4 processing ", FileChangingProcessor.currentChanges.containsKey(4), is(true));
-        assertThat("change type is included", isSameContent(ChangeType.INCLUDED, FileChangingProcessor.currentChanges.get(0), TO_FEDERATED, "included_on_1st_running/1", "1", "2", "3"), is(true));
-        assertThat("change type is not changed", isSameContent(ChangeType.NOT_CHANGED, FileChangingProcessor.currentChanges.get(1), TO_FEDERATED, "included_on_1st_running/1", "1", "2", "3"), is(true));
-        assertThat("change type is changed", isSameContent(ChangeType.CHANGED, FileChangingProcessor.currentChanges.get(2), TO_FEDERATED, "included_on_1st_running/1", "1", "2", "4"), is(true));
-        assertThat("change type is excluded", isSameContent(ChangeType.EXCLUDED, FileChangingProcessor.currentChanges.get(3), TO_FEDERATED, "included_on_1st_running/1", "1", "2", "4"), is(true));
+        for (int i = 0; i < size; i++) {
+            assertThat("change type is included", isSameContent(ChangeType.INCLUDED, FileChangingProcessor.currentChanges.get(0), TO_FEDERATED, "included_on_1st_running/" + i, Integer.toString(i), "2", "3"), is(true));
+            assertThat("change type is not changed", isSameContent(ChangeType.NOT_CHANGED, FileChangingProcessor.currentChanges.get(1), TO_FEDERATED, "included_on_1st_running/" + i, Integer.toString(i), "2", "3"), is(true));
+            assertThat("change type is changed", isSameContent(ChangeType.CHANGED, FileChangingProcessor.currentChanges.get(2), TO_FEDERATED, "included_on_1st_running/" + i, Integer.toString(i), "2", "4"), is(true));
+            assertThat("change type is excluded", isSameContent(ChangeType.EXCLUDED, FileChangingProcessor.currentChanges.get(3), TO_FEDERATED, "included_on_1st_running/" + i, Integer.toString(i), "2", "4"), is(true));
+
+        }
         assertThat("there's no one included on last processing", FileChangingProcessor.currentChanges.get(4).getIncluded().size(), is(0));
         assertThat("there's no one excluded on last processing", FileChangingProcessor.currentChanges.get(4).getExcluded().size(), is(0));
         assertThat("there's no one not changed on last processing", FileChangingProcessor.currentChanges.get(4).getNotChanged().size(), is(0));
@@ -343,23 +352,35 @@ public class FileChangingUnderBundleProcessorTest {
 
     }
 
+    private static final Map<String,File> oppenedFiles = new HashMap<String,File>();
+
     private static void storeOrChangeFile(String rootPath, String relativeFileName, String... contentInLines) throws Exception {
 
         String fileName = concatPaths(rootPath, relativeFileName);
+        File file = oppenedFiles.get(fileName);
+        if(file==null){
         String dirName = fileName.substring(0, fileName.lastIndexOf('/'));
         new File(dirName).mkdirs();
-
-        FileOutputStream fos = new FileOutputStream(fileName);
-        for (String s : contentInLines) {
-            fos.write(s.getBytes());
-            if (!s.endsWith("\n")) fos.write('\n');
+        file = new File(fileName);
+        oppenedFiles.put(fileName,file);
         }
-        fos.flush();
-        fos.close();
+
+            FileWriter writer = new FileWriter(file);
+        BufferedWriter bufferedWriter = new BufferedWriter(writer);
+        for (String s : contentInLines) {
+            bufferedWriter.write(s);
+            if (!s.endsWith("\n")) bufferedWriter.write('\n');
+        }
+        bufferedWriter.flush();
+        bufferedWriter.close();
+
+
     }
 
     private static void deleteFile(String rootPath, String fileName) {
-        if (!new File(concatPaths(rootPath, fileName)).delete())
+        File file = oppenedFiles.get(concatPaths(rootPath, fileName));
+
+        if (!file.delete())
             throw new IllegalStateException("can't delete file " + concatPaths(rootPath, fileName));
     }
 
@@ -380,7 +401,8 @@ public class FileChangingUnderBundleProcessorTest {
                 foundSet = changes.getChanged();
                 break;
         }
-        if (foundSet.size() == 0) throw new RuntimeException("Any item found for " + changeType + " " + changes);
+        if (foundSet.size() == 0)
+            throw new RuntimeException("Any item found for " + changeType + "=" + relativeFileName + " on " + changes);
         for (Change a : foundSet) {
             if (a.artifactNameWithPath.equals(fileName)) {
                 for (int i = 0, size = contentInLines.length; i < size; i++) {
