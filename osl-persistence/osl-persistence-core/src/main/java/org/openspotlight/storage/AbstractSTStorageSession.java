@@ -59,10 +59,7 @@ import org.openspotlight.storage.domain.node.STProperty;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
@@ -179,7 +176,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             for (String nodePath : nodePaths) {
                 parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry<?>>emptySet(), nodePath),
                         parentKey, partition, repositoryPath);
-                parent = new STNodeEntryImpl(parentKey,false);
+                parent = new STNodeEntryImpl(parentKey, false);
                 handleNewItem(parent);
             }
 
@@ -206,7 +203,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     protected final STNodeEntry createFoundEntryWithKey(STUniqueKey uniqueKey) {
-        return new STNodeEntryImpl(uniqueKey,true);
+        return new STNodeEntryImpl(uniqueKey, true);
     }
 
     public final class STStorageSessionSupportMethodsImpl implements STStorageSessionSupportMethods {
@@ -234,7 +231,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             String fromCache = getFromCache(uniqueKey);
             if (fromCache != null) return fromCache;
 
-            return fillCache(uniqueKey, getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey)));
+            String result = fillCache(uniqueKey, getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey)));
+            return result;
         }
 
 
@@ -1057,7 +1055,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
             STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parentKey, partition, repositoryPath);
-            STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey,false);
+            STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey, false);
             AbstractSTStorageSession.this.handleNewItem(result);
             return result;
         }
@@ -1066,9 +1064,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
     public void flushTransient() {
+        Set<STPartition> partitions = newHashSet();
 
         for (STNodeEntry newNode : newNodes) {
             try {
+                partitions.add(newNode.getUniqueKey().getPartition());
                 flushNewItem(newNode.getUniqueKey().getPartition(), newNode);
             } catch (Exception e) {
                 handleException(e);
@@ -1076,7 +1076,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
         for (STNodeEntry removedNode : removedNodes) {
             try {
-                flushRemovedItem(removedNode.getUniqueKey().getPartition(), removedNode);
+                partitions.add(removedNode.getUniqueKey().getPartition());
+                                flushRemovedItem(removedNode.getUniqueKey().getPartition(), removedNode);
             } catch (Exception e) {
                 handleException(e);
             }
@@ -1089,11 +1090,17 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                 handleException(e);
             }
         }
+        try {
 
-
+            internalSave(partitions);
+        } catch (Exception e) {
+            handleException(e);
+        }
         discardTransient();
 
     }
+
+    protected abstract void internalSave(Set<STPartition> partitions) throws Exception;
 
     private void flushDirtyProperty(STProperty dirtyProperty) {
         try {

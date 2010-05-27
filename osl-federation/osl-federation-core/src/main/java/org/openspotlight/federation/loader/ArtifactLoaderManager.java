@@ -71,9 +71,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
 
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
+import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 /**
  * Class responsible to load artifacts. It has a public method read its javadoc.
@@ -154,7 +157,7 @@ public enum ArtifactLoaderManager {
         public Void call() throws Exception {
             try {
                 PersistentArtifactManager manager = provider.get();
-                Artifact loaded = manager.getInternalMethods().findByOriginalName(source, resources.type, name);
+                Artifact loaded = manager.getInternalMethods().findByOriginalName(source, resources.type, removeBegginingFrom(source.getInitialLookup(), name));
                 loaded.setChangeType(ChangeType.EXCLUDED);
                 manager.addTransient(loaded);
                 manager.saveTransientData();
@@ -190,34 +193,34 @@ public enum ArtifactLoaderManager {
         public Void call() throws Exception {
             try {
                 PersistentArtifactManager persistentArtifactManager = provider.get();
-                Artifact original = persistentArtifactManager.getInternalMethods().findByOriginalName(source, r.type, r.name);
-                Artifact newOne = null;
+                final Artifact persisted = persistentArtifactManager.getInternalMethods().findByOriginalName(source, r.type, r.name);
+                final Artifact newOne = r.loader.findByPath(r.type, source, r.name);
+                if (newOne == null)
+                    throw logAndReturn(new IllegalStateException("This exclusion should be handled in another task"));
                 ChangeType change = null;
-                if (original == null) {
+                if (persisted == null) {
                     change = ChangeType.INCLUDED;
-                    newOne = r.loader.findByPath(r.type, source, r.name);
-                    if (newOne == null) return null;
 
                 } else {
-                    if (!r.loader.getInternalMethods().isMaybeChanged(source, r.name, original)) {
+                    if (!r.loader.getInternalMethods().isMaybeChanged(source, r.name, persisted)) {
                         change = ChangeType.NOT_CHANGED;
                     } else {
-                        newOne = r.loader.findByPath(r.type, source, r.name);
-                        if (newOne == null) return null;
-                        if (newOne.contentEquals(original)) {
+                        if (newOne.contentEquals(persisted)) {
                             change = ChangeType.NOT_CHANGED;
                         } else {
                             change = ChangeType.CHANGED;
                         }
                     }
                 }
-                if (ChangeType.INCLUDED.equals(change) || ChangeType.CHANGED.equals(change)) {
-                    newOne.setChangeType(change);
-                    newOne.updateOriginalName(source, r.name);
-                    mapNewName(r, newOne);
-                    persistentArtifactManager.addTransient(newOne);
-                    persistentArtifactManager.saveTransientData();
-                }
+                if (change.equals(ChangeType.NOT_CHANGED) && persisted.getChangeType().equals(ChangeType.NOT_CHANGED))
+                    return null;
+                newOne.setMappedFrom(r.acceptedMapping.getFrom());
+                newOne.setMappedTo(r.acceptedMapping.getTo());
+                newOne.setChangeType(change);
+                newOne.updateOriginalName(source, r.name);
+                mapNewName(r, newOne);
+                persistentArtifactManager.addTransient(newOne);
+                persistentArtifactManager.saveTransientData();
                 return null;
             } catch (Exception e) {
                 Exceptions.catchAndLog(e);
@@ -282,8 +285,8 @@ public enum ArtifactLoaderManager {
                                                                                              ArtifactSource source,
                                                                                              PersistentArtifactManagerProvider provider)
             throws Exception {
-        Set<ArtifactTypeResources> resources = new HashSet<ArtifactTypeResources>();
-        Set<ArtifactTypeCleanupResources> loadedTypes = new HashSet<ArtifactTypeCleanupResources>();
+        Set<ArtifactTypeResources> resourcesToLoad = new CopyOnWriteArraySet<ArtifactTypeResources>();
+        Set<ArtifactTypeCleanupResources> resourcesToClean = new CopyOnWriteArraySet<ArtifactTypeCleanupResources>();
 
         for (Class<? extends OriginArtifactLoader> loaderClass : settings.getLoaderRegistry()) {
             OriginArtifactLoader loader = loaderClass.newInstance();
@@ -291,26 +294,27 @@ public enum ArtifactLoaderManager {
             for (Class<? extends Artifact> type : types) {
                 if (loader.getInternalMethods().accept(source, type)) {
                     for (ArtifactSourceMapping mapping : source.getMappings()) {
-
-                        Set<String> rawNames = new HashSet<String>(loader.getInternalMethods().retrieveOriginalNames(type, source,
+                        Set<String> namesFromOrigin = new HashSet<String>(loader.getInternalMethods().retrieveOriginalNames(type, source,
                                 mapping.getFrom()));
                         if (logger.isDebugEnabled())
                             logger.debug("for type " + type.getSimpleName() + " on artifact source "
                                     + source.getName() + " was loaded "
-                                    + Strings.bigCollectionsToString(rawNames));
+                                    + Strings.bigCollectionsToString(namesFromOrigin));
 
-                        Set<String> names = new HashSet<String>();
-                        ArtifactTypeCleanupResources cleanupResources = new ArtifactTypeCleanupResources(type, names);
-                        loadedTypes.add(cleanupResources);
+                        Set<String> namesToExclude = new HashSet<String>();
 
-                        FilterResult result = filterNamesByPattern(Strings.rootPath(mapping.getFrom()), rawNames,
+                        FilterResult result = filterNamesByPattern(Strings.rootPath(mapping.getFrom()), namesFromOrigin,
                                 mapping.getIncludeds(), mapping.getExcludeds(), false);
-                        names.addAll(result.getIncludedNames());
-                        rawNames.removeAll(result.getIncludedNames());
+                        namesToExclude.addAll(provider.get().getInternalMethods().retrieveOriginalNames(source, type, mapping.getFrom()));
+
+                        namesFromOrigin.removeAll(result.getIncludedNames());
+                        namesToExclude.removeAll(namesFromOrigin);
+                        ArtifactTypeCleanupResources cleanupResources = new ArtifactTypeCleanupResources(type, namesToExclude);
+                        resourcesToClean.add(cleanupResources);
                         for (String s : result.getIncludedNames()) {
                             ArtifactTypeResources resourcesByType = new ArtifactTypeResources(s, loader, type, mapping,
                                     cleanupResources);
-                            resources.add(resourcesByType);
+                            resourcesToLoad.add(resourcesByType);
                         }
                         if (logger.isDebugEnabled()) {
                             logger.debug("for type " + type.getSimpleName() + " on artifact source " + source.getName()
@@ -329,7 +333,7 @@ public enum ArtifactLoaderManager {
             }
         }
 
-        return Pair.create(resources, loadedTypes);
+        return Pair.create(resourcesToLoad, resourcesToClean);
     }
 
     /**

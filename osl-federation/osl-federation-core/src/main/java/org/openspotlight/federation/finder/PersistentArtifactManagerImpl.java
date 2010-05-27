@@ -61,24 +61,23 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.openspotlight.common.util.Strings.concatPaths;
 
 public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactManager {
 
     private final String repositoryName;
     private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
-    private final STNodeEntry rootPath;
 
     public PersistentArtifactManagerImpl(
             Repository repository, SimplePersistFactory factory) {
         this.simplePersist = factory.createSimplePersist(SLPartition.FEDERATION);
         this.repositoryName = repository.getName();
-        this.rootPath = simplePersist.getPartitionMethods().createNewSimpleNode("artifacts");
     }
 
     @Override
     protected <A extends Artifact> void internalAddTransient(A artifact) throws Exception {
         artifact.setRepositoryName(repositoryName);
-        simplePersist.convertBeanToNode(this.rootPath, artifact);
+        simplePersist.convertBeanToNode(artifact);
     }
 
     @Override
@@ -95,7 +94,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
 
     private String createOriginName(ArtifactSource source,
                                     String originName) {
-        return source.getName() + ":" + (originName != null ? originName : "");
+        return concatPaths(source.getInitialLookup(),originName);
     }
 
     @Override
@@ -107,7 +106,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
     private <A> A internalFind(Class<A> type,
                                String path,
                                String propertyName) throws Exception {
-        return simplePersist.findUniqueByProperties(this.rootPath, type, new String[]{propertyName}, new Object[]{path});
+        return simplePersist.findUniqueByProperties(type, new String[]{propertyName}, new Object[]{path});
 
     }
 
@@ -118,7 +117,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
 
     @Override
     protected <A extends Artifact> void internalMarkAsRemoved(A artifact) throws Exception {
-        final STNodeEntry node = simplePersist.convertBeanToNode(this.rootPath, artifact);
+        final STNodeEntry node = simplePersist.convertBeanToNode(artifact);
         simplePersist.getCurrentSession().removeNode(node);
     }
 
@@ -126,7 +125,9 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
     protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(ArtifactSource source,
                                                                              Class<A> type,
                                                                              String initialPath) throws Exception {
-        return privateRetrieveNames(type, createOriginName(source, initialPath), PROPERTY_NAME_OLD_ARTIFACT_PATH);
+        Set<String> result = privateRetrieveNames(type, initialPath, PROPERTY_NAME_OLD_ARTIFACT_PATH);
+        return result;
+
     }
 
     @Override

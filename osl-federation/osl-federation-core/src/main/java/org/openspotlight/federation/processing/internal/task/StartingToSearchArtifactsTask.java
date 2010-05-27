@@ -57,6 +57,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.taskexec.TaskExec;
@@ -106,10 +107,11 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
 
     @SuppressWarnings( "unchecked" )
     public void doIt() throws Exception {
+
         final BundleProcessorGlobalPhase<? extends Artifact> bundleProcessor = bundleProcessorType.getGlobalPhase().newInstance();
 
-        final Map<Class<? extends Artifact>, ArtifactChanges<Artifact>> changesByType = new HashMap<Class<? extends Artifact>, ArtifactChanges<Artifact>>();
-        final Map<Class<? extends Artifact>, ArtifactsToBeProcessed<Artifact>> returnByType = new HashMap<Class<? extends Artifact>, ArtifactsToBeProcessed<Artifact>>();
+        final Map<Class<? extends Artifact>, ArtifactChanges<Artifact>> changesByType = new ConcurrentHashMap<Class<? extends Artifact>, ArtifactChanges<Artifact>>();
+        final Map<Class<? extends Artifact>, ArtifactsToBeProcessed<Artifact>> returnByType = new ConcurrentHashMap<Class<? extends Artifact>, ArtifactsToBeProcessed<Artifact>>();
 
         for (final Class<? extends Artifact> artifactType : bundleProcessor.getArtifactTypes()) {
 
@@ -126,19 +128,19 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
                 for (final String name : newNames.getIncludedNames()) {
                     final Artifact savedArtifact = manager.findByPath(artifactType, name);
                     if (savedArtifact != null) {
-                        switch (savedArtifact.getChangeType()) {
+                        changingSwitch: switch (savedArtifact.getChangeType()) {
                             case CHANGED:
                                 changes.getChangedArtifacts().add(savedArtifact);
-                                break;
+                                break changingSwitch;
                             case EXCLUDED:
                                 changes.getExcludedArtifacts().add(savedArtifact);
-                                break;
+                                break changingSwitch;
                             case INCLUDED:
                                 changes.getIncludedArtifacts().add(savedArtifact);
-                                break;
+                                break changingSwitch;
                             case NOT_CHANGED:
                                 changes.getNotChangedArtifacts().add(savedArtifact);
-                                break;
+                                break changingSwitch;
                         }
                     } else {
                         logger.info("null artifact " + name + " on finder of type " + artifactType.getName());
@@ -239,6 +241,7 @@ public class StartingToSearchArtifactsTask extends RunnableWithBundleContext {
                                                                                                                                                                          phaseThree).andPublishTask();
 
         }
+                
 
     }
 

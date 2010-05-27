@@ -73,7 +73,7 @@ public class ArtifactFinderSupportTest {
         existent2.getContent().setTransient(asList("def"));
         existents.add(existent1);
         existents.add(existent2);
-        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents);
+        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents,null);
         assertThat(existents.size(), is(1));
         assertThat(existents.iterator().next().getContent().get(null), is(not(asList("abc"))));
     }
@@ -260,7 +260,7 @@ public class ArtifactFinderSupportTest {
         existent2.getContent().setTransient(asList("abc"));
         existents.add(existent1);
         existents.add(existent2);
-        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents);
+        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(existents,null);
         assertThat(existents.size(), is(1));
         assertThat(existents.iterator().next().getContent().get(null), is(asList("def")));
         assertThat(existents.iterator().next().getChangeType(), is(ChangeType.NOT_CHANGED));

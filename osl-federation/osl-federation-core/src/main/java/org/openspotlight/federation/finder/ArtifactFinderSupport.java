@@ -48,13 +48,13 @@
  */
 package org.openspotlight.federation.finder;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.jcr.Session;
-
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import javax.jcr.Session;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The Class ArtifactFinderSupport.
@@ -63,14 +63,14 @@ public class ArtifactFinderSupport {
 
     /**
      * Apply difference on existents.
-     * 
+     *
      * @param existents the existents
-     * @param newOnes the new ones
+     * @param newOnes   the new ones
      * @return the set< t>
      */
-    public static <T extends Artifact> Set<T> applyDifferenceOnExistents( final Set<T> existents,
-                                                                          final Set<T> newOnes,
-                                                                          final Session session ) {
+    public static <T extends Artifact> Set<T> applyDifferenceOnExistents(final Set<T> existents,
+                                                                         final Set<T> newOnes,
+                                                                         final Session session) {
         final Set<T> result = new HashSet<T>();
         final Set<T> delta = new HashSet<T>(newOnes);
         for (final T existent : existents) {
@@ -94,7 +94,7 @@ public class ArtifactFinderSupport {
                             newOne.setChangeType(defaultChangeType);
                     }
                     final boolean bothIncludedAndExcluded = ChangeType.INCLUDED.equals(existent.getChangeType())
-                                                            && ChangeType.EXCLUDED.equals(newOne.getChangeType());
+                            && ChangeType.EXCLUDED.equals(newOne.getChangeType());
                     if (!bothIncludedAndExcluded) {
                         result.add(newOne);
                     }
@@ -115,13 +115,13 @@ public class ArtifactFinderSupport {
 
     /**
      * Find the equivalent.
-     * 
-     * @param artifact the artifact
+     *
+     * @param artifact          the artifact
      * @param setWithEquivalent the set with equivalent
      * @return the t
      */
-    public static <T extends Artifact> T findTheEquivalent( final T artifact,
-                                                            final Set<T> setWithEquivalent ) {
+    public static <T extends Artifact> T findTheEquivalent(final T artifact,
+                                                           final Set<T> setWithEquivalent) {
         for (final T equivalent : setWithEquivalent) {
             if (equivalent.getArtifactCompleteName().equals(artifact.getArtifactCompleteName())) {
                 return equivalent;
@@ -133,10 +133,10 @@ public class ArtifactFinderSupport {
     /**
      * Freeze changes after bundle processing. This will remove all artifacts marked as excluded and change all other status to
      * not changed.
-     * 
+     *
      * @param existents the existents
      */
-    public static <T extends Artifact> void freezeChangesAfterBundleProcessing( final Set<T> existents ) {
+    public static <T extends Artifact> void freezeChangesAfterBundleProcessing(final Set<T> existents, PersistentArtifactManager manager) {
         final Set<T> toBeRemoved = new HashSet<T>();
         for (final T t : existents) {
             if (ChangeType.EXCLUDED.equals(t.getChangeType())) {
@@ -146,5 +146,13 @@ public class ArtifactFinderSupport {
             }
         }
         existents.removeAll(toBeRemoved);
+        if (manager != null) {
+            Iterable<STNodeEntry> nodesToExclude = manager.getSimplePersist().convertBeansToNodes(toBeRemoved);
+            for (STNodeEntry nodeToExclude : nodesToExclude) {
+                manager.getSimplePersist().getCurrentSession().removeNode(nodeToExclude);
+            }
+            manager.getSimplePersist().getCurrentSession().flushTransient();
+        }
+
     }
 }

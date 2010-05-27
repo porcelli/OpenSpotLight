@@ -106,7 +106,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @return the excludeds
      */
-    public Set<String> getExcludeds() {
+    public synchronized Set<String> getExcludeds() {
         return excludeds;
     }
 
@@ -116,7 +116,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * @return the relative
      */
     @KeyProperty
-    public String getFrom() {
+    public synchronized String getFrom() {
         return from;
     }
 
@@ -125,7 +125,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @return the includeds
      */
-    public Set<String> getIncludeds() {
+    public synchronized Set<String> getIncludeds() {
         return includeds;
     }
 
@@ -135,7 +135,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * @return the source
      */
     @ParentProperty
-    public ArtifactSource getSource() {
+    public synchronized ArtifactSource getSource() {
         return source;
     }
 
@@ -144,7 +144,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @return the to
      */
-    public String getTo() {
+    public synchronized String getTo() {
         return to;
     }
 
@@ -153,7 +153,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @see java.lang.Object#hashCode()
      */
-    public int hashCode() {
+    public synchronized int hashCode() {
         int result = hashCode;
         if (result == 0) {
             result = HashCodes.hashOf(to, source, from);
@@ -167,7 +167,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param excludeds the new excludeds
      */
-    public void setExcludeds( final Set<String> excludeds ) {
+    public synchronized void setExcludeds( final Set<String> excludeds ) {
         this.excludeds = excludeds;
     }
 
@@ -176,7 +176,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param from the new relative
      */
-    public void setFrom( final String from ) {
+    public synchronized void setFrom( final String from ) {
         this.from = from;
     }
 
@@ -185,7 +185,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param includeds the new includeds
      */
-    public void setIncludeds( final Set<String> includeds ) {
+    public synchronized void setIncludeds( final Set<String> includeds ) {
         this.includeds = includeds;
     }
 
@@ -194,7 +194,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param source the new source
      */
-    public void setSource( final ArtifactSource source ) {
+    public synchronized void setSource( final ArtifactSource source ) {
         this.source = source;
     }
 
@@ -203,7 +203,7 @@ public class ArtifactSourceMapping implements SimpleNodeType, Serializable {
      * 
      * @param to the new to
      */
-    public void setTo( final String to ) {
+    public synchronized void setTo( final String to ) {
         this.to = to;
     }
 

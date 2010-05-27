@@ -48,11 +48,6 @@
  */
 package org.openspotlight.federation.processing.internal;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.taskexec.TaskExecGroup;
 import org.openspotlight.common.taskexec.TaskExecManager;
@@ -60,11 +55,7 @@ import org.openspotlight.common.taskexec.TaskExecPool;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.GroupListener;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.GroupListener.ListenerAction;
 import org.openspotlight.federation.domain.Repository.GroupVisitor;
 import org.openspotlight.federation.processing.BundleExecutionException;
@@ -83,39 +74,54 @@ import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.jcr.util.JCRUtil;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class BundleProcessorExecution {
 
-    private final GlobalExecutionStatus   status           = GlobalExecutionStatus.SUCCESS;
-    /** The executor. */
-    private final TaskExecPool            pool;
-    private final String                  username;
-    private final String                  password;
+    private final GlobalExecutionStatus status = GlobalExecutionStatus.SUCCESS;
+    /**
+     * The executor.
+     */
+    private final TaskExecPool pool;
+    private final String username;
+    private final String password;
     private final JcrConnectionDescriptor descriptor;
 
-    /** The repositories. */
-    private final Group[]                 groups;
+    /**
+     * The repositories.
+     */
+    private final Group[] groups;
 
-    /** The context factory. */
+    /**
+     * The context factory.
+     */
     private final ExecutionContextFactory contextFactory;
 
-    /** The default sleep interval in millis. */
-    private final long                    defaultSleepIntervalInMillis;
+    /**
+     * The default sleep interval in millis.
+     */
+    private final long defaultSleepIntervalInMillis;
 
-    /** The queue. */
+    /**
+     * The queue.
+     */
 
-    private final Set<String>             activeReposities = new HashSet<String>();
+    private final Set<String> activeReposities = new HashSet<String>();
 
     /**
      * Instantiates a new bundle processor execution.
-     * 
+     *
      * @param contextFactory the context factory
-     * @param settings the settings
-     * @param groups the repositories
+     * @param settings       the settings
+     * @param groups         the repositories
      */
     public BundleProcessorExecution(
-                                     final String username, final String password, final JcrConnectionDescriptor descriptor,
-                                     final ExecutionContextFactory contextFactory, final GlobalSettings settings,
-                                     final Group[] groups ) {
+            final String username, final String password, final JcrConnectionDescriptor descriptor,
+            final ExecutionContextFactory contextFactory, final GlobalSettings settings,
+            final Group[] groups) {
         this.username = username;
         this.password = password;
         this.descriptor = descriptor;
@@ -133,14 +139,14 @@ public class BundleProcessorExecution {
         }
         pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor", Runtime.getRuntime().availableProcessors() * 2);
         final BundleContextThreadInjector listener = new BundleContextThreadInjector(contextFactory, repositories, username,
-                                                                                     password, descriptor);
+                password, descriptor);
         pool.addListener(listener);
 
     }
 
     /**
      * Execute.
-     * 
+     *
      * @throws BundleExecutionException the bundle execution exception
      * @throws InterruptedException
      */
@@ -155,7 +161,7 @@ public class BundleProcessorExecution {
         return status;
     }
 
-    private void fillTaskQueue( final List<Group> groupsWithBundles ) {
+    private void fillTaskQueue(final List<Group> groupsWithBundles) {
         int priority = 1;
         for (final Group group : groupsWithBundles) {
             for (final BundleProcessorType bundleProcessorType : group.getBundleTypes()) {
@@ -166,20 +172,20 @@ public class BundleProcessorExecution {
                 currentContext.setCurrentRepository(repository);
 
                 final String idPrefix = bundleProcessorType.getGlobalPhase().getSimpleName() + ":" + repository.getName() + ":"
-                                        + currentContext.getCurrentGroup().toUniqueJobString() + ":"
-                                        + bundleProcessorType.getName() + ":" + bundleProcessorType.getGlobalPhase().getName();
+                        + currentContext.getCurrentGroup().toUniqueJobString() + ":"
+                        + bundleProcessorType.getName() + ":" + bundleProcessorType.getGlobalPhase().getName();
                 final String seachId = idPrefix + ":searchArtifacts";
                 final TaskExecGroup searchArtifacts = pool.createTaskGroup(seachId, priority);
 
                 final StartingToSearchArtifactsTask searchTask = new StartingToSearchArtifactsTask(currentContext,
-                                                                                                   bundleProcessorType,
-                                                                                                   repository, searchArtifacts);
+                        bundleProcessorType,
+                        repository, searchArtifacts);
                 searchArtifacts.prepareTask().withReadableDescriptionAndUniqueId(seachId).withRunnable(searchTask).andPublishTask();
                 final String saveId = idPrefix + ":saveGraph";
                 final TaskExecGroup saveGraph = pool.createTaskGroup(saveId, ++priority);
                 saveGraph.prepareTask().withReadableDescriptionAndUniqueId(saveId).withRunnable(
-                                                                                                new SaveGraphTask(
-                                                                                                                  repository.getName())).andPublishTask();
+                        new SaveGraphTask(
+                                repository.getName())).andPublishTask();
                 ++priority;
 
             }
@@ -190,7 +196,7 @@ public class BundleProcessorExecution {
     private List<Group> findGroupsWithBundles() {
         final List<Group> groupsWithBundles = new ArrayList<Group>();
         final GroupVisitor visitor = new GroupVisitor() {
-            public void visitGroup( final Group group ) {
+            public void visitGroup(final Group group) {
                 if (group.isActive()) {
                     if (group.getBundleTypes() != null && group.getBundleTypes().size() > 0) {
                         for (final BundleProcessorType type : group.getBundleTypes()) {
@@ -225,7 +231,7 @@ public class BundleProcessorExecution {
 
             for (final Repository repository : repositories) {
                 JCRUtil.getOrCreateByPath(session, session.getRootNode(), SharedConstants.DEFAULT_JCR_ROOT_NAME + "/"
-                                                                          + repository.getName());
+                        + repository.getName());
             }
             session.save();// here the new repository nodes needs to be seen by
             // another opened sessions
@@ -238,10 +244,10 @@ public class BundleProcessorExecution {
             for (final Repository repository : repositories) {
 
                 final ExecutionContext internalContext = contextFactory.createExecutionContext(username, password, descriptor,
-                                                                                               repository);
+                        repository);
                 final GroupDifferences differences = GroupSupport.getDifferences(
-                                                                                 internalContext.getPersistentArtifactManager().getSimplePersist(),
-                                                                                 repository.getName());
+                        internalContext.getPersistentArtifactManager().getSimplePersist(),
+                        repository.getName());
 
                 final SLContext groupContext = internalContext.getGraphSession().createContext(SLConsts.DEFAULT_GROUP_CONTEXT);
                 for (final Group group : allGroups) {
@@ -254,7 +260,8 @@ public class BundleProcessorExecution {
                     }
                 }
                 for (final GroupListener instance : groupListenerInstances) {
-                    adding: for (final String added : differences.getAddedGroups()) {
+                    adding:
+                    for (final String added : differences.getAddedGroups()) {
                         final SLNode groupAsSLNode = groupContext.getRootNode().getNode(added);
                         try {
                             final ListenerAction response = instance.groupAdded(groupAsSLNode, internalContext);
@@ -265,7 +272,8 @@ public class BundleProcessorExecution {
                             Exceptions.catchAndLog(e);
                         }
                     }
-                    removing: for (final String removed : differences.getRemovedGroups()) {
+                    removing:
+                    for (final String removed : differences.getRemovedGroups()) {
                         final SLNode groupAsSLNode = groupContext.getRootNode().getNode(removed);
                         try {
                             final ListenerAction response = instance.groupRemoved(groupAsSLNode, internalContext);

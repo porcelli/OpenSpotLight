@@ -50,10 +50,17 @@ package org.openspotlight.federation.processing.internal.task;
 
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.finder.ArtifactFinderSupport;
 import org.openspotlight.federation.processing.ArtifactChanges;
 import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
+
+import java.util.List;
+import java.util.Set;
+
+import static com.google.common.collect.Lists.newLinkedList;
+import static com.google.common.collect.Sets.newHashSet;
 
 public class EndingToProcessArtifactsTask extends RunnableWithBundleContext {
     private final ArtifactChanges<Artifact>                      changes;
@@ -76,5 +83,12 @@ public class EndingToProcessArtifactsTask extends RunnableWithBundleContext {
 
     public void doIt() throws Exception {
         processor.didFinishProcessing(changes, context, currentContext);
+        Set<Artifact> all = newHashSet();
+        all.addAll(changes.getIncludedArtifacts());
+        all.addAll(changes.getChangedArtifacts());
+        all.addAll(changes.getExcludedArtifacts());
+        all.addAll(changes.getNotChangedArtifacts());
+
+        ArtifactFinderSupport.freezeChangesAfterBundleProcessing(all,context.getPersistentArtifactManager());
     }
 }

@@ -201,6 +201,13 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
 
     @Override
+    protected void internalSave(Set<STPartition> partitions) throws Exception {
+        for(STPartition p: partitions){
+            this.factory.getFrom(p).save();
+        }
+    }
+
+    @Override
     protected Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception {
         List<String> propertiesIntersection = newLinkedList();
         List<String> uniqueIdsFromLocalOnes = newLinkedList();

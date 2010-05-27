@@ -99,6 +99,7 @@ public class FileSystemOriginArtifactLoader extends AbstractOriginArtifactLoader
                 }
                 final StringArtifact artifact = Artifact.createArtifact(StringArtifact.class, "/" + path, ChangeType.INCLUDED);
                 artifact.getContent().setTransient(lines);
+                artifact.setLastChange(file.lastModified());
                 return (A) artifact;
             } else {// StreamArtifact
                 final InputStream resource = new BufferedInputStream(new FileInputStream(file));
@@ -106,6 +107,7 @@ public class FileSystemOriginArtifactLoader extends AbstractOriginArtifactLoader
                 IOUtils.copy(resource, baos);
                 final StreamArtifact artifact = Artifact.createArtifact(StreamArtifact.class, "/" + path, ChangeType.INCLUDED);
                 artifact.getContent().setTransient(new ByteArrayInputStream(baos.toByteArray()));
+                artifact.setLastChange(file.lastModified());
                 return (A) artifact;
             }
         } catch (final Exception e) {

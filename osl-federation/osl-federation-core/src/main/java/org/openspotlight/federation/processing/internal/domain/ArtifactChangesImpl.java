@@ -48,29 +48,37 @@
  */
 package org.openspotlight.federation.processing.internal.domain;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableSet;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.processing.ArtifactChanges;
+
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * The Class ArtifactChangesImpl.
  */
 public class ArtifactChangesImpl<T extends Artifact> implements ArtifactChanges<T> {
 
-    /** The changed artifacts. */
-    private Set<T> changedArtifacts    = new LinkedHashSet<T>();
+    /**
+     * The changed artifacts.
+     */
+    private final Set<T> changedArtifacts = new CopyOnWriteArraySet<T>();
 
-    /** The excluded artifacts. */
-    private Set<T> excludedArtifacts   = new LinkedHashSet<T>();
+    /**
+     * The excluded artifacts.
+     */
+    private final Set<T> excludedArtifacts= new CopyOnWriteArraySet<T>();
 
-    /** The included artifacts. */
-    private Set<T> includedArtifacts   = new LinkedHashSet<T>();
+    /**
+     * The included artifacts.
+     */
+    private final Set<T> includedArtifacts= new CopyOnWriteArraySet<T>();
 
-    /** The not changed artifacts. */
-    private Set<T> notChangedArtifacts = new LinkedHashSet<T>();
+    /**
+     * The not changed artifacts.
+     */
+    private final Set<T> notChangedArtifacts= new CopyOnWriteArraySet<T>();
 
     /*
      * (non-Javadoc)
@@ -79,6 +87,7 @@ public class ArtifactChangesImpl<T extends Artifact> implements ArtifactChanges<
      * org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges
      * #getChangedArtifacts()
      */
+
     public Set<T> getChangedArtifacts() {
         return this.changedArtifacts;
     }
@@ -90,6 +99,7 @@ public class ArtifactChangesImpl<T extends Artifact> implements ArtifactChanges<
      * org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges
      * #getExcludedArtifacts()
      */
+
     public Set<T> getExcludedArtifacts() {
         return this.excludedArtifacts;
     }
@@ -101,6 +111,7 @@ public class ArtifactChangesImpl<T extends Artifact> implements ArtifactChanges<
      * org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges
      * #getIncludedArtifacts()
      */
+
     public Set<T> getIncludedArtifacts() {
         return this.includedArtifacts;
     }
@@ -112,43 +123,9 @@ public class ArtifactChangesImpl<T extends Artifact> implements ArtifactChanges<
      * org.openspotlight.federation.processing.BundleProcessor.ArtifactChanges
      * #getNotChangedArtifacts()
      */
+
     public Set<T> getNotChangedArtifacts() {
         return this.notChangedArtifacts;
     }
 
-    /**
-     * Sets the changed artifacts.
-     * 
-     * @param changedArtifacts the new changed artifacts
-     */
-    public void setChangedArtifacts( final Set<T> changedArtifacts ) {
-        this.changedArtifacts = Collections.unmodifiableSet(changedArtifacts);
-    }
-
-    /**
-     * Sets the excluded artifacts.
-     * 
-     * @param excludedArtifacts the new excluded artifacts
-     */
-    public void setExcludedArtifacts( final Set<T> excludedArtifacts ) {
-        this.excludedArtifacts = Collections.unmodifiableSet(excludedArtifacts);
-    }
-
-    /**
-     * Sets the included artifacts.
-     * 
-     * @param includedArtifacts the new included artifacts
-     */
-    public void setIncludedArtifacts( final Set<T> includedArtifacts ) {
-        this.includedArtifacts = Collections.unmodifiableSet(includedArtifacts);
-    }
-
-    /**
-     * Sets the not changed artifacts.
-     * 
-     * @param notChangedArtifacts the new not changed artifacts
-     */
-    public void setNotChangedArtifacts( final Set<T> notChangedArtifacts ) {
-        this.notChangedArtifacts = Collections.unmodifiableSet(notChangedArtifacts);
-    }
 }

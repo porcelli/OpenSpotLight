@@ -59,6 +59,8 @@ import org.openspotlight.persist.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 
+import static org.openspotlight.common.util.Strings.concatPaths;
+
 // TODO: Auto-generated Javadoc
 
 /**
@@ -68,20 +70,20 @@ import java.util.Date;
  */
 public abstract class Artifact implements SimpleNodeType, Serializable, LogableObject {
     @IndexedProperty
-    public String getMappedFrom() {
+    public synchronized String getMappedFrom() {
         return mappedFrom;
     }
 
-    public void setMappedFrom(String mappedFrom) {
+    public synchronized void setMappedFrom(String mappedFrom) {
         this.mappedFrom = mappedFrom;
     }
 
     @IndexedProperty
-    public String getMappedTo() {
+    public synchronized String getMappedTo() {
         return mappedTo;
     }
 
-    public void setMappedTo(String mappedTo) {
+    public synchronized void setMappedTo(String mappedTo) {
         this.mappedTo = mappedTo;
     }
 
@@ -92,25 +94,25 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
 
     public void updateOriginalName(ArtifactSource source,
                                    String originalName) {
-        this.originalName = source + ":" + originalName;
+        this.originalName = concatPaths(source.getInitialLookup(),originalName);
     }
 
     @IndexedProperty
-    public String getOriginalName() {
+    public synchronized String getOriginalName() {
         return originalName;
     }
 
-    public void setOriginalName(String originalName) {
+    public synchronized void setOriginalName(String originalName) {
         this.originalName = originalName;
     }
 
     private long lastChange;
 
-    public long getLastChange() {
+    public synchronized long getLastChange() {
         return lastChange;
     }
 
-    public void setLastChange(long lastChange) {
+    public synchronized void setLastChange(long lastChange) {
         this.lastChange = lastChange;
     }
 
@@ -204,7 +206,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      */
 
     @Override
-    public boolean equals(final Object o) {
+    public synchronized boolean equals(final Object o) {
         if (!(o instanceof Artifact)) {
             return false;
         }
@@ -222,7 +224,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      * @return the artifact complete name
      */
     @KeyProperty
-    public String getArtifactCompleteName() {
+    public synchronized String getArtifactCompleteName() {
         return artifactCompleteName;
     }
 
@@ -232,7 +234,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      * @return the artifact name
      */
     @KeyProperty
-    public String getArtifactName() {
+    public synchronized String getArtifactName() {
         return artifactName;
     }
 
@@ -241,15 +243,15 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      *
      * @return the change type
      */
-    public ChangeType getChangeType() {
+    public synchronized ChangeType getChangeType() {
         return changeType;
     }
 
-    public Date getLastProcessedDate() {
+    public synchronized Date getLastProcessedDate() {
         return lastProcessedDate;
     }
 
-    public LastProcessStatus getLastProcessStatus() {
+    public synchronized LastProcessStatus getLastProcessStatus() {
         return lastProcessStatus;
     }
 
@@ -259,25 +261,25 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      * @return the parent
      */
     @PersistPropertyAsStream
-    public PathElement getParent() {
+    public synchronized PathElement getParent() {
         return parent;
     }
 
-    public String getRepositoryName() {
+    public synchronized String getRepositoryName() {
         return repositoryName;
     }
 
     @TransientProperty
-    public AddOnlyConcurrentMap<String, Object> getTransientMap() {
+    public synchronized AddOnlyConcurrentMap<String, Object> getTransientMap() {
         return transientMap;
     }
 
-    public String getUniqueContextName() {
+    public synchronized String getUniqueContextName() {
         return uniqueContextName;
     }
 
     @TransientProperty
-    public String getVersion() {
+    public synchronized String getVersion() {
         return "1";
     }
 
@@ -288,7 +290,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      */
 
     @Override
-    public int hashCode() {
+    public synchronized int hashCode() {
         int result = hashcode;
         if (result == 0) {
             result = 17;
@@ -302,7 +304,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
         return result;
     }
 
-    public void setArtifactCompleteName(final String artifactCompleteName) {
+    public synchronized void setArtifactCompleteName(final String artifactCompleteName) {
         if (artifactCompleteName == null) throw new NullPointerException();
         this.artifactCompleteName = artifactCompleteName;
     }
@@ -312,7 +314,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      *
      * @param artifactName the new artifact name
      */
-    public void setArtifactName(final String artifactName) {
+    public synchronized void setArtifactName(final String artifactName) {
         this.artifactName = artifactName;
     }
 
@@ -321,15 +323,16 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      *
      * @param changeType the new change type
      */
-    public void setChangeType(final ChangeType changeType) {
+    public synchronized void setChangeType(final ChangeType changeType) {
         this.changeType = changeType;
+
     }
 
-    public void setLastProcessedDate(final Date lastProcessedDate) {
+    public synchronized void setLastProcessedDate(final Date lastProcessedDate) {
         this.lastProcessedDate = lastProcessedDate;
     }
 
-    public void setLastProcessStatus(final LastProcessStatus lastProcessStatus) {
+    public synchronized void setLastProcessStatus(final LastProcessStatus lastProcessStatus) {
         this.lastProcessStatus = lastProcessStatus;
     }
 
@@ -338,20 +341,20 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      *
      * @param parent the new parent
      */
-    public void setParent(final PathElement parent) {
+    public synchronized void setParent(final PathElement parent) {
         this.parent = parent;
         setArtifactCompleteName(Strings.concatPaths(parent.getCompletePath(), artifactName));
     }
 
-    public void setRepositoryName(final String repositoryName) {
+    public synchronized void setRepositoryName(final String repositoryName) {
         this.repositoryName = repositoryName;
     }
 
-    public void setTransientMap(final AddOnlyConcurrentMap<String, Object> transientMap) {
+    public synchronized void setTransientMap(final AddOnlyConcurrentMap<String, Object> transientMap) {
         this.transientMap = transientMap;
     }
 
-    public void setUniqueContextName(final String uniqueContextName) {
+    public synchronized void setUniqueContextName(final String uniqueContextName) {
         this.uniqueContextName = uniqueContextName;
     }
 

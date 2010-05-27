@@ -771,7 +771,8 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                                         Object[] propertyValues) {
         Iterable<T> result = findByProperties(parent, beanType, propertyNames, propertyValues);
         Iterator<T> it = result.iterator();
-        return it.hasNext() ? it.next() : null;
+        T resultAsBean = it.hasNext() ? it.next() : null;
+        return resultAsBean;
     }
 
     public <T> Iterable<STNodeEntry> convertBeansToNodes(Iterable<T> beans) {

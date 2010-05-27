@@ -179,7 +179,7 @@ public class Files {
         checkNotEmpty("basePath", basePath); //$NON-NLS-1$
         checkNotNull("file", file); //$NON-NLS-1$
         String normalized = getNormalizedFileName(basePath, file);
-        if (!normalized.isEmpty() && !normalized.endsWith("/")) {
+        if (!normalized.isEmpty() && !normalized.endsWith("/") && file.isFile()) {
             setOfFiles.add(Strings.concatPaths(basePath, normalized));
         }
         final File[] files = file.listFiles();
