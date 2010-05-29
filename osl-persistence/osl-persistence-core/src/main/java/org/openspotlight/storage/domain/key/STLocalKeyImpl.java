@@ -61,7 +61,7 @@ import static com.google.common.collect.Sets.newHashSet;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:46:52 AM
  */
 public class STLocalKeyImpl implements STLocalKey {
-    public STLocalKeyImpl(Set<STKeyEntry<?>> entries, String nodeEntryName) {
+    public STLocalKeyImpl(Set<STKeyEntry> entries, String nodeEntryName) {
         if(nodeEntryName==null) throw new IllegalArgumentException();
         Set<String> names= newHashSet();
         for(STKeyEntry entry: entries){
@@ -75,7 +75,7 @@ public class STLocalKeyImpl implements STLocalKey {
         this.nodeEntryName = nodeEntryName;
     }
 
-    private final Set<STKeyEntry<?>> entries;
+    private final Set<STKeyEntry> entries;
 
     private final Set<String> entryNames;
 
@@ -85,7 +85,7 @@ public class STLocalKeyImpl implements STLocalKey {
 
     private final String nodeEntryName;
 
-    public Set<STKeyEntry<?>> getEntries() {
+    public Set<STKeyEntry> getEntries() {
         return entries;
     }
 
@@ -125,15 +125,15 @@ public class STLocalKeyImpl implements STLocalKey {
     public int compareTo(STLocalKey o) {
         int result = this.getNodeEntryName().compareTo(o.getNodeEntryName());
         if (result != 0) return result;
-        Iterator<STKeyEntry<?>> thisIt = getEntries().iterator();
-        Iterator<STKeyEntry<?>> thatIt = o.getEntries().iterator();
+        Iterator<STKeyEntry> thisIt = getEntries().iterator();
+        Iterator<STKeyEntry> thatIt = o.getEntries().iterator();
         while (true) {
             boolean thisHasNext = thisIt.hasNext();
             boolean thatHasNext = thatIt.hasNext();
 
             if (thisHasNext && thatHasNext) {
-                STKeyEntry<?> thisNext = thisIt.next();
-                STKeyEntry<?> thatNext = thatIt.next();
+                STKeyEntry thisNext = thisIt.next();
+                STKeyEntry thatNext = thatIt.next();
                 result = thisNext.compareTo(thatNext);
                 if (result != 0) return result;
             } else {

@@ -1,12 +1,16 @@
 package org.openspotlight.storage.domain.node;
 
+import org.apache.commons.io.IOUtils;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
-import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,144 +21,106 @@ import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitive
  */
 public class STPropertyImpl implements STProperty {
 
-
-    @Override
-    public String toString() {
-        return "STPropertyImpl{" +
-                "propertyName='" + propertyName + '\'' +
-                ", description=" + description +
-                '}';
-    }
-
-    public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
-                          Class<?> propertyType, Class<?> firstParameterizedType,
-                          Class<?> secondParameterizedType) {
-        if (propertyName.indexOf(" ") > 0) throw new IllegalArgumentException();
-        if (description == null) throw new IllegalArgumentException();
-        if (firstParameterizedType != null && !description.hasFirstParameterizedLevel())
-            throw new IllegalArgumentException();
-        if (secondParameterizedType != null && !description.hasSecondParameterizedLevel())
-            throw new IllegalArgumentException();
-
-        this.parent = parent;
-        this.propertyName = propertyName;
-        this.propertyType = findClassWithoutPrimitives(propertyType);
-        this.firstParameterizedType = firstParameterizedType;
-        this.secondParameterizedType = secondParameterizedType;
-        this.key = STPropertyDescription.KEY.equals(description);
-        hasParameterizedTypes = true;
-        serialized = description.getSerialized().equals(STPropertyDescription.STSerializedType.SERIALIZED);
-        difficultToLoad = description.getLoadWeight().equals(STPropertyDescription.STLoadWeight.DIFFICULT);
-        this.description = description;
-
-        this.partition = parent.getUniqueKey().getPartition();
-    }
-
-    public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
-                          Class<?> propertyType, Class<?> firstParameterizedType) {
-        this(parent, propertyName, description, propertyType, firstParameterizedType, null);
-    }
-
-    public STPropertyImpl(STNodeEntry parent, String propertyName, STPropertyDescription description,
-                          Class<?> propertyType) {
-        this(parent, propertyName, description, propertyType, null, null);
-
-
-    }
-
     private final STPropertyInternalMethods propertyInternalMethods = new STPropertyInternalMethodsImpl();
 
-    private final STNodeEntry parent;
-
-    private final STPartition partition;
-
-    private final String propertyName;
-
-    private final Class<?> propertyType;
-
-    private final Class<?> firstParameterizedType;
-
-    private final Class<?> secondParameterizedType;
-
-    private final boolean hasParameterizedTypes;
-
-    private final boolean serialized;
-
-    private final boolean difficultToLoad;
-
-    private final boolean key;
-
-    private final STPropertyDescription description;
-
-    private WeakReference<?> weakReference;
-
-    private Object value;
-
-    public <T> void setValue(STStorageSession session, T value) {
-        if (key) throw new IllegalStateException("key properties are immutable");
-        this.value = value;
-        session.withPartition(partition).getInternalMethods().propertySetProperty(this, value);
+    public static STPropertyImpl createSimple(String name, STNodeEntry parent) {
+        STPropertyImpl property = new STPropertyImpl(name, parent.getUniqueKey().getPartition(), parent, false, false);
+        return property;
     }
 
-    public <R> R getValueAs(STStorageSession session, Class<R> type) {
-        R result;
-        if (value != null)
-            return (R) value;
-        if (getInternalMethods().isDifficultToLoad()) {
-            result = (R) weakReference != null ? (R) weakReference.get() : null;
-            if (result == null) {
-                result = (R) session.withPartition(partition).getInternalMethods().propertyGetPropertyAs(this, type);
-                if (result != null) {
-                    weakReference = new WeakReference<R>((R) result);
-                }
-            }
-        } else {
-            value = session.withPartition(partition).getInternalMethods().propertyGetPropertyAs(this, type);
-            result = (R) value;
-        }
-        resetIfStream(result);
-
-        return result;
+    public static STPropertyImpl createIndexed(String name, STNodeEntry parent) {
+        STPropertyImpl property = new STPropertyImpl(name, parent.getUniqueKey().getPartition(), parent, true, false);
+        return property;
     }
 
-    private <R> void resetIfStream(R result) {
-        try {
-            if (result instanceof InputStream) {
-                InputStream is = (InputStream) result;
-                if (is.markSupported()) is.reset();
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+    public static STPropertyImpl createKey(String name, STNodeEntry parent) {
+        STPropertyImpl property = new STPropertyImpl(name, parent.getUniqueKey().getPartition(), parent, true, true);
+        return property;
     }
+
+
+    private STPropertyImpl(String name, STPartition partition, STNodeEntry parent, boolean indexed, boolean key) {
+        this.name = name;
+        this.partition = partition;
+        this.parent = parent;
+        this.indexed = indexed;
+        this.key = key;
+    }
+
+    private final String name;
 
     public STNodeEntry getParent() {
         return parent;
     }
 
+    private final PropertyValue propertyValue = new PropertyValue();
 
-    public <R> R getValue(STStorageSession session) {
-        R result;
-        if (getInternalMethods().isDifficultToLoad()) {
-            result = (R) weakReference != null ? (R) weakReference.get() : null;
-            if (result == null) {
-                result = (R) session.withPartition(partition).getInternalMethods().propertyGetValue(this);
-                if (result != null) {
-                    weakReference = new WeakReference<R>((R) result);
-                }
-            }
-        } else {
-            if (value == null) value = (R) session.withPartition(partition).getInternalMethods().propertyGetValue(this);
-            result = (R) value;
+    private final STPartition partition;
+
+    private final STNodeEntry parent;
+
+    public boolean isKey() {
+        return key;
+    }
+
+    public boolean isIndexed() {
+        return indexed;
+    }
+
+    private final boolean indexed;
+
+    private final boolean key;
+
+    @Override
+    public void setStringValue(STStorageSession session, String value) {
+        propertyValue.setDirty(true);
+        propertyValue.setValue(value);
+        session.withPartition(partition).getInternalMethods().propertySetProperty(this, propertyValue.getValueAsBytes());
+    }
+
+    @Override
+    public void setBytesValue(STStorageSession session, byte[] value) {
+        propertyValue.setDirty(true);
+        propertyValue.setValue(value);
+        session.withPartition(partition).getInternalMethods().propertySetProperty(this, propertyValue.getValueAsBytes());
+    }
+
+    @Override
+    public void setStreamValue(STStorageSession session, InputStream value) {
+        propertyValue.setDirty(true);
+        propertyValue.setValue(value);
+        session.withPartition(partition).getInternalMethods().propertySetProperty(this, propertyValue.getValueAsBytes());
+    }
+
+    private void refreshPropertyIfNecessary(STStorageSession session) {
+        if (!propertyValue.isDirty() && !propertyValue.isLoaded()) {
+            propertyValue.setValue(session.withPartition(partition).getInternalMethods().propertyGetValue(this));
+            propertyValue.setLoaded(true);
         }
-        resetIfStream(result);
-
-        return result;
 
     }
 
+    @Override
+    public String getValueAsString(STStorageSession session) {
+        refreshPropertyIfNecessary(session);
+        return propertyValue.getValueAsString();
+    }
+
+    @Override
+    public byte[] getValueAsBytes(STStorageSession session) {
+        refreshPropertyIfNecessary(session);
+        return propertyValue.getValueAsBytes();
+    }
+
+    @Override
+    public InputStream getValueAsStream(STStorageSession session) {
+        refreshPropertyIfNecessary(session);
+        return propertyValue.getValueAsStream();
+    }
+
+    @Override
     public String getPropertyName() {
-        return propertyName;
+        return name;
     }
 
     public STPropertyInternalMethods getInternalMethods() {
@@ -163,50 +129,159 @@ public class STPropertyImpl implements STProperty {
 
     private class STPropertyInternalMethodsImpl implements STPropertyInternalMethods {
 
-        public <R> R getTransientValue() {
-            return (R) value;
+        @Override
+        public void setStringValueOnLoad(STStorageSession session, String value) {
+            propertyValue.setValue(value);
+            propertyValue.setDirty(false);
         }
 
-
-        public boolean isKey() {
-            return key;
+        @Override
+        public void setBytesValueOnLoad(STStorageSession session, byte[] value) {
+            propertyValue.setValue(value);
+            propertyValue.setDirty(false);
         }
 
-        public <T> void setValueOnLoad(T value) {
-            STPropertyImpl.this.value = value;
+        @Override
+        public void setStreamValueOnLoad(STStorageSession session, InputStream value) {
+            propertyValue.setValue(value);
+            propertyValue.setDirty(false);
         }
 
+        @Override
         public void removeTransientValueIfExpensive() {
-            if (difficultToLoad) value = null;
+            if (!key && !propertyValue.isDirty() && propertyValue.isLoaded()) {
+                if (propertyValue.getValueAsBytes() != null) {
+                    if (propertyValue.getValueAsBytes().length > 255) {
+                        propertyValue.setValue((byte[]) null);
+                        propertyValue.setLoaded(false);
+                    }
+                }
+            }
         }
 
-        public <T> Class<T> getPropertyType() {
-            return (Class<T>) propertyType;
+        @Override
+        public String getTransientValueAsString(STStorageSession session) {
+            return propertyValue.getValueAsString();
         }
 
-        public <T> Class<T> getFirstParameterizedType() {
-            return (Class<T>) firstParameterizedType;
+        @Override
+        public byte[] getTransientValueAsBytes(STStorageSession session) {
+            return propertyValue.getValueAsBytes();
         }
 
-        public <T> Class<T> getSecondParameterizedType() {
-            return (Class<T>) secondParameterizedType;
+        @Override
+        public InputStream getTransientValueAsStream(STStorageSession session) {
+            return propertyValue.getValueAsStream();
+        }
+    }
+
+
+    private class PropertyValue {
+
+        private boolean dirty;
+
+        private boolean loaded;
+
+        public boolean isLoaded() {
+            return loaded;
         }
 
-        public boolean hasParameterizedTypes() {
-            return hasParameterizedTypes;
+        public void setLoaded(boolean loaded) {
+            this.loaded = loaded;
         }
 
-        public boolean isSerialized() {
-            return serialized;
+        public boolean isDirty() {
+            return dirty;
         }
 
-        public boolean isDifficultToLoad() {
-            return difficultToLoad;
+        public void setDirty(boolean dirty) {
+            this.dirty = dirty;
         }
 
-        public STPropertyDescription getDescription() {
-            return description;
+        private byte[] asBytes(String s) {
+            return s != null ? s.getBytes() : null;
         }
+
+        private <T> T getWeakValue(WeakReference<T> ref) {
+            return ref != null ? ref.get() : null;
+        }
+
+        private String asString(byte[] b) {
+            return b != null ? new String(b) : null;
+        }
+
+        private InputStream asStream(byte[] b) {
+            return b != null ? new ByteArrayInputStream(b) : null;
+        }
+
+        private <T> WeakReference<T> asWeakRef(T t) {
+            return t != null ? new WeakReference<T>(t) : null;
+        }
+
+        private byte[] asBytes(InputStream is) {
+            if (is == null) return null;
+            try {
+                if (is.markSupported()) {
+                    is.reset();
+                }
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                IOUtils.copy(is, os);
+                return os.toByteArray();
+            } catch (Exception e) {
+                throw logAndReturnNew(e, SLRuntimeException.class);
+            }
+        }
+
+        private WeakReference<String> weakValueAsString;
+        private WeakReference<InputStream> weakValueAsStream;
+        private byte[] realValue;
+
+        private void nullEverything() {
+            weakValueAsString = null;
+            weakValueAsStream = null;
+            realValue = null;
+        }
+
+
+        public void setValue(String value) {
+            nullEverything();
+            this.realValue = asBytes(value);
+            this.weakValueAsString = asWeakRef(value);
+        }
+
+        public void setValue(InputStream value) {
+            nullEverything();
+            this.realValue = asBytes(value);
+            this.weakValueAsStream = asWeakRef(value);
+        }
+
+        public void setValue(byte[] value) {
+            nullEverything();
+            this.realValue = value;
+        }
+
+        public String getValueAsString() {
+            String value = getWeakValue(this.weakValueAsString);
+            if (value == null) {
+                value = asString(this.realValue);
+                this.weakValueAsString = asWeakRef(value);
+            }
+            return value;
+        }
+
+        public InputStream getValueAsStream() {
+            InputStream value = getWeakValue(this.weakValueAsStream);
+            if (value == null) {
+                value = asStream(this.realValue);
+                this.weakValueAsStream = asWeakRef(value);
+            }
+            return value;
+        }
+
+        public byte[] getValueAsBytes() {
+            return this.realValue;
+        }
+
     }
 
 }

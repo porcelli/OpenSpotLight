@@ -68,7 +68,7 @@ public interface STNodeEntryFactory {
 
     interface STNodeEntryBuilder {
         
-        <T extends Serializable> STNodeEntryBuilder withKey(String name, Class<T> type, Serializable value);
+        STNodeEntryBuilder withKey(String name, String value);
 
         STNodeEntryBuilder withParent(STNodeEntry parent);
         STNodeEntryBuilder withParentKey(STUniqueKey parentKey);

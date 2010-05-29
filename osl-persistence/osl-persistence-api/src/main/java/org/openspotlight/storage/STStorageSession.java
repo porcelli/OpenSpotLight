@@ -188,9 +188,7 @@ public interface STStorageSession {
 
         STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name);
 
-        <T> T propertyGetPropertyAs(org.openspotlight.storage.domain.node.STProperty stProperty, Class<T> type);
-
-        <T> void propertySetProperty(org.openspotlight.storage.domain.node.STProperty stProperty, T value);
+        void propertySetProperty(org.openspotlight.storage.domain.node.STProperty stProperty, byte[] value);
 
         Set<STProperty> nodeEntryLoadProperties(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 
@@ -198,14 +196,14 @@ public interface STStorageSession {
 
         Set<STNodeEntry> nodeEntryGetChildren(STNodeEntry stNodeEntry);
 
-        <T> T propertyGetValue(STProperty stProperty);
+        byte[] propertyGetValue(STProperty stProperty); 
 
         Set<STNodeEntry> nodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name);
     }
 
     interface STUniqueKeyBuilder {
 
-        <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, Serializable value);
+        STUniqueKeyBuilder withEntry(String propertyName, String value);
 
         STUniqueKeyBuilder withParent(String nodeEntryName);
 

@@ -55,9 +55,6 @@ import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 
 import java.io.InputStream;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -76,8 +73,6 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
     STProperty getProperty(STStorageSession session, String name);
 
-    <T> T getPropertyValue(STStorageSession session, String name);
-
     Set<STNodeEntry> getChildren(STStorageSession session);
 
     Set<STNodeEntry> getChildrenNamed(STStorageSession session, String name);
@@ -94,39 +89,13 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
     Set<STProperty> getProperties(STStorageSession session);
 
-    /**
-     * Here, for every set property, it the value type or other internal property been set doesn't match the previous one,
-     * it gonna throw a runtime exception
-     *
-     * @return
-     */
-    STPropertyOperation getVerifiedOperations();
+    STProperty setSimpleProperty(STStorageSession session, String name, String value);
 
-    /**
-     * Here, for every set property, it the value type or other internal property been set doesn't match the previous one,
-     * it gonna change the internal property
-     *
-     * @return
-     */
-    STPropertyOperation getUnverifiedOperations();
+    STProperty setSimpleProperty(STStorageSession session, String name, InputStream value);
 
+    STProperty setSimpleProperty(STStorageSession session, String name, byte[] value);
 
-    interface STPropertyOperation {
-
-        <T extends Serializable> STProperty setSimpleProperty(STStorageSession session, String name, Class<? super T> propertyType, T value);
-        <T extends Serializable> STProperty setIndexedProperty(STStorageSession session, String name, Class<? super T> propertyType, T value);
-
-        <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<? super V> parameterizedType, List<V> value);
-
-        <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<? super V> parameterizedType, Set<V> value);
-
-        <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<? super K> keyType, Class<? super V> valueType, Map<K, V> value);
-
-        <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<? super S> propertyType, S value);
-
-        STProperty setInputStreamProperty(STStorageSession session, String name, InputStream value);
-
-    }
+    STProperty setIndexedProperty(STStorageSession session, String name, String value);
 
 
 }

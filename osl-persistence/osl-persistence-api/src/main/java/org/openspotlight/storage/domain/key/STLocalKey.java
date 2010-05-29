@@ -62,7 +62,7 @@ import java.util.Set;
  */
 public interface STLocalKey extends STAData, Comparable<STLocalKey> {
 
-    Set<STKeyEntry<?>> getEntries();
+    Set<STKeyEntry> getEntries();
 
     Set<String> getEntryNames();
 

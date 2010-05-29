@@ -50,26 +50,18 @@
 package org.openspotlight.storage.domain.node;
 
 import com.google.inject.internal.ImmutableSet;
-import org.apache.commons.io.IOUtils;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 import static com.google.common.collect.Maps.newHashMap;
-import static java.text.MessageFormat.format;
-import static org.openspotlight.common.util.Equals.eachEquality;
-import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
 
 
 public class STNodeEntryImpl implements STNodeEntry {
@@ -91,8 +83,6 @@ public class STNodeEntryImpl implements STNodeEntry {
             }
         }
         partition = uniqueKey.getPartition();
-        verifiedOperations = new STPropertyOperationImpl(true, this);
-        unverifiedOperations = new STPropertyOperationImpl(false, this);
         namedChildrenWeakReference = new WeakHashMap<Set<STNodeEntry>, String>();
     }
 
@@ -111,17 +101,13 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     private final Map<String, STProperty> propertiesByName;
 
-    private final STPropertyOperation verifiedOperations;
-
-    private final STPropertyOperation unverifiedOperations;
-
     private final String nodeEntryName;
 
     private final STLocalKey localKey;
 
     private final STUniqueKey uniqueKey;
 
-    public void forceReload(){
+    public void forceReload() {
         this.propertiesByName.clear();
         this.lastLoad = -1;
     }
@@ -156,12 +142,6 @@ public class STNodeEntryImpl implements STNodeEntry {
             result = propertiesByName.get(name);
         }
         return result;
-    }
-
-    public <T> T getPropertyValue(STStorageSession session, String name) {
-        loadPropertiesOnce(session);
-        STProperty property = getProperty(session, name);
-        return property != null ? property.<T>getValue(session) : null;
     }
 
     public Set<STNodeEntry> getChildren(STStorageSession session) {
@@ -225,6 +205,59 @@ public class STNodeEntryImpl implements STNodeEntry {
         return ImmutableSet.copyOf(propertiesByName.values());
     }
 
+    @Override
+    public STProperty setSimpleProperty(STStorageSession session, String name, String value) {
+        if (localKey.getEntryNames().contains(name)) throw new IllegalStateException();
+        STProperty currentProperty = getProperty(session, name);
+        if (currentProperty == null) {
+            currentProperty = STPropertyImpl.createSimple(name, this);
+            propertiesByName.put(name, currentProperty);
+        }
+        currentProperty.setStringValue(session, value);
+
+        return currentProperty;
+    }
+
+    @Override
+    public STProperty setSimpleProperty(STStorageSession session, String name, InputStream value) {
+        if (localKey.getEntryNames().contains(name)) throw new IllegalStateException();
+        STProperty currentProperty = getProperty(session, name);
+        if (currentProperty == null) {
+            currentProperty = STPropertyImpl.createSimple(name, this);
+            propertiesByName.put(name, currentProperty);
+        }
+        currentProperty.setStreamValue(session, value);
+
+        return currentProperty;
+    }
+
+    @Override
+    public STProperty setSimpleProperty(STStorageSession session, String name, byte[] value) {
+        if (localKey.getEntryNames().contains(name)) throw new IllegalStateException();
+        STProperty currentProperty = getProperty(session, name);
+        if (currentProperty == null) {
+            currentProperty = STPropertyImpl.createSimple(name, this);
+            propertiesByName.put(name, currentProperty);
+        }
+        currentProperty.setBytesValue(session, value);
+
+        return currentProperty;
+
+    }
+
+    @Override
+    public STProperty setIndexedProperty(STStorageSession session, String name, String value) {
+        if (localKey.getEntryNames().contains(name)) throw new IllegalStateException();
+        STProperty currentProperty = getProperty(session, name);
+        if (currentProperty == null) {
+            currentProperty = STPropertyImpl.createIndexed(name, this);
+            propertiesByName.put(name, currentProperty);
+        }
+        currentProperty.setStringValue(session, value);
+
+        return currentProperty;
+    }
+
     private void reloadProperties(STStorageSession session) {
         boolean tooOld = this.lastLoad < (System.currentTimeMillis() + TIMEOUT);
         boolean empty = propertiesByName.isEmpty();
@@ -248,13 +281,6 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     }
 
-    public STPropertyOperation getVerifiedOperations() {
-        return verifiedOperations;
-    }
-
-    public STPropertyOperation getUnverifiedOperations() {
-        return unverifiedOperations;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -279,153 +305,6 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     public int compareTo(STNodeEntry o) {
         return this.getLocalKey().compareTo(o.getLocalKey());
-    }
-
-    private static class STPropertyOperationImpl implements STPropertyOperation {
-
-        private final boolean verifyBefore;
-
-        private final STNodeEntryImpl parent;
-
-        public STPropertyOperationImpl(boolean verifyBefore, STNodeEntryImpl parent) {
-            this.verifyBefore = verifyBefore;
-            this.parent = parent;
-        }
-
-        public <T extends Serializable> STProperty setSimpleProperty(STStorageSession session, String name, Class<? super T> rawPropertyType, T value) {
-            if (parent.localKey.getEntryNames().contains(name)) throw new IllegalStateException();
-            STProperty currentProperty = parent.getProperty(session, name);
-            Class<?> propertyType = findClassWithoutPrimitives(rawPropertyType);
-            if (currentProperty != null) {
-
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SIMPLE, propertyType, null, null);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SIMPLE, propertyType);
-                parent.propertiesByName.put(name, currentProperty);
-            }
-            currentProperty.setValue(session, value);
-
-            return currentProperty;
-        }
-
-        public <T extends Serializable> STProperty setIndexedProperty(STStorageSession session, String name, Class<? super T> rawPropertyType, T value) {
-            if (parent.localKey.getEntryNames().contains(name)) throw new IllegalStateException();
-            STProperty currentProperty = parent.getProperty(session, name);
-            Class<?> propertyType = findClassWithoutPrimitives(rawPropertyType);
-            if (currentProperty != null) {
-
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SIMPLE_INDEXED, propertyType, null, null);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SIMPLE_INDEXED, propertyType);
-                parent.propertiesByName.put(name, currentProperty);
-            }
-            currentProperty.setValue(session, value);
-
-            return currentProperty;
-        }
-
-        public <V extends Serializable> STProperty setSerializedListProperty(STStorageSession session, String name, Class<? super V> parameterizedType, List<V> value) {
-            STProperty currentProperty = parent.getProperty(session, name);
-            if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_LIST, List.class, parameterizedType, null);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_LIST, List.class, parameterizedType);
-            }
-            currentProperty.setValue(session, value);
-            parent.propertiesByName.put(name, currentProperty);
-            return currentProperty;
-        }
-
-        public <V extends Serializable> STProperty setSerializedSetProperty(STStorageSession session, String name, Class<? super V> parameterizedType, Set<V> value) {
-            STProperty currentProperty = parent.getProperty(session, name);
-            if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_SET, Set.class, parameterizedType, null);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_SET, Set.class, parameterizedType);
-            }
-            currentProperty.setValue(session, value);
-            parent.propertiesByName.put(name, currentProperty);
-            return currentProperty;
-        }
-
-        public <K extends Serializable, V extends Serializable> STProperty setSerializedMapProperty(STStorageSession session, String name, Class<? super K> keyType, Class<? super V> valueType, Map<K, V> value) {
-            STProperty currentProperty = parent.getProperty(session, name);
-            if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_MAP, Map.class, keyType, valueType);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_MAP, Map.class, keyType, valueType);
-            }
-            currentProperty.setValue(session, value);
-            parent.propertiesByName.put(name, currentProperty);
-            return currentProperty;
-        }
-
-        public <S extends Serializable> STProperty setSerializedPojoProperty(STStorageSession session, String name, Class<? super S> propertyType, S value) {
-            STProperty currentProperty = parent.getProperty(session, name);
-            if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.SERIALIZED_POJO, propertyType, null, null);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.SERIALIZED_POJO, propertyType);
-            }
-            currentProperty.setValue(session, value);
-            parent.propertiesByName.put(name, currentProperty);
-            return currentProperty;
-        }
-
-        public STProperty setInputStreamProperty(STStorageSession session, String name, InputStream value) {
-            STProperty currentProperty = parent.getProperty(session, name);
-            if (currentProperty != null) {
-                validatePropertyDescription(currentProperty, STProperty.STPropertyDescription.INPUT_STREAM, InputStream.class, null, null);
-            } else {
-                currentProperty = new STPropertyImpl(parent, name, STProperty.STPropertyDescription.INPUT_STREAM, InputStream.class);
-            }
-            InputStream newValue;
-            if (value == null) {
-                newValue = null;
-            } else {
-                ByteArrayOutputStream input = new ByteArrayOutputStream();
-                try {
-                    if (value.markSupported()) {
-                        value.reset();
-                    }
-                    IOUtils.copy(value, input);
-                } catch (Exception e) {
-                    throw new IllegalStateException(e.getMessage(), e);
-                }
-                newValue = new ByteArrayInputStream(input.toByteArray());
-            }
-            currentProperty.setValue(session, newValue);
-            parent.propertiesByName.put(name, currentProperty);
-            return currentProperty;
-        }
-
-        private void validatePropertyDescription(STProperty currentProperty, STProperty.STPropertyDescription newDescription, Class<?> type, Class<?> firstParameterizedType, Class<?> secondParameterizedType) {
-            if (verifyBefore) {
-                if (!currentProperty.getInternalMethods().getDescription().equals(newDescription)) {
-                    throw new IllegalArgumentException(
-                            format("wrong description of property {2}: should be {0} instead of {1}",
-                                    currentProperty.getInternalMethods().getDescription(), newDescription, currentProperty.getPropertyName()));
-                }
-                if (!currentProperty.getInternalMethods().getPropertyType().equals(type)) {
-                    throw new IllegalArgumentException(
-                            format("wrong type of property {2}: should be {0} instead of {1}",
-                                    currentProperty.getInternalMethods().getPropertyType(), type));
-
-                }
-                if (!eachEquality(currentProperty.getInternalMethods().getFirstParameterizedType(), firstParameterizedType)) {
-                    throw new IllegalArgumentException(
-                            format("wrong first parameterized type of property {2}: should be {0} instead of {1}",
-                                    currentProperty.getInternalMethods().getFirstParameterizedType(), firstParameterizedType, currentProperty.getPropertyName()));
-
-                }
-                if (!eachEquality(currentProperty.getInternalMethods().getSecondParameterizedType(), secondParameterizedType)) {
-                    throw new IllegalArgumentException(
-                            format("wrong second parameterized type of property {2}: should be {0} instead of {1}",
-                                    currentProperty.getInternalMethods().getSecondParameterizedType(), secondParameterizedType, currentProperty.getPropertyName()));
-
-                }
-            }
-        }
     }
 
     @Override

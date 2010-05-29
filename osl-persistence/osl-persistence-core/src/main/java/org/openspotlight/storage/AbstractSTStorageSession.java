@@ -57,9 +57,11 @@ import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
 
-import java.io.InputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
@@ -164,7 +166,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public STUniqueKey createNewSimpleKey(String... nodePaths) {
             STUniqueKey parentKey = null;
             for (String path : nodePaths) {
-                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry<?>>emptySet(), path),
+                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry>emptySet(), path),
                         parentKey, partition, repositoryPath);
             }
             return parentKey;
@@ -174,7 +176,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             STNodeEntry parent = null;
             STUniqueKey parentKey = null;
             for (String nodePath : nodePaths) {
-                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry<?>>emptySet(), nodePath),
+                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry>emptySet(), nodePath),
                         parentKey, partition, repositoryPath);
                 parent = new STNodeEntryImpl(parentKey, false);
                 handleNewItem(parent);
@@ -260,7 +262,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             sb.append(localKey.getNodeEntryName());
             for (STKeyEntry entry : localKey.getEntries()) {
                 sb.append(":").append(entry.getPropertyName()).append(":")
-                        .append(entry.getType().getName()).append(":").append(entry.getValue());
+                        .append(":").append(entry.getValue());
             }
             return sb.toString();
         }
@@ -899,40 +901,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return withPartition(partition).createWithName(AbstractSTStorageSession.this, name).withParent(stNodeEntry);
         }
 
-        public <T> T propertyGetPropertyAs(STProperty stProperty, Class<T> type) {
-            if (!partition.equals(stProperty.getParent().getUniqueKey().getPartition()))
-                throw new IllegalArgumentException("wrong partition for this property");
 
-            try {
-                if (internalHasSavedProperty(partition, stProperty)) {
-                    switch (stProperty.getInternalMethods().getDescription()) {
-                        case SIMPLE:
-                            return internalPropertyGetSimplePropertyAs(partition, stProperty, type);
-                        case SIMPLE_INDEXED:
-                            return internalPropertyGetSimplePropertyAs(partition, stProperty, type);
-                        case KEY:
-                            return internalPropertyGetKeyPropertyAs(partition, stProperty, type);
-                        case SERIALIZED_LIST:
-                            return internalPropertyGetSerializedListPropertyAs(partition, stProperty, type);
-                        case SERIALIZED_SET:
-                            return internalPropertyGetSerializedSetPropertyAs(partition, stProperty, type);
-                        case SERIALIZED_MAP:
-                            return internalPropertyGetSerializedMapPropertyAs(partition, stProperty, type);
-                        case SERIALIZED_POJO:
-                            return internalPropertyGetSerializedPojoPropertyAs(partition, stProperty, type);
-                        case INPUT_STREAM:
-                            return (T) internalPropertyGetInputStreamProperty(partition, stProperty);
-                        default:
-                            throw new IllegalArgumentException("missing entry on Property description");
-                    }
-                }
-            } catch (Exception e) {
-                handleException(e);
-            }
-            return null;
-        }
-
-        public <T> void propertySetProperty(STProperty stProperty, T value) {
+        public void propertySetProperty(STProperty stProperty, byte[] value) {
             if (!partition.equals(stProperty.getParent().getUniqueKey().getPartition()))
                 throw new IllegalArgumentException("wrong partition for this property");
 
@@ -980,19 +950,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return null;
         }
 
-        public <T> T propertyGetValue(STProperty stProperty) {
-            if (!partition.equals(stProperty.getParent().getUniqueKey().getPartition()))
-                throw new IllegalArgumentException("wrong partition for this property");
-
-            try {
-                if (internalHasSavedProperty(partition, stProperty)) {
-                    return AbstractSTStorageSession.this.<T>internalPropertyGetValue(stProperty);
-                }
-            } catch (Exception e) {
-                handleException(e);
-            }
-            return null;
+        @Override
+        public byte[] propertyGetValue(STProperty stProperty) {
+            return internalPropertyGetValue(stProperty.getParent().getUniqueKey().getPartition(), stProperty);
         }
+
 
         public Set<STNodeEntry> nodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name) {
             if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
@@ -1009,6 +971,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
     }
+
+    protected abstract byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty);
 
 
     public STFlushMode getFlushMode() {
@@ -1029,12 +993,12 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private STUniqueKey parentKey = null;
 
-        private Set<STKeyEntry<?>> keys = newHashSet();
+        private Set<STKeyEntry> keys = newHashSet();
         private Set<String> keyNames = newHashSet();
 
-        public <T extends Serializable> STNodeEntryFactory.STNodeEntryBuilder withKey(String name, Class<T> type, Serializable value) {
+        public STNodeEntryFactory.STNodeEntryBuilder withKey(String name, String value) {
             if (keyNames.contains(name)) throw new IllegalStateException("key name already inserted");
-            this.keys.add(STKeyEntryImpl.create(type, (T) value, name));
+            this.keys.add(new STKeyEntryImpl(name, value));
             this.keyNames.add(name);
             return this;
         }
@@ -1077,7 +1041,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         for (STNodeEntry removedNode : removedNodes) {
             try {
                 partitions.add(removedNode.getUniqueKey().getPartition());
-                                flushRemovedItem(removedNode.getUniqueKey().getPartition(), removedNode);
+                flushRemovedItem(removedNode.getUniqueKey().getPartition(), removedNode);
             } catch (Exception e) {
                 handleException(e);
             }
@@ -1105,33 +1069,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     private void flushDirtyProperty(STProperty dirtyProperty) {
         try {
 
-            switch (dirtyProperty.getInternalMethods().getDescription()) {
+            internalFlushSimpleProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
 
-                case SIMPLE:
-                    internalFlushSimpleProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
-                    break;
-                case SIMPLE_INDEXED:
-                    internalFlushSimpleProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
-                    break;
-                case SERIALIZED_LIST:
-                    internalFlushSerializedListProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
-                    break;
-                case SERIALIZED_SET:
-                    internalFlushSerializedSetProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
-                    break;
-                case SERIALIZED_MAP:
-                    internalFlushSerializedMapProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
-                    break;
-                case SERIALIZED_POJO:
-                    internalFlushSerializedPojoProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
-                    break;
-                case INPUT_STREAM:
-                    internalFlushInputStreamProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
-                    break;
-                default:
-                    throw new IllegalArgumentException("missing entry on Property description");
-
-            }
         } catch (Exception e) {
             handleException(e);
         }
@@ -1140,7 +1079,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     private class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
 
-        private Set<STKeyEntry<?>> localEntries = newHashSet();
+        private Set<STKeyEntry> localEntries = newHashSet();
         private Set<String> namesInsideEntries = newHashSet();
         private final String name;
 
@@ -1160,8 +1099,8 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             this.partition = partition;
         }
 
-        public <T extends Serializable> STUniqueKeyBuilder withEntry(String propertyName, Class<T> type, Serializable value) {
-            this.localEntries.add(STKeyEntryImpl.<T>create(type, (T) value, propertyName));
+        public STUniqueKeyBuilder withEntry(String propertyName, String value) {
+            this.localEntries.add(new STKeyEntryImpl(propertyName, value));
             return this;
         }
 
@@ -1186,37 +1125,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     }
 
 
-    protected final <T> T internalPropertyGetValue(STProperty stProperty) throws Exception {
-        try {
-            Class<T> type = (Class<T>) internalPropertyDiscoverType(stProperty.getParent().getUniqueKey().getPartition(), stProperty);
-            switch (stProperty.getInternalMethods().getDescription()) {
-
-                case KEY:
-                    return this.<T>internalPropertyGetKeyPropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
-                case SIMPLE:
-                    return this.<T>internalPropertyGetSimplePropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
-                case SIMPLE_INDEXED:
-                    return this.<T>internalPropertyGetSimplePropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
-                case SERIALIZED_LIST:
-                    return this.<T>internalPropertyGetSerializedListPropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
-                case SERIALIZED_SET:
-                    return this.<T>internalPropertyGetSerializedSetPropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
-                case SERIALIZED_MAP:
-                    return this.<T>internalPropertyGetSerializedMapPropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
-                case SERIALIZED_POJO:
-                    return this.<T>internalPropertyGetSerializedPojoPropertyAs(stProperty.getParent().getUniqueKey().getPartition(), stProperty, type);
-                case INPUT_STREAM:
-                    return (T) this.internalPropertyGetInputStreamProperty(stProperty.getParent().getUniqueKey().getPartition(), stProperty);
-                default:
-                    throw new IllegalArgumentException("missing entry on Property description");
-            }
-        } catch (Exception e) {
-            handleException(e);
-            return null;
-        }
-
-    }
-
     protected abstract Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception;
 
     protected abstract void flushNewItem(STPartition partition, STNodeEntry entry) throws Exception;
@@ -1227,35 +1135,11 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     protected abstract boolean internalHasSavedProperty(STPartition partition, STProperty stProperty) throws Exception;
 
-    protected abstract void internalFlushInputStreamProperty(STPartition partition, STProperty dirtyProperty) throws Exception;
-
-    protected abstract void internalFlushSerializedPojoProperty(STPartition partition, STProperty dirtyProperty) throws Exception;
-
-    protected abstract void internalFlushSerializedMapProperty(STPartition partition, STProperty dirtyProperty) throws Exception;
-
-    protected abstract void internalFlushSerializedSetProperty(STPartition partition, STProperty dirtyProperty) throws Exception;
-
-    protected abstract void internalFlushSerializedListProperty(STPartition partition, STProperty dirtyProperty) throws Exception;
-
     protected abstract void internalFlushSimpleProperty(STPartition partition, STProperty dirtyProperty) throws Exception;
-
-    protected abstract Class<?> internalPropertyDiscoverType(STPartition partition, STProperty stProperty) throws Exception;
 
     protected abstract Set<STNodeEntry> internalNodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
     protected abstract STNodeEntry internalNodeEntryGetParent(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
-
-    protected abstract <T> T internalPropertyGetKeyPropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception;
-
-    protected abstract InputStream internalPropertyGetInputStreamProperty(STPartition partition, STProperty stProperty) throws Exception;
-
-    protected abstract <T> T internalPropertyGetSerializedPojoPropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception;
-
-    protected abstract <T> T internalPropertyGetSerializedMapPropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception;
-
-    protected abstract <T> T internalPropertyGetSerializedSetPropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception;
-
-    protected abstract <T> T internalPropertyGetSerializedListPropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception;
 
     protected abstract <T> T internalPropertyGetSimplePropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception;
 

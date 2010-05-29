@@ -59,32 +59,19 @@ import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitive
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:42:37 AM
  */
-public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
+public class STKeyEntryImpl implements STKeyEntry {
 
-    public static <T extends Serializable> STKeyEntry<T> create(Class<T> type, T value, String propertyName) {
-        return new STKeyEntryImpl<T>(type, value, propertyName);
-    }
-
-
-    private STKeyEntryImpl(Class<T> type, T value, String propertyName) {
-        checkNotNull("type", type);
+    public STKeyEntryImpl(String propertyName, String value) {
         checkNotEmpty("propertyName", propertyName);
-        this.type = (Class<T>)findClassWithoutPrimitives(type);
         this.value = value;
         this.propertyName = propertyName;
     }
 
-    private final Class<T> type;
-
-    private final T value;
+    private final String value;
 
     private final String propertyName;
 
-    public Class<T> getType() {
-        return type;
-    }
-
-    public T getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -101,7 +88,6 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
         STKeyEntryImpl that = (STKeyEntryImpl) o;
 
         if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
         if (value != null ? !value.equals(that.value) : that.value != null) return false;
 
         return true;
@@ -109,16 +95,13 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
 
     @Override
     public int hashCode() {
-        int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (value != null ? value.hashCode() : 0);
+        int result = (value != null ? value.hashCode() : 0);
         result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
         return result;
     }
 
     public int compareTo(STKeyEntry o) {
         int result = npeSafeCompare(propertyName, o.getPropertyName());
-        if (result != 0) return result;
-        result = type.getName().compareTo(o.getType().getName());
         if (result != 0) return result;
         result = npeSafeCompare(value, o.getValue());
         return result;
@@ -127,7 +110,6 @@ public class STKeyEntryImpl<T extends Serializable> implements STKeyEntry<T> {
     @Override
     public String toString() {
         return "STKeyEntryImpl{" +
-                "type=" + type +
                 ", value=" + value +
                 ", propertyName='" + propertyName + '\'' +
                 '}';
