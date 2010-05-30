@@ -719,7 +719,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 if (descriptor == null) {
                     throw new SLRuntimeException("invalid property:" + propertyNames[i]);
                 }
-                builder.withProperty(propertyNames[i]).equals(
+                builder.withProperty(propertyNames[i]).equalsTo(
                         (Class<? extends Serializable>) findClassWithoutPrimitives(descriptor.getPropertyType()),
                         (Serializable) propertyValues[i]);
             }

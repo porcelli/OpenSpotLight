@@ -158,7 +158,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         /*
          * (non-Javadoc)
          * 
-         * @see java.lang.Object#equals(java.lang.Object)
+         * @see java.lang.Object#equalsTo(java.lang.Object)
          */
         @Override
         public boolean equals( final Object obj ) {
@@ -259,7 +259,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
         /*
          * (non-Javadoc)
          * 
-         * @see java.lang.Object#equals(java.lang.Object)
+         * @see java.lang.Object#equalsTo(java.lang.Object)
          */
         @Override
         public boolean equals( final Object obj ) {

@@ -105,6 +105,16 @@ public class STUniqueKeyImpl implements STUniqueKey {
     }
 
     @Override
+    public String toString() {
+        return "STUniqueKeyImpl{" +
+                "repositoryPath=" + repositoryPath +
+                ", partition=" + partition +
+                ", localKey=" + localKey +
+                ", parentKey=" + parentKey +
+                '}';
+    }
+
+    @Override
     public int hashCode() {
         int result = repositoryPath != null ? repositoryPath.hashCode() : 0;
         result = 31 * result + (partition != null ? partition.hashCode() : 0);

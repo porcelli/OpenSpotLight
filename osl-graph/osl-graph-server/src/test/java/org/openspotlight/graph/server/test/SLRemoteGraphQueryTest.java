@@ -1133,7 +1133,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equals"),
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equalsTo"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "subList"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasNext"),
@@ -1173,7 +1173,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "get"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "add"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "equals"), isOneOf(wrappers));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "equalsTo"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "headSet"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "isEmpty"), isOneOf(wrappers));
@@ -1274,13 +1274,13 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "isEmpty"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "containsAll"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equals"), isOneOf(wrappers));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equalsTo"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "hashCode"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Enumeration", "nextElement"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "remove"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"),
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "toArray"),
                             isOneOf(wrappers));
@@ -1301,7 +1301,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equals"), isOneOf(wrappers));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equalsTo"), isOneOf(wrappers));
                 }
             }.execute();
 
@@ -1344,7 +1344,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equals"),
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equalsTo"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "subList"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasNext"),
@@ -1384,7 +1384,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "get"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "add"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "equals"), isOneOf(wrappers));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "equalsTo"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "headSet"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "isEmpty"), isOneOf(wrappers));
@@ -1485,13 +1485,13 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "isEmpty"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "containsAll"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equals"), isOneOf(wrappers));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equalsTo"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "hashCode"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Enumeration", "nextElement"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "remove"), isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"),
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "toArray"),
                             isOneOf(wrappers));
@@ -1512,7 +1512,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equals"), isOneOf(wrappers));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equalsTo"), isOneOf(wrappers));
                 }
             }.execute();
 
@@ -1567,7 +1567,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "add"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"),
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "remove"),
                             isOneOf(wrappers));
@@ -1629,7 +1629,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "add"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"),
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "remove"),
                             isOneOf(wrappers));
@@ -1665,7 +1665,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
             new AssertResult() {
                 public void execute() {
                     assertThat(wrappers.length, is(36));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), isOneOf(wrappers));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setDate"), isOneOf(wrappers));
@@ -1752,7 +1752,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
                             is(wrappers[6]));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
                             is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
@@ -1798,7 +1798,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
                             is(wrappers[6]));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
                             is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
@@ -1856,7 +1856,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
                             is(wrappers[6]));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
                             is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
@@ -1901,7 +1901,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
                             is(wrappers[6]));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
                             is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),

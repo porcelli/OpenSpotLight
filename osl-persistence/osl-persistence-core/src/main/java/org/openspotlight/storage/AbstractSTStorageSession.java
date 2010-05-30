@@ -57,11 +57,7 @@ import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
@@ -260,7 +256,9 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public String getLocalKeyAsSimpleString(STLocalKey localKey) {
             StringBuilder sb = new StringBuilder();
             sb.append(localKey.getNodeEntryName());
-            for (STKeyEntry entry : localKey.getEntries()) {
+            List<STKeyEntry> ordered = new ArrayList<STKeyEntry>(localKey.getEntries());
+            Collections.sort(ordered);
+            for (STKeyEntry entry : ordered) {
                 sb.append(":").append(entry.getPropertyName()).append(":")
                         .append(":").append(entry.getValue());
             }
@@ -368,28 +366,21 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     }
 
-    private static class STPropertyCriteriaItemImpl<T extends Serializable> implements STPropertyCriteriaItem<T> {
-        private STPropertyCriteriaItemImpl(T value, Class<T> type, String propertyName, String nodeEntryName) {
+    private static class STPropertyCriteriaItemImpl implements STPropertyCriteriaItem {
+        private STPropertyCriteriaItemImpl(String propertyName, String value, String nodeEntryName) {
             this.value = value;
-            this.type = type;
             this.propertyName = propertyName;
             this.nodeEntryName = nodeEntryName;
         }
 
-        private final T value;
-
-        private final Class<T> type;
+        private final String value;
 
         private final String propertyName;
 
         private final String nodeEntryName;
 
-        public T getValue() {
+        public String getValue() {
             return value;
-        }
-
-        public Class<T> getType() {
-            return type;
         }
 
         public String getPropertyName() {
@@ -412,7 +403,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                 return false;
             if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null)
                 return false;
-            if (type != null ? !type.equals(that.type) : that.type != null) return false;
             if (value != null ? !value.equals(that.value) : that.value != null) return false;
 
             return true;
@@ -421,7 +411,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         @Override
         public int hashCode() {
             int result = value != null ? value.hashCode() : 0;
-            result = 31 * result + (type != null ? type.hashCode() : 0);
             result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
             result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
@@ -655,9 +644,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         private STLocalKey transientLocalKey;
 
-        private Class<? extends Serializable> transientPropertyType;
-
-        private Serializable transientPropertyValue;
+        private String transientPropertyValue;
 
         private String startsWith;
         private String endsWith;
@@ -681,7 +668,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         public STCriteriaBuilder withProperty(String propertyName) {
             breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientPropertyType);
             breakIfNotNull(transientPropertyValue);
             breakIfNotNull(transientLocalKey);
 
@@ -697,14 +683,12 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             return this;
         }
 
-        public <T extends Serializable> STCriteriaBuilder equals(Class<T> type, Serializable value) {
+        public STCriteriaBuilder equalsTo(String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
 
             breakIfNull(transientPropertyName);
-            breakIfNotNull(transientPropertyType);
             breakIfNotNull(transientPropertyValue);
-            transientPropertyType = type;
             transientPropertyValue = value;
             and();
             return this;
@@ -715,8 +699,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             breakIfNotNull(transientLocalKey);
 
             breakIfNull(transientPropertyName);
-            breakIfNotNull(transientPropertyType);
-            transientPropertyType = String.class;
             contains = value;
             and();
             return this;
@@ -729,8 +711,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             breakIfNotNull(transientLocalKey);
 
             breakIfNull(transientPropertyName);
-            breakIfNotNull(transientPropertyType);
-            transientPropertyType = String.class;
             startsWith = value;
             and();
             return this;
@@ -742,8 +722,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
             breakIfNotNull(transientLocalKey);
 
             breakIfNull(transientPropertyName);
-            breakIfNotNull(transientPropertyType);
-            transientPropertyType = String.class;
             endsWith = value;
             and();
             return this;
@@ -763,7 +741,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
             } else if (transientPropertyName != null) {
 
-                breakIfNull(transientPropertyType);
 
                 if (startsWith != null) {
                     item = new STPropertyStartsWithStringImpl(transientNodeEntryName, transientPropertyName, startsWith);
@@ -772,14 +749,13 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
                 } else if (contains != null) {
                     item = new STPropertyContainsStringImpl(transientNodeEntryName, transientPropertyName, contains);
                 } else {
-                    item = new STPropertyCriteriaItemImpl(transientPropertyValue, transientPropertyType,
-                            transientPropertyName, transientNodeEntryName);
+                    item = new STPropertyCriteriaItemImpl(
+                            transientPropertyName, transientPropertyValue, transientNodeEntryName);
                 }
             }
             transientPropertyName = null;
             transientUniqueKey = null;
             transientLocalKey = null;
-            transientPropertyType = null;
             transientPropertyValue = null;
             this.items.add(item);
 
@@ -797,7 +773,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         public STCriteriaBuilder withLocalKey(STLocalKey localKey) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientPropertyName);
-            breakIfNotNull(transientPropertyType);
             breakIfNotNull(transientPropertyValue);
 
             breakIfNotNull(transientLocalKey);
@@ -812,7 +787,6 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
             breakIfNotNull(transientLocalKey);
             breakIfNotNull(transientPropertyName);
-            breakIfNotNull(transientPropertyType);
             breakIfNotNull(transientPropertyValue);
 
             breakIfNotNull(transientUniqueKey);
@@ -952,7 +926,12 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
         @Override
         public byte[] propertyGetValue(STProperty stProperty) {
-            return internalPropertyGetValue(stProperty.getParent().getUniqueKey().getPartition(), stProperty);
+            try {
+                return internalPropertyGetValue(stProperty.getParent().getUniqueKey().getPartition(), stProperty);
+            } catch (Exception e) {
+                handleException(e);
+            }
+            return null;
         }
 
 
@@ -972,7 +951,7 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     }
 
-    protected abstract byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty);
+    protected abstract byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty) throws Exception;
 
 
     public STFlushMode getFlushMode() {

@@ -86,7 +86,7 @@ public class BundleSource implements SimpleNodeType, Serializable {
     /*
      * (non-Javadoc)
      * 
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     public boolean equals( final Object o ) {
         if (!(o instanceof BundleSource)) {

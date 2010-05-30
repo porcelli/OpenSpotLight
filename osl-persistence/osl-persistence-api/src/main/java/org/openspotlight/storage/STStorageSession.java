@@ -103,7 +103,7 @@ public interface STStorageSession {
 
         STCriteriaBuilder withNodeEntry(String nodeName);
 
-        <T extends Serializable> STCriteriaBuilder equals(Class<T> type, Serializable value);
+        STCriteriaBuilder equalsTo(String value);
 
         STCriteriaBuilder containsString(String value);
 
@@ -120,11 +120,10 @@ public interface STStorageSession {
         STCriteriaBuilder withUniqueKey(STUniqueKey uniqueKey);
     }
 
-    interface STPropertyCriteriaItem<T extends Serializable> extends STCriteriaItem {
+    interface STPropertyCriteriaItem extends STCriteriaItem {
 
-        T getValue();
+        String getValue();
 
-        Class<T> getType();
 
         String getPropertyName();
 

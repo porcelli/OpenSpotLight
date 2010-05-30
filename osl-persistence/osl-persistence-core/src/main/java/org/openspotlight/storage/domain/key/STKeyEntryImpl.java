@@ -102,8 +102,6 @@ public class STKeyEntryImpl implements STKeyEntry {
 
     public int compareTo(STKeyEntry o) {
         int result = npeSafeCompare(propertyName, o.getPropertyName());
-        if (result != 0) return result;
-        result = npeSafeCompare(value, o.getValue());
         return result;
     }
 

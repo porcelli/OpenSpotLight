@@ -117,7 +117,7 @@ public class SyntaxInformation implements StreamPropertyWithParent<Artifact>, Co
     /*
      * (non-Javadoc)
      * 
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     @SuppressWarnings( "boxing" )
     @Override

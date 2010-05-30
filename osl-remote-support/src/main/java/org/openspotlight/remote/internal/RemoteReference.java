@@ -137,7 +137,7 @@ public class RemoteReference<T> implements Serializable {
     /*
      * (non-Javadoc)
      * 
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     @Override
     public boolean equals( final Object obj ) {

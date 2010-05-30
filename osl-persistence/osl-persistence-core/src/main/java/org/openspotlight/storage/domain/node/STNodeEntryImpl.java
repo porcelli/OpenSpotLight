@@ -134,6 +134,32 @@ public class STNodeEntryImpl implements STNodeEntry {
         return uniqueKey;
     }
 
+    public String getPropertyAsString(STStorageSession session, String name) {
+        STProperty prop = getProperty(session, name);
+        if (prop != null) {
+            return prop.getValueAsString(session);
+        }
+        return null;
+    }
+
+    public InputStream getPropertyAsStream(STStorageSession session, String name) {
+
+        STProperty prop = getProperty(session, name);
+        if (prop != null) {
+            return prop.getValueAsStream(session);
+        }
+        return null;
+    }
+
+    public byte[] getPropertyAsBytes(STStorageSession session, String name) {
+
+        STProperty prop = getProperty(session, name);
+        if (prop != null) {
+            return prop.getValueAsBytes(session);
+        }
+        return null;
+    }
+
     public STProperty getProperty(STStorageSession session, String name) {
         loadPropertiesOnce(session);
         STProperty result = propertiesByName.get(name);
@@ -312,7 +338,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         return "STNodeEntryImpl{" +
                 "partition=" + partition +
                 ", nodeEntryName='" + nodeEntryName + '\'' +
+                ", uniqueKey=" + uniqueKey +
                 '}';
     }
-
 }

@@ -77,7 +77,7 @@ public class SLLinkedNodeDeletionMarkImpl implements SLLinkedNodeDeletionMark {
     /*
      * (non-Javadoc)
      * 
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     public boolean equals( final Object obj ) {
         if (!(obj instanceof SLLinkedNodeDeletionMark)) {

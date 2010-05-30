@@ -195,7 +195,7 @@ public class SLLinkImpl implements SLLink {
                 final String name2 = classNode2.getName().concat(pairNode2.getName());
                 return name1.equals(name2);
             } catch (final SLException e) {
-                throw new SLRuntimeException("Error on attempt to execute SLLinkImpl.equals().", e);
+                throw new SLRuntimeException("Error on attempt to execute SLLinkImpl.equalsTo().", e);
             }
         }
     }

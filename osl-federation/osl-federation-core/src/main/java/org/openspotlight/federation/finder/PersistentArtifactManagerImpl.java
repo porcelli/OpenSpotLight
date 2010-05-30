@@ -154,7 +154,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
         Set<STNodeEntry> foundNodes;
         String nodeName = simplePersist.getInternalMethods().getNodeName(type);
         if (initialPath != null) {
-            foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName).withProperty(propertyNameAndPath[IDX_MAPPED]).equals(String.class,
+            foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName).withProperty(propertyNameAndPath[IDX_MAPPED]).equalsTo(String.class,
                     initialPath).buildCriteria().andFind(
                     simplePersist.getCurrentSession());
         } else {

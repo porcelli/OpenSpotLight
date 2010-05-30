@@ -158,7 +158,7 @@ public class SLSelectTypeInfo {
     /*
      * (non-Javadoc)
      * 
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     @Override
     public boolean equals( Object obj ) {

@@ -193,7 +193,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
     }
 
     /**
-     * Content equals.
+     * Content equalsTo.
      *
      * @param other the other
      * @return true, if successful
@@ -203,7 +203,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
     /*
      * (non-Javadoc)
      * 
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
 
     @Override

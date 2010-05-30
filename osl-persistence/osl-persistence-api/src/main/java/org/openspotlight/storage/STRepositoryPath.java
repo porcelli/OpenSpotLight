@@ -36,4 +36,11 @@ public class STRepositoryPath {
     public int hashCode() {
         return repositoryPath != null ? repositoryPath.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "STRepositoryPath{" +
+                "repositoryPath='" + repositoryPath + '\'' +
+                '}';
+    }
 }

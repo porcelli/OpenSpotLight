@@ -73,6 +73,12 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory,
 
     STProperty getProperty(STStorageSession session, String name);
 
+    String getPropertyAsString(STStorageSession session, String name);
+
+    InputStream getPropertyAsStream(STStorageSession session, String name);
+
+    byte[] getPropertyAsBytes(STStorageSession session, String name);
+
     Set<STNodeEntry> getChildren(STStorageSession session);
 
     Set<STNodeEntry> getChildrenNamed(STStorageSession session, String name);

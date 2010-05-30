@@ -55,9 +55,7 @@ import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.persist.annotation.KeyProperty;
-import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
-import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 
 /**
@@ -140,7 +138,7 @@ public class PathElement implements Comparable<PathElement>, Serializable {
     /*
      * (non-Javadoc)
      * 
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
     @Override
     public boolean equals( final Object o ) {

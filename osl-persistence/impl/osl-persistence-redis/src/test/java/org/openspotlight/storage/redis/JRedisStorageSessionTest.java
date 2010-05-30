@@ -202,10 +202,10 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldCreateTheSameKey() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry sameNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry sameNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         String aKeyAsString = session.getSupportMethods().getUniqueKeyAsSimpleString(aNode.getUniqueKey());
         String sameKeyAsString = session.getSupportMethods().getUniqueKeyAsSimpleString(sameNode.getUniqueKey());
         assertThat(aKeyAsString, is(sameKeyAsString));
@@ -216,12 +216,12 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldFindByUniqueKey() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         STNodeEntry theSameNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withUniqueKey(aNode.getUniqueKey()).buildCriteria().andFindUnique(session);
         assertThat(aNode, is(theSameNode));
-        assertThat(theSameNode.getProperty(session, "name").getValueAs(session, String.class), is("name"));
+        assertThat(theSameNode.getProperty(session, "name").getValueAsString(session), is("name"));
         STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withUniqueKey(session.withPartition(ExamplePartition.DEFAULT).createKey("invalid").andCreate()).buildCriteria().andFindUnique(session);
         assertThat(nullNode, is(nullValue()));
@@ -232,14 +232,14 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldFindByLocalKey() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root2).andCreate();
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root2).andCreate();
 
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withLocalKey(aNode1.getUniqueKey().getLocalKey()).buildCriteria().andFind(session);
@@ -254,27 +254,27 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldFindByProperties() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
-        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
-        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value1");
-        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value2");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root2).andCreate();
+        aNode1.setIndexedProperty(session, "parameter",  "value");
+        aNode2.setIndexedProperty(session, "parameter",  "value");
+        aNode1.setIndexedProperty(session, "parameter1",  "value1");
+        aNode2.setIndexedProperty(session, "parameter1",  "value2");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                .withProperty("parameter").equals(String.class, "value").buildCriteria().andFind(session);
+                .withProperty("parameter").equalsTo("value").buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(aNode1), is(true));
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
         Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                .withProperty("parameter1").equals(String.class, "value1").buildCriteria().andFind(session);
+                .withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session);
         assertThat(onlyOneNode.size(), is(1));
         assertThat(onlyOneNode.contains(aNode1), is(true));
         assertThat(onlyOneNode.contains(aNode2), is(false));
@@ -286,18 +286,18 @@ public class JRedisStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesContainingString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "aeiou");
-        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "foo");
-        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "bar");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name2").withParent(root2).andCreate();
+        aNode1.setSimpleProperty(session, "parameter",  "io");
+        aNode2.setSimpleProperty(session, "parameter",  "aeiou");
+        root1.setSimpleProperty(session, "parameter",  "foo");
+        root2.setSimpleProperty(session, "parameter",  "bar");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
                 .withProperty("parameter").containsString("io").buildCriteria().andFind(session);
         assertThat(theSameNodes.contains(aNode1), is(true));
@@ -311,20 +311,20 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldFindByPropertiesWithNullValue() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "a").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 2)
-                .withKey("name", String.class, "b").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "io");
-        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "aeiou");
-        root1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, null);
-        root2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, null);
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "a").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "2")
+                .withKey("name",  "b").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name2").withParent(root2).andCreate();
+        aNode1.setIndexedProperty(session, "parameter",  "io");
+        aNode2.setIndexedProperty(session, "parameter",  "aeiou");
+        root1.setIndexedProperty(session, "parameter",  null);
+        root2.setIndexedProperty(session, "parameter",  null);
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                .withProperty("parameter").equals(String.class, null).buildCriteria().andFind(session);
+                .withProperty("parameter").equalsTo(null).buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(root1), is(true));
         assertThat(theSameNodes.contains(root2), is(true));
@@ -335,18 +335,18 @@ public class JRedisStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesStartingWithString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "iou");
-        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "fooiou");
-        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "baior");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name2").withParent(root2).andCreate();
+        aNode1.setSimpleProperty(session, "parameter",  "io");
+        aNode2.setSimpleProperty(session, "parameter",  "iou");
+        root1.setSimpleProperty(session, "parameter",  "fooiou");
+        root2.setSimpleProperty(session, "parameter",  "baior");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
                 .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session);
         assertThat(theSameNodes.contains(aNode1), is(true));
@@ -359,18 +359,18 @@ public class JRedisStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesEndingWithString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "uio");
-        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "fooiou");
-        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "baior");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name2").withParent(root2).andCreate();
+        aNode1.setSimpleProperty(session, "parameter",  "io");
+        aNode2.setSimpleProperty(session, "parameter",  "uio");
+        root1.setSimpleProperty(session, "parameter",  "fooiou");
+        root2.setSimpleProperty(session, "parameter",  "baior");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
                 .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session);
         assertThat(theSameNodes.contains(aNode1), is(true));
@@ -384,27 +384,27 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldFindByLocalKeyAndProperties() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
-        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
-        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value1");
-        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value2");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root2).andCreate();
+        aNode1.setIndexedProperty(session, "parameter",  "value");
+        aNode2.setIndexedProperty(session, "parameter",  "value");
+        aNode1.setIndexedProperty(session, "parameter1",  "value1");
+        aNode2.setIndexedProperty(session, "parameter1",  "value2");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter").equals(String.class, "value").buildCriteria().andFind(session);
+                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter").equalsTo("value").buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(aNode1), is(true));
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
         Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter1").equals(String.class, "value1").buildCriteria().andFind(session);
+                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session);
         assertThat(onlyOneNode.size(), is(1));
         assertThat(onlyOneNode.contains(aNode1), is(true));
         assertThat(onlyOneNode.contains(aNode2), is(false));
@@ -415,14 +415,14 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldFindNamedNodes() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root2).andCreate();
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root2).andCreate();
 
         Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).findNamed("root1");
         assertThat(onlyOneNode.size(), is(1));
@@ -445,8 +445,8 @@ public class JRedisStorageSessionTest {
     public void shouldThrowExceptionWhenFindingWithUniqueAndOtherAttributes() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
         session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1")
-                .withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").withUniqueKey(session
+                .withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").withUniqueKey(session
                 .withPartition(ExamplePartition.DEFAULT).createKey("sample").andCreate())
                 .buildCriteria().andFindUnique(session);
     }
@@ -455,14 +455,14 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldInsertNewNodeEntryAndFindUniqueWithAutoFlush() {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+        STNodeEntry foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence")
-                .equals(Integer.class, 1).withProperty("name").equals(String.class, "name")
+                .equalsTo("1").withProperty("name").equalsTo("name")
                 .buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(notNullValue()));
         assertThat(foundNewNode1, is(newNode1));
@@ -472,19 +472,19 @@ public class JRedisStorageSessionTest {
     public void shouldInsertNewNodeEntryAndFindUniqueWithExplicitFlush() {
 
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+        STNodeEntry foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence")
-                .equals(Integer.class, 1).withProperty("name").equals(String.class, "name")
+                .equalsTo("1").withProperty("name").equalsTo("name")
                 .buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
         session.flushTransient();
         STNodeEntry foundNewNode2 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence")
-                .equals(Integer.class, 1).withProperty("name").equals(String.class, "name")
+                .equalsTo("1").withProperty("name").equalsTo("name")
                 .buildCriteria().andFindUnique(session);
         assertThat(foundNewNode2, is(notNullValue()));
         assertThat(foundNewNode2, is(newNode1));
@@ -495,16 +495,16 @@ public class JRedisStorageSessionTest {
 
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withParent(newNode1).withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withParent(newNode2).withKey("sequence", Integer.class, 3)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withParent(newNode1).withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withParent(newNode2).withKey("sequence", "3")
+                .withKey("name",  "name").andCreate();
 
 
         STNodeEntry foundNewNode3 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("sameName").withProperty("sequence")
-                .equals(Integer.class, 3).withProperty("name").equals(String.class, "name")
+                .equalsTo( "3").withProperty("name").equalsTo("name")
                 .buildCriteria().andFindUnique(session);
         assertThat(foundNewNode3, is(notNullValue()));
         STNodeEntry foundNewNode2 = foundNewNode3.getParent(session);
@@ -512,12 +512,12 @@ public class JRedisStorageSessionTest {
         assertThat(foundNewNode3, is(newNode3));
         assertThat(foundNewNode2, is(newNode2));
         assertThat(foundNewNode1, is(newNode1));
-        assertThat(foundNewNode1.<String>getPropertyValue(session, "name"), is("name"));
-        assertThat(foundNewNode2.<String>getPropertyValue(session, "name"), is("name"));
-        assertThat(foundNewNode3.<String>getPropertyValue(session, "name"), is("name"));
-        assertThat(foundNewNode1.<Integer>getPropertyValue(session, "sequence"), is(1));
-        assertThat(foundNewNode2.<Integer>getPropertyValue(session, "sequence"), is(1));
-        assertThat(foundNewNode3.<Integer>getPropertyValue(session, "sequence"), is(3));
+        assertThat(foundNewNode1.getPropertyAsString(session, "name"), is("name"));
+        assertThat(foundNewNode2.getPropertyAsString(session, "name"), is("name"));
+        assertThat(foundNewNode3.getPropertyAsString(session, "name"), is("name"));
+        assertThat(foundNewNode1.getPropertyAsString(session, "sequence"), is("1"));
+        assertThat(foundNewNode2.getPropertyAsString(session, "sequence"), is("1"));
+        assertThat(foundNewNode3.getPropertyAsString(session, "sequence"), is("3"));
         assertThat(foundNewNode1.getNodeEntryName(), is("sameName"));
         assertThat(foundNewNode2.getNodeEntryName(), is("sameName"));
         assertThat(foundNewNode3.getNodeEntryName(), is("sameName"));
@@ -531,40 +531,40 @@ public class JRedisStorageSessionTest {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
 
         STNodeEntry root = session.withPartition(ExamplePartition.DEFAULT).createWithName("root")
-                .withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         STNodeEntry child1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child")
                 .withParent(root)
-                .withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         STNodeEntry child2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child")
                 .withParent(root)
-                .withKey("sequence", Integer.class, 2)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence", "2")
+                .withKey("name",  "name").andCreate();
         STNodeEntry child3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child")
                 .withParent(root)
-                .withKey("sequence", Integer.class, 3)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence", "3")
+                .withKey("name",  "name").andCreate();
         STNodeEntry child4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child")
                 .withParent(root)
-                .withKey("sequence", Integer.class, 4)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence", "4")
+                .withKey("name",  "name").andCreate();
         STNodeEntry childAnotherType1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType")
                 .withParent(root)
-                .withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         STNodeEntry childAnotherType2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType")
                 .withParent(root)
-                .withKey("sequence", Integer.class, 2)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence", "2")
+                .withKey("name",  "name").andCreate();
         STNodeEntry childAnotherType3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType")
                 .withParent(root)
-                .withKey("sequence", Integer.class, 3)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence", "3")
+                .withKey("name",  "name").andCreate();
         STNodeEntry childAnotherType4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType")
                 .withParent(root)
-                .withKey("sequence", Integer.class, 4)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence", "4")
+                .withKey("name",  "name").andCreate();
 
         Set<STNodeEntry> allChildren = root.getChildren(session);
         assertThat(allChildren.size(), is(8));
@@ -602,25 +602,25 @@ public class JRedisStorageSessionTest {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
 
         session.withPartition(ExamplePartition.DEFAULT).createWithName("root")
-                .withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         session.withPartition(ExamplePartition.FIRST).createWithName("root")
-                .withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         session.withPartition(ExamplePartition.SECOND).createWithName("root")
-                .withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+                .withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withUniqueKey(
-                session.withPartition(ExamplePartition.DEFAULT).createKey("root").withEntry("sequence", Integer.class, 1)
-                        .withEntry("name", String.class, "name").andCreate()).buildCriteria().andFindUnique(session);
+                session.withPartition(ExamplePartition.DEFAULT).createKey("root").withEntry("sequence",  "1")
+                        .withEntry("name",  "name").andCreate()).buildCriteria().andFindUnique(session);
 
         STNodeEntry root2 = session.withPartition(ExamplePartition.FIRST).createCriteria().withUniqueKey(
-                session.withPartition(ExamplePartition.FIRST).createKey("root").withEntry("sequence", Integer.class, 1)
-                        .withEntry("name", String.class, "name").andCreate()).buildCriteria().andFindUnique(session);
+                session.withPartition(ExamplePartition.FIRST).createKey("root").withEntry("sequence",  "1")
+                        .withEntry("name",  "name").andCreate()).buildCriteria().andFindUnique(session);
 
         STNodeEntry root3 = session.withPartition(ExamplePartition.SECOND).createCriteria().withUniqueKey(
-                session.withPartition(ExamplePartition.SECOND).createKey("root").withEntry("sequence", Integer.class, 1)
-                        .withEntry("name", String.class, "name").andCreate()).buildCriteria().andFindUnique(session);
+                session.withPartition(ExamplePartition.SECOND).createKey("root").withEntry("sequence",  "1")
+                        .withEntry("name",  "name").andCreate()).buildCriteria().andFindUnique(session);
 
         assertThat(root1, is(notNullValue()));
 
@@ -647,171 +647,42 @@ public class JRedisStorageSessionTest {
 
         Date newDate = new Date();
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
 
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
 
         assertThat(loadedNode, is(nullValue()));
 
         session.flushTransient();
 
-        STNodeEntry loadedNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+        STNodeEntry loadedNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
 
         assertThat(loadedNode1, is(notNullValue()));
 
-        newNode.getVerifiedOperations().setSimpleProperty(session, "classProperty", Class.class, String.class);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "enumProperty", ExampleEnum.class, ExampleEnum.FIRST);
-        newNode.getVerifiedOperations().setIndexedProperty(session, "stringProperty", String.class, "value");
-        newNode.getVerifiedOperations().setSimpleProperty(session, "dateProperty", Date.class, newDate);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "integerProperty", Integer.class, 2);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "floatProperty", Float.class, 2.1f);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "doubleProperty", Double.class, 2.1d);
+        newNode.setIndexedProperty(session, "stringProperty",  "value");
 
 
-        assertThat(newNode.getProperty(session, "enumProperty").getInternalMethods().<ExampleEnum>getTransientValue(),
-                is(ExampleEnum.FIRST));
-        assertThat(newNode.getProperty(session, "classProperty").getInternalMethods().<Class>getTransientValue().getName(),
-                is(String.class.getName()));
-        assertThat(newNode.getProperty(session, "stringProperty").getInternalMethods().<String>getTransientValue(),
+        assertThat(newNode.getProperty(session, "stringProperty").getInternalMethods().getTransientValueAsString(session),
                 is("value"));
 
-        assertThat(newNode.getProperty(session, "dateProperty").getInternalMethods().<Date>getTransientValue(),
-                is(newDate));
 
-
-        assertThat(newNode.getProperty(session, "integerProperty").getInternalMethods().<Integer>getTransientValue(),
-                is(2));
-
-        assertThat(newNode.getProperty(session, "floatProperty").getInternalMethods().<Float>getTransientValue(),
-                is(2.1f));
-
-        assertThat(newNode.getProperty(session, "doubleProperty").getInternalMethods().<Double>getTransientValue(),
-                is(2.1d));
-
-        assertThat(newNode.<String>getPropertyValue(session, "stringProperty"),
-                is("value"));
-
-        assertThat(newNode.<ExampleEnum>getPropertyValue(session, "enumProperty"),
-                is(ExampleEnum.FIRST));
-
-        assertThat(newNode.<Class>getPropertyValue(session, "classProperty").getName(),
-                is(String.class.getName()));
-
-        assertThat(newNode.<Date>getPropertyValue(session, "dateProperty"),
-                is(newDate));
-
-
-        assertThat(newNode.<Integer>getPropertyValue(session, "integerProperty"),
-                is(2));
-
-        assertThat(newNode.<Float>getPropertyValue(session, "floatProperty"),
-                is(2.1f));
-
-        assertThat(newNode.<Double>getPropertyValue(session, "doubleProperty"),
-                is(2.1d));
-
-
-        assertThat(loadedNode1.<String>getPropertyValue(session, "stringProperty"),
+        assertThat(loadedNode1.getPropertyAsString(session, "stringProperty"),
                 is(nullValue()));
 
-        assertThat(loadedNode1.<ExampleEnum>getPropertyValue(session, "enumProperty"),
-                is(nullValue()));
-
-        assertThat(loadedNode1.<Class>getPropertyValue(session, "classProperty"),
-                is(nullValue()));
-
-
-        assertThat(loadedNode1.<Date>getPropertyValue(session, "dateProperty"),
-                is(nullValue()));
-
-
-        assertThat(loadedNode1.<Integer>getPropertyValue(session, "integerProperty"),
-                is(nullValue()));
-
-        assertThat(loadedNode1.<Float>getPropertyValue(session, "floatProperty"),
-                is(nullValue()));
-
-        assertThat(loadedNode1.<Double>getPropertyValue(session, "doubleProperty"),
-                is(nullValue()));
 
         session.flushTransient();
         loadedNode1.forceReload();
 
 
-        assertThat(loadedNode1.<String>getPropertyValue(session, "stringProperty"),
+        assertThat(loadedNode1.getPropertyAsString(session, "stringProperty"),
                 is("value"));
 
-        assertThat(loadedNode1.<ExampleEnum>getPropertyValue(session, "enumProperty"),
-                is(ExampleEnum.FIRST));
-
-        assertThat(loadedNode1.<Class>getPropertyValue(session, "classProperty").getName(),
-                is(String.class.getName()));
-
-
-        assertThat(loadedNode1.<Date>getPropertyValue(session, "dateProperty").toString(),
-                is(newDate.toString()));
-
-
-        assertThat(loadedNode1.<Integer>getPropertyValue(session, "integerProperty"),
-                is(2));
-
-        assertThat(loadedNode1.<Float>getPropertyValue(session, "floatProperty"),
-                is(2.1f));
-
-        assertThat(loadedNode1.<Double>getPropertyValue(session, "doubleProperty"),
-                is(2.1d));
-
 
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotChangePropertyTypeOnList() throws Exception {
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        List<Integer> correctList = newArrayList();
-        List<String> wrongList = newArrayList();
-
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", Integer.class, correctList);
-        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", String.class, wrongList);
-    }
-
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotChangePropertyTypeOnMap() throws Exception {
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        Map<String, Integer> correctMap = newHashMap();
-        Map<String, String> wrongMap = newHashMap();
-
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, Integer.class, correctMap);
-        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, String.class, wrongMap);
-
-    }
-
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotChangePropertyTypeOnStream() throws Exception {
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        newNode.getVerifiedOperations().setInputStreamProperty(session, "streamProperty", new ByteArrayInputStream("test".getBytes()));
-        newNode.getVerifiedOperations().setSimpleProperty(session, "streamProperty", String.class, "invalidValue");
-    }
-
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotChangePropertyTypeOnSimple() throws Exception {
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        newNode.getVerifiedOperations().setSimpleProperty(session, "classProperty", Class.class, String.class);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "classProperty", String.class, "invalidValue");
-    }
 
     public enum ExampleEnum {
         FIRST
@@ -822,95 +693,33 @@ public class JRedisStorageSessionTest {
 
         Date newDate = new Date();
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        newNode.getVerifiedOperations().setSimpleProperty(session, "classProperty", Class.class, String.class);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "enumProperty", ExampleEnum.class, ExampleEnum.FIRST);
-        newNode.getVerifiedOperations().setIndexedProperty(session, "stringProperty", String.class, "value");
-        newNode.getVerifiedOperations().setSimpleProperty(session, "dateProperty", Date.class, newDate);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "integerProperty", Integer.class, 2);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "floatProperty", Float.class, 2.1f);
-        newNode.getVerifiedOperations().setSimpleProperty(session, "doubleProperty", Double.class, 2.1d);
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        newNode.setIndexedProperty(session, "stringProperty",  "value");
+
+        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
 
 
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-
-        assertThat(newNode.getProperty(session, "enumProperty").getInternalMethods().<ExampleEnum>getTransientValue(),
-                is(ExampleEnum.FIRST));
-        assertThat(newNode.getProperty(session, "classProperty").getInternalMethods().<Class>getTransientValue().getName(),
-                is(String.class.getName()));
-        assertThat(newNode.getProperty(session, "stringProperty").getInternalMethods().<String>getTransientValue(),
+        assertThat(newNode.getProperty(session, "stringProperty").getInternalMethods().getTransientValueAsString(session),
                 is("value"));
 
-        assertThat(newNode.getProperty(session, "dateProperty").getInternalMethods().<Date>getTransientValue().toString(),
-                is(newDate.toString()));
-
-
-        assertThat(newNode.getProperty(session, "integerProperty").getInternalMethods().<Integer>getTransientValue(),
-                is(2));
-
-        assertThat(newNode.getProperty(session, "floatProperty").getInternalMethods().<Float>getTransientValue(),
-                is(2.1f));
-
-        assertThat(newNode.getProperty(session, "doubleProperty").getInternalMethods().<Double>getTransientValue(),
-                is(2.1d));
-
-        assertThat(newNode.<String>getPropertyValue(session, "stringProperty"),
+        assertThat(newNode.getPropertyAsString(session, "stringProperty"),
                 is("value"));
 
-        assertThat(newNode.<ExampleEnum>getPropertyValue(session, "enumProperty"),
-                is(ExampleEnum.FIRST));
-
-        assertThat(newNode.<Class>getPropertyValue(session, "classProperty").getName(),
-                is(String.class.getName()));
-
-        assertThat(newNode.<Date>getPropertyValue(session, "dateProperty").toString(),
-                is(newDate.toString()));
 
 
-        assertThat(newNode.<Integer>getPropertyValue(session, "integerProperty"),
-                is(2));
-
-        assertThat(newNode.<Float>getPropertyValue(session, "floatProperty"),
-                is(2.1f));
-
-        assertThat(newNode.<Double>getPropertyValue(session, "doubleProperty"),
-                is(2.1d));
-
-
-        assertThat(loadedNode.<String>getPropertyValue(session, "stringProperty"),
+        assertThat(loadedNode.getPropertyAsString(session, "stringProperty"),
                 is("value"));
-
-        assertThat(loadedNode.<ExampleEnum>getPropertyValue(session, "enumProperty"),
-                is(ExampleEnum.FIRST));
-
-        assertThat(loadedNode.<Class>getPropertyValue(session, "classProperty").getName(),
-                is(String.class.getName()));
-
-
-        assertThat(loadedNode.<Date>getPropertyValue(session, "dateProperty").toString(),
-                is(newDate.toString()));
-
-
-        assertThat(loadedNode.<Integer>getPropertyValue(session, "integerProperty"),
-                is(2));
-
-        assertThat(loadedNode.<Float>getPropertyValue(session, "floatProperty"),
-                is(2.1f));
-
-        assertThat(loadedNode.<Double>getPropertyValue(session, "doubleProperty"),
-                is(2.1d));
 
 
         STNodeEntry anotherLoadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1")
-                .withProperty("stringProperty").equals(String.class, "value").buildCriteria().andFindUnique(session);
+                .withProperty("stringProperty").equalsTo("value").buildCriteria().andFindUnique(session);
 
         assertThat(anotherLoadedNode, is(loadedNode));
 
         STNodeEntry noLoadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1")
-                .withProperty("stringProperty").equals(String.class, "invalid").buildCriteria().andFindUnique(session);
+                .withProperty("stringProperty").equalsTo("invalid").buildCriteria().andFindUnique(session);
 
         assertThat(noLoadedNode, is(nullValue()));
     }
@@ -960,67 +769,37 @@ public class JRedisStorageSessionTest {
     }
 
     @Test
-    public void shouldWorkWithSerializedPojoPropertiesOnAutoFlush() throws Exception {
-
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-
-        PojoClass pojo1 = new PojoClass();
-        pojo1.setAnInt(3);
-        pojo1.setaString("a string");
-
-        newNode.getVerifiedOperations().setSerializedPojoProperty(session, "pojoProperty", PojoClass.class, pojo1);
-
-
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-
-        assertThat(newNode.getProperty(session, "pojoProperty").getInternalMethods().<PojoClass>getTransientValue(),
-                is(pojo1));
-
-        PojoClass loaded1 = loadedNode.<PojoClass>getPropertyValue(session, "pojoProperty");
-
-        PojoClass loaded2 = loadedNode.getProperty(session, "pojoProperty").<PojoClass>getValueAs(session, PojoClass.class);
-
-        assertThat(loaded1, is(pojo1));
-        assertThat(loaded2, is(pojo1));
-
-    }
-
-    @Test
     public void shouldWorkWithInputStreamPropertiesOnExplicitFlush() throws Exception {
 
 
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
 
         InputStream stream = new ByteArrayInputStream("streamValue".getBytes());
 
-        newNode.getVerifiedOperations().setInputStreamProperty(session, "streamProperty", stream);
+        newNode.setSimpleProperty(session, "streamProperty", stream);
 
 
-        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
 
         assertThat(nullNode, is(nullValue()));
         session.flushTransient();
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
 
 
-        assertThat(IOUtils.contentEquals(newNode.getProperty(session, "streamProperty").getInternalMethods().<InputStream>getTransientValue(), stream),
+        assertThat(IOUtils.contentEquals(newNode.getPropertyAsStream(session, "streamProperty"), stream),
                 is(true));
 
-        InputStream loaded1 = loadedNode.<InputStream>getPropertyValue(session, "streamProperty");
+        InputStream loaded1 = loadedNode.getPropertyAsStream(session, "streamProperty");
 
         ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
         IOUtils.copy(loaded1, temporary1);
         String asString1 = new String(temporary1.toByteArray());
         ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
-        InputStream loaded2 = loadedNode.getProperty(session, "streamProperty").<InputStream>getValueAs(session, InputStream.class);
+        InputStream loaded2 = loadedNode.getPropertyAsStream(session, "streamProperty");
 
         IOUtils.copy(loaded2, temporary2);
         String asString2 = new String(temporary2.toByteArray());
@@ -1034,28 +813,34 @@ public class JRedisStorageSessionTest {
     public void shouldWorkWithInputStreamPropertiesOnAutoFlush() throws Exception {
 
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+
 
         InputStream stream = new ByteArrayInputStream("streamValue".getBytes());
 
-        newNode.getVerifiedOperations().setInputStreamProperty(session, "streamProperty", stream);
+        newNode.setSimpleProperty(session, "streamProperty", stream);
 
 
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
+        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
+
+        assertThat(nullNode, is(nullValue()));
+        session.flushTransient();
+        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
 
 
-        assertThat(IOUtils.contentEquals(newNode.getProperty(session, "streamProperty").getInternalMethods().<InputStream>getTransientValue(), stream),
+        assertThat(IOUtils.contentEquals(newNode.getPropertyAsStream(session, "streamProperty"), stream),
                 is(true));
 
-        InputStream loaded1 = loadedNode.<InputStream>getPropertyValue(session, "streamProperty");
+        InputStream loaded1 = loadedNode.getPropertyAsStream(session, "streamProperty");
 
         ByteArrayOutputStream temporary1 = new ByteArrayOutputStream();
         IOUtils.copy(loaded1, temporary1);
         String asString1 = new String(temporary1.toByteArray());
         ByteArrayOutputStream temporary2 = new ByteArrayOutputStream();
-        InputStream loaded2 = loadedNode.getProperty(session, "streamProperty").<InputStream>getValueAs(session, InputStream.class);
+        InputStream loaded2 = loadedNode.getPropertyAsStream(session, "streamProperty");
 
         IOUtils.copy(loaded2, temporary2);
         String asString2 = new String(temporary2.toByteArray());
@@ -1067,192 +852,22 @@ public class JRedisStorageSessionTest {
 
     }
 
-    @Test
-    public void shouldWorkWithSerializedListPropertiesOnExplicitFlush() throws Exception {
-
-        STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-
-        List<String> aList = asList("1", "2", "3");
-        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", String.class, aList);
-
-        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-        assertThat(nullNode, is(nullValue()));
-        session.flushTransient();
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-
-        assertThat((Object) newNode.getProperty(session, "listProperty").getInternalMethods().<List>getTransientValue(),
-                is((Object) aList));
-
-        List<String> loaded1 = loadedNode.<List>getPropertyValue(session, "listProperty");
-
-        List<String> loaded2 = loadedNode.getProperty(session, "listProperty").<List>getValueAs(session, List.class);
-
-        assertThat((Object) loaded1, is((Object) aList));
-        assertThat((Object) loaded2, is((Object) aList));
-    }
-
-    @Test
-    public void shouldWorkWithSerializedListPropertiesOnAutoFlush() throws Exception {
-
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-
-        List<String> aList = asList("1", "2", "3");
-        newNode.getVerifiedOperations().setSerializedListProperty(session, "listProperty", String.class, aList);
-
-
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-
-        assertThat((Object) newNode.getProperty(session, "listProperty").getInternalMethods().<List>getTransientValue(),
-                is((Object) aList));
-
-        List<String> loaded1 = loadedNode.<List>getPropertyValue(session, "listProperty");
-
-        List<String> loaded2 = loadedNode.getProperty(session, "listProperty").<List>getValueAs(session, List.class);
-
-        assertThat((Object) loaded1, is((Object) aList));
-        assertThat((Object) loaded2, is((Object) aList));
-    }
-
-    @Test
-    public void shouldWorkWithSerializedSetPropertiesOnExplicitFlush() throws Exception {
-
-        STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-
-        Set<String> aSet = ImmutableSet.of("1", "2", "3");
-        newNode.getVerifiedOperations().setSerializedSetProperty(session, "setProperty", String.class, aSet);
-
-
-        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-        assertThat(nullNode, is(nullValue()));
-        session.flushTransient();
-
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-
-        assertThat((Object) newNode.getProperty(session, "setProperty").getInternalMethods().<Set>getTransientValue(),
-                is((Object) aSet));
-
-        Set<String> loaded1 = loadedNode.<Set>getPropertyValue(session, "setProperty");
-
-        Set<String> loaded2 = loadedNode.getProperty(session, "setProperty").<Set>getValueAs(session, Set.class);
-
-        assertThat((Object) loaded1, is((Object) aSet));
-        assertThat((Object) loaded2, is((Object) aSet));
-    }
-
-    @Test
-    public void shouldWorkWithSerializedSetPropertiesOnAutoFlush() throws Exception {
-
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-
-        Set<String> aSet = ImmutableSet.of("1", "2", "3");
-        newNode.getVerifiedOperations().setSerializedSetProperty(session, "setProperty", String.class, aSet);
-
-
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-
-        assertThat((Object) newNode.getProperty(session, "setProperty").getInternalMethods().<Set>getTransientValue(),
-                is((Object) aSet));
-
-        Set<String> loaded1 = loadedNode.<Set>getPropertyValue(session, "setProperty");
-
-        Set<String> loaded2 = loadedNode.getProperty(session, "setProperty").<Set>getValueAs(session, Set.class);
-
-        assertThat((Object) loaded1, is((Object) aSet));
-        assertThat((Object) loaded2, is((Object) aSet));
-    }
-
-    @Test
-    public void shouldWorkWithSerializedMapPropertiesOnExplicitFlush() throws Exception {
-
-        STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-
-        Map<String, Integer> aMap = ImmutableMap.<String, Integer>builder().put("1", 1).put("2", 2).build();
-        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, Integer.class, aMap);
-
-
-        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-        assertThat(nullNode, is(nullValue()));
-        session.flushTransient();
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-
-        assertThat((Object) newNode.getProperty(session, "mapProperty").getInternalMethods().<Map>getTransientValue(),
-                is((Object) aMap));
-
-        Map<String, Integer> loaded1 = loadedNode.<Map>getPropertyValue(session, "mapProperty");
-
-        Map<String, Integer> loaded2 = loadedNode.getProperty(session, "mapProperty").<Map>getValueAs(session, Map.class);
-
-        assertThat((Object) loaded1, is((Object) aMap));
-        assertThat((Object) loaded2, is((Object) aMap));
-    }
-
-    @Test
-    public void shouldWorkWithSerializedMapPropertiesOnAutoFlush() throws Exception {
-
-
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-
-        Map<String, Integer> aMap = ImmutableMap.<String, Integer>builder().put("1", 1).put("2", 2).build();
-        newNode.getVerifiedOperations().setSerializedMapProperty(session, "mapProperty", String.class, Integer.class, aMap);
-
-
-        STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equals(Integer.class, 1)
-                .withProperty("name").equals(String.class, "name").buildCriteria().andFindUnique(session);
-
-
-        assertThat((Object) newNode.getProperty(session, "mapProperty").getInternalMethods().<Map>getTransientValue(),
-                is((Object) aMap));
-
-        Map<String, Integer> loaded1 = loadedNode.<Map>getPropertyValue(session, "mapProperty");
-
-        Map<String, Integer> loaded2 = loadedNode.getProperty(session, "mapProperty").<Map>getValueAs(session, Map.class);
-
-        assertThat((Object) loaded1, is((Object) aMap));
-        assertThat((Object) loaded2, is((Object) aMap));
-    }
 
 
     @Test
     public void shouldFindMultipleResults() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 2)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "another name").andCreate();
-        STNodeEntry newNode4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("anotherName").withKey("sequence", Integer.class, 2)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "2")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "another name").andCreate();
+        STNodeEntry newNode4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("anotherName").withKey("sequence", "2")
+                .withKey("name",  "name").andCreate();
 
         Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("name")
-                .equals(String.class, "name").buildCriteria().andFind(session);
+                .equalsTo("name").buildCriteria().andFind(session);
 
         assertThat(result, is(notNullValue()));
         assertThat(result.size(), is(2));
@@ -1267,10 +882,10 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldRemoveNodesOnAutoFlush() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 2)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "2")
+                .withKey("name",  "name").andCreate();
 
         Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
 
@@ -1290,10 +905,10 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldRemoveNodesOnExplicitFlush() throws Exception {
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 2)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "2")
+                .withKey("name",  "name").andCreate();
         session.flushTransient();
         Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
 
@@ -1319,10 +934,10 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldDiscardTransientNodesOnExplicitFlush() throws Exception {
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 2)
-                .withKey("name", String.class, "name").andCreate();
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "2")
+                .withKey("name",  "name").andCreate();
         session.flushTransient();
         Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
 
@@ -1358,23 +973,23 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldUpdatePropertyAndFindWithUpdatedValue() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        newNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "firstValue");
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        newNode1.setIndexedProperty(session, "parameter",  "firstValue");
         Set<STNodeEntry> found = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withNodeEntry("newNode1").withProperty("parameter").equals(String.class, "firstValue")
+                .withNodeEntry("newNode1").withProperty("parameter").equalsTo("firstValue")
                 .buildCriteria().andFind(session);
         assertThat(found.size(), is(1));
         assertThat(found.contains(newNode1), is(true));
-        newNode1.getProperty(session, "parameter").setValue(session, "secondValue");
+        newNode1.getProperty(session, "parameter").setStringValue(session, "secondValue");
 
         Set<STNodeEntry> notFound = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withNodeEntry("newNode1").withProperty("parameter").equals(String.class, "firstValue")
+                .withNodeEntry("newNode1").withProperty("parameter").equalsTo("firstValue")
                 .buildCriteria().andFind(session);
         assertThat(notFound.size(), is(0));
 
         Set<STNodeEntry> foundAgain = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withNodeEntry("newNode1").withProperty("parameter").equals(String.class, "secondValue")
+                .withNodeEntry("newNode1").withProperty("parameter").equalsTo("secondValue")
                 .buildCriteria().andFind(session);
         assertThat(foundAgain.size(), is(1));
         assertThat(foundAgain.contains(newNode1), is(true));
@@ -1385,9 +1000,9 @@ public class JRedisStorageSessionTest {
     @Test(expected = IllegalStateException.class)
     public void shouldNotSetKeyProperty() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", Integer.class, 3);
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        newNode1.setSimpleProperty(session, "sequence", "3");
 
     }
 
@@ -1406,36 +1021,19 @@ public class JRedisStorageSessionTest {
 
 
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("key", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", Integer.class, 3);
-        assertThat(newNode1.<Integer>getPropertyValue(session, "sequence"), is(3));
-        newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", String.class, "4");
-        assertThat(newNode1.<String>getPropertyValue(session, "sequence"), is("4"));
-        newNode1.getUnverifiedOperations().setSerializedPojoProperty(session, "sequence", PojoClass.class, pojo);
-        assertThat(newNode1.<PojoClass>getPropertyValue(session, "sequence"), is(pojo));
-        newNode1.getUnverifiedOperations().setSerializedPojoProperty(session, "sequence", String.class, "I am serializable! That's ok!");
-        assertThat(newNode1.<String>getPropertyValue(session, "sequence"), is("I am serializable! That's ok!"));
-        newNode1.getUnverifiedOperations().setSerializedListProperty(session, "sequence", String.class, stringList);
-        assertThat(newNode1.<List>getPropertyValue(session, "sequence"), is((Object) stringList));
-        newNode1.getUnverifiedOperations().setSerializedListProperty(session, "sequence", Integer.class, integerList);
-        assertThat(newNode1.<List>getPropertyValue(session, "sequence"), is((Object) integerList));
-        newNode1.getUnverifiedOperations().setSerializedSetProperty(session, "sequence", String.class, stringSet);
-        assertThat(newNode1.<Set>getPropertyValue(session, "sequence"), is((Object) stringSet));
-        newNode1.getUnverifiedOperations().setSerializedSetProperty(session, "sequence", Integer.class, integerSet);
-        assertThat(newNode1.<Set>getPropertyValue(session, "sequence"), is((Object) integerSet));
-        newNode1.getUnverifiedOperations().setSerializedMapProperty(session, "sequence", String.class, String.class, stringMap);
-        assertThat(newNode1.<Map>getPropertyValue(session, "sequence"), is((Object) stringMap));
-        newNode1.getUnverifiedOperations().setSerializedMapProperty(session, "sequence", Integer.class, Integer.class, integerMap);
-        assertThat(newNode1.<Map>getPropertyValue(session, "sequence"), is((Object) integerMap));
-        newNode1.getUnverifiedOperations().setInputStreamProperty(session, "sequence", stream);
-        InputStream loaded2 = newNode1.getProperty(session, "sequence").<InputStream>getValueAs(session, InputStream.class);
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("key",  "1")
+                .withKey("name",  "name").andCreate();
+        newNode1.setSimpleProperty(session, "sequence", "3");
+        assertThat(newNode1.getPropertyAsString(session, "sequence"), is("3"));
+        newNode1.setSimpleProperty(session, "sequence",  "4");
+        assertThat(newNode1.getPropertyAsString(session, "sequence"), is("4"));
+        InputStream loaded2 = newNode1.getPropertyAsStream(session, "sequence");
         ByteArrayOutputStream temporary = new ByteArrayOutputStream();
         IOUtils.copy(loaded2, temporary);
         String contentAsString = new String(temporary.toByteArray());
         assertThat(contentAsString, is(streamData));
-        newNode1.getUnverifiedOperations().setSimpleProperty(session, "sequence", Integer.class, 3);
-        assertThat(newNode1.<Integer>getPropertyValue(session, "sequence"), is(3));
+        newNode1.setSimpleProperty(session, "sequence", "3");
+        assertThat(newNode1.getPropertyAsString(session, "sequence"), is("3"));
 
     }
 
@@ -1443,27 +1041,27 @@ public class JRedisStorageSessionTest {
     @Test
     public void shouldFindByPropertiesWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
-        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter", String.class, "value");
-        aNode1.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value1");
-        aNode2.getVerifiedOperations().setIndexedProperty(session, "parameter1", String.class, "value2");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence",  "1")
+                .withKey("name",  "name").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence",  "1")
+                .withKey("name",  "name").withParent(root2).andCreate();
+        aNode1.setIndexedProperty(session, "parameter",  "value");
+        aNode2.setIndexedProperty(session, "parameter",  "value");
+        aNode1.setIndexedProperty(session, "parameter1",  "value1");
+        aNode2.setIndexedProperty(session, "parameter1",  "value2");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withProperty("parameter").equals(String.class, "value").buildCriteria().andFind(session);
+                .withProperty("parameter").equalsTo("value").buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(aNode1), is(true));
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
         Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withProperty("parameter1").equals(String.class, "value1").buildCriteria().andFind(session);
+                .withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session);
         assertThat(onlyOneNode.size(), is(1));
         assertThat(onlyOneNode.contains(aNode1), is(true));
         assertThat(onlyOneNode.contains(aNode2), is(false));
@@ -1475,18 +1073,18 @@ public class JRedisStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesContainingStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "aeiou");
-        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "foo");
-        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "bar");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence",  "1")
+                .withKey("name",  "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence",  "1")
+                .withKey("name",  "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence",  "1")
+                .withKey("name",  "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence",  "1")
+                .withKey("name",  "name2").withParent(root2).andCreate();
+        aNode1.setSimpleProperty(session, "parameter",  "io");
+        aNode2.setSimpleProperty(session, "parameter",  "aeiou");
+        root1.setSimpleProperty(session, "parameter",  "foo");
+        root2.setSimpleProperty(session, "parameter",  "bar");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withProperty("parameter").containsString("io").buildCriteria().andFind(session);
         assertThat(theSameNodes.contains(aNode1), is(true));
@@ -1499,18 +1097,18 @@ public class JRedisStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesStartingWithStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "iou");
-        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "fooiou");
-        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "baior");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence",  "1")
+                .withKey("name",  "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence",  "1")
+                .withKey("name",  "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence",  "1")
+                .withKey("name",  "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence",  "1")
+                .withKey("name",  "name2").withParent(root2).andCreate();
+        aNode1.setSimpleProperty(session, "parameter",  "io");
+        aNode2.setSimpleProperty(session, "parameter",  "iou");
+        root1.setSimpleProperty(session, "parameter",  "fooiou");
+        root2.setSimpleProperty(session, "parameter",  "baior");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session);
         assertThat(theSameNodes.contains(aNode1), is(true));
@@ -1523,18 +1121,18 @@ public class JRedisStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesEndingWithStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", Integer.class, 1)
-                .withKey("name", String.class, "name2").withParent(root2).andCreate();
-        aNode1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "io");
-        aNode2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "uio");
-        root1.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "fooiou");
-        root2.getVerifiedOperations().setSimpleProperty(session, "parameter", String.class, "baior");
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence",  "1")
+                .withKey("name",  "name1").andCreate();
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence",  "1")
+                .withKey("name",  "name2").andCreate();
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence",  "1")
+                .withKey("name",  "name1").withParent(root1).andCreate();
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence",  "1")
+                .withKey("name",  "name2").withParent(root2).andCreate();
+        aNode1.setSimpleProperty(session, "parameter",  "io");
+        aNode2.setSimpleProperty(session, "parameter",  "uio");
+        root1.setSimpleProperty(session, "parameter",  "fooiou");
+        root2.setSimpleProperty(session, "parameter",  "baior");
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session);
         assertThat(theSameNodes.contains(aNode1), is(true));

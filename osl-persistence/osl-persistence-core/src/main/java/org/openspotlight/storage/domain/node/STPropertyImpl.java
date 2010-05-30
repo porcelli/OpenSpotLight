@@ -133,18 +133,22 @@ public class STPropertyImpl implements STProperty {
         public void setStringValueOnLoad(STStorageSession session, String value) {
             propertyValue.setValue(value);
             propertyValue.setDirty(false);
+            propertyValue.setLoaded(true);
+
         }
 
         @Override
         public void setBytesValueOnLoad(STStorageSession session, byte[] value) {
             propertyValue.setValue(value);
             propertyValue.setDirty(false);
+            propertyValue.setLoaded(true);
         }
 
         @Override
         public void setStreamValueOnLoad(STStorageSession session, InputStream value) {
             propertyValue.setValue(value);
             propertyValue.setDirty(false);
+            propertyValue.setLoaded(true);
         }
 
         @Override

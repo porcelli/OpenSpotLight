@@ -812,7 +812,7 @@ public class JavaPublicElementsTreeExecutor {
                 // methodParametersTypeLink.setOrder(i++);
                 // int arrayDimensions = 0;
                 // if (param.getArrayDimensions() != null
-                // && !"".equals(param.getArrayDimensions().trim())) {
+                // && !"".equalsTo(param.getArrayDimensions().trim())) {
                 // arrayDimensions = Integer.parseInt(param
                 // .getArrayDimensions());
                 // }

@@ -53,7 +53,6 @@ import com.google.common.collect.ImmutableList;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
@@ -438,7 +437,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
                 final SLPersistentNode pNode = SLCommonSupport.getPNode((SLNode) obj);
                 return this.pNode.getID().equals(pNode.getID());
             } catch (final SLException e) {
-                throw new RuntimeException("Error on " + this.getClass() + " equals method.", e);
+                throw new RuntimeException("Error on " + this.getClass() + " equalsTo method.", e);
             }
         }
     }
