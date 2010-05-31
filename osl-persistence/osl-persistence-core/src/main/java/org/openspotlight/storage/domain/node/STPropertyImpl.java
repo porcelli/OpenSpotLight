@@ -279,10 +279,18 @@ public class STPropertyImpl implements STProperty {
                 value = asStream(this.realValue);
                 this.weakValueAsStream = asWeakRef(value);
             }
+            if (value != null && value.markSupported()) {
+                try {
+                    value.reset();
+                } catch (Exception e) {
+                    throw logAndReturnNew(e, SLRuntimeException.class);
+                }
+            }
             return value;
         }
 
-        public byte[] getValueAsBytes() {
+        public byte[] getValueAsBytes
+                () {
             return this.realValue;
         }
 

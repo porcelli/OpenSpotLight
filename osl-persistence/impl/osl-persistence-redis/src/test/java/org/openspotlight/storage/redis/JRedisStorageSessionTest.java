@@ -793,6 +793,7 @@ public class JRedisStorageSessionTest {
                 .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
 
 
+        stream.reset();
         assertThat(IOUtils.contentEquals(newNode.getPropertyAsStream(session, "streamProperty"), stream),
                 is(true));
 
@@ -1009,36 +1010,6 @@ public class JRedisStorageSessionTest {
 
     }
 
-    @Test
-    public void shouldChangePropertyTypesOnUnverifiedOperations() throws Exception {
-
-        PojoClass pojo = new PojoClass();
-        List<String> stringList = newArrayList();
-        List<Integer> integerList = newArrayList();
-        Map<String, String> stringMap = newHashMap();
-        Map<Integer, Integer> integerMap = newHashMap();
-        Set<String> stringSet = newHashSet();
-        Set<Integer> integerSet = newHashSet();
-        String streamData = "exampleData";
-        InputStream stream = new ByteArrayInputStream(streamData.getBytes());
-
-
-        STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("key",  "1")
-                .withKey("name",  "name").andCreate();
-        newNode1.setSimpleProperty(session, "sequence", "3");
-        assertThat(newNode1.getPropertyAsString(session, "sequence"), is("3"));
-        newNode1.setSimpleProperty(session, "sequence",  "4");
-        assertThat(newNode1.getPropertyAsString(session, "sequence"), is("4"));
-        InputStream loaded2 = newNode1.getPropertyAsStream(session, "sequence");
-        ByteArrayOutputStream temporary = new ByteArrayOutputStream();
-        IOUtils.copy(loaded2, temporary);
-        String contentAsString = new String(temporary.toByteArray());
-        assertThat(contentAsString, is(streamData));
-        newNode1.setSimpleProperty(session, "sequence", "3");
-        assertThat(newNode1.getPropertyAsString(session, "sequence"), is("3"));
-
-    }
 
 
     @Test

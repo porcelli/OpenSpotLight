@@ -605,7 +605,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         exec.sadd(setName, propertyName);
         String valueKey = KEY_WITH_PROPERTY_VALUE.format(uniqueKey, propertyName);
         if (propertyType.isIndexed()) {
-            String stripped = stripString(new String(propertyValue));
+            String stripped = stripString(propertyValue!=null?new String(propertyValue):null);
             if (jredis.exists(valueKey)) {
                 String existent = stripString(toStr(jredis.get(valueKey)));
                 if (!existent.equals(stripped)) {
