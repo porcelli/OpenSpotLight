@@ -528,16 +528,6 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
 
     @Override
-    protected <T> T internalPropertyGetSimplePropertyAs(STPartition partition, STProperty stProperty, Class<T> type) throws Exception {
-        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(stProperty.getParent().getUniqueKey());
-        JRedis jredis = factory.getFrom(partition);
-
-        String typeValueAsString = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE.format(uniqueKey, stProperty.getPropertyName())));
-        T value = convert(typeValueAsString, type);
-        return value;
-    }
-
-    @Override
     protected Set<STProperty> internalNodeEntryLoadProperties(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
         JRedis jredis = factory.getFrom(partition);
         Set<STProperty> result = newHashSet();
