@@ -154,7 +154,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
         Set<STNodeEntry> foundNodes;
         String nodeName = simplePersist.getInternalMethods().getNodeName(type);
         if (initialPath != null) {
-            foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName).withProperty(propertyNameAndPath[IDX_MAPPED]).equalsTo(String.class,
+            foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName).withProperty(propertyNameAndPath[IDX_MAPPED]).equalsTo(
                     initialPath).buildCriteria().andFind(
                     simplePersist.getCurrentSession());
         } else {
@@ -163,7 +163,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
         }
         Set<String> names = newHashSet();
         for (STNodeEntry nodeEntry : foundNodes) {
-            String name = nodeEntry.<String>getPropertyValue(simplePersist.getCurrentSession(), propertyNameAndPath[IDX_ARTIFACT_NAME]);
+            String name = nodeEntry.getPropertyAsString(simplePersist.getCurrentSession(), propertyNameAndPath[IDX_ARTIFACT_NAME]);
             if (name == null) {
                 throw new IllegalStateException("Mandatory property " + propertyNameAndPath[IDX_ARTIFACT_NAME] + " from node " + nodeEntry + " with null value");
             }

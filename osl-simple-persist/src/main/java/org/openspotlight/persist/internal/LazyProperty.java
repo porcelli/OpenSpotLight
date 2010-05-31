@@ -147,7 +147,7 @@ public final class LazyProperty<T> implements Serializable {
                                                                                                  simplePersist.getCurrentPartition()).createCriteria().withUniqueKey(
                                                                                                                                                                      parentKey).buildCriteria().andFindUnique(
                                                                                                                                                                                                               simplePersist.getCurrentSession());
-                        Object o = node.getPropertyValue(simplePersist.getCurrentSession(), propertyName);
+                        Object o = node.getPropertyAsStream(simplePersist.getCurrentSession(), propertyName);
                         if (o instanceof InputStream) {
                             InputStream is = (InputStream)o;
                             if (is.markSupported()) {
