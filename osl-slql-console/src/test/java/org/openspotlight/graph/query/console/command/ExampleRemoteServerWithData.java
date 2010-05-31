@@ -228,7 +228,7 @@ public class ExampleRemoteServerWithData {
 
             Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
                     ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                    repositoryPath("repository")),
+                    repositoryPath(SLConsts.DEFAULT_REPOSITORY_NAME)),
                     new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
 
@@ -243,7 +243,7 @@ public class ExampleRemoteServerWithData {
             final Collection<Class<?>> classes = this.loadClasses("java-util-classes.txt");
 
             SLContext context = null;
-            if (session.getContext("queryTest") == null) {
+//            if (session.getContext("queryTest") == null) {
                 context = session.createContext("queryTest");
                 SLNode root = context.getRootNode();
 
@@ -282,7 +282,7 @@ public class ExampleRemoteServerWithData {
                 }
 
                 session.save();
-            }
+//            }
             session.close();
         }
 
