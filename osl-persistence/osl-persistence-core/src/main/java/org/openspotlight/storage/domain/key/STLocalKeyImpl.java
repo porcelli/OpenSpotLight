@@ -94,22 +94,14 @@ public class STLocalKeyImpl implements STLocalKey {
     }
 
     @Override
-    public String toString() {
-        return "STLocalKeyImpl{" +
-                "entries=" + entries +
-                ", nodeEntryName='" + nodeEntryName + '\'' +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        STLocalKeyImpl that = (STLocalKeyImpl) o;
+        STLocalKeyImpl localKey = (STLocalKeyImpl) o;
 
-        if (entries != null ? !entries.equals(that.entries) : that.entries != null) return false;
-        if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)
+        if (entries != null ? !entries.equals(localKey.entries) : localKey.entries != null) return false;
+        if (nodeEntryName != null ? !nodeEntryName.equals(localKey.nodeEntryName) : localKey.nodeEntryName != null)
             return false;
 
         return true;

@@ -95,7 +95,7 @@ public class STKeyEntryImpl implements STKeyEntry {
 
     @Override
     public int hashCode() {
-        int result = (value != null ? value.hashCode() : 0);
+        int result = value != null ? value.hashCode() : 0;
         result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
         return result;
     }

@@ -210,9 +210,9 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
     private static final String SET_WITH_ALL_KEYS = "uids";
     private static final CustomizedFormat SET_WITH_ALL_NODE_KEYS_FOR_NAME = new CustomizedFormat("name: :uids");
     private static final CustomizedFormat SET_WITH_ALL_LOCAL_KEYS = new CustomizedFormat("lkeys: :uids");
-    private static final CustomizedFormat SET_WITH_NODE_PROPERTY_KEY_NAMES = new CustomizedFormat("nuid: :pnames");
+    private static final CustomizedFormat SET_WITH_NODE_PROPERTY_KEY_NAMES = new CustomizedFormat("nuid: :knames");
     private static final CustomizedFormat SET_WITH_NODE_PROPERTY_SIMPLE_NAMES = new CustomizedFormat("nuid: :pnames");
-    private static final CustomizedFormat SET_WITH_NODE_PROPERTY_INDEXED_NAMES = new CustomizedFormat("nuid: :pnames");
+    private static final CustomizedFormat SET_WITH_NODE_PROPERTY_INDEXED_NAMES = new CustomizedFormat("nuid: :inames");
     private static final CustomizedFormat SET_WITH_NODE_CHILDREN_KEYS = new CustomizedFormat("nuid: :cld-uids");
     private static final CustomizedFormat SET_WITH_NODE_CHILDREN_NAMED_KEYS = new CustomizedFormat("nuid: :nname: :cld-uids");
     private static final CustomizedFormat KEY_WITH_PROPERTY_VALUE = new CustomizedFormat("nuid: :pname: :value");

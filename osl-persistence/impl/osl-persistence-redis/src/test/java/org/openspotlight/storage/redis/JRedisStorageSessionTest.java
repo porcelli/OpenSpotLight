@@ -269,6 +269,9 @@ public class JRedisStorageSessionTest {
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
                 .withProperty("parameter").equalsTo("value").buildCriteria().andFind(session);
         assertThat(theSameNodes.size(), is(2));
+        
+
+
         assertThat(theSameNodes.contains(aNode1), is(true));
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
