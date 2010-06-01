@@ -885,7 +885,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "lastIndexOf"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
                         isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "subList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasNext"),
                         isOneOf(wrappers));
@@ -917,7 +917,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "add"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "headSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "lastKey"), isOneOf(wrappers));
@@ -996,13 +996,13 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                         isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "containsAll"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Enumeration", "nextElement"),
                         isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "remove"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "toArray"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
                         isOneOf(wrappers));
@@ -1018,7 +1018,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                         isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
                         isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equals"), isOneOf(wrappers));
             }
         }.execute();
 
@@ -1049,7 +1049,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "lastIndexOf"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
                         isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "subList"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasNext"),
                         isOneOf(wrappers));
@@ -1081,7 +1081,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "get"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "add"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedSet", "headSet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.SortedMap", "lastKey"), isOneOf(wrappers));
@@ -1160,13 +1160,13 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                         isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "isEmpty"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "containsAll"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Map", "keySet"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "hashCode"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Enumeration", "nextElement"),
                         isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "remove"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "toArray"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.GregorianCalendar"),
                         isOneOf(wrappers));
@@ -1182,7 +1182,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                         isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.ListResourceBundle"),
                         isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Set", "equals"), isOneOf(wrappers));
             }
         }.execute();
 
@@ -1218,7 +1218,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "remove"), isOneOf(wrappers));
             }
         }.execute();
@@ -1257,7 +1257,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "addAll"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "add"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "contains"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "remove"), isOneOf(wrappers));
             }
         }.execute();
@@ -1280,7 +1280,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
         new AssertResult() {
             public void execute() {
                 assertThat(wrappers.length, is(36));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "toGMTString"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setDate"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "setSeconds"), isOneOf(wrappers));
@@ -1347,7 +1347,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
                             is(wrappers[6]));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
                             is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
@@ -1383,7 +1383,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
                             is(wrappers[6]));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
                             is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
@@ -1432,7 +1432,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
                             is(wrappers[6]));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
                             is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
@@ -1468,7 +1468,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "compareTo"), is(wrappers[5]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "convertToAbbr"),
                             is(wrappers[6]));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equalsTo"), is(wrappers[7]));
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "equals"), is(wrappers[7]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarDate"),
                             is(wrappers[8]));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Date", "getCalendarSystem"),
@@ -3429,7 +3429,7 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
                         isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Vector"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "addAll"), isOneOf(wrappers));
-                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equalsTo"), isOneOf(wrappers));
+                assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "equals"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.util", "java.util.Date"), isOneOf(wrappers));
                 assertThat(new NodeWrapper(JavaClass.class.getName(), "java.security", "java.security.Permission"),
                         isOneOf(wrappers));
