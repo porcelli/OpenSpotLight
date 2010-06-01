@@ -8,7 +8,8 @@ import org.openspotlight.storage.STStorageSession;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
@@ -96,6 +97,7 @@ public class STPropertyImpl implements STProperty {
         if (!propertyValue.isDirty() && !propertyValue.isLoaded()) {
             propertyValue.setValue(session.withPartition(partition).getInternalMethods().propertyGetValue(this));
             propertyValue.setLoaded(true);
+            propertyValue.setDirty(false);
         }
 
     }
@@ -206,7 +208,7 @@ public class STPropertyImpl implements STProperty {
             return s != null ? s.getBytes() : null;
         }
 
-        private <T> T getWeakValue(WeakReference<T> ref) {
+        private <T> T getWeakValue(Reference<T> ref) {
             return ref != null ? ref.get() : null;
         }
 
@@ -218,8 +220,8 @@ public class STPropertyImpl implements STProperty {
             return b != null ? new ByteArrayInputStream(b) : null;
         }
 
-        private <T> WeakReference<T> asWeakRef(T t) {
-            return t != null ? new WeakReference<T>(t) : null;
+        private <T> Reference<T> asWeakRef(T t) {
+            return t != null ? new SoftReference<T>(t) : null;
         }
 
         private byte[] asBytes(InputStream is) {
@@ -236,8 +238,8 @@ public class STPropertyImpl implements STProperty {
             }
         }
 
-        private WeakReference<String> weakValueAsString;
-        private WeakReference<InputStream> weakValueAsStream;
+        private Reference<String> weakValueAsString;
+        private Reference<InputStream> weakValueAsStream;
         private byte[] realValue;
 
         private void nullEverything() {
@@ -256,7 +258,6 @@ public class STPropertyImpl implements STProperty {
         public void setValue(InputStream value) {
             nullEverything();
             this.realValue = asBytes(value);
-            this.weakValueAsStream = asWeakRef(value);
         }
 
         public void setValue(byte[] value) {

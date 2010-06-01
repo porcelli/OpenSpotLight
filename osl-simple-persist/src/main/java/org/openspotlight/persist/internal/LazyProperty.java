@@ -1,8 +1,10 @@
 package org.openspotlight.persist.internal;
 
+import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.SerializationUtil;
 import org.openspotlight.common.util.Sha1;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
@@ -147,17 +149,15 @@ public final class LazyProperty<T> implements Serializable {
                                                                                                  simplePersist.getCurrentPartition()).createCriteria().withUniqueKey(
                                                                                                                                                                      parentKey).buildCriteria().andFindUnique(
                                                                                                                                                                                                               simplePersist.getCurrentSession());
-                        Object o = node.getPropertyAsStream(simplePersist.getCurrentSession(), propertyName);
-                        if (o instanceof InputStream) {
+                        InputStream o = node.getPropertyAsStream(simplePersist.getCurrentSession(), propertyName);
                             InputStream is = (InputStream)o;
                             if (is.markSupported()) {
                                 is.reset();
                             }
-                        }
-
-                        simplePersist.getInternalMethods().beforeUnConvert((SimpleNodeType)parent, (Serializable)o, null);
-                        setCached((T)o);
-                        return (T)o;
+                        T s = (T)SerializationUtil.deserialize(o);
+                        simplePersist.getInternalMethods().beforeUnConvert((SimpleNodeType)parent, (Serializable)s, null);
+                        setCached(s);
+                        return s;
 
                     } catch (final Exception e) {
                         throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);

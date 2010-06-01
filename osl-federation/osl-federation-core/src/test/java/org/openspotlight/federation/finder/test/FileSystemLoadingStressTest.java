@@ -51,6 +51,7 @@ package org.openspotlight.federation.finder.test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.internal.ImmutableList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -79,17 +80,21 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Strings.concatPaths;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public class FileSystemLoadingStressTest {
 
     private static final Logger logger = LoggerFactory.getLogger(FileSystemLoadingStressTest.class);
+    private static ArtifactSource artifactSource;
 
     private static class RepositoryData {
         public final GlobalSettings settings;
@@ -129,7 +134,7 @@ public class FileSystemLoadingStressTest {
         group.setRepository(repository);
         repository.getGroups().add(group);
         group.setActive(true);
-        final ArtifactSource artifactSource = new ArtifactSource();
+        artifactSource = new ArtifactSource();
         repository.getArtifactSources().add(artifactSource);
         artifactSource.setRepository(repository);
         artifactSource.setName("lots of files");
@@ -206,6 +211,7 @@ public class FileSystemLoadingStressTest {
             assertThat(file, is(notNullValue()));
             List<String> lazyLoadedContent = file.getContent().get(context.getPersistentArtifactManager().getSimplePersist());
             assertThat(lazyLoadedContent, is(notNullValue()));
+            assertThat(lazyLoadedContent.equals(getFileContentAsStringList(artifactSource, file.getOriginalName())), is(true));
 
             if (lazyLoadedContent.size() != 0) {
                 loadedSize++;
@@ -214,6 +220,17 @@ public class FileSystemLoadingStressTest {
         logger.debug("finished to load item contents from persistent storage");
         assertThat(loadedSize > 50, is(true));
 
+    }
+
+    private List<String> getFileContentAsStringList(ArtifactSource artifactSource, String originalName) throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(concatPaths(artifactSource.getInitialLookup(), originalName)));
+        ImmutableList.Builder<String> builder = ImmutableList.builder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            builder.add(line);
+        }
+        reader.close();
+        return builder.build();
     }
 
 }

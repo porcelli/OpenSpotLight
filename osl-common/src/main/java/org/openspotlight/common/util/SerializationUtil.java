@@ -48,15 +48,7 @@
  */
 package org.openspotlight.common.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InvalidClassException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -176,11 +168,11 @@ public class SerializationUtil {
      * @return the object
      * @throws SerializationUtilException the serialization util exception
      */
-    public static Object deserialize( final InputStream inputStream ) throws SerializationUtilException {
+    public static <T extends Serializable> T deserialize( final InputStream inputStream ) throws SerializationUtilException {
         ObjectInputStream ois = null;
         try {
             ois = new ObjectInputStream(inputStream);
-            return ois.readObject();
+            return (T)ois.readObject();
         } catch (final Exception e) {
             throw new SerializationUtilException("Error on attempt to deserialize object.", e);
         } finally {

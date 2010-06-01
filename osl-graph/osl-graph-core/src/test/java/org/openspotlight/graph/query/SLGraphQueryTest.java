@@ -1183,7 +1183,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Collection", "retainAll"),
                             isOneOf(wrappers));
-                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equalsTo"),
+                    assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.Comparator", "equals"),
                             isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.List", "subList"), isOneOf(wrappers));
                     assertThat(new NodeWrapper(JavaTypeMethod.class.getName(), "java.util.ListIterator", "hasNext"),

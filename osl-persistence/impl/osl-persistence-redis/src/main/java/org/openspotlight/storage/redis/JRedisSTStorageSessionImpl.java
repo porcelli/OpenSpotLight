@@ -71,7 +71,6 @@ import java.util.Set;
 import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
-import static org.openspotlight.common.util.Conversion.convert;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
@@ -234,7 +233,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
 
 
     @Override
-    protected byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty) throws Exception{
+    protected byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty) throws Exception {
         JRedis jredis = this.factory.getFrom(partition);
         String uniqueKey = supportMethods.getUniqueKeyAsStringHash(stProperty.getParent().getUniqueKey());
         byte[] propertyValue = jredis.get(KEY_WITH_PROPERTY_VALUE.format(uniqueKey, stProperty.getPropertyName()));
@@ -462,7 +461,6 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         }
         jredis.del(simpleProperties, keyProperties, indexedProperties,
                 KEY_WITH_NODE_ENTRY_NAME.format(uniqueKey),
-                SET_WITH_ALL_LOCAL_KEYS.format(uniqueKey),
                 SET_WITH_NODE_CHILDREN_KEYS.format(uniqueKey),
                 KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey),
                 KEY_WITH_NODE_ENTRY_NAME.format(uniqueKey));
@@ -472,7 +470,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         List<String> keys = listBytesToListString(jredis.smembers(dependentKeys));
 
         for (String key : keys) {
-            if (key.contains(uniqueKey)) {
+            if (key.contains(uniqueKey) ) {
                 jredis.del(key);
             } else {
                 List<String> possibleValues = listBytesToListString(jredis.smembers(key));
@@ -595,7 +593,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession {
         exec.sadd(setName, propertyName);
         String valueKey = KEY_WITH_PROPERTY_VALUE.format(uniqueKey, propertyName);
         if (propertyType.isIndexed()) {
-            String stripped = stripString(propertyValue!=null?new String(propertyValue):null);
+            String stripped = stripString(propertyValue != null ? new String(propertyValue) : null);
             if (jredis.exists(valueKey)) {
                 String existent = stripString(toStr(jredis.get(valueKey)));
                 if (!existent.equals(stripped)) {
