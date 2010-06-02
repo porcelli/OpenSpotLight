@@ -9,6 +9,7 @@ jrat.xml
 .settings
 .wtpmodules
 .pmd
+.idea
 atlassian-ide-plugin.xml
 
 #ANTLR temp files
