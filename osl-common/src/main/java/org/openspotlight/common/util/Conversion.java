@@ -97,7 +97,7 @@ public class Conversion {
 
     static {
         final SimpleDateFormat df = (SimpleDateFormat)SimpleDateFormat.getDateInstance();
-        df.applyPattern("EEE MMM dd HH:mm:ss zzz yyyy");
+        df.applyPattern("yyyy-MM-dd HH:mm:ss zzz");
 
         Conversion.CONVERTERS.put(Integer.class, new IntegerConverter());
         Conversion.CONVERTERS.put(Double.class, new DoubleConverter());

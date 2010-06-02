@@ -49,20 +49,25 @@
 
 package org.openspotlight.common.util.test;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Conversion;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test class for {@link Conversion}.
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings( "all" )
+@SuppressWarnings("all")
 public class ConversionTest {
 
     public static enum SomeEnum {
@@ -96,6 +101,36 @@ public class ConversionTest {
         final String asString = Conversion.convert(d, String.class);
         final Date asDate = Conversion.convert(asString, Date.class);
         Assert.assertThat(d.toString(), Is.is(asDate.toString()));
+    }
+
+    @Test(expected = SLException.class)
+    public void shouldNotWorkWhenThereIsNoTimeZone() throws Exception {
+        String date1AsString = "2010-06-02 11:26:44";
+        Conversion.convert(date1AsString, Date.class);
+        
+    }
+
+    @Test
+    public void shouldWorkWithDifferentTimezones() throws Exception {
+        String date1AsString = "2010-06-02 11:26:44 BRT";
+        String date2AsString = "2010-06-02 11:26:44 EST";
+
+        Date date1 = Conversion.convert(date1AsString, Date.class);
+        Date date2 = Conversion.convert(date2AsString, Date.class);
+        assertThat(date1, is(not(date2)));
+        assertThat(date1.getTime(), is(not(date2.getTime())));
+    }
+
+    @Test
+    public void shouldRepresentTheSameDateWithDifferentTimezones() throws Exception {
+        String date1AsString = "2010-06-02 13:26:44 BRT";
+        String date2AsString = "2010-06-02 11:26:44 EST";
+
+        Date date1 = Conversion.convert(date1AsString, Date.class);
+        Date date2 = Conversion.convert(date2AsString, Date.class);
+        assertThat(date1, is(date2));
+        assertThat(date1.getTime(), is(date2.getTime()));
+
     }
 
     @Test
