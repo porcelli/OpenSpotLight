@@ -194,7 +194,7 @@ public enum ArtifactLoaderManager {
             try {
                 PersistentArtifactManager persistentArtifactManager = provider.get();
                 final Artifact persisted = persistentArtifactManager.getInternalMethods().findByOriginalName(source, r.type, r.name);
-                final Artifact newOne = r.loader.findByPath(r.type, source, r.name);
+                final Artifact newOne = r.loader.findByPath(r.type, source, r.name, source.getEncodingForFileContent());
                 if (newOne == null)
                     throw logAndReturn(new IllegalStateException("This exclusion should be handled in another task"));
                 ChangeType change = null;

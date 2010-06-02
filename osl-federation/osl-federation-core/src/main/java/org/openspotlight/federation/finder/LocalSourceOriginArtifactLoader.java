@@ -84,7 +84,7 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
     @SuppressWarnings( "unchecked" )
     protected <A extends Artifact> A internalFindByPath( Class<A> type,
                                                          ArtifactSource source,
-                                                         String rawPath ) {
+                                                         String rawPath, String encodding) {
         Assertions.checkNotEmpty("rawPath", rawPath);
         Assertions.checkCondition("validTypeAndConfig", (type.equals(StringArtifact.class) && !source.isBinary())
                                                         || (type.equals(StreamArtifact.class) && source.isBinary()));
@@ -97,7 +97,8 @@ public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoade
                 if (!file.exists()) continue;
                 if (StringArtifact.class.equals(type)) {
                     final FileInputStream resource = new FileInputStream(file);
-                    final BufferedReader reader = new BufferedReader(new InputStreamReader(resource));
+                    final BufferedReader reader = new BufferedReader(encodding!=null?
+                            new InputStreamReader(resource,encodding):new InputStreamReader(resource));
                     List<String> lines = newLinkedList();
                     String line=null;
                     while ((line = reader.readLine()) != null) {

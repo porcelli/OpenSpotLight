@@ -94,7 +94,7 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
 
     public void updateOriginalName(ArtifactSource source,
                                    String originalName) {
-        this.originalName = concatPaths(source.getInitialLookup(),originalName);
+        this.originalName = concatPaths(source.getInitialLookup(), originalName);
 
     }
 
@@ -138,7 +138,13 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
             artifact.setArtifactName(internalArtifactName);
             artifact.setChangeType(changeType);
             artifact.setParent(pathElement);
-            artifact.setArtifactCompleteName(Strings.concatPaths(pathElement.getCompletePath(), internalArtifactName));
+            if (pathElement != null) {
+                artifact.setArtifactCompleteName(Strings.concatPaths(pathElement.getCompletePath(), internalArtifactName));
+
+            } else {
+                artifact.setArtifactCompleteName(internalArtifactName);
+
+            }
 
             return artifact;
         } catch (final Exception e) {
@@ -344,7 +350,13 @@ public abstract class Artifact implements SimpleNodeType, Serializable, LogableO
      */
     public synchronized void setParent(final PathElement parent) {
         this.parent = parent;
-        setArtifactCompleteName(Strings.concatPaths(parent.getCompletePath(), artifactName));
+        if (parent != null) {
+            setArtifactCompleteName(Strings.concatPaths(parent.getCompletePath(), artifactName));
+        } else {
+            setArtifactCompleteName(artifactName);
+
+        }
+
     }
 
     public synchronized void setRepositoryName(final String repositoryName) {

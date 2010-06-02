@@ -359,7 +359,7 @@ public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder
     @Override
     protected <A extends Artifact> A internalFindByPath( Class<A> type,
                                                          ArtifactSource source,
-                                                         String path ) throws Exception {
+                                                         String path , String encoding) throws Exception {
         final DbArtifactSource dbBundle = (DbArtifactSource)source;
         final Map<String, DatabaseCustomArtifact> resultMap = getResultFrom(dbBundle);
         @SuppressWarnings( "unchecked" )

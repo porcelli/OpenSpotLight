@@ -99,35 +99,35 @@ public interface OriginArtifactLoader extends Disposable {
      * Find by path.
      * 
      * @param path the path
-     * @param artifactSource the artifact source
+     * @param source the artifact source
      * @return the stream artifact
      */
     public <A extends Artifact> A findByPath( Class<A> type,
                                               ArtifactSource source,
-                                              String path );
+                                              String path, String encoding );
 
     /**
      * Find by relative path.
      * 
      * @param relativeTo the relative to
      * @param path the path
-     * @param artifactSource the artifact source
+     * @param source the artifact source
      * @return the stream artifact
      */
     public <A extends Artifact> A findByRelativePath( Class<A> type,
                                                       ArtifactSource source,
                                                       A relativeTo,
-                                                      String path );
+                                                      String path, String encoding );
 
     /**
      * List by path.
      * 
      * @param path the path
-     * @param artifactSource the artifact source
+     * @param source the artifact source
      * @return the set< stream artifact>
      */
     public <A extends Artifact> Set<A> listByPath( Class<A> type,
                                                    ArtifactSource source,
-                                                   String path );
+                                                   String path, String encoding );
 
 }

@@ -46,63 +46,57 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-
-package org.openspotlight.federation.data.load.test;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.Set;
+package org.openspotlight.federation.finder.test;
 
 import org.junit.Test;
-import org.openspotlight.federation.data.load.DnaFileSystemArtifactFinder;
-import org.openspotlight.federation.domain.DnaFileSystemArtifactSource;
 import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 
-/**
- * Test 
- * 
- * @author Luiz Fernando Teston - feu.teston@caravelatech.com
- */
-public class DnaFileSystemArtifactFinderTest {
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Arrays;
 
-    @Test
-    public void shouldLoadAFile() throws Exception {
-        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
-        artifactSource.setActive(true);
-        artifactSource.setInitialLookup("../");
-        artifactSource.setName("Dna FileSystem");
-        final Repository repository = new Repository();
-        repository.setName("repository");
-        artifactSource.setRepository(repository);
-        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Strings.concatPaths;
 
-        final StringArtifact sa = finder.findByPath(StringArtifact.class, artifactSource,
-                                                    "osl-federation-dna-filesystem-loader/src/main/java/org/openspotlight/federation/data/load/DnaFileSystemArtifactFinder.java",null);
+public class FileSystemOriginArtifactLoaderEncodingTest {
 
-        assertThat(sa, is(notNullValue()));
-        assertThat(sa.getContent(), is(notNullValue()));
-
-        finder.closeResources();
-    }
 
     @Test
-    public void shouldRetrieveFileNames() throws Exception {
-        final DnaFileSystemArtifactSource artifactSource = new DnaFileSystemArtifactSource();
-        artifactSource.setActive(true);
-        artifactSource.setInitialLookup("../");
-        final Repository repository = new Repository();
-        repository.setName("repository");
-        artifactSource.setRepository(repository);
-        artifactSource.setName("Dna FileSystem");
-        final DnaFileSystemArtifactFinder finder = new DnaFileSystemArtifactFinder();
+    public void storeAndLoadAFileEncodedInAnotherEncoding() throws Exception {
+        String encoding = "ISO-8859-1";
+        String strangeContent = new String("çãçãà");
+        byte[] inAnotherEncoding = strangeContent.getBytes(encoding);
+        byte[] inUnicode = strangeContent.getBytes();
+        String file = "test-file.txt";
+        assertThat(Arrays.equals(inAnotherEncoding, inUnicode), is(false));
+        String path = "./target/FileSystemOriginArtifactLoaderEncodingTest/test-data";
+        new File(path).mkdirs();
+        FileOutputStream fos = new FileOutputStream(concatPaths(path, file));
+        fos.write(inAnotherEncoding);
+        fos.flush();
+        fos.close();
 
-        final Set<String> names = finder.getInternalMethods().retrieveOriginalNames(StringArtifact.class, artifactSource,
-                                                                                    "osl-federation-dna-filesystem-loader");
-        assertThat(names.size(), is(not(0)));
-        finder.closeResources();
+        FileSystemOriginArtifactLoader loader = new FileSystemOriginArtifactLoader();
+        ArtifactSource stringArtifactSource;
+
+        final Repository repository = new Repository();
+        repository.setName("repositoryName");
+
+        stringArtifactSource = new ArtifactSource();
+        stringArtifactSource.setRepository(repository);
+        stringArtifactSource.setName("classpath");
+        stringArtifactSource.setInitialLookup(path);
+
+        final StringArtifact streamArtifact1 = loader.findByPath(StringArtifact.class, stringArtifactSource,
+                file, encoding);
+        assertThat(streamArtifact1, is(notNullValue()));
+        assertThat(streamArtifact1.getContent().get(null).get(0), is(strangeContent));
+
     }
+
 }

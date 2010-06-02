@@ -130,9 +130,9 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
 
     public final <A extends Artifact> A findByPath( Class<A> type,
                                                     ArtifactSource source,
-                                                    String path ) {
+                                                    String path, String encoding ) {
         try {
-            A result = fillSomeData(type, source, internalFindByPath(type, source, path));
+            A result = fillSomeData(type, source, internalFindByPath(type, source, path, encoding));
             if (logger.isDebugEnabled()) {
                 logger.debug("returned " + result + " for (" + type.getSimpleName() + ", " + source.getName() + ", " + path + ")");
             }
@@ -145,9 +145,9 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
     public final <A extends Artifact> A findByRelativePath( Class<A> type,
                                                             ArtifactSource source,
                                                             A relativeTo,
-                                                            String path ) {
+                                                            String path, String encoding ) {
         try {
-            return fillSomeData(type, source, internalFindByRelativePath(type, source, relativeTo, path));
+            return fillSomeData(type, source, internalFindByRelativePath(type, source, relativeTo, path, encoding));
         } catch (Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
@@ -159,9 +159,9 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
 
     public final <A extends Artifact> Set<A> listByPath( Class<A> type,
                                                          ArtifactSource source,
-                                                         String path ) {
+                                                         String path, String encoding ) {
         try {
-            return fillSomeData(type, source, internalListByPath(type, source, path));
+            return fillSomeData(type, source, internalListByPath(type, source, path, encoding));
         } catch (Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
@@ -178,15 +178,15 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
     protected <A extends Artifact> A internalFindByRelativePath( Class<A> type,
                                                                  ArtifactSource source,
                                                                  A relativeTo,
-                                                                 String path ) throws Exception {
+                                                                 String path, String encoding ) throws Exception {
         final String newPath = PathElement.createRelativePath(relativeTo.getParent(), path).getCompletePath();
-        return internalFindByPath(type, source, newPath);
+        return internalFindByPath(type, source, newPath, encoding);
 
     }
 
     protected <A extends Artifact> Set<A> internalListByPath( final Class<A> type,
                                                               final ArtifactSource source,
-                                                              final String initialPath ) throws Exception {
+                                                              final String initialPath, final String encoding ) throws Exception {
         Set<String> paths = getInternalMethods().retrieveOriginalNames(type, source, initialPath);
         Set<A> result = new HashSet<A>();
         if (isMultithreaded()) {
@@ -194,7 +194,7 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
             for (final String path : paths) {
                 Callable<A> callable = new Callable<A>() {
                     public A call() throws Exception {
-                        return internalFindByPath(type, source, path);
+                        return internalFindByPath(type, source, path,encoding);
                     }
                 };
                 tasks.add(callable);
@@ -210,7 +210,7 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
 
         } else {
             for (final String path : paths) {
-                A a = internalFindByPath(type, source, path);
+                A a = internalFindByPath(type, source, path, encoding);
                 if(a!=null){
                     result.add(a);
                 }
@@ -254,7 +254,7 @@ public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoad
 
     protected abstract <A extends Artifact> A internalFindByPath( Class<A> type,
                                                                   ArtifactSource source,
-                                                                  String path ) throws Exception;
+                                                                  String path, String encodingToRead ) throws Exception;
 
     protected abstract void internalCloseResources() throws Exception;
 

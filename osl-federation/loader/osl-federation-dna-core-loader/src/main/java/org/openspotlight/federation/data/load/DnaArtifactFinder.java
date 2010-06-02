@@ -102,7 +102,7 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
     @Override
     protected <A extends Artifact> A internalFindByPath( Class<A> type,
                                                          ArtifactSource source,
-                                                         String rawPath ) throws Exception {
+                                                         String rawPath, String encoding ) throws Exception {
         String path;
         if (rawPath.startsWith("/")) {
             path = rawPath.substring(1);
@@ -121,7 +121,8 @@ public abstract class DnaArtifactFinder extends AbstractOriginArtifactLoader {
         while ((available = is.read()) != -1) {
             baos.write(available);
         }
-        BufferedReader reader = new BufferedReader(new StringReader(new String(baos.toByteArray())));
+        String str = encoding!=null?new String(baos.toByteArray(),encoding):new String(baos.toByteArray());
+        BufferedReader reader = new BufferedReader(new StringReader(str));
         List<String> list = newLinkedList();
         String line;
         while((line=reader.readLine())!=null){

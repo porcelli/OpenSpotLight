@@ -87,7 +87,7 @@ public class DnaSvnArtifactLoaderTest {
         bundle.setRepository(repository);
 
         final DNASvnArtifactFinder finder = new DNASvnArtifactFinder();
-        final StringArtifact sa = finder.findByPath(StringArtifact.class, bundle, "osl/pom.xml");
+        final StringArtifact sa = finder.findByPath(StringArtifact.class, bundle, "osl/pom.xml",null);
 
         assertThat(sa, is(notNullValue()));
         assertThat(sa.getContent(), is(notNullValue()));

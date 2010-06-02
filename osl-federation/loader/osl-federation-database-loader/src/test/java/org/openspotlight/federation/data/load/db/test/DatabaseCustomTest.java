@@ -130,9 +130,9 @@ public class DatabaseCustomTest {
         connection.close();
 
         final RoutineArtifact exampleProcedure = (RoutineArtifact) finder.findByPath(RoutineArtifact.class, bundle,
-                "/PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE");
+                "/PUBLIC/PROCEDURE/DB/NEWEXAMPLEPROCEDURE",null);
         final RoutineArtifact exampleFunction = (RoutineArtifact) finder.findByPath(RoutineArtifact.class, bundle,
-                "/PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION");
+                "/PUBLIC/FUNCTION/DB/NEWEXAMPLEFUNCTION",null);
         assertThat(exampleProcedure.getType(), is(RoutineType.PROCEDURE));
         assertThat(exampleFunction.getType(), is(RoutineType.FUNCTION));
         connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
@@ -163,14 +163,14 @@ public class DatabaseCustomTest {
         connection.commit();
         connection.close();
 
-        final TableArtifact exampleTable = finder.findByPath(TableArtifact.class, bundle, "/PUBLIC/DB/TABLE/EXAMPLETABLE");
+        final TableArtifact exampleTable = finder.findByPath(TableArtifact.class, bundle, "/PUBLIC/DB/TABLE/EXAMPLETABLE",null);
         final TableArtifact exampleView = (TableArtifact) finder.findByPath(TableArtifact.class, bundle,
-                "/PUBLIC/DB/VIEW/EXAMPLEVIEW");
+                "/PUBLIC/DB/VIEW/EXAMPLEVIEW",null);
         assertThat(exampleTable, is(TableArtifact.class));
         final Set<DatabaseCustomArtifact> pks = finder.listByPath(DatabaseCustomArtifact.class, bundle,
-                Constraints.PRIMARY_KEY.toString());
+                Constraints.PRIMARY_KEY.toString(),null);
         final Set<DatabaseCustomArtifact> fks = finder.listByPath(DatabaseCustomArtifact.class, bundle,
-                Constraints.FOREIGN_KEY.toString());
+                Constraints.FOREIGN_KEY.toString(),null);
 
         Set<String> names = finder.getInternalMethods().retrieveOriginalNames(DatabaseCustomArtifact.class, bundle, null);
 

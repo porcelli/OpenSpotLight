@@ -80,6 +80,16 @@ public class ArtifactSource implements SimpleNodeType, Serializable, LogableObje
 
     private List<String>               cronInformation  = new ArrayList<String>();
 
+    private String encodingForFileContent;
+
+    public String getEncodingForFileContent() {
+        return encodingForFileContent;
+    }
+
+    public void setEncodingForFileContent(String encodingForFileContent) {
+        this.encodingForFileContent = encodingForFileContent;
+    }
+
     /** The repository. */
     private transient Repository       repository;
 

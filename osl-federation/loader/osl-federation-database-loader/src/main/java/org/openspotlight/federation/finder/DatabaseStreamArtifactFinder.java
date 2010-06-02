@@ -83,7 +83,7 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
     @Override
     protected <A extends Artifact> A internalFindByPath( Class<A> type,
                                                          ArtifactSource source,
-                                                         String path ) throws Exception {
+                                                         String path, String encoding ) throws Exception {
         DbArtifactSource artifactSource = (DbArtifactSource)source;
 
         final Connection conn = getConnectionFromSource(artifactSource);
@@ -147,7 +147,7 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
             if (streamHandler != null) {
                 content = streamHandler.afterStreamProcessing(schema, scriptType, catalog, name, content, conn);
             }
-            final List<String> contentAsStringList = asStringList(content);
+            final List<String> contentAsStringList = asStringList(content,encoding);
             final StringArtifact sa = Artifact.createArtifact(StringArtifact.class, path, ChangeType.INCLUDED);
             sa.getContent().setTransient(contentAsStringList);
             @SuppressWarnings( "unchecked" )
@@ -156,9 +156,9 @@ public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder
         }
     }
 
-    private List<String> asStringList(byte[] content) throws IOException{
+    private List<String> asStringList(byte[] content, String encoding) throws IOException{
         List<String> lines = newLinkedList();
-        BufferedReader reader = new BufferedReader(new StringReader(new String(content)));
+        BufferedReader reader = new BufferedReader(new StringReader(encoding!=null?new String(content,encoding):new String(content)));
         String line;
         while((line = reader.readLine())!=null){
             lines.add(line);
