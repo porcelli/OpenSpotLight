@@ -112,28 +112,6 @@ public class ConversionTest {
         
     }
 
-    @Test
-    public void shouldWorkWithDifferentTimezones() throws Exception {
-        String date1AsString = "2010-06-02 11:26:44 BRT";
-        String date2AsString = "2010-06-02 11:26:44 EST";
-
-        Date date1 = Conversion.convert(date1AsString, Date.class);
-        Date date2 = Conversion.convert(date2AsString, Date.class);
-        assertThat(date1, is(not(date2)));
-        assertThat(date1.getTime(), is(not(date2.getTime())));
-    }
-
-    @Test
-    public void shouldRepresentTheSameDateWithDifferentTimezones() throws Exception {
-        String date1AsString = "2010-06-02 13:26:44 BRT";
-        String date2AsString = "2010-06-02 11:26:44 EST";
-
-        Date date1 = Conversion.convert(date1AsString, Date.class);
-        Date date2 = Conversion.convert(date2AsString, Date.class);
-        assertThat(date1, is(date2));
-        assertThat(date1.getTime(), is(date2.getTime()));
-
-    }
 
     @Test
     public void shouldWorkWithEnums() throws Exception {

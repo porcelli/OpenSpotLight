@@ -137,7 +137,7 @@ public class BundleProcessorExecution {
         if (defaultSleepIntervalInMillis <= 0) {
             Exceptions.logAndThrow(new IllegalStateException("Default Thread sleep time in millis must be positive!"));
         }
-        pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor", Runtime.getRuntime().availableProcessors() * 2);
+        pool = TaskExecManager.INSTANCE.createTaskPool("bundle-processor", settings.getParallelThreads());
         final BundleContextThreadInjector listener = new BundleContextThreadInjector(contextFactory, repositories, username,
                 password, descriptor);
         pool.addListener(listener);

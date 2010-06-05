@@ -94,6 +94,8 @@ public class DbArtifactGlobalProcessor implements BundleProcessorGlobalPhase<Dat
                 final TableArtifact tableArtifact = (TableArtifact)artifact;
                 final DbWrappedType wrappedType = WrappedTypeFactory.INSTANCE.createByType(tableArtifact.getDatabaseType());
                 final ParentVo parent = createTableParentNodes(wrappedType, tableArtifact, currentContext, context);
+
+
                 final SLNode tableNode = parent.parent.getNode(tableArtifact.getTableName());
                 if (tableNode != null) {
                     tableNode.remove();

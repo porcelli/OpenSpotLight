@@ -70,6 +70,16 @@ public class GlobalSettings implements SimpleNodeType, Serializable {
 
     private Set<Class<? extends OriginArtifactLoader>> loaderRegistry   = new HashSet<Class<? extends OriginArtifactLoader>>();
 
+    private int parallelThreads = Runtime.getRuntime().availableProcessors() * 2;
+
+    public int getParallelThreads() {
+        return parallelThreads;
+    }
+
+    public void setParallelThreads(int parallelThreads) {
+        this.parallelThreads = parallelThreads;
+    }
+
     public Set<Class<? extends OriginArtifactLoader>> getLoaderRegistry() {
         return loaderRegistry;
     }

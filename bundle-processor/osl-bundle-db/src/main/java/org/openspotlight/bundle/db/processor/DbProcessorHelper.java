@@ -59,7 +59,6 @@ import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.link.ConstraintDatabaseColumn;
 import org.openspotlight.bundle.db.metamodel.link.DatabaseSchema;
 import org.openspotlight.bundle.db.metamodel.link.ForeignKey;
-import org.openspotlight.bundle.db.metamodel.link.GroupDatabase;
 import org.openspotlight.bundle.db.metamodel.link.SchemaCatalog;
 import org.openspotlight.bundle.db.metamodel.link.SchemaTableView;
 import org.openspotlight.bundle.db.metamodel.link.TableViewColumns;
@@ -177,10 +176,9 @@ public class DbProcessorHelper implements DBConstants {
 
         final SLNode databaseContextNode = databaseContext.getRootNode();
 
-        final Server server = currentContext.getCurrentNodeGroup().addNode(wrappedType.getServerType(), serverName);
+        final Server server = databaseContextNode.addNode(wrappedType.getServerType(), serverName);
         final Database database = server.addNode(wrappedType.getDatabaseType(), databaseName);
-        context.getGraphSession().addLink(GroupDatabase.class, currentContext.getCurrentNodeGroup(), database, false);
-
+ 
         final Schema schema = database.addNode(wrappedType.getSchemaType(), schemaName);
 
         context.getGraphSession().addLink(DatabaseSchema.class, database, schema, false);
@@ -270,9 +268,8 @@ public class DbProcessorHelper implements DBConstants {
 
         final SLNode databaseContextNode = databaseContext.getRootNode();
 
-        final Server server = currentContext.getCurrentNodeGroup().addNode(wrappedType.getServerType(), serverName);
+        final Server server = databaseContextNode.addNode(wrappedType.getServerType(), serverName);
         final Database database = server.addNode(wrappedType.getDatabaseType(), databaseName);
-        context.getGraphSession().addLink(GroupDatabase.class, currentContext.getCurrentNodeGroup(), database, false);
 
         final Schema schema = database.addNode(wrappedType.getSchemaType(), schemaName);
 

@@ -96,8 +96,6 @@ public class Conversion {
     private static final Map<Class<?>, Converter> CONVERTERS      = new HashMap<Class<?>, Converter>();
 
     static {
-        final SimpleDateFormat df = (SimpleDateFormat)SimpleDateFormat.getDateInstance();
-        df.applyPattern("yyyy-MM-dd HH:mm:ss zzz");
 
         Conversion.CONVERTERS.put(Integer.class, new IntegerConverter());
         Conversion.CONVERTERS.put(Double.class, new DoubleConverter());
@@ -113,9 +111,10 @@ public class Conversion {
             public Object convert( final Class type,
                                    final Object value ) {
                 try {
-                    if (type.equals(Date.class) && value instanceof String) {
+                    if (type.equals(Date.class) && value instanceof String
+                            && ((String) value).isEmpty()==false) {
                         final String newValue = (String)value;
-                        return df.parse(newValue);
+                        return new Date(Long.parseLong(newValue));
                     }
                 } catch (final Exception e) {
                     throw Exceptions.logAndReturn(new IllegalStateException(e));
@@ -134,7 +133,7 @@ public class Conversion {
                         return null;
                     }
                     if (type.equals(String.class) && value instanceof Date) {
-                                            return df.format((Date)value);
+                                            return Long.toString(((Date)value).getTime());
                                         }
                     if (type.equals(String.class) && value instanceof Class) {
                                             return ((Class)value).getName();

@@ -80,6 +80,8 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -122,6 +124,7 @@ public class DbTableArtifactBundleProcessorTest {
         settings.setDefaultSleepingIntervalInMilliseconds(1000);
 
         GlobalSettingsSupport.initializeScheduleMap(settings);
+        settings.setParallelThreads(1);
         settings.getLoaderRegistry().add(DatabaseCustomArtifactFinder.class);
         final Repository repository = new Repository();
         repository.setName("sampleRepository");
@@ -184,6 +187,8 @@ public class DbTableArtifactBundleProcessorTest {
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
         final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
@@ -225,9 +230,9 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
+        
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
         final SLNode exampleServerNode1 = groupContext1.getRootNode().getNode("server name");
-        for(SLNode n: groupContext1.getRootNode().getNodes()) System.out.println(n.getName());
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
         final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
@@ -245,9 +250,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
-        final SLNode exampleServerNode2 = groupNode2.getNode("server name");
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode exampleServerNode2 = groupContext2.getRootNode().getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
         final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
@@ -273,8 +277,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode();
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
         final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
@@ -293,8 +297,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode();
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
         final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
@@ -320,8 +324,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode();
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
         final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
@@ -337,8 +341,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode();
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
         final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
@@ -360,8 +364,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode();
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
         final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
@@ -394,8 +398,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode();
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
         final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
@@ -441,8 +445,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode();
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
         boolean foundFkConstraint1 = false;
@@ -466,8 +470,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode();
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
         boolean foundFkConstraint2 = false;
@@ -500,8 +504,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext1 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode1 = groupContext1.getRootNode();
         final SLNode exampleServerNode1 = groupNode1.getNode("server name");
         final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
         final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
@@ -532,8 +536,8 @@ public class DbTableArtifactBundleProcessorTest {
         final ExecutionContext executionContext2 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode().getNode(data.group.getUniqueName());
+        final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
+        final SLNode groupNode2 = groupContext2.getRootNode();
         final SLNode exampleServerNode2 = groupNode2.getNode("server name");
         final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
         final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");

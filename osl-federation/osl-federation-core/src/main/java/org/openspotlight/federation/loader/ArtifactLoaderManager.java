@@ -158,9 +158,14 @@ public enum ArtifactLoaderManager {
             try {
                 PersistentArtifactManager manager = provider.get();
                 Artifact loaded = manager.getInternalMethods().findByOriginalName(source, resources.type, name);
-                loaded.setChangeType(ChangeType.EXCLUDED);
-                manager.addTransient(loaded);
-                manager.saveTransientData();
+                if (loaded == null) {
+                    loaded = manager.findByPath(resources.type, name);
+                }
+                if (loaded != null) {
+                    loaded.setChangeType(ChangeType.EXCLUDED);
+                    manager.addTransient(loaded);
+                    manager.saveTransientData();
+                }
                 return null;
             } catch (Exception e) {
                 Exceptions.catchAndLog(e);
@@ -311,7 +316,7 @@ public enum ArtifactLoaderManager {
                         }
 
                         namesToExclude.removeAll(namesFromOrigin);
-                        
+
                         ArtifactTypeCleanupResources cleanupResources = new ArtifactTypeCleanupResources(type, namesToExclude);
                         resourcesToClean.add(cleanupResources);
                         for (String s : result.getIncludedNames()) {
