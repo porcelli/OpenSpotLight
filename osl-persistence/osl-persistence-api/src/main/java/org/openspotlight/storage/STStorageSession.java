@@ -92,9 +92,6 @@ public interface STStorageSession {
     }
 
 
-    STStorageSessionSupportMethods getSupportMethods();
-
-
     void removeNode(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 
     interface STCriteriaBuilder {
@@ -210,19 +207,6 @@ public interface STStorageSession {
 
     }
 
-    interface STStorageSessionSupportMethods {
-        String getLocalKeyAsStringHash(STLocalKey localKey);
-
-        String getUniqueKeyAsStringHash(STUniqueKey uniqueKey);
-
-        byte[] getLocalKeyAsByteHash(STLocalKey localKey);
-
-        byte[] getUniqueKeyAsByteHash(STUniqueKey uniqueKey);
-
-        String getLocalKeyAsSimpleString(STLocalKey localKey);
-
-        String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey);
-    }
 
     void discardTransient();
 

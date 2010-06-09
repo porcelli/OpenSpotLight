@@ -248,14 +248,14 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
     @Override
     protected byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty) throws Exception {
         JRedis jredis = this.factory.getFrom(partition);
-        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(stProperty.getParent().getUniqueKey());
+        String uniqueKey = stProperty.getParent().getUniqueKey().getKeyAsString();
         byte[] propertyValue = jredis.get(KEY_WITH_PROPERTY_VALUE.format(uniqueKey, stProperty.getPropertyName()));
         return propertyValue;
 
     }
 
     @Override
-    protected void internalSave(Set<STPartition> partitions) throws Exception {
+    protected void internalSavePartitions(STPartition... partitions) throws Exception {
         for (STPartition p : partitions) {
             this.factory.getFrom(p).save();
         }
@@ -307,12 +307,12 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
             }
             if (c instanceof STUniqueKeyCriteriaItem) {
                 STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;
-                uniqueIds.add(supportMethods.getUniqueKeyAsStringHash(uniqueCriteria.getValue()));
+                uniqueIds.add(uniqueCriteria.getValue().getKeyAsString());
 
             }
             if (c instanceof STLocalKeyCriteriaItem) {
                 STLocalKeyCriteriaItem uniqueCriteria = (STLocalKeyCriteriaItem) c;
-                String localHash = supportMethods.getLocalKeyAsStringHash(uniqueCriteria.getValue());
+                String localHash = uniqueCriteria.getValue().getKeyAsString();
                 uniqueIdsFromLocalOnes.addAll(listBytesToListString(jredis.smembers(SET_WITH_ALL_LOCAL_KEYS.format(localHash))));
 
             }
@@ -428,7 +428,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
     protected void flushNewItem(Nothing reference, STPartition partition, STNodeEntry entry) throws Exception {
         JRedis jredis = factory.getFrom(partition);
 
-        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(entry.getUniqueKey());
+        String uniqueKey = entry.getUniqueKey().getKeyAsString();
 
         JRedisLoggedExecution jredisExec = new JRedisLoggedExecution(uniqueKey, jredis);
         jredisExec.sadd(SET_WITH_ALL_KEYS, uniqueKey);
@@ -436,12 +436,12 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
         jredisExec.set(KEY_WITH_NODE_ENTRY_NAME.format(uniqueKey), entry.getNodeEntryName());
         STUniqueKey parentKey = entry.getUniqueKey().getParentKey();
         if (parentKey != null) {
-            String parentAsString = supportMethods.getUniqueKeyAsStringHash(parentKey);
+            String parentAsString = parentKey.getKeyAsString();
             jredisExec.set(KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey), parentAsString);
             jredisExec.sadd(SET_WITH_NODE_CHILDREN_KEYS.format(parentAsString), uniqueKey);
             jredisExec.sadd(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(parentAsString, entry.getNodeEntryName()), uniqueKey);
         }
-        String localKey = supportMethods.getLocalKeyAsStringHash(entry.getLocalKey());
+        String localKey = entry.getLocalKey().getKeyAsString();
         jredisExec.sadd(SET_WITH_ALL_LOCAL_KEYS.format(localKey), uniqueKey);
         for (STKeyEntry k : entry.getLocalKey().getEntries()) {
             internalFlushSimplePropertyAndCreateIndex(jredisExec,
@@ -457,7 +457,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
     protected void flushRemovedItem(STPartition partition, STNodeEntry entry) throws Exception {
         JRedis jredis = factory.getFrom(partition);
 
-        String uniqueKey = supportMethods.getUniqueKeyAsStringHash(entry.getUniqueKey());
+        String uniqueKey = entry.getUniqueKey().getKeyAsString();
         jredis.srem(SET_WITH_ALL_KEYS, uniqueKey);
         jredis.srem(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entry.getNodeEntryName()), uniqueKey);
         String simpleProperties = SET_WITH_NODE_PROPERTY_SIMPLE_NAMES.format(uniqueKey);
@@ -502,7 +502,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
     protected Set<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition partition, STNodeEntry stNodeEntry, String name) throws Exception {
         JRedis jredis = factory.getFrom(partition);
 
-        String parentKey = supportMethods.getUniqueKeyAsStringHash(stNodeEntry.getUniqueKey());
+        String parentKey = stNodeEntry.getUniqueKey().getKeyAsString();
         String keyName = name == null ? SET_WITH_NODE_CHILDREN_KEYS.format(parentKey) : SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(parentKey, name);
         List<String> childrenKeys = listBytesToListString(jredis.smembers(keyName));
         ImmutableSet.Builder<STNodeEntry> builder = ImmutableSet.builder();
@@ -534,7 +534,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
         JRedis jredis = factory.getFrom(partition);
         Set<STProperty> result = newHashSet();
 
-        String parentKey = supportMethods.getUniqueKeyAsStringHash(stNodeEntry.getUniqueKey());
+        String parentKey = stNodeEntry.getUniqueKey().getKeyAsString();
         for (PropertyType type : PropertyType.values()) {
             String properties = type.getSetName(parentKey);
             if (jredis.exists(properties)) {
@@ -578,7 +578,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
     @Override
     protected void internalFlushSimpleProperty(Nothing reference, STPartition partition, STProperty dirtyProperty) throws Exception {
         JRedis jredis = factory.getFrom(partition);
-        String uniqueKey = getSupportMethods().getUniqueKeyAsStringHash(dirtyProperty.getParent().getUniqueKey());
+        String uniqueKey = dirtyProperty.getParent().getUniqueKey().getKeyAsString();
         JRedisLoggedExecution jredisExecution = new JRedisLoggedExecution(uniqueKey, jredis);
         PropertyType type = dirtyProperty.isKey() ? PropertyType.KEY : (dirtyProperty.isIndexed() ? PropertyType.INDEXED : PropertyType.SIMPLE);
 

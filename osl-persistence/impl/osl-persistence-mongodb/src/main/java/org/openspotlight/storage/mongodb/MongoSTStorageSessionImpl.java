@@ -49,31 +49,61 @@
 
 package org.openspotlight.storage.mongodb;
 
+import com.google.inject.Inject;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.Mongo;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STRepositoryPath;
+import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STProperty;
+
+import java.util.Map;
 import java.util.Set;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.Mongo;
+import static com.google.common.collect.Maps.newHashMap;
+
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
-public class MongoSTStorageSessionImpl extends AbstractSTStorageSession {
-    
-    protected MongoSTStorageSessionImpl(STFlushMode flushMode, STRepositoryPath repositoryPath) {
-        super(flushMode, repositoryPath);
+public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<BasicDBObject> {
+
+
+    private final Map<STPartition, DB> partitionMap;
+
+
+    private final Mongo mongo;
+    private final STRepositoryPath repositoryPath;
+
+    private DB getDbForPartition(STPartition partition){
+        DB db = partitionMap.get(partition);
+        if(db==null){
+            db = mongo.getDB(repositoryPath.getRepositoryPathAsString() + "/" + partition.getPartitionName());
+            partitionMap.put(partition,db);
+        }
+        return db;
     }
 
+    @Override
+    protected void internalSavePartitions(STPartition... partitions) throws Exception {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected BasicDBObject createReferenceIfNecessary(STPartition partition, STNodeEntry entry) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     @Override
     protected byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty) throws Exception {
         return new byte[0];  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void internalSave(Set<STPartition> partitions) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -82,7 +112,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected void flushNewItem(STPartition partition, STNodeEntry entry) throws Exception {
+    protected void flushNewItem(BasicDBObject reference, STPartition partition, STNodeEntry entry) throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -97,12 +127,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected boolean internalHasSavedProperty(STPartition partition, STProperty stProperty) throws Exception {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void internalFlushSimpleProperty(STPartition partition, STProperty dirtyProperty) throws Exception {
+    protected void internalFlushSimpleProperty(BasicDBObject reference, STPartition partition, STProperty dirtyProperty) throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -117,7 +142,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession {
     }
 
     @Override
-    protected Set<STProperty> internalNodeEntryLoadProperties(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
+    protected Set<STProperty> internalNodeEntryLoadProperties(BasicDBObject reference, STPartition partition, STNodeEntry stNodeEntry) throws Exception {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -125,4 +150,14 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession {
     protected Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Inject
+    public MongoSTStorageSessionImpl(Mongo mongo, STFlushMode flushMode, STRepositoryPath repositoryPath) {
+        super(flushMode, repositoryPath);
+        this.partitionMap = newHashMap();
+        this.mongo = mongo;
+        this.repositoryPath = repositoryPath;
+    }
+
+
 }

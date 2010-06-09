@@ -73,6 +73,9 @@ import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
 public abstract class AbstractSTStorageSession<R> implements STStorageSession {
+
+    protected abstract void internalSavePartitions(STPartition... partitions) throws Exception;
+    
     public STRepositoryPath getRepositoryPath() {
         return repositoryPath;
     }
@@ -198,89 +201,9 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
     }
 
 
-    protected final STStorageSessionSupportMethods supportMethods = new STStorageSessionSupportMethodsImpl();
-
-    public STStorageSessionSupportMethods getSupportMethods() {
-        return supportMethods;
-    }
 
     protected final STNodeEntry createFoundEntryWithKey(STUniqueKey uniqueKey) {
         return new STNodeEntryImpl(uniqueKey, true);
-    }
-
-    public final class STStorageSessionSupportMethodsImpl implements STStorageSessionSupportMethods {
-
-        private final WeakHashMap<STAData, Object> cache = new WeakHashMap<STAData, Object>();
-
-        private <T> T getFromCache(STAData key) {
-            return (T) cache.get(key);
-        }
-
-
-        private <T> T fillCache(STAData key, T toCache) {
-            cache.put(key, toCache);
-            return toCache;
-        }
-
-        public String getLocalKeyAsStringHash(STLocalKey localKey) {
-            String fromCache = getFromCache(localKey);
-            if (fromCache != null) return fromCache;
-
-            return fillCache(localKey, getSha1SignatureEncodedAsBase64(getLocalKeyAsSimpleString(localKey)));
-        }
-
-        public String getUniqueKeyAsStringHash(STUniqueKey uniqueKey) {
-            String fromCache = getFromCache(uniqueKey);
-            if (fromCache != null) return fromCache;
-
-            String result = fillCache(uniqueKey, getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey)));
-            return result;
-        }
-
-
-        public byte[] getLocalKeyAsByteHash(STLocalKey localKey) {
-            byte[] fromCache = getFromCache(localKey);
-            if (fromCache != null) return fromCache;
-
-
-            return fillCache(localKey, getSha1Signature(getLocalKeyAsSimpleString(localKey)));
-        }
-
-
-        public byte[] getUniqueKeyAsByteHash(STUniqueKey uniqueKey) {
-
-            byte[] fromCache = getFromCache(uniqueKey);
-            if (fromCache != null) return fromCache;
-
-            return fillCache(uniqueKey, getSha1Signature(getUniqueKeyAsSimpleString(uniqueKey)));
-
-        }
-
-
-        public String getLocalKeyAsSimpleString(STLocalKey localKey) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(localKey.getNodeEntryName());
-            List<STKeyEntry> ordered = new ArrayList<STKeyEntry>(localKey.getEntries());
-            Collections.sort(ordered);
-            for (STKeyEntry entry : ordered) {
-                sb.append(":").append(entry.getPropertyName()).append(":")
-                        .append(":").append(entry.getValue());
-            }
-            return sb.toString();
-        }
-
-        public String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey) {
-            StringBuilder sb = new StringBuilder();
-            STUniqueKey currentKey = uniqueKey;
-
-            while (currentKey != null) {
-                sb.append(getLocalKeyAsSimpleString(currentKey.getLocalKey())).append(":");
-                currentKey = currentKey.getParentKey();
-            }
-            sb.append(uniqueKey.getRepositoryPath().getRepositoryPathAsString());
-            return sb.toString();
-        }
-
     }
 
     private static class STUniqueKeyCriteriaItemImpl implements STUniqueKeyCriteriaItem {
@@ -1057,7 +980,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
         try {
 
-            internalSave(partitions);
+            internalSavePartitions(partitions.toArray(new STPartition[partitions.size()]));
         } catch (Exception e) {
             handleException(e);
         }
@@ -1065,7 +988,6 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
     }
 
-    protected abstract void internalSave(Set<STPartition> partitions) throws Exception;
 
     private void flushDirtyProperty(R reference, STProperty dirtyProperty) {
         try {

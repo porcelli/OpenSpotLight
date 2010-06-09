@@ -171,8 +171,8 @@ public abstract class AbstractSTStorageSessionTest {
                 .withKey("name", "name").andCreate();
         STNodeEntry sameNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        String aKeyAsString = session.getSupportMethods().getUniqueKeyAsSimpleString(aNode.getUniqueKey());
-        String sameKeyAsString = session.getSupportMethods().getUniqueKeyAsSimpleString(sameNode.getUniqueKey());
+        String aKeyAsString = aNode.getUniqueKey().getKeyAsString();
+        String sameKeyAsString = sameNode.getUniqueKey().getKeyAsString();
         assertThat(aKeyAsString, is(sameKeyAsString));
 
     }

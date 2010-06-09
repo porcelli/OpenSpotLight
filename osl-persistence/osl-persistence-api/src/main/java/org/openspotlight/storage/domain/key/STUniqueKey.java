@@ -63,6 +63,8 @@ import org.openspotlight.storage.domain.STAData;
  */
 public interface STUniqueKey extends STAData , Comparable<STUniqueKey>{
 
+    public String getKeyAsString();
+
     STPartition getPartition();
 
     STLocalKey getLocalKey();

@@ -50,7 +50,7 @@
 package org.openspotlight.storage.domain.key;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
+import org.openspotlight.storage.StringIDSupport;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -65,10 +65,10 @@ import static java.util.Collections.sort;
  */
 public class STLocalKeyImpl implements STLocalKey {
     public STLocalKeyImpl(Set<STKeyEntry> entries, String nodeEntryName) {
-        if(nodeEntryName==null) throw new IllegalArgumentException();
-        Set<String> names= newHashSet();
-        for(STKeyEntry entry: entries){
-            if(names.contains(entry.getPropertyName())) {
+        if (nodeEntryName == null) throw new IllegalArgumentException();
+        Set<String> names = newHashSet();
+        for (STKeyEntry entry : entries) {
+            if (names.contains(entry.getPropertyName())) {
                 throw new IllegalStateException("duplicated entry name");
             }
             names.add(entry.getPropertyName());
@@ -97,6 +97,20 @@ public class STLocalKeyImpl implements STLocalKey {
     public String getNodeEntryName() {
         return nodeEntryName;
     }
+
+    private transient String keyAsString = null;
+
+
+    @Override
+    public String getKeyAsString() {
+        String value = keyAsString;
+        if (value == null) {
+            value = StringIDSupport.getLocalKeyAsStringHash(this);
+            keyAsString = value;
+        }
+        return value;
+    }
+
 
     @Override
     public boolean equals(Object o) {
