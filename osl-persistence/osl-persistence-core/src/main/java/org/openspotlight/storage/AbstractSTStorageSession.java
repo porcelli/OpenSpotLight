@@ -49,7 +49,9 @@
 
 package org.openspotlight.storage;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import org.openspotlight.common.Pair;
 import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
@@ -827,27 +829,37 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
     private final STFlushMode flushMode;
 
 
-    protected final Set<Pair<STNodeEntry,R>> newNodes = newLinkedHashSet();
+    protected final Set<Pair<STNodeEntry, R>> newNodes = newLinkedHashSet();
 
-    protected final Set<Pair<STProperty,R>> dirtyProperties = newLinkedHashSet();
+    protected final Multimap<STNodeEntry, STProperty> dirtyProperties = ArrayListMultimap.create();
 
-    protected final Set<Pair<STNodeEntry,R>> removedNodes = newLinkedHashSet();
+    protected final Set<STNodeEntry> removedNodes = newLinkedHashSet();
 
 
     private R handleNewItem(STNodeEntry entry) {
         try {
+            R reference;
             switch (getFlushMode()) {
                 case AUTO:
-                    return flushNewItem(entry.getUniqueKey().getPartition(), entry);
-                    break;
+                    reference = createReferenceIfNecessary(entry.getUniqueKey().getPartition(), entry);
+                    flushNewItem(reference, entry.getUniqueKey().getPartition(), entry);
+                    return reference;
+
                 case EXPLICIT:
-                    newNodes.add(entry);
-                    break;
+                    reference = createReferenceIfNecessary(entry.getUniqueKey().getPartition(), entry);
+                    newNodes.add(newPair(entry, reference));
+                    return reference;
+                default:
+                    throw new IllegalStateException();
             }
         } catch (Exception e) {
             handleException(e);
+
         }
+        return null;
     }
+
+    protected abstract R createReferenceIfNecessary(STPartition partition, STNodeEntry entry);
 
     private void handleRemovedItem(STNodeEntry entry) {
         try {
@@ -878,14 +890,14 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
 
 
-        public void propertySetProperty(R reference, STProperty stProperty, byte[] value) {
+        public void propertySetProperty(STProperty stProperty, byte[] value) {
             if (!partition.equals(stProperty.getParent().getUniqueKey().getPartition()))
                 throw new IllegalArgumentException("wrong partition for this property");
 
             if (flushMode.equals(STFlushMode.AUTO)) {
-                flushDirtyProperty(reference,stProperty);
+                flushDirtyProperty(null, stProperty);
             } else {
-                dirtyProperties.add(newPair(stProperty,reference));
+                dirtyProperties.put(stProperty.getParent(), stProperty);
             }
 
         }
@@ -895,7 +907,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
                 throw new IllegalArgumentException("wrong partition for this node entry");
 
             try {
-                return internalNodeEntryLoadProperties(partition, stNodeEntry);
+                return internalNodeEntryLoadProperties(null, partition, stNodeEntry);
             } catch (Exception e) {
                 handleException(e);
             }
@@ -1010,11 +1022,12 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
     public void flushTransient() {
         Set<STPartition> partitions = newHashSet();
-
-        for (STNodeEntry newNode : newNodes) {
+        Map<STNodeEntry, R> referenceMap = newHashMap();
+        for (Pair<STNodeEntry, R> newNode : newNodes) {
             try {
-                partitions.add(newNode.getUniqueKey().getPartition());
-                flushNewItem(newNode.getUniqueKey().getPartition(), newNode);
+                partitions.add(newNode.getK1().getUniqueKey().getPartition());
+                flushNewItem(newNode.getK2(), newNode.getK1().getUniqueKey().getPartition(), newNode.getK1());
+                referenceMap.put(newNode.getK1(), newNode.getK2());
             } catch (Exception e) {
                 handleException(e);
             }
@@ -1027,13 +1040,20 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
                 handleException(e);
             }
         }
-
-        for (STProperty data : dirtyProperties) {
-            try {
-                flushDirtyProperty(data);
-            } catch (Exception e) {
-                handleException(e);
+        for (STNodeEntry nodeWithDirtyProperties : dirtyProperties.keySet()) {
+            R reference = referenceMap.get(nodeWithDirtyProperties);
+            if (reference == null) {
+                reference = createReferenceIfNecessary(nodeWithDirtyProperties.getUniqueKey().getPartition(), nodeWithDirtyProperties);
             }
+            for (STProperty data : dirtyProperties.get(nodeWithDirtyProperties)) {
+                try {
+                    flushDirtyProperty(reference, data);
+                } catch (Exception e) {
+                    handleException(e);
+                }
+            }
+
+
         }
         try {
 
@@ -1110,7 +1130,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
     protected abstract void flushNewItem(R reference, STPartition partition, STNodeEntry entry) throws Exception;
 
-    protected abstract void flushRemovedItem(R reference, STPartition partition, STNodeEntry entry) throws Exception;
+    protected abstract void flushRemovedItem(STPartition partition, STNodeEntry entry) throws Exception;
 
     protected abstract Set<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition partition, STNodeEntry stNodeEntry, String name) throws Exception;
 
@@ -1118,7 +1138,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
     protected abstract Set<STNodeEntry> internalNodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
-    protected abstract STNodeEntry internalNodeEntryGetParent(R reference, STPartition partition, STNodeEntry stNodeEntry) throws Exception;
+    protected abstract STNodeEntry internalNodeEntryGetParent(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
     protected abstract Set<STProperty> internalNodeEntryLoadProperties(R reference, STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
