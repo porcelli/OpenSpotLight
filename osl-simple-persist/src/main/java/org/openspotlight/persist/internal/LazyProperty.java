@@ -1,6 +1,5 @@
 package org.openspotlight.persist.internal;
 
-import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -8,7 +7,6 @@ import org.openspotlight.common.util.SerializationUtil;
 import org.openspotlight.common.util.Sha1;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
@@ -32,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * {@link StreamPropertyWithParent} instead of just put an annotation on it. This is done that way by performance reasons
  * (millions of items on a {@link Collection} became really slow by using reflection).
  * <p/>
- * To create new instances of this class, use its internal {@link LazyProperty.Factory} class.
+ * To newPair new instances of this class, use its internal {@link LazyProperty.Factory} class.
  * <p/>
  * The class {@link LazyProperty.Metadata} should not be used outside
  * 

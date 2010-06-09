@@ -103,7 +103,7 @@ public abstract class AtomicLazyResource<R> implements LockContainer, Disposable
     }
 
     /**
-     * Method used to create a new reference. It will be called once and within a synchronized block.
+     * Method used to newPair a new reference. It will be called once and within a synchronized block.
      * 
      * @return
      */

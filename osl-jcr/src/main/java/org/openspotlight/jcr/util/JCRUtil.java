@@ -102,7 +102,7 @@ public class JCRUtil {
             }
             return jcrValue;
         } catch (final Exception e) {
-            throw new JCRUtilException("Error on attempt to create value.", e);
+            throw new JCRUtilException("Error on attempt to newPair value.", e);
         }
     }
 
@@ -154,7 +154,7 @@ public class JCRUtil {
             return jcrValues;
 
         } catch (final Exception e) {
-            throw new JCRUtilException("Error on attempt to create value array.", e);
+            throw new JCRUtilException("Error on attempt to newPair value array.", e);
         }
     }
 

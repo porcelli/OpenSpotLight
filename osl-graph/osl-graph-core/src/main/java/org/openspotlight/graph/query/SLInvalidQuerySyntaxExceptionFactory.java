@@ -204,7 +204,7 @@ public class SLInvalidQuerySyntaxExceptionFactory {
     }
 
     /**
-     * This will take a RecognitionException, and create a sensible error message out of it.
+     * This will take a RecognitionException, and newPair a sensible error message out of it.
      * 
      * @param e the e
      * @return the list< string>

@@ -74,9 +74,9 @@ public class SqlServerDatabaseStreamTest extends DatabaseStreamTest implements R
     protected void fillDatabase( final Connection conn ) throws Exception {
         conn.prepareStatement("CREATE TABLE example_table ( id INT,  data VARCHAR(100) ) ").execute();
         conn.prepareStatement(
-                              " create trigger example_trigger ON example_table " + " FOR INSERT, UPDATE "
+                              " newPair trigger example_trigger ON example_table " + " FOR INSERT, UPDATE "
                               + " AS RAISERROR (50009, 16, 10)").execute();
-        conn.prepareStatement("create view example_view as select * from example_table").execute();
+        conn.prepareStatement("newPair view example_view as select * from example_table").execute();
         conn.prepareStatement("ALTER TABLE example_table " + " ADD CONSTRAINT example_constraint CHECK (id >= 1 )").execute();
         conn.prepareStatement(
                               " CREATE FUNCTION example_function() " + " RETURNS int " + " AS " + " BEGIN " + "  RETURN(1); "

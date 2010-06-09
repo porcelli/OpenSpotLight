@@ -113,7 +113,7 @@ public class ColumnChangingFiresTableChangeTest {
         Connection conn = DatabaseSupport.createConnection(dbBundle);
 
         conn.prepareStatement(
-                "create table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
+                "newPair table EXAMPLE_TABLE_XXX(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)") //$NON-NLS-1$
                 .execute();
         conn.close();
         final GlobalSettings configuration = new GlobalSettings();
@@ -133,7 +133,7 @@ public class ColumnChangingFiresTableChangeTest {
         conn.prepareStatement("drop table EXAMPLE_TABLE_XXX") //$NON-NLS-1$
                 .execute();
 
-        conn.prepareStatement("create table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
+        conn.prepareStatement("newPair table EXAMPLE_TABLE_XXX(changed_columns int not null)") //$NON-NLS-1$
                 .execute();
         conn.close();
         ArtifactLoaderManager.INSTANCE.refreshResources(globalSettings, dbBundle, provider);

@@ -123,9 +123,9 @@ public class DatabaseCustomTest {
         Connection connection = getConnection("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db", "sa", "");
 
         connection.prepareStatement(
-                "create alias newExampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\" ").execute();
+                "newPair alias newExampleFunction for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.increment\" ").execute();
         connection.prepareStatement(
-                "create alias newExampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\"").execute();
+                "newPair alias newExampleProcedure for \"org.openspotlight.federation.data.load.db.test.StaticFunctions.flagProcedure\"").execute();
         connection.commit();
         connection.close();
 
@@ -152,10 +152,10 @@ public class DatabaseCustomTest {
                 "sa", "");
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         connection.prepareStatement(
-                "create table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "newPair table exampleTable(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection.prepareStatement(
-                "create view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable").execute();
-        connection.prepareStatement("create table anotherTable(i int not null primary key, i_fk int)").execute();
+                "newPair view exampleView (s_was_i, dp_was_s, i_was_f, f_was_dp) as select i,s,f,dp from exampleTable").execute();
+        connection.prepareStatement("newPair table anotherTable(i int not null primary key, i_fk int)").execute();
 
         connection.prepareStatement(
                 "alter table anotherTable add constraint example_fk foreign key(i_fk) references exampleTable(i)").execute();

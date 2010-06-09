@@ -71,7 +71,6 @@ import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.federation.scheduler.DefaultScheduler;
 import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
-import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
@@ -222,7 +221,7 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                "create table exampleTable2(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "newPair table exampleTable2(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
@@ -269,7 +268,7 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                "create table exampleTable3(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "newPair table exampleTable3(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
@@ -316,7 +315,7 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                "create table exampleTable4(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "newPair table exampleTable4(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
@@ -356,7 +355,7 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                "create table exampleTable7(i int , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "newPair table exampleTable7(i int , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
@@ -390,7 +389,7 @@ public class DbTableArtifactBundleProcessorTest {
 
         connection2.prepareStatement("drop table exampleTable7 ").execute();
         connection2.prepareStatement(
-                "create table exampleTable7(i varchar(10) not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "newPair table exampleTable7(i varchar(10) not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection2.close();
 
         reloadArtifactsAndCallBundleProcessor();
@@ -430,10 +429,10 @@ public class DbTableArtifactBundleProcessorTest {
         final Random r = new Random();
         final String tableSufix = r.nextInt(50) + "_" + r.nextInt(50) + "_" + r.nextInt(50);
         connection1.prepareStatement(
-                "create table exampleTable"
+                "newPair table exampleTable"
                         + tableSufix
                         + "(i int not null , last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
-        connection1.prepareStatement("create table anotherTable" + tableSufix + "(i int not null , i_fk int)").execute();
+        connection1.prepareStatement("newPair table anotherTable" + tableSufix + "(i int not null , i_fk int)").execute();
 
         connection1.prepareStatement(
                 "alter table anotherTable" + tableSufix + " add constraint example_fk" + tableSufix
@@ -496,7 +495,7 @@ public class DbTableArtifactBundleProcessorTest {
         final Connection connection1 = DatabaseSupport.createConnection(data.artifactSource);
 
         connection1.prepareStatement(
-                "create table exampleTable6(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "newPair table exampleTable6(i int not null primary key, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection1.close();
 
         reloadArtifactsAndCallBundleProcessor();
@@ -528,7 +527,7 @@ public class DbTableArtifactBundleProcessorTest {
 
         connection2.prepareStatement("drop table exampleTable6 ").execute();
         connection2.prepareStatement(
-                "create table exampleTable6(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
+                "newPair table exampleTable6(i int not null, last_i_plus_2 int, s smallint, f float, dp double precision, v varchar(10) not null)").execute();
         connection2.close();
 
         reloadArtifactsAndCallBundleProcessor();

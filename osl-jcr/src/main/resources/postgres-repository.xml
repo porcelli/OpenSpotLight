@@ -76,7 +76,7 @@
 	<Workspaces rootPath="${rep.home}/workspaces"
 		defaultWorkspace="default" />
 	<!--
-		workspace configuration template: used to create the initial workspace
+		workspace configuration template: used to newPair the initial workspace
 		if there's no workspace yet
 	-->
 	<Workspace name="${wsp.name}">

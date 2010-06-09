@@ -50,6 +50,7 @@
 package org.openspotlight.storage;
 
 import com.google.common.collect.ImmutableSet;
+import org.openspotlight.common.Pair;
 import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.*;
 import org.openspotlight.storage.domain.node.STNodeEntry;
@@ -62,13 +63,14 @@ import java.util.*;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.collect.Sets.newLinkedHashSet;
+import static org.openspotlight.common.Pair.newPair;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
-public abstract class AbstractSTStorageSession implements STStorageSession {
+public abstract class AbstractSTStorageSession<R> implements STStorageSession {
     public STRepositoryPath getRepositoryPath() {
         return repositoryPath;
     }
@@ -825,18 +827,18 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
     private final STFlushMode flushMode;
 
 
-    protected final Set<STNodeEntry> newNodes = newLinkedHashSet();
+    protected final Set<Pair<STNodeEntry,R>> newNodes = newLinkedHashSet();
 
-    protected final Set<STProperty> dirtyProperties = newLinkedHashSet();
+    protected final Set<Pair<STProperty,R>> dirtyProperties = newLinkedHashSet();
 
-    protected final Set<STNodeEntry> removedNodes = newLinkedHashSet();
+    protected final Set<Pair<STNodeEntry,R>> removedNodes = newLinkedHashSet();
 
 
-    private void handleNewItem(STNodeEntry entry) {
+    private R handleNewItem(STNodeEntry entry) {
         try {
             switch (getFlushMode()) {
                 case AUTO:
-                    flushNewItem(entry.getUniqueKey().getPartition(), entry);
+                    return flushNewItem(entry.getUniqueKey().getPartition(), entry);
                     break;
                 case EXPLICIT:
                     newNodes.add(entry);
@@ -876,14 +878,14 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
         }
 
 
-        public void propertySetProperty(STProperty stProperty, byte[] value) {
+        public void propertySetProperty(R reference, STProperty stProperty, byte[] value) {
             if (!partition.equals(stProperty.getParent().getUniqueKey().getPartition()))
                 throw new IllegalArgumentException("wrong partition for this property");
 
             if (flushMode.equals(STFlushMode.AUTO)) {
-                flushDirtyProperty(stProperty);
+                flushDirtyProperty(reference,stProperty);
             } else {
-                dirtyProperties.add(stProperty);
+                dirtyProperties.add(newPair(stProperty,reference));
             }
 
         }
@@ -1045,10 +1047,10 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     protected abstract void internalSave(Set<STPartition> partitions) throws Exception;
 
-    private void flushDirtyProperty(STProperty dirtyProperty) {
+    private void flushDirtyProperty(R reference, STProperty dirtyProperty) {
         try {
 
-            internalFlushSimpleProperty(dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
+            internalFlushSimpleProperty(reference, dirtyProperty.getParent().getUniqueKey().getPartition(), dirtyProperty);
 
         } catch (Exception e) {
             handleException(e);
@@ -1106,21 +1108,19 @@ public abstract class AbstractSTStorageSession implements STStorageSession {
 
     protected abstract Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception;
 
-    protected abstract void flushNewItem(STPartition partition, STNodeEntry entry) throws Exception;
+    protected abstract void flushNewItem(R reference, STPartition partition, STNodeEntry entry) throws Exception;
 
-    protected abstract void flushRemovedItem(STPartition partition, STNodeEntry entry) throws Exception;
+    protected abstract void flushRemovedItem(R reference, STPartition partition, STNodeEntry entry) throws Exception;
 
     protected abstract Set<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition partition, STNodeEntry stNodeEntry, String name) throws Exception;
 
-    protected abstract boolean internalHasSavedProperty(STPartition partition, STProperty stProperty) throws Exception;
-
-    protected abstract void internalFlushSimpleProperty(STPartition partition, STProperty dirtyProperty) throws Exception;
+    protected abstract void internalFlushSimpleProperty(R reference, STPartition partition, STProperty dirtyProperty) throws Exception;
 
     protected abstract Set<STNodeEntry> internalNodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
-    protected abstract STNodeEntry internalNodeEntryGetParent(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
+    protected abstract STNodeEntry internalNodeEntryGetParent(R reference, STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
-    protected abstract Set<STProperty> internalNodeEntryLoadProperties(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
+    protected abstract Set<STProperty> internalNodeEntryLoadProperties(R reference, STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
     protected abstract Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception;
 

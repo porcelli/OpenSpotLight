@@ -31,18 +31,13 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-common</artifactId>
+			<artifactId>osl-persistence-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

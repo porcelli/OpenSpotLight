@@ -85,7 +85,7 @@ public abstract class AbstractFactory {
                 factoryMap.put(clazz, factory);
             }
         } catch (final Exception e) {
-            throw new AbstractFactoryException("Error on attempt to create the factory.", e);
+            throw new AbstractFactoryException("Error on attempt to newPair the factory.", e);
         }
         return factory;
     }

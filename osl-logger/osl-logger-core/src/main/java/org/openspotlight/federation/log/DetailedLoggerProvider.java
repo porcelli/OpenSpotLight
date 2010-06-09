@@ -61,7 +61,7 @@ import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 /**
- * The Factory used to create {@link DetailedLogger}.
+ * The Factory used to newPair {@link DetailedLogger}.
  */
 @Singleton
 public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLogger> {

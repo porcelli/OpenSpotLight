@@ -192,12 +192,23 @@
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
+                <artifactId>osl-persistence-test</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openspotlight</groupId>
                 <artifactId>osl-persistence-core</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-persistence-redis</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openspotlight</groupId>
+                <artifactId>osl-persistence-mongodb</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>
@@ -380,6 +391,11 @@
             </dependency>
 
             <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>2.0rc4</version>
+            </dependency>
+            <dependency>
                 <groupId>jredis</groupId>
                 <artifactId>jredis</artifactId>
                 <version>1.0-rc1-java5</version>
@@ -561,19 +577,16 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.4</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-library</artifactId>
                 <version>1.1</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-all</artifactId>
                 <version>1.1</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>

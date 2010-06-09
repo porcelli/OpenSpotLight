@@ -233,7 +233,7 @@ public class SLPersistentTreeSessionImpl implements SLPersistentTreeSession {
                 }
                 return new SLPersistentNodeImpl(this, null, rootNode, eventPoster);
             } catch (final RepositoryException e) {
-                throw new SLPersistentTreeSessionException("Couldn't create persistent root node.", e);
+                throw new SLPersistentTreeSessionException("Couldn't newPair persistent root node.", e);
             }
         }
     }

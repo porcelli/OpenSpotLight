@@ -18,8 +18,8 @@ public enum RedisServerExecutor {
     private static final String RELATIVE_REDIS_PATH = "osl-persistence/impl/osl-persistence-redis/native/redis";
     private static final String REDIS_EXEC = "redis-server";
     private static final String MAKE = "make";
-    private static final String ERROR_MESSAGE = "It is necessary to create an environment variable or JVM property for OSL_HOME ." +
-            " It is possible also to create a variable or JVM property for REDIS_HOME";
+    private static final String ERROR_MESSAGE = "It is necessary to newPair an environment variable or JVM property for OSL_HOME ." +
+            " It is possible also to newPair a variable or JVM property for REDIS_HOME";
     private Process currentProcess = null;
     private static final String ERROR_COMPILING_REDIS = "Error on redis compilation. The executable wasn't found after the make call.";
 

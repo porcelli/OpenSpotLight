@@ -14,6 +14,8 @@
 	<modules>
 		<module>osl-persistence-api</module>
 		<module>osl-persistence-core</module>
+		<module>osl-persistence-test</module>
 		<module>impl/osl-persistence-redis</module>
+		<module>impl/osl-persistence-mongodb</module>
 	</modules>
 </project>

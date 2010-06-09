@@ -51,7 +51,7 @@ package org.openspotlight.remote.server;
 import org.openspotlight.common.exception.SLException;
 
 /**
- * The Class InvalidReferenceTypeException is thrown by {@link RemoteServer} when trying to create an invalid type.
+ * The Class InvalidReferenceTypeException is thrown by {@link RemoteServer} when trying to newPair an invalid type.
  */
 public class InvalidReferenceTypeException extends SLException {
 

@@ -126,7 +126,7 @@ public class RemoteObjectFactoryTest {
     }
 
     /**
-     * Should create remote object factory.
+     * Should newPair remote object factory.
      * 
      * @throws Exception the exception
      */
@@ -136,7 +136,7 @@ public class RemoteObjectFactoryTest {
     }
 
     /**
-     * Should create remote reference.
+     * Should newPair remote reference.
      * 
      * @throws Exception the exception
      */
@@ -208,7 +208,7 @@ public class RemoteObjectFactoryTest {
     }
 
     /**
-     * Should not create remote object factory when server is invalid.
+     * Should not newPair remote object factory when server is invalid.
      * 
      * @throws Exception the exception
      */
@@ -218,7 +218,7 @@ public class RemoteObjectFactoryTest {
     }
 
     /**
-     * Should not create remote object factory when user is invalid.
+     * Should not newPair remote object factory when user is invalid.
      * 
      * @throws Exception the exception
      */

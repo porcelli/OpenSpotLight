@@ -109,7 +109,7 @@ public class MultipleProvider<T> implements Disposable {
     private final T                          singleItem;
 
     /**
-     * returns the item. If this is a multithreaded environment it will create one if this one doesn't exists.
+     * returns the item. If this is a multithreaded environment it will newPair one if this one doesn't exists.
      * 
      * @return
      */

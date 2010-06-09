@@ -64,7 +64,7 @@ import org.openspotlight.common.util.reflection.MethodIdentificationSupport.Meth
 import org.openspotlight.common.util.reflection.MethodIdentificationSupport.UseEnhanced;
 
 /**
- * This factory is used to create lazy behavior on method invocations. For the first method invocation with some of the
+ * This factory is used to newPair lazy behavior on method invocations. For the first method invocation with some of the
  * parameters, the target method is called, and its response is cached. So, on the next invocations with the same parameters, the
  * result is returned from the cache. It is possible to instantiate the new cached instance if there's a default constructor. Also
  * it's possible to call any constructor. The only restriction is: the target class MUST BE NON FINAL. It caches returned objects
@@ -254,7 +254,7 @@ public final class InvocationCacheFactory {
     }
 
     /**
-     * do not create a new cache factory.
+     * do not newPair a new cache factory.
      */
     private InvocationCacheFactory() {
         throw new UnsupportedOperationException();

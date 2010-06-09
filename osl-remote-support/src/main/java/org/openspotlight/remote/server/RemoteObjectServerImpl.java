@@ -510,7 +510,7 @@ public class RemoteObjectServerImpl implements RemoteObjectServer {
     }
 
     /**
-     * Internal create remote reference.
+     * Internal newPair remote reference.
      * 
      * @param userToken the user token
      * @param remoteReferenceType the remote reference type

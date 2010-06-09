@@ -63,7 +63,7 @@ public class SLPersistentTreeFactoryImpl extends SLPersistentTreeFactory {
         try {
             return new SLPersistentTreeImpl(descriptor);
         } catch (final Exception e) {
-            throw new SLPersistentTreeFactoryException("Couldn't create persistent tree.", e);
+            throw new SLPersistentTreeFactoryException("Couldn't newPair persistent tree.", e);
         }
     }
 

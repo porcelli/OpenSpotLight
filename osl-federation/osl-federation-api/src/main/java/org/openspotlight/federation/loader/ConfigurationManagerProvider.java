@@ -49,7 +49,7 @@
 package org.openspotlight.federation.loader;
 
 /**
- * This interface describes a {@link ConfigurationManager} factory. It should create a new {@link ConfigurationManager} each time
+ * This interface describes a {@link ConfigurationManager} factory. It should newPair a new {@link ConfigurationManager} each time
  * the method {@link #getNewInstance()} is called.
  * 
  * @author feu

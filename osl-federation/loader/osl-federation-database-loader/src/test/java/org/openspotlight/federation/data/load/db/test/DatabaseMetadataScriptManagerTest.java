@@ -90,7 +90,7 @@ public class DatabaseMetadataScriptManagerTest {
         script.setPreferedType(PreferedType.SQL);
         script.setDataSelect("select * from data");
         script.setTemplatesSelect("select sysdate from dual where $dummy$ = 'X'");
-        script.setTemplate("create table $dummy$ ");
+        script.setTemplate("newPair table $dummy$ ");
         script.setDatabase(DatabaseType.ORACLE);
         script.setScriptType(ScriptType.TABLE);
         script.setStreamHandlerClass(PostgresRoutineStreamHandler.class);

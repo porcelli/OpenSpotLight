@@ -71,7 +71,7 @@ public class Pair<K1, K2> {
      * @param k2
      * @return
      */
-    public static <K1, K2> Pair<K1, K2> create( K1 k1,
+    public static <K1, K2> Pair<K1, K2> newPair( K1 k1,
                                                 K2 k2 ) {
         return new Pair<K1, K2>(k1, k2);
     }

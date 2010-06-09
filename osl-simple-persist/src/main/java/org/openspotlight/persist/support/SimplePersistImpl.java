@@ -21,7 +21,6 @@ import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 
 import java.beans.PropertyDescriptor;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -925,7 +924,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                         }
                     }
                 }
-                resultInReverseOrder.add(Pair.create(oldParentName, (SimpleNodeType) oldParent));
+                resultInReverseOrder.add(Pair.newPair(oldParentName, (SimpleNodeType) oldParent));
             } while (currentDescriptors != null && oldParent != null);
             reverse(resultInReverseOrder);
             return ImmutableList.copyOf(resultInReverseOrder);

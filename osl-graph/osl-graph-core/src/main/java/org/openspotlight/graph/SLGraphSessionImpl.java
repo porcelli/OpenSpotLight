@@ -370,7 +370,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
         synchronized (lock) {
             try {
                 if (!hasPrivileges(GraphElement.CONTEXT, Action.WRITE)) {
-                    throw new SLInvalidCredentialException("User does not have privilegies to create contexts.");
+                    throw new SLInvalidCredentialException("User does not have privilegies to newPair contexts.");
                 }
 
                 final SLPersistentNode contextsPersistentNode = SLCommonSupport.getContextsPersistentNode(treeSession);
@@ -385,7 +385,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
                 return new SLContextImpl(this, contextRootPersistentNode, eventPoster);
             } catch (final SLPersistentTreeSessionException e) {
                 Exceptions.catchAndLog(e);
-                throw new SLGraphSessionException("Error on attempt to create context node.", e);
+                throw new SLGraphSessionException("Error on attempt to newPair context node.", e);
             }
         }
     }

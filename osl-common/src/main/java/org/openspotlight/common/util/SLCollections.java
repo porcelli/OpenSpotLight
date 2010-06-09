@@ -142,7 +142,7 @@ public class SLCollections {
     }
 
     /**
-     * Convenient method to create a typed set using varargs.
+     * Convenient method to newPair a typed set using varargs.
      * 
      * @param <T>
      * @param elements

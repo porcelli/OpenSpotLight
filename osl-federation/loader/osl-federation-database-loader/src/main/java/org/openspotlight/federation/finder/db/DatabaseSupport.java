@@ -63,7 +63,7 @@ import org.openspotlight.federation.domain.DbArtifactSource;
  */
 public class DatabaseSupport {
     /**
-     * Helper method to create a connection using a {@link DbArtifactSource}.
+     * Helper method to newPair a connection using a {@link DbArtifactSource}.
      * 
      * @param dbBundle
      * @return the connection itself

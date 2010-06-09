@@ -341,7 +341,7 @@ public enum ArtifactLoaderManager {
             }
         }
 
-        return Pair.create(resourcesToLoad, resourcesToClean);
+        return Pair.newPair(resourcesToLoad, resourcesToClean);
     }
 
     /**
