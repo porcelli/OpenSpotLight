@@ -64,7 +64,7 @@ import java.io.Serializable;
  */
 public interface STNodeEntryFactory {
 
-    STNodeEntryBuilder createWithName(STStorageSession session, String name);
+    STNodeEntryBuilder createWithName(STStorageSession session, String name, boolean rootKey);
 
     interface STNodeEntryBuilder {
         

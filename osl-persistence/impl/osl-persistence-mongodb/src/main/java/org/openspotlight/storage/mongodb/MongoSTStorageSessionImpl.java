@@ -52,21 +52,19 @@ package org.openspotlight.storage.mongodb;
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STProperty;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
 import static com.google.common.collect.Maps.newHashMap;
 
 
@@ -78,18 +76,23 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<BasicDBO
 
     private final Map<STPartition, DB> partitionMap;
 
+    private static final String ID="_id",LOCAL_ID="node:local-id",PARENT_ID="node:parent-id",CHILDREN="node:children";
+
 
     private final Mongo mongo;
     private final STRepositoryPath repositoryPath;
 
-    private DB getDbForPartition(STPartition partition){
+    private DB getDbForPartition(STPartition partition) {
         DB db = partitionMap.get(partition);
-        if(db==null){
+        if (db == null) {
             db = mongo.getDB(repositoryPath.getRepositoryPathAsString() + "/" + partition.getPartitionName());
-            partitionMap.put(partition,db);
+            partitionMap.put(partition, db);
         }
         return db;
     }
+
+    private WeakHashMap<STNodeEntry, BasicDBObject> cache = new WeakHashMap();
+
 
     @Override
     protected void internalSavePartitions(STPartition... partitions) throws Exception {
@@ -98,12 +101,35 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<BasicDBO
 
     @Override
     protected BasicDBObject createReferenceIfNecessary(STPartition partition, STNodeEntry entry) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        BasicDBObject basicDBObject = findReferenceOrReturnNull(partition,entry);
+        if (basicDBObject == null) {
+            basicDBObject = new BasicDBObject();
+            basicDBObject.put(ID, entry.getUniqueKey().getKeyAsString());
+        }
+        return basicDBObject;
+    }
+
+    private BasicDBObject findReferenceOrReturnNull(STPartition partition, STNodeEntry entry) {
+        DB db = getDbForPartition(partition);
+        DBCollection coll = db.getCollection(entry.getNodeEntryName());
+        BasicDBObject queryObject = new BasicDBObject();
+        queryObject.put(ID, entry.getUniqueKey().getKeyAsString());
+        BasicDBObject basicDBObject = (BasicDBObject) coll.findOne(queryObject);
+        if (basicDBObject == null) {
+            basicDBObject = new BasicDBObject();
+            queryObject.put(ID, entry.getUniqueKey().getKeyAsString());
+        }
+        return basicDBObject;
     }
 
     @Override
     protected byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty) throws Exception {
-        return new byte[0];  //To change body of implemented methods use File | Settings | File Templates.
+        BasicDBObject reference = findReferenceOrReturnNull(partition, stProperty.getParent());
+        if(reference!=null){
+            byte[] value = (byte[])reference.get(stProperty.getPropertyName());
+            return value;
+        }
+        return null;
     }
 
     @Override
@@ -113,7 +139,9 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<BasicDBO
 
     @Override
     protected void flushNewItem(BasicDBObject reference, STPartition partition, STNodeEntry entry) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        reference.put(LOCAL_ID,entry.getUniqueKey().getLocalKey().getKeyAsString());
+        STUniqueKey parentId = entry.getParent(this).getUniqueKey();
+        FIND IF THE NODE IS A ROOT NODE
     }
 
     @Override

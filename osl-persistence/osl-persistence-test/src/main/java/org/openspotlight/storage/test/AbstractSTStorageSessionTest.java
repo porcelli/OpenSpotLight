@@ -167,9 +167,9 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldCreateTheSameKey() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry sameNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry sameNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         String aKeyAsString = aNode.getUniqueKey().getKeyAsString();
         String sameKeyAsString = sameNode.getUniqueKey().getKeyAsString();
@@ -181,14 +181,14 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldFindByUniqueKey() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         STNodeEntry theSameNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withUniqueKey(aNode.getUniqueKey()).buildCriteria().andFindUnique(session);
         assertThat(aNode, is(theSameNode));
         assertThat(theSameNode.getProperty(session, "name").getValueAsString(session), is("name"));
         STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withUniqueKey(session.withPartition(ExamplePartition.DEFAULT).createKey("invalid").andCreate()).buildCriteria().andFindUnique(session);
+                .withUniqueKey(session.withPartition(ExamplePartition.DEFAULT).createKey("invalid",false).andCreate()).buildCriteria().andFindUnique(session);
         assertThat(nullNode, is(nullValue()));
 
 
@@ -197,13 +197,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldFindByLocalKey() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root2).andCreate();
 
         Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
@@ -219,13 +219,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldFindByProperties() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root2).andCreate();
         aNode1.setIndexedProperty(session, "parameter", "value");
         aNode2.setIndexedProperty(session, "parameter", "value");
@@ -253,13 +253,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesContainingString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name2").withParent(root2).andCreate();
         aNode1.setSimpleProperty(session, "parameter", "io");
         aNode2.setSimpleProperty(session, "parameter", "aeiou");
@@ -278,13 +278,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldFindByPropertiesWithNullValue() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "a").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "2")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "2")
                 .withKey("name", "b").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name2").withParent(root2).andCreate();
         aNode1.setIndexedProperty(session, "parameter", "io");
         aNode2.setIndexedProperty(session, "parameter", "aeiou");
@@ -302,13 +302,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesStartingWithString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name2").withParent(root2).andCreate();
         aNode1.setSimpleProperty(session, "parameter", "io");
         aNode2.setSimpleProperty(session, "parameter", "iou");
@@ -326,13 +326,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesEndingWithString() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name2").withParent(root2).andCreate();
         aNode1.setSimpleProperty(session, "parameter", "io");
         aNode2.setSimpleProperty(session, "parameter", "uio");
@@ -351,13 +351,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldFindByLocalKeyAndProperties() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root2).andCreate();
         aNode1.setIndexedProperty(session, "parameter", "value");
         aNode2.setIndexedProperty(session, "parameter", "value");
@@ -382,13 +382,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldFindNamedNodes() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("root2",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root2).andCreate();
 
         Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).findNamed("root1");
@@ -414,7 +414,7 @@ public abstract class AbstractSTStorageSessionTest {
         session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1")
                 .withProperty("sequence").equalsTo("1")
                 .withProperty("name").equalsTo("name").withUniqueKey(session
-                .withPartition(ExamplePartition.DEFAULT).createKey("sample").andCreate())
+                .withPartition(ExamplePartition.DEFAULT).createKey("sample",false).andCreate())
                 .buildCriteria().andFindUnique(session);
     }
 
@@ -426,7 +426,7 @@ public abstract class AbstractSTStorageSessionTest {
                 .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence")
                 .equalsTo("1").withProperty("name").equalsTo("name")
@@ -443,7 +443,7 @@ public abstract class AbstractSTStorageSessionTest {
                 .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence")
                 .equalsTo("1").withProperty("name").equalsTo("name")
@@ -462,11 +462,11 @@ public abstract class AbstractSTStorageSessionTest {
 
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withParent(newNode1).withKey("sequence", "1")
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName",false).withParent(newNode1).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName").withParent(newNode2).withKey("sequence", "3")
+        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("sameName",false).withParent(newNode2).withKey("sequence", "3")
                 .withKey("name", "name").andCreate();
 
 
@@ -497,38 +497,38 @@ public abstract class AbstractSTStorageSessionTest {
 
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
 
-        STNodeEntry root = session.withPartition(ExamplePartition.DEFAULT).createWithName("root")
+        STNodeEntry root = session.withPartition(ExamplePartition.DEFAULT).createWithName("root",false)
                 .withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry child1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child")
+        STNodeEntry child1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child",false)
                 .withParent(root)
                 .withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry child2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child")
+        STNodeEntry child2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child",false)
                 .withParent(root)
                 .withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
-        STNodeEntry child3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child")
+        STNodeEntry child3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child",false)
                 .withParent(root)
                 .withKey("sequence", "3")
                 .withKey("name", "name").andCreate();
-        STNodeEntry child4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child")
+        STNodeEntry child4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("child",false)
                 .withParent(root)
                 .withKey("sequence", "4")
                 .withKey("name", "name").andCreate();
-        STNodeEntry childAnotherType1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType")
+        STNodeEntry childAnotherType1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType",false)
                 .withParent(root)
                 .withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry childAnotherType2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType")
+        STNodeEntry childAnotherType2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType",false)
                 .withParent(root)
                 .withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
-        STNodeEntry childAnotherType3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType")
+        STNodeEntry childAnotherType3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType",false)
                 .withParent(root)
                 .withKey("sequence", "3")
                 .withKey("name", "name").andCreate();
-        STNodeEntry childAnotherType4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType")
+        STNodeEntry childAnotherType4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("childAnotherType",false)
                 .withParent(root)
                 .withKey("sequence", "4")
                 .withKey("name", "name").andCreate();
@@ -568,25 +568,25 @@ public abstract class AbstractSTStorageSessionTest {
     public void shouldWorkWithPartitions() {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
 
-        session.withPartition(ExamplePartition.DEFAULT).createWithName("root")
+        session.withPartition(ExamplePartition.DEFAULT).createWithName("root",false)
                 .withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        session.withPartition(ExamplePartition.FIRST).createWithName("root")
+        session.withPartition(ExamplePartition.FIRST).createWithName("root",false)
                 .withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        session.withPartition(ExamplePartition.SECOND).createWithName("root")
+        session.withPartition(ExamplePartition.SECOND).createWithName("root",false)
                 .withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withUniqueKey(
-                session.withPartition(ExamplePartition.DEFAULT).createKey("root").withEntry("sequence", "1")
+                session.withPartition(ExamplePartition.DEFAULT).createKey("root",false).withEntry("sequence", "1")
                         .withEntry("name", "name").andCreate()).buildCriteria().andFindUnique(session);
 
         STNodeEntry root2 = session.withPartition(ExamplePartition.FIRST).createCriteria().withUniqueKey(
-                session.withPartition(ExamplePartition.FIRST).createKey("root").withEntry("sequence", "1")
+                session.withPartition(ExamplePartition.FIRST).createKey("root",false).withEntry("sequence", "1")
                         .withEntry("name", "name").andCreate()).buildCriteria().andFindUnique(session);
 
         STNodeEntry root3 = session.withPartition(ExamplePartition.SECOND).createCriteria().withUniqueKey(
-                session.withPartition(ExamplePartition.SECOND).createKey("root").withEntry("sequence", "1")
+                session.withPartition(ExamplePartition.SECOND).createKey("root",false).withEntry("sequence", "1")
                         .withEntry("name", "name").andCreate()).buildCriteria().andFindUnique(session);
 
         assertThat(root1, is(notNullValue()));
@@ -614,7 +614,7 @@ public abstract class AbstractSTStorageSessionTest {
 
         Date newDate = new Date();
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
 
         STNodeEntry loadedNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
@@ -660,7 +660,7 @@ public abstract class AbstractSTStorageSessionTest {
 
         Date newDate = new Date();
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         newNode.setIndexedProperty(session, "stringProperty", "value");
 
@@ -739,7 +739,7 @@ public abstract class AbstractSTStorageSessionTest {
 
 
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
 
         InputStream stream = new ByteArrayInputStream("streamValue".getBytes());
@@ -780,7 +780,7 @@ public abstract class AbstractSTStorageSessionTest {
     public void shouldWorkWithInputStreamPropertiesOnAutoFlush() throws Exception {
 
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
 
 
@@ -819,13 +819,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldFindMultipleResults() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "2")
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
-        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "another name").andCreate();
-        STNodeEntry newNode4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("anotherName").withKey("sequence", "2")
+        STNodeEntry newNode4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("anotherName",false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
         Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("name")
                 .equalsTo("name").buildCriteria().andFind(session);
@@ -843,9 +843,9 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldRemoveNodesOnAutoFlush() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "2")
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
 
         Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
@@ -869,9 +869,9 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldRemoveNodesOnExplicitFlush() throws Exception {
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "2")
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
         session.flushTransient();
         Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
@@ -905,9 +905,9 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldDiscardTransientNodesOnExplicitFlush() throws Exception {
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "2")
+        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
         session.flushTransient();
         Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
@@ -944,7 +944,7 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldUpdatePropertyAndFindWithUpdatedValue() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         newNode1.setIndexedProperty(session, "parameter", "firstValue");
         Set<STNodeEntry> found = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
@@ -971,7 +971,7 @@ public abstract class AbstractSTStorageSessionTest {
     @Test(expected = IllegalStateException.class)
     public void shouldNotSetKeyProperty() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1").withKey("sequence", "1")
+        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         newNode1.setSimpleProperty(session, "sequence", "3");
 
@@ -981,13 +981,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldFindByPropertiesWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def",false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl",false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root2).andCreate();
         aNode1.setIndexedProperty(session, "parameter", "value");
         aNode2.setIndexedProperty(session, "parameter", "value");
@@ -1013,13 +1013,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesContainingStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc",false).withKey("sequence", "1")
                 .withKey("name", "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def",false).withKey("sequence", "1")
                 .withKey("name", "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi",false).withKey("sequence", "1")
                 .withKey("name", "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl",false).withKey("sequence", "1")
                 .withKey("name", "name2").withParent(root2).andCreate();
         aNode1.setSimpleProperty(session, "parameter", "io");
         aNode2.setSimpleProperty(session, "parameter", "aeiou");
@@ -1037,13 +1037,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesStartingWithStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc",false).withKey("sequence", "1")
                 .withKey("name", "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def",false).withKey("sequence", "1")
                 .withKey("name", "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi",false).withKey("sequence", "1")
                 .withKey("name", "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl",false).withKey("sequence", "1")
                 .withKey("name", "name2").withParent(root2).andCreate();
         aNode1.setSimpleProperty(session, "parameter", "io");
         aNode2.setSimpleProperty(session, "parameter", "iou");
@@ -1061,13 +1061,13 @@ public abstract class AbstractSTStorageSessionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldFindByPropertiesEndingWithStringWithoutNodeName() throws Exception {
         STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc").withKey("sequence", "1")
+        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("abc",false).withKey("sequence", "1")
                 .withKey("name", "name1").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def").withKey("sequence", "1")
+        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("def",false).withKey("sequence", "1")
                 .withKey("name", "name2").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi").withKey("sequence", "1")
+        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("ghi",false).withKey("sequence", "1")
                 .withKey("name", "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl").withKey("sequence", "1")
+        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl",false).withKey("sequence", "1")
                 .withKey("name", "name2").withParent(root2).andCreate();
         aNode1.setSimpleProperty(session, "parameter", "io");
         aNode2.setSimpleProperty(session, "parameter", "uio");

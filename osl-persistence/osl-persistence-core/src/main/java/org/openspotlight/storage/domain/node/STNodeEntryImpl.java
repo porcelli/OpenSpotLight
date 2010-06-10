@@ -302,8 +302,8 @@ public class STNodeEntryImpl implements STNodeEntry {
         }
     }
 
-    public STNodeEntryBuilder createWithName(final STStorageSession session, final String name) {
-        return session.withPartition(partition).getInternalMethods().nodeEntryCreateWithName(this, name);
+    public STNodeEntryBuilder createWithName(final STStorageSession session, final String name, boolean rootKey) {
+        return session.withPartition(partition).getInternalMethods().nodeEntryCreateWithName(this, name, rootKey);
 
     }
 

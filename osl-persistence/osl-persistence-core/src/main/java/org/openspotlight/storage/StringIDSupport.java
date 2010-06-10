@@ -26,6 +26,7 @@ public class StringIDSupport {
     private static String getLocalKeyAsSimpleString(STLocalKey localKey) {
         StringBuilder sb = new StringBuilder();
         sb.append(localKey.getNodeEntryName());
+        sb.append(localKey.isRootKey());
         List<STKeyEntry> ordered = new ArrayList<STKeyEntry>(localKey.getEntries());
         Collections.sort(ordered);
         for (STKeyEntry entry : ordered) {

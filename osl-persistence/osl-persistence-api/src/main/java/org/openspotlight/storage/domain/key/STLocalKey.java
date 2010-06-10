@@ -70,4 +70,6 @@ public interface STLocalKey extends STAData, Comparable<STLocalKey> {
 
     String getKeyAsString();
 
+    boolean isRootKey();
+
 }

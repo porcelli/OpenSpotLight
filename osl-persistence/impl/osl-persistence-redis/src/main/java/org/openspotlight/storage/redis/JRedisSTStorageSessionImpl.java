@@ -77,7 +77,7 @@ import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
  */
 
 
-enum Nothing{
+enum Nothing {
     NOTHING
 }
 
@@ -224,6 +224,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
     private static final CustomizedFormat KEY_WITH_PROPERTY_VALUE = new CustomizedFormat("nuid: :pname: :value");
     private static final CustomizedFormat KEY_WITH_PARENT_UNIQUE_ID = new CustomizedFormat("nuid: :prt-uid");
     private static final CustomizedFormat KEY_WITH_NODE_ENTRY_NAME = new CustomizedFormat("nuid: :nname");
+    private static final CustomizedFormat KEY_WITH_NODE_ENTRY_ROOT = new CustomizedFormat("nuid: :root");
 
     private static enum SearchType {
         EQUAL, STRING_STARTS_WITH, STRING_ENDS_WITH, STRING_CONTAINS
@@ -237,7 +238,6 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
         super(flushMode, repositoryPath);
         this.factory = factory;
     }
-
 
 
     @Override
@@ -391,9 +391,10 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
         do {
             List<String> keyPropertyNames = listBytesToListString(jredis.smembers(SET_WITH_NODE_PROPERTY_KEY_NAMES.format(parentKey)));
             String nodeEntryName = toStr(jredis.get(KEY_WITH_NODE_ENTRY_NAME.format(parentKey)));
+            boolean isRoot = Boolean.valueOf(toStr(jredis.get(KEY_WITH_NODE_ENTRY_ROOT.format(parentKey))));
             if (nodeEntryName == null) break;
 
-            keyBuilder = keyBuilder == null ? withPartition(partition).createKey(nodeEntryName) : keyBuilder.withParent(nodeEntryName);
+            keyBuilder = keyBuilder == null ? withPartition(partition).createKey(nodeEntryName, isRoot) : keyBuilder.withParent(nodeEntryName, isRoot);
 
             for (String keyName : keyPropertyNames) {
                 String value = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE.format(parentKey, keyName)));
@@ -434,6 +435,7 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
         jredisExec.sadd(SET_WITH_ALL_KEYS, uniqueKey);
         jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entry.getNodeEntryName()), uniqueKey);
         jredisExec.set(KEY_WITH_NODE_ENTRY_NAME.format(uniqueKey), entry.getNodeEntryName());
+        jredisExec.set(KEY_WITH_NODE_ENTRY_ROOT.format(uniqueKey), Boolean.toString(entry.getUniqueKey().getLocalKey().isRootKey()));
         STUniqueKey parentKey = entry.getUniqueKey().getParentKey();
         if (parentKey != null) {
             String parentAsString = parentKey.getKeyAsString();
@@ -474,16 +476,16 @@ public class JRedisSTStorageSessionImpl extends AbstractSTStorageSession<Nothing
         }
         jredis.del(simpleProperties, keyProperties, indexedProperties,
                 KEY_WITH_NODE_ENTRY_NAME.format(uniqueKey),
-                SET_WITH_NODE_CHILDREN_KEYS.format(uniqueKey),
-                KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey),
-                KEY_WITH_NODE_ENTRY_NAME.format(uniqueKey));
+                KEY_WITH_NODE_ENTRY_ROOT.format(uniqueKey),
+                                                SET_WITH_NODE_CHILDREN_KEYS.format(uniqueKey),
+                KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey));
 
 
         String dependentKeys = SET_WITH_ALL_DEPENDENT_KEYS.format(uniqueKey);
         List<String> keys = listBytesToListString(jredis.smembers(dependentKeys));
 
         for (String key : keys) {
-            if (key.contains(uniqueKey) ) {
+            if (key.contains(uniqueKey)) {
                 jredis.del(key);
             } else {
                 List<String> possibleValues = listBytesToListString(jredis.smembers(key));

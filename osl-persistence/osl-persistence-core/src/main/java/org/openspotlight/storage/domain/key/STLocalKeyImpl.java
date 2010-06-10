@@ -64,7 +64,14 @@ import static java.util.Collections.sort;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:46:52 AM
  */
 public class STLocalKeyImpl implements STLocalKey {
-    public STLocalKeyImpl(Set<STKeyEntry> entries, String nodeEntryName) {
+    public boolean isRootKey() {
+        return rootKey;
+    }
+
+    private final boolean rootKey;
+
+    public STLocalKeyImpl(Set<STKeyEntry> entries, String nodeEntryName, boolean rootKey) {
+        this.rootKey = rootKey;
         if (nodeEntryName == null) throw new IllegalArgumentException();
         Set<String> names = newHashSet();
         for (STKeyEntry entry : entries) {
