@@ -10,8 +10,8 @@ public enum SLPartition implements STPartition {
 
     GRAPH("graph"),
     FEDERATION("federation"),
-    SYNTAX_HIGHLIGHT("syntax-highlight",FEDERATION),
-    LINE_REFERENCE("line-reference",GRAPH),
+    SYNTAX_HIGHLIGHT("syntax_highlight",FEDERATION),
+    LINE_REFERENCE("line_reference",GRAPH),
     SECURITY("security"),
     LOG("log")
     ;

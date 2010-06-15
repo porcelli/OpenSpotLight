@@ -201,7 +201,7 @@ public interface STStorageSession {
 
         STUniqueKeyBuilder withEntry(String propertyName, String value);
 
-        STUniqueKeyBuilder withParent(String nodeEntryName, boolean rootKey);
+        STUniqueKeyBuilder withParent(STPartition partition, String nodeEntryName, boolean rootKey);
 
         STUniqueKey andCreate();
 

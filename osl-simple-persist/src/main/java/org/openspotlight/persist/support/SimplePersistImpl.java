@@ -36,7 +36,8 @@ import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Reflection.*;
+import static org.openspotlight.common.util.Reflection.unwrapCollectionFromMethodReturn;
+import static org.openspotlight.common.util.Reflection.unwrapMapFromMethodReturn;
 
 /**
  * Created by IntelliJ IDEA. User: feuteston Date: 05/04/2010 Time: 13:19:32 To change this template use File | Settings | File
@@ -305,7 +306,8 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                                           Descriptors descriptors,
                                           String propertyName) throws Exception {
         String name = internalGetNodeName(descriptors.bean);
-        STNodeEntryFactory.STNodeEntryBuilder builder = currentSession.withPartition(currentPartition).createWithName(name);
+        boolean isRootNode = internalGetRootMode(descriptors.bean);
+        STNodeEntryFactory.STNodeEntryBuilder builder = currentSession.withPartition(currentPartition).createWithName(name, isRootNode);
 
         if (parentNode != null) {
             builder.withParent(parentNode);
@@ -346,6 +348,15 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     private <T> String internalGetNodeName(T bean) {
         return this.<T>internalGetNodeName((Class<T>) bean.getClass());
+    }
+
+
+    private <T> boolean internalGetRootMode(T bean) {
+        return this.<T>internalGetRootMode((Class<T>) bean.getClass());
+    }
+
+    private <T> boolean internalGetRootMode(Class<T> type) {
+        return type.isAnnotationPresent(PersistAsRootNode.class);
     }
 
     private <T> String internalGetNodeType(T bean) {
@@ -511,7 +522,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         for (PropertyDescriptor descriptor : simplePropertiesDescriptor) {
             String value = node.getPropertyAsString(currentSession, descriptor.getName());
             if (value == null && descriptor.getPropertyType().isPrimitive()) continue;
-            descriptor.getWriteMethod().invoke(bean, Conversion.convert(value,descriptor.getPropertyType()));
+            descriptor.getWriteMethod().invoke(bean, Conversion.convert(value, descriptor.getPropertyType()));
         }
     }
 
@@ -693,7 +704,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                     throw new SLRuntimeException("invalid property:" + propertyNames[i]);
                 }
                 builder.withProperty(propertyNames[i]).equalsTo(
-                        Conversion.convert(propertyValues[i],String.class));
+                        Conversion.convert(propertyValues[i], String.class));
             }
             Set<STNodeEntry> foundItems = builder.buildCriteria().andFind(currentSession);
             if (parent != null) {

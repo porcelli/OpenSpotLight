@@ -23,9 +23,9 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  *
- * ***********************************************************************
+ ***********************************************************************
  * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- * *
+ *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
  * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
@@ -46,39 +46,14 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.persist.annotation;
 
-package org.openspotlight.storage.redis.guice;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import org.openspotlight.guice.ThreadLocalProvider;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.JRedisSTStorageSessionImpl;
-
-/**
- * Created by User: feu - Date: Mar 23, 2010 - Time: 4:57:04 PM
- */
-@Singleton
-public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorageSession> {
-    private final STPartitionFactory partitionFactory;
-
-    @Inject
-    public JRedisSTStorageSessionProvider(STStorageSession.STFlushMode flushMode, JRedisFactory factory, STRepositoryPath repositoryPath, STPartitionFactory partitionFactory) {
-        this.flushMode = flushMode;
-        this.factory = factory;
-        this.repositoryPath = repositoryPath;
-        this.partitionFactory = partitionFactory;
-    }
-
-    private final STStorageSession.STFlushMode flushMode;
-    private final JRedisFactory factory;
-    private final STRepositoryPath repositoryPath;
-
-
-    @Override
-    protected STStorageSession createInstance() {
-        return new JRedisSTStorageSessionImpl(flushMode, factory,repositoryPath, partitionFactory);
-    }
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
+public @interface PersistAsRootNode {
 }

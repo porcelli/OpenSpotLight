@@ -49,42 +49,63 @@
 
 package org.openspotlight.storage.mongodb.test;
 
+import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.mongodb.Mongo;
+import org.openspotlight.storage.STRepositoryPath;
+import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.test.AbstractSTStorageSessionTest;
 
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 5:08:39 PM
  */
-public class MongoStorageSessionTest extends AbstractSTStorageSessionTest{
+public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
+
+    private final Mongo mongo;
+    private final STRepositoryPath repositoryPath;
+
+    public MongoStorageSessionTest() {
+        try {
+            mongo = new Mongo();
+            repositoryPath = new STRepositoryPath("repository");
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     protected Injector createsAutoFlushInjector() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.AUTO, mongo, repositoryPath));
     }
 
     @Override
     protected Injector createsExplicitFlushInjector() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.AUTO, mongo, repositoryPath));
     }
 
     @Override
     protected boolean supportsAutoFlushInjector() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     @Override
     protected boolean supportsExplicitFlushInjector() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     @Override
     protected boolean supportsAdvancedQueries() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     @Override
     protected void internalCleanPreviousData() throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        for (String dbName : mongo.getDatabaseNames()) {
+
+            mongo.getDB(dbName).dropDatabase();
+        }
     }
 }

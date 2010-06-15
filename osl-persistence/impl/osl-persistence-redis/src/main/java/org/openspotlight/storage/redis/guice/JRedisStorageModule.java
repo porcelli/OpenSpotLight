@@ -51,9 +51,7 @@ package org.openspotlight.storage.redis.guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.*;
 
 import java.util.Map;
 
@@ -68,14 +66,25 @@ public class JRedisStorageModule extends AbstractModule {
 
     private final STRepositoryPath repositoryPath;
 
+    private final STPartitionFactory partitionFactory;
+
     public JRedisStorageModule(STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig, STRepositoryPath repositoryPath) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
         this.repositoryPath = repositoryPath;
+        this.partitionFactory = new DefaultSTPartitionFactory();
+    }
+
+    public JRedisStorageModule(STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig, STRepositoryPath repositoryPath, STPartitionFactory partitionFactory) {
+        this.flushMode = flushMode;
+        this.mappedServerConfig = mappedServerConfig;
+        this.repositoryPath = repositoryPath;
+        this.partitionFactory = partitionFactory;
     }
 
     @Override
     protected void configure() {
+        bind(STPartitionFactory.class).toInstance(partitionFactory);
         bind(STStorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
         bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
         bind(new TypeLiteral<Map<STPartition, JRedisServerDetail>>() {

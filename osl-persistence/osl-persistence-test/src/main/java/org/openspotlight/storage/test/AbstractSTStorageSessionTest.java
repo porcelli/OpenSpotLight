@@ -97,7 +97,7 @@ public abstract class AbstractSTStorageSessionTest {
 
     protected enum ExamplePartition implements STPartition {
 
-        DEFAULT("default"), FIRST("first"), SECOND("second");
+        DEFAULT("DEFAULT"), FIRST("FIRST"), SECOND("SECOND");
 
         private final String partitionName;
 
@@ -105,7 +105,7 @@ public abstract class AbstractSTStorageSessionTest {
             return partitionName;
         }
 
-        ExamplePartition(String partitionName) {
+        private ExamplePartition(String partitionName) {
             this.partitionName = partitionName;
         }
     }

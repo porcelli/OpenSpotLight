@@ -1035,8 +1035,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             return this;
         }
 
-        public STUniqueKeyBuilder withParent(String nodeEntryName, boolean rootKey) {
-            return new STUniqueKeyBuilderImpl(nodeEntryName, this, partition, rootKey);
+        public STUniqueKeyBuilder withParent(STPartition newPartition, String nodeEntryName, boolean rootKey) {
+            return new STUniqueKeyBuilderImpl(nodeEntryName, this, newPartition, rootKey);
         }
 
         public STUniqueKey andCreate() {
