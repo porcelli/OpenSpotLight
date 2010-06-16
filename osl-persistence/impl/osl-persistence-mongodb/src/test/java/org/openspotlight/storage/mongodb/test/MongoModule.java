@@ -18,15 +18,25 @@ public class MongoModule extends AbstractModule {
 
     private final STRepositoryPath repositoryPath;
 
+    private final STPartitionFactory factory;
+
     public MongoModule(STStorageSession.STFlushMode flushMode, Mongo mongo, STRepositoryPath repositoryPath) {
         this.flushMode = flushMode;
         this.mongo = mongo;
         this.repositoryPath = repositoryPath;
+        this.factory = new DefaultSTPartitionFactory();
+    }
+
+    public MongoModule(STStorageSession.STFlushMode flushMode, Mongo mongo, STRepositoryPath repositoryPath, STPartitionFactory factory) {
+        this.flushMode = flushMode;
+        this.mongo = mongo;
+        this.repositoryPath = repositoryPath;
+        this.factory = factory;
     }
 
     @Override
     protected void configure() {
-        bind(STPartitionFactory.class).toInstance(new DefaultSTPartitionFactory());
+        bind(STPartitionFactory.class).toInstance(factory);
         bind(Mongo.class).toInstance(mongo);
         bind(STRepositoryPath.class).toInstance(repositoryPath);
         bind(STStorageSession.STFlushMode.class).toInstance(flushMode);

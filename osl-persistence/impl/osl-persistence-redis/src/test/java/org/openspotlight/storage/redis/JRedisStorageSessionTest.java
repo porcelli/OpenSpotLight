@@ -53,7 +53,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
@@ -114,24 +113,12 @@ public class JRedisStorageSessionTest extends AbstractSTStorageSessionTest {
 
     @Override
     protected Injector createsAutoFlushInjector() {
-        return Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath"), new STPartitionFactory() {
-
-            @Override
-            public STPartition getPartitionByName(String name) {
-                return ExamplePartition.valueOf(name.toUpperCase());
-            }
-        }));
+        return Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
     }
 
     @Override
     protected Injector createsExplicitFlushInjector() {
-        return Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.EXPLICIT, mappedServerConfig, repositoryPath("repositoryPath"), new STPartitionFactory() {
-
-            @Override
-            public STPartition getPartitionByName(String name) {
-                return ExamplePartition.valueOf(name.toUpperCase());
-            }
-        }));
+        return Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.EXPLICIT, mappedServerConfig, repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
     }
 
     @Override

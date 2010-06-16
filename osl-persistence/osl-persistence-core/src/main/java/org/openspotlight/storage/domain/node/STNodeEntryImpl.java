@@ -329,10 +329,6 @@ public class STNodeEntryImpl implements STNodeEntry {
         return result;
     }
 
-    public int compareTo(STNodeEntry o) {
-        return this.getLocalKey().compareTo(o.getLocalKey());
-    }
-
     @Override
     public String toString() {
         return "STNodeEntryImpl{" +

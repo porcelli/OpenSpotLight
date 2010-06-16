@@ -1,15 +1,14 @@
 package org.openspotlight.storage.mongodb.test;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
+import com.mongodb.*;
+import org.bson.types.ObjectId;
 import org.junit.Test;
 
 /**
  * Created by User: feu - Date: Jun 9, 2010 - Time: 10:24:03 AM
  */
 public class RawStorageTest {
+
 
 
     @Test
@@ -19,7 +18,7 @@ public class RawStorageTest {
         DB db = m.getDB("mydb");
 
         BasicDBObject doc = new BasicDBObject();
-        DBCollection coll = db.getCollection("testCollection");
+        DBCollection coll = db.getCollection("aa");
 
         doc.put("name", "MongoDB");
         doc.put("type", "database");
@@ -32,7 +31,17 @@ public class RawStorageTest {
 
         doc.put("info", info);
 
-        coll.insert(doc);
+                 doc.put("_id","alalala");
+        coll.save(doc);
+        Object id = doc.get("_id");
+        System.err.println("ID:" + id);
+        BasicDBObject obj = new BasicDBObject();
+        obj.put("_id","alalala");
+        DBCursor cur = coll.find(obj);
+        while(cur.hasNext()) {
+            System.err.println(cur.next());
+        }
+        System.err.println("dam!");
 
 
     }

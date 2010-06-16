@@ -52,15 +52,24 @@ package org.openspotlight.storage.mongodb;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.mongodb.*;
-import org.openspotlight.storage.*;
+import org.openspotlight.storage.AbstractSTStorageSession;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STPartitionFactory;
+import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
+import org.openspotlight.storage.domain.node.STPropertyImpl;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static org.openspotlight.common.util.Conversion.convert;
 
 
 /**
@@ -73,15 +82,17 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
     private static final String
             ID = "_id",
-            LOCAL_ID = "node-local-id",
-            PARENT_ID = "node-parent-id",
-            CHILDREN = "node-children",
-            MULTIPLE_PARENT_PATH = "multiple-parent-path",
-            MPP_KEY = "mpp-key",
-            MPP_PARTITION = "mpp-partition",
-            MPP_ROOT = "mpp-root",
-            MPP_KEY_NAME = "mpp-key-name",
-            KEY = "node-key",
+            LOCAL_ID = "node_local_id",
+            PARENT_ID = "node_parent_id",
+            CHILDREN = "node_children",
+            MULTIPLE_PARENT_PATH = "multiple_parent_path",
+            MPP_KEY = "mpp_key",
+            MPP_PARTITION = "mpp_partition",
+            MPP_ROOT = "mpp_root",
+            MPP_KEY_NAME = "mpp_key_name",
+            KEY = "node_key",
+            PROPERTIES = "node_properties",
+            INDEXED = "node_indexed",
             ENTRY_NAME = "node-entry-name",
             ROOT_NODE = "node-root";
 
@@ -96,7 +107,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     private DB getDbForPartition(String partitionName) {
         DB db = partitionMap.get(partitionName);
         if (db == null) {
-            db = mongo.getDB(repositoryPath.getRepositoryPathAsString() + "/" + partitionName);
+            db = mongo.getDB(repositoryPath.getRepositoryPathAsString() + "_" + partitionName);
             partitionMap.put(partitionName, db);
         }
         return db;
@@ -135,17 +146,92 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
     @Override
     protected byte[] internalPropertyGetValue(STPartition partition, STProperty stProperty) throws Exception {
-        DBObject reference = findReferenceOrReturnNull(partition, stProperty.getParent());
-        if (reference != null) {
-            byte[] value = (byte[]) reference.get(stProperty.getPropertyName());
-            return value;
+        byte[] value = null;
+        if (stProperty.isKey()) {
+            for (STKeyEntry e : stProperty.getParent().getUniqueKey().getLocalKey().getEntries()) {
+                if (e.getPropertyName().equals(stProperty.getPropertyName())) {
+                    value = e.getValue() != null ? e.getValue().getBytes() : null;
+                    break;
+                }
+            }
+
+        } else {
+            DBObject reference = findReferenceOrReturnNull(partition, stProperty.getParent());
+            if (reference != null) {
+                if (stProperty.isIndexed()) {
+                    value = (byte[]) reference.get(INDEXED + "." + stProperty.getPropertyName());
+
+                } else {
+                    value = (byte[]) reference.get(PROPERTIES + "." + stProperty.getPropertyName());
+
+                }
+            }
+
         }
-        return null;
+        return value;
     }
 
     @Override
     protected Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        DB db = getDbForPartition(partition);
+
+        ImmutableSet.Builder<DBObject> builder = ImmutableSet.builder();
+
+        for (STCriteriaItem c : criteria.getCriteriaItems()) {
+            if (c instanceof STPropertyCriteriaItem) {
+                STPropertyCriteriaItem p = (STPropertyCriteriaItem) c;
+                BasicDBObject dbObjectForKey = new BasicDBObject();
+                BasicDBObject dbObjectForIndexed = new BasicDBObject();
+                BasicDBObject indexEntry = new BasicDBObject();
+                BasicDBObject keyEntry = new BasicDBObject();
+                dbObjectForKey.put(INDEXED, indexEntry);
+                dbObjectForKey.put(KEY, keyEntry);
+                indexEntry.put(p.getPropertyName(), p.getValue());
+                keyEntry.put(p.getPropertyName(), p.getValue());
+                builder.add(dbObjectForIndexed, dbObjectForKey);
+            }
+            if (c instanceof STPropertyContainsString) {
+                STPropertyContainsString p = (STPropertyContainsString) c;
+                throw new UnsupportedOperationException();
+            }
+            if (c instanceof STPropertyStartsWithString) {
+                STPropertyStartsWithString p = (STPropertyStartsWithString) c;
+                throw new UnsupportedOperationException();
+            }
+            if (c instanceof STPropertyEndsWithString) {
+                STPropertyEndsWithString p = (STPropertyEndsWithString) c;
+                throw new UnsupportedOperationException();
+            }
+            if (c instanceof STUniqueKeyCriteriaItem) {
+                STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;
+                BasicDBObject objectToBeUsedOnFind = new BasicDBObject();
+                objectToBeUsedOnFind.put(ID, uniqueCriteria.getValue().getKeyAsString());
+                builder.add(objectToBeUsedOnFind);
+            }
+            if (c instanceof STLocalKeyCriteriaItem) {
+                STLocalKeyCriteriaItem uniqueCriteria = (STLocalKeyCriteriaItem) c;
+                BasicDBObject objectToBeUsedOnFind = new BasicDBObject();
+                String localHash = uniqueCriteria.getValue().getKeyAsString();
+                objectToBeUsedOnFind.put(LOCAL_ID, localHash);
+                builder.add(objectToBeUsedOnFind);
+            }
+        }
+        if (criteria.getCriteriaItems().size() == 0) {
+            builder.add(new BasicDBObject());
+        }
+
+        ImmutableSet.Builder<STNodeEntry> resultBuilder = ImmutableSet.builder();
+
+        for (DBObject criteriaAsObj : builder.build()) {
+            DBCursor resultAsDbObject = db.getCollection(criteria.getNodeName()).find(criteriaAsObj);
+            while (resultAsDbObject.hasNext()) {
+                resultBuilder.add(convertToNode(partition, resultAsDbObject.next()));
+            }
+
+        }
+
+        return resultBuilder.build();
+
     }
 
     @Override
@@ -176,10 +262,13 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         for (STKeyEntry keyEntry : uniqueId.getLocalKey().getEntries()) {
             key.put(keyEntry.getPropertyName(), keyEntry.getValue() != null ? keyEntry.getValue().getBytes() : null);
         }
+        reference.put(ID, uniqueId.getKeyAsString());
         reference.put(KEY, key);
         reference.put(ENTRY_NAME, uniqueId.getLocalKey().getNodeEntryName());
         reference.put(ROOT_NODE, uniqueId.getLocalKey().isRootKey());
-        getDbForPartition(partition).getCollection(entry.getNodeEntryName()).save(reference);
+        DB db = getDbForPartition(partition);
+        DBCollection col = db.getCollection(entry.getNodeEntryName());
+        col.save(reference);
     }
 
     @Override
@@ -193,8 +282,24 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     @Override
-    protected void internalFlushSimpleProperty(DBObject reference, STPartition partition, STProperty dirtyProperty) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+    protected void internalFlushSimpleProperty(DBObject possibleReference, STPartition partition, STProperty dirtyProperty) throws Exception {
+        DBObject reference = possibleReference != null ? possibleReference : createReferenceIfNecessary(partition, dirtyProperty.getParent());
+        String objName = null;
+        Object value = null;
+        if (dirtyProperty.isIndexed()) {
+            objName = INDEXED;
+            value = dirtyProperty.getInternalMethods().getTransientValueAsString(this);
+        } else if (!dirtyProperty.isKey()) {
+            objName = PROPERTIES;
+            value = dirtyProperty.getInternalMethods().getTransientValueAsBytes(this);
+        }
+        if (objName == null) return;
+        DBObject obj = (DBObject) reference.get(objName);
+        if (obj == null) {
+            obj = new BasicDBObject();
+            reference.put(objName, obj);
+        }
+        reference.put(dirtyProperty.getPropertyName(), value);
     }
 
     @Override
@@ -208,42 +313,68 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     @Override
-    protected Set<STProperty> internalNodeEntryLoadProperties(DBObject reference, STPartition partition, STNodeEntry stNodeEntry) throws Exception {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected Set<STProperty> internalNodeEntryLoadProperties(DBObject possibleReference, STPartition partition, STNodeEntry stNodeEntry) throws Exception {
+        ImmutableSet.Builder<STProperty> builder = ImmutableSet.builder();
+        for (STKeyEntry entry : stNodeEntry.getUniqueKey().getLocalKey().getEntries()) {
+            STPropertyImpl p = STPropertyImpl.createKey(entry.getPropertyName(), stNodeEntry);
+            p.setStringValue(this, entry.getValue());
+            builder.add(p);
+        }
+        DBObject reference = possibleReference != null ? possibleReference : createReferenceIfNecessary(partition, stNodeEntry);
+        DBObject indexed = (DBObject) reference.get(INDEXED);
+        if (indexed != null) {
+            for (String s : indexed.keySet()) {
+                STPropertyImpl p = STPropertyImpl.createIndexed(s, stNodeEntry);
+                builder.add(p);
+            }
+        }
+
+        DBObject properties = (DBObject) reference.get(PROPERTIES);
+        if (properties != null) {
+            for (String s : properties.keySet()) {
+                STPropertyImpl p = STPropertyImpl.createSimple(s, stNodeEntry);
+                builder.add(p);
+            }
+        }
+
+        return builder.build();
     }
 
     @Override
     protected Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception {
         DBCursor cursor = getDbForPartition(partition).getCollection(nodeEntryName).find();
-        Iterator<DBObject> it = cursor.iterator();
         ImmutableSet.Builder<STNodeEntry> builder = ImmutableSet.builder();
-        while (it.hasNext()) {
-            builder.add(convertToNode(partition, it.next()));
+        while (cursor.hasNext()) {
+            builder.add(convertToNode(partition, cursor.next()));
         }
         return builder.build();
     }
 
-    private STNodeEntry convertToNode(STPartition partition, DBObject dbObject) {
+    private STNodeEntry convertToNode(STPartition partition, DBObject dbObject) throws Exception {
         DBObject keyAsDbObj = (DBObject) dbObject.get(KEY);
-        List<DBObject> list = (List<DBObject>) keyAsDbObj.get(MULTIPLE_PARENT_PATH);
-        STKeyEntry key;
-        STUniqueKey lastKey = null;
-
-                                          STUniqueKeyBuilder keyBuilder=null;
-//        this.withPartition(partitionFactory.getPartitionByName((String) o.get(MPP_PARTITION))).createKey((String) o.get(MPP_KEY_NAME), (Boolean) o.get(MPP_ROOT));
-        for (DBObject o:list) {
-//            if(keyBuilder==null){
-//                keyBuilder =
-//            }else{
-//                keyBuilder.withParent()
-//            }
-
-            o.keySet();
+        List<DBObject> list = (List<DBObject>) dbObject.get(MULTIPLE_PARENT_PATH);
 
 
+        STUniqueKeyBuilder keyBuilder = this.withPartition(partition).createKey(
+                (String) dbObject.get(ENTRY_NAME), (Boolean) dbObject.get(ROOT_NODE));
+        for (String s : keyAsDbObj.keySet()) {
+            keyBuilder.withEntry(s, convert(keyAsDbObj.get(s), String.class));
         }
 
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        if (list != null) {
+            for (DBObject o : list) {
+                keyBuilder = keyBuilder.withParent(partitionFactory.getPartitionByName((String) o.get(MPP_PARTITION)),
+                        (String) o.get(MPP_KEY_NAME), (Boolean) o.get(MPP_ROOT));
+                for (String s : o.keySet()) {
+                    if (MPP_KEY.equals(s) || MPP_KEY_NAME.equals(s) || MPP_PARTITION.equals(s) || MPP_ROOT.equals(s))
+                        continue;
+                    keyBuilder.withEntry(s, (String) o.get(s));
+                }
+            }
+        }
+        STUniqueKey uniqueKey = keyBuilder.andCreate();
+        STNodeEntry node = new STNodeEntryImpl(uniqueKey, false);
+        return node;
     }
 
     private final STPartitionFactory partitionFactory;

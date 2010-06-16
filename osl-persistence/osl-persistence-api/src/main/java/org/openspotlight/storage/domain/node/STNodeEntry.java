@@ -58,8 +58,7 @@ import java.io.InputStream;
 import java.util.Set;
 
 
-public interface STNodeEntry extends STAData, STNodeEntryFactory,
-        Comparable<STNodeEntry> {
+public interface STNodeEntry extends STAData, STNodeEntryFactory {
 
     public void forceReload();
 

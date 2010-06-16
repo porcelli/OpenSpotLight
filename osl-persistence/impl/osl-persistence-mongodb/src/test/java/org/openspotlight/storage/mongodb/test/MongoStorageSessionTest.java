@@ -78,12 +78,12 @@ public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
 
     @Override
     protected Injector createsAutoFlushInjector() {
-        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.AUTO, mongo, repositoryPath));
+        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.AUTO, mongo, repositoryPath, ExamplePartition.FACTORY));
     }
 
     @Override
     protected Injector createsExplicitFlushInjector() {
-        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.AUTO, mongo, repositoryPath));
+        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.AUTO, mongo, repositoryPath, ExamplePartition.FACTORY));
     }
 
     @Override
