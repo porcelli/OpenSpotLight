@@ -134,10 +134,6 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     @Override
     protected DBObject createReferenceIfNecessary(STPartition partition, STNodeEntry entry) {
         DBObject basicDBObject = findReferenceOrReturnNull(partition, entry);
-        if (basicDBObject == null) {
-            basicDBObject = new BasicDBObject();
-            basicDBObject.put(ID, entry.getUniqueKey().getKeyAsString());
-        }
         transientObjects.put(partition,newPair(entry,basicDBObject));
         return basicDBObject;
     }
@@ -158,7 +154,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             basicDBObject = coll.findOne(queryObject);
             if (basicDBObject == null) {
                 basicDBObject = new BasicDBObject();
-                queryObject.put(ID, entry.getUniqueKey().getKeyAsString());
+                basicDBObject.put(ID, entry.getUniqueKey().getKeyAsString());
             }
         }
         return basicDBObject;
@@ -404,7 +400,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         ImmutableSet.Builder<STProperty> builder = ImmutableSet.builder();
         for (STKeyEntry entry : stNodeEntry.getUniqueKey().getLocalKey().getEntries()) {
             STPropertyImpl p = STPropertyImpl.createKey(entry.getPropertyName(), stNodeEntry);
-            p.setStringValue(this, entry.getValue());
+            p.getInternalMethods().setStringValueOnLoad(this, entry.getValue());
             builder.add(p);
         }
         DBObject reference = possibleReference != null ? possibleReference : createReferenceIfNecessary(partition, stNodeEntry);
@@ -412,6 +408,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         if (indexed != null) {
             for (String s : indexed.keySet()) {
                 STPropertyImpl p = STPropertyImpl.createIndexed(s, stNodeEntry);
+                p.getInternalMethods().setStringValueOnLoad(this,(String)indexed.get(s));
                 builder.add(p);
             }
         }

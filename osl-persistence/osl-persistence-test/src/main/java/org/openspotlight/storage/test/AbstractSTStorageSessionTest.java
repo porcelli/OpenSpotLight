@@ -647,7 +647,7 @@ public abstract class AbstractSTStorageSessionTest {
 
         assertThat(loadedNode1, is(notNullValue()));
 
-        newNode.setIndexedProperty(session, "stringProperty", "value");
+        newNode.setSimpleProperty(session, "stringProperty", "value");
 
 
         assertThat(newNode.getProperty(session, "stringProperty").getInternalMethods().getTransientValueAsString(session),
