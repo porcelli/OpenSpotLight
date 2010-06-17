@@ -104,6 +104,10 @@ public abstract class AbstractSTStorageSessionTest {
             public STPartition getPartitionByName(String name) {
                 return ExamplePartition.valueOf(name.toUpperCase());
             }
+
+            public STPartition[] getValues(){
+                return ExamplePartition.values();
+            }
         };
 
         private final String partitionName;

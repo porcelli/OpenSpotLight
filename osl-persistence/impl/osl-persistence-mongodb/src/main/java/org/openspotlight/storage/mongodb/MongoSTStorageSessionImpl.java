@@ -70,6 +70,7 @@ import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static java.util.Collections.emptySet;
 import static org.openspotlight.common.util.Conversion.convert;
 
 
@@ -87,7 +88,6 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             ID = "_id",
             LOCAL_ID = "node_local_id",
             PARENT_ID = "node_parent_id",
-            CHILDREN = "node_children",
             MULTIPLE_PARENT_PATH = "multiple_parent_path",
             MPP_KEY = "mpp_key",
             MPP_PARTITION = "mpp_partition",
@@ -180,7 +180,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         return value;
     }
 
-    private static String beforeRegex(String s){
+    private static String beforeRegex(String s) {
         return s;
     }
 
@@ -294,8 +294,33 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     @Override
-    protected Set<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition partition, STNodeEntry stNodeEntry, String name) throws Exception {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected Set<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition initialPartition, STNodeEntry stNodeEntry, String name) throws Exception {
+        if (stNodeEntry == null) return emptySet();
+        ImmutableSet.Builder<STNodeEntry> resultBuilder = ImmutableSet.builder();
+        internalGetChildren(resultBuilder, stNodeEntry, name);
+        return resultBuilder.build();
+    }
+
+    private void internalGetChildren(ImmutableSet.Builder<STNodeEntry> resultBuilder, STNodeEntry stNodeEntry, String name) throws Exception {
+        STPartition[] partitions = partitionFactory.getValues();
+        for (STPartition partition : partitions) {
+            DB db = getDbForPartition(partition);
+            BasicDBObject baseDbObj = new BasicDBObject();
+            baseDbObj.put(PARENT_ID, stNodeEntry.getUniqueKey().getKeyAsString());
+            ImmutableSet.Builder<String> names = ImmutableSet.builder();
+            if (name != null) {
+                names.add(name);
+            } else {
+                names.addAll(db.getCollectionNames());
+            }
+            for (String n : names.build()) {
+                DBCursor resultAsDbObj = db.getCollection(n).find(baseDbObj);
+                while (resultAsDbObj.hasNext()) {
+                    resultBuilder.add(convertToNode(partition, resultAsDbObj.next()));
+                }
+            }
+        }
+
     }
 
     @Override
@@ -327,12 +352,25 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
     @Override
     protected Set<STNodeEntry> internalNodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        if (stNodeEntry == null) return emptySet();
+        ImmutableSet.Builder<STNodeEntry> resultBuilder = ImmutableSet.builder();
+        internalGetChildren(resultBuilder, stNodeEntry, null);
+        return resultBuilder.build();
     }
 
     @Override
     protected STNodeEntry internalNodeEntryGetParent(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        STUniqueKey parentKey = stNodeEntry.getUniqueKey().getParentKey();
+        if(parentKey==null) return null;
+        STPartition parentPartition = parentKey.getPartition();
+        String parentName = parentKey.getLocalKey().getNodeEntryName();
+        String parentIdAsString = parentKey.getKeyAsString();
+        BasicDBObject parameter = new BasicDBObject();
+        parameter.put(ID,parentIdAsString);
+        DB db = getDbForPartition(parentPartition);
+        DBCollection collection = db.getCollection(parentName);
+        DBObject result = collection.findOne(parameter);
+        return convertToNode(parentPartition,result);
     }
 
     @Override

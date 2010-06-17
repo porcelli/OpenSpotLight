@@ -13,4 +13,9 @@ public class DefaultSTPartitionFactory implements STPartitionFactory{
     public STPartition getPartitionByName(String name) {
         return SLPartition.valueOf(name.toUpperCase());
     }
+
+    @Override
+    public STPartition[] getValues() {
+        return SLPartition.values();
+    }
 }
