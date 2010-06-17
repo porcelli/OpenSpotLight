@@ -180,6 +180,10 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         return value;
     }
 
+    private static String beforeRegex(String s){
+        return s;
+    }
+
     @Override
     protected Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception {
         DB db = getDbForPartition(partition);
@@ -196,18 +200,18 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             }
             if (c instanceof STPropertyContainsString) {
                 STPropertyContainsString p = (STPropertyContainsString) c;
-                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("(.*)" + p.getValue() + "(.*)"));
-                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + p.getValue() + "(.*)"));
+                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "(.*)"));
+                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "(.*)"));
             }
             if (c instanceof STPropertyStartsWithString) {
                 STPropertyStartsWithString p = (STPropertyStartsWithString) c;
-                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("^" + p.getValue() + "(.*)"));
-                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("^" + p.getValue() + "(.*)"));
+                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("^" + beforeRegex(p.getValue()) + "(.*)"));
+                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("^" + beforeRegex(p.getValue()) + "(.*)"));
             }
             if (c instanceof STPropertyEndsWithString) {
                 STPropertyEndsWithString p = (STPropertyEndsWithString) c;
-                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("(.*)" + p.getValue() + "$"));
-                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + p.getValue() + "$"));
+                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "$"));
+                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "$"));
             }
             if (c instanceof STUniqueKeyCriteriaItem) {
                 STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;
