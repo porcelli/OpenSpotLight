@@ -49,9 +49,12 @@
 
 package org.openspotlight.storage.mongodb;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.mongodb.*;
+import org.openspotlight.common.Pair;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
@@ -66,11 +69,11 @@ import org.openspotlight.storage.domain.node.STPropertyImpl;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.emptySet;
+import static org.openspotlight.common.Pair.newPair;
 import static org.openspotlight.common.util.Conversion.convert;
 
 
@@ -81,7 +84,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
 
     private static final String NULL_VALUE = "!!!NULL!!!";
-
+    private Multimap<STPartition, Pair<STNodeEntry, DBObject>> transientObjects = HashMultimap.create();
     private final Map<String, DB> partitionMap;
 
     private static final String
@@ -116,12 +119,16 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         return db;
     }
 
-    private WeakHashMap<STNodeEntry, BasicDBObject> cache = new WeakHashMap();
-
-
     @Override
     protected void internalSavePartitions(STPartition... partitions) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        for (STPartition partition : partitions) {
+            DB db = getDbForPartition(partition);
+            for (Pair<STNodeEntry, DBObject> p : transientObjects.get(partition)) {
+                DBCollection coll = db.getCollection(p.getK1().getNodeEntryName());
+                coll.save(p.getK2());
+            }
+        }
+        transientObjects.clear();
     }
 
     @Override
@@ -131,18 +138,28 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             basicDBObject = new BasicDBObject();
             basicDBObject.put(ID, entry.getUniqueKey().getKeyAsString());
         }
+        transientObjects.put(partition,newPair(entry,basicDBObject));
         return basicDBObject;
     }
 
     private DBObject findReferenceOrReturnNull(STPartition partition, STNodeEntry entry) {
-        DB db = getDbForPartition(partition);
-        DBCollection coll = db.getCollection(entry.getNodeEntryName());
-        BasicDBObject queryObject = new BasicDBObject();
-        queryObject.put(ID, entry.getUniqueKey().getKeyAsString());
-        DBObject basicDBObject = coll.findOne(queryObject);
+        DBObject basicDBObject = null;
+        for (Pair<STNodeEntry, DBObject> pair : transientObjects.get(partition)) {
+            if (pair.getK1().equals(entry)) {
+                basicDBObject = pair.getK2();
+                break;
+            }
+        }
         if (basicDBObject == null) {
-            basicDBObject = new BasicDBObject();
+            DB db = getDbForPartition(partition);
+            DBCollection coll = db.getCollection(entry.getNodeEntryName());
+            BasicDBObject queryObject = new BasicDBObject();
             queryObject.put(ID, entry.getUniqueKey().getKeyAsString());
+            basicDBObject = coll.findOne(queryObject);
+            if (basicDBObject == null) {
+                basicDBObject = new BasicDBObject();
+                queryObject.put(ID, entry.getUniqueKey().getKeyAsString());
+            }
         }
         return basicDBObject;
     }
@@ -283,9 +300,13 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         reference.put(KEY, key);
         reference.put(ENTRY_NAME, uniqueId.getLocalKey().getNodeEntryName());
         reference.put(ROOT_NODE, uniqueId.getLocalKey().isRootKey());
-        DB db = getDbForPartition(partition);
-        DBCollection col = db.getCollection(entry.getNodeEntryName());
-        col.save(reference);
+        if (STFlushMode.AUTO.equals(getFlushMode())) {
+            DB db = getDbForPartition(partition);
+            DBCollection col = db.getCollection(entry.getNodeEntryName());
+            col.save(reference);
+        } else {
+            transientObjects.put(partition, newPair(entry, reference));
+        }
     }
 
     @Override
@@ -348,7 +369,10 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         if (STFlushMode.AUTO.equals(getFlushMode())) {
             DB db = getDbForPartition(partition);
             db.getCollection(dirtyProperty.getParent().getNodeEntryName()).save(reference);
+        } else {
+            transientObjects.put(partition, newPair(dirtyProperty.getParent(), reference));
         }
+
 
     }
 

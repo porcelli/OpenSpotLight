@@ -59,14 +59,14 @@ import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.collect.Sets.newLinkedHashSet;
 import static org.openspotlight.common.Pair.newPair;
-import static org.openspotlight.common.util.Sha1.getSha1Signature;
-import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
 
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
@@ -74,7 +74,7 @@ import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64
 public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
     protected abstract void internalSavePartitions(STPartition... partitions) throws Exception;
-    
+
     public STRepositoryPath getRepositoryPath() {
         return repositoryPath;
     }
@@ -99,7 +99,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 
         public STNodeEntryFactory.STNodeEntryBuilder createWithName(String name, boolean rootKey) {
-            return this.createWithName(AbstractSTStorageSession.this, name,rootKey);
+            return this.createWithName(AbstractSTStorageSession.this, name, rootKey);
         }
 
 
@@ -188,7 +188,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
 
         public STUniqueKeyBuilder createKey(String nodeEntryName, boolean rootKey) {
-            return new STUniqueKeyBuilderImpl(nodeEntryName, partition,rootKey);
+            return new STUniqueKeyBuilderImpl(nodeEntryName, partition, rootKey);
         }
 
         private final STPartition partition;
@@ -198,7 +198,6 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             internalMethods = new STStorageSessionInternalMethodsImpl(partition);
         }
     }
-
 
 
     protected final STNodeEntry createFoundEntryWithKey(STUniqueKey uniqueKey) {
@@ -808,7 +807,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 
         public STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name, boolean rootKey) {
-            return withPartition(partition).createWithName(AbstractSTStorageSession.this, name,rootKey).withParent(stNodeEntry);
+            return withPartition(partition).createWithName(AbstractSTStorageSession.this, name, rootKey).withParent(stNodeEntry);
         }
 
 
@@ -903,7 +902,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             this.rootKey = rootKey;
         }
 
-        private final boolean rootKey ;
+        private final boolean rootKey;
 
         private final STPartition partition;
 
@@ -911,8 +910,6 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
         private STUniqueKey parentKey = null;
 
-
-        
 
         private Set<STKeyEntry> keys = newHashSet();
         private Set<String> keyNames = newHashSet();
@@ -941,7 +938,14 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
             STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parentKey, partition, repositoryPath);
             STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey, false);
-            AbstractSTStorageSession.this.handleNewItem(result);
+            if (getFlushMode().equals(STFlushMode.AUTO)) {
+
+                AbstractSTStorageSession.this.handleNewItem(result);
+            } else {
+                R ref = AbstractSTStorageSession.this.createReferenceIfNecessary(partition, result);
+                Pair<STNodeEntry, R> pair = newPair((STNodeEntry)result,ref);
+                AbstractSTStorageSession.this.newNodes.add(pair);
+            }
             return result;
         }
 
@@ -1016,14 +1020,14 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
         private final STUniqueKeyBuilderImpl child;
 
-        public STUniqueKeyBuilderImpl(String name, STPartition partition,boolean rootKey) {
+        public STUniqueKeyBuilderImpl(String name, STPartition partition, boolean rootKey) {
             this.name = name;
             this.partition = partition;
             this.child = null;
             this.rootKey = rootKey;
         }
 
-        private STUniqueKeyBuilderImpl(String name, STUniqueKeyBuilderImpl child, STPartition partition,boolean rootKey) {
+        private STUniqueKeyBuilderImpl(String name, STUniqueKeyBuilderImpl child, STPartition partition, boolean rootKey) {
             this.name = name;
             this.child = child;
             this.partition = partition;

@@ -69,8 +69,6 @@ public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
         try {
             mongo = new Mongo();
             repositoryPath = new STRepositoryPath("repository");
-
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -83,7 +81,7 @@ public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
 
     @Override
     protected Injector createsExplicitFlushInjector() {
-        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.AUTO, mongo, repositoryPath, ExamplePartition.FACTORY));
+        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.EXPLICIT, mongo, repositoryPath, ExamplePartition.FACTORY));
     }
 
     @Override
