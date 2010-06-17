@@ -290,7 +290,9 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
     @Override
     protected void flushRemovedItem(STPartition partition, STNodeEntry entry) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
+        DB db = getDbForPartition(partition);
+        DBCollection collection = db.getCollection(entry.getNodeEntryName());
+        collection.remove(new BasicDBObject(ID, entry.getUniqueKey().getKeyAsString()));
     }
 
     @Override
@@ -361,16 +363,16 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     @Override
     protected STNodeEntry internalNodeEntryGetParent(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
         STUniqueKey parentKey = stNodeEntry.getUniqueKey().getParentKey();
-        if(parentKey==null) return null;
+        if (parentKey == null) return null;
         STPartition parentPartition = parentKey.getPartition();
         String parentName = parentKey.getLocalKey().getNodeEntryName();
         String parentIdAsString = parentKey.getKeyAsString();
         BasicDBObject parameter = new BasicDBObject();
-        parameter.put(ID,parentIdAsString);
+        parameter.put(ID, parentIdAsString);
         DB db = getDbForPartition(parentPartition);
         DBCollection collection = db.getCollection(parentName);
         DBObject result = collection.findOne(parameter);
-        return convertToNode(parentPartition,result);
+        return convertToNode(parentPartition, result);
     }
 
     @Override
