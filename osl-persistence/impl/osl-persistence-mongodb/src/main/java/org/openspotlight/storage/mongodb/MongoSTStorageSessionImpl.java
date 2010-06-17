@@ -67,6 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.regex.Pattern;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static org.openspotlight.common.util.Conversion.convert;
@@ -77,6 +78,8 @@ import static org.openspotlight.common.util.Conversion.convert;
  */
 public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject> {
 
+
+    private static final String NULL_VALUE = "!!!NULL!!!";
 
     private final Map<String, DB> partitionMap;
 
@@ -93,8 +96,8 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             KEY = "node_key",
             PROPERTIES = "node_properties",
             INDEXED = "node_indexed",
-            ENTRY_NAME = "node-entry-name",
-            ROOT_NODE = "node-root";
+            ENTRY_NAME = "node_entry_name",
+            ROOT_NODE = "node_root";
 
 
     private final Mongo mongo;
@@ -159,10 +162,16 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             DBObject reference = findReferenceOrReturnNull(partition, stProperty.getParent());
             if (reference != null) {
                 if (stProperty.isIndexed()) {
-                    value = (byte[]) reference.get(INDEXED + "." + stProperty.getPropertyName());
+                    DBObject innerObj = (DBObject) reference.get(INDEXED);
+                    if (innerObj != null) {
+                        value = ((String) innerObj.get(stProperty.getPropertyName())).getBytes();
+                        if (NULL_VALUE.equals(value)) value = null;
+                    }
 
                 } else {
-                    value = (byte[]) reference.get(PROPERTIES + "." + stProperty.getPropertyName());
+                    DBObject innerObj = (DBObject) reference.get(PROPERTIES);
+                    if (innerObj != null)
+                        value = (byte[]) innerObj.get(stProperty.getPropertyName());
 
                 }
             }
@@ -175,64 +184,68 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     protected Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception {
         DB db = getDbForPartition(partition);
 
-        ImmutableSet.Builder<DBObject> builder = ImmutableSet.builder();
+        DBObject possibleKeyParameter = new BasicDBObject();
+        DBObject possibleIndexParameter = new BasicDBObject();
 
         for (STCriteriaItem c : criteria.getCriteriaItems()) {
             if (c instanceof STPropertyCriteriaItem) {
                 STPropertyCriteriaItem p = (STPropertyCriteriaItem) c;
-                BasicDBObject dbObjectForKey = new BasicDBObject();
-                BasicDBObject dbObjectForIndexed = new BasicDBObject();
-                BasicDBObject indexEntry = new BasicDBObject();
-                BasicDBObject keyEntry = new BasicDBObject();
-                dbObjectForKey.put(INDEXED, indexEntry);
-                dbObjectForKey.put(KEY, keyEntry);
-                indexEntry.put(p.getPropertyName(), p.getValue());
-                keyEntry.put(p.getPropertyName(), p.getValue());
-                builder.add(dbObjectForIndexed, dbObjectForKey);
+                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), p.getValue() == null ? NULL_VALUE : p.getValue());
+                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), p.getValue() == null ? NULL_VALUE : p.getValue());
+
             }
             if (c instanceof STPropertyContainsString) {
                 STPropertyContainsString p = (STPropertyContainsString) c;
-                throw new UnsupportedOperationException();
+                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("(.*)" + p.getValue() + "(.*)"));
+                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + p.getValue() + "(.*)"));
             }
             if (c instanceof STPropertyStartsWithString) {
                 STPropertyStartsWithString p = (STPropertyStartsWithString) c;
-                throw new UnsupportedOperationException();
+                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("^" + p.getValue() + "(.*)"));
+                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("^" + p.getValue() + "(.*)"));
             }
             if (c instanceof STPropertyEndsWithString) {
                 STPropertyEndsWithString p = (STPropertyEndsWithString) c;
-                throw new UnsupportedOperationException();
+                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("(.*)" + p.getValue() + "$"));
+                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + p.getValue() + "$"));
             }
             if (c instanceof STUniqueKeyCriteriaItem) {
                 STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;
-                BasicDBObject objectToBeUsedOnFind = new BasicDBObject();
-                objectToBeUsedOnFind.put(ID, uniqueCriteria.getValue().getKeyAsString());
-                builder.add(objectToBeUsedOnFind);
+                possibleIndexParameter.put(ID, uniqueCriteria.getValue().getKeyAsString());
+                possibleKeyParameter.put(ID, uniqueCriteria.getValue().getKeyAsString());
+
             }
             if (c instanceof STLocalKeyCriteriaItem) {
                 STLocalKeyCriteriaItem uniqueCriteria = (STLocalKeyCriteriaItem) c;
-                BasicDBObject objectToBeUsedOnFind = new BasicDBObject();
                 String localHash = uniqueCriteria.getValue().getKeyAsString();
-                objectToBeUsedOnFind.put(LOCAL_ID, localHash);
-                builder.add(objectToBeUsedOnFind);
+                possibleIndexParameter.put(LOCAL_ID, localHash);
+                possibleKeyParameter.put(LOCAL_ID, localHash);
+
             }
-        }
-        if (criteria.getCriteriaItems().size() == 0) {
-            builder.add(new BasicDBObject());
         }
 
         ImmutableSet.Builder<STNodeEntry> resultBuilder = ImmutableSet.builder();
 
-        for (DBObject criteriaAsObj : builder.build()) {
-            DBCursor resultAsDbObject = db.getCollection(criteria.getNodeName()).find(criteriaAsObj);
-            while (resultAsDbObject.hasNext()) {
-                resultBuilder.add(convertToNode(partition, resultAsDbObject.next()));
+        for (DBObject criteriaAsObj : ImmutableSet.of(possibleIndexParameter, possibleKeyParameter)) {
+            ImmutableSet.Builder<String> nodeNamesBuilder = ImmutableSet.builder();
+            if (criteria.getNodeName() != null) {
+                nodeNamesBuilder.add(criteria.getNodeName());
+            } else {
+                nodeNamesBuilder.addAll(db.getCollectionNames());
             }
+            for (String s : nodeNamesBuilder.build()) {
+                DBCursor resultAsDbObject = db.getCollection(s).find(criteriaAsObj);
+                while (resultAsDbObject.hasNext()) {
+                    resultBuilder.add(convertToNode(partition, resultAsDbObject.next()));
+                }
 
+            }
         }
 
         return resultBuilder.build();
 
     }
+
 
     @Override
     protected void flushNewItem(DBObject reference, STPartition partition, STNodeEntry entry) throws Exception {
@@ -260,7 +273,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         BasicDBObject key = new BasicDBObject();
 
         for (STKeyEntry keyEntry : uniqueId.getLocalKey().getEntries()) {
-            key.put(keyEntry.getPropertyName(), keyEntry.getValue() != null ? keyEntry.getValue().getBytes() : null);
+            key.put(keyEntry.getPropertyName(), keyEntry.getValue() != null ? keyEntry.getValue() : NULL_VALUE);
         }
         reference.put(ID, uniqueId.getKeyAsString());
         reference.put(KEY, key);
@@ -289,6 +302,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         if (dirtyProperty.isIndexed()) {
             objName = INDEXED;
             value = dirtyProperty.getInternalMethods().getTransientValueAsString(this);
+            if (value == null) value = NULL_VALUE;
         } else if (!dirtyProperty.isKey()) {
             objName = PROPERTIES;
             value = dirtyProperty.getInternalMethods().getTransientValueAsBytes(this);
@@ -299,7 +313,12 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             obj = new BasicDBObject();
             reference.put(objName, obj);
         }
-        reference.put(dirtyProperty.getPropertyName(), value);
+        obj.put(dirtyProperty.getPropertyName(), value);
+        if (STFlushMode.AUTO.equals(getFlushMode())) {
+            DB db = getDbForPartition(partition);
+            db.getCollection(dirtyProperty.getParent().getNodeEntryName()).save(reference);
+        }
+
     }
 
     @Override
@@ -358,7 +377,9 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         STUniqueKeyBuilder keyBuilder = this.withPartition(partition).createKey(
                 (String) dbObject.get(ENTRY_NAME), (Boolean) dbObject.get(ROOT_NODE));
         for (String s : keyAsDbObj.keySet()) {
-            keyBuilder.withEntry(s, convert(keyAsDbObj.get(s), String.class));
+            String valueAsString = convert(keyAsDbObj.get(s), String.class);
+            if (NULL_VALUE.equals(valueAsString)) valueAsString = null;
+            keyBuilder.withEntry(s, valueAsString);
         }
 
         if (list != null) {
@@ -368,7 +389,9 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
                 for (String s : o.keySet()) {
                     if (MPP_KEY.equals(s) || MPP_KEY_NAME.equals(s) || MPP_PARTITION.equals(s) || MPP_ROOT.equals(s))
                         continue;
-                    keyBuilder.withEntry(s, (String) o.get(s));
+                    String valueAsString = (String) o.get(s);
+                    if (NULL_VALUE.equals(valueAsString)) valueAsString = null;
+                    keyBuilder.withEntry(s, valueAsString);
                 }
             }
         }

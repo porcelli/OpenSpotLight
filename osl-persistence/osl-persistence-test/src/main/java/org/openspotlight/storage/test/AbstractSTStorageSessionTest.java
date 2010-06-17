@@ -256,6 +256,7 @@ public abstract class AbstractSTStorageSessionTest {
         assertThat(onlyOneNode.contains(root2), is(false));
     }
 
+    @Test
 
     public void shouldFindByPropertiesContainingString() throws Exception {
         if (supportsAdvancedQueries()) {
@@ -268,17 +269,17 @@ public abstract class AbstractSTStorageSessionTest {
                     .withKey("name", "name1").withParent(root1).andCreate();
             STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node", false).withKey("sequence", "1")
                     .withKey("name", "name2").withParent(root2).andCreate();
-            aNode1.setSimpleProperty(session, "parameter", "io");
-            aNode2.setSimpleProperty(session, "parameter", "aeiou");
-            root1.setSimpleProperty(session, "parameter", "foo");
-            root2.setSimpleProperty(session, "parameter", "bar");
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "aeiou");
+            root1.setIndexedProperty(session, "parameter", "foo");
+            root2.setIndexedProperty(session, "parameter", "bar");
             Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
                     .withProperty("parameter").containsString("io").buildCriteria().andFind(session);
+            assertThat(theSameNodes.size(), is(2));
             assertThat(theSameNodes.contains(aNode1), is(true));
             assertThat(theSameNodes.contains(aNode2), is(true));
             assertThat(theSameNodes.contains(root1), is(false));
             assertThat(theSameNodes.contains(root2), is(false));
-            assertThat(theSameNodes.size(), is(2));
         }
     }
 
@@ -307,6 +308,7 @@ public abstract class AbstractSTStorageSessionTest {
         assertThat(theSameNodes.contains(aNode2), is(false));
     }
 
+    @Test
     public void shouldFindByPropertiesStartingWithString() throws Exception {
         if (supportsAdvancedQueries()) {
             STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
@@ -318,10 +320,10 @@ public abstract class AbstractSTStorageSessionTest {
                     .withKey("name", "name1").withParent(root1).andCreate();
             STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node", false).withKey("sequence", "1")
                     .withKey("name", "name2").withParent(root2).andCreate();
-            aNode1.setSimpleProperty(session, "parameter", "io");
-            aNode2.setSimpleProperty(session, "parameter", "iou");
-            root1.setSimpleProperty(session, "parameter", "fooiou");
-            root2.setSimpleProperty(session, "parameter", "baior");
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "iou");
+            root1.setIndexedProperty(session, "parameter", "fooiou");
+            root2.setIndexedProperty(session, "parameter", "baior");
             Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
                     .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session);
             assertThat(theSameNodes.contains(aNode1), is(true));
@@ -331,6 +333,8 @@ public abstract class AbstractSTStorageSessionTest {
             assertThat(theSameNodes.size(), is(2));
         }
     }
+
+    @Test
 
     public void shouldFindByPropertiesEndingWithString() throws Exception {
         if (supportsAdvancedQueries()) {
@@ -343,10 +347,10 @@ public abstract class AbstractSTStorageSessionTest {
                     .withKey("name", "name1").withParent(root1).andCreate();
             STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node", false).withKey("sequence", "1")
                     .withKey("name", "name2").withParent(root2).andCreate();
-            aNode1.setSimpleProperty(session, "parameter", "io");
-            aNode2.setSimpleProperty(session, "parameter", "uio");
-            root1.setSimpleProperty(session, "parameter", "fooiou");
-            root2.setSimpleProperty(session, "parameter", "baior");
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "uio");
+            root1.setIndexedProperty(session, "parameter", "fooiou");
+            root2.setIndexedProperty(session, "parameter", "baior");
             Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
                     .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session);
             assertThat(theSameNodes.contains(aNode1), is(true));
@@ -1020,6 +1024,7 @@ public abstract class AbstractSTStorageSessionTest {
     }
 
 
+    @Test
     public void shouldFindByPropertiesContainingStringWithoutNodeName() throws Exception {
         if (supportsAdvancedQueries()) {
             STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
@@ -1031,10 +1036,10 @@ public abstract class AbstractSTStorageSessionTest {
                     .withKey("name", "name1").withParent(root1).andCreate();
             STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl", false).withKey("sequence", "1")
                     .withKey("name", "name2").withParent(root2).andCreate();
-            aNode1.setSimpleProperty(session, "parameter", "io");
-            aNode2.setSimpleProperty(session, "parameter", "aeiou");
-            root1.setSimpleProperty(session, "parameter", "foo");
-            root2.setSimpleProperty(session, "parameter", "bar");
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "aeiou");
+            root1.setIndexedProperty(session, "parameter", "foo");
+            root2.setIndexedProperty(session, "parameter", "bar");
             Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                     .withProperty("parameter").containsString("io").buildCriteria().andFind(session);
             assertThat(theSameNodes.contains(aNode1), is(true));
@@ -1045,6 +1050,7 @@ public abstract class AbstractSTStorageSessionTest {
         }
     }
 
+    @Test
     public void shouldFindByPropertiesStartingWithStringWithoutNodeName() throws Exception {
         if (supportsAdvancedQueries()) {
             STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
@@ -1056,10 +1062,10 @@ public abstract class AbstractSTStorageSessionTest {
                     .withKey("name", "name1").withParent(root1).andCreate();
             STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl", false).withKey("sequence", "1")
                     .withKey("name", "name2").withParent(root2).andCreate();
-            aNode1.setSimpleProperty(session, "parameter", "io");
-            aNode2.setSimpleProperty(session, "parameter", "iou");
-            root1.setSimpleProperty(session, "parameter", "fooiou");
-            root2.setSimpleProperty(session, "parameter", "baior");
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "iou");
+            root1.setIndexedProperty(session, "parameter", "fooiou");
+            root2.setIndexedProperty(session, "parameter", "baior");
             Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                     .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session);
             assertThat(theSameNodes.contains(aNode1), is(true));
@@ -1070,6 +1076,7 @@ public abstract class AbstractSTStorageSessionTest {
         }
     }
 
+    @Test
     public void shouldFindByPropertiesEndingWithStringWithoutNodeName() throws Exception {
         if (supportsAdvancedQueries()) {
             STStorageSession session = autoFlushInjector.getInstance(STStorageSession.class);
@@ -1081,10 +1088,10 @@ public abstract class AbstractSTStorageSessionTest {
                     .withKey("name", "name1").withParent(root1).andCreate();
             STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("jkl", false).withKey("sequence", "1")
                     .withKey("name", "name2").withParent(root2).andCreate();
-            aNode1.setSimpleProperty(session, "parameter", "io");
-            aNode2.setSimpleProperty(session, "parameter", "uio");
-            root1.setSimpleProperty(session, "parameter", "fooiou");
-            root2.setSimpleProperty(session, "parameter", "baior");
+            aNode1.setIndexedProperty(session, "parameter", "io");
+            aNode2.setIndexedProperty(session, "parameter", "uio");
+            root1.setIndexedProperty(session, "parameter", "fooiou");
+            root2.setIndexedProperty(session, "parameter", "baior");
             Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                     .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session);
             assertThat(theSameNodes.contains(aNode1), is(true));
