@@ -973,6 +973,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             }
         }
         for (STNodeEntry nodeWithDirtyProperties : dirtyProperties.keySet()) {
+            partitions.add(nodeWithDirtyProperties.getUniqueKey().getPartition());
+
             R reference = referenceMap.get(nodeWithDirtyProperties);
             if (reference == null) {
                 reference = createReferenceIfNecessary(nodeWithDirtyProperties.getUniqueKey().getPartition(), nodeWithDirtyProperties);

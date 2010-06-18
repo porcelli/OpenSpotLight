@@ -51,6 +51,7 @@ package org.openspotlight.storage.test;
 
 import com.google.inject.Injector;
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.storage.STPartition;
@@ -630,7 +631,6 @@ public abstract class AbstractSTStorageSessionTest {
     @Test
     public void shouldWorkWithSimplePropertiesOnExplicitFlush() throws Exception {
 
-        Date newDate = new Date();
         STStorageSession session = explicitFlushInjector.getInstance(STStorageSession.class);
         STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1", false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
@@ -659,6 +659,17 @@ public abstract class AbstractSTStorageSessionTest {
 
 
         session.flushTransient();
+        STNodeEntry loadedNode2 = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("sequence").equalsTo("1")
+                .withProperty("name").equalsTo("name").buildCriteria().andFindUnique(session);
+
+
+        assertThat(loadedNode1.getPropertyAsString(session, "stringProperty"),
+                is(nullValue()));
+
+        assertThat(loadedNode2.getPropertyAsString(session, "stringProperty"),
+                is("value"));
+
+
         loadedNode1.forceReload();
 
 
