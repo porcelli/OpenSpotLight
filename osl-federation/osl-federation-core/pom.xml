@@ -1,95 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.openspotlight</groupId>
-		<artifactId>osl-federation</artifactId>
-		<version>0.7-SNAPSHOT</version>
-	</parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.openspotlight</groupId>
+        <artifactId>osl-federation</artifactId>
+        <version>0.7-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>osl-federation-core</artifactId>
-	<packaging>jar</packaging>
-	<name>OpenSpotLight Federation Core</name>
+    <artifactId>osl-federation-core</artifactId>
+    <packaging>jar</packaging>
+    <name>OpenSpotLight Federation Core</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-core</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-persistence-redis</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-federation-api</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-logger-core</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<!-- Internal dependencies -->
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-common</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-simple-persist</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<!-- External dependencies -->
-		<dependency>
-			<groupId>net.jcip</groupId>
-			<artifactId>jcip-annotations</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<!-- Test dependencies -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- log dependencies -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-graph-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-persistence-redis</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-persistence-mongodb</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-federation-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-logger-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-common</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
+            <artifactId>osl-simple-persist</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <!-- External dependencies -->
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- log dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>opensymphony</groupId>
-			<artifactId>quartz</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
 
-		<!-- Java Content Repository API -->
-		<dependency>
-			<groupId>javax.jcr</groupId>
-			<artifactId>jcr</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-		</dependency>
-	</dependencies>
+        <!-- Java Content Repository API -->
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+        </dependency>
+    </dependencies>
 </project>

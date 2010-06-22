@@ -1,9 +1,23 @@
 package org.openspotlight.storage.mongodb.test;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.Mongo;
 import org.junit.Test;
+import org.openspotlight.storage.DefaultSTPartitionFactory;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
+import sun.java2d.pipe.SpanShapeRenderer;
 
-import java.util.regex.Pattern;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * Created by User: feu - Date: Jun 9, 2010 - Time: 10:24:03 AM
@@ -11,41 +25,35 @@ import java.util.regex.Pattern;
 public class RawStorageTest {
 
 
-
-
     @Test
     public void shouldStoreAndRetrieveSomething() throws Exception {
 
-        Mongo m = new Mongo();
-        DB db = m.getDB("mydb");
+        final MongoSTStorageSessionProvider provider = new MongoSTStorageSessionProvider(STStorageSession.STFlushMode.AUTO,repositoryPath("repository"),new Mongo(),new DefaultSTPartitionFactory());
 
-        BasicDBObject doc = new BasicDBObject();
-        DBCollection coll = db.getCollection("aa");
+        ExecutorService s = Executors.newFixedThreadPool(4);
 
-        doc.put("name", "MongoDB");
-        doc.put("type", "database");
-        doc.put("count", 1);
+        final ThreadLocal<Random> rnd = new ThreadLocal<Random>(){
+            @Override
+            protected Random initialValue() {
+                return new Random();
+            }
+        };
 
-        BasicDBObject info = new BasicDBObject();
+        for (int i = 0; i < 4; i++) {
 
-        info.put("x", 203);
-        info.put("y", 102);
+            s.execute(new Runnable() {
 
-        doc.put("info", info);
+                @Override
+                public void run() {
+                    while (true) {
 
-        doc.put("_id", "alalala");
-        coll.save(doc);
-        Object id = doc.get("_id");
-        System.err.println("ID:" + id);
-        BasicDBObject obj = new BasicDBObject();
-        obj.put("_id", "alalala");
-        DBCursor cur = coll.find(obj);
-        while (cur.hasNext()) {
-            System.err.println(cur.next());
+                        STStorageSession session = provider.createInstance();
+                        STNodeEntry newNode = session.withPartition(SLPartition.FEDERATION).createWithName("sample",false).withKey("id",Integer.toString(rnd.get().nextInt())).andCreate();
+                    }
+                }
+            });
         }
-        System.err.println("dam!");
-
-
+         s.awaitTermination(50000, TimeUnit.HOURS);
     }
 
 }

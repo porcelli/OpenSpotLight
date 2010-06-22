@@ -393,7 +393,8 @@
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongo-java-driver</artifactId>
-                <version>2.0rc4</version>
+                <!--version>2.0rc4</version-->
+                <version>2.0-custom</version>
             </dependency>
             <dependency>
                 <groupId>jredis</groupId>

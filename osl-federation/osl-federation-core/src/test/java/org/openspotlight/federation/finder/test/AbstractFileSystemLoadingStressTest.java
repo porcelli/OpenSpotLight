@@ -51,10 +51,11 @@ package org.openspotlight.federation.finder.test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.internal.ImmutableList;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
@@ -72,11 +73,9 @@ import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.redis.guice.JRedisFactory;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
-import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,10 +90,11 @@ import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Strings.concatPaths;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
-public class FileSystemLoadingStressTest {
+public abstract class AbstractFileSystemLoadingStressTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileSystemLoadingStressTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractFileSystemLoadingStressTest.class);
     private static ArtifactSource artifactSource;
+    protected Injector injector;
 
     private static class RepositoryData {
         public final GlobalSettings settings;
@@ -140,13 +140,13 @@ public class FileSystemLoadingStressTest {
         artifactSource.setName("lots of files");
         artifactSource.setActive(true);
         artifactSource.setBinary(false);
-        //artifactSource.setInitialLookup("/Users/feu/much-data");
-        artifactSource.setInitialLookup("./");
+        artifactSource.setInitialLookup("/Users/feu/much-data");
+//        artifactSource.setInitialLookup("./");
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
-        //mapping.setFrom("files");
-        mapping.setFrom("src");
+        mapping.setFrom("files");
+//        mapping.setFrom("src");
         mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("**/*");
@@ -154,33 +154,38 @@ public class FileSystemLoadingStressTest {
         return new RepositoryData(settings, repository, group, artifactSource);
     }
 
-    @BeforeClass
-    public static void setupResources() throws Exception {
+    private boolean runned = false;
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
-                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                repositoryPath("repository")),
-                new SimplePersistModule(), new DetailedLoggerModule(),
-                new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+    @Before
+    public void setupResources() throws Exception {
+        if (!runned) {
+            injector = Guice.createInjector(createStorageModule(repositoryPath("repository")),
+                    new SimplePersistModule(), new DetailedLoggerModule(),
+                    new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
+            clearData();
+            data = createRepositoryData();
+            contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
-        data = createRepositoryData();
-        contextFactory = injector.getInstance(ExecutionContextFactory.class);
+            final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
+                    DefaultJcrDescriptor.TEMP_DESCRIPTOR,
+                    data.repository);
 
-        final ExecutionContext context = contextFactory.createExecutionContext("username", "password",
-                DefaultJcrDescriptor.TEMP_DESCRIPTOR,
-                data.repository);
+            context.getDefaultConfigurationManager().saveGlobalSettings(data.settings);
+            context.getDefaultConfigurationManager().saveRepository(data.repository);
+            context.closeResources();
 
-        context.getDefaultConfigurationManager().saveGlobalSettings(data.settings);
-        context.getDefaultConfigurationManager().saveRepository(data.repository);
-        context.closeResources();
-
-        scheduler = DefaultScheduler.INSTANCE;
-        scheduler.initializeSettings(contextFactory, "user", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        scheduler.refreshJobs(data.settings, SLCollections.setOf(data.repository));
-        scheduler.startScheduler();
+            scheduler = DefaultScheduler.INSTANCE;
+            scheduler.initializeSettings(contextFactory, "user", "password", DefaultJcrDescriptor.TEMP_DESCRIPTOR);
+            scheduler.refreshJobs(data.settings, SLCollections.setOf(data.repository));
+            scheduler.startScheduler();
+            runned = true;
+        }
 
     }
+
+    protected abstract void clearData() throws Exception;
+
+    protected abstract Module createStorageModule(STRepositoryPath repositoryPath)throws Exception;
 
     @After
     public void closeTestResources() {
