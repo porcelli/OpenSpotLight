@@ -54,6 +54,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.mongodb.*;
+import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSInputFile;
+import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.Pair;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
@@ -66,11 +70,13 @@ import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
 import org.openspotlight.storage.domain.node.STPropertyImpl;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
@@ -87,6 +93,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     private static final String NULL_VALUE = "!!!NULL!!!";
     private Multimap<STPartition, Pair<STNodeEntry, DBObject>> transientObjects = HashMultimap.create();
     private final Map<String, DB> partitionMap;
+    private final Map<String, GridFS> gridFSMap;
     private final Map<Pair<String, String>, DBCollection> collectionsMap = newHashMap();
 
     private static final String
@@ -98,7 +105,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             MPP_PARTITION = "mpp_partition",
             MPP_ROOT = "mpp_root",
             MPP_KEY_NAME = "mpp_key_name",
-            KEY = "node_key",
+            KEY_NAMES = "node_key_names",
             PROPERTIES = "node_properties",
             INDEXED = "node_indexed",
             ENTRY_NAME = "node_entry_name",
@@ -107,6 +114,21 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
     private final Mongo mongo;
     private final STRepositoryPath repositoryPath;
+
+    private GridFS getCachedGridFSForPartition(STPartition partition) {
+        return getCachedGridFSForPartition(partition.getPartitionName());
+    }
+
+    private GridFS getCachedGridFSForPartition(String partition) {
+        GridFS fs = gridFSMap.get(partition);
+        if (fs == null) {
+            DB db = getCachedDbForPartition(partition);
+            fs = new GridFS(db);
+            gridFSMap.put(partition, fs);
+        }
+        return fs;
+
+    }
 
 
     private DB getCachedDbForPartition(STPartition partition) {
@@ -197,15 +219,19 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
                         value = ((String) innerObj.get(stProperty.getPropertyName())).getBytes();
                         if (NULL_VALUE.equals(value)) value = null;
                     }
-
                 } else {
                     DBObject innerObj = (DBObject) reference.get(PROPERTIES);
-                    if (innerObj != null)
-                        value = (byte[]) innerObj.get(stProperty.getPropertyName());
+                    if (innerObj != null) {
+                        Boolean isBig = (Boolean) innerObj.get(getBigPropertyName(stProperty));
+                        if (Boolean.TRUE.equals(isBig)) {
+                            value = readAsGridFS(partition, stProperty);
 
+                        } else {
+                            value = (byte[]) innerObj.get(stProperty.getPropertyName());
+                        }
+                    }
                 }
             }
-
         }
         return value;
     }
@@ -217,62 +243,51 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     @Override
     protected Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception {
 
-        DBObject possibleKeyParameter = new BasicDBObject();
-        DBObject possibleIndexParameter = new BasicDBObject();
+        DBObject criteriaAsObj = new BasicDBObject();
 
         for (STCriteriaItem c : criteria.getCriteriaItems()) {
             if (c instanceof STPropertyCriteriaItem) {
                 STPropertyCriteriaItem p = (STPropertyCriteriaItem) c;
-                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), p.getValue() == null ? NULL_VALUE : p.getValue());
-                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), p.getValue() == null ? NULL_VALUE : p.getValue());
+                criteriaAsObj.put(INDEXED + "." + p.getPropertyName(), p.getValue() == null ? NULL_VALUE : p.getValue());
 
             }
             if (c instanceof STPropertyContainsString) {
                 STPropertyContainsString p = (STPropertyContainsString) c;
-                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "(.*)"));
-                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "(.*)"));
+                criteriaAsObj.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "(.*)"));
             }
             if (c instanceof STPropertyStartsWithString) {
                 STPropertyStartsWithString p = (STPropertyStartsWithString) c;
-                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("^" + beforeRegex(p.getValue()) + "(.*)"));
-                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("^" + beforeRegex(p.getValue()) + "(.*)"));
+                criteriaAsObj.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("^" + beforeRegex(p.getValue()) + "(.*)"));
             }
             if (c instanceof STPropertyEndsWithString) {
                 STPropertyEndsWithString p = (STPropertyEndsWithString) c;
-                possibleKeyParameter.put(KEY + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "$"));
-                possibleIndexParameter.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "$"));
+                criteriaAsObj.put(INDEXED + "." + p.getPropertyName(), Pattern.compile("(.*)" + beforeRegex(p.getValue()) + "$"));
             }
             if (c instanceof STUniqueKeyCriteriaItem) {
                 STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;
-                possibleIndexParameter.put(ID, uniqueCriteria.getValue().getKeyAsString());
-                possibleKeyParameter.put(ID, uniqueCriteria.getValue().getKeyAsString());
-
+                criteriaAsObj.put(ID, uniqueCriteria.getValue().getKeyAsString());
             }
             if (c instanceof STLocalKeyCriteriaItem) {
                 STLocalKeyCriteriaItem uniqueCriteria = (STLocalKeyCriteriaItem) c;
                 String localHash = uniqueCriteria.getValue().getKeyAsString();
-                possibleIndexParameter.put(LOCAL_ID, localHash);
-                possibleKeyParameter.put(LOCAL_ID, localHash);
-
+                criteriaAsObj.put(LOCAL_ID, localHash);
             }
         }
 
         ImmutableSet.Builder<STNodeEntry> resultBuilder = ImmutableSet.builder();
 
-        for (DBObject criteriaAsObj : ImmutableSet.of(possibleIndexParameter, possibleKeyParameter)) {
-            ImmutableSet.Builder<String> nodeNamesBuilder = ImmutableSet.builder();
-            if (criteria.getNodeName() != null) {
-                nodeNamesBuilder.add(criteria.getNodeName());
-            } else {
-                nodeNamesBuilder.addAll(getCachedDbForPartition(partition).getCollectionNames());
+        ImmutableSet.Builder<String> nodeNamesBuilder = ImmutableSet.builder();
+        if (criteria.getNodeName() != null) {
+            nodeNamesBuilder.add(criteria.getNodeName());
+        } else {
+            nodeNamesBuilder.addAll(getCachedDbForPartition(partition).getCollectionNames());
+        }
+        for (String s : nodeNamesBuilder.build()) {
+            DBCursor resultAsDbObject = getCachedCollection(partition, s).find(criteriaAsObj);
+            while (resultAsDbObject.hasNext()) {
+                resultBuilder.add(convertToNode(partition, resultAsDbObject.next()));
             }
-            for (String s : nodeNamesBuilder.build()) {
-                DBCursor resultAsDbObject = getCachedCollection(partition, s).find(criteriaAsObj);
-                while (resultAsDbObject.hasNext()) {
-                    resultBuilder.add(convertToNode(partition, resultAsDbObject.next()));
-                }
 
-            }
         }
 
         return resultBuilder.build();
@@ -306,14 +321,16 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             reference.put(MULTIPLE_PARENT_PATH, parentList);
         }
         BasicDBObject key = new BasicDBObject();
-
+        List<String> keyNames = newArrayList();
         for (STKeyEntry keyEntry : uniqueId.getLocalKey().getEntries()) {
+            keyNames.add(keyEntry.getPropertyName());
             key.put(keyEntry.getPropertyName(), keyEntry.getValue() != null ? keyEntry.getValue() : NULL_VALUE);
-            ensureIndexed(partition, entry.getNodeEntryName(), KEY, keyEntry.getPropertyName());
+            ensureIndexed(partition, entry.getNodeEntryName(), INDEXED, keyEntry.getPropertyName());
 
         }
         reference.put(ID, uniqueId.getKeyAsString());
-        reference.put(KEY, key);
+        reference.put(KEY_NAMES, keyNames);
+        reference.put(INDEXED, key);
         reference.put(ENTRY_NAME, uniqueId.getLocalKey().getNodeEntryName());
         reference.put(ROOT_NODE, uniqueId.getLocalKey().isRootKey());
         if (STFlushMode.AUTO.equals(getFlushMode())) {
@@ -379,14 +396,53 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             obj = new BasicDBObject();
             reference.put(objName, obj);
         }
-        obj.put(dirtyProperty.getPropertyName(), value);
-        if (STFlushMode.AUTO.equals(getFlushMode())) {
-            getCachedCollection(partition, dirtyProperty.getParent().getNodeEntryName()).save(reference);
+        if (value instanceof byte[] && isBiggerThan4mb((byte[]) value)) {
+            obj.put(getBigPropertyName(dirtyProperty), true);
         } else {
-            transientObjects.put(partition, newPair(dirtyProperty.getParent(), reference));
+            obj.removeField(getBigPropertyName(dirtyProperty));
+            obj.put(dirtyProperty.getPropertyName(), value);
+            if (STFlushMode.AUTO.equals(getFlushMode())) {
+                getCachedCollection(partition, dirtyProperty.getParent().getNodeEntryName()).save(reference);
+            } else {
+                transientObjects.put(partition, newPair(dirtyProperty.getParent(), reference));
+            }
         }
 
 
+    }
+
+    private String getBigPropertyName(STProperty dirtyProperty) {
+        return "big_" + dirtyProperty.getPropertyName();
+    }
+
+
+    private static final String _ = "_";
+
+    public void storeInGridFS(STPartition partition, STProperty property, byte[] value) throws Exception {
+        String key = getFileName(partition, property);
+        GridFS fs = getCachedGridFSForPartition(partition);
+        GridFSInputFile file = fs.createFile(value);
+        file.setFilename(key);
+        file.save();
+
+    }
+
+    private String getFileName(STPartition partition, STProperty property) {
+        String key = partition.getPartitionName() + _ + property.getParent().getUniqueKey().getKeyAsString() + _ + property.getPropertyName();
+        return key;
+    }
+
+    public byte[] readAsGridFS(STPartition partition, STProperty property) throws Exception {
+        String key = getFileName(partition, property);
+        GridFS fs = getCachedGridFSForPartition(partition);
+        GridFSDBFile file = fs.findOne(key);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        IOUtils.copy(file.getInputStream(), baos);
+        return baos.toByteArray();
+    }
+
+    boolean isBiggerThan4mb(byte[] bytes) {
+        return (double) (bytes == null ? 0 : bytes.length) / (1024 * 1024) > 4.0;
     }
 
     Set<String> allIndexes = newHashSet();
@@ -431,11 +487,14 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         }
         DBObject reference = possibleReference != null ? possibleReference : createReferenceIfNecessary(partition, stNodeEntry);
         DBObject indexed = (DBObject) reference.get(INDEXED);
+        List<String> keyNames = (List<String>) reference.get(KEY_NAMES);
         if (indexed != null) {
             for (String s : indexed.keySet()) {
-                STPropertyImpl p = STPropertyImpl.createIndexed(s, stNodeEntry);
-                p.getInternalMethods().setStringValueOnLoad(this, (String) indexed.get(s));
-                builder.add(p);
+                if (!keyNames.contains(s)) {
+                    STPropertyImpl p = STPropertyImpl.createIndexed(s, stNodeEntry);
+                    p.getInternalMethods().setStringValueOnLoad(this, (String) indexed.get(s));
+                    builder.add(p);
+                }
             }
         }
 
@@ -461,16 +520,19 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     private STNodeEntry convertToNode(STPartition partition, DBObject dbObject) throws Exception {
-        DBObject keyAsDbObj = (DBObject) dbObject.get(KEY);
+        DBObject keyAsDbObj = (DBObject) dbObject.get(INDEXED);
+        List<String> keyNames = (List<String>) dbObject.get(KEY_NAMES);
         List<DBObject> list = (List<DBObject>) dbObject.get(MULTIPLE_PARENT_PATH);
 
 
         STUniqueKeyBuilder keyBuilder = this.withPartition(partition).createKey(
                 (String) dbObject.get(ENTRY_NAME), (Boolean) dbObject.get(ROOT_NODE));
         for (String s : keyAsDbObj.keySet()) {
-            String valueAsString = convert(keyAsDbObj.get(s), String.class);
-            if (NULL_VALUE.equals(valueAsString)) valueAsString = null;
-            keyBuilder.withEntry(s, valueAsString);
+            if (keyNames.contains(s)) {
+                String valueAsString = convert(keyAsDbObj.get(s), String.class);
+                if (NULL_VALUE.equals(valueAsString)) valueAsString = null;
+                keyBuilder.withEntry(s, valueAsString);
+            }
         }
 
         if (list != null) {
@@ -500,6 +562,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         this.partitionMap = newHashMap();
         this.mongo = mongo;
         this.repositoryPath = repositoryPath;
+        this.gridFSMap = newHashMap();
     }
 
 
