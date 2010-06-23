@@ -209,7 +209,6 @@ public abstract class AbstractFileSystemLoadingStressTest {
         logger.debug("finished to load item names from persistent storage");
 
         assertThat(list.size() > 50, is(true));
-        if(true) return;//TODO remove this
         int loadedSize = 0;
         logger.debug("about to load item contents from persistent storage");
         for (String s : list) {

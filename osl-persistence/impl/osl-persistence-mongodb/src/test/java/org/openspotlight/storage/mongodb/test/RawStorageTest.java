@@ -1,9 +1,6 @@
 package org.openspotlight.storage.mongodb.test;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.Mongo;
+import com.mongodb.*;
 import org.junit.Test;
 import org.openspotlight.storage.DefaultSTPartitionFactory;
 import org.openspotlight.storage.STPartition;
@@ -28,32 +25,15 @@ public class RawStorageTest {
     @Test
     public void shouldStoreAndRetrieveSomething() throws Exception {
 
-        final MongoSTStorageSessionProvider provider = new MongoSTStorageSessionProvider(STStorageSession.STFlushMode.AUTO,repositoryPath("repository"),new Mongo(),new DefaultSTPartitionFactory());
+        Mongo m  = new Mongo();
+        DB db = m.getDB("db");
+        BasicDBObject someObj = new BasicDBObject("_id","sameID");
+                someObj.put("la","la");
+                db.getCollection("col").save(someObj);
+        BasicDBObject sameObj = new BasicDBObject("_id","sameID");
+                someObj.put("le","le");
+                db.getCollection("col").save(sameObj);
 
-        ExecutorService s = Executors.newFixedThreadPool(4);
-
-        final ThreadLocal<Random> rnd = new ThreadLocal<Random>(){
-            @Override
-            protected Random initialValue() {
-                return new Random();
-            }
-        };
-
-        for (int i = 0; i < 4; i++) {
-
-            s.execute(new Runnable() {
-
-                @Override
-                public void run() {
-                    while (true) {
-
-                        STStorageSession session = provider.createInstance();
-                        STNodeEntry newNode = session.withPartition(SLPartition.FEDERATION).createWithName("sample",false).withKey("id",Integer.toString(rnd.get().nextInt())).andCreate();
-                    }
-                }
-            });
-        }
-         s.awaitTermination(50000, TimeUnit.HOURS);
     }
 
 }
