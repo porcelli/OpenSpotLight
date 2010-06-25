@@ -49,38 +49,78 @@
 
 package org.openspotlight.common.util;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.unmodifiableMap;
-import static java.util.Collections.unmodifiableSet;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
+import com.google.common.collect.ImmutableSet;
+import org.openspotlight.common.concurrent.*;
 
 import java.awt.List;
 import java.util.*;
+import java.util.Queue;
 
-import com.google.common.collect.ImmutableSet;
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
-import org.openspotlight.common.concurrent.NeedsSyncronizationList;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
-import org.openspotlight.common.concurrent.UnsafeDummyLockContainer;
+import static java.util.Collections.*;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Helper class to deal with collections
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class SLCollections {
 
+    public static <T> Iterable<T> iterableOfAll(final Iterable<Iterable<T>> iterables) {
+        return new Iterable<T>() {
+
+            @Override
+            public Iterator<T> iterator() {
+                return new Iterator<T>() {
+
+                    private Iterator<T> currentIterator = null;
+                    final Iterator<Iterable<T>> it = iterables.iterator();
+
+                    private boolean hasNextIterator() {
+                        if (currentIterator == null || !currentIterator.hasNext()) {
+                            while (it.hasNext()) {
+                                currentIterator = it.next().iterator();
+                                if (currentIterator.hasNext()) return true;
+
+                            }
+                            return false;
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        return hasNextIterator();
+                    }
+
+                    @Override
+                    public T next() {
+                        if (hasNextIterator()) {
+                            T result = currentIterator.next();
+                            if (result == null) throw new NullPointerException();
+                            return result;
+                        }
+                        throw new NoSuchElementException();
+                    }
+
+                    @Override
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
+    }
+
     /**
      * Creates an immutable map in a null pointer safe way
-     * 
+     *
      * @param <K>
      * @param <V>
      * @param base
      * @return an immutable map
      */
-    public static <K, V> Map<K, V> createImmutableMap( final Map<K, V> base ) {
+    public static <K, V> Map<K, V> createImmutableMap(final Map<K, V> base) {
         Map<K, V> temp = base;
         if (temp == null) {
             temp = emptyMap();
@@ -90,27 +130,25 @@ public class SLCollections {
         return temp;
     }
 
-    public static <T> Set<T> iterableToSet(Iterable<T> iterable){
-        if(iterable==null) return Collections.emptySet();
+    public static <T> Set<T> iterableToSet(Iterable<T> iterable) {
+        if (iterable == null) return Collections.emptySet();
         Iterator<T> it = iterable.iterator();
         ImmutableSet.Builder<T> builder = ImmutableSet.builder();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             builder.add(it.next());
         }
         return builder.build();
     }
 
 
-
-
     /**
      * Creates an immutable set in a null pointer safe way
-     * 
+     *
      * @param <E>
      * @param base
      * @return an immutable set
      */
-    public static <E> Set<E> createImmutableSet( final Set<E> base ) {
+    public static <E> Set<E> createImmutableSet(final Set<E> base) {
         Set<E> temp = base;
         if (temp == null) {
             temp = emptySet();
@@ -122,15 +160,15 @@ public class SLCollections {
 
     /**
      * Creates the new collection.
-     * 
+     *
      * @param <I>
      * @param collectionType the collection type
-     * @param initialSize the initial size
+     * @param initialSize    the initial size
      * @return the c
      */
-    @SuppressWarnings( "unchecked" )
-    public static <I> Collection<I> createNewCollection( final Class<? extends Iterable> collectionType,
-                                                         final int initialSize ) {
+    @SuppressWarnings("unchecked")
+    public static <I> Collection<I> createNewCollection(final Class<? extends Iterable> collectionType,
+                                                        final int initialSize) {
         if (NeedsSyncronizationSet.class.isAssignableFrom(collectionType)) {
             return LockedCollections.createSetWithLock(new UnsafeDummyLockContainer(), new HashSet<I>(initialSize));
         } else if (NeedsSyncronizationList.class.isAssignableFrom(collectionType)) {
@@ -150,12 +188,12 @@ public class SLCollections {
 
     /**
      * Convenient method to newPair a typed set using varargs.
-     * 
+     *
      * @param <T>
      * @param elements
      * @return a new set with the elements
      */
-    public static <T> Set<T> setOf( final T... elements ) {
+    public static <T> Set<T> setOf(final T... elements) {
         final HashSet<T> set = new HashSet<T>();
         if (elements != null) {
             for (final T e : elements) {

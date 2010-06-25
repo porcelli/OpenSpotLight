@@ -34,7 +34,6 @@ import static java.text.MessageFormat.format;
 import static java.util.Collections.reverse;
 import static java.util.Collections.sort;
 import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
-import static org.openspotlight.common.collection.IteratorBuilder.createIteratorBuilder;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
@@ -338,11 +337,18 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     }
 
-    private <T> List<T> internalConvertNodesToBeans(Iterable<STNodeEntry> nodes) throws Exception {
-        List<T> itemsConverted = newArrayList();
-        for (STNodeEntry node : nodes)
-            itemsConverted.add(this.<T>convertNodeToBean(node));
-        return itemsConverted;
+    private <T> Iterable<T> internalConvertNodesToBeans(Iterable<STNodeEntry> nodes) throws Exception {
+        IteratorBuilder.SimpleIteratorBuilder<T, STNodeEntry> b = IteratorBuilder.createIteratorBuilder();
+        b.withConverter(new IteratorBuilder.Converter<T, STNodeEntry>() {
+            @Override
+            public T convert(STNodeEntry nodeEntry) throws Exception {
+                return (T)convertNodeToBean(nodeEntry);
+            }
+        });
+        Iterable<T> result = b.withItems(nodes).andBuild();
+        return result;
+
+
     }
 
     private String internalGetNodeType(STNodeEntry node) {
@@ -712,7 +718,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             }
             final Iterable<STNodeEntry> foundItems = builder.buildCriteria().andFind(currentSession);
 
-            IteratorBuilder.SimpleIteratorBuilder<T, STNodeEntry> b =createIteratorBuilder();
+            IteratorBuilder.SimpleIteratorBuilder<T, STNodeEntry> b = IteratorBuilder.<T, STNodeEntry>createIteratorBuilder();
             b.withConverter(new IteratorBuilder.Converter<T, STNodeEntry>() {
                 @Override
                 public T convert(STNodeEntry nodeEntry) throws Exception {

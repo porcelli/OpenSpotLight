@@ -59,6 +59,8 @@ import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.Pair;
+import org.openspotlight.common.collection.IteratorBuilder;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
@@ -77,6 +79,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
@@ -183,7 +186,6 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
     private DBObject findReferenceOrReturnNull(STPartition partition, STNodeEntry entry) {
         DBObject basicDBObject = null;//TODO fix with fakePair and/or find cache
-        if(true) throw new RuntimeException("TODO fix with fakePair and/or find cache");
         for (Pair<STNodeEntry, DBObject> pair : transientObjects.get(partition)) {
             if (pair.getK1().equals(entry)) {
                 basicDBObject = pair.getK2();
@@ -245,7 +247,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     @Override
-    protected Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception {
+    protected Iterable<STNodeEntry> internalFindByCriteria(final STPartition partition, final STCriteria criteria) throws Exception {
 
         DBObject criteriaAsObj = new BasicDBObject();
 
@@ -278,7 +280,6 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             }
         }
 
-        ImmutableSet.Builder<STNodeEntry> resultBuilder = ImmutableSet.builder();
 
         ImmutableSet.Builder<String> nodeNamesBuilder = ImmutableSet.builder();
         if (criteria.getNodeName() != null) {
@@ -286,15 +287,23 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         } else {
             nodeNamesBuilder.addAll(getCachedDbForPartition(partition).getCollectionNames());
         }
+        List<Iterable<DBObject>> dbCursors = newLinkedList();
         for (String s : nodeNamesBuilder.build()) {
             DBCursor resultAsDbObject = getCachedCollection(partition, s).find(criteriaAsObj);
-            while (resultAsDbObject.hasNext()) {
-                resultBuilder.add(convertToNode(partition, resultAsDbObject.next()));
-            }
+            dbCursors.add(resultAsDbObject);
 
         }
 
-        return resultBuilder.build();
+        IteratorBuilder.SimpleIteratorBuilder<STNodeEntry, DBObject> b = IteratorBuilder.createIteratorBuilder();
+        b.withConverter(new IteratorBuilder.Converter<STNodeEntry, DBObject>() {
+            @Override
+            public STNodeEntry convert(DBObject nodeEntry) throws Exception {
+                return convertToNode(partition, nodeEntry);
+            }
+        });
+        Iterable<STNodeEntry> result = b.withItems(SLCollections.<DBObject>iterableOfAll(dbCursors)).andBuild();
+        return result;
+
 
     }
 
@@ -354,32 +363,36 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     @Override
-    protected Set<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition initialPartition, STNodeEntry stNodeEntry, String name) throws Exception {
+    protected Iterable<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition initialPartition, STNodeEntry stNodeEntry, String name) throws Exception {
         if (stNodeEntry == null) return emptySet();
-        ImmutableSet.Builder<STNodeEntry> resultBuilder = ImmutableSet.builder();
-        internalGetChildren(resultBuilder, stNodeEntry, name);
-        return resultBuilder.build();
+        return internalGetChildren(initialPartition, stNodeEntry, name);
     }
 
-    private void internalGetChildren(ImmutableSet.Builder<STNodeEntry> resultBuilder, STNodeEntry stNodeEntry, String name) throws Exception {
-        STPartition[] partitions = partitionFactory.getValues();
-        for (STPartition partition : partitions) {
-            BasicDBObject baseDbObj = new BasicDBObject();
-            baseDbObj.put(PARENT_ID, stNodeEntry.getUniqueKey().getKeyAsString());
-            ImmutableSet.Builder<String> names = ImmutableSet.builder();
-            if (name != null) {
-                names.add(name);
-            } else {
-                names.addAll(getCachedDbForPartition(partition).getCollectionNames());
-            }
-            for (String n : names.build()) {
-                DBCursor resultAsDbObj = getCachedCollection(partition, n).find(baseDbObj);
-                while (resultAsDbObj.hasNext()) {
-                    resultBuilder.add(convertToNode(partition, resultAsDbObj.next()));
-                }
-            }
+    private Iterable<STNodeEntry> internalGetChildren(final STPartition partition, STNodeEntry stNodeEntry, String name) throws Exception {
+        BasicDBObject baseDbObj = new BasicDBObject();
+        baseDbObj.put(PARENT_ID, stNodeEntry.getUniqueKey().getKeyAsString());
+        ImmutableSet.Builder<String> names = ImmutableSet.builder();
+        if (name != null) {
+            names.add(name);
+        } else {
+            names.addAll(getCachedDbForPartition(partition).getCollectionNames());
+        }
+        List<Iterable<DBObject>> dbCursors = newLinkedList();
+        for (String s : names.build()) {
+            DBCursor resultAsDbObject = getCachedCollection(partition, s).find(baseDbObj);
+            dbCursors.add(resultAsDbObject);
+
         }
 
+        IteratorBuilder.SimpleIteratorBuilder<STNodeEntry, DBObject> b = IteratorBuilder.createIteratorBuilder();
+        b.withConverter(new IteratorBuilder.Converter<STNodeEntry, DBObject>() {
+            @Override
+            public STNodeEntry convert(DBObject nodeEntry) throws Exception {
+                return convertToNode(partition, nodeEntry);
+            }
+        });
+        Iterable<STNodeEntry> result = b.withItems(SLCollections.<DBObject>iterableOfAll(dbCursors)).andBuild();
+        return result;
     }
 
     @Override
@@ -465,11 +478,10 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     @Override
-    protected Set<STNodeEntry> internalNodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
+    protected Iterable<STNodeEntry> internalNodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
         if (stNodeEntry == null) return emptySet();
-        ImmutableSet.Builder<STNodeEntry> resultBuilder = ImmutableSet.builder();
-        internalGetChildren(resultBuilder, stNodeEntry, null);
-        return resultBuilder.build();
+        return internalGetChildren(partition, stNodeEntry, null);
+
     }
 
     @Override
@@ -519,7 +531,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     @Override
-    protected Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception {
+    protected Iterable<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception {
         DBCursor cursor = getCachedCollection(partition, nodeEntryName).find();
         ImmutableSet.Builder<STNodeEntry> builder = ImmutableSet.builder();
         while (cursor.hasNext()) {

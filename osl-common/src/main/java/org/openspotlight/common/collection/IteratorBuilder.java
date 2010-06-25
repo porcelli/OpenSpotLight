@@ -122,7 +122,7 @@ public class IteratorBuilder {
                     }
                 } else {
                     try {
-                        return converter.convert(cachedOrigin);
+                        return converter.convert(iterator.next());
 
                     } catch (Exception e) {
                         throw logAndReturnNew(e, SLRuntimeException.class);
