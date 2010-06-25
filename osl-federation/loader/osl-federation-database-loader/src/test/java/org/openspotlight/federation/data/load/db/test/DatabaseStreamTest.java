@@ -198,7 +198,7 @@ public abstract class DatabaseStreamTest {
 
         ArtifactLoaderManager.INSTANCE.refreshResources(configuration, bundle, provider);
 
-        Set<StringArtifact> loadedArtifacts = provider.get().listByInitialPath(StringArtifact.class, null);
+        Iterable<StringArtifact> loadedArtifacts = provider.get().listByInitialPath(StringArtifact.class, null);
         final Set<String> failMessages = new HashSet<String>();
         lookingTypes:
         for (final ScriptType typeToAssert : typesToAssert()) {

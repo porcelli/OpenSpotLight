@@ -49,6 +49,7 @@
 
 package org.openspotlight.storage.domain.node;
 
+import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.STLocalKey;
@@ -78,13 +79,13 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory {
 
     byte[] getPropertyAsBytes(STStorageSession session, String name);
 
-    Set<STNodeEntry> getChildren(STStorageSession session);
+    Iterable<STNodeEntry> getChildren(STPartition partition, STStorageSession session);
 
-    Set<STNodeEntry> getChildrenNamed(STStorageSession session, String name);
+    Iterable<STNodeEntry> getChildrenNamed(STPartition partition, STStorageSession session, String name);
 
-    Set<STNodeEntry> getChildrenForcingReload(STStorageSession session);
+    Iterable<STNodeEntry> getChildrenForcingReload(STPartition partition, STStorageSession session);
 
-    Set<STNodeEntry> getChildrenNamedForcingReload(STStorageSession session, String name);
+    Iterable<STNodeEntry> getChildrenNamedForcingReload(STPartition partition, STStorageSession session, String name);
 
     STNodeEntry getParent(STStorageSession session);
 

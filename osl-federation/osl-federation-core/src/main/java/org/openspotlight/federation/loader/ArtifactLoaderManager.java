@@ -76,6 +76,7 @@ import java.util.concurrent.Future;
 
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
+import static org.openspotlight.common.util.SLCollections.iterableToSet;
 import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 /**
@@ -310,7 +311,7 @@ public enum ArtifactLoaderManager {
                         FilterResult result = filterNamesByPattern(Strings.rootPath(mapping.getFrom()), namesFromOrigin,
                                 mapping.getIncludeds(), mapping.getExcludeds(), false);
                         HashSet<String> namesToExclude = new HashSet<String>();
-                        HashSet<String> rawNamesToExclude = new HashSet<String>(provider.get().getInternalMethods().retrieveOriginalNames(source, type, mapping.getFrom()));
+                        Set<String> rawNamesToExclude = iterableToSet(provider.get().getInternalMethods().retrieveOriginalNames(source, type, mapping.getFrom()));
                         for (String raw : rawNamesToExclude) {
                             namesToExclude.add(removeBegginingFrom(source.getInitialLookup(), raw));
                         }

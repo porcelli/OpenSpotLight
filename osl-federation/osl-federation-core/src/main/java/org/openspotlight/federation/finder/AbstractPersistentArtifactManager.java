@@ -88,7 +88,7 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
             }
         }
 
-        public <A extends Artifact> Set<A> listByOriginalNames( ArtifactSource source,
+        public <A extends Artifact> Iterable<A> listByOriginalNames( ArtifactSource source,
                                                                 Class<A> type,
                                                                 String originName ) {
             try {
@@ -98,7 +98,7 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
             }
         }
 
-        public <A extends Artifact> Set<String> retrieveOriginalNames( ArtifactSource source,
+        public <A extends Artifact> Iterable<String> retrieveOriginalNames( ArtifactSource source,
                                                                        Class<A> type,
                                                                        String initialPath ) {
             try {
@@ -108,7 +108,7 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
             }
         }
 
-        public <A extends Artifact> Set<String> retrieveNames( Class<A> type,
+        public <A extends Artifact> Iterable<String> retrieveNames( Class<A> type,
                                                                String initialPath ) {
             try {
                 return internalRetrieveNames(type, initialPath);
@@ -140,7 +140,7 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
         return internalMethods;
     }
 
-    public <A extends Artifact> Set<A> listByInitialPath( Class<A> type,
+    public <A extends Artifact> Iterable<A> listByInitialPath( Class<A> type,
                                                    String path ) {
         try {
             return internalListByPath(type, path);
@@ -179,11 +179,11 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
 
     protected abstract <A extends Artifact> boolean internalIsTypeSupported( Class<A> type ) throws Exception;
 
-    protected abstract <A extends Artifact> Set<String> internalRetrieveOriginalNames( ArtifactSource source,
+    protected abstract <A extends Artifact> Iterable<String> internalRetrieveOriginalNames( ArtifactSource source,
                                                                                        Class<A> type,
                                                                                        String initialPath ) throws Exception;
 
-    protected abstract <A extends Artifact> Set<String> internalRetrieveNames( Class<A> type,
+    protected abstract <A extends Artifact> Iterable<String> internalRetrieveNames( Class<A> type,
                                                                                String initialPath ) throws Exception;
 
     protected abstract <A extends Artifact> void internalAddTransient( A artifact ) throws Exception;
@@ -197,11 +197,11 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
 
     protected abstract void internalCloseResources() throws Exception;
 
-    protected final <A extends Artifact> Set<A> internalListByOriginalNames( final ArtifactSource source,
+    protected final <A extends Artifact> Iterable<A> internalListByOriginalNames( final ArtifactSource source,
                                                                              final Class<A> type,
                                                                              String initialPath ) throws Exception {
-        Set<String> paths = getInternalMethods().retrieveOriginalNames(source, type, initialPath);
-        Set<A> result = new HashSet<A>();
+        Iterable<String> paths = getInternalMethods().retrieveOriginalNames(source, type, initialPath);
+        HashSet<A> result = new HashSet<A>();
         if (isMultithreaded()) {
             List<Callable<A>> tasks = new ArrayList<Callable<A>>();
             for (final String path : paths) {
@@ -223,9 +223,9 @@ public abstract class AbstractPersistentArtifactManager implements PersistentArt
         return result;
     }
 
-    protected final <A extends Artifact> Set<A> internalListByPath( final Class<A> type,
+    protected final <A extends Artifact> Iterable<A> internalListByPath( final Class<A> type,
                                                                     String initialPath ) throws Exception {
-        Set<String> paths = getInternalMethods().retrieveNames(type, initialPath);
+        Iterable<String> paths = getInternalMethods().retrieveNames(type, initialPath);
         Set<A> result = new HashSet<A>();
         if (isMultithreaded()) {
             List<Callable<A>> tasks = new ArrayList<Callable<A>>();

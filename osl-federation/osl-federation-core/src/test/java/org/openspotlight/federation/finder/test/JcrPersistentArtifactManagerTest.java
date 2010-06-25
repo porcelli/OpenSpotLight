@@ -74,7 +74,6 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
@@ -113,9 +112,9 @@ public class JcrPersistentArtifactManagerTest {
         repository.setName("name");
         artifactSource.setRepository(repository);
         final FileSystemOriginArtifactLoader fileSystemFinder = new FileSystemOriginArtifactLoader();
-        final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(StringArtifact.class, artifactSource, null,null);
+        final Set<StringArtifact> artifacts = fileSystemFinder.listByPath(StringArtifact.class, artifactSource, null, null);
         persistenArtifactManager = new PersistentArtifactManagerImpl(repository, injector.getInstance(SimplePersistFactory.class));
-        for (StringArtifact artifact : artifacts){
+        for (StringArtifact artifact : artifacts) {
             artifact.setMappedTo("/src");
             persistenArtifactManager.addTransient(artifact);
         }
@@ -139,26 +138,31 @@ public class JcrPersistentArtifactManagerTest {
 
     @Test
     public void shouldListArtifactNames() throws Exception {
-        final Set<String> artifacts = persistenArtifactManager.getInternalMethods().retrieveNames(StringArtifact.class, null);
+        final Iterable<String> artifacts = persistenArtifactManager.getInternalMethods().retrieveNames(StringArtifact.class, null);
 
         assertThat(artifacts, is(notNullValue()));
-        assertThat(artifacts.size(), is(not(0)));
+        boolean hasOne = false;
         for (final String s : artifacts) {
             assertThat(s, is(notNullValue()));
+            hasOne = true;
         }
+        assertThat(hasOne, is(true));
+
     }
 
     @Test
     public void shouldListArtifacts() throws Exception {
-        final Set<StringArtifact> artifacts = persistenArtifactManager.listByInitialPath(StringArtifact.class,
+        final Iterable<StringArtifact> artifacts = persistenArtifactManager.listByInitialPath(StringArtifact.class,
                 "/src");
 
         assertThat(artifacts, is(notNullValue()));
-        assertThat(artifacts.size(), is(not(0)));
+        boolean hasOne = false;
         for (final StringArtifact sa : artifacts) {
             assertThat(sa, is(notNullValue()));
             assertThat(sa.getContent(), is(notNullValue()));
+            hasOne = true;
         }
+        assertThat(hasOne, is(true));
     }
 
 }

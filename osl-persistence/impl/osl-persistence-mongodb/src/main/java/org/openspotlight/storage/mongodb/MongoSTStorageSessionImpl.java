@@ -182,7 +182,8 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     }
 
     private DBObject findReferenceOrReturnNull(STPartition partition, STNodeEntry entry) {
-        DBObject basicDBObject = null;TODO fix with fakePair and/or find cache
+        DBObject basicDBObject = null;//TODO fix with fakePair and/or find cache
+        if(true) throw new RuntimeException("TODO fix with fakePair and/or find cache");
         for (Pair<STNodeEntry, DBObject> pair : transientObjects.get(partition)) {
             if (pair.getK1().equals(entry)) {
                 basicDBObject = pair.getK2();

@@ -73,9 +73,9 @@ public interface STStorageSession {
 
         STUniqueKeyBuilder createKey(String nodeEntryName, boolean rootKey);
 
-        Set<STNodeEntry> findByCriteria(STCriteria criteria);
+        Iterable<STNodeEntry> findByCriteria(STCriteria criteria);
 
-        Set<STNodeEntry> findNamed(String nodeEntryName);
+        Iterable<STNodeEntry> findNamed(String nodeEntryName);
 
         STNodeEntry findUniqueByCriteria(STCriteria criteria);
 
@@ -167,7 +167,7 @@ public interface STStorageSession {
 
         Set<STCriteriaItem> getCriteriaItems();
 
-        Set<STNodeEntry> andFind(STStorageSession session);
+        Iterable<STNodeEntry> andFind(STStorageSession session);
 
         STNodeEntry andFindUnique(STStorageSession session);
 
@@ -190,11 +190,11 @@ public interface STStorageSession {
 
         STNodeEntry nodeEntryGetParent(org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 
-        Set<STNodeEntry> nodeEntryGetChildren(STNodeEntry stNodeEntry);
+        Iterable<STNodeEntry> nodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry);
 
         byte[] propertyGetValue(STProperty stProperty); 
 
-        Set<STNodeEntry> nodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name);
+        Iterable<STNodeEntry> nodeEntryGetNamedChildren(STPartition partition, STNodeEntry stNodeEntry, String name);
     }
 
     interface STUniqueKeyBuilder {

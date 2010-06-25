@@ -92,7 +92,7 @@ public interface PersistentArtifactManager extends Disposable {
          * @param type
          * @return
          */
-        public <A extends Artifact> Set<String> retrieveOriginalNames( ArtifactSource source,
+        public <A extends Artifact> Iterable<String> retrieveOriginalNames( ArtifactSource source,
                                                                        Class<A> type,
                                                                        String initialPath );
 
@@ -104,7 +104,7 @@ public interface PersistentArtifactManager extends Disposable {
          * @param type
          * @return
          */
-        public <A extends Artifact> Set<String> retrieveNames( Class<A> type,
+        public <A extends Artifact> Iterable<String> retrieveNames( Class<A> type,
                                                                String initialPath );
 
         /**
@@ -127,7 +127,7 @@ public interface PersistentArtifactManager extends Disposable {
          * @param originName
          * @return
          */
-        public <A extends Artifact> Set<A> listByOriginalNames( ArtifactSource source,
+        public <A extends Artifact> Iterable<A> listByOriginalNames( ArtifactSource source,
                                                                 Class<A> type,
                                                                 String originName );
 
@@ -168,7 +168,7 @@ public interface PersistentArtifactManager extends Disposable {
      * @param path
      * @return
      */
-    public <A extends Artifact> Set<A> listByInitialPath( Class<A> type,
+    public <A extends Artifact> Iterable<A> listByInitialPath( Class<A> type,
                                                    String path );
 
     /**

@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.openspotlight.common.Pair;
+import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Reflection;
@@ -33,11 +34,13 @@ import static java.text.MessageFormat.format;
 import static java.util.Collections.reverse;
 import static java.util.Collections.sort;
 import static org.apache.commons.beanutils.PropertyUtils.getPropertyDescriptors;
+import static org.openspotlight.common.collection.IteratorBuilder.createIteratorBuilder;
 import static org.openspotlight.common.util.Assertions.checkCondition;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Reflection.unwrapCollectionFromMethodReturn;
 import static org.openspotlight.common.util.Reflection.unwrapMapFromMethodReturn;
+import static org.openspotlight.common.util.SLCollections.iterableToSet;
 
 /**
  * Created by IntelliJ IDEA. User: feuteston Date: 05/04/2010 Time: 13:19:32 To change this template use File | Settings | File
@@ -238,7 +241,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             for (SimpleNodeType beanBeenSaved : data.childrenToSave) {
                 internalConvertBeanToNode(context, data.propertyName, beanBeenSaved, newNodeEntry);
             }
-            context.allNodes.addAll(newNodeEntry.getChildrenNamed(currentSession, internalGetNodeName(data.nodeType)));
+            context.allNodes.addAll(iterableToSet(newNodeEntry.getChildrenNamed(currentPartition, currentSession, internalGetNodeName(data.nodeType))));
         }
 
     }
@@ -461,7 +464,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
             if (!SimpleNodeType.class.isAssignableFrom(nodeType)) throw new IllegalStateException("wrong child type");
             String childrenName = internalGetNodeName(nodeType);
-            Set<STNodeEntry> children = node.getChildrenNamed(currentSession, childrenName);
+            Set<STNodeEntry> children = iterableToSet(node.getChildrenNamed(currentPartition, currentSession, childrenName));
             children = filterChildrenWithProperty(children, descriptor.getName());
             List<Object> childrenAsBeans = newLinkedList();
             if ((!isMultiple) && children.size() > 1)
@@ -683,10 +686,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         return value;
     }
 
-    public <T> Iterable<T> findByProperties(STNodeEntry parent,
-                                            Class<T> beanType,
-                                            String[] propertyNames,
-                                            Object[] propertyValues) {
+    public <T> Iterable<T> findByProperties(final STNodeEntry parent,
+                                            final Class<T> beanType,
+                                            final String[] propertyNames,
+                                            final Object[] propertyValues) {
         try {
             checkNotNull("currentPartition", currentPartition);
             checkNotNull("currentSession", currentSession);
@@ -707,22 +710,31 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                 builder.withProperty(propertyNames[i]).equalsTo(
                         Conversion.convert(propertyValues[i], String.class));
             }
-            Set<STNodeEntry> foundItems = builder.buildCriteria().andFind(currentSession);
-            if (parent != null) {
-                Set<STNodeEntry> children = newHashSet();
-                for (STNodeEntry n : foundItems) {
-                    if (n.isChildOf(parent)) children.add(n);
+            final Iterable<STNodeEntry> foundItems = builder.buildCriteria().andFind(currentSession);
+
+            IteratorBuilder.SimpleIteratorBuilder<T, STNodeEntry> b =createIteratorBuilder();
+            b.withConverter(new IteratorBuilder.Converter<T, STNodeEntry>() {
+                @Override
+                public T convert(STNodeEntry nodeEntry) throws Exception {
+                    return (T)convertNodeToBean(nodeEntry);
                 }
-                foundItems = children;
-            }
+            });
+            b.withReferee(new IteratorBuilder.NextItemReferee<STNodeEntry>() {
+                @Override
+                public boolean canAcceptAsNewItem(STNodeEntry nodeEntry) {
+                    String typeAsString = nodeEntry.getPropertyAsString(currentSession, NODE_ENTRY_TYPE);
+                    if (typeAsString != null && typeAsString.equals(beanType.getName())) {
+                        if (parent != null) {
+                            return nodeEntry.isChildOf(parent);
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            Iterable<T> result = b.withItems(foundItems).andBuild();
+            return result;
 
-            List<?> result = this.<T>internalConvertNodesToBeans(foundItems);
-            List<T> filteredResult = filterOnlyThisType(beanType, result);
-
-            if (Comparable.class.isAssignableFrom(beanType)) {
-                sort((List<Comparable<? super Comparable<?>>>) filteredResult);
-            }
-            return ImmutableList.copyOf(filteredResult);
         } catch (Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
 
@@ -730,15 +742,6 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
     }
 
-    private <T> List<T> filterOnlyThisType(Class<T> beanType, List<?> result) {
-        List<T> list = newLinkedList();
-        for (Object o : result) {
-            if (beanType.isInstance(o)) {
-                list.add((T) o);
-            }
-        }
-        return list;
-    }
 
     private Map<String, PropertyDescriptor> createMapWith(PropertyDescriptor[] propertyDescriptors) {
         ImmutableMap.Builder<String, PropertyDescriptor> builder = ImmutableMap.<String, PropertyDescriptor>builder();

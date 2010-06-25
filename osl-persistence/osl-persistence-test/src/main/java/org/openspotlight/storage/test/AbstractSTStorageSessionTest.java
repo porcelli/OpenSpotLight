@@ -49,8 +49,10 @@
 
 package org.openspotlight.storage.test;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Injector;
 import org.apache.commons.io.IOUtils;
+import static org.openspotlight.common.util.SLCollections.iterableToSet;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,9 +65,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -218,8 +218,8 @@ public abstract class AbstractSTStorageSessionTest {
         STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node", false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root2).andCreate();
 
-        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).buildCriteria().andFind(session);
+        Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).buildCriteria().andFind(session));
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(aNode1), is(true));
         assertThat(theSameNodes.contains(aNode2), is(true));
@@ -243,8 +243,8 @@ public abstract class AbstractSTStorageSessionTest {
         aNode2.setIndexedProperty(session, "parameter", "value");
         aNode1.setIndexedProperty(session, "parameter1", "value1");
         aNode2.setIndexedProperty(session, "parameter1", "value2");
-        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                .withProperty("parameter").equalsTo("value").buildCriteria().andFind(session);
+        Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                .withProperty("parameter").equalsTo("value").buildCriteria().andFind(session));
         assertThat(theSameNodes.size(), is(2));
 
 
@@ -252,8 +252,8 @@ public abstract class AbstractSTStorageSessionTest {
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
-        Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                .withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session);
+        Set<STNodeEntry> onlyOneNode = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                .withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session));
         assertThat(onlyOneNode.size(), is(1));
         assertThat(onlyOneNode.contains(aNode1), is(true));
         assertThat(onlyOneNode.contains(aNode2), is(false));
@@ -278,8 +278,8 @@ public abstract class AbstractSTStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "aeiou");
             root1.setIndexedProperty(session, "parameter", "foo");
             root2.setIndexedProperty(session, "parameter", "bar");
-            Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                    .withProperty("parameter").containsString("io").buildCriteria().andFind(session);
+            Set<STNodeEntry> theSameNodes =iterableToSet( session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                    .withProperty("parameter").containsString("io").buildCriteria().andFind(session));
             assertThat(theSameNodes.size(), is(2));
             assertThat(theSameNodes.contains(aNode1), is(true));
             assertThat(theSameNodes.contains(aNode2), is(true));
@@ -304,8 +304,8 @@ public abstract class AbstractSTStorageSessionTest {
         aNode2.setIndexedProperty(session, "parameter", "aeiou");
         root1.setIndexedProperty(session, "parameter", null);
         root2.setIndexedProperty(session, "parameter", null);
-        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                .withProperty("parameter").equalsTo(null).buildCriteria().andFind(session);
+        Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                .withProperty("parameter").equalsTo(null).buildCriteria().andFind(session));
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(root1), is(true));
         assertThat(theSameNodes.contains(root2), is(true));
@@ -329,8 +329,8 @@ public abstract class AbstractSTStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "iou");
             root1.setIndexedProperty(session, "parameter", "fooiou");
             root2.setIndexedProperty(session, "parameter", "baior");
-            Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                    .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session);
+            Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                    .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session));
             assertThat(theSameNodes.contains(aNode1), is(true));
             assertThat(theSameNodes.contains(aNode2), is(true));
             assertThat(theSameNodes.contains(root1), is(false));
@@ -356,8 +356,8 @@ public abstract class AbstractSTStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "uio");
             root1.setIndexedProperty(session, "parameter", "fooiou");
             root2.setIndexedProperty(session, "parameter", "baior");
-            Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
-                    .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session);
+            Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("node")
+                    .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session));
             assertThat(theSameNodes.contains(aNode1), is(true));
             assertThat(theSameNodes.contains(aNode2), is(true));
             assertThat(theSameNodes.contains(root1), is(false));
@@ -382,15 +382,15 @@ public abstract class AbstractSTStorageSessionTest {
         aNode2.setIndexedProperty(session, "parameter", "value");
         aNode1.setIndexedProperty(session, "parameter1", "value1");
         aNode2.setIndexedProperty(session, "parameter1", "value2");
-        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter").equalsTo("value").buildCriteria().andFind(session);
+        Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter").equalsTo("value").buildCriteria().andFind(session));
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(aNode1), is(true));
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
-        Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session);
+        Set<STNodeEntry> onlyOneNode = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withLocalKey(aNode1.getUniqueKey().getLocalKey()).withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session));
         assertThat(onlyOneNode.size(), is(1));
         assertThat(onlyOneNode.contains(aNode1), is(true));
         assertThat(onlyOneNode.contains(aNode2), is(false));
@@ -410,13 +410,13 @@ public abstract class AbstractSTStorageSessionTest {
         STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("node", false).withKey("sequence", "1")
                 .withKey("name", "name").withParent(root2).andCreate();
 
-        Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).findNamed("root1");
+        Set<STNodeEntry> onlyOneNode = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("root1"));
         assertThat(onlyOneNode.size(), is(1));
         assertThat(onlyOneNode.contains(aNode1), is(false));
         assertThat(onlyOneNode.contains(aNode2), is(false));
         assertThat(onlyOneNode.contains(root1), is(true));
         assertThat(onlyOneNode.contains(root2), is(false));
-        Set<STNodeEntry> twoNodes = session.withPartition(ExamplePartition.DEFAULT).findNamed("node");
+        Set<STNodeEntry> twoNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("node"));
         assertThat(twoNodes.size(), is(2));
         assertThat(twoNodes.contains(aNode1), is(true));
         assertThat(twoNodes.contains(aNode2), is(true));
@@ -552,7 +552,7 @@ public abstract class AbstractSTStorageSessionTest {
                 .withKey("sequence", "4")
                 .withKey("name", "name").andCreate();
 
-        Set<STNodeEntry> allChildren = root.getChildren(session);
+        Set<STNodeEntry> allChildren = iterableToSet(root.getChildren(ExamplePartition.DEFAULT,session));
         assertThat(allChildren.size(), is(8));
         assertThat(allChildren.contains(child1), is(true));
         assertThat(allChildren.contains(child2), is(true));
@@ -564,7 +564,7 @@ public abstract class AbstractSTStorageSessionTest {
         assertThat(allChildren.contains(childAnotherType4), is(true));
 
 
-        Set<STNodeEntry> childrenType2 = root.getChildrenNamed(session, "childAnotherType");
+        Set<STNodeEntry> childrenType2 = iterableToSet(root.getChildrenNamed(ExamplePartition.DEFAULT,session, "childAnotherType"));
 
         assertThat(childrenType2.size(), is(4));
         assertThat(childrenType2.contains(childAnotherType1), is(true));
@@ -572,7 +572,7 @@ public abstract class AbstractSTStorageSessionTest {
         assertThat(childrenType2.contains(childAnotherType3), is(true));
         assertThat(childrenType2.contains(childAnotherType4), is(true));
 
-        Set<STNodeEntry> childrenType1 = root.getChildrenNamed(session, "child");
+        Set<STNodeEntry> childrenType1 = iterableToSet(root.getChildrenNamed(ExamplePartition.DEFAULT,session, "child"));
 
         assertThat(childrenType1.size(), is(4));
         assertThat(childrenType1.contains(child1), is(true));
@@ -618,9 +618,9 @@ public abstract class AbstractSTStorageSessionTest {
 
         assertThat(root2, is(not(root3)));
 
-        Set<STNodeEntry> list1 = session.withPartition(ExamplePartition.DEFAULT).findNamed("root");
-        Set<STNodeEntry> list2 = session.withPartition(ExamplePartition.DEFAULT).findNamed("root");
-        Set<STNodeEntry> list3 = session.withPartition(ExamplePartition.DEFAULT).findNamed("root");
+        Set<STNodeEntry> list1 = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("root"));
+        Set<STNodeEntry> list2 = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("root"));
+        Set<STNodeEntry> list3 = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("root"));
 
         assertThat(list1.size(), is(1));
         assertThat(list2.size(), is(1));
@@ -856,8 +856,8 @@ public abstract class AbstractSTStorageSessionTest {
                 .withKey("name", "another name").andCreate();
         STNodeEntry newNode4 = session.withPartition(ExamplePartition.DEFAULT).createWithName("anotherName", false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
-        Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("name")
-                .equalsTo("name").buildCriteria().andFind(session);
+        Set<STNodeEntry> result = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria().withNodeEntry("newNode1").withProperty("name")
+                .equalsTo("name").buildCriteria().andFind(session));
 
         assertThat(result, is(notNullValue()));
         assertThat(result.size(), is(2));
@@ -877,20 +877,20 @@ public abstract class AbstractSTStorageSessionTest {
         STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1", false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
 
-        Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> result = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(result.size(), is(2));
         assertThat(result.contains(newNode1), is(true));
         assertThat(result.contains(newNode2), is(true));
 
         newNode1.removeNode(session);
-        Set<STNodeEntry> newResult = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> newResult = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
         assertThat(newResult.size(), is(1));
         assertThat(newResult.contains(newNode1), is(false));
         assertThat(newResult.contains(newNode2), is(true));
 
         newNode2.removeNode(session);
-        newResult = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        newResult = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
         assertThat(newResult.size(), is(0));
 
     }
@@ -903,14 +903,14 @@ public abstract class AbstractSTStorageSessionTest {
         STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1", false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
         session.flushTransient();
-        Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> result = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(result.size(), is(2));
         assertThat(result.contains(newNode1), is(true));
         assertThat(result.contains(newNode2), is(true));
 
         newNode1.removeNode(session);
-        Set<STNodeEntry> resultNotChanged = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> resultNotChanged = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(resultNotChanged.size(), is(2));
         assertThat(resultNotChanged.contains(newNode1), is(true));
@@ -918,7 +918,7 @@ public abstract class AbstractSTStorageSessionTest {
 
         session.flushTransient();
 
-        Set<STNodeEntry> newResult = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> newResult = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
         assertThat(newResult.size(), is(1));
         assertThat(newResult.contains(newNode1), is(false));
         assertThat(newResult.contains(newNode2), is(true));
@@ -926,7 +926,7 @@ public abstract class AbstractSTStorageSessionTest {
 
         newNode2.removeNode(session);
         session.flushTransient();
-        newResult = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        newResult = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
         assertThat(newResult.size(), is(0));
 
     }
@@ -939,14 +939,14 @@ public abstract class AbstractSTStorageSessionTest {
         STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1", false).withKey("sequence", "2")
                 .withKey("name", "name").andCreate();
         session.flushTransient();
-        Set<STNodeEntry> result = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> result = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(result.size(), is(2));
         assertThat(result.contains(newNode1), is(true));
         assertThat(result.contains(newNode2), is(true));
 
         newNode1.removeNode(session);
-        Set<STNodeEntry> resultNotChanged = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> resultNotChanged = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(resultNotChanged.size(), is(2));
         assertThat(resultNotChanged.contains(newNode1), is(true));
@@ -954,14 +954,14 @@ public abstract class AbstractSTStorageSessionTest {
 
         session.discardTransient();
 
-        Set<STNodeEntry> resultStillNotChanged = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> resultStillNotChanged =iterableToSet( session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(resultStillNotChanged.size(), is(2));
         assertThat(resultStillNotChanged.contains(newNode1), is(true));
         assertThat(resultStillNotChanged.contains(newNode2), is(true));
 
         session.flushTransient();
-        Set<STNodeEntry> resultNotChangedAgain = session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1");
+        Set<STNodeEntry> resultNotChangedAgain = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(resultNotChangedAgain.size(), is(2));
         assertThat(resultNotChangedAgain.contains(newNode1), is(true));
@@ -976,21 +976,21 @@ public abstract class AbstractSTStorageSessionTest {
         STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT).createWithName("newNode1", false).withKey("sequence", "1")
                 .withKey("name", "name").andCreate();
         newNode1.setIndexedProperty(session, "parameter", "firstValue");
-        Set<STNodeEntry> found = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+        Set<STNodeEntry> found = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withNodeEntry("newNode1").withProperty("parameter").equalsTo("firstValue")
-                .buildCriteria().andFind(session);
+                .buildCriteria().andFind(session));
         assertThat(found.size(), is(1));
         assertThat(found.contains(newNode1), is(true));
         newNode1.getProperty(session, "parameter").setStringValue(session, "secondValue");
 
-        Set<STNodeEntry> notFound = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+        Set<STNodeEntry> notFound = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withNodeEntry("newNode1").withProperty("parameter").equalsTo("firstValue")
-                .buildCriteria().andFind(session);
+                .buildCriteria().andFind(session));
         assertThat(notFound.size(), is(0));
 
-        Set<STNodeEntry> foundAgain = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+        Set<STNodeEntry> foundAgain = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
                 .withNodeEntry("newNode1").withProperty("parameter").equalsTo("secondValue")
-                .buildCriteria().andFind(session);
+                .buildCriteria().andFind(session));
         assertThat(foundAgain.size(), is(1));
         assertThat(foundAgain.contains(newNode1), is(true));
 
@@ -1022,15 +1022,15 @@ public abstract class AbstractSTStorageSessionTest {
         aNode2.setIndexedProperty(session, "parameter", "value");
         aNode1.setIndexedProperty(session, "parameter1", "value1");
         aNode2.setIndexedProperty(session, "parameter1", "value2");
-        Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withProperty("parameter").equalsTo("value").buildCriteria().andFind(session);
+        Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withProperty("parameter").equalsTo("value").buildCriteria().andFind(session));
         assertThat(theSameNodes.size(), is(2));
         assertThat(theSameNodes.contains(aNode1), is(true));
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
-        Set<STNodeEntry> onlyOneNode = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                .withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session);
+        Set<STNodeEntry> onlyOneNode = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                .withProperty("parameter1").equalsTo("value1").buildCriteria().andFind(session));
         assertThat(onlyOneNode.size(), is(1));
         assertThat(onlyOneNode.contains(aNode1), is(true));
         assertThat(onlyOneNode.contains(aNode2), is(false));
@@ -1055,8 +1055,8 @@ public abstract class AbstractSTStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "aeiou");
             root1.setIndexedProperty(session, "parameter", "foo");
             root2.setIndexedProperty(session, "parameter", "bar");
-            Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                    .withProperty("parameter").containsString("io").buildCriteria().andFind(session);
+            Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                    .withProperty("parameter").containsString("io").buildCriteria().andFind(session));
             assertThat(theSameNodes.contains(aNode1), is(true));
             assertThat(theSameNodes.contains(aNode2), is(true));
             assertThat(theSameNodes.contains(root1), is(false));
@@ -1081,8 +1081,8 @@ public abstract class AbstractSTStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "iou");
             root1.setIndexedProperty(session, "parameter", "fooiou");
             root2.setIndexedProperty(session, "parameter", "baior");
-            Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                    .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session);
+            Set<STNodeEntry> theSameNodes = iterableToSet(session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                    .withProperty("parameter").startsWithString("io").buildCriteria().andFind(session));
             assertThat(theSameNodes.contains(aNode1), is(true));
             assertThat(theSameNodes.contains(aNode2), is(true));
             assertThat(theSameNodes.contains(root1), is(false));
@@ -1107,8 +1107,8 @@ public abstract class AbstractSTStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "uio");
             root1.setIndexedProperty(session, "parameter", "fooiou");
             root2.setIndexedProperty(session, "parameter", "baior");
-            Set<STNodeEntry> theSameNodes = session.withPartition(ExamplePartition.DEFAULT).createCriteria()
-                    .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session);
+            Set<STNodeEntry> theSameNodes =iterableToSet( session.withPartition(ExamplePartition.DEFAULT).createCriteria()
+                    .withProperty("parameter").endsWithString("io").buildCriteria().andFind(session));
             assertThat(theSameNodes.contains(aNode1), is(true));
             assertThat(theSameNodes.contains(aNode2), is(true));
             assertThat(theSameNodes.contains(root1), is(false));

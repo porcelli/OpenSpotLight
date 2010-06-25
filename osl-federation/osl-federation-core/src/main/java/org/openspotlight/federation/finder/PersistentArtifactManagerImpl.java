@@ -48,7 +48,7 @@
  */
 package org.openspotlight.federation.finder;
 
-import com.google.common.collect.ImmutableSet;
+import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
@@ -60,7 +60,7 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static org.openspotlight.common.collection.IteratorBuilder.createIteratorBuilder;
 import static org.openspotlight.common.util.Strings.concatPaths;
 
 public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactManager {
@@ -94,7 +94,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
 
     private String createOriginName(ArtifactSource source,
                                     String originName) {
-        return concatPaths(source.getInitialLookup(),originName);
+        return concatPaths(source.getInitialLookup(), originName);
     }
 
     @Override
@@ -122,10 +122,10 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
     }
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveOriginalNames(ArtifactSource source,
+    protected <A extends Artifact> Iterable<String> internalRetrieveOriginalNames(ArtifactSource source,
                                                                              Class<A> type,
                                                                              String initialPath) throws Exception {
-        Set<String> result = privateRetrieveNames(type, initialPath, PROPERTY_NAME_OLD_ARTIFACT_PATH);
+        Iterable<String> result = privateRetrieveNames(type, initialPath, PROPERTY_NAME_OLD_ARTIFACT_PATH);
         return result;
 
     }
@@ -136,7 +136,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
     }
 
     @Override
-    protected <A extends Artifact> Set<String> internalRetrieveNames(Class<A> type,
+    protected <A extends Artifact> Iterable<String> internalRetrieveNames(Class<A> type,
                                                                      String initialPath) throws Exception {
         return privateRetrieveNames(type, initialPath, PROPERTY_NAME_ARTIFACT_PATH);
 
@@ -148,10 +148,10 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
 
     private static final int IDX_ARTIFACT_NAME = 0, IDX_MAPPED = 1;
 
-    private <A> Set<String> privateRetrieveNames(Class<A> type,
-                                                 String initialPath,
-                                                 String[] propertyNameAndPath) throws Exception {
-        Set<STNodeEntry> foundNodes;
+    private <A> Iterable<String> privateRetrieveNames(final Class<A> type,
+                                                      final String initialPath,
+                                                      final String[] propertyNameAndPath) throws Exception {
+        Iterable<STNodeEntry> foundNodes;
         String nodeName = simplePersist.getInternalMethods().getNodeName(type);
         if (initialPath != null) {
             foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName).withProperty(propertyNameAndPath[IDX_MAPPED]).equalsTo(
@@ -161,16 +161,20 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
             foundNodes = simplePersist.getPartitionMethods().findNamed(nodeName);
 
         }
-        Set<String> names = newHashSet();
-        for (STNodeEntry nodeEntry : foundNodes) {
-            String name = nodeEntry.getPropertyAsString(simplePersist.getCurrentSession(), propertyNameAndPath[IDX_ARTIFACT_NAME]);
-            if (name == null) {
-                throw new IllegalStateException("Mandatory property " + propertyNameAndPath[IDX_ARTIFACT_NAME] + " from node " + nodeEntry + " with null value");
-            }
-            names.add(name);
-        }
-        return ImmutableSet.copyOf(names);
 
+        IteratorBuilder.SimpleIteratorBuilder<String, STNodeEntry> b = createIteratorBuilder();
+        b.withConverter(new IteratorBuilder.Converter<String, STNodeEntry>() {
+            @Override
+            public String convert(STNodeEntry nodeEntry) throws Exception {
+                String name = nodeEntry.getPropertyAsString(simplePersist.getCurrentSession(), propertyNameAndPath[IDX_ARTIFACT_NAME]);
+                if (name == null) {
+                    throw new IllegalStateException("Mandatory property " + propertyNameAndPath[IDX_ARTIFACT_NAME] + " from node " + nodeEntry + " with null value");
+                }
+                return name;
+            }
+        });
+        Iterable<String> result = b.withItems(foundNodes).andBuild();
+        return result;
     }
 
     @Override

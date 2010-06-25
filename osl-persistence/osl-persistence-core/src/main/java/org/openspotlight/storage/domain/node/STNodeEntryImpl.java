@@ -83,7 +83,7 @@ public class STNodeEntryImpl implements STNodeEntry {
             }
         }
         partition = uniqueKey.getPartition();
-        namedChildrenWeakReference = new WeakHashMap<Set<STNodeEntry>, String>();
+        namedChildrenWeakReference = new WeakHashMap<Iterable<STNodeEntry>, String>();
     }
 
 
@@ -95,9 +95,9 @@ public class STNodeEntryImpl implements STNodeEntry {
 
     private WeakReference<STNodeEntry> parentWeakReference = null;
 
-    private WeakReference<Set<STNodeEntry>> childrenWeakReference = null;
+    private WeakReference<Iterable<STNodeEntry>> childrenWeakReference = null;
 
-    private WeakHashMap<Set<STNodeEntry>, String> namedChildrenWeakReference;
+    private WeakHashMap<Iterable<STNodeEntry>, String> namedChildrenWeakReference;
 
     private final Map<String, STProperty> propertiesByName;
 
@@ -170,19 +170,19 @@ public class STNodeEntryImpl implements STNodeEntry {
         return result;
     }
 
-    public Set<STNodeEntry> getChildren(STStorageSession session) {
-        Set<STNodeEntry> children = childrenWeakReference != null ? childrenWeakReference.get() : null;
+    public Iterable<STNodeEntry> getChildren(STPartition partition, STStorageSession session) {
+        Iterable<STNodeEntry> children = childrenWeakReference != null ? childrenWeakReference.get() : null;
         if (children == null) {
-            children = getChildrenForcingReload(session);
+            children = getChildrenForcingReload(partition,session);
         }
         return children;
     }
 
-    public Set<STNodeEntry> getChildrenNamed(STStorageSession session, String name) {
+    public Iterable<STNodeEntry> getChildrenNamed(STPartition partition, STStorageSession session, String name) {
 
-        Set<STNodeEntry> thisChildren = null;
+        Iterable<STNodeEntry> thisChildren = null;
         if (namedChildrenWeakReference.containsValue(name)) {
-            for (Map.Entry<Set<STNodeEntry>, String> entry : namedChildrenWeakReference.entrySet()) {
+            for (Map.Entry<Iterable<STNodeEntry>, String> entry : namedChildrenWeakReference.entrySet()) {
                 if (name.equals(entry.getValue())) {
                     thisChildren = entry.getKey();
                     break;
@@ -191,19 +191,19 @@ public class STNodeEntryImpl implements STNodeEntry {
         }
 
         if (thisChildren == null) {
-            thisChildren = getChildrenNamedForcingReload(session, name);
+            thisChildren = getChildrenNamedForcingReload(partition,session, name);
         }
         return thisChildren;
     }
 
-    public Set<STNodeEntry> getChildrenForcingReload(STStorageSession session) {
-        Set<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetChildren(this);
-        childrenWeakReference = new WeakReference<Set<STNodeEntry>>(children);
+    public Iterable<STNodeEntry> getChildrenForcingReload(STPartition partition, STStorageSession session) {
+        Iterable<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetChildren(partition,this);
+        childrenWeakReference = new WeakReference<Iterable<STNodeEntry>>(children);
         return children;
     }
 
-    public Set<STNodeEntry> getChildrenNamedForcingReload(STStorageSession session, String name) {
-        Set<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetNamedChildren(this, name);
+    public Iterable<STNodeEntry> getChildrenNamedForcingReload(STPartition partition, STStorageSession session, String name) {
+        Iterable<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetNamedChildren(partition,this, name);
         namedChildrenWeakReference.put(children, name);
         return children;
     }

@@ -60,6 +60,7 @@ import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -103,7 +104,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
 
 
-        public Set<STNodeEntry> findByCriteria(STCriteria criteria) {
+        public Iterable<STNodeEntry> findByCriteria(STCriteria criteria) {
             try {
                 if (!criteria.getPartition().equals(partition)) throw new IllegalArgumentException();
                 boolean hasGlobal = false;
@@ -131,7 +132,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             }
         }
 
-        public Set<STNodeEntry> findNamed(String nodeEntryName) {
+        public Iterable<STNodeEntry> findNamed(String nodeEntryName) {
             try {
                 return internalFindNamed(partition, nodeEntryName);
             } catch (Exception e) {
@@ -142,11 +143,12 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
         public STNodeEntry findUniqueByCriteria(STCriteria criteria) {
             try {
-                Set<STNodeEntry> result = findByCriteria(criteria);
+                Iterable<STNodeEntry> result = findByCriteria(criteria);
                 if (result == null) return null;
-                if (result.size() == 0) return null;
-                if (result.size() == 1) return result.iterator().next();
-                throw new IllegalStateException();
+                Iterator<STNodeEntry> it = result.iterator();
+                if (!it.hasNext()) return null;
+                return it.next();
+
             } catch (Exception e) {
                 handleException(e);
                 return null;
@@ -548,7 +550,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             return criteriaItems;
         }
 
-        public Set<STNodeEntry> andFind(STStorageSession session) {
+        public Iterable<STNodeEntry> andFind(STStorageSession session) {
             return session.withPartition(partition).findByCriteria(this);
         }
 
@@ -847,7 +849,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             return null;
         }
 
-        public Set<STNodeEntry> nodeEntryGetChildren(STNodeEntry stNodeEntry) {
+        public Iterable<STNodeEntry> nodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) {
             if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
                 throw new IllegalArgumentException("wrong partition for this node entry");
 
@@ -870,7 +872,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
 
 
-        public Set<STNodeEntry> nodeEntryGetNamedChildren(STNodeEntry stNodeEntry, String name) {
+        public Iterable<STNodeEntry> nodeEntryGetNamedChildren(STPartition partition, STNodeEntry stNodeEntry, String name) {
             if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
                 throw new IllegalArgumentException("wrong partition for this node entry");
 
@@ -1062,22 +1064,22 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
     }
 
 
-    protected abstract Set<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception;
+    protected abstract Iterable<STNodeEntry> internalFindByCriteria(STPartition partition, STCriteria criteria) throws Exception;
 
     protected abstract void flushNewItem(R reference, STPartition partition, STNodeEntry entry) throws Exception;
 
     protected abstract void flushRemovedItem(STPartition partition, STNodeEntry entry) throws Exception;
 
-    protected abstract Set<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition partition, STNodeEntry stNodeEntry, String name) throws Exception;
+    protected abstract Iterable<STNodeEntry> internalNodeEntryGetNamedChildren(STPartition partition, STNodeEntry stNodeEntry, String name) throws Exception;
 
     protected abstract void internalFlushSimpleProperty(R reference, STPartition partition, STProperty dirtyProperty) throws Exception;
 
-    protected abstract Set<STNodeEntry> internalNodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
+    protected abstract Iterable<STNodeEntry> internalNodeEntryGetChildren(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
     protected abstract STNodeEntry internalNodeEntryGetParent(STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
     protected abstract Set<STProperty> internalNodeEntryLoadProperties(R reference, STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
-    protected abstract Set<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception;
+    protected abstract Iterable<STNodeEntry> internalFindNamed(STPartition partition, String nodeEntryName) throws Exception;
 
 }
