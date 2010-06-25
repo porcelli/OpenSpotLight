@@ -7,6 +7,7 @@ import org.openspotlight.guice.ThreadLocalProvider;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.mongodb.MongoMaxCacheSize;
 import org.openspotlight.storage.mongodb.MongoSTStorageSessionImpl;
 
 /**
@@ -14,12 +15,15 @@ import org.openspotlight.storage.mongodb.MongoSTStorageSessionImpl;
  */
 @Singleton
 public class MongoSTStorageSessionProvider extends ThreadLocalProvider<STStorageSession> {
+    private final int maxCacheSize;
+
     @Inject
-    public MongoSTStorageSessionProvider(STStorageSession.STFlushMode flushMode, STRepositoryPath repositoryPath, Mongo mongo, STPartitionFactory partitionFactory) {
+    public MongoSTStorageSessionProvider(STStorageSession.STFlushMode flushMode, STRepositoryPath repositoryPath, Mongo mongo, STPartitionFactory partitionFactory, @MongoMaxCacheSize int maxCacheSize) {
         this.flushMode = flushMode;
         this.repositoryPath = repositoryPath;
         this.mongo = mongo;
         this.partitionFactory = partitionFactory;
+        this.maxCacheSize = maxCacheSize;
     }
 
     private final Mongo mongo;
@@ -30,6 +34,6 @@ public class MongoSTStorageSessionProvider extends ThreadLocalProvider<STStorage
 
     @Override
     protected STStorageSession createInstance() {
-        return new MongoSTStorageSessionImpl(mongo, flushMode, repositoryPath, partitionFactory);
+        return new MongoSTStorageSessionImpl(mongo, flushMode, repositoryPath, partitionFactory, maxCacheSize);
     }
 }

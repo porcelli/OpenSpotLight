@@ -6,6 +6,7 @@ import org.openspotlight.storage.DefaultSTPartitionFactory;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.mongodb.MongoMaxCacheSize;
 
 /**
  * Created by User: feu - Date: Jun 11, 2010 - Time: 10:42:37 AM
@@ -41,5 +42,8 @@ public class MongoModule extends AbstractModule {
         bind(STRepositoryPath.class).toInstance(repositoryPath);
         bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
         bind(STStorageSession.class).toProvider(MongoSTStorageSessionProvider.class);
+        bind(int.class)
+                .annotatedWith(MongoMaxCacheSize.class).toInstance(256);
+
     }
 }

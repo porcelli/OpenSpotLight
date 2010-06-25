@@ -73,6 +73,7 @@ import org.openspotlight.storage.domain.node.STProperty;
 import org.openspotlight.storage.domain.node.STPropertyImpl;
 
 import java.io.ByteArrayOutputStream;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,8 +92,8 @@ import static org.openspotlight.common.util.Conversion.convert;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:46:25 PM
  */
 public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject> {
-
-
+    private final LinkedList<Pair<STUniqueKey, DBObject>> objectCache = newLinkedList();
+    private final int maxCacheSize;
     private static final String NULL_VALUE = "!!!NULL!!!";
     private Multimap<STPartition, Pair<STNodeEntry, DBObject>> transientObjects = HashMultimap.create();
     private final Map<String, DB> partitionMap;
@@ -186,11 +187,20 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
     private DBObject findReferenceOrReturnNull(STPartition partition, STNodeEntry entry) {
         DBObject basicDBObject = null;//TODO fix with fakePair and/or find cache
-        for (Pair<STNodeEntry, DBObject> pair : transientObjects.get(partition)) {
-            if (pair.getK1().equals(entry)) {
-                basicDBObject = pair.getK2();
-                break;
+
+        Pair<STNodeEntry, DBObject> p = newPair(entry, null, Pair.PairEqualsMode.K1);
+        if (transientObjects.get(partition).contains(p)) {
+            for (Pair<STNodeEntry, DBObject> pair : transientObjects.get(partition)) {
+                if (pair.equals(p)) {
+                    basicDBObject = pair.getK2();
+                    break;
+                }
             }
+        }
+        Pair<STUniqueKey, DBObject> p1 = newPair(entry.getUniqueKey(), null, Pair.PairEqualsMode.K1);
+        int idx = objectCache.indexOf(p1);
+        if (idx != -1) {
+            basicDBObject = objectCache.get(idx).getK2();
         }
         if (basicDBObject == null) {
             DBCollection coll = getCachedCollection(partition, entry.getNodeEntryName());
@@ -201,6 +211,8 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
                 basicDBObject = new BasicDBObject();
                 basicDBObject.put(ID, entry.getUniqueKey().getKeyAsString());
             }
+            objectCache.addFirst(newPair(entry.getUniqueKey(), basicDBObject, Pair.PairEqualsMode.K1));
+            if (objectCache.size() > maxCacheSize) objectCache.removeLast();
         }
         return basicDBObject;
     }
@@ -577,9 +589,10 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     private final STPartitionFactory partitionFactory;
 
     @Inject
-    public MongoSTStorageSessionImpl(Mongo mongo, STFlushMode flushMode, STRepositoryPath repositoryPath, STPartitionFactory partitionFactory) {
+    public MongoSTStorageSessionImpl(Mongo mongo, STFlushMode flushMode, STRepositoryPath repositoryPath, STPartitionFactory partitionFactory, int maxCacheSize) {
         super(flushMode, repositoryPath);
         this.partitionFactory = partitionFactory;
+        this.maxCacheSize = maxCacheSize;
         this.partitionMap = newHashMap();
         this.mongo = mongo;
         this.repositoryPath = repositoryPath;
