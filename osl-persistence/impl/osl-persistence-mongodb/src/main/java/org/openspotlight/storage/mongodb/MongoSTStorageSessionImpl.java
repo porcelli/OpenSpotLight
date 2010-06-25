@@ -169,17 +169,20 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             }
         }
         transientObjects.clear();
+
     }
 
     @Override
     protected DBObject createReferenceIfNecessary(STPartition partition, STNodeEntry entry) {
         DBObject basicDBObject = findReferenceOrReturnNull(partition, entry);
-        transientObjects.put(partition, newPair(entry, basicDBObject));
+        Pair<STNodeEntry, DBObject> p = newPair(entry, basicDBObject, Pair.PairEqualsMode.K1);
+        if (!transientObjects.get(partition).contains(p))
+            transientObjects.put(partition, p);
         return basicDBObject;
     }
 
     private DBObject findReferenceOrReturnNull(STPartition partition, STNodeEntry entry) {
-        DBObject basicDBObject = null;
+        DBObject basicDBObject = null;TODO fix with fakePair and/or find cache
         for (Pair<STNodeEntry, DBObject> pair : transientObjects.get(partition)) {
             if (pair.getK1().equals(entry)) {
                 basicDBObject = pair.getK2();
@@ -337,7 +340,9 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             DBCollection col = getCachedCollection(partition, entry.getNodeEntryName());
             col.save(reference);
         } else {
-            transientObjects.put(partition, newPair(entry, reference));
+            Pair<STNodeEntry, DBObject> p = newPair(entry, reference, Pair.PairEqualsMode.K1);
+            if (!transientObjects.get(partition).contains(p))
+                transientObjects.put(partition, p);
         }
     }
 
@@ -404,7 +409,10 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             if (STFlushMode.AUTO.equals(getFlushMode())) {
                 getCachedCollection(partition, dirtyProperty.getParent().getNodeEntryName()).save(reference);
             } else {
-                transientObjects.put(partition, newPair(dirtyProperty.getParent(), reference));
+                Pair<STNodeEntry, DBObject> p = newPair(dirtyProperty.getParent(), reference, Pair.PairEqualsMode.K1);
+                if (!transientObjects.get(partition).contains(p))
+                    transientObjects.put(partition, p);
+
             }
         }
 

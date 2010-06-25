@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * To newPair new instances of this class, use its internal {@link LazyProperty.Factory} class.
  * <p/>
  * The class {@link LazyProperty.Metadata} should not be used outside
- * 
+ *
  * @author feu
  * @param <T>
  */
@@ -41,26 +41,27 @@ public final class LazyProperty<T> implements Serializable {
 
     private final Class<T> type;
 
-    private String         sha1;
+    private String sha1;
+    private STNodeEntry node;
 
     /**
      * Factory class.
-     * 
+     *
      * @author feu
      */
     public static final class Factory {
 
         /**
          * It creates an empty {@link LazyProperty}. All parameter are mandatory.
-         * 
+         *
          * @param <T>
          * @param parent
          * @return
          */
-        public static <T> LazyProperty<T> create( Class<? super T> type,
-                                                  final SimpleNodeType parent ) {
+        public static <T> LazyProperty<T> create(Class<? super T> type,
+                                                 final SimpleNodeType parent) {
             Assertions.checkNotNull("parent", parent);
-            return new LazyProperty<T>(parent, (Class<T>)type);
+            return new LazyProperty<T>(parent, (Class<T>) type);
         }
 
         private Factory() {
@@ -71,10 +72,14 @@ public final class LazyProperty<T> implements Serializable {
     /**
      * Internal metadata. Should be used only on {@link org.openspotlight.persist.support.SimplePersistCapable}. This class expose
      * internal information about cached and transient values.
-     * 
+     *
      * @author feu
      */
     public final class Metadata implements Serializable {
+
+        public void setSavedNode(STNodeEntry node){
+            LazyProperty.this.node = node;
+        }
 
         public Class<T> getPropertyType() {
             return type;
@@ -84,7 +89,7 @@ public final class LazyProperty<T> implements Serializable {
             return sha1;
         }
 
-        private String createSha1( T content ) {
+        private String createSha1(T content) {
             if (content == null) return null;
             try {
                 if (content instanceof Serializable) {
@@ -96,7 +101,7 @@ public final class LazyProperty<T> implements Serializable {
                     oos.close();
                     return Sha1.getSha1SignatureEncodedAsBase64(baos.toByteArray());
                 } else {
-                    InputStream is = (InputStream)content;
+                    InputStream is = (InputStream) content;
                     return Sha1.getSha1SignatureEncodedAsBase64(is);
 
                 }
@@ -107,10 +112,10 @@ public final class LazyProperty<T> implements Serializable {
 
         /**
          * This method should not be used outside {@link org.openspotlight.persist.support.SimplePersistCapable}.
-         * 
+         *
          * @param sha1
          */
-        public void internalSetSha1( String sha1 ) {
+        public void internalSetSha1(String sha1) {
             LazyProperty.this.sha1 = sha1;
         }
 
@@ -125,11 +130,11 @@ public final class LazyProperty<T> implements Serializable {
         /**
          * Return the cached value. If there's no cached value, the session will be used to load a new one. The session isn't
          * mandatory, since the value should be cached, but if it isn't, it will throw a {@link NullPointerException}.
-         * 
+         *
          * @return
          */
-        @SuppressWarnings( "unchecked" )
-        public T getCached( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+        @SuppressWarnings("unchecked")
+        public T getCached(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
             try {
                 lock.lock();
                 final T cachedValue = cached == null ? null : cached.get();
@@ -143,17 +148,21 @@ public final class LazyProperty<T> implements Serializable {
                     Assertions.checkNotNull("parentKey", parentKey);
                     Assertions.checkNotEmpty("propertyName", propertyName);
                     try {
-                        final STNodeEntry node = simplePersist.getCurrentSession().withPartition(
-                                                                                                 simplePersist.getCurrentPartition()).createCriteria().withUniqueKey(
-                                                                                                                                                                     parentKey).buildCriteria().andFindUnique(
-                                                                                                                                                                                                              simplePersist.getCurrentSession());
+                        if (node == null) {
+
+                            node = simplePersist.getCurrentSession().withPartition(
+                                    simplePersist.getCurrentPartition()).createCriteria().withUniqueKey(
+                                    parentKey).buildCriteria().andFindUnique(
+                                    simplePersist.getCurrentSession());
+
+                        }
                         InputStream o = node.getPropertyAsStream(simplePersist.getCurrentSession(), propertyName);
-                            InputStream is = (InputStream)o;
-                            if (is.markSupported()) {
-                                is.reset();
-                            }
-                        T s = (T)SerializationUtil.deserialize(o);
-                        simplePersist.getInternalMethods().beforeUnConvert((SimpleNodeType)parent, (Serializable)s, null);
+                        InputStream is = (InputStream) o;
+                        if (is != null && is.markSupported()) {
+                            is.reset();
+                        }
+                        T s = (T) SerializationUtil.deserialize(o);
+                        simplePersist.getInternalMethods().beforeUnConvert((SimpleNodeType) parent, (Serializable) s, null);
                         setCached(s);
                         return s;
 
@@ -169,7 +178,7 @@ public final class LazyProperty<T> implements Serializable {
 
         /**
          * Return the lock used internally.
-         * 
+         *
          * @return
          */
         public ReentrantLock getLock() {
@@ -178,7 +187,7 @@ public final class LazyProperty<T> implements Serializable {
 
         /**
          * Return the parent property.
-         * 
+         *
          * @return
          */
         public SimpleNodeType getParent() {
@@ -195,7 +204,7 @@ public final class LazyProperty<T> implements Serializable {
 
         /**
          * Return the transient value if there's any one setted
-         * 
+         *
          * @return
          */
         public T getTransient() {
@@ -248,7 +257,7 @@ public final class LazyProperty<T> implements Serializable {
             }
         }
 
-        public void setCached( final T cached ) {
+        public void setCached(final T cached) {
             try {
                 lock.lock();
                 LazyProperty.this.cached = new WeakReference<T>(cached);
@@ -257,36 +266,36 @@ public final class LazyProperty<T> implements Serializable {
             }
         }
 
-        public void setParentKey( final STUniqueKey parentKey ) {
+        public void setParentKey(final STUniqueKey parentKey) {
             LazyProperty.this.parentKey = parentKey;
         }
 
-        public void setPropertyName( final String propertyName ) {
+        public void setPropertyName(final String propertyName) {
             LazyProperty.this.propertyName = propertyName;
         }
 
     }
 
-    private STUniqueKey                parentKey;
+    private STUniqueKey parentKey;
 
-    private String                     propertyName;
+    private String propertyName;
 
     /**
      *
      */
-    private static final long          serialVersionUID = 7214615570747274715L;
+    private static final long serialVersionUID = 7214615570747274715L;
 
-    private final Metadata             metadata         = new Metadata();
+    private final Metadata metadata = new Metadata();
 
-    private final SimpleNodeType       parent;
-    private transient WeakReference<T> cached           = null;
-    private T                          transientValue   = null;
-    private final ReentrantLock        lock             = new ReentrantLock();
+    private final SimpleNodeType parent;
+    private transient WeakReference<T> cached = null;
+    private T transientValue = null;
+    private final ReentrantLock lock = new ReentrantLock();
 
-    private boolean                    needsSave        = false;
+    private boolean needsSave = false;
 
     private LazyProperty(
-                          final SimpleNodeType parent, Class<T> type ) {
+            final SimpleNodeType parent, Class<T> type) {
         this.parent = parent;
 
         this.type = type;
@@ -295,10 +304,10 @@ public final class LazyProperty<T> implements Serializable {
     /**
      * It will try to return, in this order, the transient value, and if there's no transient value, it will return the saved
      * value.
-     * 
+     *
      * @return
      */
-    public T get( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+    public T get(SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist) {
         try {
             lock.lock();
             T value = metadata.getTransient();
@@ -317,10 +326,10 @@ public final class LazyProperty<T> implements Serializable {
 
     /**
      * It will set the transient value and will activate the needsSave flag.
-     * 
+     *
      * @param newValue
      */
-    public void setTransient( final T newValue ) {
+    public void setTransient(final T newValue) {
         try {
             lock.lock();
             this.transientValue = newValue;

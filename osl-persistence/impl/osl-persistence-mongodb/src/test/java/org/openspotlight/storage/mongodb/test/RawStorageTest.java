@@ -1,5 +1,6 @@
 package org.openspotlight.storage.mongodb.test;
 
+import com.google.common.collect.Multimap;
 import com.mongodb.*;
 import org.junit.Test;
 import org.openspotlight.storage.DefaultSTPartitionFactory;

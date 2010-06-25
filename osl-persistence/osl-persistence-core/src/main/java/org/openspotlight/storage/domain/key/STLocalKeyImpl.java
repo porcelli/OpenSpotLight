@@ -50,6 +50,7 @@
 package org.openspotlight.storage.domain.key;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 import org.openspotlight.storage.StringIDSupport;
 
 import java.util.ArrayList;

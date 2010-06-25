@@ -141,15 +141,16 @@ public abstract class AbstractFileSystemLoadingStressTest {
         artifactSource.setActive(true);
         artifactSource.setBinary(false);
         artifactSource.setInitialLookup("/Users/feu/much-data");
-        //artifactSource.setInitialLookup("./");
+//        artifactSource.setInitialLookup("./");
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
         mapping.setFrom("files");
-        //mapping.setFrom("src");
+//        mapping.setFrom("src");
         mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("**/*");
+//        mapping.getIncludeds().add("**/XmlConfigurationManagerFactory.java"); //TODO remove this
 
         return new RepositoryData(settings, repository, group, artifactSource);
     }
@@ -208,7 +209,9 @@ public abstract class AbstractFileSystemLoadingStressTest {
         Set<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StringArtifact.class, null);
         logger.debug("finished to load item names from persistent storage");
 
-        assertThat(list.size() > 50, is(true));
+        int size = 50;
+//        size = 1 ;//TODO remove this
+        assertThat(list.size() >= size, is(true));
         int loadedSize = 0;
         logger.debug("about to load item contents from persistent storage");
         for (String s : list) {
@@ -216,19 +219,19 @@ public abstract class AbstractFileSystemLoadingStressTest {
             assertThat(file, is(notNullValue()));
             List<String> lazyLoadedContent = file.getContent().get(context.getPersistentArtifactManager().getSimplePersist());
             assertThat(lazyLoadedContent, is(notNullValue()));
-            assertThat(lazyLoadedContent.equals(getFileContentAsStringList(artifactSource, file.getOriginalName())), is(true));
-
+            assertThat(lazyLoadedContent.equals(getFileContentAsStringList(file.getOriginalName())), is(true));
+            System.err.println(file.getOriginalName());
             if (lazyLoadedContent.size() != 0) {
                 loadedSize++;
             }
         }
         logger.debug("finished to load item contents from persistent storage");
-        assertThat(loadedSize > 50, is(true));
+        assertThat(loadedSize >= size, is(true));
 
     }
 
-    private List<String> getFileContentAsStringList(ArtifactSource artifactSource, String originalName) throws Exception {
-        BufferedReader reader = new BufferedReader(new FileReader(concatPaths(artifactSource.getInitialLookup(), originalName)));
+    private List<String> getFileContentAsStringList(String originalName) throws Exception {
+        BufferedReader reader = new BufferedReader(new FileReader(originalName));
         ImmutableList.Builder<String> builder = ImmutableList.builder();
         String line = null;
         while ((line = reader.readLine()) != null) {

@@ -430,6 +430,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             String propertyName = property.getName();
             LazyProperty<?> lazyProperty = (LazyProperty<?>) property.getReadMethod().invoke(bean);
             lazyProperty.getMetadata().setParentKey(cached.getUniqueKey());
+            lazyProperty.getMetadata().setSavedNode(cached);
             lazyProperty.getMetadata().setPropertyName(propertyName);
             String sha1 = cached.getPropertyAsString(currentSession, format(SHA1_PROPERTY_NAME, propertyName));
             lazyProperty.getMetadata().internalSetSha1(sha1);

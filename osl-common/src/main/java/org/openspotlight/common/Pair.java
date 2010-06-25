@@ -49,66 +49,107 @@
 
 package org.openspotlight.common;
 
-import org.openspotlight.common.util.Arrays;
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.HashCodes;
-
 /**
  * This is a simple class to store a pair of objects.
- * 
+ *
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * @param <K1>
  * @param <K2>
  */
 public class Pair<K1, K2> {
 
+    public static enum PairEqualsMode {
+        K1, K2, BOTH
+    }
+
+
     /**
      * static factory method
-     * 
+     *
      * @param <K1>
      * @param <K2>
      * @param k1
      * @param k2
      * @return
      */
-    public static <K1, K2> Pair<K1, K2> newPair( K1 k1,
-                                                K2 k2 ) {
-        return new Pair<K1, K2>(k1, k2);
+    public static <K1, K2> Pair<K1, K2> newPair(K1 k1,
+                                                K2 k2) {
+        return new Pair<K1, K2>(k1, k2, PairEqualsMode.BOTH);
+    }
+
+    /**
+     * static factory method
+     *
+     * @param <K1>
+     * @param <K2>
+     * @param k1
+     * @param k2
+     * @return
+     */
+    public static <K1, K2> Pair<K1, K2> newPair(K1 k1,
+                                                K2 k2, PairEqualsMode equalsMode) {
+        return new Pair<K1, K2>(k1, k2, equalsMode);
     }
 
     /**
      * First item.
      */
-    private final K1     k1;
+    private final K1 k1;
     /**
      * Second item.
      */
-    private final K2     k2;
+    private final K2 k2;
 
-    private volatile int hashCode;
+    private final PairEqualsMode equalsMode;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pair pair = (Pair) o;
+
+        if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K1.equals(equalsMode))
+            if (k1 != null ? !k1.equals(pair.k1) : pair.k1 != null) return false;
+        if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K2.equals(equalsMode))
+            if (k2 != null ? !k2.equals(pair.k2) : pair.k2 != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 0;
+        if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K1.equals(equalsMode))
+            result = k1 != null ? k1.hashCode() : 0;
+        if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K2.equals(equalsMode))
+            result = 31 * result + (k2 != null ? k2.hashCode() : 0);
+        return result;
+    }
 
     /**
      * Creates a new pair using the two keys provided.
-     * 
+     *
      * @param k1
      * @param k2
      */
     public Pair(
-                 final K1 k1, final K2 k2 ) {
+            final K1 k1, final K2 k2, final PairEqualsMode equalsMode) {
         this.k1 = k1;
         this.k2 = k2;
+        this.equalsMode = equalsMode;
     }
-
-    @Override
-    public boolean equals( final Object o ) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof Pair<?, ?>)) {
-            return false;
-        }
-        final Pair<?, ?> that = (Pair<?, ?>)o;
-        return Equals.eachEquality(Arrays.of(this.k1, this.k2), Arrays.andOf(that.k1, that.k2));
+    /**
+     * Creates a new pair using the two keys provided.
+     *
+     * @param k1
+     * @param k2
+     */
+    public Pair(
+            final K1 k1, final K2 k2) {
+        this.k1 = k1;
+        this.k2 = k2;
+        this.equalsMode = PairEqualsMode.BOTH;
     }
 
     /**
@@ -125,14 +166,4 @@ public class Pair<K1, K2> {
         return this.k2;
     }
 
-    @Override
-    public int hashCode() {
-        int result = this.hashCode;
-        if (result == 0) {
-            result = HashCodes.hashOf(this.k1, this.k2);
-            this.hashCode = result;
-        }
-        return result;
-
-    }
 }

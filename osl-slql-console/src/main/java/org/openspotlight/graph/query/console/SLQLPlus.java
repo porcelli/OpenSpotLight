@@ -67,6 +67,8 @@ import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
 import org.openspotlight.graph.query.console.completor.SLQLFileNameCompletor;
 import org.openspotlight.graph.query.console.util.Messages;
 
+import static org.openspotlight.common.Pair.newPair;
+
 /**
  * The Class SLQLPlus. This is the main application.
  * 
@@ -111,7 +113,7 @@ public class SLQLPlus {
         out.println();
         out.flush();
 
-        Pair<Boolean, SLGraphSession> result = new Pair<Boolean, SLGraphSession>(false, null);
+        Pair<Boolean, SLGraphSession> result = newPair(false, null);
         int loginAtemptsCount = 0;
         int failCount = 0;
         start: while (true) {
@@ -306,13 +308,13 @@ public class SLQLPlus {
         throws SLException, IOException, ClassNotFoundException {
         if (userName.equalsIgnoreCase("sa")) { //$NON-NLS-1$
             final GraphConnection connection = new GraphConnection();
-            return new Pair<Boolean, SLGraphSession>(true, connection.connect(serverName, portNumber, userName, password,
+            return newPair(true, connection.connect(serverName, portNumber, userName, password,
                                                                               repositoryName));
         }
 
         out.println(Messages.getString("SLQLPlus.13")); //$NON-NLS-1$
         out.flush();
-        return new Pair<Boolean, SLGraphSession>(false, null);
+        return newPair(false, null);
     }
 
 }
