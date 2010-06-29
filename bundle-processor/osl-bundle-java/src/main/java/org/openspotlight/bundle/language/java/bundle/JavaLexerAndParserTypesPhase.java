@@ -48,8 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.bundle;
 
-import javax.jcr.Session;
-
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;

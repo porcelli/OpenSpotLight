@@ -48,18 +48,11 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLContext;
@@ -68,6 +61,8 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class JavaExecutorSupport {
     private final Logger          logger                = LoggerFactory.getLogger(getClass());
@@ -149,9 +144,9 @@ public class JavaExecutorSupport {
             return (W)source;
         }
 
-        NeedsSyncronizationCollection<AbstractTypeBind> links = session.getLinks(AbstractTypeBind.class, source, null);
+        Collection<AbstractTypeBind> links = session.getLink(AbstractTypeBind.class, source, null);
         if (links.size() == 0) {
-            links = session.getLinks(AbstractTypeBind.class, null, source);
+            links = session.getLink(AbstractTypeBind.class, null, source);
         }
         if (links.size() == 0) {
             if (logger.isDebugEnabled()) {
@@ -243,7 +238,7 @@ public class JavaExecutorSupport {
 
     JavaType findPrimitiveType( final String string ) {
         try {
-            final JavaTypePrimitive primitive = abstractContext.addNode(JavaTypePrimitive.class, string);
+            final JavaTypePrimitive primitive = abstractContext.addChildNode(JavaTypePrimitive.class, string);
             return primitive;
         } catch (final Exception e) {
             if (quiet) {

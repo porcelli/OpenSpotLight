@@ -48,15 +48,13 @@
  */
 package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkEachParameterNotNull;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
-
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Helper class to deal with arrays

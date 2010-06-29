@@ -51,40 +51,9 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import static java.lang.Class.forName;
-import static java.text.MessageFormat.format;
-import static java.util.Collections.reverse;
-import static org.openspotlight.bundle.language.java.JavaConstants.ABSTRACT_CONTEXT;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
-import org.openspotlight.bundle.language.java.metamodel.link.AutoboxedBy;
-import org.openspotlight.bundle.language.java.metamodel.link.Autoboxes;
-import org.openspotlight.bundle.language.java.metamodel.link.Extends;
-import org.openspotlight.bundle.language.java.metamodel.link.Implements;
-import org.openspotlight.bundle.language.java.metamodel.link.ImplicitExtends;
-import org.openspotlight.bundle.language.java.metamodel.link.ImplicitPrimitiveCast;
-import org.openspotlight.bundle.language.java.metamodel.link.InterfaceExtends;
-import org.openspotlight.bundle.language.java.metamodel.link.PackageType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.util.InvocationCacheFactory;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
@@ -92,6 +61,14 @@ import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
+
+import java.util.*;
+
+import static java.lang.Class.forName;
+import static java.text.MessageFormat.format;
+import static java.util.Collections.reverse;
+import static org.openspotlight.bundle.language.java.JavaConstants.ABSTRACT_CONTEXT;
+import static org.openspotlight.common.util.Exceptions.*;
 
 /**
  * The Class JavaTypeResolver is a {@link TypeResolver} used for Java Programming Language.
@@ -406,9 +383,9 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
                 if (t2Primitive && !t1Primitive) {
                     return BestTypeMatch.T2;
                 }
-                final Collection<ImplicitPrimitiveCast> linksT1 = getSession().getLinks(ImplicitPrimitiveCast.class, t1,
+                final Collection<ImplicitPrimitiveCast> linksT1 = getSession().getLink(ImplicitPrimitiveCast.class, t1,
                                                                                         reference);
-                final Collection<ImplicitPrimitiveCast> linksT2 = getSession().getLinks(ImplicitPrimitiveCast.class, t2,
+                final Collection<ImplicitPrimitiveCast> linksT2 = getSession().getLink(ImplicitPrimitiveCast.class, t2,
                                                                                         reference);
                 if (linksT1.size() != linksT2.size()) {
                     if (linksT1.size() > linksT2.size()) {
@@ -1183,7 +1160,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
             if (result) {
                 if (this.isPrimitiveType(implementation)) {
                     if (this.isConcreteType(superType)) {
-                        final Collection<Autoboxes> links = getSession().getLinks(Autoboxes.class, superType, implementation);
+                        final Collection<Autoboxes> links = getSession().getLink(Autoboxes.class, superType, implementation);
                         if (links.size() == 0) {
                             return false;
                         }

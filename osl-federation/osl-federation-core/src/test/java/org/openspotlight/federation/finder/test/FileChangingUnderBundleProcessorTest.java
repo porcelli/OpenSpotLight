@@ -31,13 +31,14 @@ import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.collect.Lists.newLinkedList;
-import static java.lang.Thread.sleep;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Files.delete;

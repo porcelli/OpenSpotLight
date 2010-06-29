@@ -48,13 +48,12 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
-import java.io.PrintWriter;
-
 import jline.ConsoleReader;
-
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
+
+import java.io.PrintWriter;
 
 /**
  * The Class DisplayPropertiesCommand. This command displays all propertis that should be displayed during query output result.

@@ -48,13 +48,6 @@
  */
 package org.openspotlight.graph.listeners;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
@@ -65,6 +58,8 @@ import org.openspotlight.graph.event.SLLinkAddedEvent;
 import org.openspotlight.graph.event.SLNodeAddedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -183,7 +178,7 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
             if (linkTypesForLinkedNodeDeletion != null) {
                 // mark for deletion all the nodes linked to this node ...
                 for (final Class<? extends SLLink> linkType : linkTypesForLinkedNodeDeletion) {
-                    final Collection<SLNode> nodes = session.getNodesByLink(linkType, node);
+                    final Collection<SLNode> nodes = session.getLinkedNodes(linkType, node);
                     nodesForDeletion.addAll(nodes);
                 }
             }

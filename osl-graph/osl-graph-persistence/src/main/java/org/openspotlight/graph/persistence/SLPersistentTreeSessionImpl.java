@@ -47,20 +47,14 @@
  * Boston, MA  02110-1301  USA
  */package org.openspotlight.graph.persistence;
 
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
 import org.apache.log4j.Logger;
 import org.openspotlight.common.SharedConstants;
-import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.jcr.util.JCRUtil;
+
+import javax.jcr.*;
 
 /**
  * The Class SLPersistentTreeSessionImpl.

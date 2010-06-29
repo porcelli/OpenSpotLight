@@ -48,14 +48,8 @@
  */
 package org.openspotlight.graph.query.console;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
-import java.util.Random;
-
 import jline.ConsoleReader;
 import jline.SimpleCompletor;
-
 import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.SharedConstants;
@@ -66,6 +60,11 @@ import org.openspotlight.graph.query.console.command.Command;
 import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
 import org.openspotlight.graph.query.console.completor.SLQLFileNameCompletor;
 import org.openspotlight.graph.query.console.util.Messages;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Random;
 
 import static org.openspotlight.common.Pair.newPair;
 

@@ -48,12 +48,11 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
-import java.io.PrintWriter;
-
 import jline.ConsoleReader;
-
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.query.console.ConsoleState;
+
+import java.io.PrintWriter;
 
 /**
  * The Class ExecuteLastQueryCommand. This command executes the last executed query.

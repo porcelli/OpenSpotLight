@@ -48,32 +48,26 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-import java.text.Collator;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.event.SLGraphSessionEventPoster;
-import org.openspotlight.graph.event.SLLinkEvent;
-import org.openspotlight.graph.event.SLLinkPropertyEvent;
-import org.openspotlight.graph.event.SLLinkPropertySetEvent;
-import org.openspotlight.graph.event.SLLinkRemovedEvent;
+import org.openspotlight.graph.event.*;
 import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.exception.SLPropertyNotFoundException;
 import org.openspotlight.graph.exception.SLPropertyTypeInvalidException;
+import org.openspotlight.graph.meta.SLMetaLink;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.util.ProxyUtil;
+
+import java.io.Serializable;
+import java.text.Collator;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The Class SLLinkImpl.
@@ -85,7 +79,7 @@ public class SLLinkImpl implements SLLink {
     /** The session. */
     private final SLGraphSession            session;
 
-    private SLMetaLink                      metaLink = null;
+    private SLMetaLink metaLink = null;
     /** The lock. */
     private final Lock                      lock;
 
@@ -351,10 +345,10 @@ public class SLLinkImpl implements SLLink {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationSet<SLLinkProperty<Serializable>> getProperties() {
+    public Set<SLLinkProperty<Serializable>> getProperties() {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationSet<SLLinkProperty<Serializable>> properties = LockedCollections.createSetWithLock(
+                final Set<SLLinkProperty<Serializable>> properties = LockedCollections.createSetWithLock(
                                                                                                                             this,
                                                                                                                             new HashSet<SLLinkProperty<Serializable>>());
                 final Set<SLPersistentProperty<Serializable>> persistentProperties = linkNode.getProperties(SLConsts.PROPERTY_PREFIX_USER

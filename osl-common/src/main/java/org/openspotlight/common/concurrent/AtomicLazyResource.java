@@ -59,9 +59,7 @@ import org.openspotlight.common.util.Exceptions;
  * @author feu
  * @param <R>
  */
-public abstract class AtomicLazyResource<R> implements LockContainer, Disposable {
-
-    private final Lock lock;
+public abstract class AtomicLazyResource<R> implements Disposable {
 
     private R          reference = null;
 

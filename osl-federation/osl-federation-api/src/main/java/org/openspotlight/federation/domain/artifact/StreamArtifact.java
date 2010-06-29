@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
-import java.io.InputStream;
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.internal.LazyProperty;
+
+import java.io.InputStream;
 
 @Name( "stream_artifact" )
 public class StreamArtifact extends ArtifactWithSyntaxInformation {

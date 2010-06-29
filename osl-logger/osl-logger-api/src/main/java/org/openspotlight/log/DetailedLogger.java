@@ -48,10 +48,10 @@
  */
 package org.openspotlight.log;
 
-import java.io.Serializable;
-
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.security.idm.AuthenticatedUser;
+
+import java.io.Serializable;
 
 /**
  * This interface describes the Detailed Logger. This logger should be used to log information related to the {@link SLNode}

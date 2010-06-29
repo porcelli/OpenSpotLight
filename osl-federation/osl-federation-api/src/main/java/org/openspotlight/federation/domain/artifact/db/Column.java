@@ -48,8 +48,6 @@
  */
 package org.openspotlight.federation.domain.artifact.db;
 
-import java.io.Serializable;
-
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
@@ -57,6 +55,8 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+
+import java.io.Serializable;
 
 @Name( "column" )
 public class Column implements SimpleNodeType, Serializable {

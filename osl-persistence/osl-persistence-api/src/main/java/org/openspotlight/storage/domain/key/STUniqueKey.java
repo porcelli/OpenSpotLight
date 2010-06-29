@@ -49,8 +49,8 @@
 
 package org.openspotlight.storage.domain.key;
 
-import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.domain.STAData;
 
 

@@ -48,12 +48,12 @@
  */
 package org.openspotlight.federation.domain.artifact.db;
 
-import java.io.Serializable;
-
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+
+import java.io.Serializable;
 
 @Name( "routine_parameter" )
 public class RoutineParameter implements SimpleNodeType, Serializable {

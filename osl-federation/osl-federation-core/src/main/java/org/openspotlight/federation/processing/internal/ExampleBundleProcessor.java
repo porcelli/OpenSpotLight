@@ -48,23 +48,13 @@
  */
 package org.openspotlight.federation.processing.internal;
 
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.jcr.Session;
-
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
-import org.openspotlight.federation.processing.ArtifactChanges;
-import org.openspotlight.federation.processing.ArtifactsToBeProcessed;
-import org.openspotlight.federation.processing.BundleProcessorSinglePhase;
-import org.openspotlight.federation.processing.CurrentProcessorContext;
-import org.openspotlight.federation.processing.SaveBehavior;
+import org.openspotlight.federation.processing.*;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.log.DetailedLogger.LogEventType;
@@ -73,6 +63,10 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ExampleBundleProcessor implements BundleProcessorSinglePhase<StringArtifact> {
 
@@ -125,8 +119,8 @@ public class ExampleBundleProcessor implements BundleProcessorSinglePhase<String
         for (int i = 0; i < 10; i++) {
             final SLNode groupNode = currentContext.getCurrentNodeGroup();
             final String nodeName = artifact.getArtifactCompleteName() + i;
-            final SLNode node = groupNode.addNode(nodeName);
-            final SLNode node1 = node.addNode(nodeName);
+            final SLNode node = groupNode.addChildNode(nodeName);
+            final SLNode node1 = node.addChildNode(nodeName);
             context.getGraphSession().addLink(SLLink.class, node, node1, false);
         }
 

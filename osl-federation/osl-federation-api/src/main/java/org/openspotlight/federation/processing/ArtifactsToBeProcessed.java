@@ -48,9 +48,9 @@
  */
 package org.openspotlight.federation.processing;
 
-import java.util.Set;
-
 import org.openspotlight.federation.domain.artifact.Artifact;
+
+import java.util.Set;
 
 /**
  * The Interface ArtifactsToBeProcessed.

@@ -48,9 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-
-import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.event.SLGraphSessionEventPoster;
 import org.openspotlight.graph.event.SLNodePropertyEvent;
 import org.openspotlight.graph.event.SLNodePropertyRemovedEvent;
@@ -58,6 +55,8 @@ import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+
+import java.io.Serializable;
 
 /**
  * The Class SLNodePropertyImpl.

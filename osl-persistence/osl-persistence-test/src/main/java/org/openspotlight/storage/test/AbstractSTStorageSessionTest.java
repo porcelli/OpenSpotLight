@@ -49,11 +49,8 @@
 
 package org.openspotlight.storage.test;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Injector;
 import org.apache.commons.io.IOUtils;
-import static org.openspotlight.common.util.SLCollections.iterableToSet;
-import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.storage.STPartition;
@@ -65,7 +62,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -75,6 +74,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.SLCollections.iterableToSet;
 
 
 /**

@@ -49,15 +49,12 @@
 
 package org.openspotlight.common.util.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Strings.firstLetterToLowerCase;
-import static org.openspotlight.common.util.Strings.firstLetterToUpperCase;
-import static org.openspotlight.common.util.Strings.removeBegginingFrom;
-import static org.openspotlight.common.util.Strings.replaceLast;
-
 import org.junit.Test;
 import org.openspotlight.common.util.Strings;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Strings.*;
 
 /**
  * Test class for {@link Strings}

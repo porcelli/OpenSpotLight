@@ -98,9 +98,9 @@ public class ExampleRemoteServerWithData {
             final Class<?>[] iFaces = clazz.getInterfaces();
             for (final Class<?> iFace : iFaces) {
                 final Package iFacePack = iFace.getPackage();
-                final JavaPackage javaPackage = root.addNode(JavaPackage.class, iFacePack.getName());
+                final JavaPackage javaPackage = root.addChildNode(JavaPackage.class, iFacePack.getName());
                 javaPackage.setCaption(iFacePack.getName());
-                final JavaInterface javaInterface = javaPackage.addNode(JavaInterface.class, iFace.getName());
+                final JavaInterface javaInterface = javaPackage.addChildNode(JavaInterface.class, iFace.getName());
                 javaInterface.setCaption(iFace.getName());
                 session.addLink(ClassImplementsInterface.class, javaClass, javaInterface, false);
             }
@@ -118,7 +118,7 @@ public class ExampleRemoteServerWithData {
                                                          final JavaClass javaClass) {
             final Method[] methods = clazz.getDeclaredMethods();
             for (final Method method : methods) {
-                final JavaTypeMethod javaTypeMethod = javaClass.addNode(JavaTypeMethod.class, method.getName());
+                final JavaTypeMethod javaTypeMethod = javaClass.addChildNode(JavaTypeMethod.class, method.getName());
                 javaTypeMethod.setCaption(method.getName());
                 session.addLink(TypeContainsMethod.class, javaClass, javaTypeMethod, false);
             }
@@ -139,9 +139,9 @@ public class ExampleRemoteServerWithData {
             final Class<?> superClass = clazz.getSuperclass();
             if (superClass != null) {
                 final Package classPack = clazz.getPackage();
-                final JavaPackage javaPackage = root.addNode(JavaPackage.class, classPack.getName());
+                final JavaPackage javaPackage = root.addChildNode(JavaPackage.class, classPack.getName());
                 javaPackage.setCaption(classPack.getName());
-                final JavaClass superJavaClass = javaPackage.addNode(JavaClass.class, superClass.getName());
+                final JavaClass superJavaClass = javaPackage.addChildNode(JavaClass.class, superClass.getName());
                 session.addLink(PackageContainsType.class, javaPackage, superJavaClass, false);
                 session.addLink(JavaClassHierarchy.class, javaClass, superJavaClass, false);
                 this.addJavaClassHirarchyLinks(session, root, superClass, superJavaClass);
@@ -160,7 +160,7 @@ public class ExampleRemoteServerWithData {
                                                         final JavaInterface javaInterface) {
             final Method[] methods = iFace.getDeclaredMethods();
             for (final Method method : methods) {
-                final JavaTypeMethod javaTypeMethod = javaInterface.addNode(JavaTypeMethod.class, method.getName());
+                final JavaTypeMethod javaTypeMethod = javaInterface.addChildNode(JavaTypeMethod.class, method.getName());
                 javaTypeMethod.setCaption(method.getName());
                 session.addLink(TypeContainsMethod.class, javaInterface, javaTypeMethod, false);
             }
@@ -181,9 +181,9 @@ public class ExampleRemoteServerWithData {
             final Class<?>[] superIFaces = iFace.getInterfaces();
             for (final Class<?> superIFace : superIFaces) {
                 final Package iFacePack = iFace.getPackage();
-                final JavaPackage javaPackage = root.addNode(JavaPackage.class, iFacePack.getName());
+                final JavaPackage javaPackage = root.addChildNode(JavaPackage.class, iFacePack.getName());
                 javaPackage.setCaption(iFacePack.getName());
-                final JavaInterface superJavaInterface = javaPackage.addNode(JavaInterface.class, superIFace.getName());
+                final JavaInterface superJavaInterface = javaPackage.addChildNode(JavaInterface.class, superIFace.getName());
                 session.addLink(PackageContainsType.class, javaPackage, superJavaInterface, false);
                 superJavaInterface.setCaption(superIFace.getName());
                 session.addLink(JavaInterfaceHierarchy.class, javaInterface, superJavaInterface, false);
@@ -248,13 +248,13 @@ public class ExampleRemoteServerWithData {
                 SLNode root = context.getRootNode();
 
                 final Package pack = java.util.Date.class.getPackage();
-                final JavaPackage utilJavaPackage = root.addNode(JavaPackage.class, pack.getName());
+                final JavaPackage utilJavaPackage = root.addChildNode(JavaPackage.class, pack.getName());
                 utilJavaPackage.setCaption(pack.getName());
 
                 int count = 0;
                 final float floatValue = 0.3F;
                 for (final Class<?> iFace : iFaces) {
-                    final JavaInterface javaInterface = utilJavaPackage.addNode(JavaInterface.class, iFace.getName());
+                    final JavaInterface javaInterface = utilJavaPackage.addChildNode(JavaInterface.class, iFace.getName());
                     session.addLink(PackageContainsType.class, utilJavaPackage, javaInterface, false);
                     javaInterface.setCaption(iFace.getName());
                     javaInterface.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);
@@ -269,7 +269,7 @@ public class ExampleRemoteServerWithData {
                 for (final Class<?> clazz : classes) {
                     // context = session.createContext("queryTest2");
                     root = context.getRootNode();
-                    final JavaClass javaClass = utilJavaPackage.addNode(JavaClass.class, clazz.getName());
+                    final JavaClass javaClass = utilJavaPackage.addChildNode(JavaClass.class, clazz.getName());
                     session.addLink(PackageContainsType.class, utilJavaPackage, javaClass, false);
                     javaClass.setCaption(clazz.getName());
                     javaClass.setProperty(Integer.class, VisibilityLevel.PUBLIC, "intValue", count);

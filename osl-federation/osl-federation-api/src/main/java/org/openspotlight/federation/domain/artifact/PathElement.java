@@ -48,15 +48,15 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
-import java.io.Serializable;
-import java.util.StringTokenizer;
-
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.TransientProperty;
+
+import java.io.Serializable;
+import java.util.StringTokenizer;
 
 /**
  * The Class PathElement.

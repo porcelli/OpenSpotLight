@@ -122,7 +122,7 @@ public class GraphSavingTest {
     @Test
     public void shouldDoNotSaveChanges() throws Exception {
         final SLGraphSession session = GraphSavingTest.graph.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
-        session.createContext("new context not saved").getRootNode().addNode("node 1 not saved").addNode("node 2 not saved");
+        session.createContext("new context not saved").getRootNode().addChildNode("node 1 not saved").addChildNode("node 2 not saved");
         session.close();
 
         final SLGraphSession session1 = GraphSavingTest.graph.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
@@ -136,7 +136,7 @@ public class GraphSavingTest {
     public void shouldSaveChanges() throws Exception {
 
         final SLGraphSession session = GraphSavingTest.graph.openSession(GraphSavingTest.user, SLConsts.DEFAULT_REPOSITORY_NAME);
-        session.createContext("new context").getRootNode().addNode("node 1").addNode("node 2");
+        session.createContext("new context").getRootNode().addChildNode("node 1").addChildNode("node 2");
         session.save();
         session.close();
 
@@ -155,12 +155,12 @@ public class GraphSavingTest {
 
         final SLGraphSession sessionToSave = GraphSavingTest.graph.openSession(GraphSavingTest.user,
                 SLConsts.DEFAULT_REPOSITORY_NAME);
-        sessionToSave.createContext("new saved context").getRootNode().addNode("node 1 saved").addNode("node 2 saved");
+        sessionToSave.createContext("new saved context").getRootNode().addChildNode("node 1 saved").addChildNode("node 2 saved");
         sessionToSave.save();
         sessionToSave.close();
         final SLGraphSession sessionToDismiss = GraphSavingTest.graph.openSession(GraphSavingTest.user,
                 SLConsts.DEFAULT_REPOSITORY_NAME);
-        sessionToDismiss.createContext("new context not saved").getRootNode().addNode("node 1 not saved").addNode(
+        sessionToDismiss.createContext("new context not saved").getRootNode().addChildNode("node 1 not saved").addChildNode(
                 "node 2 not saved");
         sessionToDismiss.close();
 

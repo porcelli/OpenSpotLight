@@ -51,14 +51,6 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
-
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.AfterClass;
@@ -72,21 +64,22 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.IncludedResult;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.ResultOrder;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 // TODO: Auto-generated Javadoc
 /**

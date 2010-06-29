@@ -51,9 +51,9 @@ package org.openspotlight.federation.data.load;
 
 import org.modeshape.graph.SecurityContext;
 
-import static org.openspotlight.common.util.SLCollections.setOf;
-
 import java.util.Set;
+
+import static org.openspotlight.common.util.SLCollections.setOf;
 
 
 /**

@@ -48,25 +48,7 @@
  */
 package org.openspotlight.graph.query.parser;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtConstructor;
-import javassist.CtMethod;
-import javassist.CtNewConstructor;
-import javassist.CtNewMethod;
-import javassist.LoaderClassPath;
-
+import javassist.*;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -79,6 +61,17 @@ import org.openspotlight.common.util.Sha1;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.SLQueryTextInternal;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The Class SLQueryTextInternalBuilder. This class genarates, based on slql external dsl, a new instance SLQueryTextInternal.

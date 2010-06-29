@@ -48,15 +48,15 @@
  */
 package org.openspotlight.federation.finder.db;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Script types to be used inside the artifact loader implementation.

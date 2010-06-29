@@ -46,45 +46,15 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.annotation;
 
-import java.io.Serializable;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-
-// TODO: Auto-generated Javadoc
-/**
- * The Interface SLMetaLinkProperty.
- * 
- * @author Vitor Hugo Chagas
- */
-public interface SLMetaLinkProperty extends SLMetaElement {
-
-    /**
-     * Gets the meta link.
-     * 
-     * @return the meta link
-     */
-    public SLMetaLink getMetaLink();
-
-    /**
-     * Gets the name.
-     * 
-     * @return the name
-     */
-    public String getName();
-
-    /**
-     * Gets the type.
-     * 
-     * @return the type
-     */
-    public Class<? extends Serializable> getType();
-
-    /**
-     * Gets the visibility.
-     * 
-     * @return the visibility
-     */
-    public VisibilityLevel getVisibility();
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
+public @interface SLLinkAutoBidirectional{
+    boolean value();
 }

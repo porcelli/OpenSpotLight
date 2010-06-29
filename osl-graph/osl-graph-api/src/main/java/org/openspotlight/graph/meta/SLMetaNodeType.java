@@ -46,62 +46,47 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.meta;
+
+import org.openspotlight.graph.meta.SLMetadata.BooleanOperator;
+import org.openspotlight.graph.meta.SLMetadata.LogicOperator;
+import org.openspotlight.graph.meta.SLMetadata.MetaNodeTypeProperty;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLRecursiveMode;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.exception.SLRenderHintNotFoundException;
+import org.openspotlight.graph.persistence.SLPersistentNode;
 
 import java.util.Collection;
 import java.util.List;
 
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-
 /**
- * The Interface SLMetaLink.
+ * The Interface SLMetaNodeType.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetaLink extends SLMetaElement {
+public interface SLMetaNodeType extends SLMetaElement {
 
     /**
-     * Gets the meta link type.
+     * Gets the type.
      * 
-     * @return the meta link type
+     * @return the type
      */
-    public SLMetaLinkType getMetaLinkType();
+    public Class<? extends SLNode> getType();
 
     /**
-     * Gets the source type.
+     * Gets the type name.
      * 
-     * @return the source type
+     * @return the type name
      */
-    public Class<? extends SLNode> getSourceType();
-
-    /**
-     * Gets the target type.
-     * 
-     * @return the target type
-     */
-    public Class<? extends SLNode> getTargetType();
-
-    /**
-     * Gets the side types.
-     * 
-     * @return the side types
-     */
-    public List<Class<? extends SLNode>> getSideTypes();
-
-    /**
-     * Checks if is bidirectional.
-     * 
-     * @return true, if is bidirectional
-     */
-    public boolean isBidirectional();
+    public String getTypeName();
 
     /**
      * Gets the meta properties.
      * 
      * @return the meta properties
      */
-    public Collection<SLMetaLinkProperty> getMetaProperties();
+    public Collection<SLMetaNodeProperty> getMetaProperties();
 
     /**
      * Gets the meta property.
@@ -109,7 +94,45 @@ public interface SLMetaLink extends SLMetaElement {
      * @param name the name
      * @return the meta property
      */
-    public SLMetaLinkProperty getMetaProperty( String name );
+    public SLMetaNodeProperty getMetaProperty( String name );
+
+    /**
+     * Gets the sub meta node type.
+     * 
+     * @param nodeClass the node class
+     * @return the sub meta node type
+     */
+    public SLMetaNodeType getSubMetaNodeType( Class<? extends SLNode> nodeClass );
+
+    /**
+     * Gets the sub meta node type.
+     * 
+     * @param name the name
+     * @return the sub meta node type
+     */
+    public SLMetaNodeType getSubMetaNodeType( String name );
+
+    /**
+     * Gets the sub meta node types.
+     * 
+     * @return the sub meta node types
+     */
+    public Collection<SLMetaNodeType> getSubMetaNodeTypes();
+
+    /**
+     * Gets the meta render hint.
+     * 
+     * @param name the name
+     * @return the meta render hint
+     */
+    public SLMetaRenderHint getMetaRenderHint( String name ) throws SLRenderHintNotFoundException;
+
+    /**
+     * Gets the meta render hints.
+     * 
+     * @return the meta render hints
+     */
+    public Collection<SLMetaRenderHint> getMetaRenderHints();
 
     /**
      * Gets the description.
@@ -126,10 +149,35 @@ public interface SLMetaLink extends SLMetaElement {
     public VisibilityLevel getVisibility();
 
     /**
+     * Gets the parent.
+     * 
+     * @return the parent
+     */
+    public SLMetaNodeType getParent();
+
+    /**
      * Gets the node.
      * 
      * @return the node
      */
     public SLPersistentNode getNode();
+
+    /**
+     * Search sub meta node types.
+     * 
+     * @param recursiveMode the recursive mode
+     * @param visibility the visibility
+     * @param property2Find the property2 find
+     * @param logicOp the logic op
+     * @param booleanOp the boolean op
+     * @param values the values
+     * @return the collection< sl meta node type>
+     */
+    public Collection<SLMetaNodeType> searchSubMetaNodeTypes( final SLRecursiveMode recursiveMode,
+                                                              final VisibilityLevel visibility,
+                                                              final MetaNodeTypeProperty property2Find,
+                                                              final LogicOperator logicOp,
+                                                              final BooleanOperator booleanOp,
+                                                              final List<String> values );
 
 }

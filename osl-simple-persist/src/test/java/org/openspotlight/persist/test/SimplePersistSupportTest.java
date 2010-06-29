@@ -48,7 +48,6 @@
  */
 package org.openspotlight.persist.test;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
@@ -61,18 +60,19 @@ import org.junit.Test;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
-import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
-import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;

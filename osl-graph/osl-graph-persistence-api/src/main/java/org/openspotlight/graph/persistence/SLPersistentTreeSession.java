@@ -50,8 +50,6 @@ package org.openspotlight.graph.persistence;
 
 import javax.jcr.Session;
 
-import org.openspotlight.common.concurrent.LockContainer;
-
 /**
  * The Interface SLPersistentTreeSession.
  * 

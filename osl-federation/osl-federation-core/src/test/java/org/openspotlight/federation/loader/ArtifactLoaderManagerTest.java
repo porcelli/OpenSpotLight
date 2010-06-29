@@ -75,7 +75,6 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;

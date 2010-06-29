@@ -48,13 +48,13 @@
  */
 package org.openspotlight.federation.domain.artifact.db;
 
-import static org.openspotlight.common.util.Arrays.andOf;
-import static org.openspotlight.common.util.Arrays.of;
-import static org.openspotlight.common.util.Equals.eachEquality;
-
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.persist.annotation.Name;
+
+import static org.openspotlight.common.util.Arrays.andOf;
+import static org.openspotlight.common.util.Arrays.of;
+import static org.openspotlight.common.util.Equals.eachEquality;
 
 @Name( "database" )
 public class PrimaryKeyConstraintArtifact extends ConstraintArtifact {

@@ -48,35 +48,25 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
-import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLMetadata;
+import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentQuery;
-import org.openspotlight.graph.persistence.SLPersistentQueryResult;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.persistence.*;
 import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
 import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
 import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
+
+import java.util.*;
+
+import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 /**
  * The Class SLSelectByLinkCountExecuteCommand.
@@ -95,7 +85,7 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
     private Map<String, List<PNodeWrapper>> nodeWrapperListMap;
 
     /** The metadata. */
-    private SLMetadata                      metadata;
+    private SLMetadata metadata;
 
     /**
      * Instantiates a new sL select by link count execute command.

@@ -48,13 +48,13 @@
  */
 package org.openspotlight.common.collection;
 
+import org.openspotlight.common.util.Assertions;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.openspotlight.common.util.Assertions;
 
 /**
  * This map has a support for adding a key only once. It is possible to clear its values, but it isn't possible to add values more

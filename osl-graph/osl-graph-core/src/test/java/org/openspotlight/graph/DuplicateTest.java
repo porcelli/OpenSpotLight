@@ -56,7 +56,6 @@ import com.google.inject.Injector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.AbstractFactoryException;
 import org.openspotlight.graph.exception.SLGraphException;
 import org.openspotlight.graph.guice.SLGraphModule;
@@ -114,8 +113,8 @@ public class DuplicateTest {
     public void shouldInsertTwoDifferentNodes() throws Exception {
         final SLNode rootNode = session.createContext("tmpXX").getRootNode();
 
-        final JavaClass javaClass = rootNode.addNode(JavaClass.class, "test");
-        final JavaPackage javaPackage = rootNode.addNode(JavaPackage.class, "test");
+        final JavaClass javaClass = rootNode.addChildNode(JavaClass.class, "test");
+        final JavaPackage javaPackage = rootNode.addChildNode(JavaPackage.class, "test");
 
         final List<SLNode> nodes = new ArrayList<SLNode>();
         nodes.add(javaClass);
@@ -123,7 +122,7 @@ public class DuplicateTest {
 
         session.save();
         session.cleanCache();
-        final NeedsSyncronizationSet<SLNode> foundNodes = rootNode.getNodes();
+        final Set<SLNode> foundNodes = rootNode.getNodes();
         for (final SLNode n : foundNodes) {
             System.err.println(n.getName() + " " + n.getClass().getInterfaces()[0].getSimpleName());
         }
@@ -131,10 +130,10 @@ public class DuplicateTest {
 
         assertThat(session.getNodeByID(javaPackage.getID()).getID(), is(javaPackage.getID()));
 
-        final NeedsSyncronizationSet<JavaClass> classChildren = rootNode.getChildNodes(JavaClass.class);
+        final Set<JavaClass> classChildren = rootNode.getChildrenNodes(JavaClass.class);
         assertThat(classChildren.size(), is(0));
 
-        final NeedsSyncronizationSet<JavaPackage> allChildren = rootNode.getChildNodes(JavaPackage.class);
+        final Set<JavaPackage> allChildren = rootNode.getChildrenNodes(JavaPackage.class);
         assertThat(allChildren.size(), is(1));
 
     }
@@ -143,22 +142,22 @@ public class DuplicateTest {
     public void shouldNotInsertTwoEqualNodes() throws Exception {
         final SLNode rootNode = session.createContext("tmp").getRootNode();
         final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
-        final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
-        final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
-        final JavaType n1 = parent.addNode(JavaClass.class, "someName");
+        final JavaClass parent = rootNode.addChildNode(JavaClass.class, "parent");
+        final JavaClass parent1 = rootNode1.addChildNode(JavaClass.class, "parent");
+        final JavaType n1 = parent.addChildNode(JavaClass.class, "someName");
         n1.setCaption("someName");
-        final JavaType n2 = parent.addNode(JavaType.class, "another");
+        final JavaType n2 = parent.addChildNode(JavaType.class, "another");
         n2.setCaption("another");
-        final JavaType n3 = parent.addNode(JavaType.class, "someName");
+        final JavaType n3 = parent.addChildNode(JavaType.class, "someName");
 
         assertThat(n1, is(n3));
 
         n3.setCaption("someName");
-        final JavaType n1_ = parent1.addNode(JavaClass.class, "someName");
+        final JavaType n1_ = parent1.addChildNode(JavaClass.class, "someName");
         n1_.setCaption("someName");
-        final JavaType n2_ = parent1.addNode(JavaType.class, "another");
+        final JavaType n2_ = parent1.addChildNode(JavaType.class, "another");
         n2_.setCaption("another");
-        final JavaType n3_ = parent1.addNode(JavaType.class, "someName");
+        final JavaType n3_ = parent1.addChildNode(JavaType.class, "someName");
 
         assertThat(n1_, is(n3_));
 
@@ -194,22 +193,22 @@ public class DuplicateTest {
     public void shouldNotInsertTwoEqualNodes2() throws Exception {
         final SLNode rootNode = session.createContext("tmp").getRootNode();
         final SLNode rootNode1 = session.createContext("tmp1").getRootNode();
-        final JavaClass parent = rootNode.addNode(JavaClass.class, "parent");
-        final JavaClass parent1 = rootNode1.addNode(JavaClass.class, "parent");
-        final JavaType n1 = parent.addNode(JavaClass.class, "someName");
+        final JavaClass parent = rootNode.addChildNode(JavaClass.class, "parent");
+        final JavaClass parent1 = rootNode1.addChildNode(JavaClass.class, "parent");
+        final JavaType n1 = parent.addChildNode(JavaClass.class, "someName");
         n1.setCaption("someName");
-        final JavaType n2 = parent.addNode(JavaType.class, "another");
+        final JavaType n2 = parent.addChildNode(JavaType.class, "another");
         n2.setCaption("another");
-        final JavaType n3 = parent.addNode(JavaType.class, "someName");
+        final JavaType n3 = parent.addChildNode(JavaType.class, "someName");
 
         assertThat(n1, is(n3));
 
         n3.setCaption("someName");
-        final JavaType n1_ = parent1.addNode(JavaClass.class, "someName");
+        final JavaType n1_ = parent1.addChildNode(JavaClass.class, "someName");
         n1_.setCaption("someName");
-        final JavaType n2_ = parent1.addNode(JavaType.class, "another");
+        final JavaType n2_ = parent1.addChildNode(JavaType.class, "another");
         n2_.setCaption("another");
-        final JavaType n3_ = parent1.addNode(JavaType.class, "someName");
+        final JavaType n3_ = parent1.addChildNode(JavaType.class, "someName");
 
         assertThat(n1_, is(n3_));
 

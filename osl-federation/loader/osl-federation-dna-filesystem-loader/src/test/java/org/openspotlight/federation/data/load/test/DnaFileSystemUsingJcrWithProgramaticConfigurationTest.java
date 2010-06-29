@@ -49,12 +49,6 @@
 
 package org.openspotlight.federation.data.load.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import javax.jcr.Session;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +57,12 @@ import org.modeshape.jcr.JcrConfiguration;
 import org.modeshape.jcr.JcrEngine;
 import org.modeshape.jcr.SecurityContextCredentials;
 import org.openspotlight.federation.data.load.DefaultSecurityContext;
+
+import javax.jcr.Session;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test class to validate a programatic example for DNA File System Connector using JCR.

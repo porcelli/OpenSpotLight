@@ -48,10 +48,10 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
-
-import org.openspotlight.graph.SLMetadata;
+import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+
+import java.util.Collection;
 
 /**
  * The Class SLSelectCommandDO.

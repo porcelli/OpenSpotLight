@@ -48,17 +48,17 @@
  */
 package org.openspotlight.graph;
 
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
-
-import java.util.List;
-
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Messages;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLMetadata.BooleanOperator;
-import org.openspotlight.graph.SLMetadata.LogicOperator;
-import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
+import org.openspotlight.graph.meta.SLMetadata.BooleanOperator;
+import org.openspotlight.graph.meta.SLMetadata.LogicOperator;
+import org.openspotlight.graph.meta.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+
+import java.util.List;
+
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 public class SLMetadataXPathSupporter {
 

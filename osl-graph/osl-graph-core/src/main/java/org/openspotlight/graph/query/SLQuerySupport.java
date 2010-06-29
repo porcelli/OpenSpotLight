@@ -48,16 +48,8 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openspotlight.graph.SLMetaNodeType;
-import org.openspotlight.graph.SLMetadata;
+import org.openspotlight.graph.meta.SLMetaNodeType;
+import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
@@ -66,6 +58,8 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.info.SLSelectInfo;
 import org.openspotlight.graph.query.info.SLSelectStatementInfo;
+
+import java.util.*;
 
 /**
  * The Class SLQuerySupport.

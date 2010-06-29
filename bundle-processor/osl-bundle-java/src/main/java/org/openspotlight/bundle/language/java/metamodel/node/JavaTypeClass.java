@@ -49,6 +49,7 @@
 package org.openspotlight.bundle.language.java.metamodel.node;
 
 import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.annotation.SLInitialWeight;
 
 /**
  * The Interface for node Java Type Class Meta Model.
@@ -56,6 +57,7 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Java Type Class" )
+@SLInitialWeight(6)
 public interface JavaTypeClass extends JavaType {
 
 }

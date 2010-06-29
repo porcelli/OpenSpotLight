@@ -48,11 +48,11 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import java.text.Collator;
-
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLCollator;
 import org.openspotlight.graph.annotation.SLProperty;
+
+import java.text.Collator;
 
 /**
  * The Interface SQLElement.

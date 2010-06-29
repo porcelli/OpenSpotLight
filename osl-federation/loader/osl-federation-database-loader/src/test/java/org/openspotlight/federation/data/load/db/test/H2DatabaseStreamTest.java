@@ -48,17 +48,17 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
-import static org.openspotlight.common.util.Files.delete;
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
+import org.junit.Before;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.finder.db.ScriptType;
 
 import java.sql.Connection;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.finder.db.ScriptType;
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createH2DbConfiguration;
 
 @SuppressWarnings( "all" )
 public class H2DatabaseStreamTest extends DatabaseStreamTest {

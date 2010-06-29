@@ -48,11 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.query.info.SLOrderByStatementInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereTypeInfo;
+import org.openspotlight.graph.query.info.*;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo;

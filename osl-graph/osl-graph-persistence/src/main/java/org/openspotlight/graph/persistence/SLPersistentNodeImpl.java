@@ -48,27 +48,15 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.jcr.util.JCRUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * The Class SLPersistentNodeImpl.
@@ -214,10 +202,10 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationSet<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException {
+    public Set<SLPersistentNode> getNodes() throws SLPersistentTreeSessionException {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationSet<SLPersistentNode> persistentNodes = LockedCollections.createSetWithLock(
+                final Set<SLPersistentNode> persistentNodes = LockedCollections.createSetWithLock(
                                                                                                                      this,
                                                                                                                      new HashSet<SLPersistentNode>());
                 final NodeIterator iter = jcrNode.getNodes();
@@ -236,9 +224,9 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLPersistentNode> getNodes( final String name ) throws SLPersistentTreeSessionException {
+    public Collection<SLPersistentNode> getNodes( final String name ) throws SLPersistentTreeSessionException {
         synchronized (lock) {
-            final NeedsSyncronizationCollection<SLPersistentNode> pNodes = LockedCollections.createCollectionWithLock(
+            final Collection<SLPersistentNode> pNodes = LockedCollections.createCollectionWithLock(
                                                                                                                       this,
                                                                                                                       new ArrayList<SLPersistentNode>());
             try {
@@ -278,11 +266,11 @@ public class SLPersistentNodeImpl implements SLPersistentNode {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationSet<SLPersistentProperty<Serializable>> getProperties( final String pattern )
+    public Set<SLPersistentProperty<Serializable>> getProperties( final String pattern )
         throws SLPersistentTreeSessionException {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationSet<SLPersistentProperty<Serializable>> persistentProperties = LockedCollections.createSetWithLock(
+                final Set<SLPersistentProperty<Serializable>> persistentProperties = LockedCollections.createSetWithLock(
                                                                                                                                             this,
                                                                                                                                             new HashSet<SLPersistentProperty<Serializable>>());
                 final PropertyIterator iter = jcrNode.getProperties(pattern);

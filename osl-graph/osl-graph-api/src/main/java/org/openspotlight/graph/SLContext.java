@@ -48,14 +48,12 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.concurrent.LockContainer;
-
 /**
  * The Interface SLContext.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLContext extends LockContainer {
+public interface SLContext {
 
     /**
      * Gets the iD.
@@ -83,11 +81,5 @@ public interface SLContext extends LockContainer {
      */
     public SLNode getRootNode();
 
-    /**
-     * Gets the session.
-     * 
-     * @return the session
-     */
-    public SLGraphSession getSession();
 
 }

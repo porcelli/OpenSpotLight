@@ -48,48 +48,13 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.common.parser.ParsingSupport;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.link.AnottatedBy;
-import org.openspotlight.bundle.language.java.metamodel.link.ArrayOfType;
-import org.openspotlight.bundle.language.java.metamodel.link.DataType;
-import org.openspotlight.bundle.language.java.metamodel.link.Extends;
-import org.openspotlight.bundle.language.java.metamodel.link.Implements;
-import org.openspotlight.bundle.language.java.metamodel.link.InnerClass;
-import org.openspotlight.bundle.language.java.metamodel.link.InterfaceExtends;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
-import org.openspotlight.bundle.language.java.metamodel.link.PackageType;
-import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.link.References;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeArgument;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentExtends;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeArgumentSuper;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeParameter;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedExtended;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterizedSuper;
-import org.openspotlight.common.concurrent.NeedsSyncronizationList;
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -104,6 +69,10 @@ import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class JavaPublicElementsTreeExecutor {
 
@@ -214,7 +183,7 @@ public class JavaPublicElementsTreeExecutor {
             final SLNode concreteParent = support.findEquivalend(peek, WhatContext.CONCRETE);
             final List<SLNode> nodes = new ArrayList<SLNode>();
             for (final VariableDeclarationDto var : variables) {
-                final JavaDataField newField = concreteParent.addNode(JavaDataField.class, var.getName());
+                final JavaDataField newField = concreteParent.addChildNode(JavaDataField.class, var.getName());
                 support.session.addLink(DataType.class, newField, type31, false);
 
                 nodes.add(newField);
@@ -373,7 +342,7 @@ public class JavaPublicElementsTreeExecutor {
                 packagesQuery.select().type(JavaType.class.getName()).subTypes().byLink(linkType.getName()).b().selectEnd().select().type(
                                                                                                                                           JavaPackage.class.getName()).byLink(
                                                                                                                                                                               PackageType.class.getName()).selectEnd().keepResult().executeXTimes();
-                final NeedsSyncronizationList<SLNode> nodes = packagesQuery.execute(Arrays.asList(superType)).getNodes();
+                final List<SLNode> nodes = packagesQuery.execute(Arrays.asList(superType)).getNodes();
                 if (nodes.size() > 0) {
                     synchronized (nodes.getLockObject()) {
                         for (final SLNode node : nodes) {
@@ -405,7 +374,7 @@ public class JavaPublicElementsTreeExecutor {
                     packagesQuery.select().type(JavaType.class.getName()).subTypes().byLink(Implements.class.getName()).b().selectEnd().select().type(
                                                                                                                                                       JavaPackage.class.getName()).byLink(
                                                                                                                                                                                           PackageType.class.getName()).selectEnd().keepResult().executeXTimes();
-                    NeedsSyncronizationList<SLNode> nodes = packagesQuery.execute(Arrays.asList((SLNode)interfaceType)).getNodes();
+                    List<SLNode> nodes = packagesQuery.execute(Arrays.asList((SLNode)interfaceType)).getNodes();
                     if (nodes.size() > 0) {
                         synchronized (nodes.getLockObject()) {
                             for (final SLNode node : nodes) {
@@ -432,7 +401,7 @@ public class JavaPublicElementsTreeExecutor {
             }
             if (typeParams != null) {
                 for (final TypeParameterDto typeParam : typeParams) {
-                    final JavaTypeParameterized typeParameterized = newClass.addNode(JavaTypeParameterized.class,
+                    final JavaTypeParameterized typeParameterized = newClass.addChildNode(JavaTypeParameterized.class,
                                                                                      typeParam.getName());
                     support.session.addLink(TypeParameter.class, newClass, typeParameterized, false);
                     if (typeParam.getTypeParameterExtends() != null) {
@@ -507,7 +476,7 @@ public class JavaPublicElementsTreeExecutor {
                                                            final SLNode parent,
                                                            final String name ) {
         try {
-            final T newNode = parent.addNode(type, name);
+            final T newNode = parent.addChildNode(type, name);
             SLNode cachedParent;
             if (parent.getContext().equals(support.abstractContext.getContext())) {
                 cachedParent = parent;
@@ -517,7 +486,7 @@ public class JavaPublicElementsTreeExecutor {
             if (cachedParent == null) {
                 cachedParent = support.findEquivalend(parent, WhatContext.ABSTRACT);
             }
-            final SLNode newAbstractNode = cachedParent.addNode(abstractType, name);
+            final SLNode newAbstractNode = cachedParent.addChildNode(abstractType, name);
             support.putOnBothCaches(newNode, newAbstractNode);
             support.session.addLink(AbstractTypeBind.class, newAbstractNode, newNode, false);
             return newNode;
@@ -560,7 +529,7 @@ public class JavaPublicElementsTreeExecutor {
             if (arrayNode == null) {
                 @SuppressWarnings( "unchecked" )
                 final Class<? extends JavaType> sameType = (Class<? extends JavaType>) simpleOne.getClass().getInterfaces()[0];
-                arrayNode = parent.addNode(sameType, arrayName);
+                arrayNode = parent.addChildNode(sameType, arrayName);
                 arrayNode.setArray(true);
                 arrayNode.setQualifiedName(simpleOne.getQualifiedName() + "[]");
                 arrayNode.setSimpleName(arrayName);
@@ -596,7 +565,7 @@ public class JavaPublicElementsTreeExecutor {
             final String parameterizedName = "<? extends " + simpleOne.getName() + ">";
             JavaTypeParameterizedExtended parameterizedNode = (JavaTypeParameterizedExtended)parent.getNode(parameterizedName);
             if (parameterizedNode == null) {
-                parameterizedNode = parent.addNode(JavaTypeParameterizedExtended.class, parameterizedName);
+                parameterizedNode = parent.addChildNode(JavaTypeParameterizedExtended.class, parameterizedName);
                 parameterizedNode.setQualifiedName("<? extends " + simpleOne.getQualifiedName() + ">");
                 parameterizedNode.setSimpleName(parameterizedName);
                 support.session.addLink(TypeArgumentExtends.class, parameterizedNode, simpleOne, false);
@@ -627,7 +596,7 @@ public class JavaPublicElementsTreeExecutor {
             final String parameterizedName = simpleOne.getName() + parameterizedNameBuilder.toString();
             JavaTypeParameterized parameterizedNode = (JavaTypeParameterized)parent.getNode(parameterizedName);
             if (parameterizedNode == null) {
-                parameterizedNode = parent.addNode(JavaTypeParameterized.class, parameterizedName);
+                parameterizedNode = parent.addChildNode(JavaTypeParameterized.class, parameterizedName);
                 parameterizedNode.setQualifiedName(simpleOne.getQualifiedName() + parameterizedNameBuilder.toString());
                 parameterizedNode.setSimpleName(parameterizedName);
 
@@ -665,7 +634,7 @@ public class JavaPublicElementsTreeExecutor {
             final String parameterizedName = "<? super " + simpleOne.getName() + ">";
             JavaTypeParameterizedSuper parameterizedNode = (JavaTypeParameterizedSuper)parent.getNode(parameterizedName);
             if (parameterizedNode == null) {
-                parameterizedNode = parent.addNode(JavaTypeParameterizedSuper.class, parameterizedName);
+                parameterizedNode = parent.addChildNode(JavaTypeParameterizedSuper.class, parameterizedName);
                 parameterizedNode.setQualifiedName("<? super " + simpleOne.getQualifiedName() + ">");
                 parameterizedNode.setSimpleName(parameterizedName);
                 support.session.addLink(TypeArgumentSuper.class, parameterizedNode, simpleOne, false);
@@ -793,9 +762,9 @@ public class JavaPublicElementsTreeExecutor {
             final String complMethodName = completeMethodName.toString();
             final JavaMethod javaMethod;
             if (constructor) {
-                javaMethod = concreteParent.addNode(JavaMethodConstructor.class, complMethodName);
+                javaMethod = concreteParent.addChildNode(JavaMethodConstructor.class, complMethodName);
             } else {
-                javaMethod = concreteParent.addNode(JavaMethodMethod.class, complMethodName);
+                javaMethod = concreteParent.addChildNode(JavaMethodMethod.class, complMethodName);
             }
             if (logger.isDebugEnabled()) {
                 logger.debug("creating method " + complMethodName + " inside its parent " + concreteParent.getName() + " (id "
@@ -818,7 +787,7 @@ public class JavaPublicElementsTreeExecutor {
                 // }
                 // methodParametersTypeLink.setArray(arrayDimensions != 0);
                 // methodParametersTypeLink.setArrayDimension(arrayDimensions);
-                final JavaDataParameter parameter = javaMethod.addNode(JavaDataParameter.class, param.getName());
+                final JavaDataParameter parameter = javaMethod.addChildNode(JavaDataParameter.class, param.getName());
                 param.getTreeElement().setNode(parameter);
                 support.session.addLink(DataType.class, parameter, param.getType(), false);
 

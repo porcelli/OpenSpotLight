@@ -49,26 +49,25 @@
 
 package org.openspotlight.federation.data.load.db.test;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.EnumMap;
-
+import com.thoughtworks.xstream.XStream;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.junit.Test;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.PreferedType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.finder.db.ScriptType;
-import org.openspotlight.federation.finder.db.DatabaseMetadataScript.PreferedType;
 import org.openspotlight.federation.finder.db.handler.PostgresRoutineStreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.thoughtworks.xstream.XStream;
+import java.util.EnumMap;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test class for {@link DatabaseMetadataScriptManager}.

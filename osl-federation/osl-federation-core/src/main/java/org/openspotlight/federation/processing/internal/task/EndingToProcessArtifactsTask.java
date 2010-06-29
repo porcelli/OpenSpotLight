@@ -56,10 +56,8 @@ import org.openspotlight.federation.processing.BundleProcessorGlobalPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.federation.processing.internal.RunnableWithBundleContext;
 
-import java.util.List;
 import java.util.Set;
 
-import static com.google.common.collect.Lists.newLinkedList;
 import static com.google.common.collect.Sets.newHashSet;
 
 public class EndingToProcessArtifactsTask extends RunnableWithBundleContext {

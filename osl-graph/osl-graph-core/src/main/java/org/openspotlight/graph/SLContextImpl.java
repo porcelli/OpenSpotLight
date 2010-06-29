@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.event.SLGraphSessionEventPoster;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.util.ProxyUtil;

@@ -48,7 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import org.openspotlight.common.concurrent.NeedsSyncronizationList;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
@@ -83,7 +82,7 @@ class ByPropertyFinder {
         query1.select().type(type.getName()).subTypes().selectEnd().where().type(type.getName()).subTypes().each().property(
                                                                                                                             propertyName).equalsTo().value(
                                                                                                                                                            propertyValue).typeEnd().whereEnd();
-        final NeedsSyncronizationList<SLNode> result1 = query1.execute().getNodes();
+        final List<SLNode> result1 = query1.execute().getNodes();
         if (result1.size() > 0) {
             synchronized (result1.getLockObject()) {
                 for (final SLNode found : result1) {

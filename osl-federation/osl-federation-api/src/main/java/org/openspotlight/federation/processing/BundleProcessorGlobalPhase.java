@@ -48,10 +48,10 @@
  */
 package org.openspotlight.federation.processing;
 
-import java.util.Set;
-
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
+
+import java.util.Set;
 
 public interface BundleProcessorGlobalPhase<T extends Artifact> {
 

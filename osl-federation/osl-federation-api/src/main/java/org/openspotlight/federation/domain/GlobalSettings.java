@@ -48,16 +48,16 @@
  */
 package org.openspotlight.federation.domain;
 
+import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.federation.finder.OriginArtifactLoader;
+import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.SimpleNodeType;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
-import org.openspotlight.federation.finder.OriginArtifactLoader;
-import org.openspotlight.persist.annotation.Name;
-import org.openspotlight.persist.annotation.SimpleNodeType;
 
 // TODO: Auto-generated Javadoc
 /**

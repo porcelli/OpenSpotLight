@@ -51,9 +51,6 @@ package org.openspotlight.graph;
 
 import com.google.common.collect.ImmutableList;
 import org.openspotlight.common.SharedConstants;
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Arrays;
@@ -67,6 +64,7 @@ import org.openspotlight.graph.event.SLNodePropertySetEvent;
 import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.exception.SLPropertyNotFoundException;
 import org.openspotlight.graph.exception.SLPropertyTypeInvalidException;
+import org.openspotlight.graph.meta.SLMetaNodeType;
 import org.openspotlight.graph.persistence.SLInvalidPersistentPropertyTypeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
@@ -264,7 +262,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T addNode(final Class<T> clazz,
+    public <T extends SLNode> T addChildNode(final Class<T> clazz,
                                         final String name) {
         synchronized (lock) {
             return this.addChildNode(clazz, name, getSession().getDefaultEncoder(), SLPersistenceMode.NORMAL, null, null);
@@ -274,7 +272,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T addNode(final Class<T> clazz,
+    public <T extends SLNode> T addChildNode(final Class<T> clazz,
                                         final String name,
                                         final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                         final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
@@ -536,10 +534,10 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
         }
     }
 
-    public <T extends SLNode> NeedsSyncronizationSet<T> getChildNodes(final Class<T> clazz) {
+    public <T extends SLNode> Set<T> getChildrenNodes(final Class<T> clazz) {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationSet<T> childNodes = LockedCollections.createSetWithLock(this, new HashSet<T>());
+                final Set<T> childNodes = LockedCollections.createSetWithLock(this, new HashSet<T>());
                 final Collection<SLPersistentNode> persistentChildNodes = pNode.getNodes();
                 for (final SLPersistentNode pChildNode : persistentChildNodes) {
                     final Class<? extends SLNode> nodeType = getNodeType(pChildNode);
@@ -566,9 +564,9 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
      * @return the child nodes
      * @throws SLException the SL exception
      */
-    private NeedsSyncronizationSet<SLNode> getChildNodes(final String pattern) throws SLException {
+    private Set<SLNode> getChildNodes(final String pattern) throws SLException {
         synchronized (lock) {
-            final NeedsSyncronizationSet<SLNode> childNodes = LockedCollections.createSetWithLock(this, new HashSet<SLNode>());
+            final Set<SLNode> childNodes = LockedCollections.createSetWithLock(this, new HashSet<SLNode>());
             final Collection<SLPersistentNode> persistentChildNodes = pattern == null ? pNode.getNodes() : pNode.getNodes(pattern);
             for (final SLPersistentNode persistentChildNode : persistentChildNodes) {
                 final SLNode childNode = new SLNodeImpl(getContext(), this, persistentChildNode, eventPoster);
@@ -730,7 +728,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public <T extends SLNode> T getNode(final Class<T> clazz,
+    public <T extends SLNode> T getChildNode(final Class<T> clazz,
                                         final String name) {
         synchronized (lock) {
             return this.getChildNode(clazz, name);
@@ -760,7 +758,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationSet<SLNode> getNodes() {
+    public Set<SLNode> getNodes() {
         synchronized (lock) {
             try {
                 return getChildNodes((String) null);
@@ -813,11 +811,11 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationSet<SLNodeProperty<Serializable>> getProperties() {
+    public Set<SLNodeProperty<Serializable>> getProperties() {
         synchronized (lock) {
             try {
                 final Class<? extends SLNode> nodeType = getNodeType(pNode);
-                final NeedsSyncronizationSet<SLNodeProperty<Serializable>> properties = LockedCollections.createSetWithLock(
+                final Set<SLNodeProperty<Serializable>> properties = LockedCollections.createSetWithLock(
                         this,
                         new HashSet<SLNodeProperty<Serializable>>());
                 final Set<SLPersistentProperty<Serializable>> persistentProperties = pNode.getProperties(SLConsts.PROPERTY_PREFIX_USER

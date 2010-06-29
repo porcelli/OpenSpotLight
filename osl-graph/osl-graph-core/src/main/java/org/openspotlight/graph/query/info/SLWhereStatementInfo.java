@@ -48,10 +48,10 @@
  */
 package org.openspotlight.graph.query.info;
 
+import org.openspotlight.common.util.StringBuilderUtil;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.openspotlight.common.util.StringBuilderUtil;
 
 /**
  * The Class SLWhereStatementInfo.

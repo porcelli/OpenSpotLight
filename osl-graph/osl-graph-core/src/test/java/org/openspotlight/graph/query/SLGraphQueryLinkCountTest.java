@@ -157,16 +157,16 @@ public class SLGraphQueryLinkCountTest {
             for (final Class<?> type : types) {
                 final Method[] methods = type.getDeclaredMethods();
                 LOGGER.info(type.getName() + ": " + methods.length + " methods");
-                final JavaInterface javaInteface = root.addNode(JavaInterface.class, type.getName());
+                final JavaInterface javaInteface = root.addChildNode(JavaInterface.class, type.getName());
                 javaInteface.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", type.getName());
                 for (final Method method : methods) {
-                    final JavaTypeMethod javaMethod = javaInteface.addNode(JavaTypeMethod.class, method.getName());
+                    final JavaTypeMethod javaMethod = javaInteface.addChildNode(JavaTypeMethod.class, method.getName());
                     javaMethod.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", method.getName());
                     session.addLink(TypeContainsMethod.class, javaInteface, javaMethod, false);
                     final Class<?>[] paramTypes = method.getParameterTypes();
                     LOGGER.info("\t\t" + method.getName() + ": " + paramTypes.length + " params");
                     for (final Class<?> paramType : paramTypes) {
-                        final MethodParam methodParam = javaMethod.addNode(MethodParam.class, paramType.getName());
+                        final MethodParam methodParam = javaMethod.addChildNode(MethodParam.class, paramType.getName());
                         methodParam.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", paramType.getName());
                         session.addLink(MethodContainsParam.class, javaMethod, methodParam, false);
                     }

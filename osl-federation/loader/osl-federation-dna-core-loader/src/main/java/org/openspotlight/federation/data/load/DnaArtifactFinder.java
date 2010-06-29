@@ -49,10 +49,20 @@
 
 package org.openspotlight.federation.data.load;
 
-import static com.google.common.collect.Lists.newLinkedList;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.jcr.util.JcrNodeVisitor.withVisitor;
+import org.modeshape.jcr.JcrConfiguration;
+import org.modeshape.jcr.JcrEngine;
+import org.modeshape.jcr.SecurityContextCredentials;
+import org.modeshape.repository.ModeShapeConfiguration;
+import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.federation.domain.artifact.*;
+import org.openspotlight.federation.finder.AbstractOriginArtifactLoader;
+import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -63,24 +73,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-
-import org.modeshape.jcr.JcrConfiguration;
-import org.modeshape.jcr.JcrEngine;
-import org.modeshape.jcr.SecurityContextCredentials;
-import org.modeshape.repository.ModeShapeConfiguration;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.StreamArtifact;
-import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.finder.AbstractOriginArtifactLoader;
-import org.openspotlight.jcr.util.JcrNodeVisitor.NodeVisitor;
+import static com.google.common.collect.Lists.newLinkedList;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.jcr.util.JcrNodeVisitor.withVisitor;
 
 /**
  * Artifact loader that loads Artifact for file system using DNA File System Connector.

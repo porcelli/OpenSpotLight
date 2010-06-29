@@ -48,13 +48,13 @@
  */
 package org.openspotlight.bundle.language.java.parser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLNode;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ExpressionDto {
     public final JavaType             resultType;

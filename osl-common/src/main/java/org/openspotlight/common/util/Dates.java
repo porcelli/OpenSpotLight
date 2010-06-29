@@ -49,17 +49,15 @@
 
 package org.openspotlight.common.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static java.text.DateFormat.getDateInstance;
 import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import static org.openspotlight.common.util.Exceptions.*;
 
 /**
  * Helper class to deal with dates

@@ -48,17 +48,6 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
-import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
@@ -69,12 +58,19 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
 import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectByLinkInfo;
 import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectTypeInfo;
+import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLConditionInfo;
+
+import java.util.*;
+
+import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 /**
  * The Class SLSelectByLinkTypeExecuteCommand.

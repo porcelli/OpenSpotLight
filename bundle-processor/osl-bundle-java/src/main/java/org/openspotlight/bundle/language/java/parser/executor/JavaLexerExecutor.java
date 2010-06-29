@@ -48,8 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import javax.jcr.Session;
-
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.metrics.SyntaxInformationAggregator;
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;

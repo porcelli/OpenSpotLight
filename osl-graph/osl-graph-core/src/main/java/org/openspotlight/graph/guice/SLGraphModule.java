@@ -1,13 +1,10 @@
 package org.openspotlight.graph.guice;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Module;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphImpl;
 import org.openspotlight.graph.persistence.SLPersistentTreeFactory;
 import org.openspotlight.graph.persistence.SLPersistentTreeFactoryImpl;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.SecurityFactoryImpl;
 

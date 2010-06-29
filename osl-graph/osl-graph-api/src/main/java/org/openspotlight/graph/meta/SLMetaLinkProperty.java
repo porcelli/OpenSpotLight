@@ -46,23 +46,45 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.meta;
 
-import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
+import java.io.Serializable;
+
+// TODO: Auto-generated Javadoc
 /**
- * The Interface SLPNodeGetter.
+ * The Interface SLMetaLinkProperty.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLPNodeGetter extends LockContainer {
+public interface SLMetaLinkProperty extends SLMetaElement {
 
     /**
-     * Gets the p node.
+     * Gets the meta link.
      * 
-     * @return the p node
+     * @return the meta link
      */
-    public SLPersistentNode getPNode();
+    public SLMetaLink getMetaLink();
 
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName();
+
+    /**
+     * Gets the type.
+     * 
+     * @return the type
+     */
+    public Class<? extends Serializable> getType();
+
+    /**
+     * Gets the visibility.
+     * 
+     * @return the visibility
+     */
+    public VisibilityLevel getVisibility();
 }

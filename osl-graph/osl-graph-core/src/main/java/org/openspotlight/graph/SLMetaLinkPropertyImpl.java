@@ -48,13 +48,15 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-
-import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.meta.SLMetaLink;
+import org.openspotlight.graph.meta.SLMetaLinkProperty;
+import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+
+import java.io.Serializable;
 
 /**
  * The Class SLMetaLinkPropertyImpl.

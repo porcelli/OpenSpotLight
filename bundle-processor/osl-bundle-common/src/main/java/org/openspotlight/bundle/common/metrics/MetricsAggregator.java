@@ -48,14 +48,14 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.exception.SLGraphException;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class MetricsAggregator {
 

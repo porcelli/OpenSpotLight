@@ -48,9 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.After;
@@ -63,33 +60,23 @@ import org.openspotlight.bundle.language.java.metamodel.link.Extends;
 import org.openspotlight.bundle.language.java.metamodel.link.ImplicitExtends;
 import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
 import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.AbstractFactoryException;
-import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
@@ -247,9 +234,9 @@ public abstract class AbstractMethodResolutionTest {
 
     protected JavaType getAbstractType( final String packageName,
                                         final String className ) {
-        final JavaPackage abstractPackage = abstractContex.getRootNode().getNode(JavaPackage.class, packageName);
+        final JavaPackage abstractPackage = abstractContex.getRootNode().getChildNode(JavaPackage.class, packageName);
         if (abstractPackage != null) {
-            return abstractPackage.getNode(JavaType.class, className);
+            return abstractPackage.getChildNode(JavaType.class, className);
         }
         return null;
     }

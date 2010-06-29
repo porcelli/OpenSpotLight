@@ -48,8 +48,6 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
-import javax.jcr.Session;
-
 import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
 import org.openspotlight.persist.support.SimplePersistCapable;

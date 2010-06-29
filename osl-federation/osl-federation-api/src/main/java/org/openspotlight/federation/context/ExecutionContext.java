@@ -58,9 +58,9 @@ import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
+import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 public interface ExecutionContext extends Disposable {

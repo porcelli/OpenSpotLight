@@ -48,11 +48,11 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import java.util.List;
-
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
+
+import java.util.List;
 
 public class VariableDeclarationDto {
 

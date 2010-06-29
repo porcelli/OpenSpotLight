@@ -48,10 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
@@ -62,6 +58,7 @@ import org.openspotlight.graph.exception.SLGraphException;
 import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.exception.SLNodeNotFoundException;
 import org.openspotlight.graph.listeners.*;
+import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.persistence.*;
 import org.openspotlight.graph.query.*;
 import org.openspotlight.graph.query.parser.SLQueryTextInternalBuilder;
@@ -418,7 +415,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
      * @param returnSubTypes the return sub types
      * @return the set< n>
      */
-    private <N extends SLNode> NeedsSyncronizationSet<N> filterNodesFromLinks(final Collection<? extends SLLink> links,
+    private <N extends SLNode> Set<N> filterNodesFromLinks(final Collection<? extends SLLink> links,
                                                                               final SLNode node,
                                                                               final Class<N> nodeClass,
                                                                               final boolean returnSubTypes) {
@@ -471,7 +468,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinks(final Class<L> linkClass,
+    public <L extends SLLink> Collection<L> getBidirectionalLink(final Class<L> linkClass,
                                                                                      final SLNode side1,
                                                                                      final SLNode side2) {
         synchronized (lock) {
@@ -482,7 +479,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinks(final SLNode side1,
+    public Collection<SLLink> getBidirectionalLinks(final SLNode side1,
                                                                        final SLNode side2) {
         synchronized (lock) {
             return this.getLinks(side1, side2, SLLink.DIRECTION_BI);
@@ -492,7 +489,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinksBySide(final Class<L> linkClass,
+    public <L extends SLLink> Collection<L> getBidirectionalLinksBySide(final Class<L> linkClass,
                                                                                            final SLNode side) {
         synchronized (lock) {
             return this.getLinks(linkClass, side, null, SLLink.DIRECTION_BI);
@@ -502,7 +499,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinksBySide(final SLNode side) {
+    public Collection<SLLink> getBidirectionalLinksBySide(final SLNode side) {
         synchronized (lock) {
             return this.getLinks(side, null, SLLink.DIRECTION_BI);
         }
@@ -608,7 +605,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks(final Class<L> linkClass,
+    public <L extends SLLink> Collection<L> getLink(final Class<L> linkClass,
                                                                         final SLNode source,
                                                                         final SLNode target) {
         synchronized (lock) {
@@ -619,14 +616,14 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks(final Class<L> linkClass,
+    public <L extends SLLink> Collection<L> getLinks(final Class<L> linkClass,
                                                                         final SLNode source,
                                                                         final SLNode target,
                                                                         final int direction) {
         synchronized (lock) {
 
             try {
-                final NeedsSyncronizationSet<L> links = LockedCollections.createSetWithLock(this, new TreeSet<L>());
+                final Set<L> links = LockedCollections.createSetWithLock(this, new TreeSet<L>());
 
                 // query format:
                 // //osl/links/JavaClassToJavaMethod/*[(@a=sourceID or
@@ -776,7 +773,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getLinks(final SLNode source,
+    public Collection<SLLink> getLinks(final SLNode source,
                                                           final SLNode target) {
         synchronized (lock) {
             return this.getLinks(source, target, SLLink.DIRECTION_ANY);
@@ -786,11 +783,11 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getLinks(final SLNode source,
+    public Collection<SLLink> getLinks(final SLNode source,
                                                           final SLNode target,
                                                           final int directionType) {
         synchronized (lock) {
-            final NeedsSyncronizationCollection<SLLink> links = LockedCollections.createCollectionWithLock(
+            final Collection<SLLink> links = LockedCollections.createCollectionWithLock(
                     this,
                     new ArrayList<SLLink>());
             final Collection<Class<? extends SLLink>> linkClasses = getLinkClasses();
@@ -851,7 +848,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(final Class<? extends SLLink> linkClass) {
+    public Collection<SLNode> getNodesByLink(final Class<? extends SLLink> linkClass) {
         synchronized (lock) {
             return this.getNodesByLink(linkClass, null);
         }
@@ -860,7 +857,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(final Class<? extends SLLink> linkClass,
+    public Collection<SLNode> getNodesByLink(final Class<? extends SLLink> linkClass,
                                                                 final SLNode node) {
         synchronized (lock) {
             return this.getNodesByLink(linkClass, node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
@@ -870,7 +867,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(final Class<? extends SLLink> linkClass,
+    public <N extends SLNode> Collection<N> getNodesByLink(final Class<? extends SLLink> linkClass,
                                                                               final SLNode node,
                                                                               final Class<N> nodeClass,
                                                                               final boolean returnSubTypes) {
@@ -882,7 +879,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(final Class<? extends SLLink> linkClass,
+    public <N extends SLNode> Collection<N> getNodesByLink(final Class<? extends SLLink> linkClass,
                                                                               final SLNode node,
                                                                               final Class<N> nodeClass,
                                                                               final boolean returnSubTypes,
@@ -900,7 +897,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(final Class<? extends SLLink> linkClass,
+    public Collection<SLNode> getNodesByLink(final Class<? extends SLLink> linkClass,
                                                                 final SLNode node,
                                                                 final int direction) {
         synchronized (lock) {
@@ -911,7 +908,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(final SLNode node) {
+    public Collection<SLNode> getLinkedNodes(final SLNode node) {
         synchronized (lock) {
             return this.getNodesByLink(node, SLLink.DIRECTION_UNI | SLLink.DIRECTION_BI);
         }
@@ -920,7 +917,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(final SLNode node,
+    public <N extends SLNode> Collection<N> getLinkedNodes(final SLNode node,
                                                                               final Class<N> nodeClass,
                                                                               final boolean returnSubTypes) {
         synchronized (lock) {
@@ -931,7 +928,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink(final SLNode node,
+    public <N extends SLNode> Collection<N> getNodesByLink(final SLNode node,
                                                                               final Class<N> nodeClass,
                                                                               final boolean returnSubTypes,
                                                                               final int direction) {
@@ -948,7 +945,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink(final SLNode node,
+    public Collection<SLNode> getNodesByLink(final SLNode node,
                                                                 final int direction) {
         synchronized (lock) {
             return this.getNodesByLink(node, SLNode.class, true, direction);
@@ -958,10 +955,10 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByPredicate(final SLNodePredicate predicate) {
+    public Collection<SLNode> getNodesByPredicate(final SLNodePredicate predicate) {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationCollection<SLNode> nodes = LockedCollections.createCollectionWithLock(
+                final Collection<SLNode> nodes = LockedCollections.createCollectionWithLock(
                         this,
                         new ArrayList<SLNode>());
                 final SLPersistentQuery query = treeSession.createQuery(treeSession.getXPathRootPath()
@@ -1063,7 +1060,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinks(final Class<L> linkClass,
+    public <L extends SLLink> Collection<L> getUnidirectionalLinks(final Class<L> linkClass,
                                                                                       final SLNode source,
                                                                                       final SLNode target) {
         synchronized (lock) {
@@ -1074,7 +1071,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinks(final SLNode source,
+    public Collection<SLLink> getUnidirectionalLinks(final SLNode source,
                                                                         final SLNode target) {
         synchronized (lock) {
             return this.getLinks(source, target, SLLink.DIRECTION_UNI);
@@ -1084,7 +1081,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksBySource(final Class<L> linkClass,
+    public <L extends SLLink> Collection<L> getUnidirectionalLinksBySource(final Class<L> linkClass,
                                                                                               final SLNode source) {
         synchronized (lock) {
             return this.getLinks(linkClass, source, null, SLLink.DIRECTION_UNI);
@@ -1094,7 +1091,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksBySource(final SLNode source) {
+    public Collection<SLLink> getUnidirectionalLinksBySource(final SLNode source) {
         synchronized (lock) {
             return this.getLinks(source, null, SLLink.DIRECTION_UNI);
         }
@@ -1103,7 +1100,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksByTarget(final Class<L> linkClass,
+    public <L extends SLLink> Collection<L> getUnidirectionalLinksByTarget(final Class<L> linkClass,
                                                                                               final SLNode target) {
         synchronized (lock) {
             return this.getLinks(linkClass, null, target, SLLink.DIRECTION_UNI);
@@ -1113,7 +1110,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksByTarget(final SLNode target) {
+    public Collection<SLLink> getUnidirectionalLinksByTarget(final SLNode target) {
         synchronized (lock) {
             return this.getLinks(null, target, SLLink.DIRECTION_UNI);
         }
@@ -1204,7 +1201,7 @@ public class SLGraphSessionImpl implements SLGraphSession {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLNode> searchNodes(final String text) {
+    public Collection<SLNode> searchNodes(final String text) {
         try {
             final SLQueryApi query = createQueryApi();
             query.select().type(SLNode.class.getName()).subTypes().selectEnd().where().type(SLNode.class.getName()).subTypes().each().property(

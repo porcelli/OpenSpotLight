@@ -172,9 +172,9 @@ public class DetailedLoggerTest {
         logger = loggerProvider.get();
         final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(StringArtifact.class, "a/b/c/d",
                 ChangeType.INCLUDED);
-        final SLNode node = graphSession.createContext("ctx").getRootNode().addNode("node1");
-        final SLNode node2 = node.addNode("node2");
-        final SLNode node3 = node2.addNode("node3");
+        final SLNode node = graphSession.createContext("ctx").getRootNode().addChildNode("node1");
+        final SLNode node2 = node.addChildNode("node2");
+        final SLNode node3 = node2.addChildNode("node3");
         logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "firstEntry", node3, artifact);
 
         logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "secondEntry", artifact);

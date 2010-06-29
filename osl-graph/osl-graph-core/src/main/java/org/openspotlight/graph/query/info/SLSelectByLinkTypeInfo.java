@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.query.info;
 
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.graph.query.SLSideType;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.graph.query.SLSideType;
 
 /**
  * The Class SLSelectByLinkTypeInfo.

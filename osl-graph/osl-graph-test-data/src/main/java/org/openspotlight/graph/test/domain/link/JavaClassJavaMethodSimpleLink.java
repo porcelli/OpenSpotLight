@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import java.text.Collator;
-import java.util.Date;
-
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLCollator;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
+
+import java.text.Collator;
+import java.util.Date;
 
 /**
  * The Interface JavaClassJavaMethodSimpleLink.

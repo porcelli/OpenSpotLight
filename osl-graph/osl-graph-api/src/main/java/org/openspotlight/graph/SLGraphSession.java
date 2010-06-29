@@ -48,9 +48,8 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.graph.exception.SLNodeNotFoundException;
+import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryText;
@@ -65,404 +64,246 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
  * The Interface SLGraphSession. All methods in this interface throw a
  * {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level. Any security
  * violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
- * 
+ *
  * @author Vitor Hugo Chagas
  */
-public interface SLGraphSession extends LockContainer {
-
-    public SimplePersistCapable<STNodeEntry, STStorageSession> getLineReferenceSimplePersist();
-
+public interface SLGraphSession {
 
     /**
      * Adds the link.
-     * 
+     *
      * @param linkClass the link class
-     * @param source the source
-     * @param target the target
-     * @param bidirecional the bidirecional
+     * @param source    the source
+     * @param target    the target
      * @return the l
      */
-    public <L extends SLLink> L addLink( Class<L> linkClass,
-                                         SLNode source,
-                                         SLNode target,
-                                         boolean bidirecional );
+    public <L extends SLLink> L addLink(Class<L> linkClass,
+                                        SLNode source,
+                                        SLNode target);
 
     /**
      * Adds the link.
-     * 
+     *
      * @param linkClass the link class
-     * @param source the source
-     * @param target the target
-     * @param bidirecional the bidirecional
-     * @param persistenceMode the persistence mode
+     * @param source    the source
+     * @param target    the target
      * @return the l
      */
-    public <L extends SLLink> L addLink( Class<L> linkClass,
-                                         SLNode source,
-                                         SLNode target,
-                                         boolean bidirecional,
-                                         SLPersistenceMode persistenceMode );
-
-    /**
-     * Clear.
-     */
-    public void clear();
+    public <L extends SLLink> L addBidirectionalLink(Class<L> linkClass,
+                                                     SLNode source,
+                                                     SLNode target);
 
     /**
      * Close.
      */
-    @DisposeMethod( callOnTimeout = true )
+    @DisposeMethod(callOnTimeout = true)
     public void close();
 
     /**
      * Creates the context.
-     * 
+     *
      * @param id the id
      * @return the sL context
      */
-    public SLContext createContext( String id );
+    public SLContext createContext(String id);
 
     /**
      * Creates the api query.
-     * 
+     *
      * @return the sL query
      */
     public SLQueryApi createQueryApi();
 
     /**
      * Creates the text query.
-     * 
+     *
      * @param slqlInput the slql input
-     * @throws SLInvalidQuerySyntaxException invalid syntax
      * @return the sL query
+     * @throws SLInvalidQuerySyntaxException invalid syntax
      */
-    public SLQueryText createQueryText( String slqlInput ) throws SLInvalidQuerySyntaxException;
-
-    /**
-     * Gets the bidirectional links.
-     * 
-     * @param linkClass the link class
-     * @param side1 the side1
-     * @param side2 the side2
-     * @return the bidirectional links
-     */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinks( Class<L> linkClass,
-                                                                                      SLNode side1,
-                                                                                      SLNode side2 );
-
-    /**
-     * Gets the bidirectional links.
-     * 
-     * @param side1 the side1
-     * @param side2 the side2
-     * @return the bidirectional links
-     */
-    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinks( SLNode side1,
-                                                                        SLNode side2 );
-
-    /**
-     * Gets the bidirectional links by side.
-     * 
-     * @param linkClass the link class
-     * @param side the side
-     * @return the bidirectional links by side
-     */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getBidirectionalLinksBySide( Class<L> linkClass,
-                                                                                            SLNode side );
-
-    /**
-     * Gets the bidirectional links by side.
-     * 
-     * @param side the side
-     * @return the bidirectional links by side
-     */
-    public NeedsSyncronizationCollection<SLLink> getBidirectionalLinksBySide( SLNode side );
+    public SLQueryText createQueryText(String slqlInput) throws SLInvalidQuerySyntaxException;
 
     /**
      * Gets the context.
-     * 
+     *
      * @param id the id
      * @return the context
      */
-    public SLContext getContext( String id );
-
-    /**
-     * Gets the default encoder.
-     * 
-     * @return the default encoder
-     */
-    public SLEncoder getDefaultEncoder();
-
-    /**
-     * Gets the encoder factory.
-     * 
-     * @return the encoder factory
-     */
-    public SLEncoderFactory getEncoderFactory();
+    public SLContext getContext(String id);
 
     /**
      * Gets the links.
-     * 
+     *
      * @param linkClass the link class
+     * @param source    the source
+     * @param target    the target
+     * @return the links
+     */
+    public <L extends SLLink> L getLink(Class<L> linkClass,
+                                        SLNode source,
+                                        SLNode target,
+                                        SLLinkDirection linkDirection);
+
+    /**
+     * Gets the links.
+     *
      * @param source the source
      * @param target the target
      * @return the links
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks( Class<L> linkClass,
-                                                                         SLNode source,
-                                                                         SLNode target );
+    public Iterable<SLLink> getLinks(SLNode source,
+                                     SLNode target,
+                                     SLLinkDirection linkDirection);
+
 
     /**
-     * Gets the links.
-     * 
+     * Gets the bidirectional links by side.
+     *
      * @param linkClass the link class
-     * @param source the source
-     * @param target the target
-     * @param directionType the direction type
-     * @return the links
+     * @param side      the side
+     * @return the bidirectional links by side
      */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getLinks( Class<L> linkClass,
-                                                                         SLNode source,
-                                                                         SLNode target,
-                                                                         int directionType );
+    public <L extends SLLink> Iterable<L> getBidirectionalLinks(Class<L> linkClass,
+                                                                SLNode side);
+
 
     /**
-     * Gets the links.
-     * 
-     * @param source the source
-     * @param target the target
-     * @return the links
+     * Gets the unidirectional links by source.
+     *
+     * @param linkClass the link class
+     * @param source    the source
+     * @return the unidirectional links by source
      */
-    public NeedsSyncronizationCollection<SLLink> getLinks( SLNode source,
-                                                           SLNode target );
+    public <L extends SLLink> Iterable<L> getUnidirectionalLinksBySource(Class<L> linkClass,
+                                                                           SLNode source);
 
     /**
-     * Gets the links.
-     * 
-     * @param source the source
-     * @param target the target
-     * @param directionType the direction type
-     * @return the links
+     * Gets the unidirectional links by target.
+     *
+     * @param linkClass the link class
+     * @param target    the target
+     * @return the unidirectional links by target
      */
-    public NeedsSyncronizationCollection<SLLink> getLinks( SLNode source,
-                                                           SLNode target,
-                                                           int directionType );
+    public <L extends SLLink> Iterable<L> getUnidirectionalLinksByTarget(Class<L> linkClass,
+                                                                           SLNode target);
+
+    /**
+     * Gets the bidirectional links by side.
+     *
+     * @param side the side
+     * @return the bidirectional links by side
+     */
+    public Iterable<SLLink> getBidirectionalLinks(SLNode side);
+
+
+    /**
+     * Gets the unidirectional links by source.
+     *
+     * @param source the source
+     * @return the unidirectional links by source
+     */
+    public Iterable<SLLink> getUnidirectionalLinksBySource(SLNode source);
+
+    /**
+     * Gets the unidirectional links by target.
+     *
+     * @param target the target
+     * @return the unidirectional links by target
+     */
+    public Iterable<SLLink> getUnidirectionalLinksByTarget(SLNode target);
+
+
 
     /**
      * Gets the metadata.
-     * 
+     *
      * @return the metadata
      */
     public SLMetadata getMetadata();
 
     /**
      * Gets the node by id.
-     * 
+     *
      * @param id the id
-     * @throws SLNodeNotFoundException node not found
      * @return the node by id
+     * @throws SLNodeNotFoundException node not found
      */
-    public SLNode getNodeByID( String id ) throws SLNodeNotFoundException;
+    public SLNode getNodeByID(String id) throws SLNodeNotFoundException;
 
     /**
      * Gets the nodes by link.
-     * 
+     *
      * @param linkClass the link class
      * @return the nodes by link
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass );
+    public Iterable<SLNode> getLinkedNodes(Class<? extends SLLink> linkClass);
 
     /**
      * Gets the nodes by link.
-     * 
+     *
      * @param linkClass the link class
-     * @param node the node
+     * @param node      the node
      * @return the nodes by link
      */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass,
-                                                                 SLNode node );
+    public Iterable<SLNode> getLinkedNodes(Class<? extends SLLink> linkClass,
+                                           SLNode node, SLLinkDirection linkDirection);
 
     /**
      * Gets the nodes by link.
-     * 
-     * @param linkClass the link class
-     * @param node the node
-     * @param nodeClass the node class
+     *
+     * @param linkClass      the link class
+     * @param node           the node
+     * @param nodeClass      the node class
+     * @param returnSubTypes the return sub types
+     * @param linkDirection  the link direction
+     * @return the nodes by link
+     */
+    public <N extends SLNode> Iterable<N> getLinkedNodes(Class<? extends SLLink> linkClass,
+                                                         SLNode node,
+                                                         Class<N> nodeClass,
+                                                         boolean returnSubTypes,
+                                                         SLLinkDirection linkDirection);
+
+
+    /**
+     * Gets the nodes by link.
+     *
+     * @param node           the node
+     * @param nodeClass      the node class
      * @param returnSubTypes the return sub types
      * @return the nodes by link
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( Class<? extends SLLink> linkClass,
-                                                                               SLNode node,
-                                                                               Class<N> nodeClass,
-                                                                               boolean returnSubTypes );
+    public <N extends SLNode> Iterable<N> getLinkedNodes(SLNode node,
+                                                         Class<N> nodeClass,
+                                                         boolean returnSubTypes,
+                                                         SLLinkDirection linkDirection);
 
     /**
      * Gets the nodes by link.
-     * 
-     * @param linkClass the link class
-     * @param node the node
-     * @param nodeClass the node class
-     * @param returnSubTypes the return sub types
-     * @param direction the direction
+     *
+     * @param node      the node
      * @return the nodes by link
      */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( Class<? extends SLLink> linkClass,
-                                                                               SLNode node,
-                                                                               Class<N> nodeClass,
-                                                                               boolean returnSubTypes,
-                                                                               int direction );
-
-    /**
-     * Gets the nodes by link.
-     * 
-     * @param linkClass the link class
-     * @param node the node
-     * @param direction the direction
-     * @return the nodes by link
-     */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink( Class<? extends SLLink> linkClass,
-                                                                 SLNode node,
-                                                                 int direction );
-
-    /**
-     * Gets the nodes by link.
-     * 
-     * @param node the node
-     * @return the nodes by link
-     */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink( SLNode node );
-
-    /**
-     * Gets the nodes by link.
-     * 
-     * @param node the node
-     * @param nodeClass the node class
-     * @param returnSubTypes the return sub types
-     * @return the nodes by link
-     */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( SLNode node,
-                                                                               Class<N> nodeClass,
-                                                                               boolean returnSubTypes );
-
-    /**
-     * Gets the nodes by link.
-     * 
-     * @param node the node
-     * @param nodeClass the node class
-     * @param returnSubTypes the return sub types
-     * @param direction the direction
-     * @return the nodes by link
-     */
-    public <N extends SLNode> NeedsSyncronizationCollection<N> getNodesByLink( SLNode node,
-                                                                               Class<N> nodeClass,
-                                                                               boolean returnSubTypes,
-                                                                               int direction );
-
-    /**
-     * Gets the nodes by link.
-     * 
-     * @param node the node
-     * @param direction the direction
-     * @return the nodes by link
-     */
-    public NeedsSyncronizationCollection<SLNode> getNodesByLink( SLNode node,
-                                                                 int direction );
-
-    /**
-     * Gets the nodes by predicate.
-     * 
-     * @param predicate the predicate
-     * @return the nodes by predicate
-     */
-    public NeedsSyncronizationCollection<SLNode> getNodesByPredicate( SLNodePredicate predicate );
-
-    /**
-     * Gets the policy enforcement.
-     * 
-     * @return the policy enforcement
-     */
-    public PolicyEnforcement getPolicyEnforcement();
-
-    /**
-     * Gets the unidirectional links.
-     * 
-     * @param linkClass the link class
-     * @param source the source
-     * @param target the target
-     * @return the unidirectional links
-     */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinks( Class<L> linkClass,
-                                                                                       SLNode source,
-                                                                                       SLNode target );
-
-    /**
-     * Gets the unidirectional links.
-     * 
-     * @param source the source
-     * @param target the target
-     * @return the unidirectional links
-     */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinks( SLNode source,
-                                                                         SLNode target );
-
-    /**
-     * Gets the unidirectional links by source.
-     * 
-     * @param linkClass the link class
-     * @param source the source
-     * @return the unidirectional links by source
-     */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksBySource( Class<L> linkClass,
-                                                                                               SLNode source );
-
-    /**
-     * Gets the unidirectional links by source.
-     * 
-     * @param source the source
-     * @return the unidirectional links by source
-     */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksBySource( SLNode source );
-
-    /**
-     * Gets the unidirectional links by target.
-     * 
-     * @param linkClass the link class
-     * @param target the target
-     * @return the unidirectional links by target
-     */
-    public <L extends SLLink> NeedsSyncronizationCollection<L> getUnidirectionalLinksByTarget( Class<L> linkClass,
-                                                                                               SLNode target );
-
-    /**
-     * Gets the unidirectional links by target.
-     * 
-     * @param target the target
-     * @return the unidirectional links by target
-     */
-    public NeedsSyncronizationCollection<SLLink> getUnidirectionalLinksByTarget( SLNode target );
-
-    /**
-     * Gets the user.
-     * 
-     * @return the user
-     */
-    public User getUser();
+    public Iterable<SLNode> getLinkedNodes(SLNode node,
+                                             SLLinkDirection linkDirection);
 
     /**
      * Save.
      */
     public void save();
 
-    /**
-     * Executes a full text search on graph.
-     * 
-     * @param text text to be searched
-     * @return the nodes
-     */
-    public NeedsSyncronizationCollection<SLNode> searchNodes( String text );
 
     /**
-     * Clean cache.
+     * Gets the policy enforcement.
+     *
+     * @return the policy enforcement
      */
-    public void cleanCache();
+    public PolicyEnforcement getPolicyEnforcement();
+
+    /**
+     * Gets the user.
+     *
+     * @return the user
+     */
+    public User getUser();
 }

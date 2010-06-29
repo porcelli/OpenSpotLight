@@ -48,8 +48,6 @@
  */
 package org.openspotlight.federation.util;
 
-import java.util.Set;
-
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 

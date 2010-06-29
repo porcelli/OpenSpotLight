@@ -48,44 +48,23 @@
  */
 package org.openspotlight.graph.listeners;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLLinkProperty;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLRenderHint;
 import org.openspotlight.graph.annotation.SLRenderHints;
 import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.event.SLAbstractGraphSessionEventListener;
-import org.openspotlight.graph.event.SLGraphSessionSaveEvent;
-import org.openspotlight.graph.event.SLLinkAddedEvent;
-import org.openspotlight.graph.event.SLLinkPropertySetEvent;
-import org.openspotlight.graph.event.SLNodeAddedEvent;
-import org.openspotlight.graph.event.SLNodePropertySetEvent;
+import org.openspotlight.graph.event.*;
 import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
-import org.openspotlight.graph.persistence.SLPersistentQuery;
-import org.openspotlight.graph.persistence.SLPersistentQueryResult;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.persistence.*;
+
+import java.io.Serializable;
+import java.util.*;
 
 class LinkKey implements Serializable {
 

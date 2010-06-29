@@ -46,19 +46,33 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.event;
+package org.openspotlight.graph.meta;
 
-import java.io.Serializable;
+/**
+ * The Interface SLMetaRenderHint.
+ * 
+ * @author Vitor Hugo Chagas
+ */
+public interface SLMetaRenderHint extends SLMetaElement {
 
-import org.openspotlight.graph.SLNodeProperty;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
+    /**
+     * Gets the meta node.
+     * 
+     * @return the meta node
+     */
+    public SLMetaNodeType getMetaNode();
 
-public final class SLNodePropertyRemovedEvent extends SLNodePropertyEvent {
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public String getName();
 
-    public SLNodePropertyRemovedEvent(
-                                       final SLNodeProperty<? extends Serializable> property,
-                                       final SLPersistentProperty<? extends Serializable> pProperty, final String propertyName ) {
-        super(property, pProperty, propertyName);
-    }
-
+    /**
+     * Gets the value.
+     * 
+     * @return the value
+     */
+    public String getValue();
 }

@@ -48,15 +48,15 @@
  */
 package org.openspotlight.task;
 
+import org.openspotlight.common.concurrent.GossipExecutor;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-
-import org.openspotlight.common.concurrent.GossipExecutor;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Exceptions;
 
 public enum ExecutorInstance {
 

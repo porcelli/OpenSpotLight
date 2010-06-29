@@ -48,9 +48,9 @@
  */
 package org.openspotlight.persist.test;
 
-import java.io.InputStream;
-
 import org.openspotlight.persist.annotation.SimpleNodeType;
+
+import java.io.InputStream;
 
 public class ObjectWithInputStream implements SimpleNodeType {
 

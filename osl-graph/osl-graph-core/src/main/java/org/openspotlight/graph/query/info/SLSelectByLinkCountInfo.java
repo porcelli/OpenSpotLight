@@ -48,11 +48,11 @@
  */
 package org.openspotlight.graph.query.info;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SLSelectByLinkCountInfo extends SLSelectInfo {
 

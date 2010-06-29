@@ -49,11 +49,7 @@
 
 package org.openspotlight.federation.data.processing.test;
 
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.BundleProcessorType;
-import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
 /**

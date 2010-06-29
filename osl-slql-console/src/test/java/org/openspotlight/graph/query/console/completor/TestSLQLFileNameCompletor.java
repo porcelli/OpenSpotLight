@@ -48,15 +48,15 @@
  */
 package org.openspotlight.graph.query.console.completor;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
+import org.junit.Test;
+import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Test;
-import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
 
 public class TestSLQLFileNameCompletor {
 

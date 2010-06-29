@@ -48,14 +48,14 @@
  */
 package org.openspotlight.web.command;
 
-import static org.openspotlight.common.util.Exceptions.catchAndLog;
-
-import java.util.Map;
-
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.web.MessageWebException;
 import org.openspotlight.web.WebException;
 import org.openspotlight.web.util.ConfigurationSupport;
+
+import java.util.Map;
+
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
 
 /**
  * The Class InitialImportWebCommand.

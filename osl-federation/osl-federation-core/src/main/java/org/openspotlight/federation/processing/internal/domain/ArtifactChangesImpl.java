@@ -48,7 +48,6 @@
  */
 package org.openspotlight.federation.processing.internal.domain;
 
-import com.google.common.collect.ImmutableSet;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.processing.ArtifactChanges;
 

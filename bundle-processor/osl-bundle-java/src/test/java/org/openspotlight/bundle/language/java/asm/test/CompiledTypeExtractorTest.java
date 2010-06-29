@@ -48,9 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.asm.test;
 
-import java.io.FileInputStream;
-import java.util.List;
-
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
@@ -58,6 +55,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.asm.CompiledTypesExtractor;
 import org.openspotlight.bundle.language.java.asm.model.TypeDefinition;
+
+import java.io.FileInputStream;
+import java.util.List;
 
 public class CompiledTypeExtractorTest {
 

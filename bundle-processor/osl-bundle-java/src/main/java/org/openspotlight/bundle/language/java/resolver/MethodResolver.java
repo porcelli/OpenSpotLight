@@ -48,18 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Map.Entry;
-
 import org.openspotlight.bundle.common.SLBundleException;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.IncludedResult;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.ResultOrder;
@@ -72,6 +60,12 @@ import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryResult;
+
+import java.util.*;
+import java.util.Map.Entry;
+
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 /**
  * This is a support class that resolves the methods.

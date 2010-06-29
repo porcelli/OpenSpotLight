@@ -48,21 +48,21 @@
  */
 package org.openspotlight.graph;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.meta.SLMetaLinkType;
+import org.openspotlight.graph.meta.SLMetaNodeType;
+import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The Class SLMetadataImpl.
@@ -199,10 +199,10 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes() {
+    public Collection<SLMetaLinkType> getMetaLinkTypes() {
         synchronized (lock) {
             try {
-                final NeedsSyncronizationCollection<SLMetaLinkType> metaLinkTypes = LockedCollections.createCollectionWithLock(
+                final Collection<SLMetaLinkType> metaLinkTypes = LockedCollections.createCollectionWithLock(
                                                                                                                                this,
                                                                                                                                new ArrayList<SLMetaLinkType>());
                 final StringBuilder statement = new StringBuilder(treeSession.getXPathRootPath() + "/metadata/links/*");
@@ -223,7 +223,7 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes() {
+    public Collection<SLMetaNodeType> getMetaNodesTypes() {
         synchronized (lock) {
             return this.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE);
         }
@@ -232,7 +232,7 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( final SLRecursiveMode recursiveMode ) {
+    public Collection<SLMetaNodeType> getMetaNodesTypes( final SLRecursiveMode recursiveMode ) {
         synchronized (lock) {
             return getMetaNodesTypes(recursiveMode, null);
         }
@@ -241,7 +241,7 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( final SLRecursiveMode recursiveMode,
+    public Collection<SLMetaNodeType> getMetaNodesTypes( final SLRecursiveMode recursiveMode,
                                                                             final VisibilityLevel visibility ) {
         synchronized (lock) {
             try {
@@ -276,7 +276,7 @@ public class SLMetadataImpl implements SLMetadata {
     /**
      * {@inheritDoc}
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType( final SLRecursiveMode recursiveMode,
+    public Collection<SLMetaNodeType> searchMetaNodeType( final SLRecursiveMode recursiveMode,
                                                                              final VisibilityLevel visibility,
                                                                              final MetaNodeTypeProperty property2Find,
                                                                              final LogicOperator logicOp,

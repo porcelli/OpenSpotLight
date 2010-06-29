@@ -46,75 +46,56 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.event;
+package org.openspotlight.graph.meta;
 
-import org.openspotlight.common.concurrent.LockContainer;
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
+
+import java.util.Collection;
 
 /**
- * The listener interface for receiving SLGraphSessionEvent events. The class that is interested in processing a
- * SLGraphSessionEvent event implements this interface, and the object created with that class is registered with a component
- * using the component's <code>addSLGraphSessionEventListener<code> method. When
- * the SLGraphSessionEvent event occurs, that object's appropriate
- * method is invoked.
+ * The Interface SLMetaLinkType.
  * 
- * All methods in this interface throw a {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level.
- * Any security violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
- * 
- * @see org.openspotlight.graph.event.SLGraphSessionEvent
+ * @author Vitor Hugo Chagas
  */
-public interface SLGraphSessionEventListener extends LockContainer {
+public interface SLMetaLinkType extends SLMetaElement {
 
     /**
-     * Before save.
+     * Gets the type.
      * 
-     * @param event the event
+     * @return the type
      */
-    public void beforeSave( SLGraphSessionSaveEvent event );
+    public Class<? extends SLLink> getType();
 
     /**
-     * Link added.
+     * Gets the metalinks.
      * 
-     * @param event the event
+     * @return the metalinks
      */
-    public void linkAdded( SLLinkAddedEvent event );
+    public Collection<SLMetaLink> getMetalinks();
 
     /**
-     * Link property set.
+     * Gets the meta links.
      * 
-     * @param event the event
+     * @param sourceType the source type
+     * @param targetType the target type
+     * @param bidirectional the bidirectional
+     * @return the meta links
      */
-    public void linkPropertySet( SLLinkPropertySetEvent event );
+    public Collection<SLMetaLink> getMetaLinks( Class<? extends SLNode> sourceType,
+                                                Class<? extends SLNode> targetType,
+                                                Boolean bidirectional );
 
     /**
-     * Link removed.
+     * Gets the meta links.
      * 
-     * @param event the event
+     * @param sourceType the source type
+     * @param targetType the target type
+     * @param bidirectional the bidirectional
+     * @return the meta links
      */
-    public void linkRemoved( SLLinkRemovedEvent event );
+    public Collection<SLMetaLink> getMetaLinks( String sourceType,
+                                                String targetType,
+                                                Boolean bidirectional );
 
-    /**
-     * Node added.
-     * 
-     * @param event the event
-     */
-    public void nodeAdded( SLNodeAddedEvent event );
-
-    /**
-     * Node property removed.
-     * 
-     * @param event the event
-     */
-    public void nodePropertyRemoved( SLNodePropertyRemovedEvent event );
-
-    /**
-     * Node property set.
-     * 
-     * @param event the event
-     */
-    public void nodePropertySet( SLNodePropertySetEvent event );
-
-    /**
-     * Session cleaned.
-     */
-    public void sessionCleaned();
 }

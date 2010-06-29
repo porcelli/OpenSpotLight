@@ -48,34 +48,22 @@
  */
 package org.openspotlight.common.taskexec;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
+import org.openspotlight.common.concurrent.GossipExecutor;
+import org.openspotlight.common.concurrent.Priority;
+import org.openspotlight.common.task.exception.*;
+import org.openspotlight.common.util.Exceptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.openspotlight.common.concurrent.GossipExecutor;
-import org.openspotlight.common.concurrent.Priority;
-import org.openspotlight.common.task.exception.PoolAlreadyStoppedException;
-import org.openspotlight.common.task.exception.RunnableWithException;
-import org.openspotlight.common.task.exception.RunningPriorityBigger;
-import org.openspotlight.common.task.exception.TaskAlreadyOnPoolException;
-import org.openspotlight.common.task.exception.TaskAlreadyRunnedException;
-import org.openspotlight.common.task.exception.TaskRunningException;
-import org.openspotlight.common.util.Exceptions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.openspotlight.common.util.Assertions.*;
 
 public enum TaskExecManager {
 

@@ -49,7 +49,6 @@
 package org.openspotlight.web;
 
 import net.sf.json.JSONObject;
-
 import org.openspotlight.web.json.Message;
 
 /**

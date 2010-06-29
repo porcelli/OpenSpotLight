@@ -48,10 +48,9 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
-
-import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.graph.SLNode;
+
+import java.util.Collection;
 
 /**
  * The Interface SLQuery.

@@ -56,13 +56,7 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Conversion;
 
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.util.Date;
-import java.util.Map;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
 
 /**
  * Test class for {@link Conversion}.

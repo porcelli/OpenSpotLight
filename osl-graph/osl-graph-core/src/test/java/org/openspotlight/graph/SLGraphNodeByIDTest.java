@@ -140,7 +140,7 @@ public class SLGraphNodeByIDTest {
             final SLContext context = session.createContext("linkCountTest");
             final SLNode root = context.getRootNode();
 
-            final JavaInterface javaInterface = root.addNode(JavaInterface.class, "javaInterface");
+            final JavaInterface javaInterface = root.addChildNode(JavaInterface.class, "javaInterface");
             final JavaInterface javaInterface2 = (JavaInterface) session.getNodeByID(javaInterface.getID());
 
             assertThat(javaInterface, is(javaInterface2));

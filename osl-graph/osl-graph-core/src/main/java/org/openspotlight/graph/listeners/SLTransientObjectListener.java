@@ -48,12 +48,6 @@
  */
 package org.openspotlight.graph.listeners;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
-import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLPersistenceMode;
@@ -64,6 +58,9 @@ import org.openspotlight.graph.event.SLLinkAddedEvent;
 import org.openspotlight.graph.event.SLNodeAddedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * The listener interface for receiving SLTransientObject events. The class that is interested in processing a SLTransientObject
@@ -77,10 +74,10 @@ import org.slf4j.LoggerFactory;
 public class SLTransientObjectListener extends SLAbstractGraphSessionEventListener {
 
     /** The transient links. */
-    private final NeedsSyncronizationSet<SLLink> transientLinks;
+    private final Set<SLLink> transientLinks;
 
     /** The transient nodes. */
-    private final NeedsSyncronizationSet<SLNode> transientNodes;
+    private final Set<SLNode> transientNodes;
 
     private final Logger                         logger = LoggerFactory.getLogger(getClass());
 

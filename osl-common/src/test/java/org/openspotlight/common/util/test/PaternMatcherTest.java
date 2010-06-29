@@ -49,15 +49,15 @@
 
 package org.openspotlight.common.util.test;
 
+import org.junit.Test;
+import org.openspotlight.common.util.PatternMatcher.FilterResult;
+
+import java.util.Set;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.PatternMatcher.filterNamesByPattern;
 import static org.openspotlight.common.util.SLCollections.setOf;
-
-import java.util.Set;
-
-import org.junit.Test;
-import org.openspotlight.common.util.PatternMatcher.FilterResult;
 
 /**
  * Test class for {@link PatternMatcher}

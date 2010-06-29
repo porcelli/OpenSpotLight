@@ -48,8 +48,6 @@
  */
 package org.openspotlight.federation.context;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import com.google.inject.Inject;
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.federation.domain.Repository;
@@ -57,6 +55,8 @@ import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.support.SimplePersistFactory;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DefaultExecutionContextFactory implements ExecutionContextFactory, DisposingListener<DefaultExecutionContext> {
 

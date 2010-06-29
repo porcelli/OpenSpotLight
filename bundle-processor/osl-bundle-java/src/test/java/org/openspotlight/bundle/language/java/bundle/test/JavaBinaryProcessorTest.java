@@ -77,8 +77,6 @@ import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import java.util.Set;
-
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 

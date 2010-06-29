@@ -52,12 +52,7 @@ import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.InnerClass;
 import org.openspotlight.bundle.language.java.metamodel.link.PackageType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
@@ -121,8 +116,8 @@ public class JavaParserNodeHelper {
                 qualifiedNamePrefix.append(parentAsJavaType.getQualifiedName());
             }
             qualifiedNamePrefix.append('.');
-            final JavaType abstractNode = parent.getK1().addNode(JavaType.class, typeName);
-            final T concreteNode = parent.getK2().addNode(type, typeName);
+            final JavaType abstractNode = parent.getK1().addChildNode(JavaType.class, typeName);
+            final T concreteNode = parent.getK2().addChildNode(type, typeName);
             session.addLink(AbstractTypeBind.class, abstractNode, concreteNode, false);
             final Class<? extends SLLink> linkType;
             final String qualifiedName = Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE,
@@ -175,8 +170,8 @@ public class JavaParserNodeHelper {
     private Pair<SLNode, SLNode> createPackage( final String packageName ) {
         try {
             Assertions.checkNotEmpty("packageName", packageName);
-            final JavaPackage abstractNode = abstractContext.addNode(JavaPackage.class, packageName);
-            final JavaPackage concreteNode = currentContext.addNode(JavaPackage.class, packageName);
+            final JavaPackage abstractNode = abstractContext.addChildNode(JavaPackage.class, packageName);
+            final JavaPackage concreteNode = currentContext.addChildNode(JavaPackage.class, packageName);
             session.addLink(AbstractTypeBind.class, abstractNode, concreteNode, false);
             if (logger.isDebugEnabled()) {
                 logger.debug("adding node " + concreteNode.getName());

@@ -58,7 +58,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
 import org.openspotlight.common.util.Files;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -209,7 +208,7 @@ public class BundleProcessorManagerTest {
         Assert.assertThat(node, Is.is(IsNull.notNullValue()));
         final SLNode node2 = node.getNode(nodeName);
         Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
-        final NeedsSyncronizationCollection<SLLink> links = context1.getGraphSession().getLinks(node, node2);
+        final Collection<SLLink> links = context1.getGraphSession().getLinks(node, node2);
         Assert.assertThat(links.size(), Is.is(IsNot.not(0)));
         final StringArtifact sourceFile = context1.getPersistentArtifactManager().findByPath(StringArtifact.class,
                 "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java");

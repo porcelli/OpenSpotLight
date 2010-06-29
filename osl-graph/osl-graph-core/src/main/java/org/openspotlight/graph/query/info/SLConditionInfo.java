@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.query.info;
 
-import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
-
 import org.openspotlight.graph.query.SLConditionalOperatorType;
 import org.openspotlight.graph.query.SLRelationalOperatorType;
 import org.openspotlight.graph.query.SLSideType;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
+
+import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
 
 /**
  * The Class SLConditionInfo.

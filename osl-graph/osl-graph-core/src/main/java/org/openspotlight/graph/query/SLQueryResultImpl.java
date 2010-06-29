@@ -48,14 +48,10 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.graph.SLNode;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.common.concurrent.LockedCollections;
-import org.openspotlight.common.concurrent.NeedsSyncronizationList;
-import org.openspotlight.graph.SLNode;
 
 /**
  * The Class SLQueryResultImpl.
@@ -65,7 +61,7 @@ import org.openspotlight.graph.SLNode;
 public class SLQueryResultImpl implements SLQueryResult {
     private final Lock                            lockObject;
     /** The nodes. */
-    private final NeedsSyncronizationList<SLNode> nodes;
+    private final List<SLNode> nodes;
 
     /** The query id. */
     private final String                          queryId;
@@ -114,7 +110,7 @@ public class SLQueryResultImpl implements SLQueryResult {
      * 
      * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
      */
-    public NeedsSyncronizationList<SLNode> getNodes() throws SLQueryException {
+    public List<SLNode> getNodes() throws SLQueryException {
         return nodes;
     }
 

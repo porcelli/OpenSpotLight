@@ -48,9 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import java.util.List;
-import java.util.Stack;
-
 import org.antlr.runtime.tree.Tree;
 import org.openspotlight.bundle.common.metrics.SourceLineInfoAggregator;
 import org.openspotlight.bundle.common.parser.SLCommonToken;
@@ -60,6 +57,9 @@ import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLNode;
+
+import java.util.List;
+import java.util.Stack;
 
 public class JavaParserExecutor implements JavaConstants {
     private final JavaParserNodeHelper        helper;
@@ -84,7 +84,7 @@ public class JavaParserExecutor implements JavaConstants {
         try {
             final SLNode parent = typeContext.peek().getK1();
             for (final String s : list) {
-                parent.addNode(JavaDataField.class, s);
+                parent.addChildNode(JavaDataField.class, s);
             }
 
         } catch (final Exception e) {

@@ -48,9 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.bundle.test;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.jackrabbit.rmi.remote.RemoteRepository;
@@ -66,6 +63,9 @@ import org.openspotlight.remote.server.UserAuthenticator;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
+
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 

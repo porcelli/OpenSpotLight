@@ -48,10 +48,10 @@
  */
 package org.openspotlight.web;
 
+import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 /**
  * The Class OslServletContextSupport contains methods to retrieve some useful objects from {@link ServletContext}.

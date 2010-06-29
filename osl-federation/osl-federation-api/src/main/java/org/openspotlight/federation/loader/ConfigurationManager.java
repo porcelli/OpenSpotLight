@@ -49,11 +49,11 @@
 
 package org.openspotlight.federation.loader;
 
-import java.util.Set;
-
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
+
+import java.util.Set;
 
 /**
  * Interface responsible to load and save the configuration data on a persistent layer.

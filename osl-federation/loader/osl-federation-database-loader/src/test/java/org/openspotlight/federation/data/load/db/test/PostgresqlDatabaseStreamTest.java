@@ -48,14 +48,14 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createPostgresqlConfiguration;
+import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.federation.finder.db.ScriptType;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.finder.db.ScriptType;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createPostgresqlConfiguration;
 
 @SuppressWarnings( "all" )
 public class PostgresqlDatabaseStreamTest extends DatabaseStreamTest implements RunWhenDatabaseVendorTestsIsActive {

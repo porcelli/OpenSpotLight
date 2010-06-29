@@ -141,12 +141,12 @@ public abstract class AbstractFileSystemLoadingStressTest {
         artifactSource.setActive(true);
         artifactSource.setBinary(false);
         artifactSource.setInitialLookup("/Users/feu/much-data");
-//        artifactSource.setInitialLookup("./");
+        artifactSource.setInitialLookup("./");
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
         mapping.setFrom("files");
-//        mapping.setFrom("src");
+        mapping.setFrom("src");
         mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("**/*");

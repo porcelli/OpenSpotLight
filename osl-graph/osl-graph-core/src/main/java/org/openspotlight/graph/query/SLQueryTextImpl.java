@@ -48,14 +48,13 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
-import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * The Class SLQueryTextImpl.

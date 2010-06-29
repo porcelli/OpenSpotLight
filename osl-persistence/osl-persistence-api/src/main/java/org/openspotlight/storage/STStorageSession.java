@@ -55,7 +55,6 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STProperty;
 
-import java.io.Serializable;
 import java.util.Set;
 
 

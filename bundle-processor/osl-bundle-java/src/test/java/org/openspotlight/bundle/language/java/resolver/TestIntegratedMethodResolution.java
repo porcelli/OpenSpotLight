@@ -48,15 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.bundle.common.SLBundleException;
@@ -69,6 +60,15 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
 
 @SuppressWarnings( "unused" )
 public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest {
@@ -535,7 +535,7 @@ public class TestIntegratedMethodResolution extends AbstractMethodResolutionTest
         this.createMethod("java.lang", "Object", "wait", "wait()");
 
         // Start code to build Method Parameterized Type
-        final JavaMethodMethod method = numberType.addNode(JavaMethodMethod.class,
+        final JavaMethodMethod method = numberType.addChildNode(JavaMethodMethod.class,
                                                            "wait(java.lang.Long$this$T, java.lang.String, java.lang.Long)");
         method.setSimpleName("wait");
         graphSession.addLink(TypeDeclares.class, numberType, method, false);

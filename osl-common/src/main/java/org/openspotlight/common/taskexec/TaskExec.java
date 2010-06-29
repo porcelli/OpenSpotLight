@@ -48,9 +48,9 @@
  */
 package org.openspotlight.common.taskexec;
 
-import java.util.List;
-
 import org.openspotlight.common.task.exception.RunnableWithException;
+
+import java.util.List;
 
 public interface TaskExec extends RunnableWithException {
     public void awaitToRun() throws InterruptedException;

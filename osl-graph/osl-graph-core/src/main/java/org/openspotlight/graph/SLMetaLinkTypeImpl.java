@@ -48,15 +48,17 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.graph.exception.SLGraphSessionException;
+import org.openspotlight.graph.meta.SLMetaLink;
+import org.openspotlight.graph.meta.SLMetaLinkType;
+import org.openspotlight.graph.meta.SLMetadata;
+import org.openspotlight.graph.persistence.SLPersistentNode;
+import org.openspotlight.graph.persistence.SLPersistentProperty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
 
 /**
  * The Class SLMetaLinkTypeImpl.
@@ -68,7 +70,7 @@ public class SLMetaLinkTypeImpl implements SLMetaLinkType {
     private final Lock              lock;
 
     /** The metadata. */
-    private final SLMetadata        metadata;
+    private final SLMetadata metadata;
 
     /** The p node. */
     private final SLPersistentNode  pNode;

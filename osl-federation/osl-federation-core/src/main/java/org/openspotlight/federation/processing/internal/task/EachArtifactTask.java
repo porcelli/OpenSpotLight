@@ -48,17 +48,10 @@
  */
 package org.openspotlight.federation.processing.internal.task;
 
-import java.util.Date;
-import java.util.HashSet;
-
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformation;
-import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.LastProcessStatus;
-import org.openspotlight.federation.domain.artifact.SyntaxInformation;
+import org.openspotlight.federation.domain.artifact.*;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.SaveBehavior;
@@ -69,6 +62,9 @@ import org.openspotlight.graph.SLContext;
 import org.openspotlight.log.DetailedLogger.LogEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+import java.util.HashSet;
 
 public class EachArtifactTask<T extends Artifact> extends RunnableWithBundleContext {
 

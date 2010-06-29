@@ -46,27 +46,91 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.common.concurrent;
+package org.openspotlight.graph.meta;
+
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+import org.openspotlight.graph.persistence.SLPersistentNode;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
- * This is a {@link Collection} with a {@link LockContainer} used to synchronize all its methods. Its behavior works like
- * {@link SLCollections#synchronizedCollection(Collection)}. The synchronization during iterations to avoid
- * {@link ConcurrentModificationException} needs to be done with {@link LockContainer#getLockObject()} instead of the intrinsic
- * object lock. example:
+ * The Interface SLMetaLink.
  * 
- * <pre>
- * synchronized (items.getLockObject()) {
- *     for (A a : items) {
- *         // do stuff
- *     }
- * }
- * </pre>
- * 
- * @author feu
- * @param <E>
+ * @author Vitor Hugo Chagas
  */
-public interface NeedsSyncronizationCollection<E> extends Collection<E>, LockContainer {
+public interface SLMetaLink extends SLMetaElement {
+
+    /**
+     * Gets the meta link type.
+     * 
+     * @return the meta link type
+     */
+    public SLMetaLinkType getMetaLinkType();
+
+    /**
+     * Gets the source type.
+     * 
+     * @return the source type
+     */
+    public Class<? extends SLNode> getSourceType();
+
+    /**
+     * Gets the target type.
+     * 
+     * @return the target type
+     */
+    public Class<? extends SLNode> getTargetType();
+
+    /**
+     * Gets the side types.
+     * 
+     * @return the side types
+     */
+    public List<Class<? extends SLNode>> getSideTypes();
+
+    /**
+     * Checks if is bidirectional.
+     * 
+     * @return true, if is bidirectional
+     */
+    public boolean isBidirectional();
+
+    /**
+     * Gets the meta properties.
+     * 
+     * @return the meta properties
+     */
+    public Collection<SLMetaLinkProperty> getMetaProperties();
+
+    /**
+     * Gets the meta property.
+     * 
+     * @param name the name
+     * @return the meta property
+     */
+    public SLMetaLinkProperty getMetaProperty( String name );
+
+    /**
+     * Gets the description.
+     * 
+     * @return the description
+     */
+    public String getDescription();
+
+    /**
+     * Gets the visibility.
+     * 
+     * @return the visibility
+     */
+    public VisibilityLevel getVisibility();
+
+    /**
+     * Gets the node.
+     * 
+     * @return the node
+     */
+    public SLPersistentNode getNode();
 
 }

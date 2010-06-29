@@ -48,13 +48,13 @@
  */
 package org.openspotlight.security.domain;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.jboss.identity.idm.spi.model.IdentityObjectAttribute;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.persist.annotation.IndexedProperty;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SLTransientIdentityObjectAttribute implements IdentityObjectAttribute {
 

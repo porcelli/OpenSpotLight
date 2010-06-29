@@ -48,16 +48,12 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.graph.annotation.SLLinkAttribute;
+import org.openspotlight.graph.persistence.*;
+import org.openspotlight.graph.util.ProxyUtil;
+
 import java.io.Serializable;
 import java.util.Arrays;
-
-import org.openspotlight.graph.annotation.SLLinkAttribute;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentProperty;
-import org.openspotlight.graph.persistence.SLPersistentPropertyNotFoundException;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.util.ProxyUtil;
 
 /**
  * The Class SLCommonSupport.

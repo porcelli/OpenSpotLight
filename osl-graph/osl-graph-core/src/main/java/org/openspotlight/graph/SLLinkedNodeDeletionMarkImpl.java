@@ -101,7 +101,7 @@ public class SLLinkedNodeDeletionMarkImpl implements SLLinkedNodeDeletionMark {
     /*
      * (non-Javadoc)
      * 
-     * @see org.openspotlight.graph.SLLinkedNodeDeletionMark#getNode()
+     * @see org.openspotlight.graph.SLLinkedNodeDeletionMark#getChildNode()
      */
     public SLNode getNode() {
         return node;

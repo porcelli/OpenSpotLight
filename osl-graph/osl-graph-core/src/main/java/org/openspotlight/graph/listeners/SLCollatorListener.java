@@ -48,10 +48,6 @@
  */
 package org.openspotlight.graph.listeners;
 
-import java.io.Serializable;
-import java.text.Collator;
-
-import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.graph.SLCollatorSupport;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.event.SLAbstractGraphSessionEventListener;
@@ -61,6 +57,9 @@ import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentProperty;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+
+import java.io.Serializable;
+import java.text.Collator;
 
 /**
  * The listener interface for receiving SLCollator events. The class that is interested in processing a SLCollator event

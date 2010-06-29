@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.listeners;
 
-import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLLink;

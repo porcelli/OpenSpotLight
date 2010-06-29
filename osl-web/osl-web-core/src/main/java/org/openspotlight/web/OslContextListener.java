@@ -48,11 +48,6 @@
  */
 package org.openspotlight.web;
 
-import java.util.Set;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.openspotlight.common.exception.ConfigurationException;
@@ -79,6 +74,9 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.openspotlight.web.command.InitialImportWebCommand;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 

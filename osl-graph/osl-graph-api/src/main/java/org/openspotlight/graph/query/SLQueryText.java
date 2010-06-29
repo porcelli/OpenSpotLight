@@ -48,10 +48,10 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.graph.SLNode;
+
 import java.util.Collection;
 import java.util.Map;
-
-import org.openspotlight.graph.SLNode;
 
 /**
  * The Interface SLQueryText. This class is exposed to the user.

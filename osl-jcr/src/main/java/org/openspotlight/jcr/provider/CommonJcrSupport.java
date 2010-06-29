@@ -48,13 +48,13 @@
  */
 package org.openspotlight.jcr.provider;
 
+import org.openspotlight.common.SharedConstants;
+import org.openspotlight.common.util.Assertions;
+
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-
-import org.openspotlight.common.SharedConstants;
-import org.openspotlight.common.util.Assertions;
 
 /**
  * The Class CommonJcrSupport.

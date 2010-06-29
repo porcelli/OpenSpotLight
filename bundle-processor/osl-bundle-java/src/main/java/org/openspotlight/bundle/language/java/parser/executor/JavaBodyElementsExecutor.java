@@ -48,49 +48,16 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-
 import org.antlr.runtime.tree.CommonTree;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.common.parser.ParsingSupport;
 import org.openspotlight.bundle.common.parser.SLCommonTree;
-import org.openspotlight.bundle.language.java.metamodel.link.DataComparison;
-import org.openspotlight.bundle.language.java.metamodel.link.DataParameter;
-import org.openspotlight.bundle.language.java.metamodel.link.DataPropagation;
-import org.openspotlight.bundle.language.java.metamodel.link.DataType;
-import org.openspotlight.bundle.language.java.metamodel.link.Extends;
-import org.openspotlight.bundle.language.java.metamodel.link.Implements;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
-import org.openspotlight.bundle.language.java.metamodel.link.ParameterizedTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaBlockSimple;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataParameter;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataVariable;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeAnnotation;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeParameterized;
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.bundle.language.java.parser.ExpressionDto;
 import org.openspotlight.bundle.language.java.parser.SingleVarDto;
 import org.openspotlight.bundle.language.java.resolver.JavaTypeResolver;
 import org.openspotlight.bundle.language.java.resolver.MethodResolver;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
-import org.openspotlight.common.concurrent.NeedsSyncronizationList;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -99,6 +66,8 @@ import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class JavaBodyElementsExecutor {
 
@@ -150,7 +119,7 @@ public class JavaBodyElementsExecutor {
                                                                                                                               final SLNode parentFound )
                                                                                                   throws Exception {
                                                                                                   final List<SLNode> result = new ArrayList<SLNode>();
-                                                                                                  final NeedsSyncronizationSet<SLNode> nodes = parentFound.getNodes();
+                                                                                                  final Set<SLNode> nodes = parentFound.getNodes();
                                                                                                   for (final SLNode node : nodes) {
                                                                                                       if (node instanceof JavaMethod) {
                                                                                                           final JavaMethod method = (JavaMethod)node;
@@ -265,7 +234,7 @@ public class JavaBodyElementsExecutor {
             final SLCommonTree typedVariableDeclarator = (SLCommonTree)variableDeclarator29;
             final SLNode parent = typedPeek.getNode();
             final JavaType typeAsNode = (JavaType)typedType.getNode();
-            final JavaDataVariable variable = parent.addNode(JavaDataVariable.class, variableDeclarator29.getText());
+            final JavaDataVariable variable = parent.addChildNode(JavaDataVariable.class, variableDeclarator29.getText());
             support.session.addLink(DataType.class, variable, typeAsNode, false);
             typedVariableDeclarator.setNode(variable);
             List<SLCommonTree> value = variablesFromContext.get(peek);
@@ -350,7 +319,7 @@ public class JavaBodyElementsExecutor {
             final SLCommonTree typed = (SLCommonTree)peek;
             final SLNode parent = typed.getNode();
             final String name = (isStatic ? "staticBlockDeclaration" : "blockDeclaration") + ++currentBlock;
-            final JavaBlockSimple newBlock = parent.addNode(JavaBlockSimple.class, name);
+            final JavaBlockSimple newBlock = parent.addChildNode(JavaBlockSimple.class, name);
             final SLCommonTree typedBlockTreeElement = (SLCommonTree)blockTreeElement;
             typedBlockTreeElement.setNode(newBlock);
             return typedBlockTreeElement;
@@ -429,7 +398,7 @@ public class JavaBodyElementsExecutor {
                 leaf = ((SLCommonTree)anonymousInnerClassBlock).getNode();
             } else {
                 final int parameterSize = optionalArguments == null ? 0 : optionalArguments.size();
-                final NeedsSyncronizationSet<SLNode> children = type.getNodes();
+                final Set<SLNode> children = type.getNodes();
                 final List<JavaMethodConstructor> constructors = new ArrayList<JavaMethodConstructor>();
                 for (final SLNode child : children) {
                     if (child instanceof JavaMethodConstructor) {
@@ -445,7 +414,7 @@ public class JavaBodyElementsExecutor {
                     final Map<JavaMethod, JavaType[]> methodAndTypes = new HashMap<JavaMethod, JavaType[]>();
                     for (final JavaMethod method1 : constructors) {
                         final List<JavaType> types = new ArrayList<JavaType>();
-                        final NeedsSyncronizationCollection<MethodParameterDefinition> links = support.session.getLinks(
+                        final Collection<MethodParameterDefinition> links = support.session.getLink(
                                                                                                                         MethodParameterDefinition.class,
                                                                                                                         method1,
                                                                                                                         null);
@@ -590,7 +559,7 @@ public class JavaBodyElementsExecutor {
             final SLCommonTree parentTree = (SLCommonTree)peek;
             final SLNode parent = parentTree.getNode();
             for (final SingleVarDto dto : formalParameters) {
-                final JavaDataParameter parameter = parent.addNode(JavaDataParameter.class, dto.identifierTreeElement.getText());
+                final JavaDataParameter parameter = parent.addChildNode(JavaDataParameter.class, dto.identifierTreeElement.getText());
                 dto.identifierTreeElement.setNode(parameter);
                 support.session.addLink(DataType.class, parameter, dto.typeTreeElement.getNode(), false);
             }
@@ -614,7 +583,7 @@ public class JavaBodyElementsExecutor {
         try {
             final SLCommonTree typed = (SLCommonTree)peek;
             final SLNode parent = typed.getNode();
-            final JavaBlockSimple newBlock = parent.addNode(JavaBlockSimple.class, statement.getText());
+            final JavaBlockSimple newBlock = parent.addChildNode(JavaBlockSimple.class, statement.getText());
             final SLCommonTree typedStatement = (SLCommonTree)statement;
             typedStatement.setNode(newBlock);
         } catch (final Exception e) {
@@ -687,7 +656,7 @@ public class JavaBodyElementsExecutor {
 
     private JavaType getJavaTypeFromField( final SLNode node ) {
         JavaType resultType;
-        final NeedsSyncronizationCollection<DataType> link = support.session.getLinks(DataType.class, node, null);
+        final Collection<DataType> link = support.session.getLink(DataType.class, node, null);
         resultType = (JavaType)link.iterator().next().getTarget();
         return resultType;
     }
@@ -714,7 +683,7 @@ public class JavaBodyElementsExecutor {
                 final Map<JavaMethod, JavaType[]> methodAndTypes = new HashMap<JavaMethod, JavaType[]>();
                 for (final JavaMethod method1 : foundMethods) {
                     final List<JavaType> types = new ArrayList<JavaType>();
-                    final NeedsSyncronizationCollection<MethodParameterDefinition> links = support.session.getLinks(
+                    final Collection<MethodParameterDefinition> links = support.session.getLink(
                                                                                                                     MethodParameterDefinition.class,
                                                                                                                     method1, null);
                     for (final MethodParameterDefinition link : links) {
@@ -736,7 +705,7 @@ public class JavaBodyElementsExecutor {
                 return ExpressionDto.NULL_EXPRESSION;
 
             }
-            final NeedsSyncronizationCollection<MethodReturns> links = support.session.getLinks(MethodReturns.class, method, null);
+            final Collection<MethodReturns> links = support.session.getLink(MethodReturns.class, method, null);
             final MethodReturns link = links.iterator().next();
             final JavaType methodReturnType = (JavaType)link.getTarget();
             if (optionalArguments != null) {
@@ -878,7 +847,7 @@ public class JavaBodyElementsExecutor {
                                          final MemberLookupPredicate predicate ) throws Exception {
         JavaType currentJavaType;
         if (javaType instanceof JavaTypeParameterized) {
-            NeedsSyncronizationCollection<ParameterizedTypeClass> links = support.session.getLinks(ParameterizedTypeClass.class,
+            Collection<ParameterizedTypeClass> links = support.session.getLink(ParameterizedTypeClass.class,
                                                                                                    javaType, null);
 
             JavaType foundJavaType = null;
@@ -893,7 +862,7 @@ public class JavaBodyElementsExecutor {
             }
             currentJavaType = foundJavaType;
             if (currentJavaType == null) {
-                links = support.session.getLinks(ParameterizedTypeClass.class, null, javaType);
+                links = support.session.getLink(ParameterizedTypeClass.class, null, javaType);
 
                 for (final ParameterizedTypeClass l : links) {
                     foundJavaType = (JavaType)l.getSource();
@@ -928,7 +897,7 @@ public class JavaBodyElementsExecutor {
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             Implements.class.getName()).any().selectEnd().keepResult().select().type(
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      SLNode.class.getName()).subTypes().comma().byLink(
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        AbstractTypeBind.class.getName()).any().selectEnd();
-        final NeedsSyncronizationList<SLNode> nodes = query.execute().getNodes();
+        final List<SLNode> nodes = query.execute().getNodes();
         for (final SLNode currentNode : nodes) {
             final List<SLNode> foundMember = predicate.findMember(string, currentNode);
             if (foundMember != null && !foundMember.isEmpty()) {

@@ -58,6 +58,10 @@ import org.junit.Test;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLMetaLinkTypeNotFoundException;
 import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.graph.meta.SLMetaLink;
+import org.openspotlight.graph.meta.SLMetaLinkType;
+import org.openspotlight.graph.meta.SLMetaNodeProperty;
+import org.openspotlight.graph.meta.SLMetaNodeType;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.link.JavaClassHierarchy;
 import org.openspotlight.graph.test.domain.link.JavaClassHierarchyWithoutProperties;
@@ -141,8 +145,8 @@ public class SLGraphMetadataPropertiesTest {
     @Test
     public void testLinkPropertyVisibility() throws SLMetaLinkTypeNotFoundException {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        final SLNode testNode1 = rootNode.addNode(JavaClassNode.class, "testNode");
-        final SLNode testNode2 = rootNode.addNode(JavaClassNode.class, "testNode2");
+        final SLNode testNode1 = rootNode.addChildNode(JavaClassNode.class, "testNode");
+        final SLNode testNode2 = rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final JavaClassHierarchy link1 = session.addLink(JavaClassHierarchy.class, testNode1, testNode2, false);
         link1.setName("someName");
@@ -170,7 +174,7 @@ public class SLGraphMetadataPropertiesTest {
     @Test
     public void testNodePropertyVisibility() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        final SLNode testNode = rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
+        final SLNode testNode = rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
         testNode.setProperty(String.class, VisibilityLevel.PRIVATE, "somePropName", "value");
 
         for (final SLMetaNodeType metaType : session.getMetadata().getMetaNodesTypes()) {
@@ -180,7 +184,7 @@ public class SLGraphMetadataPropertiesTest {
             }
         }
 
-        final JavaClassNode testNodeWithProperty = rootNode.addNode(JavaClassNode.class, "testNode2");
+        final JavaClassNode testNodeWithProperty = rootNode.addChildNode(JavaClassNode.class, "testNode2");
         testNodeWithProperty.setClassName("someClassNAme");
         testNodeWithProperty.setProperty(String.class, VisibilityLevel.PUBLIC, "somePropName", "value2");
         testNodeWithProperty.setProperty(String.class, VisibilityLevel.PRIVATE, "somePropName2", "value2");

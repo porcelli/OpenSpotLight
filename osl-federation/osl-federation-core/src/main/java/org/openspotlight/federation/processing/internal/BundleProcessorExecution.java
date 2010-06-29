@@ -251,7 +251,7 @@ public class BundleProcessorExecution {
 
                 final SLContext groupContext = internalContext.getGraphSession().createContext(SLConsts.DEFAULT_GROUP_CONTEXT);
                 for (final Group group : allGroups) {
-                    groupContext.getRootNode().addNode(group.getName());
+                    groupContext.getRootNode().addChildNode(group.getName());
                 }
                 final Set<GroupListener> groupListenerInstances = new HashSet<GroupListener>();
                 if (repository.getGroupListeners() != null) {

@@ -48,17 +48,6 @@
  */
 package org.openspotlight.federation.scheduler;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
@@ -74,16 +63,14 @@ import org.openspotlight.federation.util.RepositorySet;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
-import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionException;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
-import org.quartz.TriggerUtils;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public enum DefaultScheduler implements SLScheduler {
     INSTANCE;

@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 

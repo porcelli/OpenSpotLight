@@ -48,8 +48,6 @@
  */
 package org.openspotlight.bundle.language.java.bundle;
 
-import java.util.Set;
-
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.openspotlight.bundle.common.parser.ParsingSupport;
 import org.openspotlight.bundle.language.java.JavaConstants;
@@ -61,6 +59,8 @@ import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
+
+import java.util.Set;
 
 public class JavaBodyElementsPhase implements BundleProcessorArtifactPhase<StringArtifact> {
 

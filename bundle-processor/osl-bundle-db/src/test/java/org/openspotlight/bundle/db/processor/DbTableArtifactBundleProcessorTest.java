@@ -59,7 +59,6 @@ import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
@@ -87,6 +86,7 @@ import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Random;
+import java.util.Set;
 
 import static org.openspotlight.common.util.Files.delete;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
@@ -236,9 +236,9 @@ public class DbTableArtifactBundleProcessorTest {
         final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
         final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE2");
-        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class, "I");
+        final Column exampleColumn1 = exampleTableNode1.getChildNode(Column.class, "I");
         Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
-        final Column invalidColumn1 = exampleTableNode1.getNode(Column.class, "INVALID");
+        final Column invalidColumn1 = exampleTableNode1.getChildNode(Column.class, "INVALID");
         Assert.assertThat(invalidColumn1, Is.is(IsNull.nullValue()));
         final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
@@ -255,9 +255,9 @@ public class DbTableArtifactBundleProcessorTest {
         final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
         final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE2");
-        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class, "I");
+        final Column exampleColumn2 = exampleTableNode2.getChildNode(Column.class, "I");
         Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
-        final Column invalidColumn2 = exampleTableNode2.getNode(Column.class, "INVALID");
+        final Column invalidColumn2 = exampleTableNode2.getChildNode(Column.class, "INVALID");
         Assert.assertThat(invalidColumn2, Is.is(IsNull.notNullValue()));
 
     }
@@ -283,9 +283,9 @@ public class DbTableArtifactBundleProcessorTest {
         final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
         final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE3");
-        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class, "I");
+        final Column exampleColumn1 = exampleTableNode1.getChildNode(Column.class, "I");
         Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
-        final Column invalidColumn1 = exampleTableNode1.getNode(Column.class, "LAST_I_PLUS_2");
+        final Column invalidColumn1 = exampleTableNode1.getChildNode(Column.class, "LAST_I_PLUS_2");
         Assert.assertThat(invalidColumn1, Is.is(IsNull.notNullValue()));
         final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
@@ -303,9 +303,9 @@ public class DbTableArtifactBundleProcessorTest {
         final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
         final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE3");
-        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class, "I");
+        final Column exampleColumn2 = exampleTableNode2.getChildNode(Column.class, "I");
         Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
-        final Column invalidColumn2 = exampleTableNode2.getNode(Column.class, "LAST_I_PLUS_2");
+        final Column invalidColumn2 = exampleTableNode2.getChildNode(Column.class, "LAST_I_PLUS_2");
         Assert.assertThat(invalidColumn2, Is.is(IsNull.nullValue()));
     }
 
@@ -371,7 +371,7 @@ public class DbTableArtifactBundleProcessorTest {
         final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
         final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE7");
 
-        final Column exampleColumn1 = exampleTableNode1.getNode(Column.class, "I");
+        final Column exampleColumn1 = exampleTableNode1.getChildNode(Column.class, "I");
 
         final Collection<SLLink> links1 = executionContext1.getGraphSession().getUnidirectionalLinksBySource(exampleColumn1);
         String dataType1 = null;
@@ -405,7 +405,7 @@ public class DbTableArtifactBundleProcessorTest {
         final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
         final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE7");
 
-        final Column exampleColumn2 = exampleTableNode2.getNode(Column.class, "I");
+        final Column exampleColumn2 = exampleTableNode2.getChildNode(Column.class, "I");
 
         final Collection<SLLink> links2 = executionContext1.getGraphSession().getUnidirectionalLinksBySource(exampleColumn2);
         String dataType2 = null;
@@ -451,7 +451,7 @@ public class DbTableArtifactBundleProcessorTest {
         boolean foundFkConstraint1 = false;
         synchronized (exampleDatabaseNode1.getLockObject()) {
 
-            final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode1.getNodes();
+            final Set<SLNode> nodes = exampleDatabaseNode1.getNodes();
             for (final SLNode node : nodes) {
                 if (node instanceof DatabaseConstraintForeignKey) {
                     foundFkConstraint1 = true;
@@ -476,7 +476,7 @@ public class DbTableArtifactBundleProcessorTest {
         boolean foundFkConstraint2 = false;
         synchronized (exampleDatabaseNode2.getLockObject()) {
 
-            final NeedsSyncronizationSet<SLNode> nodes = exampleDatabaseNode2.getNodes();
+            final Set<SLNode> nodes = exampleDatabaseNode2.getNodes();
             for (final SLNode node : nodes) {
                 if (node instanceof DatabaseConstraintForeignKey) {
                     foundFkConstraint2 = true;
@@ -513,7 +513,7 @@ public class DbTableArtifactBundleProcessorTest {
         boolean foundPk = false;
         synchronized (exampleCatalogNode1.getLockObject()) {
 
-            final NeedsSyncronizationSet<SLNode> nodes = exampleCatalogNode1.getNodes();
+            final Set<SLNode> nodes = exampleCatalogNode1.getNodes();
             for (final SLNode node : nodes) {
                 if (node instanceof DatabaseConstraintPrimaryKey) {
                     foundPk = true;
@@ -545,7 +545,7 @@ public class DbTableArtifactBundleProcessorTest {
         boolean foundPk2 = false;
         synchronized (exampleCatalogNode2.getLockObject()) {
 
-            final NeedsSyncronizationSet<SLNode> nodes = exampleCatalogNode2.getNodes();
+            final Set<SLNode> nodes = exampleCatalogNode2.getNodes();
             for (final SLNode node : nodes) {
                 if (node instanceof DatabaseConstraintPrimaryKey) {
                     foundPk2 = true;

@@ -48,14 +48,6 @@
  */
 package org.openspotlight.federation.finder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
@@ -65,6 +57,10 @@ import org.openspotlight.federation.domain.artifact.PathElement;
 import org.openspotlight.task.ExecutorInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 public abstract class AbstractOriginArtifactLoader implements OriginArtifactLoader {
 

@@ -48,24 +48,12 @@
  */
 package org.openspotlight.graph;
 
-import java.util.Collection;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.event.SLGraphSessionEvent;
-import org.openspotlight.graph.event.SLGraphSessionEventListener;
-import org.openspotlight.graph.event.SLGraphSessionEventPoster;
-import org.openspotlight.graph.event.SLGraphSessionSaveEvent;
-import org.openspotlight.graph.event.SLLinkAddedEvent;
-import org.openspotlight.graph.event.SLLinkPropertySetEvent;
-import org.openspotlight.graph.event.SLLinkRemovedEvent;
-import org.openspotlight.graph.event.SLNodeAddedEvent;
-import org.openspotlight.graph.event.SLNodePropertyEvent;
-import org.openspotlight.graph.event.SLNodePropertyRemovedEvent;
-import org.openspotlight.graph.event.SLNodePropertySetEvent;
+import org.openspotlight.graph.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collection;
 
 /**
  * The Class SLGraphSessionEventPosterImpl.

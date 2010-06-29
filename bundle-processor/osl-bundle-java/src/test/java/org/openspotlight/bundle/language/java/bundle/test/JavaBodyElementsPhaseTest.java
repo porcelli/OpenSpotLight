@@ -66,7 +66,6 @@ import org.openspotlight.bundle.language.java.bundle.*;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeEnum;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
 import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
@@ -283,7 +282,7 @@ public class JavaBodyElementsPhaseTest {
         Assert.assertThat(classOnConcrete, Is.is(IsNull.notNullValue()));
         Assert.assertThat(classOnConcrete, Is.is(JavaTypeClass.class));
 
-        final AbstractTypeBind link = context.getGraphSession().getLinks(AbstractTypeBind.class, classOnConcrete, null).iterator().next();
+        final AbstractTypeBind link = context.getGraphSession().getLink(AbstractTypeBind.class, classOnConcrete, null).iterator().next();
         final SLNode classOnAbstract = link.getTarget();
         System.err.println(" abstract " + classOnAbstract.getID());
         System.err.println(" concrete " + classOnConcrete.getID());
@@ -291,7 +290,7 @@ public class JavaBodyElementsPhaseTest {
         System.err.println(" concrete " + classOnConcrete.getContext().getID());
         final SLNode doSomethingMethodNode = classOnConcrete.getNode("doSomething()");
 
-        final NeedsSyncronizationSet<SLNode> nodes = classOnAbstract.getNodes();
+        final Set<SLNode> nodes = classOnAbstract.getNodes();
         for (final SLNode n : nodes) {
             System.err.println(n.getName());
         }

@@ -49,17 +49,17 @@
 
 package org.openspotlight.common.util;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
-
-import java.io.InputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.jasypt.util.digest.Digester;
 import org.openspotlight.common.exception.SLRuntimeException;
+
+import java.io.InputStream;
+
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Class with sha1 signature method.

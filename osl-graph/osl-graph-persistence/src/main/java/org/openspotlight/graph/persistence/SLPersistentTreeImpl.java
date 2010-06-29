@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The Class SLPersistentTreeImpl.

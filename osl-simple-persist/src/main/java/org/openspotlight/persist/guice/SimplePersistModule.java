@@ -1,7 +1,6 @@
 package org.openspotlight.persist.guice;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.TypeLiteral;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.persist.support.SimplePersistFactoryImpl;
 

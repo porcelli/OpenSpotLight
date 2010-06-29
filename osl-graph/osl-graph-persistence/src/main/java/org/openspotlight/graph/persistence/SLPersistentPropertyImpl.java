@@ -48,20 +48,14 @@
  */
 package org.openspotlight.graph.persistence;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
-
-import javax.jcr.Property;
-import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-
-import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.SerializationUtil;
 import org.openspotlight.jcr.util.JCRUtil;
+
+import javax.jcr.*;
+import java.io.Serializable;
+import java.lang.reflect.Array;
 
 /**
  * The Class SLPersistentPropertyImpl.

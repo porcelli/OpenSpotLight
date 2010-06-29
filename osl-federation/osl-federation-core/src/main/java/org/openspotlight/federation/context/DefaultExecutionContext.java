@@ -50,8 +50,6 @@ package org.openspotlight.federation.context;
 
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.concurrent.AtomicLazyResource;
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockContainer;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;

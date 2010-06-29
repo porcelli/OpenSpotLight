@@ -49,13 +49,13 @@
 
 package org.openspotlight.common.util;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Exceptions.logAndThrow;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-import org.openspotlight.common.exception.SLRuntimeException;
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
 /**
  * Helper class to build equals methods in a secure and concise way.

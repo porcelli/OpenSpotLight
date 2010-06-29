@@ -48,10 +48,10 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
+import org.openspotlight.common.util.Exceptions;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.openspotlight.common.util.Exceptions;
 
 public enum JavaLiteralType {
     BOOLEAN("boolean", "(true|false)"),

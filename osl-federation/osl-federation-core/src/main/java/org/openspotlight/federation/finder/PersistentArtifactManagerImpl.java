@@ -58,8 +58,6 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
-import java.util.Set;
-
 import static org.openspotlight.common.collection.IteratorBuilder.createIteratorBuilder;
 import static org.openspotlight.common.util.Strings.concatPaths;
 

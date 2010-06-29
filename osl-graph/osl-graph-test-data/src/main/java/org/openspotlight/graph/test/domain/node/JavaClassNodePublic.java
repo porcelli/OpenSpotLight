@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import java.util.Date;
-
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+
+import java.util.Date;
 
 //@SLTransient
 //@CollatorLevel(IDENTICAL)

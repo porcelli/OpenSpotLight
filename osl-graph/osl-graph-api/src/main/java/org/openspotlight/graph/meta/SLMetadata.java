@@ -46,15 +46,16 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph;
+package org.openspotlight.graph.meta;
 
-import java.util.List;
-
-import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.SLRecursiveMode;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLMetaLinkTypeNotFoundException;
 import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
+
+import java.util.List;
 
 /**
  * The Interface SLMetadata.
@@ -164,14 +165,14 @@ public interface SLMetadata extends LockContainer {
      * 
      * @return the meta link types
      */
-    public NeedsSyncronizationCollection<SLMetaLinkType> getMetaLinkTypes();
+    public Collection<SLMetaLinkType> getMetaLinkTypes();
 
     /**
      * Gets the meta nodes types.
      * 
      * @return the meta nodes types
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes();
+    public Collection<SLMetaNodeType> getMetaNodesTypes();
 
     /**
      * Gets the meta nodes types.
@@ -179,9 +180,9 @@ public interface SLMetadata extends LockContainer {
      * @param recursiveMode the recursive mode
      * @return the meta nodes types
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( SLRecursiveMode recursiveMode );
+    public Collection<SLMetaNodeType> getMetaNodesTypes( SLRecursiveMode recursiveMode );
 
-    public NeedsSyncronizationCollection<SLMetaNodeType> getMetaNodesTypes( SLRecursiveMode recursiveMode,
+    public Collection<SLMetaNodeType> getMetaNodesTypes( SLRecursiveMode recursiveMode,
                                                                             final VisibilityLevel visibility );
 
     /**
@@ -195,7 +196,7 @@ public interface SLMetadata extends LockContainer {
      * @param values the values
      * @return the collection< sl meta node type>
      */
-    public NeedsSyncronizationCollection<SLMetaNodeType> searchMetaNodeType( final SLRecursiveMode recursiveMode,
+    public Collection<SLMetaNodeType> searchMetaNodeType( final SLRecursiveMode recursiveMode,
                                                                              final VisibilityLevel visibility,
                                                                              final MetaNodeTypeProperty property2Find,
                                                                              final LogicOperator logicOp,

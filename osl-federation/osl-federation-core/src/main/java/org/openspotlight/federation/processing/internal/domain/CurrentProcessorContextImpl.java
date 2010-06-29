@@ -48,9 +48,6 @@
  */
 package org.openspotlight.federation.processing.internal.domain;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.openspotlight.common.collection.AddOnlyConcurrentMap;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
@@ -62,6 +59,9 @@ import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLNode;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CurrentProcessorContextImpl implements CurrentProcessorContext {
 
@@ -122,7 +122,7 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
     }
 
     public SLNode getNodeForGroup( final Group group ) {
-        return groupContext.getRootNode().addNode(group.getUniqueName());
+        return groupContext.getRootNode().addChildNode(group.getUniqueName());
     }
 
     public SLNode getNodeForUniqueBundleConfig() {

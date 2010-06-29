@@ -55,12 +55,13 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.graph.SLMetadata.BooleanOperator;
-import org.openspotlight.graph.SLMetadata.LogicOperator;
-import org.openspotlight.graph.SLMetadata.MetaNodeTypeProperty;
+import org.openspotlight.graph.meta.SLMetadata.BooleanOperator;
+import org.openspotlight.graph.meta.SLMetadata.LogicOperator;
+import org.openspotlight.graph.meta.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
 import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.graph.meta.SLMetaNodeType;
 import org.openspotlight.graph.query.SLGraphQueryTest;
 import org.openspotlight.graph.test.domain.node.*;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -136,8 +137,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testMetadataTypeByParent() throws SLMetaNodeTypeNotFoundException {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
         session.save();
         final SLMetaNodeType foundType = session.getMetadata().getMetaNodeType(JavaClassNode.class);
 
@@ -150,8 +151,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByDescriptionUsingAnd() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutProperties.class.getName());
@@ -169,8 +170,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOr() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutPropertiesAndDescription.class.getName());
@@ -188,8 +189,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityNull() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutPropertiesAndDescription.class.getName());
@@ -206,8 +207,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityNullNotRecursive() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutDescription.class.getName());
@@ -225,8 +226,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByDescriptionUsingOrAndVisibilityPrivate() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutPropertiesAndDescription.class.getName());
@@ -244,8 +245,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByNameUsingAnd() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutProperties.class.getName());
@@ -263,8 +264,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByNameUsingOr() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutProperties.class.getName());
@@ -282,8 +283,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityNull() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutProperties.class.getName());
@@ -300,8 +301,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityNullNotRecursive() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNode.class.getName());
@@ -318,8 +319,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsMoreElementsByNameUsingOrAndVisibilityPrivate() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutProperties.class.getName());
@@ -337,8 +338,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsOneElementByDescription() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaClassNodeWithoutDescription.class.getName());
@@ -357,8 +358,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataEqualsOneElementByName() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("org.openspotlight.graph.test.domain.node.JavaClassNode");
@@ -377,8 +378,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataLikeBeginsWithOneElementByDescription() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("JavaClass");
@@ -394,8 +395,8 @@ public class SLGraphMetadataTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSearchMetadataLikeBeginsWithOneElementByName() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("JavaClass");
@@ -407,8 +408,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataLikeContainsWithOneElementByDescription() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("JavaClass");
@@ -424,8 +425,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchMetadataLikeEndsWithOneElementByDescription() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("WithoutDescription");
@@ -441,8 +442,8 @@ public class SLGraphMetadataTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSearchMetadataLikeEndsWithOneElementByName() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("JavaClass");
@@ -454,8 +455,8 @@ public class SLGraphMetadataTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSearchMetadataLikeOneElementByName() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutProperties.class, "testNode");
-        rootNode.addNode(JavaClassNode.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutProperties.class, "testNode");
+        rootNode.addChildNode(JavaClassNode.class, "testNode2");
 
         final List<String> values2Find = new ArrayList<String>();
         values2Find.add("JavaClass");
@@ -467,8 +468,8 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchSubMetadata() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
 
         List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaElementNode.class.getName());
@@ -496,9 +497,9 @@ public class SLGraphMetadataTest {
     @Test
     public void testSearchSubMetadata2() {
         final SLNode rootNode = session.createContext("Test1").getRootNode();
-        rootNode.addNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
-        rootNode.addNode(JavaClassNodeWithoutDescription.class, "testNode2");
-        rootNode.addNode(SubJavaClassNodeWithoutDescription.class, "testNode3");
+        rootNode.addChildNode(JavaClassNodeWithoutPropertiesAndDescription.class, "testNode");
+        rootNode.addChildNode(JavaClassNodeWithoutDescription.class, "testNode2");
+        rootNode.addChildNode(SubJavaClassNodeWithoutDescription.class, "testNode3");
 
         List<String> values2Find = new ArrayList<String>();
         values2Find.add(JavaElementNode.class.getName());

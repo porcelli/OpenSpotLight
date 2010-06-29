@@ -53,7 +53,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;

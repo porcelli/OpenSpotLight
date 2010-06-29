@@ -48,11 +48,11 @@
  */
 package org.openspotlight.common.util;
 
+import org.openspotlight.common.exception.SerializationUtilException;
+
 import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
-
-import org.openspotlight.common.exception.SerializationUtilException;
 
 /**
  * The Class SerializationUtil.

@@ -105,9 +105,9 @@ public class MultipleGraphSessionsTest {
                 SLConsts.DEFAULT_REPOSITORY_NAME);
 
         final SLNode abstractTestNode = session.createContext("abstractTest").getRootNode();
-        final SLNode node1 = abstractTestNode.addNode("teste!");
+        final SLNode node1 = abstractTestNode.addChildNode("teste!");
         final SLNode testRootNode = session.createContext("test").getRootNode();
-        final SLNode node2 = testRootNode.addNode("teste!");
+        final SLNode node2 = testRootNode.addChildNode("teste!");
 
         Assert.assertEquals(false, node1.getID().equals(node2.getID()));
 
@@ -117,9 +117,9 @@ public class MultipleGraphSessionsTest {
         session.close();
 
         final SLNode abstractTestNode2 = session2.createContext("abstractTest").getRootNode();
-        final SLNode node3 = abstractTestNode2.addNode("teste!");
+        final SLNode node3 = abstractTestNode2.addChildNode("teste!");
         final SLNode testRootNode2 = session2.createContext("test").getRootNode();
-        final SLNode node4 = testRootNode2.addNode("teste!");
+        final SLNode node4 = testRootNode2.addChildNode("teste!");
 
         Assert.assertEquals(false, node3.getID().equals(node4.getID()));
 
@@ -141,9 +141,9 @@ public class MultipleGraphSessionsTest {
                 SLConsts.DEFAULT_REPOSITORY_NAME);
 
         SLNode abstractTestNode = MultipleGraphSessionsTest.session.createContext("abstractTest").getRootNode();
-        SLNode node1 = abstractTestNode.addNode("teste!");
+        SLNode node1 = abstractTestNode.addChildNode("teste!");
         SLNode testRootNode = MultipleGraphSessionsTest.session.createContext("test").getRootNode();
-        SLNode node2 = testRootNode.addNode("teste!");
+        SLNode node2 = testRootNode.addChildNode("teste!");
 
         Assert.assertEquals(false, node1.getID().equals(node2.getID()));
         MultipleGraphSessionsTest.session.close();
@@ -151,9 +151,9 @@ public class MultipleGraphSessionsTest {
                 SLConsts.DEFAULT_REPOSITORY_NAME);
 
         abstractTestNode = MultipleGraphSessionsTest.session.createContext("abstractTest").getRootNode();
-        node1 = abstractTestNode.addNode("teste!");
+        node1 = abstractTestNode.addChildNode("teste!");
         testRootNode = MultipleGraphSessionsTest.session.createContext("test").getRootNode();
-        node2 = testRootNode.addNode("teste!");
+        node2 = testRootNode.addChildNode("teste!");
 
         Assert.assertEquals(false, node1.getID().equals(node2.getID()));
     }

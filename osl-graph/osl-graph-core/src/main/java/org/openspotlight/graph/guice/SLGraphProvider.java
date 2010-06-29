@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLGraphImpl;
@@ -17,8 +16,6 @@ import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.SystemUser;
 import org.openspotlight.security.idm.auth.IdentityManager;
-
-import java.util.Map;
 
 /**
  * Created by User: feu - Date: Apr 29, 2010 - Time: 10:09:02 AM

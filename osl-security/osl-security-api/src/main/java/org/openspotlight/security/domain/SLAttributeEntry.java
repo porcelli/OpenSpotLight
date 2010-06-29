@@ -48,13 +48,13 @@
  */
 package org.openspotlight.security.domain;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SLAttributeEntry implements SimpleNodeType, Serializable {
 

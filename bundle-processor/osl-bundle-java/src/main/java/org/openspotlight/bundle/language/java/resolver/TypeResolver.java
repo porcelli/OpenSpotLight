@@ -48,9 +48,9 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import java.util.List;
-
 import org.openspotlight.graph.SLNode;
+
+import java.util.List;
 
 /**
  * The Interface TypeResolver describes a set of methods needed inside a helper class to find types during a parsing phase for

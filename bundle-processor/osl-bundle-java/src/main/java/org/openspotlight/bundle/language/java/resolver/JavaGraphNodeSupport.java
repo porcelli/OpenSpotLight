@@ -48,42 +48,23 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import static org.openspotlight.common.util.Assertions.checkCondition;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.objectweb.asm.Opcodes;
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.language.java.JavaConstants;
-import org.openspotlight.bundle.language.java.metamodel.link.AutoboxedBy;
-import org.openspotlight.bundle.language.java.metamodel.link.Autoboxes;
-import org.openspotlight.bundle.language.java.metamodel.link.DataType;
-import org.openspotlight.bundle.language.java.metamodel.link.Extends;
-import org.openspotlight.bundle.language.java.metamodel.link.Implements;
-import org.openspotlight.bundle.language.java.metamodel.link.ImplicitPrimitiveCast;
-import org.openspotlight.bundle.language.java.metamodel.link.InterfaceExtends;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodParameterDefinition;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodReturns;
-import org.openspotlight.bundle.language.java.metamodel.link.MethodThrows;
-import org.openspotlight.bundle.language.java.metamodel.link.PackageType;
-import org.openspotlight.bundle.language.java.metamodel.link.TypeDeclares;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaDataField;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodConstructor;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaMethodMethod;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaPackage;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeInterface;
-import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
+import org.openspotlight.bundle.language.java.metamodel.link.*;
+import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 
 /**
  * This class should be used to insert all java relationships on the OSL Graph instead of inserting nodes and links by hand. This
@@ -261,13 +242,13 @@ public class JavaGraphNodeSupport {
         }
 
         if (JavaTypePrimitive.class.equals(nodeType)) {
-            final T newType = abstractContextRootNode.addNode(nodeType, nodeName);
+            final T newType = abstractContextRootNode.addChildNode(nodeType, nodeName);
             newType.setSimpleName(nodeName);
             newType.setQualifiedName(nodeName);
             return newType;
         }
-        final JavaPackage newPackage = abstractContextRootNode.addNode(JavaPackage.class, packageName);
-        final T newType = newPackage.addNode(nodeType, nodeName);
+        final JavaPackage newPackage = abstractContextRootNode.addChildNode(JavaPackage.class, packageName);
+        final T newType = newPackage.addChildNode(nodeType, nodeName);
         newType.setSimpleName(nodeName);
         newType.setQualifiedName(Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE + ".",
                                                                   packageName + "." + nodeName.replaceAll("[$]", ".")));
@@ -325,18 +306,18 @@ public class JavaGraphNodeSupport {
             return (T)nodesFromThisContext.get(packageName + nodeName);
         }
         if (JavaTypePrimitive.class.equals(nodeType)) {
-            final T newType = abstractContextRootNode.addNode(nodeType, nodeName);
+            final T newType = abstractContextRootNode.addChildNode(nodeType, nodeName);
             newType.setSimpleName(nodeName);
             newType.setQualifiedName(nodeName);
             return newType;
         }
-        final JavaPackage newPackage = currentContextRootNode.addNode(JavaPackage.class, packageName);
+        final JavaPackage newPackage = currentContextRootNode.addChildNode(JavaPackage.class, packageName);
         T newType = null;
 
         if (parentType != null) {
-            newType = parentType.addNode(nodeType, nodeName);
+            newType = parentType.addChildNode(nodeType, nodeName);
         } else {
-            newType = newPackage.addNode(nodeType, nodeName);
+            newType = newPackage.addChildNode(nodeType, nodeName);
         }
 
         newType.setSimpleName(nodeName);
@@ -354,8 +335,8 @@ public class JavaGraphNodeSupport {
         newType.setFinal(isFinal);
         newType.setProtected(isProtected);
 
-        final JavaPackage newAbstractPackage = abstractContextRootNode.addNode(JavaPackage.class, packageName);
-        final JavaType newAbstractType = newAbstractPackage.addNode(JavaType.class, nodeName);
+        final JavaPackage newAbstractPackage = abstractContextRootNode.addChildNode(JavaPackage.class, packageName);
+        final JavaType newAbstractType = newAbstractPackage.addChildNode(JavaType.class, nodeName);
         newAbstractType.setQualifiedName(Strings.tryToRemoveBegginingFrom(JavaConstants.DEFAULT_PACKAGE + ".",
                                                                           packageName + "." + nodeName.replaceAll("[$]", ".")));
         newAbstractType.setSimpleName(nodeName);
@@ -396,7 +377,7 @@ public class JavaGraphNodeSupport {
                          + (newType != null ? newType.getName() : "null"));
         }
 
-        final JavaDataField field = newType.addNode(JavaDataField.class, fieldName);
+        final JavaDataField field = newType.addChildNode(JavaDataField.class, fieldName);
         final JavaType fieldTypeAdded = this.addTypeOnAbstractContext(fieldType, fieldPackage, fieldTypeName);
         insertFieldData(field, fieldTypeAdded, access, array, arrayDimensions);
         return field;
@@ -425,9 +406,9 @@ public class JavaGraphNodeSupport {
 
         JavaMethod method;
         if (constructor) {
-            method = newType.addNode(JavaMethodConstructor.class, methodFullName);
+            method = newType.addChildNode(JavaMethodConstructor.class, methodFullName);
         } else {
-            method = newType.addNode(JavaMethodMethod.class, methodFullName);
+            method = newType.addChildNode(JavaMethodMethod.class, methodFullName);
         }
         final int numberOfParameters = findNumberOfParanetersByItsName(methodFullName);
         method.setNumberOfParameters(numberOfParameters);

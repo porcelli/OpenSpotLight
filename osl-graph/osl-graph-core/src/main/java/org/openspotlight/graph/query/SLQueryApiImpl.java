@@ -48,51 +48,29 @@
  */
 package org.openspotlight.graph.query;
 
-import java.io.Serializable;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.log4j.Logger;
-import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.SerializationUtil;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLMetaNodeType;
-import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLRecursiveMode;
+import org.openspotlight.graph.*;
 import org.openspotlight.graph.exception.SLGraphRuntimeException;
 import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
+import org.openspotlight.graph.meta.SLMetaNodeType;
+import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.query.info.SLOrderByStatementInfo;
-import org.openspotlight.graph.query.info.SLOrderByTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
-import org.openspotlight.graph.query.info.SLSelectTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereTypeInfo;
+import org.openspotlight.graph.query.info.*;
 import org.openspotlight.graph.query.info.SLOrderByTypeInfo.OrderType;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
+
+import java.io.Serializable;
+import java.text.Collator;
+import java.util.*;
 
 class PLinkNodeWrapper {
 
@@ -321,7 +299,7 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
     static final Logger          LOGGER           = Logger.getLogger(SLQueryApiImpl.class);
 
     /** The metadata. */
-    private final SLMetadata     metadata;
+    private final SLMetadata metadata;
 
     /** The selects. */
     private final List<SLSelect> selects          = new ArrayList<SLSelect>();

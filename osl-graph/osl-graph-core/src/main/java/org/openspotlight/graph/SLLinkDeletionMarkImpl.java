@@ -101,7 +101,7 @@ public class SLLinkDeletionMarkImpl implements SLLinkDeletionMark {
     /*
      * (non-Javadoc)
      * 
-     * @see org.openspotlight.graph.SLLinkDeletionMark#getNode()
+     * @see org.openspotlight.graph.SLLinkDeletionMark#getChildNode()
      */
     public SLNode getNode() {
         return node;

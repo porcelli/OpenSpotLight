@@ -91,7 +91,7 @@ public class MultithreadGraphSessionTest {
         public State call() throws Exception {
             try {
                 for (int i = 0; i < 100; i++) {
-                    MultithreadGraphSessionTest.newNode.addNode("node " + i);
+                    MultithreadGraphSessionTest.newNode.addChildNode("node " + i);
                 }
                 this.state = State.DONE;
                 MultithreadGraphSessionTest.session.save();
@@ -154,7 +154,7 @@ public class MultithreadGraphSessionTest {
         MultithreadGraphSessionTest.session = MultithreadGraphSessionTest.graph.openSession(MultithreadGraphSessionTest.user,
                 SLConsts.DEFAULT_REPOSITORY_NAME);
         MultithreadGraphSessionTest.rootNode = MultithreadGraphSessionTest.session.createContext("new context").getRootNode();
-        MultithreadGraphSessionTest.newNode = MultithreadGraphSessionTest.rootNode.addNode("abc");
+        MultithreadGraphSessionTest.newNode = MultithreadGraphSessionTest.rootNode.addChildNode("abc");
         MultithreadGraphSessionTest.session.save();
         // session.close();
 

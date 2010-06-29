@@ -53,12 +53,6 @@ import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.StringIDSupport;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
-
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:48:26 AM
  */

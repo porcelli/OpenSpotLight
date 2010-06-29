@@ -1,21 +1,9 @@
 package org.openspotlight.storage.mongodb.test;
 
-import com.google.common.collect.Multimap;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.Mongo;
 import org.junit.Test;
-import org.openspotlight.storage.DefaultSTPartitionFactory;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
-import sun.java2d.pipe.SpanShapeRenderer;
-
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 /**
  * Created by User: feu - Date: Jun 9, 2010 - Time: 10:24:03 AM

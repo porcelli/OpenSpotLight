@@ -48,14 +48,12 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.graph.annotation.SLVisibility;
+import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
+
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-
-import org.openspotlight.common.concurrent.Lock;
-import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.graph.annotation.SLVisibility;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 /**
  * The Class SLLinkInvocationHandler.

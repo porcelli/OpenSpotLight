@@ -48,11 +48,11 @@
  */
 package org.openspotlight.common.concurrent.test;
 
+import org.junit.Test;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.concurrent.Priority.createPriority;
-
-import org.junit.Test;
 
 public class PriorityTest {
 

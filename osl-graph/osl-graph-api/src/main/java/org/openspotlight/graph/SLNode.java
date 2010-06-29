@@ -48,47 +48,17 @@
  */
 package org.openspotlight.graph;
 
-import java.io.Serializable;
-import java.text.Collator;
-import java.util.Collection;
-
-import org.openspotlight.common.concurrent.LockContainer;
-import org.openspotlight.common.concurrent.NeedsSyncronizationCollection;
-import org.openspotlight.common.concurrent.NeedsSyncronizationSet;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.exception.SLPropertyNotFoundException;
-import org.openspotlight.graph.exception.SLPropertyTypeInvalidException;
+import org.openspotlight.graph.meta.SLMetaNodeType;
 import org.openspotlight.log.LogableObject;
-import org.openspotlight.remote.annotation.DisposeMethod;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import java.util.Collection;
 
 /**
  * The Interface SLNode.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer {
-
-    /**
-     * Adds the line reference.
-     * 
-     * @param startLine the start line
-     * @param endLine the end line
-     * @param startColumn the start column
-     * @param endColumn the end column
-     * @param statement the statement
-     * @param artifactId the artifact id
-     * @param artifactVersion the artifact version
-     * @return the sL line reference
-     */
-    public SLLineReference addLineReference( int startLine,
-                                             int endLine,
-                                             int startColumn,
-                                             int endColumn,
-                                             String statement,
-                                             String artifactId,
-                                             String artifactVersion );
+public interface SLNode extends Comparable<SLNode>, LogableObject, SLElement {
 
     /**
      * Adds the node.
@@ -97,7 +67,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * @param name the name
      * @return the t
      */
-    public <T extends SLNode> T addNode( Class<T> clazz,
+    public <T extends SLNode> T addChildNode( Class<T> clazz,
                                          String name );
 
     /**
@@ -109,116 +79,10 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
      * @return the t
      */
-    public <T extends SLNode> T addNode( Class<T> clazz,
+    public <T extends SLNode> T addChildNode( Class<T> clazz,
                                          String name,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                          Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion );
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param encoder the encoder
-     * @return the t
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder );
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param encoder the encoder
-     * @param linkTypesForLinkDeletion the link types for link deletion
-     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
-     * @return the t
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion );
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param encoder the encoder
-     * @param persistenceMode the persistence mode
-     * @return the t
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder,
-                                         SLPersistenceMode persistenceMode );
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param encoder the encoder
-     * @param persistenceMode the persistence mode
-     * @param linkTypesForLinkDeletion the link types for link deletion
-     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
-     * @return the t
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder,
-                                         SLPersistenceMode persistenceMode,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion );
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param persistenceMode the persistence mode
-     * @return the t
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLPersistenceMode persistenceMode );
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param persistenceMode the persistence mode
-     * @param linkTypesForLinkDeletion the link types for link deletion
-     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
-     * @return the t
-     */
-    public <T extends SLNode> T addNode( Class<T> clazz,
-                                         String name,
-                                         SLPersistenceMode persistenceMode,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion );
-
-    /**
-     * Adds the node.
-     * 
-     * @param name the name
-     * @return the sL node
-     */
-    public SLNode addNode( String name );
-
-    /**
-     * Adds the node.
-     * 
-     * @param name the name
-     * @param encoder the encoder
-     * @return the sL node
-     */
-    public SLNode addNode( String name,
-                           SLEncoder encoder );
 
     /**
      * Do cast.
@@ -248,7 +112,7 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * @param clazz the clazz
      * @return the child node
      */
-    public <T extends SLNode> NeedsSyncronizationSet<T> getChildNodes( Class<T> clazz );
+    public <T extends SLNode> Iterable<T> getChildrenNodes( Class<T> clazz );
 
     /**
      * Gets the context.
@@ -263,21 +127,6 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * @return the iD
      */
     public String getID();
-
-    /**
-     * Gets the line references.
-     * 
-     * @return the line references
-     */
-    public Collection<SLLineReference> getLineReferences();
-
-    /**
-     * Gets the line references for a specific artifactId.
-     * 
-     * @param artifactId the artifact id
-     * @return the line references
-     */
-    public Collection<SLLineReference> getLineReferences( String artifactId );
 
     /**
      * Gets the meta type.
@@ -300,35 +149,8 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      * @param name the name
      * @return the node
      */
-    public <T extends SLNode> T getNode( Class<T> clazz,
+    public <T extends SLNode> T getChildNode( Class<T> clazz,
                                          String name );
-
-    /**
-     * Gets the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param encoder the encoder
-     * @return the node
-     */
-    public <T extends SLNode> T getNode( Class<T> clazz,
-                                         String name,
-                                         SLEncoder encoder );
-
-    /**
-     * Gets the node.
-     * 
-     * @param name the name
-     * @return the node
-     */
-    public SLNode getNode( String name );
-
-    /**
-     * Gets the nodes.
-     * 
-     * @return the nodes
-     */
-    public NeedsSyncronizationSet<SLNode> getNodes();
 
     /**
      * Gets the parent.
@@ -337,71 +159,14 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      */
     public SLNode getParent();
 
-    /**
-     * Gets the properties.
-     * 
-     * @return the properties
-     */
-    public NeedsSyncronizationSet<SLNodeProperty<Serializable>> getProperties();
 
     /**
-     * Gets the property.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @return the property
-     * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL node property not found exception
-     * @throws org.openspotlight.graph.exception.SLPropertyTypeInvalidException the SL invalid node property type exception
+     *
+     * @return the node weight, initially got from its SLNode inherited type.
      */
-    public <V extends Serializable> SLNodeProperty<V> getProperty( Class<V> clazz,
-                                                                   String name )
-        throws SLPropertyNotFoundException, SLPropertyTypeInvalidException;
+    public int getWeight();
 
-    /**
-     * Gets the property.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param collator the collator
-     * @return the property
-     * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL node property not found exception
-     * @throws org.openspotlight.graph.exception.SLPropertyTypeInvalidException the SL invalid node property type exception
-     */
-    public <V extends Serializable> SLNodeProperty<V> getProperty( Class<V> clazz,
-                                                                   String name,
-                                                                   Collator collator )
-        throws SLPropertyNotFoundException, SLPropertyTypeInvalidException;
-
-    /**
-     * Gets the property value as string.
-     * 
-     * @param name the name
-     * @return the property value as string
-     * @throws org.openspotlight.graph.exception.SLPropertyNotFoundException the SL node property not found exception
-     */
-    public String getPropertyValueAsString( String name ) throws SLPropertyNotFoundException;
-
-    /**
-     * Gets the session.
-     * 
-     * @return the session
-     */
-    public SLGraphSession getSession();
-
-    /**
-     * Gets line references in tree format.
-     * 
-     * @return the tree line references
-     */
-    public SLTreeLineReference getTreeLineReferences( );
-
-    /**
-     * Gets line references in tree format for a specific artifact.
-     * 
-     * @param artifactId the artifact id
-     * @return the tree line references
-     */
-    public SLTreeLineReference getTreeLineReferences( String artifactId );
+    
 
     /**
      * Gets the type name.
@@ -410,36 +175,4 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, LockContainer
      */
     public String getTypeName();
 
-    /**
-     * Removes the.
-     */
-    @DisposeMethod
-    public void remove();
-
-    /**
-     * Sets the property.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param value the value
-     * @return the sL node property< v>
-     */
-    public <V extends Serializable> SLNodeProperty<V> setProperty( Class<V> clazz,
-                                                                   String name,
-                                                                   V value );
-
-    /**
-     * Sets the property.
-     * 
-     * @param clazz the clazz
-     * @param visibility the visibility
-     * @param name the name
-     * @param value the value
-     * @return the sL node property< v>
-     * @throws SLPropertyTypeInvalidException the SL graph session exception
-     */
-    public <V extends Serializable> SLNodeProperty<V> setProperty( Class<V> clazz,
-                                                                   VisibilityLevel visibility,
-                                                                   String name,
-                                                                   V value ) throws SLPropertyTypeInvalidException;
 }

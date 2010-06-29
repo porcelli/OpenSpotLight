@@ -48,24 +48,6 @@
  */
 package org.openspotlight.federation.finder;
 
-import static java.util.Collections.emptySet;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
-import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.openspotlight.common.exception.ConfigurationException;
@@ -76,13 +58,26 @@ import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.db.ColumnsNamesForMetadataSelect;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
-import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
-import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseArtifactNameHandler;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
+import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Collections.emptySet;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
+import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
 
 public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtifactLoader {
 

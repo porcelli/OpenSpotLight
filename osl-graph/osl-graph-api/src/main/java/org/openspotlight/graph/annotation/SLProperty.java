@@ -61,4 +61,5 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.METHOD )
 public @interface SLProperty {
+    SLPropertyChangeBehavior value() default SLPropertyChangeBehavior.NOT_ALLOW_USER;
 }
