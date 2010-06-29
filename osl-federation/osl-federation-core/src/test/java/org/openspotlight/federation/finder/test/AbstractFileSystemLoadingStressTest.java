@@ -74,20 +74,20 @@ import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.domain.SLPartition;
-
+import org.openspotlight.task.ExecutorInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Strings.concatPaths;
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public abstract class AbstractFileSystemLoadingStressTest {
@@ -186,7 +186,7 @@ public abstract class AbstractFileSystemLoadingStressTest {
 
     protected abstract void clearData() throws Exception;
 
-    protected abstract Module createStorageModule(STRepositoryPath repositoryPath)throws Exception;
+    protected abstract Module createStorageModule(STRepositoryPath repositoryPath) throws Exception;
 
     @After
     public void closeTestResources() {
@@ -211,21 +211,38 @@ public abstract class AbstractFileSystemLoadingStressTest {
 
         int size = 50;
 //        size = 1 ;//TODO remove this
-        int loadedSize = 0;
+        final AtomicInteger loadedSize = new AtomicInteger(0);
+        final AtomicInteger nullSize = new AtomicInteger(0);
+        final AtomicInteger fileContentNotEqualsSize = new AtomicInteger(0);
         logger.debug("about to load item contents from persistent storage");
-        for (String s : list) {
-            StringArtifact file = context.getPersistentArtifactManager().findByPath(StringArtifact.class, s);
-            assertThat(file, is(notNullValue()));
-            List<String> lazyLoadedContent = file.getContent().get(context.getPersistentArtifactManager().getSimplePersist());
-            assertThat(lazyLoadedContent, is(notNullValue()));
-            assertThat(lazyLoadedContent.equals(getFileContentAsStringList(file.getOriginalName())), is(true));
-            System.err.println(file.getOriginalName());
-            if (lazyLoadedContent.size() != 0) {
-                loadedSize++;
-            }
+        List<Callable<Void>> callables = newArrayList();
+        for (final String s : list) {
+            callables.add(new Callable<Void>() {
+                public Void call() throws Exception {
+                    StringArtifact file = context.getPersistentArtifactManager().findByPath(StringArtifact.class, s);
+                    assertThat(file, is(notNullValue()));
+                    List<String> lazyLoadedContent = file.getContent().get(context.getPersistentArtifactManager().getSimplePersist());
+                    if (lazyLoadedContent == null) {
+                        nullSize.incrementAndGet();
+                    }
+
+                    if (lazyLoadedContent == null || !lazyLoadedContent.equals(getFileContentAsStringList(file.getOriginalName()))) {
+                        fileContentNotEqualsSize.incrementAndGet();
+                    }
+                    if (lazyLoadedContent != null && lazyLoadedContent.size() != 0) {
+                        loadedSize.incrementAndGet();
+                    }
+                    return null;
+                }
+
+            });
+
         }
+        ExecutorInstance.INSTANCE.invokeAll(callables);
         logger.debug("finished to load item contents from persistent storage");
-        assertThat(loadedSize >= size, is(true));
+        assertThat(loadedSize.get() >= size, is(true));
+        assertThat(nullSize.get(), is(0));
+        assertThat(fileContentNotEqualsSize.get(), is(0));
 
     }
 

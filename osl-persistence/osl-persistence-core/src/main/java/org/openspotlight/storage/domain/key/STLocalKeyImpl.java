@@ -50,7 +50,6 @@
 package org.openspotlight.storage.domain.key;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
 import org.openspotlight.storage.StringIDSupport;
 
 import java.util.ArrayList;
@@ -65,6 +64,8 @@ import static java.util.Collections.sort;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:46:52 AM
  */
 public class STLocalKeyImpl implements STLocalKey {
+    private final int hashCode;
+
     public boolean isRootKey() {
         return rootKey;
     }
@@ -86,6 +87,11 @@ public class STLocalKeyImpl implements STLocalKey {
         sort(tempEntries);
         this.entries = ImmutableSet.copyOf(tempEntries);
         this.nodeEntryName = nodeEntryName;
+
+        int result = entries != null ? entries.hashCode() : 0;
+        result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
+        this.hashCode = result;
+
     }
 
     private final Set<STKeyEntry> entries;
@@ -126,6 +132,7 @@ public class STLocalKeyImpl implements STLocalKey {
         if (o == null || getClass() != o.getClass()) return false;
 
         STLocalKeyImpl localKey = (STLocalKeyImpl) o;
+        if (this.hashCode != localKey.hashCode) return false;
 
         if (entries != null ? !entries.equals(localKey.entries) : localKey.entries != null) return false;
         if (nodeEntryName != null ? !nodeEntryName.equals(localKey.nodeEntryName) : localKey.nodeEntryName != null)
@@ -136,9 +143,7 @@ public class STLocalKeyImpl implements STLocalKey {
 
     @Override
     public int hashCode() {
-        int result = entries != null ? entries.hashCode() : 0;
-        result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
-        return result;
+        return hashCode;
     }
 
     public int compareTo(STLocalKey o) {

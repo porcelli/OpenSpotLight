@@ -49,22 +49,22 @@
 
 package org.openspotlight.storage.domain.key;
 
-import java.io.Serializable;
-
 import static org.openspotlight.common.util.Assertions.checkNotEmpty;
-import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Compare.npeSafeCompare;
-import static org.openspotlight.common.util.Reflection.findClassWithoutPrimitives;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:42:37 AM
  */
 public class STKeyEntryImpl implements STKeyEntry {
+    private final int hashCode;
 
     public STKeyEntryImpl(String propertyName, String value) {
         checkNotEmpty("propertyName", propertyName);
         this.value = value;
         this.propertyName = propertyName;
+        int result = value != null ? value.hashCode() : 0;
+        result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
+        hashCode = result;
+
     }
 
     private final String value;
@@ -86,6 +86,7 @@ public class STKeyEntryImpl implements STKeyEntry {
         if (o == null || getClass() != o.getClass()) return false;
 
         STKeyEntryImpl that = (STKeyEntryImpl) o;
+        if(this.hashCode != that.hashCode) return false;
 
         if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) return false;
         if (value != null ? !value.equals(that.value) : that.value != null) return false;
@@ -95,9 +96,7 @@ public class STKeyEntryImpl implements STKeyEntry {
 
     @Override
     public int hashCode() {
-        int result = value != null ? value.hashCode() : 0;
-        result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
-        return result;
+        return hashCode;
     }
 
     public int compareTo(STKeyEntry o) {

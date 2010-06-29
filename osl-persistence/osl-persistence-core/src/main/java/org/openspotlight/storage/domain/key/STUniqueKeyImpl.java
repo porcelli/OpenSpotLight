@@ -63,12 +63,20 @@ import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:48:26 AM
  */
 public class STUniqueKeyImpl implements STUniqueKey {
+    private final int hashCode;
 
     public STUniqueKeyImpl(STLocalKey localKey, STUniqueKey parentKey, STPartition partition, STRepositoryPath repositoryPath) {
         this.localKey = localKey;
         this.parentKey = parentKey;
         this.partition = partition;
         this.repositoryPath = repositoryPath;
+
+        int result = repositoryPath != null ? repositoryPath.hashCode() : 0;
+        result = 31 * result + (partition != null ? partition.hashCode() : 0);
+        result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
+        result = 31 * result + (parentKey != null ? parentKey.hashCode() : 0);
+        hashCode = result;
+
     }
 
     private final STRepositoryPath repositoryPath;
@@ -115,7 +123,7 @@ public class STUniqueKeyImpl implements STUniqueKey {
         if (o == null || getClass() != o.getClass()) return false;
 
         STUniqueKeyImpl uniqueKey = (STUniqueKeyImpl) o;
-
+        if(this.hashCode!=uniqueKey.hashCode) return false;
         if (localKey != null ? !localKey.equals(uniqueKey.localKey) : uniqueKey.localKey != null) return false;
         if (parentKey != null ? !parentKey.equals(uniqueKey.parentKey) : uniqueKey.parentKey != null) return false;
         if (partition != null ? !partition.equals(uniqueKey.partition) : uniqueKey.partition != null) return false;
@@ -127,11 +135,7 @@ public class STUniqueKeyImpl implements STUniqueKey {
 
     @Override
     public int hashCode() {
-        int result = repositoryPath != null ? repositoryPath.hashCode() : 0;
-        result = 31 * result + (partition != null ? partition.hashCode() : 0);
-        result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
-        result = 31 * result + (parentKey != null ? parentKey.hashCode() : 0);
-        return result;
+        return hashCode;
     }
 
     public int compareTo(STUniqueKey o) {
