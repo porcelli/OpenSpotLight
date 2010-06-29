@@ -51,7 +51,7 @@ package org.openspotlight.graph.query;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Sha1;
 import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.exception.SLNodeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
@@ -76,7 +76,7 @@ public class SLQueryCacheImpl implements SLQueryCache {
     private final SLPersistentTreeSession treeSession;
 
     /** The session. */
-    private final SLGraphSession          session;
+    private final SLSimpleGraphSession session;
 
     /**
      * Instantiates a new query cache impl.
@@ -85,7 +85,7 @@ public class SLQueryCacheImpl implements SLQueryCache {
      * @param session the session
      */
     public SLQueryCacheImpl(
-                             final SLPersistentTreeSession treeSession, final SLGraphSession session ) {
+                             final SLPersistentTreeSession treeSession, final SLSimpleGraphSession session ) {
         this.treeSession = treeSession;
         this.session = session;
     }

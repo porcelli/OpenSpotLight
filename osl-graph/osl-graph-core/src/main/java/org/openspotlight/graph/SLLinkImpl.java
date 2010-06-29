@@ -77,7 +77,7 @@ import java.util.Set;
 public class SLLinkImpl implements SLLink {
 
     /** The session. */
-    private final SLGraphSession            session;
+    private final SLSimpleGraphSession session;
 
     private SLMetaLink metaLink = null;
     /** The lock. */
@@ -97,7 +97,7 @@ public class SLLinkImpl implements SLLink {
      * @param eventPoster the event poster
      */
     public SLLinkImpl(
-                       final SLGraphSession session, final SLPersistentNode linkNode, final SLGraphSessionEventPoster eventPoster ) {
+                       final SLSimpleGraphSession session, final SLPersistentNode linkNode, final SLGraphSessionEventPoster eventPoster ) {
         this.session = session;
         lock = session.getLockObject();
         this.linkNode = linkNode;
@@ -112,7 +112,7 @@ public class SLLinkImpl implements SLLink {
      * @param eventPoster the event poster
      */
     public SLLinkImpl(
-                       final SLGraphSession session, final SLPersistentNode linkNode,
+                       final SLSimpleGraphSession session, final SLPersistentNode linkNode,
                        final SLGraphSessionEventPoster eventPoster, final SLNode source, final SLNode target ) {
         Assertions.checkNotNull("source", source);
         Assertions.checkNotNull("target", target);
@@ -130,7 +130,7 @@ public class SLLinkImpl implements SLLink {
      * @param eventPoster the event poster
      */
     public SLLinkImpl(
-                       final SLGraphSession session, final SLPersistentNode linkNode,
+                       final SLSimpleGraphSession session, final SLPersistentNode linkNode,
                        final SLGraphSessionEventPoster eventPoster, final SLNode[] sides ) {
         Assertions.checkNotNull("sides", sides);
         Assertions.checkNotNull("sides[0]", sides[0]);
@@ -441,7 +441,7 @@ public class SLLinkImpl implements SLLink {
     /**
      * {@inheritDoc}
      */
-    public SLGraphSession getSession() {
+    public SLSimpleGraphSession getSession() {
         return session;
     }
 

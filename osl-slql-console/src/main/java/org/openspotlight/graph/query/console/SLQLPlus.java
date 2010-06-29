@@ -54,7 +54,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.SharedConstants;
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.query.console.command.Command;
 import org.openspotlight.graph.query.console.command.DynamicCommandSupport;
@@ -105,14 +105,14 @@ public class SLQLPlus {
      * @throws SLException the SL exception
      * @throws ClassNotFoundException the class not found exception
      */
-    private static Pair<Boolean, SLGraphSession> login( final ConsoleReader reader,
+    private static Pair<Boolean, SLSimpleGraphSession> login( final ConsoleReader reader,
                                                         final PrintWriter out )
         throws IOException, SLException, ClassNotFoundException {
         out.println("Please enter server address, port number, repository, user and password.");
         out.println();
         out.flush();
 
-        Pair<Boolean, SLGraphSession> result = newPair(false, null);
+        Pair<Boolean, SLSimpleGraphSession> result = newPair(false, null);
         int loginAtemptsCount = 0;
         int failCount = 0;
         start: while (true) {
@@ -220,7 +220,7 @@ public class SLQLPlus {
         reader.clearScreen();
         printLogo(out);
 
-        final Pair<Boolean, SLGraphSession> loginState = login(reader, out);
+        final Pair<Boolean, SLSimpleGraphSession> loginState = login(reader, out);
 
         if (loginState.getK1() && loginState.getK2() != null) {
             out.println();
@@ -298,7 +298,7 @@ public class SLQLPlus {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws ClassNotFoundException the class not found exception
      */
-    private static Pair<Boolean, SLGraphSession> validateCredentials( final String serverName,
+    private static Pair<Boolean, SLSimpleGraphSession> validateCredentials( final String serverName,
                                                                       final int portNumber,
                                                                       final String userName,
                                                                       final String password,

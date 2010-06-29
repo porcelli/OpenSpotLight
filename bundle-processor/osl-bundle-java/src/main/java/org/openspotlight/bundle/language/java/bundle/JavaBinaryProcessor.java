@@ -64,7 +64,7 @@ import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.storage.STStorageSession;
@@ -170,7 +170,7 @@ public class JavaBinaryProcessor implements BundleProcessorArtifactPhase<StreamA
 
     private static void createNodesFromJarData( final List<TypeDefinition> types,
                                                 final JavaGraphNodeSupport helper,
-                                                final SLGraphSession session ) throws Exception {
+                                                final SLSimpleGraphSession session ) throws Exception {
         final Map<TypeDefinition, JavaType> map = createTypes(types, helper);
         // int count = 0;
         for (final TypeDefinition definition : types) {
@@ -320,11 +320,11 @@ public class JavaBinaryProcessor implements BundleProcessorArtifactPhase<StreamA
             final SLContext slContext = context.getGraphSession().createContext(uniqueContextName);
             slContext.getRootNode().setProperty(String.class, "classPathArtifactPath", artifact.getArtifactCompleteName());
             logger.info("creating context " + uniqueContextName + " for artifact " + artifact.getArtifactCompleteName());
-            final SLGraphSession session = context.getGraphSession();
+            final SLSimpleGraphSession session = context.getGraphSession();
             final SLNode currentContextRootNode = session.createContext(uniqueContextName).getRootNode();
             final SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
             final JavaGraphNodeSupport helper = InvocationCacheFactory.createIntoCached(JavaGraphNodeSupport.class,
-                                                                                        new Class<?>[] {SLGraphSession.class,
+                                                                                        new Class<?>[] {SLSimpleGraphSession.class,
                                                                                             SLNode.class, SLNode.class},
                                                                                         new Object[] {session,
                                                                                             currentContextRootNode,

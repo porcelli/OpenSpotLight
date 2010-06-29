@@ -85,7 +85,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Vitor Hugo Chagas
  */
-public class SLGraphSessionImpl implements SLGraphSession {
+public class SLGraphSessionImpl implements SLSimpleGraphSession {
 
     public SimplePersistCapable<STNodeEntry, STStorageSession> getLineReferenceSimplePersist() {
         return lineReferenceSimplePersist;

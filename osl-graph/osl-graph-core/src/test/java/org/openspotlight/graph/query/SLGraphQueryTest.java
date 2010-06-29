@@ -54,7 +54,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.query.SLQuery.SortMode;
@@ -3689,7 +3689,7 @@ public class SLGraphQueryTest extends AbstractGeneralQueryTest {
     }
 
     @Override
-    protected SLGraphSession createSession() throws Exception {
+    protected SLSimpleGraphSession createSession() throws Exception {
         return graph.openSession(user, "repository");
     }
 }

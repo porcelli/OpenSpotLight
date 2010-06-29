@@ -53,59 +53,24 @@ import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryText;
-import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.remote.annotation.DisposeMethod;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
 
 /**
- * The Interface SLGraphSession. All methods in this interface throw a
+ * The Interface SLSimpleGraphSession. All methods in this interface throw a
  * {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level. Any security
  * violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
  *
  * @author Vitor Hugo Chagas
  */
-public interface SLGraphSession {
-
-    /**
-     * Adds the link.
-     *
-     * @param linkClass the link class
-     * @param source    the source
-     * @param target    the target
-     * @return the l
-     */
-    public <L extends SLLink> L addLink(Class<L> linkClass,
-                                        SLNode source,
-                                        SLNode target);
-
-    /**
-     * Adds the link.
-     *
-     * @param linkClass the link class
-     * @param source    the source
-     * @param target    the target
-     * @return the l
-     */
-    public <L extends SLLink> L addBidirectionalLink(Class<L> linkClass,
-                                                     SLNode source,
-                                                     SLNode target);
+public interface SLSimpleGraphSession {
 
     /**
      * Close.
      */
     @DisposeMethod(callOnTimeout = true)
     public void close();
-
-    /**
-     * Creates the context.
-     *
-     * @param id the id
-     * @return the sL context
-     */
-    public SLContext createContext(String id);
 
     /**
      * Creates the api query.
@@ -175,7 +140,7 @@ public interface SLGraphSession {
      * @return the unidirectional links by source
      */
     public <L extends SLLink> Iterable<L> getUnidirectionalLinksBySource(Class<L> linkClass,
-                                                                           SLNode source);
+                                                                         SLNode source);
 
     /**
      * Gets the unidirectional links by target.
@@ -185,7 +150,7 @@ public interface SLGraphSession {
      * @return the unidirectional links by target
      */
     public <L extends SLLink> Iterable<L> getUnidirectionalLinksByTarget(Class<L> linkClass,
-                                                                           SLNode target);
+                                                                         SLNode target);
 
     /**
      * Gets the bidirectional links by side.
@@ -211,7 +176,6 @@ public interface SLGraphSession {
      * @return the unidirectional links by target
      */
     public Iterable<SLLink> getUnidirectionalLinksByTarget(SLNode target);
-
 
 
     /**
@@ -281,16 +245,11 @@ public interface SLGraphSession {
     /**
      * Gets the nodes by link.
      *
-     * @param node      the node
+     * @param node the node
      * @return the nodes by link
      */
     public Iterable<SLNode> getLinkedNodes(SLNode node,
-                                             SLLinkDirection linkDirection);
-
-    /**
-     * Save.
-     */
-    public void save();
+                                           SLLinkDirection linkDirection);
 
 
     /**
@@ -306,4 +265,9 @@ public interface SLGraphSession {
      * @return the user
      */
     public User getUser();
+
+    
+    public void flushChangedProperties(SLNode node);
+
+
 }

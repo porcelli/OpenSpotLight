@@ -48,7 +48,7 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
@@ -61,12 +61,12 @@ class ByPropertyFinder {
 
     private final String         completeArtifactName;
 
-    private final SLGraphSession session;
+    private final SLSimpleGraphSession session;
     private final Logger         logger = LoggerFactory.getLogger(getClass());
     private final SLNode         contextRootNode;
 
     public ByPropertyFinder(
-                             final String completeArtifactName, final SLGraphSession session, final SLNode contextRootNode ) {
+                             final String completeArtifactName, final SLSimpleGraphSession session, final SLNode contextRootNode ) {
         super();
         this.completeArtifactName = completeArtifactName;
         this.session = session;

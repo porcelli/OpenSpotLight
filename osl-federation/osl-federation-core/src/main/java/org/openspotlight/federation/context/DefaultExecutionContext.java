@@ -59,7 +59,7 @@ import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.ConfigurationManagerFactoryImpl;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
@@ -117,14 +117,14 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
         }
     }
 
-    private final class LazyGraphSessionProvider extends AtomicLazyResource<SLGraphSession> {
+    private final class LazyGraphSessionProvider extends AtomicLazyResource<SLSimpleGraphSession> {
         private LazyGraphSessionProvider(
                                           final LockContainer lockContainer ) {
             super(lockContainer);
         }
 
         @Override
-        protected SLGraphSession createReference() throws Exception {
+        protected SLSimpleGraphSession createReference() throws Exception {
 
             return graph.openSession(getUser(), repositoryName);
         }
@@ -186,7 +186,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
     private final AtomicLazyResource<ConfigurationManager>      lazyConfigurationManagerReference        = new LazyConfigurationManagerProvider(
                                                                                                                                                 this);
 
-    private final AtomicLazyResource<SLGraphSession>            lazyGraphSessionReference                = new LazyGraphSessionProvider(
+    private final AtomicLazyResource<SLSimpleGraphSession>            lazyGraphSessionReference                = new LazyGraphSessionProvider(
                                                                                                                                         this);
 
     private final AtomicLazyResource<DetailedLogger>            lazyDetailedLoggerReference              = new LazyDetailedLoggerProvider(
@@ -231,7 +231,7 @@ public class DefaultExecutionContext implements ExecutionContext, LockContainer 
         return lazyConnectionProviderReference.get();
     }
 
-    public SLGraphSession getGraphSession() {
+    public SLSimpleGraphSession getGraphSession() {
         return lazyGraphSessionReference.get();
     }
 

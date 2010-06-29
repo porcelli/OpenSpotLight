@@ -48,7 +48,7 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.exception.SLGraphException;
 
@@ -364,7 +364,7 @@ public class MetricsAggregator {
         generalAcumulate(returnPoint, node);
     }
 
-    public void buildPropertyValues( final SLGraphSession session ) throws SLGraphException {
+    public void buildPropertyValues( final SLSimpleGraphSession session ) throws SLGraphException {
         setProperties(session, SystemMetaModel.propMaxConditionalNesting, maxConditionalNesting);
         setProperties(session, SystemMetaModel.propMaxLoopingDepth, maxDepthLooping);
         setProperties(session, SystemMetaModel.propParameterMetric, parameters);
@@ -448,7 +448,7 @@ public class MetricsAggregator {
         return resultMap;
     }
 
-    private Map<String, Double> divMaps( final SLGraphSession session,
+    private Map<String, Double> divMaps( final SLSimpleGraphSession session,
                                          final Map<String, Integer> mainMap,
                                          final Map<String, Integer> secondMap,
                                          final String propertyName ) throws SLGraphException {
@@ -608,7 +608,7 @@ public class MetricsAggregator {
         currentNodes.put(node.getID(), node);
     }
 
-    private void setDecisionDensity( final SLGraphSession session,
+    private void setDecisionDensity( final SLSimpleGraphSession session,
                                      final Map<String, Integer> cyclomatic,
                                      final String propertyName ) throws SLGraphException {
         for (final Entry<String, Integer> activeCyclomatic : cyclomatic.entrySet()) {
@@ -624,7 +624,7 @@ public class MetricsAggregator {
         }
     }
 
-    private void setDoubleProperties( final SLGraphSession session,
+    private void setDoubleProperties( final SLSimpleGraphSession session,
                                       final String propertyName,
                                       final Map<String, Double> counter ) throws SLGraphException {
         for (final Entry<String, Double> activeElement : counter.entrySet()) {
@@ -637,7 +637,7 @@ public class MetricsAggregator {
         codeAreas.put(node.getID(), codeArea);
     }
 
-    private void setLineMetrics( final SLGraphSession session,
+    private void setLineMetrics( final SLSimpleGraphSession session,
                                  final String nodeId,
                                  final CompleteSourceLineInfo lineInfo ) throws SLGraphException {
         setPropertyOnNode(nodeId, SystemMetaModel.propPhysicalLines, lineInfo.getPhysicalLines());
@@ -653,7 +653,7 @@ public class MetricsAggregator {
         setPropertyOnNode(nodeId, SystemMetaModel.propWhitespacePercentage, lineInfo.getWhitespacePercentage());
     }
 
-    private void setProperties( final SLGraphSession session,
+    private void setProperties( final SLSimpleGraphSession session,
                                 final String propertyName,
                                 final Map<String, Integer> counter ) throws SLGraphException {
         for (final Entry<String, Integer> activeElement : counter.entrySet()) {
@@ -675,7 +675,7 @@ public class MetricsAggregator {
         node.setProperty(Integer.class, propertyName, value);
     }
 
-    private void setTotalCyclomaticComplexity( final SLGraphSession session,
+    private void setTotalCyclomaticComplexity( final SLSimpleGraphSession session,
                                                final Map<String, Integer> parentCyclomatic,
                                                final Map<String, Integer> totalMethods,
                                                final String propertyName ) throws SLGraphException {
@@ -716,7 +716,7 @@ public class MetricsAggregator {
         return resultMap;
     }
 
-    private Map<String, Integer> sumMaps( final SLGraphSession session,
+    private Map<String, Integer> sumMaps( final SLSimpleGraphSession session,
                                           final Map<String, Integer> mainMap,
                                           final Map<String, Integer> secondMap,
                                           final String propertyName ) throws SLGraphException {

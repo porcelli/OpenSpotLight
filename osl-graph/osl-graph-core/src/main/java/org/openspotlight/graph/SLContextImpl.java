@@ -65,7 +65,7 @@ public class SLContextImpl implements SLContext {
     private final Lock           lock;
 
     /** The session. */
-    private final SLGraphSession session;
+    private final SLSimpleGraphSession session;
 
     /** The root node. */
     private final SLNode         rootNode;
@@ -78,7 +78,7 @@ public class SLContextImpl implements SLContext {
      * @param eventPoster the event poster
      */
     public SLContextImpl(
-                          final SLGraphSession session, final SLPersistentNode contextRootPersistentNode,
+                          final SLSimpleGraphSession session, final SLPersistentNode contextRootPersistentNode,
                           final SLGraphSessionEventPoster eventPoster ) {
         this.session = session;
         rootNode = new SLNodeImpl(this, null, contextRootPersistentNode, eventPoster);
@@ -123,7 +123,7 @@ public class SLContextImpl implements SLContext {
     /**
      * {@inheritDoc}
      */
-    public SLGraphSession getSession() {
+    public SLSimpleGraphSession getSession() {
         return session;
     }
 

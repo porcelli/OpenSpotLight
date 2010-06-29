@@ -52,7 +52,7 @@ import org.openspotlight.common.DisposingListener;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
@@ -65,12 +65,12 @@ import org.openspotlight.security.idm.AuthenticatedUser;
 public class SingleGraphSessionExecutionContext extends DefaultExecutionContext {
 
     private final AuthenticatedUser user;
-    private final SLGraphSession    uniqueGraphSession;
+    private final SLSimpleGraphSession uniqueGraphSession;
 
     SingleGraphSessionExecutionContext(
                                         final String username, final String password, final JcrConnectionDescriptor descriptor,
                                         final Repository repository, final DisposingListener<DefaultExecutionContext> listener,
-                                        final AuthenticatedUser user, final SLGraphSession uniqueGraphSession,
+                                        final AuthenticatedUser user, final SLSimpleGraphSession uniqueGraphSession,
                                         SimplePersistFactory simplePersistFactory, DetailedLoggerProvider detailedLoggerProvider, SLGraph graph ) {
         super(username, password, descriptor, listener, repository, simplePersistFactory, detailedLoggerProvider, graph);
         this.uniqueGraphSession = uniqueGraphSession;
@@ -79,7 +79,7 @@ public class SingleGraphSessionExecutionContext extends DefaultExecutionContext 
     }
 
     @Override
-    public SLGraphSession getGraphSession() {
+    public SLSimpleGraphSession getGraphSession() {
         return uniqueGraphSession;
     }
 

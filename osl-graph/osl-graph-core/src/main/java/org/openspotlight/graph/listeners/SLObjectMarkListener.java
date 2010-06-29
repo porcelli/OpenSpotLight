@@ -49,7 +49,7 @@
 package org.openspotlight.graph.listeners;
 
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.event.SLAbstractGraphSessionEventListener;
@@ -162,7 +162,7 @@ public class SLObjectMarkListener extends SLAbstractGraphSessionEventListener {
     public void nodeAdded( final SLNodeAddedEvent event ) {
         synchronized (lock) {
 
-            final SLGraphSession session = event.getSession();
+            final SLSimpleGraphSession session = event.getSession();
             final SLNode node = event.getNode();
             final Collection<Class<? extends SLLink>> linkTypesForLinkDeletion = event.getLinkTypesForLinkDeletion();
             final Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion = event.getLinkTypesForLinkedNodesDeletion();

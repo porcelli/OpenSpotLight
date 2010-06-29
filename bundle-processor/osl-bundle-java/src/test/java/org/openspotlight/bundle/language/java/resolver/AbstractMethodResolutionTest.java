@@ -108,7 +108,7 @@ public abstract class AbstractMethodResolutionTest {
     }
 
     protected MethodResolver<JavaType, JavaMethod> methodResolver = null;
-    protected SLGraphSession                       graphSession   = null;
+    protected SLSimpleGraphSession graphSession   = null;
     protected JavaGraphNodeSupport                 helper         = null;
 
     protected SLContext                            abstractContex = null;

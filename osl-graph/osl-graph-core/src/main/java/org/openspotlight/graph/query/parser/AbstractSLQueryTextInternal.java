@@ -50,7 +50,7 @@ package org.openspotlight.graph.query.parser;
 
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.query.*;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 
@@ -120,7 +120,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
     /**
      * {@inheritDoc}
      */
-    public abstract SLQueryResult execute( final SLGraphSession session,
+    public abstract SLQueryResult execute( final SLSimpleGraphSession session,
                                            final Map<String, ?> variableValues,
                                            final String[] inputNodesIDs,
                                            SortMode sortMode,
@@ -254,7 +254,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
      * @param inputNodesIDs the input nodes i ds
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      */
-    protected void validateAndInit( final SLGraphSession session,
+    protected void validateAndInit( final SLSimpleGraphSession session,
                                     final Map<String, ? extends Serializable> variableValues,
                                     final String[] inputNodesIDs ) throws SLInvalidQueryElementException {
         Assertions.checkNotNull("session", session);

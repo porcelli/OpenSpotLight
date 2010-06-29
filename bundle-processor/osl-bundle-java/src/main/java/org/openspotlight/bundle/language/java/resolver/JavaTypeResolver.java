@@ -56,7 +56,7 @@ import org.openspotlight.bundle.language.java.metamodel.link.*;
 import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.util.InvocationCacheFactory;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLQueryApi;
@@ -290,12 +290,12 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     public static JavaTypeResolver createNewCached( final SLContext abstractContext,
                                                     final List<SLContext> orderedActiveContexts,
                                                     final boolean enableBoxing,
-                                                    final SLGraphSession session ) {
+                                                    final SLSimpleGraphSession session ) {
         final JavaTypeResolver cached = (JavaTypeResolver)InvocationCacheFactory.createIntoCached(JavaTypeResolver.class,
                                                                                                   new Class<?>[] {
                                                                                                       SLContext.class,
                                                                                                       List.class, boolean.class,
-                                                                                                      SLGraphSession.class},
+                                                                                                      SLSimpleGraphSession.class},
                                                                                                   new Object[] {abstractContext,
                                                                                                       orderedActiveContexts,
                                                                                                       enableBoxing, session});
@@ -304,7 +304,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
 
     /**
      * Creates the new uncached and slow java type finder. Normaly its better to use the method
-     * {@link #createNewCached(SLContext, List, boolean, SLGraphSession)}. This method is here only to be used on tests.
+     * {@link #createNewCached(SLContext, List, boolean, org.openspotlight.graph.SLSimpleGraphSession)}. This method is here only to be used on tests.
      * 
      * @param abstractContext the abstract context
      * @param orderedActiveContexts the ordered active contexts
@@ -316,13 +316,13 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
     public static TypeResolver<JavaType> createNewUncachedAndSlow( final SLContext abstractContext,
                                                                    final List<SLContext> orderedActiveContexts,
                                                                    final boolean enableBoxing,
-                                                                   final SLGraphSession session ) {
+                                                                   final SLSimpleGraphSession session ) {
         return new JavaTypeResolver(abstractContext, orderedActiveContexts, enableBoxing, session);
     }
 
     /**
      * Instantiates a new java type resolver. Normaly should be better to use the static factory method
-     * {@link #createNewCached(SLContext, List, boolean, SLGraphSession)}.
+     * {@link #createNewCached(SLContext, List, boolean, org.openspotlight.graph.SLSimpleGraphSession)}.
      * 
      * @param abstractContext the abstract context
      * @param orderedActiveContexts the ordered active contexts
@@ -331,7 +331,7 @@ public class JavaTypeResolver extends AbstractTypeResolver<JavaType> {
      */
     protected JavaTypeResolver(
                                 final SLContext abstractContext, final List<SLContext> orderedActiveContexts,
-                                final boolean enableBoxing, final SLGraphSession session ) {
+                                final boolean enableBoxing, final SLSimpleGraphSession session ) {
         super(implementationInheritanceLinks, interfaceInheritanceLinks, primitiveHierarchyLinks, abstractContext,
               orderedActiveContexts, primitiveTypes, concreteTypes, enableBoxing, session);
 

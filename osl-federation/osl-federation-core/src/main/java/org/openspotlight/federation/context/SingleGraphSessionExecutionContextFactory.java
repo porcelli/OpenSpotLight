@@ -56,7 +56,7 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.security.SecurityFactory;
@@ -74,7 +74,7 @@ public class SingleGraphSessionExecutionContextFactory
     private final CopyOnWriteArrayList<SingleGraphSessionExecutionContext> openedContexts = new CopyOnWriteArrayList<SingleGraphSessionExecutionContext>();
     private AuthenticatedUser user;
 
-    private final ConcurrentHashMap<String, SLGraphSession> sessionMap = new ConcurrentHashMap<String, SLGraphSession>();
+    private final ConcurrentHashMap<String, SLSimpleGraphSession> sessionMap = new ConcurrentHashMap<String, SLSimpleGraphSession>();
 
     private final SimplePersistFactory simplePersistFactory;
 
@@ -93,7 +93,7 @@ public class SingleGraphSessionExecutionContextFactory
         for (final SingleGraphSessionExecutionContext openedContext : openedContexts) {
             openedContext.closeResources();
         }
-        for (final SLGraphSession session : sessionMap.values()) {
+        for (final SLSimpleGraphSession session : sessionMap.values()) {
             session.close();
         }
         sessionMap.clear();
@@ -105,7 +105,7 @@ public class SingleGraphSessionExecutionContextFactory
                                                                 final Repository repository) {
 
         try {
-            SLGraphSession graphSession = sessionMap.get(repository.getName());
+            SLSimpleGraphSession graphSession = sessionMap.get(repository.getName());
             if (user == null || graphSession == null) {
                 final SecurityFactory securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
                 final User simpleUser = securityFactory.createUser(username);

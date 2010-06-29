@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 
 import java.io.Serializable;
@@ -77,7 +77,7 @@ public interface SLQueryTextInternal extends Serializable {
      * @throws SLQueryException the SL query exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    public SLQueryResult execute( final SLGraphSession session,
+    public SLQueryResult execute( final SLSimpleGraphSession session,
                                   final Map<String, ?> variableValues,
                                   final String[] inputNodesIDs,
                                   SortMode sortMode,

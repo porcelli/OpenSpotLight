@@ -61,7 +61,7 @@ import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.federation.log.LogEntry;
 import org.openspotlight.federation.log.LoggedObjectInformation;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -116,7 +116,7 @@ public class DetailedLoggerTest {
 
     private static DetailedLoggerProvider loggerProvider;
 
-    private SLGraphSession graphSession;
+    private SLSimpleGraphSession graphSession;
 
     private static JcrConnectionProvider provider;
 

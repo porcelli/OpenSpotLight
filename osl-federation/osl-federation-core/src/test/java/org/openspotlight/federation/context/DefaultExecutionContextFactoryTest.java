@@ -59,7 +59,7 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
@@ -112,7 +112,7 @@ public class DefaultExecutionContextFactoryTest {
         Assert.assertThat(configurationManager, Is.is(IsNull.notNullValue()));
         final JcrConnectionProvider connectionProvider = context.getDefaultConnectionProvider();
         Assert.assertThat(connectionProvider, Is.is(IsNull.notNullValue()));
-        final SLGraphSession graphSession = context.getGraphSession();
+        final SLSimpleGraphSession graphSession = context.getGraphSession();
         Assert.assertThat(graphSession, Is.is(IsNull.notNullValue()));
         final DetailedLogger logger = context.getLogger();
         Assert.assertThat(logger, Is.is(IsNull.notNullValue()));

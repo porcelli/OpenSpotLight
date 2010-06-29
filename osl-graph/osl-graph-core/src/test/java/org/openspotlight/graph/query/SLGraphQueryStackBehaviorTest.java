@@ -53,7 +53,7 @@ import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.test.domain.link.PackageContainsType;
@@ -86,7 +86,7 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
     }
 
     public SLGraphQueryStackBehaviorTest(
-            final SLGraphSession sessionParam, final SortMode sortModeParam,
+            final SLSimpleGraphSession sessionParam, final SortMode sortModeParam,
             final boolean printInfoParam) {
         session = sessionParam;
         sortMode = sortModeParam;
@@ -247,7 +247,7 @@ public class SLGraphQueryStackBehaviorTest extends AbstractGeneralQueryTest {
     }
 
     @Override
-    protected SLGraphSession createSession() throws Exception {
+    protected SLSimpleGraphSession createSession() throws Exception {
         return graph.openSession(user, "repository");
     }
 

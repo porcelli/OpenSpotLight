@@ -53,7 +53,7 @@ package org.openspotlight.bundle.language.java.resolver;
 
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 
@@ -95,7 +95,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements TypeReso
     private final boolean                      enableBoxing;
 
     /** The session. */
-    private final SLGraphSession               session;
+    private final SLSimpleGraphSession session;
 
     /**
      * Instantiates a new type finder.
@@ -114,7 +114,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements TypeReso
                                     final Set<Class<? extends SLLink>> interfaceInheritanceLinks,
                                     final Set<Class<? extends SLLink>> primitiveHierarchyLinks, final SLContext abstractContext,
                                     final List<SLContext> orderedActiveContexts, final Set<Class<?>> primitiveTypes,
-                                    final Set<Class<?>> concreteTypes, final boolean enableBoxing, final SLGraphSession session ) {
+                                    final Set<Class<?>> concreteTypes, final boolean enableBoxing, final SLSimpleGraphSession session ) {
         Assertions.checkNotNull("implementationInheritanceLinks", implementationInheritanceLinks);
         Assertions.checkNotNull("interfaceInheritanceLinks", interfaceInheritanceLinks);
         Assertions.checkNotNull("primitiveHierarchyLinks", primitiveHierarchyLinks);
@@ -509,7 +509,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements TypeReso
      * 
      * @return the session
      */
-    protected SLGraphSession getSession() {
+    protected SLSimpleGraphSession getSession() {
         return this.session;
     }
 

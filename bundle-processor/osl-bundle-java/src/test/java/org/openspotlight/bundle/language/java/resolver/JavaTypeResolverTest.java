@@ -100,7 +100,7 @@ public class JavaTypeResolverTest {
     static SLGraph                graph;
 
     /** The session. */
-    static SLGraphSession         session;
+    static SLSimpleGraphSession session;
 
     static AuthenticatedUser      user;
 

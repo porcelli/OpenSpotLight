@@ -99,7 +99,7 @@ public class SLGraphMetadataTest {
     /**
      * The session.
      */
-    private static SLGraphSession session;
+    private static SLSimpleGraphSession session;
 
     /**
      * Finish.

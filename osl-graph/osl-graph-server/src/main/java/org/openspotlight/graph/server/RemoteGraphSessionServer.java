@@ -50,7 +50,7 @@ package org.openspotlight.graph.server;
 
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.remote.server.RemoteObjectServer;
@@ -72,7 +72,7 @@ public class RemoteGraphSessionServer {
     /**
      * A factory for creating InternalGraphSession objects.
      */
-    private static class InternalGraphSessionFactory implements InternalObjectFactory<SLGraphSession> {
+    private static class InternalGraphSessionFactory implements InternalObjectFactory<SLSimpleGraphSession> {
 
         private final SLGraph                 graph;
 
@@ -93,7 +93,7 @@ public class RemoteGraphSessionServer {
          * org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory
          * #createNewInstance(java.lang.Object[])
          */
-        public synchronized SLGraphSession createNewInstance( final Object... parameters ) throws Exception {
+        public synchronized SLSimpleGraphSession createNewInstance( final Object... parameters ) throws Exception {
             checkNotNull("parameters", parameters);
             checkCondition("correctParamSize", parameters.length == 3);
             checkCondition("correctTypeForFirstParam", parameters[0] instanceof String);
@@ -118,8 +118,8 @@ public class RemoteGraphSessionServer {
          * org.openspotlight.remote.server.RemoteObjectServer.InternalObjectFactory
          * #getTargetObjectType()
          */
-        public Class<SLGraphSession> getTargetObjectType() {
-            return SLGraphSession.class;
+        public Class<SLSimpleGraphSession> getTargetObjectType() {
+            return SLSimpleGraphSession.class;
         }
 
         /*
@@ -155,7 +155,7 @@ public class RemoteGraphSessionServer {
         checkNotNull("timeoutInMilliseconds", timeoutInMilliseconds);
         checkNotNull("descriptor", descriptor);
         remoteObjectServer = RemoteObjectServerImpl.getDefault(userAutenticator, portToUse, timeoutInMilliseconds);
-        remoteObjectServer.registerInternalObjectFactory(SLGraphSession.class, new InternalGraphSessionFactory(graph, descriptor));
+        remoteObjectServer.registerInternalObjectFactory(SLSimpleGraphSession.class, new InternalGraphSessionFactory(graph, descriptor));
     }
 
     public void removeAllObjectsFromServer() {

@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.query.SLQuery.SortMode;
@@ -63,7 +63,7 @@ import java.util.Collection;
 public abstract class AbstractSLQuery implements LockContainer {
 
     /** The session. */
-    protected SLGraphSession          session;
+    protected SLSimpleGraphSession session;
 
     private final Lock                lock;
 
@@ -77,7 +77,7 @@ public abstract class AbstractSLQuery implements LockContainer {
      * @param treeSession the tree session
      */
     public AbstractSLQuery(
-                            final SLGraphSession session, final SLPersistentTreeSession treeSession ) {
+                            final SLSimpleGraphSession session, final SLPersistentTreeSession treeSession ) {
         lock = session.getLockObject();
         this.session = session;
         this.treeSession = treeSession;

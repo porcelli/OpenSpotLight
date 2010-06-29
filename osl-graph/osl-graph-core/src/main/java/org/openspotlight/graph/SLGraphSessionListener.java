@@ -49,10 +49,10 @@
 package org.openspotlight.graph;
 
 /**
- * The listener interface for receiving SLGraphSession events. The class that is interested in processing a SLGraphSession event
+ * The listener interface for receiving SLSimpleGraphSession events. The class that is interested in processing a SLSimpleGraphSession event
  * implements this interface, and the object created with that class is registered with a component using the component's
  * <code>addSLGraphSessionListener<code> method. When
- * the SLGraphSession event occurs, that object's appropriate
+ * the SLSimpleGraphSession event occurs, that object's appropriate
  * method is invoked.
  * 
  * @see org.openspotlight.graph.event.SLGraphSessionEvent

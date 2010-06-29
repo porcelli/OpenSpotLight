@@ -92,7 +92,7 @@ public class SLGraphNodeByIDTest {
     /**
      * The session.
      */
-    private static SLGraphSession session;
+    private static SLSimpleGraphSession session;
 
     private static AuthenticatedUser user;
 

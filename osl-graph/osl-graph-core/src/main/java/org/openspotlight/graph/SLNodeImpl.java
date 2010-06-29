@@ -916,7 +916,7 @@ public class SLNodeImpl implements SLNode, SLPNodeGetter {
     /**
      * {@inheritDoc}
      */
-    public SLGraphSession getSession() {
+    public SLSimpleGraphSession getSession() {
         return context.getSession();
     }
 

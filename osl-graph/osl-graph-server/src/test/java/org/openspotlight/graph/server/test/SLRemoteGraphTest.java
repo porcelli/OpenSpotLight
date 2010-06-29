@@ -54,7 +54,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
 import org.openspotlight.graph.exception.SLGraphException;
@@ -123,7 +123,7 @@ public class SLRemoteGraphTest extends BaseGraphTest {
     }
 
     @Override
-    public SLGraphSession openSession() throws SLGraphException {
+    public SLSimpleGraphSession openSession() throws SLGraphException {
         return client.createRemoteGraphSession(userName, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 

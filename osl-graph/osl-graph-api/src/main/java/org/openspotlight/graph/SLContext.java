@@ -70,11 +70,6 @@ public interface SLContext {
     public String getCaption();
 
     /**
-     * Sets the caption.
-     */
-    public void setCaption( String caption );
-
-    /**
      * Gets the root node.
      * 
      * @return the root node

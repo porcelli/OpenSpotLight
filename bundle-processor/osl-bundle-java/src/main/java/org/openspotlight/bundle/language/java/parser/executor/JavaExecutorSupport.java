@@ -56,7 +56,7 @@ import org.openspotlight.bundle.language.java.metamodel.node.JavaTypePrimitive;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
@@ -73,7 +73,7 @@ public class JavaExecutorSupport {
 
     final SLNode                  abstractContext;
 
-    final SLGraphSession          session;
+    final SLSimpleGraphSession session;
     final ByPropertyFinder        currentContextFinder;
     final ByPropertyFinder        abstractContextFinder;
     final List<String>            includedPackages      = new LinkedList<String>();
@@ -92,7 +92,7 @@ public class JavaExecutorSupport {
     final String                  completeArtifactName;
 
     public JavaExecutorSupport(
-                                final SLNode currentContext, final SLGraphSession session, final String completeArtifactName )
+                                final SLNode currentContext, final SLSimpleGraphSession session, final String completeArtifactName )
         throws Exception {
         this.currentContext = currentContext;
         abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();

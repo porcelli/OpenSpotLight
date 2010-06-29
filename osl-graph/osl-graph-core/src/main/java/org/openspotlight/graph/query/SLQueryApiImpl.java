@@ -317,7 +317,7 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @param treeSession the tree session
      */
     public SLQueryApiImpl(
-                           final SLGraphSession session, final SLPersistentTreeSession treeSession, final SLQueryCache cache ) {
+                           final SLSimpleGraphSession session, final SLPersistentTreeSession treeSession, final SLQueryCache cache ) {
         super(session, treeSession);
         metadata = session.getMetadata();
         this.cache = cache;

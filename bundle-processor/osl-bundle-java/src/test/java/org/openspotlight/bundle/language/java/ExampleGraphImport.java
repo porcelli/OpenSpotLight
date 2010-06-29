@@ -56,7 +56,7 @@ import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -89,7 +89,7 @@ public class ExampleGraphImport {
         SLGraph graph = injector.getInstance(SLGraph.class);
 
 
-        final SLGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+        final SLSimpleGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
         final SLNode currentContextRootNode = session.createContext("Dynamo-1.0.1").getRootNode();
         final SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
         final JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode, abstractContextRootNode);

@@ -61,30 +61,6 @@ import java.util.Collection;
 public interface SLNode extends Comparable<SLNode>, LogableObject, SLElement {
 
     /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @return the t
-     */
-    public <T extends SLNode> T addChildNode( Class<T> clazz,
-                                         String name );
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param linkTypesForLinkDeletion the link types for link deletion
-     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
-     * @return the t
-     */
-    public <T extends SLNode> T addChildNode( Class<T> clazz,
-                                         String name,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                         Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion );
-
-    /**
      * Do cast.
      * 
      * @param clazz the clazz
@@ -98,13 +74,6 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, SLElement {
      * @return the caption
      */
     public String getCaption();
-
-    /**
-     * Sets the caption.
-     * 
-     * @param caption the caption
-     */
-    public void setCaption( String caption );
 
     /**
      * Gets the child node.
@@ -174,5 +143,15 @@ public interface SLNode extends Comparable<SLNode>, LogableObject, SLElement {
      * @return the type name
      */
     public String getTypeName();
+
+
+
+
+
+
+
+
+
+
 
 }

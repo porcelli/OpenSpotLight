@@ -54,7 +54,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
@@ -3672,7 +3672,7 @@ public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
     }
 
     @Override
-    protected SLGraphSession createSession() throws Exception {
+    protected SLSimpleGraphSession createSession() throws Exception {
         return factory.createRemoteGraphSession(user, pass, repository);
 
     }

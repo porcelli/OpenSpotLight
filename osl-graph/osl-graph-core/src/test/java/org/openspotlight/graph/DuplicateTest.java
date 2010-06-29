@@ -89,7 +89,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 public class DuplicateTest {
 
     SLGraph graph = null;
-    SLGraphSession session = null;
+    SLSimpleGraphSession session = null;
     AuthenticatedUser user = null;
 
     @Before

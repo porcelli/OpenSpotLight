@@ -60,7 +60,7 @@ import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
@@ -77,7 +77,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 public class InheritedNodeTest {
 
     @SuppressWarnings( "unchecked" )
-    private <T extends SLNode> T findByProperty( final SLGraphSession session,
+    private <T extends SLNode> T findByProperty( final SLSimpleGraphSession session,
                                                  final Class<T> type,
                                                  final String propertyName,
                                                  final String propertyValue )
@@ -128,7 +128,7 @@ public class InheritedNodeTest {
         final ExecutionContextFactory factory = injector.getInstance(ExecutionContextFactory.class);
         final ExecutionContext context = factory.createExecutionContext("sa", "sa", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                                                                         repository);
-        SLGraphSession graphSession = context.getGraphSession();
+        SLSimpleGraphSession graphSession = context.getGraphSession();
         JavaTypeClass newClass = graphSession.createContext("context").getRootNode().addChildNode(JavaTypeClass.class, "newClass");
         newClass.setQualifiedName("qualifiedName");
         newClass.setSimpleName("simpleName");

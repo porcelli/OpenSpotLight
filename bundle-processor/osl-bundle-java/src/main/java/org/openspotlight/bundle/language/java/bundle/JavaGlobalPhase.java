@@ -57,7 +57,7 @@ import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.processing.*;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +116,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
                 contexts.add(entry);
             }
         }
-        final SLGraphSession session = context.getGraphSession();
+        final SLSimpleGraphSession session = context.getGraphSession();
         for (final String entry : contexts) {
             final SLContext slContext = session.getContext(entry);
             Assertions.checkNotNull("slContext:" + entry, slContext);

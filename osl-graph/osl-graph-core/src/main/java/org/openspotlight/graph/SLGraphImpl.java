@@ -162,7 +162,7 @@ public class SLGraphImpl implements SLGraph {
     /**
      * {@inheritDoc}
      */
-    public SLGraphSession openSession(final AuthenticatedUser user,
+    public SLSimpleGraphSession openSession(final AuthenticatedUser user,
                                       final String repositoryName) throws SLGraphException {
         if (graphState == GraphState.SHUTDOWN) {
             throw new SLGraphException("Could not open graph session. Graph is shutdown.");

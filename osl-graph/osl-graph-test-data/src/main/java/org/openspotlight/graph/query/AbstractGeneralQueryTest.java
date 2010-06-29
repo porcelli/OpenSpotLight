@@ -57,7 +57,7 @@ import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.meta.SLMetadata;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
@@ -83,7 +83,7 @@ public abstract class AbstractGeneralQueryTest {
 
     protected abstract Callable<Void> createShutdownHandler();
 
-    protected abstract SLGraphSession createSession() throws Exception;
+    protected abstract SLSimpleGraphSession createSession() throws Exception;
 
     private static Callable<Void> shutdownHandler;
 
@@ -253,7 +253,7 @@ public abstract class AbstractGeneralQueryTest {
     /**
      * The session.
      */
-    protected SLGraphSession session;
+    protected SLSimpleGraphSession session;
 
 
     /**

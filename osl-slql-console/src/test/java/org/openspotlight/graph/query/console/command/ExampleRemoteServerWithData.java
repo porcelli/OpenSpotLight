@@ -91,7 +91,7 @@ public class ExampleRemoteServerWithData {
          * @param javaClass the java class
          * @param session   the session
          */
-        private void addClassImplementsInterfaceLinks(final SLGraphSession session,
+        private void addClassImplementsInterfaceLinks(final SLSimpleGraphSession session,
                                                       final SLNode root,
                                                       final Class<?> clazz,
                                                       final JavaClass javaClass) {
@@ -113,7 +113,7 @@ public class ExampleRemoteServerWithData {
          * @param javaClass the java class
          * @param session   the session
          */
-        private void addJavaClassContainsJavaClassMethod(final SLGraphSession session,
+        private void addJavaClassContainsJavaClassMethod(final SLSimpleGraphSession session,
                                                          final Class<?> clazz,
                                                          final JavaClass javaClass) {
             final Method[] methods = clazz.getDeclaredMethods();
@@ -132,7 +132,7 @@ public class ExampleRemoteServerWithData {
          * @param javaClass the java class
          * @param session   the session
          */
-        private void addJavaClassHirarchyLinks(final SLGraphSession session,
+        private void addJavaClassHirarchyLinks(final SLSimpleGraphSession session,
                                                final SLNode root,
                                                final Class<?> clazz,
                                                final JavaClass javaClass) {
@@ -155,7 +155,7 @@ public class ExampleRemoteServerWithData {
          * @param javaInterface the java interface
          * @param session       the session
          */
-        private void addJavaInterfaceContainsJavaMethod(final SLGraphSession session,
+        private void addJavaInterfaceContainsJavaMethod(final SLSimpleGraphSession session,
                                                         final Class<?> iFace,
                                                         final JavaInterface javaInterface) {
             final Method[] methods = iFace.getDeclaredMethods();
@@ -174,7 +174,7 @@ public class ExampleRemoteServerWithData {
          * @param javaInterface the java interface
          * @param session       the session
          */
-        private void addJavaInterfaceHirarchyLinks(final SLGraphSession session,
+        private void addJavaInterfaceHirarchyLinks(final SLSimpleGraphSession session,
                                                    final SLNode root,
                                                    final Class<?> iFace,
                                                    final JavaInterface javaInterface) {
@@ -237,7 +237,7 @@ public class ExampleRemoteServerWithData {
             final User simpleUser = securityFactory.createUser("testUser");
             AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
-            final SLGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+            final SLSimpleGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
 
             final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");
             final Collection<Class<?>> classes = this.loadClasses("java-util-classes.txt");

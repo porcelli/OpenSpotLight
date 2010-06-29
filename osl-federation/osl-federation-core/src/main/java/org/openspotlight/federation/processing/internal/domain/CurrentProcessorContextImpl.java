@@ -57,7 +57,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 
 import java.util.Map;
@@ -131,7 +131,7 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
             synchronized (groupContext.getLockObject()) {
                 try {
                     if (currentGroup != null && groupContext != null) {
-                        final SLGraphSession sess = groupContext.getSession();
+                        final SLSimpleGraphSession sess = groupContext.getSession();
                         sess.save();
                         final SLContext context = sess.createContext(bundleProcessor.getUniqueName().replaceAll("([ ]|[/]|[.])",
                                                                                                                 "-"));

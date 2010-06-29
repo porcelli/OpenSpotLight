@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.query.console;
 
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.query.console.command.Command;
 
 import java.util.Collection;
@@ -63,7 +63,7 @@ import java.util.Set;
 public class ConsoleState {
 
     /** The session. */
-    private SLGraphSession session              = null;
+    private SLSimpleGraphSession session              = null;
 
     /** The StringBuilder that holds the buffer. */
     private StringBuilder  sb                   = new StringBuilder();
@@ -91,7 +91,7 @@ public class ConsoleState {
      * @param session the session
      */
     public ConsoleState(
-                         SLGraphSession session ) {
+                         SLSimpleGraphSession session ) {
         this.session = session;
     }
 
@@ -215,7 +215,7 @@ public class ConsoleState {
      * 
      * @return the session
      */
-    public SLGraphSession getSession() {
+    public SLSimpleGraphSession getSession() {
         return session;
     }
 

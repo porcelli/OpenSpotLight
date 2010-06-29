@@ -125,7 +125,7 @@ public class SLGraphTest extends BaseGraphTest {
     }
 
     @Override
-    public SLGraphSession openSession() throws SLGraphException {
+    public SLSimpleGraphSession openSession() throws SLGraphException {
         return graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 }

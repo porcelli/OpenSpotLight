@@ -83,7 +83,7 @@ public class SLGraphCollatorTest {
 
     private static SLGraph graph;
 
-    private static SLGraphSession session;
+    private static SLSimpleGraphSession session;
 
     private static AuthenticatedUser user;
 

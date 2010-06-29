@@ -54,7 +54,7 @@ import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.*;
 import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
@@ -103,7 +103,7 @@ public class JavaGraphNodeSupport {
     private final SLNode                abstractContextRootNode;
 
     /** The session. */
-    private final SLGraphSession        session;
+    private final SLSimpleGraphSession session;
 
     /** The nodes from this context. */
     private final Map<String, JavaType> nodesFromThisContext     = new TreeMap<String, JavaType>();
@@ -126,7 +126,7 @@ public class JavaGraphNodeSupport {
      * @param abstractContextRootNode the abstract context root node
      */
     public JavaGraphNodeSupport(
-                                 final SLGraphSession session, final SLNode currentContextRootNode,
+                                 final SLSimpleGraphSession session, final SLNode currentContextRootNode,
                                  final SLNode abstractContextRootNode ) {
         checkNotNull("session", session);
         checkNotNull("currentContextRootNode", currentContextRootNode);

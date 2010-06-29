@@ -51,7 +51,7 @@ package org.openspotlight.bundle.language.java.resolver;
 import org.openspotlight.bundle.common.SLBundleException;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.IncludedResult;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.ResultOrder;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.exception.SLNodeNotFoundException;
@@ -78,7 +78,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
     private TypeResolver<T>         typeResolver                      = null;
 
     /** The graph session. */
-    private SLGraphSession          graphSession                      = null;
+    private SLSimpleGraphSession graphSession                      = null;
 
     /** Class that defines the method super type. */
     private Class<? extends SLNode> methodSuperType                   = null;
@@ -110,7 +110,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      * @param propertyMethodDefinitionOrderName property name that defines the order of method parameter definition
      */
     public MethodResolver(
-                           final AbstractTypeResolver<T> typeResolver, final SLGraphSession graphSession,
+                           final AbstractTypeResolver<T> typeResolver, final SLSimpleGraphSession graphSession,
                            final Class<? extends SLNode> methodSuperType, final Class<? extends SLLink> typeMethodLink,
                            final Class<? extends SLLink> methodParameterDefinitionLink, final String propertySimpleMethodName,
                            final String propertyMethodDefinitionOrderName ) {

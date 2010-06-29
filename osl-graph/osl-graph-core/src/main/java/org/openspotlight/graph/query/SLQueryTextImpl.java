@@ -49,7 +49,7 @@
 package org.openspotlight.graph.query;
 
 import org.apache.log4j.Logger;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 
@@ -79,7 +79,7 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
      * @param textQuery the text query
      */
     public SLQueryTextImpl(
-                            final SLGraphSession session, final SLPersistentTreeSession treeSession,
+                            final SLSimpleGraphSession session, final SLPersistentTreeSession treeSession,
                             final SLQueryTextInternal textQuery ) {
         super(session, treeSession);
         lock = session.getLockObject();

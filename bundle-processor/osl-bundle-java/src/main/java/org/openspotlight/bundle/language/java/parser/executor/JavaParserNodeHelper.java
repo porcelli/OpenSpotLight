@@ -58,7 +58,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.slf4j.Logger;
@@ -68,12 +68,12 @@ public class JavaParserNodeHelper {
     private final SLNode         currentContext;
 
     private final SLNode         abstractContext;
-    private final SLGraphSession session;
+    private final SLSimpleGraphSession session;
 
     private final Logger         logger = LoggerFactory.getLogger(getClass());
 
     public JavaParserNodeHelper(
-                                 final SLNode currentContext, final SLGraphSession session ) {
+                                 final SLNode currentContext, final SLSimpleGraphSession session ) {
         Assertions.checkNotNull("currentContext", currentContext);
         Assertions.checkNotNull("session", session);
         try {

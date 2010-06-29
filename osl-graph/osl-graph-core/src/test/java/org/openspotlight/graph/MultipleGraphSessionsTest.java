@@ -69,7 +69,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 public class MultipleGraphSessionsTest {
 
     private static SLGraph graph = null;
-    private static SLGraphSession session = null;
+    private static SLSimpleGraphSession session = null;
     private static AuthenticatedUser user;
 
     @AfterClass
@@ -99,9 +99,9 @@ public class MultipleGraphSessionsTest {
     // FIXME test this again
     @Test
     public void testMultipleSessions() throws AbstractFactoryException, Exception {
-        final SLGraphSession session = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
+        final SLSimpleGraphSession session = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
                 SLConsts.DEFAULT_REPOSITORY_NAME);
-        final SLGraphSession session2 = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
+        final SLSimpleGraphSession session2 = MultipleGraphSessionsTest.graph.openSession(MultipleGraphSessionsTest.user,
                 SLConsts.DEFAULT_REPOSITORY_NAME);
 
         final SLNode abstractTestNode = session.createContext("abstractTest").getRootNode();

@@ -67,7 +67,7 @@ import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
 
 public abstract class BaseGraphTest {
 
-    protected static SLGraphSession session;
+    protected static SLSimpleGraphSession session;
     /**
      * The java class node.
      */
@@ -101,7 +101,7 @@ public abstract class BaseGraphTest {
         clearSession();
     }
 
-    public abstract SLGraphSession openSession() throws SLGraphException;
+    public abstract SLSimpleGraphSession openSession() throws SLGraphException;
 
     /**
      * Adds the add multiple link empty case.

@@ -100,7 +100,7 @@ public class SLGraphMetadataPropertiesTest {
     /**
      * The session.
      */
-    private static SLGraphSession session;
+    private static SLSimpleGraphSession session;
 
     /**
      * The user.
