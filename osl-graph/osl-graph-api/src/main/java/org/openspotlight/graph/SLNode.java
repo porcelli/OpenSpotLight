@@ -51,107 +51,95 @@ package org.openspotlight.graph;
 import org.openspotlight.graph.meta.SLMetaNodeType;
 import org.openspotlight.log.LogableObject;
 
-import java.util.Collection;
+import java.util.Comparator;
 
 /**
  * The Interface SLNode.
- * 
+ *
  * @author Vitor Hugo Chagas
  */
-public interface SLNode extends Comparable<SLNode>, LogableObject, SLElement {
+public abstract class SLNode implements Comparable<SLNode>, LogableObject, SLElement {
 
     /**
      * Do cast.
-     * 
+     *
      * @param clazz the clazz
      * @return the t
      */
-    public <T extends SLNode> T doCast( Class<T> clazz );
+    public abstract <T extends SLNode> T doCast(Class<T> clazz);
 
     /**
      * Gets the caption.
-     * 
+     *
      * @return the caption
      */
-    public String getCaption();
+    public abstract String getCaption();
 
     /**
      * Gets the child node.
-     * 
+     *
      * @param clazz the clazz
      * @return the child node
      */
-    public <T extends SLNode> Iterable<T> getChildrenNodes( Class<T> clazz );
+    public abstract <T extends SLNode> Iterable<T> getChildrenNodes(Class<T> clazz);
 
     /**
      * Gets the context.
-     * 
+     *
      * @return the context
      */
-    public SLContext getContext();
+    public abstract SLContext getContext();
 
     /**
      * Gets the iD.
-     * 
+     *
      * @return the iD
      */
-    public String getID();
+    public abstract String getID();
 
     /**
      * Gets the meta type.
-     * 
+     *
      * @return the meta type or null if its a simple node
      */
-    public SLMetaNodeType getMetaType();
+    public abstract SLMetaNodeType getMetaType();
 
     /**
      * Gets the name.
-     * 
+     *
      * @return the name
      */
-    public String getName();
+    public abstract String getName();
 
     /**
      * Gets the node.
-     * 
+     *
      * @param clazz the clazz
-     * @param name the name
+     * @param name  the name
      * @return the node
      */
-    public <T extends SLNode> T getChildNode( Class<T> clazz,
-                                         String name );
+    public abstract <T extends SLNode> T getChildNode(Class<T> clazz,
+                                                      String name);
 
     /**
      * Gets the parent.
-     * 
+     *
      * @return the parent
      */
-    public SLNode getParent();
+    public abstract SLNode getParent();
 
 
     /**
-     *
      * @return the node weight, initially got from its SLNode inherited type.
      */
-    public int getWeight();
+    public abstract int getWeight();
 
-    
 
     /**
      * Gets the type name.
-     * 
+     *
      * @return the type name
      */
-    public String getTypeName();
-
-
-
-
-
-
-
-
-
-
-
+    public abstract String getTypeName();
+    
 }

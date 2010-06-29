@@ -10,6 +10,9 @@ import java.util.Set;
  * Created by User: feu - Date: Jun 29, 2010 - Time: 3:27:29 PM
  */
 public interface SLElement {
+
+
+    
     /**
      * Gets the iD.
      *
@@ -85,7 +88,6 @@ public interface SLElement {
      * @param endColumn       the end column
      * @param statement       the statement
      * @param artifactId      the artifact id
-     * @param artifactVersion the artifact version
      * @return the sL line reference
      */
     public void addLineReference(int startLine,
@@ -93,8 +95,8 @@ public interface SLElement {
                                  int startColumn,
                                  int endColumn,
                                  String statement,
-                                 String artifactId,
-                                 String artifactVersion);
+                                 String artifactId);
+
 
 
 }

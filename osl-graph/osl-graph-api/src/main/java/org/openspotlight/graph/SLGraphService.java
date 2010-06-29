@@ -7,7 +7,7 @@ public interface SLGraphService {
 
     public SLSimpleGraphSession openSimpleSession();
 
-    public SLEntireGraphSession openEntireSession();
+    public SLEntireGraphSession openEntireSession(String artifactId);
 
     public void shutdown();
 

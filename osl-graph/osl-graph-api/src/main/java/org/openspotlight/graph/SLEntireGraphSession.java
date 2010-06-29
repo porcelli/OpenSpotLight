@@ -7,8 +7,10 @@ import java.util.Collection;
  */
 public interface SLEntireGraphSession extends SLSimpleGraphSession {
 
+    TODO review transients
 
 
+    TODO DO NOT FORGET TO USE THE ARTIFACT_ID DURRING CREATE METHODS
     /**
      * Adds the link.
      *
@@ -17,7 +19,7 @@ public interface SLEntireGraphSession extends SLSimpleGraphSession {
      * @param target    the target
      * @return the l
      */
-    public <L extends SLLink> L addLink(Class<L> linkClass,
+    public <L extends SLLink> L createLink(Class<L> linkClass,
                                         SLNode source,
                                         SLNode target);
 
@@ -29,18 +31,9 @@ public interface SLEntireGraphSession extends SLSimpleGraphSession {
      * @param target    the target
      * @return the l
      */
-    public <L extends SLLink> L addBidirectionalLink(Class<L> linkClass,
+    public <L extends SLLink> L createBidirectionalLink(Class<L> linkClass,
                                                      SLNode source,
                                                      SLNode target);
-
-
-    /**
-     * Creates the context.
-     *
-     * @param id the id
-     * @return the sL context
-     */
-    public SLContext createContext(String id, String caption);
 
 
     /**
@@ -56,7 +49,7 @@ public interface SLEntireGraphSession extends SLSimpleGraphSession {
      * @param name  the name
      * @return the t
      */
-    public <T extends SLNode> T addChildNode(SLNode parent, Class<T> clazz,
+    public <T extends SLNode> T createChildNode(SLNode parent, Class<T> clazz,
                                              String name);
 
     /**
@@ -68,7 +61,7 @@ public interface SLEntireGraphSession extends SLSimpleGraphSession {
      * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
      * @return the t
      */
-    public <T extends SLNode> T addChildNode(SLNode parent, Class<T> clazz,
+    public <T extends SLNode> T createChildNode(SLNode parent, Class<T> clazz,
                                              String name,
                                              Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                              Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion);
@@ -79,5 +72,12 @@ public interface SLEntireGraphSession extends SLSimpleGraphSession {
      * @param caption the caption
      */
     public void setNodeCaption(SLNode node, String caption);
+
+    /**
+     * Sets the caption.
+     *
+     * @param caption the caption
+     */
+    public void setContextCaption(SLContext context, String caption);
 
 }

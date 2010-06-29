@@ -49,6 +49,7 @@
 package org.openspotlight.graph.util;
 
 import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,6 +58,14 @@ public class GraphManipulationSupport {
 
     public static Collection<Class<? extends SLLink>> links( final Class<? extends SLLink>... linkTypes ) {
         return Arrays.asList(linkTypes);
+    }
+
+    public static SomeReallyBigNumber getTypeRank(Class<? extends SLNode> type){
+        1 - creates sha1 from type annotated with DefineHierarchy . This is a number.
+        2 - count how many children its father have to get to the actual type.
+        3 - sum this count
+        4 - return this number
+
     }
 
 }
