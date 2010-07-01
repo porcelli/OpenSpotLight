@@ -270,4 +270,32 @@ public interface SLSimpleGraphSession {
     public void flushChangedProperties(SLNode node);
 
 
+    /**
+     * Gets the node.
+     *
+     * @param clazz the clazz
+     * @param name  the name
+     * @return the node
+     */
+    public abstract <T extends SLNode> T getChildNode(SLNode node, Class<T> clazz,
+                                                      String name);
+
+
+    /**
+     * Gets the child node.
+     *
+     * @param clazz the clazz
+     * @return the child node
+     */
+    public abstract <T extends SLNode> Iterable<T> getChildrenNodes(SLNode node, Class<T> clazz);
+
+    /**
+     * Gets the parent.
+     *
+     * @return the parent
+     */
+    public abstract SLNode getParentNode(SLNode node);
+
+
+
 }
