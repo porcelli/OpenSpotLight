@@ -51,19 +51,18 @@ package org.openspotlight.remote.server;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STStorageSession;
 
 public class DefaultUserAuthenticator implements UserAuthenticator {
 
-    private final JcrConnectionDescriptor descriptor;
+    private final STStorageSession session;
     private final SecurityFactory         securityFactory;
 
-    public DefaultUserAuthenticator(
-                                     final JcrConnectionDescriptor descriptor ) {
+    public DefaultUserAuthenticator(STStorageSession session) {
         try {
-            this.descriptor = descriptor;
+            this.session = session;
             securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -76,7 +75,7 @@ public class DefaultUserAuthenticator implements UserAuthenticator {
                                final String clientHost ) {
         try {
             final User simpleUser = securityFactory.createUser(userName);
-            securityFactory.createIdentityManager(descriptor).authenticate(simpleUser, password);
+            securityFactory.createIdentityManager(session).authenticate(simpleUser, password);
             return true;
         } catch (final Exception e) {
             Exceptions.catchAndLog(e);

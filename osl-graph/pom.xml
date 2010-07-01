@@ -15,8 +15,6 @@
 
 	<modules>
 		<module>osl-graph-api</module>
-		<module>osl-graph-persistence-api</module>
-		<module>osl-graph-persistence</module>
 		<module>osl-graph-core</module>
 		<module>osl-graph-client</module>
 		<module>osl-graph-server</module>

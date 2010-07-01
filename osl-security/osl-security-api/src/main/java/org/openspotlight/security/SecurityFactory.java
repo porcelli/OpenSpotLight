@@ -49,11 +49,11 @@
 package org.openspotlight.security;
 
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.SystemUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityManager;
+import org.openspotlight.storage.STStorageSession;
 
 /**
  * A factory for creating Security related components.
@@ -66,18 +66,18 @@ public abstract class SecurityFactory extends AbstractFactory {
     /**
      * Creates a new Identity Manager.
      * 
-     * @param jcrDescriptor the jcr descriptor
+     * @param session
      * @return the identity manager
      */
-    public abstract IdentityManager createIdentityManager( JcrConnectionDescriptor jcrDescriptor );
+    public abstract IdentityManager createIdentityManager( STStorageSession session);
 
     /**
      * Creates a new specialized PolicyEnforcement for Graphs.
      * 
-     * @param jcrDescriptor the jcr descriptor
+     * @param session
      * @return the policy enforcement
      */
-    public abstract PolicyEnforcement createGraphPolicyEnforcement( JcrConnectionDescriptor jcrDescriptor );
+    public abstract PolicyEnforcement createGraphPolicyEnforcement( STStorageSession session );
 
     /**
      * Creates a System User.

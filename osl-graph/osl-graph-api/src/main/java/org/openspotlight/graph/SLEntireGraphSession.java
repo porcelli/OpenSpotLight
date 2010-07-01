@@ -7,10 +7,6 @@ import java.util.Collection;
  */
 public interface SLEntireGraphSession extends SLSimpleGraphSession {
 
-    TODO review transients
-
-
-    TODO DO NOT FORGET TO USE THE ARTIFACT_ID DURRING CREATE METHODS
     /**
      * Adds the link.
      *

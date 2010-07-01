@@ -52,48 +52,53 @@ import org.openspotlight.common.Disposable;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
- * This class is used to wrap resources with lazy initialization. This also synchronizes the important methods using the
- * {@link LockContainer} passed on constructor.
- * 
+ * This class is used to wrap resources with lazy initialization. This also synchronizes the important methods using
+ * the Lock passed on the constructor
+ *
  * @author feu
  * @param <R>
  */
 public abstract class AtomicLazyResource<R> implements Disposable {
 
-    private R          reference = null;
+    private R reference = null;
+    private Lock lock;
+
 
     /**
-     * creates an new instance with a new lock object
+     * creates a new instance using the specified {@link Lock} .
+     *
+     * @param lock
      */
-    protected AtomicLazyResource() {
-        this.lock = new Lock();
+    protected AtomicLazyResource(
+            final Lock lock) {
+        this.lock = lock;
     }
 
     /**
-     * creates a new instance using the specified {@link LockContainer} internal lock.
-     * 
-     * @param lockContainer
+     * creates a new instance using the specified {@link Lock} .
      */
-    protected AtomicLazyResource(
-                                  final LockContainer lockContainer ) {
-        this.lock = lockContainer.getLockObject();
+    protected AtomicLazyResource() {
+        this.lock = new ReentrantLock();
     }
 
     /**
      * This method will be called before try to close resources. Why try? Because the wrapped resource "could" implement
      * {@link Disposable}, but this isn't mandatory.
-     * 
+     *
      * @param mayBeNullReference
      */
-    protected void afterTryToCloseResources( final R mayBeNullReference ) {
+    protected void afterTryToCloseResources(final R mayBeNullReference) {
 
     }
 
     public final void closeResources() {
         synchronized (this.lock) {
             if (this.reference instanceof Disposable) {
-                ((Disposable)this.reference).closeResources();
+                ((Disposable) this.reference).closeResources();
             }
             this.afterTryToCloseResources(this.reference);
         }
@@ -102,13 +107,14 @@ public abstract class AtomicLazyResource<R> implements Disposable {
 
     /**
      * Method used to newPair a new reference. It will be called once and within a synchronized block.
-     * 
+     *
      * @return
      */
     protected abstract R createReference() throws Exception;
 
     public final R get() throws SLRuntimeException {
-        synchronized (this.lock) {
+        try {
+            this.lock.tryLock();
             if (this.reference == null) {
                 try {
                     this.reference = this.createReference();
@@ -117,6 +123,8 @@ public abstract class AtomicLazyResource<R> implements Disposable {
                 }
             }
             return this.reference;
+        } finally {
+            this.lock.unlock();
         }
     }
 

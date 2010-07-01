@@ -48,17 +48,17 @@
  */
 package org.openspotlight.security;
 
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.authz.graph.PolicyEnforcementGraphImpl;
 import org.openspotlight.security.idm.SystemUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityManager;
 import org.openspotlight.security.idm.auth.IdentityManagerSimpleImpl;
+import org.openspotlight.storage.STStorageSession;
 
 /**
  * The Class SecurityFactoryImpl.
- * 
+ *
  * @author porcelli
  */
 public class SecurityFactoryImpl extends SecurityFactory {
@@ -67,7 +67,7 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public IdentityManager createIdentityManager( JcrConnectionDescriptor jcrDescriptor ) {
+    public IdentityManager createIdentityManager(STStorageSession session) {
         return new IdentityManagerSimpleImpl();
     }
 
@@ -75,7 +75,7 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public PolicyEnforcement createGraphPolicyEnforcement( JcrConnectionDescriptor jcrDescriptor ) {
+    public PolicyEnforcement createGraphPolicyEnforcement(STStorageSession session) {
         return new PolicyEnforcementGraphImpl();
     }
 
@@ -95,7 +95,7 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public User createUser( final String id ) {
+    public User createUser(final String id) {
         return new User() {
 
             public String getId() {

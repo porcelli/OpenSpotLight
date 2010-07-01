@@ -43,10 +43,6 @@
             <artifactId>log4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.openspotlight</groupId>
             <artifactId>osl-common</artifactId>
         </dependency>
@@ -72,47 +68,12 @@
         </dependency>
         <dependency>
             <groupId>org.openspotlight</groupId>
-            <artifactId>osl-jcr</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.openspotlight</groupId>
             <artifactId>osl-persistence-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.openspotlight</groupId>
             <artifactId>osl-bundle-java</artifactId>
             <optional>true</optional>
-        </dependency>
-        <!-- Apache Jackrabbit (JCR Implementation) -->
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-api</artifactId>
-            <!-- Exclude these since they are included in JDK 1.5 -->
-            <exclusions>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-core</artifactId>
-            <!-- Exclude these since they are included in JDK 1.5 -->
-            <exclusions>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
 </project>

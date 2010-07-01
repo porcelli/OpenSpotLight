@@ -169,12 +169,6 @@ public class SLCollections {
     public static <I> Collection<I> createNewCollection(final Class<? extends Iterable> collectionType,
                                                         final int initialSize) {
         if (Set.class.isAssignableFrom(collectionType)) {
-            return LockedCollections.createSetWithLock(new UnsafeDummyLockContainer(), new HashSet<I>(initialSize));
-        } else if (List.class.isAssignableFrom(collectionType)) {
-            return LockedCollections.createListWithLock(new UnsafeDummyLockContainer(), new ArrayList<I>(initialSize));
-        } else if (Collection.class.isAssignableFrom(collectionType)) {
-            return LockedCollections.createCollectionWithLock(new UnsafeDummyLockContainer(), new ArrayList<I>(initialSize));
-        } else if (Set.class.isAssignableFrom(collectionType)) {
             return new HashSet<I>(initialSize);
         } else if (Queue.class.isAssignableFrom(collectionType)) {
             return new PriorityQueue<I>(initialSize);

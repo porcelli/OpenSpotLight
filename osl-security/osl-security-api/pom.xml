@@ -28,10 +28,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-jcr</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-simple-persist</artifactId>
 		</dependency>
 		<dependency>

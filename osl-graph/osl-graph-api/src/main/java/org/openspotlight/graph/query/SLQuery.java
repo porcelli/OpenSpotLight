@@ -57,7 +57,7 @@ import java.util.Collection;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQuery extends LockContainer {
+public interface SLQuery {
 
     /**
      * The Enum SortMode.

@@ -58,15 +58,15 @@ import org.openspotlight.graph.annotation.SLProperty;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Column" )
-public interface Column extends SLNode {
+public abstract class Column extends SLNode {
 
     @SLProperty
-    public String getDataType();
+    public abstract String getDataType();
 
     @SLProperty
-    public Integer getOrder();
+    public abstract Integer getOrder();
 
-    public void setDataType( String dataType );
+    public abstract void setDataType( String dataType );
 
-    public void setOrder( Integer order );
+    public abstract void setOrder( Integer order );
 }

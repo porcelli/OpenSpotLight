@@ -60,12 +60,4 @@ public class GraphManipulationSupport {
         return Arrays.asList(linkTypes);
     }
 
-    public static SomeReallyBigNumber getTypeRank(Class<? extends SLNode> type){
-        1 - creates sha1 from type annotated with DefineHierarchy . This is a number.
-        2 - count how many children its father have to get to the actual type.
-        3 - sum this count
-        4 - return this number
-
-    }
-
 }

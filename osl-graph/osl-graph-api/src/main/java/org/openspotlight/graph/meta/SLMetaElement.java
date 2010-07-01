@@ -53,7 +53,7 @@ package org.openspotlight.graph.meta;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetaElement extends LockContainer {
+public interface SLMetaElement {
 
     /**
      * Gets the metadata.

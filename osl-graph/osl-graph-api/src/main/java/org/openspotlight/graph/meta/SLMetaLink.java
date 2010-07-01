@@ -49,8 +49,6 @@
 package org.openspotlight.graph.meta;
 
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-import org.openspotlight.graph.persistence.SLPersistentNode;
 
 import java.util.Collection;
 import java.util.List;
@@ -119,18 +117,5 @@ public interface SLMetaLink extends SLMetaElement {
      */
     public String getDescription();
 
-    /**
-     * Gets the visibility.
-     * 
-     * @return the visibility
-     */
-    public VisibilityLevel getVisibility();
-
-    /**
-     * Gets the node.
-     * 
-     * @return the node
-     */
-    public SLPersistentNode getNode();
 
 }

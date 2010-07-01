@@ -57,6 +57,6 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Database Constraint" )
-public interface DatabaseConstraint extends SLNode {
+public abstract class DatabaseConstraint extends SLNode {
 
 }

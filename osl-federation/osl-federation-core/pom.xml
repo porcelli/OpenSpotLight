@@ -87,11 +87,6 @@
             <artifactId>quartz</artifactId>
         </dependency>
 
-        <!-- Java Content Repository API -->
-        <dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>

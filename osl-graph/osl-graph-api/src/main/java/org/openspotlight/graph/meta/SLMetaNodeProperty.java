@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.meta;
 
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
 import java.io.Serializable;
 
@@ -80,10 +79,4 @@ public interface SLMetaNodeProperty extends SLMetaElement {
      */
     public Class<? extends Serializable> getType();
 
-    /**
-     * Gets the visibility.
-     * 
-     * @return the visibility
-     */
-    public VisibilityLevel getVisibility();
 }

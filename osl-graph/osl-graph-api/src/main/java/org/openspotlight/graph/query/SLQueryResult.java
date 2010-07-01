@@ -50,12 +50,14 @@ package org.openspotlight.graph.query;
 
 import org.openspotlight.graph.SLNode;
 
+import java.util.List;
+
 /**
  * The Interface SLQueryResult.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQueryResult extends LockContainer {
+public interface SLQueryResult {
 
     /**
      * Gets the nodes.

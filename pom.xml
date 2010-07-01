@@ -78,7 +78,6 @@
         <module>osl-common</module>
         <module>osl-persistence</module>
         <module>osl-remote-support</module>
-        <module>osl-jcr</module>
         <module>osl-simple-persist</module>
         <module>osl-logger</module>
         <module>osl-security</module>
@@ -233,11 +232,6 @@
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
-                <artifactId>osl-jcr</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openspotlight</groupId>
                 <artifactId>osl-simple-persist</artifactId>
                 <version>${pom.version}</version>
             </dependency>
@@ -284,16 +278,6 @@
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-graph-api</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openspotlight</groupId>
-                <artifactId>osl-graph-persistence-api</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openspotlight</groupId>
-                <artifactId>osl-graph-persistence</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>
@@ -497,13 +481,6 @@
                 <artifactId>commons-beanutils</artifactId>
                 <version>1.8.0</version>
             </dependency>
-            <!-- Java Content Repository API -->
-            <dependency>
-                <groupId>javax.jcr</groupId>
-                <artifactId>jcr</artifactId>
-                <version>1.0.1</version>
-                <scope>compile</scope>
-            </dependency>
             <dependency>
                 <groupId>org.modeshape</groupId>
                 <artifactId>modeshape-common</artifactId>
@@ -655,51 +632,6 @@
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>1.2.12</version>
-            </dependency>
-            <!-- Apache Jackrabbit (JCR Implementation) -->
-            <dependency>
-                <groupId>org.apache.jackrabbit</groupId>
-                <artifactId>jackrabbit-api</artifactId>
-                <version>1.6.0</version>
-                <!-- Exclude these since they are included in JDK 1.5 -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>xml-apis</groupId>
-                        <artifactId>xml-apis</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>xerces</groupId>
-                        <artifactId>xercesImpl</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.jackrabbit</groupId>
-                <artifactId>jackrabbit-jcr-rmi</artifactId>
-                <version>1.5.0</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>slf4j-api</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.jackrabbit</groupId>
-                <artifactId>jackrabbit-core</artifactId>
-                <version>1.6.0</version>
-                <!-- Exclude these since they are included in JDK 1.5 -->
-                <exclusions>
-                    <exclusion>
-                        <groupId>xml-apis</groupId>
-                        <artifactId>xml-apis</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>xerces</groupId>
-                        <artifactId>xercesImpl</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <!-- Databases and JDBC Drivers -->
             <dependency>

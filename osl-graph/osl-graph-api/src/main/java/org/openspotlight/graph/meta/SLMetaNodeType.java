@@ -52,10 +52,7 @@ import org.openspotlight.graph.meta.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.meta.SLMetadata.LogicOperator;
 import org.openspotlight.graph.meta.SLMetadata.MetaNodeTypeProperty;
 import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLRecursiveMode;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.exception.SLRenderHintNotFoundException;
-import org.openspotlight.graph.persistence.SLPersistentNode;
 
 import java.util.Collection;
 import java.util.List;
@@ -142,13 +139,6 @@ public interface SLMetaNodeType extends SLMetaElement {
     public String getDescription();
 
     /**
-     * Gets the visibility.
-     * 
-     * @return the visibility
-     */
-    public VisibilityLevel getVisibility();
-
-    /**
      * Gets the parent.
      * 
      * @return the parent
@@ -156,26 +146,15 @@ public interface SLMetaNodeType extends SLMetaElement {
     public SLMetaNodeType getParent();
 
     /**
-     * Gets the node.
-     * 
-     * @return the node
-     */
-    public SLPersistentNode getNode();
-
-    /**
      * Search sub meta node types.
      * 
-     * @param recursiveMode the recursive mode
-     * @param visibility the visibility
      * @param property2Find the property2 find
      * @param logicOp the logic op
      * @param booleanOp the boolean op
      * @param values the values
      * @return the collection< sl meta node type>
      */
-    public Collection<SLMetaNodeType> searchSubMetaNodeTypes( final SLRecursiveMode recursiveMode,
-                                                              final VisibilityLevel visibility,
-                                                              final MetaNodeTypeProperty property2Find,
+    public Collection<SLMetaNodeType> searchSubMetaNodeTypes( final MetaNodeTypeProperty property2Find,
                                                               final LogicOperator logicOp,
                                                               final BooleanOperator booleanOp,
                                                               final List<String> values );
