@@ -53,28 +53,31 @@ import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.StringIDSupport;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
-
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:48:26 AM
  */
 public class STUniqueKeyImpl implements STUniqueKey {
     private final int hashCode;
 
-    public STUniqueKeyImpl(STLocalKey localKey, STUniqueKey parentKey, STPartition partition, STRepositoryPath repositoryPath) {
+    @Override
+    public String toString() {
+        return "STUniqueKeyImpl{" +
+                "keyAsString='" + getKeyAsString() + '\'' +
+                '}';
+    }
+
+    public STUniqueKeyImpl(STLocalKey localKey, String parentKeyAsString, STPartition partition, STRepositoryPath repositoryPath) {
+        if(localKey==null) throw new IllegalArgumentException();
+        if(repositoryPath==null) throw new IllegalArgumentException();
         this.localKey = localKey;
-        this.parentKey = parentKey;
+        this.parentKeyAsString = parentKeyAsString;
         this.partition = partition;
         this.repositoryPath = repositoryPath;
 
         int result = repositoryPath != null ? repositoryPath.hashCode() : 0;
         result = 31 * result + (partition != null ? partition.hashCode() : 0);
         result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
-        result = 31 * result + (parentKey != null ? parentKey.hashCode() : 0);
+        result = 31 * result + (parentKeyAsString != null ? parentKeyAsString.hashCode() : 0);
         hashCode = result;
 
     }
@@ -85,16 +88,15 @@ public class STUniqueKeyImpl implements STUniqueKey {
 
     private final STLocalKey localKey;
 
-    private final STUniqueKey parentKey;
+    private final String parentKeyAsString;
 
     private transient String keyAsString = null;
-
 
 
     @Override
     public String getKeyAsString() {
         String value = keyAsString;
-        if(value==null){
+        if (value == null) {
             value = StringIDSupport.getUniqueKeyAsStringHash(this);
             keyAsString = value;
         }
@@ -109,8 +111,8 @@ public class STUniqueKeyImpl implements STUniqueKey {
         return localKey;
     }
 
-    public STUniqueKey getParentKey() {
-        return parentKey;
+    public String getParentKeyAsString() {
+        return parentKeyAsString;
     }
 
     public STRepositoryPath getRepositoryPath() {
@@ -123,9 +125,10 @@ public class STUniqueKeyImpl implements STUniqueKey {
         if (o == null || getClass() != o.getClass()) return false;
 
         STUniqueKeyImpl uniqueKey = (STUniqueKeyImpl) o;
-        if(this.hashCode!=uniqueKey.hashCode) return false;
+        if (this.hashCode != uniqueKey.hashCode) return false;
         if (localKey != null ? !localKey.equals(uniqueKey.localKey) : uniqueKey.localKey != null) return false;
-        if (parentKey != null ? !parentKey.equals(uniqueKey.parentKey) : uniqueKey.parentKey != null) return false;
+        if (parentKeyAsString != null ? !parentKeyAsString.equals(uniqueKey.parentKeyAsString) : uniqueKey.parentKeyAsString != null)
+            return false;
         if (partition != null ? !partition.equals(uniqueKey.partition) : uniqueKey.partition != null) return false;
         if (repositoryPath != null ? !repositoryPath.equals(uniqueKey.repositoryPath) : uniqueKey.repositoryPath != null)
             return false;
@@ -138,18 +141,13 @@ public class STUniqueKeyImpl implements STUniqueKey {
         return hashCode;
     }
 
-    public int compareTo(STUniqueKey o) {
-        STUniqueKey thisKey = this;
-        STUniqueKey thatKey = o;
-        while (true) {
-            if (thisKey == null && thatKey == null) return 0;
-            if (thisKey != null && thatKey == null) return 1;
-            if (thisKey == null && thatKey != null) return -1;
-            int result = thisKey.getLocalKey().compareTo(thatKey.getLocalKey());
-            if (result != 0) return result;
-            thisKey = thisKey.getParentKey();
-            thatKey = thatKey.getParentKey();
-        }
+    public int compareTo(STUniqueKey that) {
+        if (this == null && that == null) return 0;
+        if (this != null && that == null) return 1;
+        if (this == null && that != null) return -1;
+        int result = this.getLocalKey().compareTo(that.getLocalKey());
+        return result;
+
     }
 
 }

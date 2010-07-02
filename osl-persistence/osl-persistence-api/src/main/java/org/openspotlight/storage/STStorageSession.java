@@ -71,7 +71,7 @@ public interface STStorageSession {
 
     interface STPartitionMethods extends STNodeEntryFactory {
 
-        STUniqueKeyBuilder createKey(String nodeEntryName, boolean rootKey);
+        STUniqueKeyBuilder createKey(String nodeEntryName);
 
         Iterable<STNodeEntry> findByCriteria(STCriteria criteria);
 
@@ -81,7 +81,7 @@ public interface STStorageSession {
 
         public STCriteriaBuilder createCriteria();
 
-        STNodeEntryBuilder createWithName(String name, boolean rootKey);
+        STNodeEntryBuilder createWithName(String name);
 
         STStorageSessionInternalMethods getInternalMethods();
 
@@ -182,7 +182,7 @@ public interface STStorageSession {
 
     interface STStorageSessionInternalMethods {
 
-        STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name, boolean rootKey);
+        STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name);
 
         void propertySetProperty(org.openspotlight.storage.domain.node.STProperty stProperty, byte[] value);
 
@@ -201,7 +201,9 @@ public interface STStorageSession {
 
         STUniqueKeyBuilder withEntry(String propertyName, String value);
 
-        STUniqueKeyBuilder withParent(STPartition partition, String nodeEntryName, boolean rootKey);
+        STUniqueKeyBuilder withParent(STPartition partition, String nodeEntryName);
+        
+        STUniqueKeyBuilder withParent(String parentId);
 
         STUniqueKey andCreate();
 

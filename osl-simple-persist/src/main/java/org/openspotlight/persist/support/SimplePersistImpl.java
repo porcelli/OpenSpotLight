@@ -308,8 +308,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                                           Descriptors descriptors,
                                           String propertyName) throws Exception {
         String name = internalGetNodeName(descriptors.bean);
-        boolean isRootNode = internalGetRootMode(descriptors.bean);
-        STNodeEntryFactory.STNodeEntryBuilder builder = currentSession.withPartition(currentPartition).createWithName(name, isRootNode);
+        STNodeEntryFactory.STNodeEntryBuilder builder = currentSession.withPartition(currentPartition).createWithName(name);
 
         if (parentNode != null) {
             builder.withParent(parentNode);
@@ -360,13 +359,6 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
     }
 
 
-    private <T> boolean internalGetRootMode(T bean) {
-        return this.<T>internalGetRootMode((Class<T>) bean.getClass());
-    }
-
-    private <T> boolean internalGetRootMode(Class<T> type) {
-        return type.isAnnotationPresent(PersistAsRootNode.class);
-    }
 
     private <T> String internalGetNodeType(T bean) {
         return this.<T>internalGetNodeType((Class<T>) bean.getClass());
@@ -731,7 +723,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                     String typeAsString = nodeEntry.getPropertyAsString(currentSession, NODE_ENTRY_TYPE);
                     if (typeAsString != null && typeAsString.equals(beanType.getName())) {
                         if (parent != null) {
-                            return nodeEntry.isChildOf(parent);
+                            return nodeEntry.isDirectChildOf(parent);
                         }
                         return true;
                     }

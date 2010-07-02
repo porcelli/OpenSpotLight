@@ -92,7 +92,6 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 public abstract class AbstractFileSystemLoadingStressTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractFileSystemLoadingStressTest.class);
     private static ArtifactSource artifactSource;
     protected Injector injector;
 
@@ -141,12 +140,12 @@ public abstract class AbstractFileSystemLoadingStressTest {
         artifactSource.setActive(true);
         artifactSource.setBinary(false);
         artifactSource.setInitialLookup("/Users/feu/much-data");
-//        artifactSource.setInitialLookup("./");
+        artifactSource.setInitialLookup("./");
         final ArtifactSourceMapping mapping = new ArtifactSourceMapping();
         mapping.setSource(artifactSource);
         artifactSource.getMappings().add(mapping);
         mapping.setFrom("files");
-//        mapping.setFrom("src");
+        mapping.setFrom("src");
         mapping.setTo("OSL");
         artifactSource.getMappings().add(mapping);
         mapping.getIncludeds().add("**/*");
@@ -199,22 +198,22 @@ public abstract class AbstractFileSystemLoadingStressTest {
 
     @Test
     public void shouldProcessJarFile() throws Exception {
-        logger.debug("about to load all items from its origin");
+        System.out.println("about to load all items from its origin");
         reloadArtifacts();
-        logger.debug("finished to load all items from its origin");
+        System.out.println("finished to load all items from its origin");
 
         final ExecutionContext context = contextFactory.createExecutionContext("", "", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
-        logger.debug("about to load item names from persistent storage");
+        System.out.println("about to load item names from persistent storage");
         Iterable<String> list = context.getPersistentArtifactManager().getInternalMethods().retrieveNames(StringArtifact.class, null);
-        logger.debug("finished to load item names from persistent storage");
+        System.out.println("finished to load item names from persistent storage");
 
         int size = 50;
 //        size = 1 ;//TODO remove this
         final AtomicInteger loadedSize = new AtomicInteger(0);
         final AtomicInteger nullSize = new AtomicInteger(0);
         final AtomicInteger fileContentNotEqualsSize = new AtomicInteger(0);
-        logger.debug("about to load item contents from persistent storage");
+        System.out.println("about to load item contents from persistent storage");
         List<Callable<Void>> callables = newArrayList();
         for (final String s : list) {
             callables.add(new Callable<Void>() {
@@ -224,6 +223,7 @@ public abstract class AbstractFileSystemLoadingStressTest {
                     List<String> lazyLoadedContent = file.getContent().get(context.getPersistentArtifactManager().getSimplePersist());
                     if (lazyLoadedContent == null) {
                         nullSize.incrementAndGet();
+                        System.out.println( s + " got null content");
                     }
 
                     if (lazyLoadedContent == null || !lazyLoadedContent.equals(getFileContentAsStringList(file.getOriginalName()))) {
@@ -239,7 +239,7 @@ public abstract class AbstractFileSystemLoadingStressTest {
 
         }
         ExecutorInstance.INSTANCE.invokeAll(callables);
-        logger.debug("finished to load item contents from persistent storage");
+        System.out.println("finished to load item contents from persistent storage");
         assertThat(loadedSize.get() >= size, is(true));
         assertThat(nullSize.get(), is(0));
         assertThat(fileContentNotEqualsSize.get(), is(0));

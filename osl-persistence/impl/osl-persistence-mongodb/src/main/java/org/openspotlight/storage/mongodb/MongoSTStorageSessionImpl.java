@@ -86,6 +86,8 @@ import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
 import static org.openspotlight.common.Pair.newPair;
 import static org.openspotlight.common.util.Conversion.convert;
+import static org.openspotlight.storage.StringIDSupport.getNodeEntryName;
+import static org.openspotlight.storage.StringIDSupport.getPartition;
 
 
 /**
@@ -104,16 +106,11 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
             ID = "_id",
             LOCAL_ID = "node_local_id",
             PARENT_ID = "node_parent_id",
-            MULTIPLE_PARENT_PATH = "multiple_parent_path",
             MPP_KEY = "mpp_key",
-            MPP_PARTITION = "mpp_partition",
-            MPP_ROOT = "mpp_root",
-            MPP_KEY_NAME = "mpp_key_name",
             KEY_NAMES = "node_key_names",
             PROPERTIES = "node_properties",
             INDEXED = "node_indexed",
-            ENTRY_NAME = "node_entry_name",
-            ROOT_NODE = "node_root";
+            ENTRY_NAME = "node_entry_name";
 
 
     private final Mongo mongo;
@@ -326,24 +323,9 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         ensureIndexed(partition, entry.getNodeEntryName(), null, LOCAL_ID);
 
         final STUniqueKey uniqueId = entry.getUniqueKey();
-        final STUniqueKey parentId = uniqueId.getParentKey();
+        final String parentId = uniqueId.getParentKeyAsString();
         if (parentId != null) {
-            reference.put(PARENT_ID, parentId.getKeyAsString());
-            BasicDBList parentList = new BasicDBList();
-            STUniqueKey tempParentId = parentId;
-            while (tempParentId != null) {
-                BasicDBObject parentListItem = new BasicDBObject();
-                parentListItem.put(MPP_KEY, tempParentId.getKeyAsString());
-                parentListItem.put(MPP_PARTITION, tempParentId.getPartition().getPartitionName());
-                parentListItem.put(MPP_ROOT, tempParentId.getLocalKey().isRootKey());
-                parentListItem.put(MPP_KEY_NAME, tempParentId.getLocalKey().getNodeEntryName());
-                for (STKeyEntry ke : tempParentId.getLocalKey().getEntries()) {
-                    parentListItem.put(ke.getPropertyName(), ke.getValue());
-                }
-                parentList.add(parentListItem);
-                tempParentId = tempParentId.getParentKey();
-            }
-            reference.put(MULTIPLE_PARENT_PATH, parentList);
+            reference.put(PARENT_ID, parentId);
         }
         BasicDBObject key = new BasicDBObject();
         List<String> keyNames = newArrayList();
@@ -357,7 +339,6 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         reference.put(KEY_NAMES, keyNames);
         reference.put(INDEXED, key);
         reference.put(ENTRY_NAME, uniqueId.getLocalKey().getNodeEntryName());
-        reference.put(ROOT_NODE, uniqueId.getLocalKey().isRootKey());
         if (STFlushMode.AUTO.equals(getFlushMode())) {
             DBCollection col = getCachedCollection(partition, entry.getNodeEntryName());
             col.save(reference);
@@ -498,13 +479,12 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
 
     @Override
     protected STNodeEntry internalNodeEntryGetParent(STPartition partition, STNodeEntry stNodeEntry) throws Exception {
-        STUniqueKey parentKey = stNodeEntry.getUniqueKey().getParentKey();
+        String parentKey = stNodeEntry.getUniqueKey().getParentKeyAsString();
         if (parentKey == null) return null;
-        STPartition parentPartition = parentKey.getPartition();
-        String parentName = parentKey.getLocalKey().getNodeEntryName();
-        String parentIdAsString = parentKey.getKeyAsString();
+        STPartition parentPartition = getPartition(parentKey, partitionFactory);
+        String parentName = getNodeEntryName(parentKey);
         BasicDBObject parameter = new BasicDBObject();
-        parameter.put(ID, parentIdAsString);
+        parameter.put(ID, parentKey);
         DBCollection collection = getCachedCollection(parentPartition, parentName);
         DBObject result = collection.findOne(parameter);
         return convertToNode(parentPartition, result);
@@ -555,11 +535,10 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     private STNodeEntry convertToNode(STPartition partition, DBObject dbObject) throws Exception {
         DBObject keyAsDbObj = (DBObject) dbObject.get(INDEXED);
         List<String> keyNames = (List<String>) dbObject.get(KEY_NAMES);
-        List<DBObject> list = (List<DBObject>) dbObject.get(MULTIPLE_PARENT_PATH);
 
 
         STUniqueKeyBuilder keyBuilder = this.withPartition(partition).createKey(
-                (String) dbObject.get(ENTRY_NAME), (Boolean) dbObject.get(ROOT_NODE));
+                (String) dbObject.get(ENTRY_NAME));
         for (String s : keyAsDbObj.keySet()) {
             if (keyNames.contains(s)) {
                 String valueAsString = convert(keyAsDbObj.get(s), String.class);
@@ -567,19 +546,9 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
                 keyBuilder.withEntry(s, valueAsString);
             }
         }
-
-        if (list != null) {
-            for (DBObject o : list) {
-                keyBuilder = keyBuilder.withParent(partitionFactory.getPartitionByName((String) o.get(MPP_PARTITION)),
-                        (String) o.get(MPP_KEY_NAME), (Boolean) o.get(MPP_ROOT));
-                for (String s : o.keySet()) {
-                    if (MPP_KEY.equals(s) || MPP_KEY_NAME.equals(s) || MPP_PARTITION.equals(s) || MPP_ROOT.equals(s))
-                        continue;
-                    String valueAsString = (String) o.get(s);
-                    if (NULL_VALUE.equals(valueAsString)) valueAsString = null;
-                    keyBuilder.withEntry(s, valueAsString);
-                }
-            }
+        String parentId = (String)dbObject.get(PARENT_ID);
+        if(parentId!=null){
+            keyBuilder.withParent(parentId);
         }
         STUniqueKey uniqueKey = keyBuilder.andCreate();
         STNodeEntry node = new STNodeEntryImpl(uniqueKey, false);

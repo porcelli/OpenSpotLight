@@ -48,7 +48,6 @@
  */
 package org.openspotlight.persist.test;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
@@ -61,12 +60,10 @@ import org.junit.Test;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
-import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
-import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
@@ -764,7 +761,7 @@ public class SimplePersistSupportTest {
 
         final STNodeEntry node = simplePersist.convertBeanToNode(parentNode, obj3);
 
-        assertThat(node.isChildOf(parentNode), is(true));
+        assertThat(node.isDirectChildOf(parentNode), is(true));
         final LevelThreeObj convertedFromJcr = simplePersist.convertNodeToBean(node);
         assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
         assertThat(obj3.getProperty(), Is.is(convertedFromJcr.getProperty()));
@@ -803,7 +800,7 @@ public class SimplePersistSupportTest {
         obj1.setValue(5);
         levelThree.getObjList().add(obj1);
         final STNodeEntry asJcr = simplePersist.convertBeanToNode(parentNode, levelThree);
-        assertThat(asJcr.isChildOf(parentNode), is(true));
+        assertThat(asJcr.isDirectChildOf(parentNode), is(true));
         final LevelThreeObj anotherLevelThree = simplePersist.convertNodeToBean(asJcr);
 
         assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
