@@ -94,13 +94,13 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
     private class STPartitionMethodsImpl implements STPartitionMethods {
 
-        public STNodeEntryFactory.STNodeEntryBuilder createWithName(STStorageSession session, String name, boolean rootKey) {
-            return new STNodeEntryBuilderImpl(name, partition, rootKey);
+        public STNodeEntryFactory.STNodeEntryBuilder createWithName(STStorageSession session, String name) {
+            return new STNodeEntryBuilderImpl(name, partition);
         }
 
 
-        public STNodeEntryFactory.STNodeEntryBuilder createWithName(String name, boolean rootKey) {
-            return this.createWithName(AbstractSTStorageSession.this, name, rootKey);
+        public STNodeEntryFactory.STNodeEntryBuilder createWithName(String name) {
+            return this.createWithName(AbstractSTStorageSession.this, name);
         }
 
 
@@ -170,8 +170,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         public STUniqueKey createNewSimpleKey(String... nodePaths) {
             STUniqueKey parentKey = null;
             for (String path : nodePaths) {
-                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry>emptySet(), path, false),
-                        parentKey, partition, repositoryPath);
+                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry>emptySet(), path),
+                        parentKey.getKeyAsString(), partition, repositoryPath);
             }
             return parentKey;
         }
@@ -180,8 +180,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             STNodeEntry parent = null;
             STUniqueKey parentKey = null;
             for (String nodePath : nodePaths) {
-                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry>emptySet(), nodePath, false),
-                        parentKey, partition, repositoryPath);
+                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections.<STKeyEntry>emptySet(), nodePath),
+                        parentKey!=null?parentKey.getKeyAsString():null, partition, repositoryPath);
                 parent = new STNodeEntryImpl(parentKey, false);
                 handleNewItem(parent);
             }
@@ -189,8 +189,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             return parent;
         }
 
-        public STUniqueKeyBuilder createKey(String nodeEntryName, boolean rootKey) {
-            return new STUniqueKeyBuilderImpl(nodeEntryName, partition, rootKey);
+        public STUniqueKeyBuilder createKey(String nodeEntryName) {
+            return new STUniqueKeyBuilderImpl(nodeEntryName, partition);
         }
 
         private final STPartition partition;
@@ -808,8 +808,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
 
 
-        public STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name, boolean rootKey) {
-            return withPartition(partition).createWithName(AbstractSTStorageSession.this, name, rootKey).withParent(stNodeEntry);
+        public STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(STNodeEntry stNodeEntry, String name) {
+            return withPartition(partition).createWithName(AbstractSTStorageSession.this, name).withParent(stNodeEntry);
         }
 
 
@@ -898,13 +898,10 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
     private final class STNodeEntryBuilderImpl implements STNodeEntryFactory.STNodeEntryBuilder {
 
-        private STNodeEntryBuilderImpl(String name, STPartition partition, boolean rootKey) {
+        private STNodeEntryBuilderImpl(String name, STPartition partition) {
             this.name = name;
             this.partition = partition;
-            this.rootKey = rootKey;
         }
-
-        private final boolean rootKey;
 
         private final STPartition partition;
 
@@ -936,16 +933,16 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
 
         public STNodeEntry andCreate() {
-            STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name, rootKey);
+            STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
 
-            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parentKey, partition, repositoryPath);
+            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey, parentKey!=null?parentKey.getKeyAsString():null, partition, repositoryPath);
             STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey, false);
             if (getFlushMode().equals(STFlushMode.AUTO)) {
 
                 AbstractSTStorageSession.this.handleNewItem(result);
             } else {
                 R ref = AbstractSTStorageSession.this.createReferenceIfNecessary(partition, result);
-                Pair<STNodeEntry, R> pair = newPair((STNodeEntry)result,ref);
+                Pair<STNodeEntry, R> pair = newPair((STNodeEntry) result, ref);
                 AbstractSTStorageSession.this.newNodes.add(pair);
             }
             return result;
@@ -1016,26 +1013,24 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
     private class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
 
         private Set<STKeyEntry> localEntries = newHashSet();
-        private Set<String> namesInsideEntries = newHashSet();
         private final String name;
-        private final boolean rootKey;
 
         private final STPartition partition;
 
         private final STUniqueKeyBuilderImpl child;
 
-        public STUniqueKeyBuilderImpl(String name, STPartition partition, boolean rootKey) {
+        private String parentKey;
+
+        public STUniqueKeyBuilderImpl(String name, STPartition partition) {
             this.name = name;
             this.partition = partition;
             this.child = null;
-            this.rootKey = rootKey;
         }
 
-        private STUniqueKeyBuilderImpl(String name, STUniqueKeyBuilderImpl child, STPartition partition, boolean rootKey) {
+        private STUniqueKeyBuilderImpl(String name, STUniqueKeyBuilderImpl child, STPartition partition) {
             this.name = name;
             this.child = child;
             this.partition = partition;
-            this.rootKey = rootKey;
         }
 
         public STUniqueKeyBuilder withEntry(String propertyName, String value) {
@@ -1043,18 +1038,30 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
             return this;
         }
 
-        public STUniqueKeyBuilder withParent(STPartition newPartition, String nodeEntryName, boolean rootKey) {
-            return new STUniqueKeyBuilderImpl(nodeEntryName, this, newPartition, rootKey);
+        public STUniqueKeyBuilder withParent(STPartition newPartition, String nodeEntryName) {
+            return new STUniqueKeyBuilderImpl(nodeEntryName, this, newPartition);
+        }
+
+        @Override
+        public STUniqueKeyBuilder withParent(String parentId) {
+             this.parentKey =parentId;
+            return this;
         }
 
         public STUniqueKey andCreate() {
 
             STUniqueKey currentKey = null;
             STUniqueKeyBuilderImpl currentBuilder = this;
-            while (currentBuilder != null) {
-                STLocalKey localKey = new STLocalKeyImpl(currentBuilder.localEntries, currentBuilder.name, rootKey);
-                currentKey = new STUniqueKeyImpl(localKey, currentKey, partition, repositoryPath);
-                currentBuilder = currentBuilder.child;
+            if (parentKey == null) {
+                do{
+                    STLocalKey localKey = new STLocalKeyImpl(currentBuilder.localEntries, currentBuilder.name);
+                    currentKey = new STUniqueKeyImpl(localKey, currentKey!=null?currentKey.getKeyAsString():null, currentBuilder.partition, repositoryPath);
+                    currentBuilder = currentBuilder.child;
+                } while (currentBuilder != null) ;
+            } else {
+                STLocalKey localKey = new STLocalKeyImpl(currentBuilder.localEntries, currentBuilder.name);
+                currentKey = new STUniqueKeyImpl(localKey, parentKey, partition, repositoryPath);
+
             }
             return currentKey;
 

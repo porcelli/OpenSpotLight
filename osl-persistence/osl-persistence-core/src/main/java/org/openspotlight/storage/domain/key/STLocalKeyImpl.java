@@ -66,14 +66,8 @@ import static java.util.Collections.sort;
 public class STLocalKeyImpl implements STLocalKey {
     private final int hashCode;
 
-    public boolean isRootKey() {
-        return rootKey;
-    }
 
-    private final boolean rootKey;
-
-    public STLocalKeyImpl(Set<STKeyEntry> entries, String nodeEntryName, boolean rootKey) {
-        this.rootKey = rootKey;
+    public STLocalKeyImpl(Set<STKeyEntry> entries, String nodeEntryName) {
         if (nodeEntryName == null) throw new IllegalArgumentException();
         Set<String> names = newHashSet();
         for (STKeyEntry entry : entries) {

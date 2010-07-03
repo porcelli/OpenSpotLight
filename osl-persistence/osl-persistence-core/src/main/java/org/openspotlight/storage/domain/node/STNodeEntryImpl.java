@@ -112,14 +112,9 @@ public class STNodeEntryImpl implements STNodeEntry {
         this.lastLoad = -1;
     }
 
-    public boolean isChildOf(STNodeEntry possibleParent) {
-        STUniqueKey parentKey = this.getUniqueKey();
-        STUniqueKey possibleParentKey = possibleParent.getUniqueKey();
-        while (parentKey != null) {
-            if (parentKey.equals(possibleParentKey)) return true;
-            parentKey = parentKey.getParentKey();
-        }
-        return false;
+    public boolean isDirectChildOf(STNodeEntry possibleParent) {
+        String parentKey = possibleParent.getUniqueKey().getParentKeyAsString();
+        return parentKey!=null && parentKey.endsWith(this.getUniqueKey().getKeyAsString());
     }
 
     public String getNodeEntryName() {
@@ -302,8 +297,8 @@ public class STNodeEntryImpl implements STNodeEntry {
         }
     }
 
-    public STNodeEntryBuilder createWithName(final STStorageSession session, final String name, boolean rootKey) {
-        return session.withPartition(partition).getInternalMethods().nodeEntryCreateWithName(this, name, rootKey);
+    public STNodeEntryBuilder createWithName(final STStorageSession session, final String name) {
+        return session.withPartition(partition).getInternalMethods().nodeEntryCreateWithName(this, name);
 
     }
 

@@ -69,7 +69,7 @@ public interface STUniqueKey extends STAData , Comparable<STUniqueKey>{
 
     STLocalKey getLocalKey();
 
-    STUniqueKey getParentKey();
+    String getParentKeyAsString();
 
     STRepositoryPath getRepositoryPath();
 

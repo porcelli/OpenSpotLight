@@ -69,7 +69,4 @@ public interface STLocalKey extends STAData, Comparable<STLocalKey> {
     String getNodeEntryName();
 
     String getKeyAsString();
-
-    boolean isRootKey();
-
 }

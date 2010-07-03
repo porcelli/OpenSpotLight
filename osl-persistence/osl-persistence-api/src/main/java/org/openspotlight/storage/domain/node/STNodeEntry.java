@@ -63,7 +63,7 @@ public interface STNodeEntry extends STAData, STNodeEntryFactory {
 
     public void forceReload();
 
-    public boolean isChildOf(STNodeEntry possibleParent);
+    public boolean isDirectChildOf(STNodeEntry possibleParent);
 
     String getNodeEntryName();
 

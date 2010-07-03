@@ -61,7 +61,7 @@ import org.openspotlight.storage.domain.key.STUniqueKey;
  */
 public interface STNodeEntryFactory {
 
-    STNodeEntryBuilder createWithName(STStorageSession session, String name, boolean rootKey);
+    STNodeEntryBuilder createWithName(STStorageSession session, String name);
 
     interface STNodeEntryBuilder {
         

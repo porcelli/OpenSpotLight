@@ -764,7 +764,7 @@ public class SimplePersistSupportTest {
 
         final STNodeEntry node = simplePersist.convertBeanToNode(parentNode, obj3);
 
-        assertThat(node.isChildOf(parentNode), is(true));
+        assertThat(node.isDirectChildOf(parentNode), is(true));
         final LevelThreeObj convertedFromJcr = simplePersist.convertNodeToBean(node);
         assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
         assertThat(obj3.getProperty(), Is.is(convertedFromJcr.getProperty()));
@@ -803,7 +803,7 @@ public class SimplePersistSupportTest {
         obj1.setValue(5);
         levelThree.getObjList().add(obj1);
         final STNodeEntry asJcr = simplePersist.convertBeanToNode(parentNode, levelThree);
-        assertThat(asJcr.isChildOf(parentNode), is(true));
+        assertThat(asJcr.isDirectChildOf(parentNode), is(true));
         final LevelThreeObj anotherLevelThree = simplePersist.convertNodeToBean(asJcr);
 
         assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
