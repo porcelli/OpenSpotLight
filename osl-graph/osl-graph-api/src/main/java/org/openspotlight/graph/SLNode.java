@@ -76,6 +76,13 @@ public abstract class SLNode implements Comparable<SLNode>, LogableObject, SLEle
     public abstract String getCaption();
 
     /**
+     * Sets the caption.
+     *
+     * @param caption the caption
+     */
+    public abstract void setCaption(String caption);
+
+    /**
      * Gets the context.
      *
      * @return the context

@@ -5,11 +5,8 @@ package org.openspotlight.graph;
  */
 public interface SLGraphService {
 
-    public SLSimpleGraphSession openSimpleSession();
+    public SLGraph openSimpleGraph();
 
-    public SLEntireGraphSession openEntireSession(String artifactId);
-
-    public void shutdown();
-
+    public SLGraph openEntireGraph(String artifactId);
 
 }

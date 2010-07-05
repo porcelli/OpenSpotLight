@@ -5,7 +5,9 @@ import java.util.Collection;
 /**
  * Created by User: feu - Date: Jun 29, 2010 - Time: 4:29:33 PM
  */
-public interface SLEntireGraphSession extends SLSimpleGraphSession {
+public interface SLFullGraphSession extends SLSimpleGraphSession {
+
+    //TODO DO NOT FORGET TO USE THE ARTIFACT_ID DURRING CREATE METHODS
 
     /**
      * Adds the link.
@@ -45,7 +47,7 @@ public interface SLEntireGraphSession extends SLSimpleGraphSession {
      * @param name  the name
      * @return the t
      */
-    public <T extends SLNode> T createChildNode(SLNode parent, Class<T> clazz,
+    public <T extends SLNode> T createNode(SLNode parent, Class<T> clazz,
                                              String name);
 
     /**
@@ -57,17 +59,10 @@ public interface SLEntireGraphSession extends SLSimpleGraphSession {
      * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
      * @return the t
      */
-    public <T extends SLNode> T createChildNode(SLNode parent, Class<T> clazz,
+    public <T extends SLNode> T createNode(SLNode parent, Class<T> clazz,
                                              String name,
                                              Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
                                              Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion);
-
-    /**
-     * Sets the caption.
-     *
-     * @param caption the caption
-     */
-    public void setNodeCaption(SLNode node, String caption);
 
     /**
      * Sets the caption.
