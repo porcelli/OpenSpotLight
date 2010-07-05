@@ -15,7 +15,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
  * Created by User: feu - Date: Jun 9, 2010 - Time: 4:51:47 PM
  */
 public class StringIDSupport {
-    private static final String SEP = "!!";
+    private static final String SEP = "__";
 
     public static String getNodeEntryName(String uniqueKeyAsString) {
         return uniqueKeyAsString.split(SEP)[2];
