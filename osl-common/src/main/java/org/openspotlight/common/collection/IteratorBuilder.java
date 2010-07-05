@@ -87,7 +87,8 @@ public class IteratorBuilder {
                     if (iterator.hasNext()) {
                         tmp = iterator.next();
                     }
-                    if (tmp != null) {
+                    while (tmp != null) {
+
                         try {
                             if (referee.canAcceptAsNewItem(tmp)) {
                                 cachedOrigin = tmp;
@@ -96,6 +97,10 @@ public class IteratorBuilder {
                         } catch (Exception e) {
                             throw logAndReturnNew(e, SLRuntimeException.class);
                         }
+                        if (iterator.hasNext())
+                            tmp = iterator.next();
+                        else
+                            tmp = null;
                     }
                     return false;
                 } else {

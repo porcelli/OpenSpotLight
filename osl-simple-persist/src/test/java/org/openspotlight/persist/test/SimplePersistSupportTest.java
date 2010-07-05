@@ -761,7 +761,6 @@ public class SimplePersistSupportTest {
 
         final STNodeEntry node = simplePersist.convertBeanToNode(parentNode, obj3);
 
-        assertThat(node.isDirectChildOf(parentNode), is(true));
         final LevelThreeObj convertedFromJcr = simplePersist.convertNodeToBean(node);
         assertThat(obj3.getKey(), Is.is(convertedFromJcr.getKey()));
         assertThat(obj3.getProperty(), Is.is(convertedFromJcr.getProperty()));
@@ -800,7 +799,6 @@ public class SimplePersistSupportTest {
         obj1.setValue(5);
         levelThree.getObjList().add(obj1);
         final STNodeEntry asJcr = simplePersist.convertBeanToNode(parentNode, levelThree);
-        assertThat(asJcr.isDirectChildOf(parentNode), is(true));
         final LevelThreeObj anotherLevelThree = simplePersist.convertNodeToBean(asJcr);
 
         assertThat(anotherLevelThree.getObjList().size(), Is.is(1));
@@ -1016,7 +1014,10 @@ public class SimplePersistSupportTest {
         propertyObj.setName("obj 1");
         propertyObj.setValue(5);
         levelTwo.setPropertyObj(propertyObj);
-        simplePersist.convertBeanToNode(parentNode, levelTwo);
+        STNodeEntry newnode = simplePersist.convertBeanToNode(parentNode, levelTwo);
+        System.err.println(">>> " + newnode.getUniqueKey().getKeyAsString());
+        System.err.println(">>> " + newnode.getParent(session));
+        System.err.println(">>> " + newnode.getParent(session).getParent(session));
 
         final Iterable<PropertyObj> result = simplePersist.findByProperties(parentNode, PropertyObj.class, new String[] {"name"},
                                                                             new Object[] {"obj 1"});

@@ -112,11 +112,6 @@ public class STNodeEntryImpl implements STNodeEntry {
         this.lastLoad = -1;
     }
 
-    public boolean isDirectChildOf(STNodeEntry possibleParent) {
-        String parentKey = possibleParent.getUniqueKey().getParentKeyAsString();
-        return parentKey!=null && parentKey.endsWith(this.getUniqueKey().getKeyAsString());
-    }
-
     public String getNodeEntryName() {
         return nodeEntryName;
     }

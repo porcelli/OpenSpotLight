@@ -723,7 +723,14 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                     String typeAsString = nodeEntry.getPropertyAsString(currentSession, NODE_ENTRY_TYPE);
                     if (typeAsString != null && typeAsString.equals(beanType.getName())) {
                         if (parent != null) {
-                            return nodeEntry.isDirectChildOf(parent);
+                            STNodeEntry parentNode = nodeEntry;
+                            while(parentNode!=null){
+                                if(parentNode.getUniqueKey().equals(parent.getUniqueKey())){
+                                    return true;
+                                }
+                                parentNode = parentNode.getParent(currentSession);
+                            }
+                            return false;
                         }
                         return true;
                     }
