@@ -97,6 +97,15 @@ public interface SLSimpleGraphSession {
     public SLContext getContext(String id);
 
     /**
+     * Gets the node by id.
+     *
+     * @param id the id
+     * @return the node by id
+     * @throws SLNodeNotFoundException node not found
+     */
+    public SLNode getNode(String id) throws SLNodeNotFoundException;
+
+    /**
      * Gets the links.
      *
      * @param linkClass the link class
@@ -184,15 +193,6 @@ public interface SLSimpleGraphSession {
      * @return the metadata
      */
     public SLMetadata getMetadata();
-
-    /**
-     * Gets the node by id.
-     *
-     * @param id the id
-     * @return the node by id
-     * @throws SLNodeNotFoundException node not found
-     */
-    public SLNode getNodeByID(String id) throws SLNodeNotFoundException;
 
     /**
      * Gets the nodes by link.
@@ -316,6 +316,15 @@ public interface SLSimpleGraphSession {
     public <L extends SLLink> L createTransientBidirectionalLink(Class<L> linkClass,
                                                      SLNode source,
                                                      SLNode target);
+
+
+    public Iterable<SLNode> findNodes(String name);
+
+    public <T extends SLNode> Iterable<T> findNodes(Class<T> clazz, String name);
+
+    public Iterable<SLNode> findNodes(SLContext context, String name);
+
+    public <T extends SLNode> Iterable<T> findNodes(Class<T> clazz, SLContext context, String name);
 
 
 }
