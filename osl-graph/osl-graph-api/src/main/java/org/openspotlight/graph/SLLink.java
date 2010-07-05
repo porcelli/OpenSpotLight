@@ -111,6 +111,4 @@ public interface SLLink extends Comparable<SLLink>, SLElement {
      */
     public boolean isBidirectional();
 
-
-
 }

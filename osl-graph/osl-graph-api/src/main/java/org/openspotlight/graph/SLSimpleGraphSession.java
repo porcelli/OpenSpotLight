@@ -297,5 +297,25 @@ public interface SLSimpleGraphSession {
     public abstract SLNode getParentNode(SLNode node);
 
 
+    /**
+     * Adds the node.
+     *
+     * @param clazz the clazz
+     * @param name  the name
+     * @return the t
+     */
+    public <T extends SLNode> T createTransientNode(SLNode parent, Class<T> clazz,
+                                             String name);
+
+
+    public <L extends SLLink> L createTransientLink(Class<L> linkClass,
+                                        SLNode source,
+                                        SLNode target);
+
+    
+    public <L extends SLLink> L createTransientBidirectionalLink(Class<L> linkClass,
+                                                     SLNode source,
+                                                     SLNode target);
+
 
 }
