@@ -54,9 +54,9 @@ package org.openspotlight.graph;
  */
 public interface SLGraphSessionFactory {
 
-    public SLGraphSession openSimple();
+    public SLSimpleGraphSession openSimple();
 
-    public SLGraphSession openFull();
+    public SLFullGraphSession openFull();
 
-    public SLGraphSession openFull(String artifactId);
+    public SLFullGraphSession openFull(String artifactId);
 }
