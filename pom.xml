@@ -150,7 +150,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <aggregate>tue</aggregate>
+                    <aggregate>true</aggregate>
                     <outputName>surefire-report-${project.artifactId}</outputName>
                     <outputDirectory>${PROJECT_HOME}/target/site</outputDirectory>
                     <showSuccess>false</showSuccess>

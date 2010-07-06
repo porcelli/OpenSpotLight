@@ -46,47 +46,32 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.exception;
+package org.openspotlight.graph.manipulation;
+
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
 
 /**
- * The Class SLGraphSessionException.
- * 
+ * The Interface SLSimpleGraphSession. All methods in this interface throw a
+ * {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level. Any security
+ * violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
+ *
  * @author Vitor Hugo Chagas
  */
-public class SLGraphSessionException extends SLGraphRuntimeException {
+public interface SLGraphTransientWriter {
+    
+    public <T extends SLNode> T createTransientNode(SLNode parent, Class<T> clazz,
+                                             String name);
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
 
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
-     * @param cause the cause
-     */
-    public SLGraphSessionException(
-                                    String message, Throwable cause ) {
-        super(message, cause);
-    }
+    public <L extends SLLink> L createTransientLink(Class<L> linkClass,
+                                        SLNode source,
+                                        SLNode target);
 
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
-     */
-    public SLGraphSessionException(
-                                    String message ) {
-        super(message);
-    }
+    
+    public <L extends SLLink> L createTransientBidirectionalLink(Class<L> linkClass,
+                                                     SLNode source,
+                                                     SLNode target);
 
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param cause the cause
-     */
-    public SLGraphSessionException(
-                                    Throwable cause ) {
-        super(cause);
-    }
 
 }

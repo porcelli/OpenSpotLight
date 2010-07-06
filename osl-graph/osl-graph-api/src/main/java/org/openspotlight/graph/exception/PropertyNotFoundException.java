@@ -49,44 +49,33 @@
 package org.openspotlight.graph.exception;
 
 /**
- * The Class SLGraphSessionException.
+ * The Class PropertyNotFoundException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLGraphSessionException extends SLGraphRuntimeException {
+public class PropertyNotFoundException extends SLGraphException {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Instantiates a new sL graph manipulation exception.
+     * Instantiates a new sL node property not found exception.
      * 
-     * @param message the message
-     * @param cause the cause
+     * @param name the name
      */
-    public SLGraphSessionException(
-                                    String message, Throwable cause ) {
-        super(message, cause);
+    public PropertyNotFoundException(
+                                        String name ) {
+        super("Property " + name + " does not exit.");
     }
 
     /**
-     * Instantiates a new sL graph manipulation exception.
+     * Instantiates a new sL node property not found exception.
      * 
-     * @param message the message
-     */
-    public SLGraphSessionException(
-                                    String message ) {
-        super(message);
-    }
-
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
+     * @param name the name
      * @param cause the cause
      */
-    public SLGraphSessionException(
-                                    Throwable cause ) {
-        super(cause);
+    public PropertyNotFoundException(
+                                        String name, Throwable cause ) {
+        super("Property " + name + " does not exit.", cause);
     }
-
 }
