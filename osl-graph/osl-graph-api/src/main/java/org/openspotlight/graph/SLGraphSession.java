@@ -65,7 +65,7 @@ public interface SLGraphSession {
 
     SLGraphReader location(SLGraphLocation location);
 
-    SLGraphReader local();
+    SLGraphTransientWriter local();
 
     SLGraphWriter toSync();
 
