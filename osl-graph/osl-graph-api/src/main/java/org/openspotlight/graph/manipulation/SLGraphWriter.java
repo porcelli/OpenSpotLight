@@ -46,47 +46,88 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.exception;
+
+package org.openspotlight.graph.manipulation;
+
+import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLNode;
+
+import java.util.Collection;
 
 /**
- * The Class SLGraphSessionException.
- * 
- * @author Vitor Hugo Chagas
+ * Created by User: feu - Date: Jun 29, 2010 - Time: 4:29:33 PM
  */
-public class SLGraphSessionException extends SLGraphRuntimeException {
+public interface SLGraphWriter {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
-     * @param cause the cause
-     */
-    public SLGraphSessionException(
-                                    String message, Throwable cause ) {
-        super(message, cause);
-    }
+    //TODO DO NOT FORGET TO USE THE ARTIFACT_ID DURRING CREATE METHODS
 
     /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
+     * Adds the link.
+     *
+     * @param linkClass the link class
+     * @param source    the source
+     * @param target    the target
+     * @return the l
      */
-    public SLGraphSessionException(
-                                    String message ) {
-        super(message);
-    }
+    public <L extends SLLink> L createLink(Class<L> linkClass,
+                                        SLNode source,
+                                        SLNode target);
 
     /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param cause the cause
+     * Adds the link.
+     *
+     * @param linkClass the link class
+     * @param source    the source
+     * @param target    the target
+     * @return the l
      */
-    public SLGraphSessionException(
-                                    Throwable cause ) {
-        super(cause);
-    }
+    public <L extends SLLink> L createBidirectionalLink(Class<L> linkClass,
+                                                     SLNode source,
+                                                     SLNode target);
+
+
+    /**
+     * Save.
+     */
+    public void save();
+
+
+    /**
+     * Adds the node.
+     *
+     * @param clazz the clazz
+     * @param name  the name
+     * @return the t
+     */
+    public <T extends SLNode> T createNode(SLNode parent, Class<T> clazz,
+                                             String name);
+
+    /**
+     * Adds the node.
+     *
+     * @param clazz                          the clazz
+     * @param name                           the name
+     * @param linkTypesForLinkDeletion       the link types for link deletion
+     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
+     * @return the t
+     */
+    public <T extends SLNode> T createNode(SLNode parent, Class<T> clazz,
+                                             String name,
+                                             Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
+                                             Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion);
+
+    /**
+     * Sets the caption.
+     *
+     * @param caption the caption
+     */
+    public void setContextCaption(SLContext context, String caption);
+
+    public void removeNode(SLNode node);
+
+    public void removeLink(SLLink link);
+
+    public void removeContext(SLContext context);
 
 }

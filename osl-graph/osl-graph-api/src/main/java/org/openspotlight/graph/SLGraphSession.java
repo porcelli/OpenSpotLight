@@ -46,47 +46,52 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.exception;
+
+package org.openspotlight.graph;
+
+import org.openspotlight.graph.manipulation.*;
+import org.openspotlight.remote.annotation.DisposeMethod;
+import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.idm.User;
 
 /**
- * The Class SLGraphSessionException.
- * 
- * @author Vitor Hugo Chagas
+ * Created by IntelliJ IDEA.
+ * User: porcelli
+ * Date: 05/07/2010
+ * Time: 10:29:47
+ * To change this template use File | Settings | File Templates.
  */
-public class SLGraphSessionException extends SLGraphRuntimeException {
+public interface SLGraphSession {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    SLGraphReader location(SLGraphLocation location);
 
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
-     * @param cause the cause
-     */
-    public SLGraphSessionException(
-                                    String message, Throwable cause ) {
-        super(message, cause);
-    }
+    SLGraphReader local();
+
+    SLGraphWriter toSync();
+
+    void flushChangedProperties(SLNode node);
+
+    SLGraphSessionMode getMode();
 
     /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
+     * Gets the policy enforcement.
+     *
+     * @return the policy enforcement
      */
-    public SLGraphSessionException(
-                                    String message ) {
-        super(message);
-    }
+    public PolicyEnforcement getPolicyEnforcement();
 
     /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param cause the cause
+     * Gets the user.
+     *
+     * @return the user
      */
-    public SLGraphSessionException(
-                                    Throwable cause ) {
-        super(cause);
-    }
+    User getUser();
 
+    /**
+     * Close.
+     */
+    @DisposeMethod(callOnTimeout = true)
+    void close();
+    
+    void shutdown();
 }

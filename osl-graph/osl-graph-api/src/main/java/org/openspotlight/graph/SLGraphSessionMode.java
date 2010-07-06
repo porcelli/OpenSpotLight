@@ -46,47 +46,16 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.exception;
+
+package org.openspotlight.graph;
 
 /**
- * The Class SLGraphSessionException.
- * 
- * @author Vitor Hugo Chagas
+ * Created by IntelliJ IDEA.
+ * User: porcelli
+ * Date: 06/07/2010
+ * Time: 11:48:15
+ * To change this template use File | Settings | File Templates.
  */
-public class SLGraphSessionException extends SLGraphRuntimeException {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
-     * @param cause the cause
-     */
-    public SLGraphSessionException(
-                                    String message, Throwable cause ) {
-        super(message, cause);
-    }
-
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
-     */
-    public SLGraphSessionException(
-                                    String message ) {
-        super(message);
-    }
-
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param cause the cause
-     */
-    public SLGraphSessionException(
-                                    Throwable cause ) {
-        super(cause);
-    }
-
+public enum SLGraphSessionMode {
+    SIMPLE, FULL
 }
