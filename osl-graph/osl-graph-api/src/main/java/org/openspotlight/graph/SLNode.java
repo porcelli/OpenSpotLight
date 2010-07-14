@@ -48,10 +48,7 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.meta.SLMetaNodeType;
 import org.openspotlight.log.LogableObject;
-
-import java.util.Comparator;
 
 /**
  * A node in the graph with properties, name, caption and its metadata information.
@@ -136,6 +133,7 @@ public abstract class SLNode implements Comparable<SLNode>, LogableObject,
 	 *            the clazz
 	 * @return the t
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends SLNode> T doCast(Class<T> clazz) {
 		return (T) this;
 	}

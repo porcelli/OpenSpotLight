@@ -13,10 +13,13 @@ import org.junit.Test;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLFullGraphSession;
 import org.openspotlight.graph.SLGraphLocation;
+import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.SLLinkDirection;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.manipulation.SLGraphReader;
 import org.openspotlight.graph.manipulation.SLGraphWriter;
+import org.openspotlight.graph.test.link.TypeExtends;
 import org.openspotlight.graph.test.node.JavaMember;
 import org.openspotlight.graph.test.node.JavaMemberField;
 import org.openspotlight.graph.test.node.JavaType;
@@ -519,6 +522,385 @@ public abstract class AbstractGraphTest {
 				.equals(rootClass2Node.getWeight()), is(false));
 		assertThat(rootClass1Node.getWeight().compareTo(
 				rootClass2Node.getWeight()) < 0, is(true));
+	}
+
+	public void shouldCreateAndRetrieveUnidirectionalLinksOnSameContext()
+			throws Exception {
+		SLGraphReader simpleFromLocation = simpleGraphSession
+				.location(location());
+		SLContext context1 = simpleFromLocation.getContext(context1());
+		SLGraphWriter writer = fullGraphSession.toSync();
+		String rootClass1 = "rootClass1";
+		String rootClass2 = "rootClass2";
+		String rootClass3 = "rootClass3";
+		JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass1);
+		JavaType rootClass2Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass2);
+		JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass3);
+		TypeExtends link1 = writer.createLink(TypeExtends.class,
+				rootClass1Node, rootClass2Node);
+		TypeExtends link2 = writer.createLink(TypeExtends.class,
+				rootClass1Node, rootClass3Node);
+
+		writer.save();
+
+		Set<SLLink> twoLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(twoLinks.size(), is(2));
+		assertThat(twoLinks.contains(link1), is(true));
+		assertThat(twoLinks.contains(link2), is(true));
+
+		Set<SLLink> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(emptyLinks.size(), is(0));
+
+		Set<SLLink> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass2Node, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(linkFromNode2.size(), is(1));
+		assertThat(linkFromNode2.contains(link1), is(true));
+		assertThat(linkFromNode2.contains(link2), is(false));
+
+		Set<SLLink> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass3Node, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(linkFromNode3.size(), is(1));
+		assertThat(linkFromNode3.contains(link2), is(true));
+		assertThat(linkFromNode3.contains(link1), is(false));
+
+	}
+
+	public void shouldCreateAndRetrieveBidirectionalLinksOnSameContext()
+			throws Exception {
+		SLGraphReader simpleFromLocation = simpleGraphSession
+				.location(location());
+		SLContext context1 = simpleFromLocation.getContext(context1());
+		SLGraphWriter writer = fullGraphSession.toSync();
+		String rootClass1 = "rootClass1";
+		String rootClass2 = "rootClass2";
+		String rootClass3 = "rootClass3";
+		JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass1);
+		JavaType rootClass2Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass2);
+		JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass3);
+		TypeExtends link1 = writer.createBidirectionalLink(TypeExtends.class,
+				rootClass1Node, rootClass2Node);
+		TypeExtends link2 = writer.createBidirectionalLink(TypeExtends.class,
+				rootClass1Node, rootClass3Node);
+
+		TypeExtends link3 = writer.createBidirectionalLink(TypeExtends.class,
+				rootClass2Node, rootClass1Node);
+		TypeExtends link4 = writer.createBidirectionalLink(TypeExtends.class,
+				rootClass3Node, rootClass1Node);
+
+		writer.save();
+
+		assertThat(link1, is(link3));
+		assertThat(link2, is(link4));
+
+		Set<SLLink> twoLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(twoLinks.size(), is(2));
+		assertThat(twoLinks.contains(link1), is(true));
+		assertThat(twoLinks.contains(link2), is(true));
+
+		Set<SLLink> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(emptyLinks.size(), is(0));
+
+		Set<SLLink> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass2Node, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(linkFromNode2.size(), is(1));
+		assertThat(linkFromNode2.contains(link1), is(true));
+		assertThat(linkFromNode2.contains(link2), is(false));
+
+		Set<SLLink> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass3Node, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(linkFromNode3.size(), is(1));
+		assertThat(linkFromNode3.contains(link2), is(true));
+		assertThat(linkFromNode3.contains(link1), is(false));
+	}
+
+	public void shouldCreateAndRetrieveUniAndBidirectionalLinksOnSameContext()
+			throws Exception {
+
+		SLGraphReader simpleFromLocation = simpleGraphSession
+				.location(location());
+		SLContext context1 = simpleFromLocation.getContext(context1());
+		SLGraphWriter writer = fullGraphSession.toSync();
+
+		String rootClass1 = "rootClass1";
+		String rootClass2 = "rootClass2";
+		String rootClass3 = "rootClass3";
+		JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass1);
+		JavaType rootClass2Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass2);
+		JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass3);
+		TypeExtends link1 = writer.createLink(TypeExtends.class,
+				rootClass1Node, rootClass2Node);
+		TypeExtends link2 = writer.createLink(TypeExtends.class,
+				rootClass1Node, rootClass3Node);
+
+		String rootClass1bid = "rootClass1bid";
+		String rootClass2bid = "rootClass2bid";
+		String rootClass3bid = "rootClass3bid";
+		JavaType rootClass1BidNode = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass1bid);
+		JavaType rootClass2BidNode = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass2bid);
+		JavaType rootClass3BidNode = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass3bid);
+		TypeExtends link1Bid = writer.createBidirectionalLink(
+				TypeExtends.class, rootClass1BidNode, rootClass2BidNode);
+		TypeExtends link2Bid = writer.createBidirectionalLink(
+				TypeExtends.class, rootClass1BidNode, rootClass3BidNode);
+
+		TypeExtends link3Bid = writer.createBidirectionalLink(
+				TypeExtends.class, rootClass2BidNode, rootClass1BidNode);
+		TypeExtends link4Bid = writer.createBidirectionalLink(
+				TypeExtends.class, rootClass3BidNode, rootClass1BidNode);
+
+		writer.save();
+
+		assertThat(link1Bid, is(link3Bid));
+		assertThat(link2Bid, is(link4Bid));
+
+		Set<SLLink> twoBidLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1BidNode, null, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(twoBidLinks.size(), is(2));
+		assertThat(twoBidLinks.contains(link1Bid), is(true));
+		assertThat(twoBidLinks.contains(link2Bid), is(true));
+
+		Set<SLLink> bidLinkFromNode2 = iterableToSet(simpleFromLocation
+				.getLinks(null, rootClass2BidNode,
+						SLLinkDirection.BIDIRECTIONAL));
+		assertThat(bidLinkFromNode2.size(), is(1));
+		assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
+		assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
+
+		Set<SLLink> bidLinkFromNode3 = iterableToSet(simpleFromLocation
+				.getLinks(null, rootClass3BidNode,
+						SLLinkDirection.BIDIRECTIONAL));
+		assertThat(bidLinkFromNode3.size(), is(1));
+		assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
+		assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
+		Set<SLLink> twoLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(twoLinks.size(), is(2));
+		assertThat(twoLinks.contains(link1), is(true));
+		assertThat(twoLinks.contains(link2), is(true));
+
+		Set<SLLink> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(emptyLinks.size(), is(0));
+
+		Set<SLLink> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass2Node, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(linkFromNode2.size(), is(1));
+		assertThat(linkFromNode2.contains(link1), is(true));
+		assertThat(linkFromNode2.contains(link2), is(false));
+
+		Set<SLLink> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass3Node, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(linkFromNode3.size(), is(1));
+		assertThat(linkFromNode3.contains(link2), is(true));
+		assertThat(linkFromNode3.contains(link1), is(false));
+
+	}
+
+	public void shouldCreateAndRetrieveUnidirectionalLinksOnDiferentContext()
+			throws Exception {
+		SLGraphReader simpleFromLocation = simpleGraphSession
+				.location(location());
+		SLContext context1 = simpleFromLocation.getContext(context1());
+		SLContext context2 = simpleFromLocation.getContext(context2());
+		SLGraphWriter writer = fullGraphSession.toSync();
+		String rootClass1 = "rootClass1";
+		String rootClass2 = "rootClass2";
+		String rootClass3 = "rootClass3";
+		JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass1);
+		JavaType rootClass2Node = writer.createNode(context2.getRootNode(),
+				JavaType.class, rootClass2);
+		JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass3);
+		TypeExtends link1 = writer.createLink(TypeExtends.class,
+				rootClass1Node, rootClass2Node);
+		TypeExtends link2 = writer.createLink(TypeExtends.class,
+				rootClass1Node, rootClass3Node);
+
+		writer.save();
+
+		Set<SLLink> twoLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(twoLinks.size(), is(2));
+		assertThat(twoLinks.contains(link1), is(true));
+		assertThat(twoLinks.contains(link2), is(true));
+
+		Set<SLLink> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(emptyLinks.size(), is(0));
+
+		Set<SLLink> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass2Node, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(linkFromNode2.size(), is(1));
+		assertThat(linkFromNode2.contains(link1), is(true));
+		assertThat(linkFromNode2.contains(link2), is(false));
+
+		Set<SLLink> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass3Node, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(linkFromNode3.size(), is(1));
+		assertThat(linkFromNode3.contains(link2), is(true));
+		assertThat(linkFromNode3.contains(link1), is(false));
+
+	}
+
+	public void shouldCreateAndRetrieveBidirectionalLinksOnDiferentContext()
+			throws Exception {
+		SLGraphReader simpleFromLocation = simpleGraphSession
+				.location(location());
+		SLContext context1 = simpleFromLocation.getContext(context1());
+		SLContext context2 = simpleFromLocation.getContext(context2());
+		SLGraphWriter writer = fullGraphSession.toSync();
+		String rootClass1 = "rootClass1";
+		String rootClass2 = "rootClass2";
+		String rootClass3 = "rootClass3";
+		JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass1);
+		JavaType rootClass2Node = writer.createNode(context2.getRootNode(),
+				JavaType.class, rootClass2);
+		JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass3);
+		TypeExtends link1 = writer.createBidirectionalLink(TypeExtends.class,
+				rootClass1Node, rootClass2Node);
+		TypeExtends link2 = writer.createBidirectionalLink(TypeExtends.class,
+				rootClass1Node, rootClass3Node);
+
+		TypeExtends link3 = writer.createBidirectionalLink(TypeExtends.class,
+				rootClass2Node, rootClass1Node);
+		TypeExtends link4 = writer.createBidirectionalLink(TypeExtends.class,
+				rootClass3Node, rootClass1Node);
+
+		writer.save();
+
+		assertThat(link1, is(link3));
+		assertThat(link2, is(link4));
+
+		Set<SLLink> twoLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(twoLinks.size(), is(2));
+		assertThat(twoLinks.contains(link1), is(true));
+		assertThat(twoLinks.contains(link2), is(true));
+
+		Set<SLLink> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(emptyLinks.size(), is(0));
+
+		Set<SLLink> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass2Node, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(linkFromNode2.size(), is(1));
+		assertThat(linkFromNode2.contains(link1), is(true));
+		assertThat(linkFromNode2.contains(link2), is(false));
+
+		Set<SLLink> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass3Node, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(linkFromNode3.size(), is(1));
+		assertThat(linkFromNode3.contains(link2), is(true));
+		assertThat(linkFromNode3.contains(link1), is(false));
+	}
+
+	public void shouldCreateAndRetrieveUniAndBidirectionalLinksOnDiferentContext()
+			throws Exception {
+
+		SLGraphReader simpleFromLocation = simpleGraphSession
+				.location(location());
+		SLContext context1 = simpleFromLocation.getContext(context1());
+		SLContext context2 = simpleFromLocation.getContext(context2());
+		SLGraphWriter writer = fullGraphSession.toSync();
+
+		String rootClass1 = "rootClass1";
+		String rootClass2 = "rootClass2";
+		String rootClass3 = "rootClass3";
+		JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass1);
+		JavaType rootClass2Node = writer.createNode(context2.getRootNode(),
+				JavaType.class, rootClass2);
+		JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass3);
+		TypeExtends link1 = writer.createLink(TypeExtends.class,
+				rootClass1Node, rootClass2Node);
+		TypeExtends link2 = writer.createLink(TypeExtends.class,
+				rootClass1Node, rootClass3Node);
+
+		String rootClass1bid = "rootClass1bid";
+		String rootClass2bid = "rootClass2bid";
+		String rootClass3bid = "rootClass3bid";
+		JavaType rootClass1BidNode = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass1bid);
+		JavaType rootClass2BidNode = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass2bid);
+		JavaType rootClass3BidNode = writer.createNode(context1.getRootNode(),
+				JavaType.class, rootClass3bid);
+		TypeExtends link1Bid = writer.createBidirectionalLink(
+				TypeExtends.class, rootClass1BidNode, rootClass2BidNode);
+		TypeExtends link2Bid = writer.createBidirectionalLink(
+				TypeExtends.class, rootClass1BidNode, rootClass3BidNode);
+
+		TypeExtends link3Bid = writer.createBidirectionalLink(
+				TypeExtends.class, rootClass2BidNode, rootClass1BidNode);
+		TypeExtends link4Bid = writer.createBidirectionalLink(
+				TypeExtends.class, rootClass3BidNode, rootClass1BidNode);
+
+		writer.save();
+
+		assertThat(link1Bid, is(link3Bid));
+		assertThat(link2Bid, is(link4Bid));
+
+		Set<SLLink> twoBidLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1BidNode, null, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(twoBidLinks.size(), is(2));
+		assertThat(twoBidLinks.contains(link1Bid), is(true));
+		assertThat(twoBidLinks.contains(link2Bid), is(true));
+
+		Set<SLLink> bidLinkFromNode2 = iterableToSet(simpleFromLocation
+				.getLinks(null, rootClass2BidNode,
+						SLLinkDirection.BIDIRECTIONAL));
+		assertThat(bidLinkFromNode2.size(), is(1));
+		assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
+		assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
+
+		Set<SLLink> bidLinkFromNode3 = iterableToSet(simpleFromLocation
+				.getLinks(null, rootClass3BidNode,
+						SLLinkDirection.BIDIRECTIONAL));
+		assertThat(bidLinkFromNode3.size(), is(1));
+		assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
+		assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
+		Set<SLLink> twoLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(twoLinks.size(), is(2));
+		assertThat(twoLinks.contains(link1), is(true));
+		assertThat(twoLinks.contains(link2), is(true));
+
+		Set<SLLink> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
+				rootClass1Node, null, SLLinkDirection.BIDIRECTIONAL));
+		assertThat(emptyLinks.size(), is(0));
+
+		Set<SLLink> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass2Node, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(linkFromNode2.size(), is(1));
+		assertThat(linkFromNode2.contains(link1), is(true));
+		assertThat(linkFromNode2.contains(link2), is(false));
+
+		Set<SLLink> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
+				null, rootClass3Node, SLLinkDirection.UNIDIRECTIONAL));
+		assertThat(linkFromNode3.size(), is(1));
+		assertThat(linkFromNode3.contains(link2), is(true));
+		assertThat(linkFromNode3.contains(link1), is(false));
+
 	}
 
 }

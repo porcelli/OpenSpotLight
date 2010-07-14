@@ -48,52 +48,50 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.meta.SLMetaLink;
-import org.openspotlight.remote.annotation.DisposeMethod;
-
 /**
  * The Interface SLLink.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
-public interface SLLink extends Comparable<SLLink>, SLElement {
+public abstract class SLLink implements Comparable<SLLink>, SLElement {
 
-    /**
-     * Gets the other side.
-     *
-     * @param side the side
-     * @return the other side
-     */
-    SLNode getOtherSide(SLNode side);
+	/**
+	 * Gets the other side.
+	 * 
+	 * @param side
+	 *            the side
+	 * @return the other side
+	 */
+	public abstract SLNode getOtherSide(SLNode side);
 
-    /**
-     * Gets the sides.
-     *
-     * @return the sides
-     */
-    SLNode[] getSides();
+	/**
+	 * Gets the sides.
+	 * 
+	 * @return the sides
+	 */
+	public abstract SLNode[] getSides();
 
-    /**
-     * Gets the source.
-     *
-     * @return the source
-     */
-    SLNode getSource();
+	/**
+	 * Gets the source.
+	 * 
+	 * @return the source
+	 */
+	public abstract SLNode getSource();
 
-    /**
-     * Gets the target.
-     *
-     * @return the target
-     */
-    SLNode getTarget();
+	/**
+	 * Gets the target.
+	 * 
+	 * @return the target
+	 */
+	public abstract SLNode getTarget();
 
-    /**
-     * Checks if is bidirectional.
-     *
-     * @return true, if is bidirectional
-     */
-    boolean isBidirectional();
+	/**
+	 * Checks if is bidirectional.
+	 * 
+	 * @return true, if is bidirectional
+	 */
+	public abstract boolean isBidirectional();
 
-    int getCount();
-        
+	public abstract int getCount();
+
 }
