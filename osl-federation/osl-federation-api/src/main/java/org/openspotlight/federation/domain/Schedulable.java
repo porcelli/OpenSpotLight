@@ -50,7 +50,6 @@ package org.openspotlight.federation.domain;
 
 import org.openspotlight.federation.context.ExecutionContext;
 import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 import java.util.List;
@@ -81,7 +80,6 @@ public interface Schedulable extends SimpleNodeType {
 
     public static interface SchedulableCommandWithContextFactory<S extends Schedulable> extends SchedulableCommand<S> {
         public void setContextFactoryBeforeExecution( GlobalSettings settings,
-                                                      JcrConnectionDescriptor descriptor,
                                                       String username,
                                                       String password,
                                                       String repository,

@@ -51,7 +51,6 @@ package org.openspotlight.federation.processing;
 import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Group;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public interface BundleProcessorManager {
 
@@ -62,14 +61,12 @@ public interface BundleProcessorManager {
 
     public GlobalExecutionStatus executeBundles( final String username,
                                                  final String password,
-                                                 final JcrConnectionDescriptor descriptor,
                                                  ExecutionContextFactory contextFactory,
                                                  final GlobalSettings settings,
                                                  final Group... groups ) throws Exception;
 
     public void executeBundlesInBackground( final String username,
                                             final String password,
-                                            final JcrConnectionDescriptor descriptor,
                                             ExecutionContextFactory contextFactory,
                                             final GlobalSettings settings,
                                             final Group... groups );

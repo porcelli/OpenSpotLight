@@ -52,6 +52,7 @@ package org.openspotlight.common.util;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.converters.*;
 import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -184,7 +185,7 @@ public class Conversion {
      */
     @SuppressWarnings("unchecked")
     public static <E> E convert(final Object rawValue,
-                                final Class<E> targetType) throws SLException {
+                                final Class<E> targetType)  {
         Assertions.checkNotNull("targetType", targetType); //$NON-NLS-1$
         Assertions.checkCondition(
                 "validTargetType:" + targetType.getName(), Conversion.CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
@@ -212,7 +213,7 @@ public class Conversion {
             final E converted = (E) converter.convert(targetType, rawValue);
             return converted;
         } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLException.class);
+            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 

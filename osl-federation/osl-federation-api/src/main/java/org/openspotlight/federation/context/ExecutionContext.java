@@ -53,7 +53,6 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
@@ -69,8 +68,6 @@ public interface ExecutionContext extends Disposable {
     public PersistentArtifactManager getPersistentArtifactManager();
 
     public ConfigurationManager getDefaultConfigurationManager();
-
-    public JcrConnectionProvider getDefaultConnectionProvider();
 
     public SLSimpleGraphSession getGraphSession();
 

@@ -189,7 +189,7 @@ public abstract class AbstractGeneralQueryTest {
          */
         public String getParentName() {
             if (parentName == null) {
-                parentName = node.getParent().getName();
+                parentName = session.getParentNode(node).getName();
             }
             return parentName;
         }
@@ -558,7 +558,7 @@ public abstract class AbstractGeneralQueryTest {
             StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
             for (final SLNode node : nodes) {
                 StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60),
-                        StringUtils.rightPad(node.getName(), 60), node.getParent().getName(), '\n');
+                        StringUtils.rightPad(node.getName(), 60), session.getParentNode(node).getName(), '\n');
             }
             LOGGER.info(buffer);
         }

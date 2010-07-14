@@ -49,6 +49,8 @@
 
 package org.openspotlight.common.util.test;
 
+import java.math.BigInteger;
+
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
@@ -57,6 +59,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
+import static org.openspotlight.common.util.Sha1.getNumericSha1Signature;
 
 /**
  * Test class for {@link Sha1}
@@ -80,5 +83,13 @@ public class Sha1Test {
         final String sha1 = getSha1SignatureEncodedAsBase64("content".getBytes());
         assertThat(sha1, is(notNullValue()));
         assertThat(sha1.length(), is(not(0)));
+    }
+
+    @SuppressWarnings( {"nls", "boxing"} )
+    @Test
+    public void shouldCreateSha1SignatureAsBigInteger() throws Exception {
+        final BigInteger sha1 = getNumericSha1Signature("content".getBytes());
+        assertThat(sha1, is(notNullValue()));
+        assertThat(sha1, is(not(new BigInteger("0"))));
     }
 }

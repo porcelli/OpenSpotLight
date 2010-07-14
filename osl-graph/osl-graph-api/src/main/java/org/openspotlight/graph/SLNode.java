@@ -102,35 +102,41 @@ import java.util.Comparator;
  * wiki.neo4j.org/content/Id_Reuse</a>.
  */
 
-public abstract class SLNode implements Comparable<SLNode>, LogableObject, SLElement {
+public abstract class SLNode implements Comparable<SLNode>, LogableObject,
+		SLElement {
 
-    /**
-     * Gets the name.
-     *
-     * @return the name
-     */
-    public abstract String getName();
+	public abstract boolean isDirty();
+	
+	/**
+	 * Gets the name.
+	 * 
+	 * @return the name
+	 */
+	public abstract String getName();
 
-    /**
-     * Gets the caption.
-     *
-     * @return the caption
-     */
-    public abstract String getCaption();
+	/**
+	 * Gets the caption.
+	 * 
+	 * @return the caption
+	 */
+	public abstract String getCaption();
 
-    /**
-     * Sets the caption.
-     *
-     * @param caption the caption
-     */
-    public abstract void setCaption(String caption);
+	/**
+	 * Sets the caption.
+	 * 
+	 * @param caption
+	 *            the caption
+	 */
+	public abstract void setCaption(String caption);
 
-    /**
-     * Do cast.
-     *
-     * @param clazz the clazz
-     * @return the t
-     */
-    public abstract <T extends SLNode> T doCast(Class<T> clazz);
-
+	/**
+	 * Do cast.
+	 * 
+	 * @param clazz
+	 *            the clazz
+	 * @return the t
+	 */
+	public <T extends SLNode> T doCast(Class<T> clazz) {
+		return (T) this;
+	}
 }

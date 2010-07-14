@@ -190,7 +190,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
 
         public STUniqueKeyBuilder createKey(String nodeEntryName) {
-            return new STUniqueKeyBuilderImpl(nodeEntryName, partition);
+            return new STUniqueKeyBuilderImpl(nodeEntryName, partition,repositoryPath);
         }
 
         private final STPartition partition;
@@ -1010,7 +1010,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
     }
 
 
-    private class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
+    public static class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
 
         private Set<STKeyEntry> localEntries = newHashSet();
         private final String name;
@@ -1019,18 +1019,23 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
         private final STUniqueKeyBuilderImpl child;
 
+        private final STRepositoryPath repositoryPath;
+        
         private String parentKey;
 
-        public STUniqueKeyBuilderImpl(String name, STPartition partition) {
+        public STUniqueKeyBuilderImpl(String name, STPartition partition, STRepositoryPath repositoryPath) {
             this.name = name;
             this.partition = partition;
             this.child = null;
+            this.repositoryPath = repositoryPath;
         }
 
-        private STUniqueKeyBuilderImpl(String name, STUniqueKeyBuilderImpl child, STPartition partition) {
+        private STUniqueKeyBuilderImpl(String name, STUniqueKeyBuilderImpl child, STPartition partition, 
+                STRepositoryPath repositoryPath) {
             this.name = name;
             this.child = child;
             this.partition = partition;
+            this.repositoryPath = repositoryPath;
         }
 
         public STUniqueKeyBuilder withEntry(String propertyName, String value) {
@@ -1039,7 +1044,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
         }
 
         public STUniqueKeyBuilder withParent(STPartition newPartition, String nodeEntryName) {
-            return new STUniqueKeyBuilderImpl(nodeEntryName, this, newPartition);
+            return new STUniqueKeyBuilderImpl(nodeEntryName, this, newPartition,repositoryPath);
         }
 
         @Override

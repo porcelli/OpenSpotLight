@@ -52,7 +52,6 @@ import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.Schedulable;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 public interface SLScheduler {
 
@@ -66,8 +65,7 @@ public interface SLScheduler {
 
     public void initializeSettings( ExecutionContextFactory contextFactory,
                                     String username,
-                                    String password,
-                                    JcrConnectionDescriptor descriptor );
+                                    String password);
 
     public void refreshJobs( GlobalSettings settings,
                              Iterable<Repository> repositories );

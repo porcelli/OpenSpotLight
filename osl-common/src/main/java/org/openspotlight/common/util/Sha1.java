@@ -55,6 +55,7 @@ import org.jasypt.util.digest.Digester;
 import org.openspotlight.common.exception.SLRuntimeException;
 
 import java.io.InputStream;
+import java.math.BigInteger;
 
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
@@ -88,6 +89,14 @@ public class Sha1 {
         }
     }
 
+    public static BigInteger getNumericSha1Signature(final byte[] content){
+    	return new BigInteger(getSha1Signature(content));
+    }
+    
+    public static BigInteger getNumericSha1Signature(final String content){
+    	return new BigInteger(getSha1Signature(content));
+    }
+    
     /**
      * Returns a sha-1 signature for that content.
      * 

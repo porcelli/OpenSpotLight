@@ -202,4 +202,11 @@ public class SLCollections {
     private SLCollections() {
         logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
+    
+    public static <T> boolean contains(Iterable<T> iterable, T item){
+    	for(T t: iterable){
+    		if (item.equals(t)) return true;
+    	}
+    	return false;
+    }
 }

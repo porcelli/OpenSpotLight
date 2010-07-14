@@ -53,6 +53,7 @@ import org.openspotlight.common.Pair;
 import org.openspotlight.graph.exception.PropertyNotFoundException;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Set;
 
 /**
@@ -89,7 +90,7 @@ public interface SLElement {
      *
      * @return the element weight.
      */
-    int getWeight();
+    BigInteger getWeight();
 
     /**
      * Sets the property value for the given key.
