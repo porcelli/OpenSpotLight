@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLFullGraphSession;
 import org.openspotlight.graph.SLGraphLocation;
+import org.openspotlight.graph.SLGraphSessionFactory;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLLinkDirection;
 import org.openspotlight.graph.SLNode;
@@ -27,6 +28,7 @@ import org.openspotlight.graph.test.node.JavaTypeClass;
 import org.openspotlight.graph.test.node.JavaTypeInterface;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.Injector;
 
 public abstract class AbstractGraphTest {
 
@@ -38,18 +40,23 @@ public abstract class AbstractGraphTest {
 		return builder.build();
 	}
 
-	protected abstract SLFullGraphSession createFullSession() throws Exception;
+	protected Injector injector;
 
-	protected abstract SLSimpleGraphSession createSimpleGraphSession()
-			throws Exception;
+	protected abstract Injector createInjector() throws Exception;
 
 	protected abstract void clearData() throws Exception;
 
-	protected abstract SLGraphLocation location();
+	protected SLGraphLocation location() {
+		return SLGraphLocation.CENTRAL;
+	}
 
-	protected abstract String context1();
+	protected String context1() {
+		return "context1";
+	}
 
-	protected abstract String context2();
+	protected String context2() {
+		return "context2";
+	}
 
 	private boolean firstRun = true;
 
@@ -60,8 +67,11 @@ public abstract class AbstractGraphTest {
 	@Before
 	public void beforeTest() throws Exception {
 		if (firstRun) {
-			simpleGraphSession = createSimpleGraphSession();
-			fullGraphSession = createFullSession();
+			injector = createInjector();
+			SLGraphSessionFactory sessionFactory = injector
+					.getInstance(SLGraphSessionFactory.class);
+			simpleGraphSession = sessionFactory.openSimple();
+			fullGraphSession = sessionFactory.openFull();
 			firstRun = false;
 		}
 		clearData();

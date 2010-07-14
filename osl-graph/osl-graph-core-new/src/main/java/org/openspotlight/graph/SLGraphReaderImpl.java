@@ -12,16 +12,17 @@ import org.openspotlight.storage.STStorageSession;
 
 import com.google.inject.Provider;
 
-public class SLGraphReaderImpl implements SLGraphReader{
-	
-	public SLGraphReaderImpl(Provider<STStorageSession> sessionProvider, SLGraphLocation location){
+public class SLGraphReaderImpl implements SLGraphReader {
+
+	public SLGraphReaderImpl(Provider<STStorageSession> sessionProvider,
+			SLGraphLocation location) {
 		this.location = location;
 		this.sessionProvider = sessionProvider;
 	}
-	
+
 	private final Provider<STStorageSession> sessionProvider;
 	private final SLGraphLocation location;
-	
+
 	@Override
 	public SLQueryApi createQueryApi() {
 		throw new UnsupportedOperationException();
@@ -31,31 +32,6 @@ public class SLGraphReaderImpl implements SLGraphReader{
 	public SLQueryText createQueryText(String slqlInput)
 			throws SLInvalidQuerySyntaxException {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Iterable<SLNode> findNodes(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends SLNode> Iterable<T> findNodes(Class<T> clazz, String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Iterable<SLNode> findNodes(SLContext context, String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends SLNode> Iterable<T> findNodes(Class<T> clazz,
-			SLContext context, String name) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -113,14 +89,6 @@ public class SLGraphReaderImpl implements SLGraphReader{
 	@Override
 	public Iterable<SLNode> getLinkedNodes(Class<? extends SLLink> linkClass,
 			SLNode node, SLLinkDirection linkDirection) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <N extends SLNode> Iterable<N> getLinkedNodes(
-			Class<? extends SLLink> linkClass, SLNode node, Class<N> nodeClass,
-			boolean returnSubTypes, SLLinkDirection linkDirection) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -199,6 +167,56 @@ public class SLGraphReaderImpl implements SLGraphReader{
 
 	@Override
 	public Iterable<SLLink> getUnidirectionalLinksByTarget(SLNode target) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends SLNode> Iterable<T> findNodes(Class<T> clazz,
+			String name, SLContext context, SLContext... aditionalContexts) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<SLNode> findNodes(String name, SLContext context,
+			SLContext... aditionalContexts) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends SLNode> Iterable<T> findNodes(Class<T> clazz,
+			SLContext context, SLContext... aditionalContexts) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends SLNode> T findUniqueNode(Class<T> clazz, String name,
+			SLContext context, SLContext... aditionalContexts) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SLNode findUniqueNode(String name, SLContext context,
+			SLContext... aditionalContexts) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends SLNode> T findUniqueNode(Class<T> clazz,
+			SLContext context, SLContext... aditionalContexts) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <N extends SLNode> Iterable<N> getLinkedNodes(
+			Class<? extends SLLink> linkClass, SLNode node, Class<N> nodeClass,
+			boolean returnSubTypes, SLLinkDirection linkDirection) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -29,7 +29,7 @@ public class SLSimpleGraphSessionImpl implements SLSimpleGraphSession {
 
 	@Override
 	public void flushChangedProperties(SLNode node) {
-		if(node.)// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
 
 	}
 
