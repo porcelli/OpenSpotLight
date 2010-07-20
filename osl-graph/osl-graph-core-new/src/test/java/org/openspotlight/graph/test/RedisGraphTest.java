@@ -52,7 +52,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 
 import java.util.Map;
 
-import org.openspotlight.graph.SLGraphModule;
+import org.openspotlight.graph.GraphModule;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
@@ -132,7 +132,7 @@ public class RedisGraphTest extends AbstractGraphTest {
         return Guice.createInjector(new JRedisStorageModule(
                                                             STStorageSession.STFlushMode.AUTO, mappedServerConfig,
                                                             repositoryPath("repositoryPath"), SLPartition.FACTORY),
-                                    new SLGraphModule());
+                                    new GraphModule());
     }
 
 }

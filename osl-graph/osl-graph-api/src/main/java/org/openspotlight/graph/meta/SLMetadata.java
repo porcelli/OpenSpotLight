@@ -51,10 +51,10 @@ package org.openspotlight.graph.meta;
 import java.util.Collection;
 import java.util.List;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.exception.SLMetaLinkTypeNotFoundException;
-import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
+import org.openspotlight.graph.Link;
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.MetaLinkTypeNotFoundException;
+import org.openspotlight.graph.exception.MetaNodeTypeNotFoundException;
 
 /**
  * The Interface SLMetadata.
@@ -133,7 +133,7 @@ public interface SLMetadata {
      * @param nodeClass the node class
      * @return the sL meta node type
      */
-    public SLMetaNodeType getMetaNodeType( Class<? extends SLNode> nodeClass ) throws SLMetaNodeTypeNotFoundException;
+    public SLMetaNodeType getMetaNodeType( Class<? extends Node> nodeClass ) throws MetaNodeTypeNotFoundException;
 
     /**
      * Find meta node type.
@@ -141,7 +141,7 @@ public interface SLMetadata {
      * @param typeName the type name
      * @return the sL meta node type
      */
-    public SLMetaNodeType getMetaNodeType( String typeName ) throws SLMetaNodeTypeNotFoundException;
+    public SLMetaNodeType getMetaNodeType( String typeName ) throws MetaNodeTypeNotFoundException;
 
     /**
      * Find meta node type by description.
@@ -149,7 +149,7 @@ public interface SLMetadata {
      * @param description the description
      * @return the sL meta node type
      */
-    public SLMetaNodeType getMetaNodeTypeByDescription( String description ) throws SLMetaNodeTypeNotFoundException;
+    public SLMetaNodeType getMetaNodeTypeByDescription( String description ) throws MetaNodeTypeNotFoundException;
 
     /**
      * Gets the meta link type.
@@ -157,7 +157,7 @@ public interface SLMetadata {
      * @param linkType the link type
      * @return the meta link type
      */
-    public SLMetaLinkType getMetaLinkType( Class<? extends SLLink> linkType ) throws SLMetaLinkTypeNotFoundException;
+    public SLMetaLinkType getMetaLinkType( Class<? extends Link> linkType ) throws MetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link type.
@@ -165,7 +165,7 @@ public interface SLMetadata {
      * @param name the name
      * @return the meta link type
      */
-    public SLMetaLinkType getMetaLinkType( String name ) throws SLMetaLinkTypeNotFoundException;
+    public SLMetaLinkType getMetaLinkType( String name ) throws MetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link type by description.
@@ -173,7 +173,7 @@ public interface SLMetadata {
      * @param description the description
      * @return the meta link type by description
      */
-    public SLMetaLinkType getMetaLinkTypeByDescription( String description ) throws SLMetaLinkTypeNotFoundException;
+    public SLMetaLinkType getMetaLinkTypeByDescription( String description ) throws MetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link types.

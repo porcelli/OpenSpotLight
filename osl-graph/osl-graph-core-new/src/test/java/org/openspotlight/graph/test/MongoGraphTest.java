@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.test;
 
-import org.openspotlight.graph.SLGraphModule;
+import org.openspotlight.graph.GraphModule;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
@@ -89,7 +89,7 @@ public class MongoGraphTest extends AbstractGraphTest {
     protected Injector createInjector() throws Exception {
         return Guice.createInjector(new MongoModule(
                                                     STStorageSession.STFlushMode.EXPLICIT, mongo, repositoryPath,
-                                                    SLPartition.FACTORY), new SLGraphModule());
+                                                    SLPartition.FACTORY), new GraphModule());
     }
 
 }

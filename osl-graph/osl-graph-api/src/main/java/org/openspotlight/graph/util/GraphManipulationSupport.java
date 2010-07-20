@@ -51,11 +51,11 @@ package org.openspotlight.graph.util;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Link;
 
 public class GraphManipulationSupport {
 
-    public static Collection<Class<? extends SLLink>> links( final Class<? extends SLLink>... linkTypes ) {
+    public static Collection<Class<? extends Link>> links( final Class<? extends Link>... linkTypes ) {
         return Arrays.asList(linkTypes);
     }
 

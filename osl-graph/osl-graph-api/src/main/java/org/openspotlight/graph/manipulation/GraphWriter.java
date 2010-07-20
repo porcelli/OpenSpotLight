@@ -46,31 +46,89 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
 
-import java.util.List;
+package org.openspotlight.graph.manipulation;
 
+import java.util.Collection;
+
+import org.openspotlight.graph.Context;
+import org.openspotlight.graph.Link;
 import org.openspotlight.graph.Node;
 
 /**
- * The Interface SLQueryResult.
- * 
- * @author Vitor Hugo Chagas
+ * Created by User: feu - Date: Jun 29, 2010 - Time: 4:29:33 PM
  */
-public interface SLQueryResult {
+public interface GraphWriter {
+
+    //TODO DO NOT FORGET TO USE THE ARTIFACT_ID DURRING CREATE METHODS
 
     /**
-     * Gets the nodes.
+     * Adds the link.
      * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
+     * @param linkClass the link class
+     * @param source the source
+     * @param target the target
+     * @return the l
      */
-    public List<Node> getNodes() throws SLQueryException;
+    public <L extends Link> L createLink( Class<L> linkClass,
+                                            Node source,
+                                            Node target );
 
     /**
-     * Gets the query id. This id is related to cache.
+     * Adds the link.
      * 
-     * @return the query id
+     * @param linkClass the link class
+     * @param source the source
+     * @param target the target
+     * @return the l
      */
-    public String getQueryId();
+    public <L extends Link> L createBidirectionalLink( Class<L> linkClass,
+                                                         Node source,
+                                                         Node target );
+
+    /**
+     * Save.
+     */
+    public void save();
+
+    /**
+     * Adds the node.
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @return the t
+     */
+    public <T extends Node> T createNode( Node parent,
+                                            Class<T> clazz,
+                                             String name );
+
+    /**
+     * Adds the node.
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @param linkTypesForLinkDeletion the link types for link deletion
+     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
+     * @return the t
+     */
+    public <T extends Node> T createNode( Node parent,
+                                            Class<T> clazz,
+                                             String name,
+                                             Collection<Class<? extends Link>> linkTypesForLinkDeletion,
+                                             Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion );
+
+    /**
+     * Sets the caption.
+     * 
+     * @param caption the caption
+     */
+    public void setContextCaption( Context context,
+                                   String caption );
+
+    public void removeNode( Node node );
+
+    public void removeLink( Link link );
+
+    public void removeContext( Context context );
+
 }

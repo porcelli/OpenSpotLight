@@ -46,31 +46,17 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
 
-import java.util.List;
+package org.openspotlight.graph;
 
-import org.openspotlight.graph.Node;
+import org.openspotlight.graph.manipulation.GraphWriter;
 
 /**
- * The Interface SLQueryResult.
- * 
- * @author Vitor Hugo Chagas
+ * Created by IntelliJ IDEA. User: porcelli Date: 05/07/2010 Time: 10:29:47 To change this template use File | Settings | File
+ * Templates.
  */
-public interface SLQueryResult {
+public interface FullGraphSession extends SimpleGraphSession {
 
-    /**
-     * Gets the nodes.
-     * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
-     */
-    public List<Node> getNodes() throws SLQueryException;
+    GraphWriter toSync();
 
-    /**
-     * Gets the query id. This id is related to cache.
-     * 
-     * @return the query id
-     */
-    public String getQueryId();
 }

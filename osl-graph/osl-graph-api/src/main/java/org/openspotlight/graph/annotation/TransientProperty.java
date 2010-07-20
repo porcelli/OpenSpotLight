@@ -46,10 +46,15 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.test.link;
+package org.openspotlight.graph.annotation;
 
-import org.openspotlight.graph.Link;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public abstract class TypeImplements extends Link {
+@Retention( RetentionPolicy.RUNTIME )
+@Target( {ElementType.TYPE, ElementType.METHOD} )
+public @interface TransientProperty {
 
 }

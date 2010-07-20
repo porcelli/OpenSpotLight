@@ -46,31 +46,17 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
 
-import java.util.List;
-
-import org.openspotlight.graph.Node;
+package org.openspotlight.graph;
 
 /**
- * The Interface SLQueryResult.
- * 
- * @author Vitor Hugo Chagas
+ * Created by User: feu - Date: Jun 29, 2010 - Time: 4:56:14 PM
  */
-public interface SLQueryResult {
+public interface GraphSessionFactory {
 
-    /**
-     * Gets the nodes.
-     * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
-     */
-    public List<Node> getNodes() throws SLQueryException;
+    public SimpleGraphSession openSimple();
 
-    /**
-     * Gets the query id. This id is related to cache.
-     * 
-     * @return the query id
-     */
-    public String getQueryId();
+    public FullGraphSession openFull();
+
+    public FullGraphSession openFull( String artifactId );
 }

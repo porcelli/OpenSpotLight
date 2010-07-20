@@ -51,7 +51,7 @@ package org.openspotlight.graph.query;
 import java.util.Collection;
 import java.util.Map;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 /**
  * The Interface SLQueryText. This class is exposed to the user.
@@ -133,7 +133,7 @@ public interface SLQueryText extends SLQuery {
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
+    public SLQueryResult execute( Collection<Node> inputNodes,
                                   Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
 
@@ -149,7 +149,7 @@ public interface SLQueryText extends SLQuery {
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
+    public SLQueryResult execute( Collection<Node> inputNodes,
                                   Map<String, ?> variableValues,
                                   Integer limit,
                                   Integer offset )
@@ -235,7 +235,7 @@ public interface SLQueryText extends SLQuery {
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
+    public SLQueryResult execute( Collection<Node> inputNodes,
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
@@ -255,7 +255,7 @@ public interface SLQueryText extends SLQuery {
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
+    public SLQueryResult execute( Collection<Node> inputNodes,
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL,

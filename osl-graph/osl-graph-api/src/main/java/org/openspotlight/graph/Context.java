@@ -46,31 +46,34 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
-
-import java.util.List;
-
-import org.openspotlight.graph.Node;
+package org.openspotlight.graph;
 
 /**
- * The Interface SLQueryResult.
+ * The Interface SLContext.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQueryResult {
+public interface Context {
 
     /**
-     * Gets the nodes.
+     * Gets the iD.
      * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
+     * @return the iD
      */
-    public List<Node> getNodes() throws SLQueryException;
+    public String getID();
 
     /**
-     * Gets the query id. This id is related to cache.
+     * Gets the caption.
      * 
-     * @return the query id
+     * @return the caption
      */
-    public String getQueryId();
+    public String getCaption();
+
+    /**
+     * Gets the root node.
+     * 
+     * @return the root node
+     */
+    public Node getRootNode();
+
 }

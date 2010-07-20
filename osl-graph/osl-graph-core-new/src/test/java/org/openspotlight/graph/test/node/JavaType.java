@@ -48,12 +48,12 @@
  */
 package org.openspotlight.graph.test.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLDefineHierarchy;
-import org.openspotlight.graph.annotation.SLTransientProperty;
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.annotation.DefineHierarchy;
+import org.openspotlight.graph.annotation.TransientProperty;
 
-@SLDefineHierarchy
-public abstract class JavaType extends SLNode {
+@DefineHierarchy
+public abstract class JavaType extends Node {
 
     private String  typeName;
 
@@ -87,7 +87,7 @@ public abstract class JavaType extends SLNode {
         this.someNumber = someNumber;
     }
 
-    @SLTransientProperty
+    @TransientProperty
     public String getTransientValue() {
         return transientValue;
     }

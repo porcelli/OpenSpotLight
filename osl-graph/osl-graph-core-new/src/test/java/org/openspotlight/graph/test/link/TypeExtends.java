@@ -48,9 +48,9 @@
  */
 package org.openspotlight.graph.test.link;
 
-import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Link;
 
-public abstract class TypeExtends extends SLLink {
+public abstract class TypeExtends extends Link {
     private String  extendsName;
     private boolean extendsFlag;
 

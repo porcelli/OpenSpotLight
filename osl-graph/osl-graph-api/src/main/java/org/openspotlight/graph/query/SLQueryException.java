@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.exception.SLGraphRuntimeException;
+import org.openspotlight.graph.exception.GraphRuntimeException;
 
 /**
  * The Class SLQueryException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLQueryException extends SLGraphRuntimeException {
+public class SLQueryException extends GraphRuntimeException {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;

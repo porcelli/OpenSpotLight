@@ -46,31 +46,30 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.manipulation;
 
-import java.util.List;
-
+import org.openspotlight.graph.Link;
 import org.openspotlight.graph.Node;
 
 /**
- * The Interface SLQueryResult.
+ * The Interface SLSimpleGraphSession. All methods in this interface throw a
+ * {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level. Any security
+ * violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQueryResult {
+public interface GraphTransientWriter {
 
-    /**
-     * Gets the nodes.
-     * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
-     */
-    public List<Node> getNodes() throws SLQueryException;
+    public <T extends Node> T createTransientNode( Node parent,
+                                                     Class<T> clazz,
+                                                     String name );
 
-    /**
-     * Gets the query id. This id is related to cache.
-     * 
-     * @return the query id
-     */
-    public String getQueryId();
+    public <L extends Link> L createTransientLink( Class<L> linkClass,
+                                                     Node source,
+                                                     Node target );
+
+    public <L extends Link> L createTransientBidirectionalLink( Class<L> linkClass,
+                                                                  Node source,
+                                                                  Node target );
+
 }

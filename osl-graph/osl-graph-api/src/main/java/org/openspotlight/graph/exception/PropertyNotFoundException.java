@@ -53,7 +53,7 @@ package org.openspotlight.graph.exception;
  * 
  * @author Vitor Hugo Chagas
  */
-public class PropertyNotFoundException extends SLGraphException {
+public class PropertyNotFoundException extends GraphException {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;

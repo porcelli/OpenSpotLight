@@ -46,31 +46,27 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
-
-import java.util.List;
-
-import org.openspotlight.graph.Node;
+package org.openspotlight.graph.exception;
 
 /**
- * The Interface SLQueryResult.
+ * The Class SLNodeNotFoundException.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQueryResult {
+public class NodeNotFoundException extends GraphException {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Gets the nodes.
+     * Instantiates a new sL node not found exception.
      * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
+     * @param nodeID the node id
+     * @param cause the cause
      */
-    public List<Node> getNodes() throws SLQueryException;
+    public NodeNotFoundException(
+                                    String nodeID, Throwable cause ) {
+        super("Node of " + nodeID + " not found.", cause);
+    }
 
-    /**
-     * Gets the query id. This id is related to cache.
-     * 
-     * @return the query id
-     */
-    public String getQueryId();
 }

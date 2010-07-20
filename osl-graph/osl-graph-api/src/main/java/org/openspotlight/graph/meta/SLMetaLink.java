@@ -51,7 +51,7 @@ package org.openspotlight.graph.meta;
 import java.util.Collection;
 import java.util.List;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 /**
  * The Interface SLMetaLink.
@@ -72,21 +72,21 @@ public interface SLMetaLink extends SLMetaElement {
      * 
      * @return the source type
      */
-    public Class<? extends SLNode> getSourceType();
+    public Class<? extends Node> getSourceType();
 
     /**
      * Gets the target type.
      * 
      * @return the target type
      */
-    public Class<? extends SLNode> getTargetType();
+    public Class<? extends Node> getTargetType();
 
     /**
      * Gets the side types.
      * 
      * @return the side types
      */
-    public List<Class<? extends SLNode>> getSideTypes();
+    public List<Class<? extends Node>> getSideTypes();
 
     /**
      * Checks if is bidirectional.

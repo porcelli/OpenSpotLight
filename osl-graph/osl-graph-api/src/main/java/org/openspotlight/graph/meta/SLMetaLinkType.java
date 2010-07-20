@@ -50,8 +50,8 @@ package org.openspotlight.graph.meta;
 
 import java.util.Collection;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Link;
+import org.openspotlight.graph.Node;
 
 /**
  * The Interface SLMetaLinkType.
@@ -65,7 +65,7 @@ public interface SLMetaLinkType extends SLMetaElement {
      * 
      * @return the type
      */
-    public Class<? extends SLLink> getType();
+    public Class<? extends Link> getType();
 
     /**
      * Gets the metalinks.
@@ -82,8 +82,8 @@ public interface SLMetaLinkType extends SLMetaElement {
      * @param bidirectional the bidirectional
      * @return the meta links
      */
-    public Collection<SLMetaLink> getMetaLinks( Class<? extends SLNode> sourceType,
-                                                Class<? extends SLNode> targetType,
+    public Collection<SLMetaLink> getMetaLinks( Class<? extends Node> sourceType,
+                                                Class<? extends Node> targetType,
                                                 Boolean bidirectional );
 
     /**

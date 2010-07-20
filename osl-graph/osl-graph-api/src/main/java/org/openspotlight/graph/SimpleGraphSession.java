@@ -46,31 +46,46 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
 
-import java.util.List;
+package org.openspotlight.graph;
 
-import org.openspotlight.graph.Node;
+import org.openspotlight.graph.manipulation.GraphReader;
+import org.openspotlight.graph.manipulation.GraphTransientWriter;
+import org.openspotlight.remote.annotation.DisposeMethod;
+import org.openspotlight.security.authz.PolicyEnforcement;
+import org.openspotlight.security.idm.User;
 
 /**
- * The Interface SLQueryResult.
- * 
- * @author Vitor Hugo Chagas
+ * Created by IntelliJ IDEA. User: porcelli Date: 06/07/2010 Time: 12:42:51 To change this template use File | Settings | File
+ * Templates.
  */
-public interface SLQueryResult {
+public interface SimpleGraphSession {
+
+    GraphReader location( GraphLocation location );
+
+    GraphTransientWriter local();
+
+    void flushChangedProperties( Node node );
 
     /**
-     * Gets the nodes.
+     * Gets the policy enforcement.
      * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
+     * @return the policy enforcement
      */
-    public List<Node> getNodes() throws SLQueryException;
+    public PolicyEnforcement getPolicyEnforcement();
 
     /**
-     * Gets the query id. This id is related to cache.
+     * Gets the user.
      * 
-     * @return the query id
+     * @return the user
      */
-    public String getQueryId();
+    User getUser();
+
+    /**
+     * Close.
+     */
+    @DisposeMethod( callOnTimeout = true )
+    void close();
+
+    void shutdown();
 }

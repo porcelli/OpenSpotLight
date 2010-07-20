@@ -50,7 +50,7 @@ package org.openspotlight.graph.query;
 
 import java.util.Collection;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 /**
  * The Interface SLQuery.
@@ -92,7 +92,7 @@ public interface SLQuery {
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes )
+    public SLQueryResult execute( Collection<Node> inputNodes )
         throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
 
     /**
@@ -106,7 +106,7 @@ public interface SLQuery {
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
+    public SLQueryResult execute( Collection<Node> inputNodes,
                                   Integer limit,
                                   Integer offset )
         throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
@@ -122,7 +122,7 @@ public interface SLQuery {
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
+    public SLQueryResult execute( Collection<Node> inputNodes,
                                   SortMode sortMode,
                                   boolean showSLQL )
         throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
@@ -140,7 +140,7 @@ public interface SLQuery {
      * @throws SLInvalidQueryElementException the SL invalid query element exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult execute( Collection<SLNode> inputNodes,
+    public SLQueryResult execute( Collection<Node> inputNodes,
                                   SortMode sortMode,
                                   boolean showSLQL,
                                   Integer limit,

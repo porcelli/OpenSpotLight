@@ -46,31 +46,26 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.annotation;
 
-import java.util.List;
-
-import org.openspotlight.graph.Node;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The Interface SLQueryResult.
+ * The Interface SLRenderHints.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQueryResult {
+@Retention( RetentionPolicy.RUNTIME )
+@Target( ElementType.TYPE )
+public @interface RenderHints {
 
     /**
-     * Gets the nodes.
+     * Value.
      * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
+     * @return the sL render hint[]
      */
-    public List<Node> getNodes() throws SLQueryException;
-
-    /**
-     * Gets the query id. This id is related to cache.
-     * 
-     * @return the query id
-     */
-    public String getQueryId();
+    RenderHint[] value();
 }

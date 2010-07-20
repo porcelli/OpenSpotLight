@@ -46,31 +46,71 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
-
-import java.util.List;
-
-import org.openspotlight.graph.Node;
+package org.openspotlight.graph.exception;
 
 /**
- * The Interface SLQueryResult.
+ * The Class SLPropertyTypeInvalidException.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQueryResult {
+public class PropertyTypeInvalidException extends GraphRuntimeException {
 
     /**
-     * Gets the nodes.
-     * 
-     * @return the nodes
-     * @throws SLQueryException the SL query exception
+     * The Constant serialVersionUID.
      */
-    public List<Node> getNodes() throws SLQueryException;
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Gets the query id. This id is related to cache.
+     * Instantiates a new sL invalid node property type exception.
      * 
-     * @return the query id
+     * @param name the name
+     * @param invalidType the invalid type
+     * @param allowedTypes the allowed types
      */
-    public String getQueryId();
+    public PropertyTypeInvalidException(
+                                           String name, Class<?> invalidType, Class<?>... allowedTypes ) {
+        super(getMessage(name, invalidType, allowedTypes));
+    }
+
+    /**
+     * Instantiates a new sL invalid node property type exception.
+     * 
+     * @param message the message
+     */
+    public PropertyTypeInvalidException(
+                                           String message ) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new sL invalid node property type exception.
+     * 
+     * @param cause the cause
+     */
+    public PropertyTypeInvalidException(
+                                           Throwable cause ) {
+        super(cause);
+    }
+
+    /**
+     * Gets the message.
+     * 
+     * @param name the name
+     * @param invalidType the invalid type
+     * @param allowedTypes the allowed types
+     * @return the message
+     */
+    private static String getMessage( String name,
+                                      Class<?> invalidType,
+                                      Class<?>... allowedTypes ) {
+        StringBuilder message = new StringBuilder();
+        message.append("Value of property ").append(name).append(" cannot be retrieved as ").append(invalidType.getName()).append(
+                                                                                                                                  ". ");
+        for (int i = 0; i < allowedTypes.length; i++) {
+            if (i > 0) message.append(", ");
+            message.append(allowedTypes[i].getName());
+        }
+        message.append(" or super type can be used instead.");
+        return message.toString();
+    }
 }

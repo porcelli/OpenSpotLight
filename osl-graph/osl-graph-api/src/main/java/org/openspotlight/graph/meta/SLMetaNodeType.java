@@ -51,8 +51,8 @@ package org.openspotlight.graph.meta;
 import java.util.Collection;
 import java.util.List;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.exception.SLRenderHintNotFoundException;
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.RenderHintNotFoundException;
 import org.openspotlight.graph.meta.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.meta.SLMetadata.LogicOperator;
 import org.openspotlight.graph.meta.SLMetadata.MetaNodeTypeProperty;
@@ -69,7 +69,7 @@ public interface SLMetaNodeType extends SLMetaElement {
      * 
      * @return the type
      */
-    public Class<? extends SLNode> getType();
+    public Class<? extends Node> getType();
 
     /**
      * Gets the type name.
@@ -99,7 +99,7 @@ public interface SLMetaNodeType extends SLMetaElement {
      * @param nodeClass the node class
      * @return the sub meta node type
      */
-    public SLMetaNodeType getSubMetaNodeType( Class<? extends SLNode> nodeClass );
+    public SLMetaNodeType getSubMetaNodeType( Class<? extends Node> nodeClass );
 
     /**
      * Gets the sub meta node type.
@@ -122,7 +122,7 @@ public interface SLMetaNodeType extends SLMetaElement {
      * @param name the name
      * @return the meta render hint
      */
-    public SLMetaRenderHint getMetaRenderHint( String name ) throws SLRenderHintNotFoundException;
+    public SLMetaRenderHint getMetaRenderHint( String name ) throws RenderHintNotFoundException;
 
     /**
      * Gets the meta render hints.
