@@ -85,10 +85,10 @@
         <module>osl-slql-console</module>
         <module>osl-federation</module>
         <module>osl-web</module>
-        <module>bundle-processor/osl-bundle-common</module>
-        <module>bundle-processor/osl-common-metamodel</module>
-        <module>bundle-processor/osl-bundle-java</module>
-        <module>bundle-processor/osl-bundle-db</module>
+  <!--  <module>bundle-processor/osl-bundle-common</module> -->
+  <!--  <module>bundle-processor/osl-common-metamodel</module> -->
+  <!--  <module>bundle-processor/osl-bundle-java</module> -->
+  <!--  <module>bundle-processor/osl-bundle-db</module> -->
     </modules>
     <build>
         <plugins>
