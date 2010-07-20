@@ -27,7 +27,6 @@ import org.openspotlight.common.Pair;
 import org.openspotlight.common.Pair.PairEqualsMode;
 import org.openspotlight.graph.ContextSLNode;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLContextImpl;
 import org.openspotlight.graph.SLElement;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
@@ -45,6 +44,13 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import com.google.common.collect.ImmutableSet;
 
 public class SLNodeFactory {
+
+	public static interface SLNodeMetadata {
+		public STNodeEntry getCached();
+
+		public void setCached(STNodeEntry entry);
+		
+	}
 
 	public static final String WEIGHT = "node_weigth";
 	public static final String CORRECT_CLASS = "node_concrete_class";
@@ -101,15 +107,14 @@ public class SLNodeFactory {
 
 		if (session != null) {
 			internalNodeKey = session.withPartition(partition).createKey(
-					targetNodeType.getName()).withEntry(NAME, name)
-					.andCreate();
+					targetNodeType.getName()).withEntry(NAME, name).andCreate();
 			node = session.withPartition(partition).createCriteria()
 					.withUniqueKey(internalNodeKey).buildCriteria()
 					.andFindUnique(session);
 		} else {
 			internalNodeKey = new STUniqueKeyBuilderImpl(targetNodeType
-					.getName(), partition, repositoryPath).withEntry(NAME,
-					name).andCreate();
+					.getName(), partition, repositoryPath)
+					.withEntry(NAME, name).andCreate();
 		}
 
 		for (PropertyDescriptor d : descriptors) {
@@ -126,23 +131,29 @@ public class SLNodeFactory {
 				propertyValues, parentId, contextId);
 		if (node != null) {
 			internalNode.cachedEntry = new WeakReference<STNodeEntry>(node);
-			String weigthAsString = node.getPropertyAsString(session, WEIGHT);
-			BigInteger weightFromTargetNodeType = findWeigth(clazz);
-			if (weigthAsString != null) {
-				BigInteger weightAsBigInteger = new BigInteger(weigthAsString);
-				if (weightAsBigInteger.compareTo(weightFromTargetNodeType) > 0) {
-					setWeigthAndTypeOnNode(session, node, clazz,
-							weightFromTargetNodeType);
-				}
-			} else {
-				setWeigthAndTypeOnNode(session, node, clazz,
-						weightFromTargetNodeType);
-			}
+			fixTypeData(session, clazz, node);
 		}
 		final Enhancer e = new Enhancer();
 		e.setSuperclass(clazz);
+		e.setInterfaces(new Class<?>[] { SLNodeMetadata.class });
 		e.setCallback(new SLNodeInterceptor(internalNode));
 		return (T) e.create(new Class[0], new Object[0]);
+	}
+
+	private static void fixTypeData(STStorageSession session,
+			Class<? extends SLNode> clazz, STNodeEntry node) {
+		String weigthAsString = node.getPropertyAsString(session, WEIGHT);
+		BigInteger weightFromTargetNodeType = findWeigth(clazz);
+		if (weigthAsString != null) {
+			BigInteger weightAsBigInteger = new BigInteger(weigthAsString);
+			if (weightAsBigInteger.compareTo(weightFromTargetNodeType) > 0) {
+				setWeigthAndTypeOnNode(session, node, clazz,
+						weightFromTargetNodeType);
+			}
+		} else {
+			setWeigthAndTypeOnNode(session, node, clazz,
+					weightFromTargetNodeType);
+		}
 	}
 
 	private static void setWeigthAndTypeOnNode(STStorageSession session,
@@ -173,15 +184,18 @@ public class SLNodeFactory {
 	}
 
 	public static STNodeEntry retrievePreviousNode(STPartitionFactory factory,
-			STStorageSession session, SLContext context, SLNodeImpl node) {
-		STNodeEntry internalNode = node.cachedEntry != null ? node.cachedEntry
-				.get() : null;
+			STStorageSession session, SLContext context, SLNode node) {
+		SLNodeMetadata metadata = (SLNodeMetadata) node;
+		STNodeEntry internalNode = metadata.getCached();
 		if (internalNode == null) {
 			STPartition partition = factory.getPartitionByName(context.getID());
 			internalNode = session.withPartition(partition).createWithName(
-					node.targetNode.getName()).withKeyEntry(NAME, node.name)
-					.withParentAsString(node.parentId).andCreate();
-			node.cachedEntry = new WeakReference<STNodeEntry>(internalNode);
+					findTargetClass(node.getClass()).getName()).withKeyEntry(
+					NAME, node.getName())
+					.withParentAsString(node.getParentId()).andCreate();
+			fixTypeData(session, (Class<? extends SLNode>) node.getClass()
+					.getSuperclass(), internalNode);
+			metadata.setCached(internalNode);
 		}
 		return internalNode;
 	}
@@ -196,7 +210,25 @@ public class SLNodeFactory {
 
 	}
 
-	private static class SLNodeImpl extends SLNode {
+	private static class SLNodeImpl extends SLNode implements SLNodeMetadata {
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof SLNode))
+				return false;
+			SLNode slnode = (SLNode) obj;
+			return getId().equals(slnode.getId());
+		}
+
+		@Override
+		public int hashCode() {
+			return getId().hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return getName() + ":" + getId();
+		}
 
 		private final String contextId;
 
@@ -216,6 +248,10 @@ public class SLNodeFactory {
 
 		private final String id;
 		private final String parentId;
+
+		public String getParentId() {
+			return parentId;
+		}
 
 		private final String typeName;
 
@@ -377,6 +413,17 @@ public class SLNodeFactory {
 			return dirty.get();
 		}
 
+		@Override
+		public STNodeEntry getCached() {
+			return cachedEntry != null ? cachedEntry.get() : null;
+		}
+
+		@Override
+		public void setCached(STNodeEntry entry) {
+			this.cachedEntry = new WeakReference<STNodeEntry>(entry);
+
+		}
+
 	}
 
 	private static class SLNodeInterceptor implements MethodInterceptor {
@@ -392,10 +439,15 @@ public class SLNodeFactory {
 				MethodProxy proxy) throws Throwable {
 
 			Class<?> declarringClass = method.getDeclaringClass();
-			boolean methodFromSLNode = declarringClass.equals(SLNode.class)
-					|| declarringClass.equals(SLElement.class);
+			boolean methodFromSuperClasses = declarringClass
+					.equals(SLNode.class)
+					|| declarringClass.equals(SLElement.class)
+					|| declarringClass.equals(SLNodeMetadata.class)
+					|| declarringClass.equals(Object.class);
 			String methodName = method.getName();
-			if (methodFromSLNode && Modifier.isAbstract(method.getModifiers())) {
+			if (methodFromSuperClasses
+					&& (declarringClass.equals(Object.class) || Modifier
+							.isAbstract(method.getModifiers()))) {
 				if (isSetterMethod(methodName, method)) {
 					updateValueOnThisImpl(obj, proxy, args);
 				}

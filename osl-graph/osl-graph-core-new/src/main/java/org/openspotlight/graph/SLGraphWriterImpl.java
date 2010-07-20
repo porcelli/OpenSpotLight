@@ -10,6 +10,7 @@ import org.openspotlight.graph.manipulation.SLGraphReader;
 import org.openspotlight.graph.manipulation.SLGraphWriter;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import com.google.inject.Provider;
 
@@ -46,6 +47,7 @@ public class SLGraphWriterImpl implements SLGraphWriter {
 	public <T extends SLNode> T createNode(SLNode parent, Class<T> clazz,
 			String name) {
 		return createNode(parent, clazz, name, null, null);
+
 	}
 
 	@Override
@@ -54,9 +56,11 @@ public class SLGraphWriterImpl implements SLGraphWriter {
 			Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
 			Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
 		STStorageSession session = sessionProvider.get();
-		return SLNodeFactory.createNode(factory, session,
-				parent.getContextId(), parent.getId(), clazz, name,
+		T newNode = SLNodeFactory.createNode(factory, session, parent
+				.getContextId(), parent.getId(), clazz, name,
 				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		dirtyNodes.add(newNode);
+		return newNode;
 	}
 
 	@Override
@@ -76,7 +80,13 @@ public class SLGraphWriterImpl implements SLGraphWriter {
 
 	@Override
 	public void save() {
-		sessionProvider.get().flushTransient();
+		STStorageSession session = sessionProvider.get();
+		for (SLNode n : this.dirtyNodes) {
+			SLNodeFactory.retrievePreviousNode(factory, session, graphReader
+					.getContext(n.getContextId()), n);
+		}
+		session.flushTransient();
+
 	}
 
 	@Override

@@ -110,11 +110,13 @@ public abstract class AbstractGraphTest {
 		Iterator<JavaType> itOneNode3 = oneNode3.iterator();
 		Iterator<JavaType> itOneNode4 = oneNode4.iterator();
 
+		
+		
 		assertThat(itOneNode1.hasNext(), is(true));
 		assertThat(itOneNode3.hasNext(), is(true));
 		assertThat(itOneNode4.hasNext(), is(true));
 
-		JavaType sameNode1 = itOneNode1.next().doCast(JavaType.class);
+		JavaType sameNode1 = itOneNode1.next();
 		JavaType sameNode3 = itOneNode3.next();
 		JavaType sameNode4 = itOneNode4.next();
 
