@@ -52,13 +52,13 @@ public class ContextImpl implements Context {
 
     public ContextImpl( String caption, String id, Node rootNode ) {
         this.caption = caption;
-        this.ID = id;
+        this.id = id;
         this.rootNode = rootNode;
     }
 
     private String      caption;
 
-    public final String ID;
+    public final String id;
 
     public final Node   rootNode;
 
@@ -74,8 +74,8 @@ public class ContextImpl implements Context {
         return rootNode;
     }
 
-    public String getID() {
-        return ID;
+    public String getId() {
+        return id;
     }
 
 }

@@ -51,29 +51,11 @@ package org.openspotlight.graph;
 /**
  * The Interface SLContext.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
-public interface Context {
+public abstract class Context implements BaseIdentifer {
 
-    /**
-     * Gets the iD.
-     * 
-     * @return the iD
-     */
-    public String getID();
-
-    /**
-     * Gets the caption.
-     * 
-     * @return the caption
-     */
-    public String getCaption();
-
-    /**
-     * Gets the root node.
-     * 
-     * @return the root node
-     */
-    public Node getRootNode();
+    public abstract String getCaption();
 
 }

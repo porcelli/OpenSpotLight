@@ -313,7 +313,7 @@ public class GraphReaderImpl implements GraphReader {
                                                    Context... aditionalContexts ) {
         STStorageSession session = sessionProvider.get();
         Iterable<STNodeEntry> nodes = session.withPartition(
-                                                            factory.getPartitionByName(context.getID())).createCriteria()
+                                                            factory.getPartitionByName(context.getId())).createCriteria()
                                              .withNodeEntry(clazz.getName())
                                              .withProperty(NodeFactory.NAME).equalsTo(name)
                                              .buildCriteria().andFind(session);
@@ -326,7 +326,7 @@ public class GraphReaderImpl implements GraphReader {
                                                                                                            throws Exception {
                                                                                                            return (T)convertToSLNode(o.getUniqueKey()
                                                                                                                                       .getParentKeyAsString(), context
-                                                                                                                                                                      .getID(), o);
+                                                                                                                                                                      .getId(), o);
                                                                                                        }
                                                                                                    }).withItems(nodes).andBuild();
 
@@ -347,7 +347,7 @@ public class GraphReaderImpl implements GraphReader {
                                                    Context... aditionalContexts ) {
         STStorageSession session = sessionProvider.get();
         Iterable<STNodeEntry> nodes = session.withPartition(
-                                                            factory.getPartitionByName(context.getID())).findNamed(
+                                                            factory.getPartitionByName(context.getId())).findNamed(
                                                                                                                    clazz.getName());
         Iterable<T> result = IteratorBuilder
                                             .<T, STNodeEntry>createIteratorBuilder().withConverter(
@@ -358,7 +358,7 @@ public class GraphReaderImpl implements GraphReader {
                                                                                                            throws Exception {
                                                                                                            return (T)convertToSLNode(o.getUniqueKey()
                                                                                                                                       .getParentKeyAsString(), context
-                                                                                                                                                                      .getID(), o);
+                                                                                                                                                                      .getId(), o);
                                                                                                        }
                                                                                                    }).withItems(nodes).andBuild();
 

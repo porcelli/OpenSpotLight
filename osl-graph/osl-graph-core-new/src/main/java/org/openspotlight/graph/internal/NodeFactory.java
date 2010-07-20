@@ -243,7 +243,7 @@ public class NodeFactory {
         NodeMetadata metadata = (NodeMetadata)node;
         STNodeEntry internalNode = metadata.getCached();
         if (internalNode == null) {
-            STPartition partition = factory.getPartitionByName(context.getID());
+            STPartition partition = factory.getPartitionByName(context.getId());
             internalNode = session.withPartition(partition).createWithName(
                                                                            findTargetClass(node.getClass()).getName()).withKeyEntry(
                                                                                                                                     NAME, node.getName())
