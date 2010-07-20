@@ -49,11 +49,11 @@
 
 package org.openspotlight.graph.manipulation;
 
+import java.util.Collection;
+
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
-
-import java.util.Collection;
 
 /**
  * Created by User: feu - Date: Jun 29, 2010 - Time: 4:29:33 PM
@@ -64,70 +64,71 @@ public interface SLGraphWriter {
 
     /**
      * Adds the link.
-     *
+     * 
      * @param linkClass the link class
-     * @param source    the source
-     * @param target    the target
+     * @param source the source
+     * @param target the target
      * @return the l
      */
-    public <L extends SLLink> L createLink(Class<L> linkClass,
-                                        SLNode source,
-                                        SLNode target);
+    public <L extends SLLink> L createLink( Class<L> linkClass,
+                                            SLNode source,
+                                            SLNode target );
 
     /**
      * Adds the link.
-     *
+     * 
      * @param linkClass the link class
-     * @param source    the source
-     * @param target    the target
+     * @param source the source
+     * @param target the target
      * @return the l
      */
-    public <L extends SLLink> L createBidirectionalLink(Class<L> linkClass,
-                                                     SLNode source,
-                                                     SLNode target);
-
+    public <L extends SLLink> L createBidirectionalLink( Class<L> linkClass,
+                                                         SLNode source,
+                                                         SLNode target );
 
     /**
      * Save.
      */
     public void save();
 
-
     /**
      * Adds the node.
-     *
+     * 
      * @param clazz the clazz
-     * @param name  the name
+     * @param name the name
      * @return the t
      */
-    public <T extends SLNode> T createNode(SLNode parent, Class<T> clazz,
-                                             String name);
+    public <T extends SLNode> T createNode( SLNode parent,
+                                            Class<T> clazz,
+                                             String name );
 
     /**
      * Adds the node.
-     *
-     * @param clazz                          the clazz
-     * @param name                           the name
-     * @param linkTypesForLinkDeletion       the link types for link deletion
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @param linkTypesForLinkDeletion the link types for link deletion
      * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
      * @return the t
      */
-    public <T extends SLNode> T createNode(SLNode parent, Class<T> clazz,
+    public <T extends SLNode> T createNode( SLNode parent,
+                                            Class<T> clazz,
                                              String name,
                                              Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-                                             Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion);
+                                             Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion );
 
     /**
      * Sets the caption.
-     *
+     * 
      * @param caption the caption
      */
-    public void setContextCaption(SLContext context, String caption);
+    public void setContextCaption( SLContext context,
+                                   String caption );
 
-    public void removeNode(SLNode node);
+    public void removeNode( SLNode node );
 
-    public void removeLink(SLLink link);
+    public void removeLink( SLLink link );
 
-    public void removeContext(SLContext context);
+    public void removeContext( SLContext context );
 
 }

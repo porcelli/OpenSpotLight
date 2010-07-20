@@ -75,7 +75,6 @@ public class PropertyObj implements SimpleNodeType {
         return value;
     }
 
-
     public void setName( final String name ) {
         this.name = name;
     }

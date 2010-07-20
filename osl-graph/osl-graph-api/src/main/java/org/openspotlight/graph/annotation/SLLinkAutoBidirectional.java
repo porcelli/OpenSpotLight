@@ -55,6 +55,6 @@ import java.lang.annotation.Target;
 
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
-public @interface SLLinkAutoBidirectional{
+public @interface SLLinkAutoBidirectional {
     boolean value();
 }

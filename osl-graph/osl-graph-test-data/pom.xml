@@ -25,6 +25,10 @@
         </dependency>
         <dependency>
             <groupId>org.openspotlight</groupId>
+            <artifactId>osl-persistence-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openspotlight</groupId>
             <artifactId>osl-remote-support</artifactId>
         </dependency>
         <dependency>

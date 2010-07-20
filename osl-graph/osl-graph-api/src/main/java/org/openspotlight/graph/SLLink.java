@@ -55,43 +55,42 @@ package org.openspotlight.graph;
  */
 public abstract class SLLink implements Comparable<SLLink>, SLElement {
 
-	/**
-	 * Gets the other side.
-	 * 
-	 * @param side
-	 *            the side
-	 * @return the other side
-	 */
-	public abstract SLNode getOtherSide(SLNode side);
+    /**
+     * Gets the other side.
+     * 
+     * @param side the side
+     * @return the other side
+     */
+    public abstract SLNode getOtherSide( SLNode side );
 
-	/**
-	 * Gets the sides.
-	 * 
-	 * @return the sides
-	 */
-	public abstract SLNode[] getSides();
+    /**
+     * Gets the sides.
+     * 
+     * @return the sides
+     */
+    public abstract SLNode[] getSides();
 
-	/**
-	 * Gets the source.
-	 * 
-	 * @return the source
-	 */
-	public abstract SLNode getSource();
+    /**
+     * Gets the source.
+     * 
+     * @return the source
+     */
+    public abstract SLNode getSource();
 
-	/**
-	 * Gets the target.
-	 * 
-	 * @return the target
-	 */
-	public abstract SLNode getTarget();
+    /**
+     * Gets the target.
+     * 
+     * @return the target
+     */
+    public abstract SLNode getTarget();
 
-	/**
-	 * Checks if is bidirectional.
-	 * 
-	 * @return true, if is bidirectional
-	 */
-	public abstract boolean isBidirectional();
+    /**
+     * Checks if is bidirectional.
+     * 
+     * @return true, if is bidirectional
+     */
+    public abstract boolean isBidirectional();
 
-	public abstract int getCount();
+    public abstract int getCount();
 
 }

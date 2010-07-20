@@ -48,28 +48,52 @@
  */
 package org.openspotlight.security.idm.store;
 
-import com.google.inject.Injector;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import org.jboss.identity.idm.common.exception.IdentityException;
 import org.jboss.identity.idm.impl.store.FeaturesMetaDataImpl;
 import org.jboss.identity.idm.spi.configuration.IdentityStoreConfigurationContext;
 import org.jboss.identity.idm.spi.configuration.metadata.IdentityObjectAttributeMetaData;
 import org.jboss.identity.idm.spi.configuration.metadata.IdentityStoreConfigurationMetaData;
 import org.jboss.identity.idm.spi.exception.OperationNotSupportedException;
-import org.jboss.identity.idm.spi.model.*;
+import org.jboss.identity.idm.spi.model.IdentityObject;
+import org.jboss.identity.idm.spi.model.IdentityObjectAttribute;
+import org.jboss.identity.idm.spi.model.IdentityObjectCredential;
+import org.jboss.identity.idm.spi.model.IdentityObjectRelationship;
+import org.jboss.identity.idm.spi.model.IdentityObjectRelationshipType;
+import org.jboss.identity.idm.spi.model.IdentityObjectType;
 import org.jboss.identity.idm.spi.search.IdentityObjectSearchCriteria;
-import org.jboss.identity.idm.spi.store.*;
+import org.jboss.identity.idm.spi.store.FeaturesMetaData;
+import org.jboss.identity.idm.spi.store.IdentityObjectSearchCriteriaType;
+import org.jboss.identity.idm.spi.store.IdentityStore;
+import org.jboss.identity.idm.spi.store.IdentityStoreInvocationContext;
+import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.security.domain.*;
+import org.openspotlight.security.domain.SLAttributeEntry;
+import org.openspotlight.security.domain.SLIdentityObject;
+import org.openspotlight.security.domain.SLIdentityObjectRelationship;
+import org.openspotlight.security.domain.SLIdentityObjectRelationshipType;
+import org.openspotlight.security.domain.SLIdentityObjectType;
+import org.openspotlight.security.domain.SLPasswordEntry;
+import org.openspotlight.security.domain.SLTransientIdentityObjectAttribute;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
-import java.io.Serializable;
-import java.util.*;
+import com.google.inject.Injector;
 
 public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 

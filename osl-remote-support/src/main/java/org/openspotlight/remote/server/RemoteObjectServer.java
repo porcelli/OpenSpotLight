@@ -48,14 +48,14 @@
  */
 package org.openspotlight.remote.server;
 
-import org.openspotlight.remote.internal.RemoteObjectInvocation;
-import org.openspotlight.remote.internal.RemoteReference;
-import org.openspotlight.remote.internal.UserToken;
-
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Map;
+
+import org.openspotlight.remote.internal.RemoteObjectInvocation;
+import org.openspotlight.remote.internal.RemoteReference;
+import org.openspotlight.remote.internal.UserToken;
 
 /**
  * The Interface RemoteObjectServer.

@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph.meta;
 
-
 import java.io.Serializable;
 
 // TODO: Auto-generated Javadoc

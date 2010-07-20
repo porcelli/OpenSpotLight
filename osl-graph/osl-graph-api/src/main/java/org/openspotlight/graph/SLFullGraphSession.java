@@ -52,11 +52,8 @@ package org.openspotlight.graph;
 import org.openspotlight.graph.manipulation.SLGraphWriter;
 
 /**
- * Created by IntelliJ IDEA.
- * User: porcelli
- * Date: 05/07/2010
- * Time: 10:29:47
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: porcelli Date: 05/07/2010 Time: 10:29:47 To change this template use File | Settings | File
+ * Templates.
  */
 public interface SLFullGraphSession extends SLSimpleGraphSession {
 

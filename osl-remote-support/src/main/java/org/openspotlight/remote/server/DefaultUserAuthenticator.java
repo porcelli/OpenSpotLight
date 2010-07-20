@@ -58,9 +58,9 @@ import org.openspotlight.storage.STStorageSession;
 public class DefaultUserAuthenticator implements UserAuthenticator {
 
     private final STStorageSession session;
-    private final SecurityFactory         securityFactory;
+    private final SecurityFactory  securityFactory;
 
-    public DefaultUserAuthenticator(STStorageSession session) {
+    public DefaultUserAuthenticator( STStorageSession session ) {
         try {
             this.session = session;
             securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);

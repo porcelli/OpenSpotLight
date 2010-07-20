@@ -52,13 +52,13 @@ package org.openspotlight.guice;
 import com.google.inject.Provider;
 
 /**
- * This is a Guice provider used for thread locals variables. Is is mandatory to use the {com.google.inject.Singleton} annotation on the class that implement this interface.
- * Also if this provider implementation depends on other Thread locals, inject the provider instead of the instance.
+ * This is a Guice provider used for thread locals variables. Is is mandatory to use the {com.google.inject.Singleton} annotation
+ * on the class that implement this interface. Also if this provider implementation depends on other Thread locals, inject the
+ * provider instead of the instance.
  * <p/>
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:43:42 PM
  */
 public abstract class ThreadLocalProvider<T> implements Provider<T> {
-
 
     private final ThreadLocal<T> threadLocal = new ThreadLocal<T>();
 

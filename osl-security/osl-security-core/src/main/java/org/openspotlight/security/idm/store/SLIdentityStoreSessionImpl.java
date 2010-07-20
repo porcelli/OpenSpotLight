@@ -48,8 +48,6 @@
  */
 package org.openspotlight.security.idm.store;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import org.jboss.identity.idm.common.exception.IdentityException;
 import org.jboss.identity.idm.spi.store.IdentityStoreSession;
 import org.openspotlight.common.exception.SLRuntimeException;
@@ -58,6 +56,9 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 @Singleton
 public class SLIdentityStoreSessionImpl implements IdentityStoreSession {

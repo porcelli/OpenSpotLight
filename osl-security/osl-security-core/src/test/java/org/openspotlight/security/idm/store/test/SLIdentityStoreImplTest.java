@@ -48,8 +48,8 @@
  */
 package org.openspotlight.security.idm.store.test;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+
 import org.jboss.identity.idm.impl.configuration.IdentityConfigurationImpl;
 import org.jboss.identity.idm.impl.configuration.IdentityStoreConfigurationContextImpl;
 import org.jboss.identity.idm.impl.configuration.jaxb2.JAXB2IdentityConfiguration;
@@ -77,15 +77,15 @@ import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class SLIdentityStoreImplTest {
     private static Injector autoFlushInjector;
 
-
     private static class SLIdStoreTestContext implements IdentityStoreTestContext {
 
-        private SLIdentityStoreImpl store;
+        private SLIdentityStoreImpl        store;
 
         private SLIdentityStoreSessionImpl session;
 
@@ -93,7 +93,7 @@ public class SLIdentityStoreImplTest {
 
             final IdentityConfigurationMetaData configurationMD = JAXB2IdentityConfiguration.createConfigurationMetaData("slstore.xml");
 
-            final IdentityConfigurationContextRegistry registry = (IdentityConfigurationContextRegistry) new IdentityConfigurationImpl().configure(configurationMD);
+            final IdentityConfigurationContextRegistry registry = (IdentityConfigurationContextRegistry)new IdentityConfigurationImpl().configure(configurationMD);
 
             IdentityStoreConfigurationMetaData storeMD = null;
 
@@ -105,11 +105,11 @@ public class SLIdentityStoreImplTest {
             }
 
             final IdentityStoreConfigurationContext context = new IdentityStoreConfigurationContextImpl(configurationMD,
-                    registry, storeMD);
+                                                                                                        registry, storeMD);
 
             this.store = new SLIdentityStoreImpl();
             this.store.bootstrap(context);
-            this.session = (SLIdentityStoreSessionImpl) this.store.createIdentityStoreSession();
+            this.session = (SLIdentityStoreSessionImpl)this.store.createIdentityStoreSession();
         }
 
         public void commit() throws Exception {
@@ -147,14 +147,13 @@ public class SLIdentityStoreImplTest {
 
     private final CommonIdentityStoreTest test = new CommonIdentityStoreTest(new SLIdStoreTestContext());
 
-
     @BeforeClass
     public static void startInjector() throws Exception {
 
         autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
-                STStorageSession.STFlushMode.AUTO,
-                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                repositoryPath("repositoryPath")) {
+                                                                         STStorageSession.STFlushMode.AUTO,
+                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                         repositoryPath("repositoryPath")) {
 
             @Override
             protected void configure() {
@@ -170,7 +169,8 @@ public class SLIdentityStoreImplTest {
         autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.SECURITY).flushall();
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     public void testAttributes() throws Exception {
         this.test.testAttributes();
     }
@@ -198,7 +198,8 @@ public class SLIdentityStoreImplTest {
         this.test.testPasswordCredential();
     }
 
-    @Test  @Ignore
+    @Test
+    @Ignore
     public void testRelationships() throws Exception {
         this.test.testRelationships();
     }

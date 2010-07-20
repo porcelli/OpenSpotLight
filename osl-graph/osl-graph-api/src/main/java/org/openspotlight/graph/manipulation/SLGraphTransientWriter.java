@@ -55,23 +55,21 @@ import org.openspotlight.graph.SLNode;
  * The Interface SLSimpleGraphSession. All methods in this interface throw a
  * {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level. Any security
  * violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public interface SLGraphTransientWriter {
-    
-    public <T extends SLNode> T createTransientNode(SLNode parent, Class<T> clazz,
-                                             String name);
 
+    public <T extends SLNode> T createTransientNode( SLNode parent,
+                                                     Class<T> clazz,
+                                                     String name );
 
-    public <L extends SLLink> L createTransientLink(Class<L> linkClass,
-                                        SLNode source,
-                                        SLNode target);
-
-    
-    public <L extends SLLink> L createTransientBidirectionalLink(Class<L> linkClass,
+    public <L extends SLLink> L createTransientLink( Class<L> linkClass,
                                                      SLNode source,
-                                                     SLNode target);
+                                                     SLNode target );
 
+    public <L extends SLLink> L createTransientBidirectionalLink( Class<L> linkClass,
+                                                                  SLNode source,
+                                                                  SLNode target );
 
 }

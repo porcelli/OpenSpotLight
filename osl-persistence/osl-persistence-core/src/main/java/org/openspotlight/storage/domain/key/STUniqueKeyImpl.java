@@ -66,9 +66,9 @@ public class STUniqueKeyImpl implements STUniqueKey {
                 '}';
     }
 
-    public STUniqueKeyImpl(STLocalKey localKey, String parentKeyAsString, STPartition partition, STRepositoryPath repositoryPath) {
-        if(localKey==null) throw new IllegalArgumentException();
-        if(repositoryPath==null) throw new IllegalArgumentException();
+    public STUniqueKeyImpl( STLocalKey localKey, String parentKeyAsString, STPartition partition, STRepositoryPath repositoryPath ) {
+        if (localKey == null) throw new IllegalArgumentException();
+        if (repositoryPath == null) throw new IllegalArgumentException();
         this.localKey = localKey;
         this.parentKeyAsString = parentKeyAsString;
         this.partition = partition;
@@ -84,14 +84,13 @@ public class STUniqueKeyImpl implements STUniqueKey {
 
     private final STRepositoryPath repositoryPath;
 
-    private final STPartition partition;
+    private final STPartition      partition;
 
-    private final STLocalKey localKey;
+    private final STLocalKey       localKey;
 
-    private final String parentKeyAsString;
+    private final String           parentKeyAsString;
 
-    private transient String keyAsString = null;
-
+    private transient String       keyAsString = null;
 
     @Override
     public String getKeyAsString() {
@@ -120,11 +119,11 @@ public class STUniqueKeyImpl implements STUniqueKey {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals( Object o ) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        STUniqueKeyImpl uniqueKey = (STUniqueKeyImpl) o;
+        STUniqueKeyImpl uniqueKey = (STUniqueKeyImpl)o;
         if (this.hashCode != uniqueKey.hashCode) return false;
         if (localKey != null ? !localKey.equals(uniqueKey.localKey) : uniqueKey.localKey != null) return false;
         if (parentKeyAsString != null ? !parentKeyAsString.equals(uniqueKey.parentKeyAsString) : uniqueKey.parentKeyAsString != null)
@@ -141,7 +140,7 @@ public class STUniqueKeyImpl implements STUniqueKey {
         return hashCode;
     }
 
-    public int compareTo(STUniqueKey that) {
+    public int compareTo( STUniqueKey that ) {
         if (this == null && that == null) return 0;
         if (this != null && that == null) return 1;
         if (this == null && that != null) return -1;

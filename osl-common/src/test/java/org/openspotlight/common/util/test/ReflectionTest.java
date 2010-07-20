@@ -49,11 +49,11 @@
 
 package org.openspotlight.common.util.test;
 
-import org.junit.Test;
-import org.openspotlight.common.util.Reflection;
-import org.openspotlight.common.util.Reflection.InheritanceType;
-import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
-import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Reflection.searchInheritanceType;
+import static org.openspotlight.common.util.Reflection.searchType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -62,11 +62,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Reflection.searchInheritanceType;
-import static org.openspotlight.common.util.Reflection.searchType;
+import org.junit.Test;
+import org.openspotlight.common.util.Reflection;
+import org.openspotlight.common.util.Reflection.InheritanceType;
+import org.openspotlight.common.util.Reflection.UnwrappedCollectionTypeFromMethodReturn;
+import org.openspotlight.common.util.Reflection.UnwrappedMapTypeFromMethodReturn;
 
 /**
  * Test for the class {@link Reflection}

@@ -49,22 +49,22 @@
 
 package org.openspotlight.storage.mongodb.test;
 
+import org.openspotlight.storage.STRepositoryPath;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.test.AbstractSTStorageSessionTest;
+
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.test.AbstractSTStorageSessionTest;
-
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 5:08:39 PM
  */
 public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
 
-    private final Mongo mongo;
+    private final Mongo            mongo;
     private final STRepositoryPath repositoryPath;
 
     public MongoStorageSessionTest() {

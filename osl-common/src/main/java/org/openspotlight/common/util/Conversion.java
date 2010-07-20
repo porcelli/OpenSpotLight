@@ -49,11 +49,6 @@
 
 package org.openspotlight.common.util;
 
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.converters.*;
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.exception.SLRuntimeException;
-
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -62,14 +57,27 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.beanutils.Converter;
+import org.apache.commons.beanutils.converters.BigDecimalConverter;
+import org.apache.commons.beanutils.converters.BigIntegerConverter;
+import org.apache.commons.beanutils.converters.BooleanConverter;
+import org.apache.commons.beanutils.converters.ByteConverter;
+import org.apache.commons.beanutils.converters.CharacterConverter;
+import org.apache.commons.beanutils.converters.DoubleConverter;
+import org.apache.commons.beanutils.converters.FloatConverter;
+import org.apache.commons.beanutils.converters.IntegerConverter;
+import org.apache.commons.beanutils.converters.LongConverter;
+import org.apache.commons.beanutils.converters.ShortConverter;
+import org.openspotlight.common.exception.SLRuntimeException;
+
 /**
  * Utility conversion class based on PrimitiveOrWrapperConverter from Dozer project http://dozer.sourceforge.net/
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Conversion {
 
-    private static final Map<String, Class<?>> PRIMITIVE_TYPES = new HashMap<String, Class<?>>();
+    private static final Map<String, Class<?>>    PRIMITIVE_TYPES = new HashMap<String, Class<?>>();
 
     static {
         Conversion.PRIMITIVE_TYPES.put("int", int.class);
@@ -85,7 +93,7 @@ public class Conversion {
     /**
      * Internal map of types and converters.
      */
-    private static final Map<Class<?>, Converter> CONVERTERS = new HashMap<Class<?>, Converter>();
+    private static final Map<Class<?>, Converter> CONVERTERS      = new HashMap<Class<?>, Converter>();
 
     static {
 
@@ -99,13 +107,13 @@ public class Conversion {
         Conversion.CONVERTERS.put(Float.class, new FloatConverter());
         Conversion.CONVERTERS.put(Date.class, new Converter() {
 
-            @SuppressWarnings("unchecked")
-            public Object convert(final Class type,
-                                  final Object value) {
+            @SuppressWarnings( "unchecked" )
+            public Object convert( final Class type,
+                                   final Object value ) {
                 try {
                     if (type.equals(Date.class) && value instanceof String
-                            && ((String) value).isEmpty() == false) {
-                        final String newValue = (String) value;
+                            && ((String)value).isEmpty() == false) {
+                        final String newValue = (String)value;
                         return new Date(Long.parseLong(newValue));
                     }
                 } catch (final Exception e) {
@@ -117,18 +125,18 @@ public class Conversion {
         });
         Conversion.CONVERTERS.put(String.class, new Converter() {
 
-            @SuppressWarnings("unchecked")
-            public Object convert(final Class type,
-                                  final Object value) {
+            @SuppressWarnings( "unchecked" )
+            public Object convert( final Class type,
+                                   final Object value ) {
                 try {
                     if (value == null) {
                         return null;
                     }
                     if (type.equals(String.class) && value instanceof Date) {
-                        return Long.toString(((Date) value).getTime());
+                        return Long.toString(((Date)value).getTime());
                     }
                     if (type.equals(String.class) && value instanceof Class) {
-                        return ((Class) value).getName();
+                        return ((Class)value).getName();
                     }
                     if (type.equals(String.class) && value instanceof byte[]) {
                         return new String((byte[])value);
@@ -154,12 +162,12 @@ public class Conversion {
         Conversion.CONVERTERS.put(BigInteger.class, new BigIntegerConverter());
         Conversion.CONVERTERS.put(Class.class, new Converter() {
 
-            @SuppressWarnings("unchecked")
-            public Object convert(final Class type,
-                                  final Object value) {
+            @SuppressWarnings( "unchecked" )
+            public Object convert( final Class type,
+                                   final Object value ) {
                 try {
                     if (type.equals(Class.class) && value instanceof String) {
-                        String newValue = (String) value;
+                        String newValue = (String)value;
                         if (newValue.startsWith("class ")) {
                             newValue = Strings.removeBegginingFrom("class ", newValue);
                         }
@@ -176,19 +184,19 @@ public class Conversion {
 
     /**
      * Returns a new converted type based on target type parameter.
-     *
+     * 
      * @param <E>
      * @param rawValue
      * @param targetType
      * @return a new value from a converted type
      * @throws SLException
      */
-    @SuppressWarnings("unchecked")
-    public static <E> E convert(final Object rawValue,
-                                final Class<E> targetType)  {
+    @SuppressWarnings( "unchecked" )
+    public static <E> E convert( final Object rawValue,
+                                 final Class<E> targetType ) {
         Assertions.checkNotNull("targetType", targetType); //$NON-NLS-1$
         Assertions.checkCondition(
-                "validTargetType:" + targetType.getName(), Conversion.CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
+                                  "validTargetType:" + targetType.getName(), Conversion.CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
         if (rawValue == null) {
             return null;
         }
@@ -201,23 +209,23 @@ public class Conversion {
                     if (f.isEnumConstant()) {
                         if (f.getName().equals(rawValueAsString)) {
                             final Object value = f.get(null);
-                            return (E) value;
+                            return (E)value;
 
                         }
                     }
                 }
                 throw new IllegalStateException(MessageFormat.format("Invalid enum constant:{0} for type {1}", rawValueAsString,
-                        targetType));
+                                                                     targetType));
             }
             final Converter converter = Conversion.CONVERTERS.get(targetType);
-            final E converted = (E) converter.convert(targetType, rawValue);
+            final E converted = (E)converter.convert(targetType, rawValue);
             return converted;
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
-    public static Class<?> getPrimitiveClass(final String name) {
+    public static Class<?> getPrimitiveClass( final String name ) {
         return Conversion.PRIMITIVE_TYPES.get(name);
     }
 

@@ -48,13 +48,13 @@
  */
 package org.openspotlight.common.util;
 
-import org.openspotlight.common.exception.AbstractFactoryException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import org.openspotlight.common.exception.AbstractFactoryException;
 
 /**
  * A factory for creating Abstract objects.

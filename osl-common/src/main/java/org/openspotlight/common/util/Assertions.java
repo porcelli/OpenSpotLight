@@ -48,11 +48,11 @@
  */
 package org.openspotlight.common.util;
 
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Map;
-
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
 /**
  * Helper class for parameters validation, such as not null arguments. This class uses {@link Messages} for i18n.

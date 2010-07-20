@@ -49,20 +49,21 @@
 
 package org.openspotlight.graph;
 
-import org.openspotlight.common.Pair;
-import org.openspotlight.graph.exception.PropertyNotFoundException;
-
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Set;
 
+import org.openspotlight.common.Pair;
+import org.openspotlight.graph.exception.PropertyNotFoundException;
+
 /**
- * An element defines a common API for both nodes and links. These common features are handling properties and line references as well exposes unique identifier, type name and weight.
+ * An element defines a common API for both nodes and links. These common features are handling properties and line references as
+ * well exposes unique identifier, type name and weight.
  * <p/>
  * Properties are key-value pairs where keys are always strings and value is any serializable object.
  * <p/>
  * Line references are a complex structure that defines regions in a artifact where the element is referenced.
- *
+ * 
  * @author porcelli
  * @author feuteston
  */
@@ -72,7 +73,7 @@ public interface SLElement {
 
     /**
      * Returns the unique identifier of the element.
-     *
+     * 
      * @return the unique identifier
      */
 
@@ -80,125 +81,118 @@ public interface SLElement {
 
     /**
      * Returns the type name.
-     *
+     * 
      * @return the type name
      */
     String getTypeName();
 
     /**
      * Returns the weight value. The weight is used internally for indexing purpose.
-     *
+     * 
      * @return the element weight.
      */
     BigInteger getWeight();
 
     /**
-     * Sets the property value for the given key.
-     * Null is not an accepted property value.
-     *
-     * @param key   the property key
+     * Sets the property value for the given key. Null is not an accepted property value.
+     * 
+     * @param key the property key
      * @param value the property value
      * @throws IllegalArgumentException if value is null
      */
-    <V extends Serializable> void setProperty(String key,
-                                              V value) throws IllegalArgumentException;
+    <V extends Serializable> void setProperty( String key,
+                                               V value ) throws IllegalArgumentException;
 
     /**
      * Returns a list of properties pairs (key-value).
-     *
+     * 
      * @return the key-value properties pairs
      */
     Set<Pair<String, Serializable>> getProperties();
 
     /**
-     * Returns <code>true</code> if this property container has a property
-     * accessible through the given key, <code>false</code> otherwise.
-     *
-     * Null is not an accepted property value.
-     *
+     * Returns <code>true</code> if this property container has a property accessible through the given key, <code>false</code>
+     * otherwise. Null is not an accepted property value.
+     * 
      * @param key the property key
-     * @return <code>true</code> if this element has a property
-     *         accessible through the given key, <code>false</code> otherwise
+     * @return <code>true</code> if this element has a property accessible through the given key, <code>false</code> otherwise
      */
     public boolean hasProperty( String key ) throws IllegalArgumentException;
 
     /**
      * Returns all existing property keys, or an empty iterable if this element has no properties.
-     *
+     * 
      * @return all property keys on this element
      */
     public Iterable<String> getPropertyKeys();
-    
+
     /**
      * Returns the property value associated with the given key.
-     *
+     * 
      * @param key the property key
      * @return the property value
      * @throws PropertyNotFoundException if there's no property associated with key
      */
-    <V extends Serializable> V getPropertyValue(String key) throws PropertyNotFoundException;
+    <V extends Serializable> V getPropertyValue( String key ) throws PropertyNotFoundException;
 
     /**
-     * Returns the property value associated with the given key, or a default
-     * value.
-     *
+     * Returns the property value associated with the given key, or a default value.
+     * 
      * @param key the property key
-     * @param defaultValue the default value that will be returned if no
-     *            property value was associated with the given key
-     * @return the property value associated with the given key or the default value. 
+     * @param defaultValue the default value that will be returned if no property value was associated with the given key
+     * @return the property value associated with the given key or the default value.
      */
-    <V extends Serializable> V getPropertyValue(String key, V defaultValue);
+    <V extends Serializable> V getPropertyValue( String key,
+                                                 V defaultValue );
 
     /**
-     * Returns the property value as string.
-     * (this is just a sugar method)
-     *
+     * Returns the property value as string. (this is just a sugar method)
+     * 
      * @param key the property key
      * @return the property value as string
      * @throws PropertyNotFoundException if there's no property associated with key
      */
-    String getPropertyValueAsString(String key) throws PropertyNotFoundException;
-
+    String getPropertyValueAsString( String key ) throws PropertyNotFoundException;
 
     /**
-     * Removes the property associated with the given key if exists. If there's no property associated with the key, nothing will happen.
-     *
+     * Removes the property associated with the given key if exists. If there's no property associated with the key, nothing will
+     * happen.
+     * 
      * @param key the property key
      */
-    void removeProperty(String key);
-
+    void removeProperty( String key );
 
     /**
      * Creates a line reference.
-     *
-     * @param beginLine   the initial line
-     * @param endLine     the end line
+     * 
+     * @param beginLine the initial line
+     * @param endLine the end line
      * @param beginColumn the initial column
-     * @param endColumn   the end column
-     * @param statement   the statement
-     * @param artifactId  the artifact id
+     * @param endColumn the end column
+     * @param statement the statement
+     * @param artifactId the artifact id
      */
-    void createLineReference(int beginLine,
-                             int endLine,
-                             int beginColumn,
-                             int endColumn,
-                             String statement,
-                             String artifactId);
-
+    void createLineReference( int beginLine,
+                              int endLine,
+                              int beginColumn,
+                              int endColumn,
+                              String statement,
+                              String artifactId );
 
     /**
      * Returns a {@link org.openspotlight.graph.SLTreeLineReference} with all line references of the element.
-     *
+     * 
      * @return the tree line references
      */
     SLTreeLineReference getTreeLineReferences();
 
     /**
-     * Returns a {@link org.openspotlight.graph.SLTreeLineReference} with all line references of the element for a specific artifact.
-     *
+     * Returns a {@link org.openspotlight.graph.SLTreeLineReference} with all line references of the element for a specific
+     * artifact.
+     * 
      * @param artifactId the artifact id
      * @return the tree line references
      */
-    SLTreeLineReference getTreeLineReferences(String artifactId);
+    SLTreeLineReference getTreeLineReferences( String artifactId );
 
 }

@@ -49,33 +49,40 @@
 
 package org.openspotlight.storage.redis.guice;
 
+import java.util.Map;
+
+import org.openspotlight.storage.DefaultSTPartitionFactory;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STPartitionFactory;
+import org.openspotlight.storage.STRepositoryPath;
+import org.openspotlight.storage.STStorageSession;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
-import org.openspotlight.storage.*;
-
-import java.util.Map;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:41:43 PM
  */
 public class JRedisStorageModule extends AbstractModule {
 
-    private final STStorageSession.STFlushMode flushMode;
+    private final STStorageSession.STFlushMode         flushMode;
 
     private final Map<STPartition, JRedisServerDetail> mappedServerConfig;
 
-    private final STRepositoryPath repositoryPath;
+    private final STRepositoryPath                     repositoryPath;
 
-    private final STPartitionFactory partitionFactory;
+    private final STPartitionFactory                   partitionFactory;
 
-    public JRedisStorageModule(STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig, STRepositoryPath repositoryPath) {
+    public JRedisStorageModule( STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig,
+                                STRepositoryPath repositoryPath ) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
         this.repositoryPath = repositoryPath;
         this.partitionFactory = new DefaultSTPartitionFactory();
     }
 
-    public JRedisStorageModule(STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig, STRepositoryPath repositoryPath, STPartitionFactory partitionFactory) {
+    public JRedisStorageModule( STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig,
+                                STRepositoryPath repositoryPath, STPartitionFactory partitionFactory ) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
         this.repositoryPath = repositoryPath;

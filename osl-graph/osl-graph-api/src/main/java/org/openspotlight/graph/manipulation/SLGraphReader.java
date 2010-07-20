@@ -62,272 +62,260 @@ import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryText;
 
 /**
- * Created by IntelliJ IDEA. User: porcelli Date: 06/07/2010 Time: 11:33:31 To
- * change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: porcelli Date: 06/07/2010 Time: 11:33:31 To change this template use File | Settings | File
+ * Templates.
  */
 public interface SLGraphReader {
-	/**
-	 * Creates the api query.
-	 * 
-	 * @return the sL query
-	 */
-	SLQueryApi createQueryApi();
+    /**
+     * Creates the api query.
+     * 
+     * @return the sL query
+     */
+    SLQueryApi createQueryApi();
 
-	/**
-	 * Creates the text query.
-	 * 
-	 * @param slqlInput
-	 *            the slql input
-	 * @return the sL query
-	 * @throws org.openspotlight.graph.query.SLInvalidQuerySyntaxException
-	 *             invalid syntax
-	 */
-	SLQueryText createQueryText(String slqlInput)
-			throws SLInvalidQuerySyntaxException;
+    /**
+     * Creates the text query.
+     * 
+     * @param slqlInput the slql input
+     * @return the sL query
+     * @throws org.openspotlight.graph.query.SLInvalidQuerySyntaxException invalid syntax
+     */
+    SLQueryText createQueryText( String slqlInput )
+            throws SLInvalidQuerySyntaxException;
 
-	/**
-	 * Gets the context.
-	 * 
-	 * @param id
-	 *            the id
-	 * @return the context
-	 */
-	SLContext getContext(String id);
+    /**
+     * Gets the context.
+     * 
+     * @param id the id
+     * @return the context
+     */
+    SLContext getContext( String id );
 
-	/**
-	 * Gets the node by id.
-	 * 
-	 * @param id
-	 *            the id
-	 * @return the node by id
-	 * @throws org.openspotlight.graph.exception.SLNodeNotFoundException
-	 *             node not found
-	 */
-	SLNode getNode(String id) throws SLNodeNotFoundException;
+    /**
+     * Gets the node by id.
+     * 
+     * @param id the id
+     * @return the node by id
+     * @throws org.openspotlight.graph.exception.SLNodeNotFoundException node not found
+     */
+    SLNode getNode( String id ) throws SLNodeNotFoundException;
 
-	/**
-	 * Gets the links.
-	 * 
-	 * @param linkClass
-	 *            the link class
-	 * @param source
-	 *            the source
-	 * @param target
-	 *            the target
-	 * @return the links
-	 */
-	<L extends SLLink> L getLink(Class<L> linkClass, SLNode source,
-			SLNode target, SLLinkDirection linkDirection);
+    /**
+     * Gets the links.
+     * 
+     * @param linkClass the link class
+     * @param source the source
+     * @param target the target
+     * @return the links
+     */
+    <L extends SLLink> L getLink( Class<L> linkClass,
+                                  SLNode source,
+                                  SLNode target,
+                                  SLLinkDirection linkDirection );
 
-	/**
-	 * Gets the links.
-	 * 
-	 * @param source
-	 *            the source
-	 * @param target
-	 *            the target
-	 * @return the links
-	 */
-	Iterable<SLLink> getLinks(SLNode source, SLNode target,
-			SLLinkDirection linkDirection);
+    /**
+     * Gets the links.
+     * 
+     * @param source the source
+     * @param target the target
+     * @return the links
+     */
+    Iterable<SLLink> getLinks( SLNode source,
+                               SLNode target,
+                               SLLinkDirection linkDirection );
 
-	/**
-	 * Gets the bidirectional links by side.
-	 * 
-	 * @param linkClass
-	 *            the link class
-	 * @param side
-	 *            the side
-	 * @return the bidirectional links by side
-	 */
-	<L extends SLLink> Iterable<L> getBidirectionalLinks(Class<L> linkClass,
-			SLNode side);
+    /**
+     * Gets the bidirectional links by side.
+     * 
+     * @param linkClass the link class
+     * @param side the side
+     * @return the bidirectional links by side
+     */
+    <L extends SLLink> Iterable<L> getBidirectionalLinks( Class<L> linkClass,
+                                                          SLNode side );
 
-	/**
-	 * Gets the unidirectional links by source.
-	 * 
-	 * @param linkClass
-	 *            the link class
-	 * @param source
-	 *            the source
-	 * @return the unidirectional links by source
-	 */
-	<L extends SLLink> Iterable<L> getUnidirectionalLinksBySource(
-			Class<L> linkClass, SLNode source);
+    /**
+     * Gets the unidirectional links by source.
+     * 
+     * @param linkClass the link class
+     * @param source the source
+     * @return the unidirectional links by source
+     */
+    <L extends SLLink> Iterable<L> getUnidirectionalLinksBySource(
+                                                                   Class<L> linkClass,
+                                                                   SLNode source );
 
-	/**
-	 * Gets the unidirectional links by target.
-	 * 
-	 * @param linkClass
-	 *            the link class
-	 * @param target
-	 *            the target
-	 * @return the unidirectional links by target
-	 */
-	<L extends SLLink> Iterable<L> getUnidirectionalLinksByTarget(
-			Class<L> linkClass, SLNode target);
+    /**
+     * Gets the unidirectional links by target.
+     * 
+     * @param linkClass the link class
+     * @param target the target
+     * @return the unidirectional links by target
+     */
+    <L extends SLLink> Iterable<L> getUnidirectionalLinksByTarget(
+                                                                   Class<L> linkClass,
+                                                                   SLNode target );
 
-	/**
-	 * Gets the bidirectional links by side.
-	 * 
-	 * @param side
-	 *            the side
-	 * @return the bidirectional links by side
-	 */
-	Iterable<SLLink> getBidirectionalLinks(SLNode side);
+    /**
+     * Gets the bidirectional links by side.
+     * 
+     * @param side the side
+     * @return the bidirectional links by side
+     */
+    Iterable<SLLink> getBidirectionalLinks( SLNode side );
 
-	/**
-	 * Gets the unidirectional links by source.
-	 * 
-	 * @param source
-	 *            the source
-	 * @return the unidirectional links by source
-	 */
-	Iterable<SLLink> getUnidirectionalLinksBySource(SLNode source);
+    /**
+     * Gets the unidirectional links by source.
+     * 
+     * @param source the source
+     * @return the unidirectional links by source
+     */
+    Iterable<SLLink> getUnidirectionalLinksBySource( SLNode source );
 
-	/**
-	 * Gets the unidirectional links by target.
-	 * 
-	 * @param target
-	 *            the target
-	 * @return the unidirectional links by target
-	 */
-	Iterable<SLLink> getUnidirectionalLinksByTarget(SLNode target);
+    /**
+     * Gets the unidirectional links by target.
+     * 
+     * @param target the target
+     * @return the unidirectional links by target
+     */
+    Iterable<SLLink> getUnidirectionalLinksByTarget( SLNode target );
 
-	/**
-	 * Gets the metadata.
-	 * 
-	 * @return the metadata
-	 */
-	SLMetadata getMetadata();
+    /**
+     * Gets the metadata.
+     * 
+     * @return the metadata
+     */
+    SLMetadata getMetadata();
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param linkClass
-	 *            the link class
-	 * @return the nodes by link
-	 */
-	Iterable<SLNode> getLinkedNodes(Class<? extends SLLink> linkClass);
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param linkClass the link class
+     * @return the nodes by link
+     */
+    Iterable<SLNode> getLinkedNodes( Class<? extends SLLink> linkClass );
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param linkClass
-	 *            the link class
-	 * @param node
-	 *            the node
-	 * @return the nodes by link
-	 */
-	Iterable<SLNode> getLinkedNodes(Class<? extends SLLink> linkClass,
-			SLNode node, SLLinkDirection linkDirection);
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param linkClass the link class
+     * @param node the node
+     * @return the nodes by link
+     */
+    Iterable<SLNode> getLinkedNodes( Class<? extends SLLink> linkClass,
+                                     SLNode node,
+                                     SLLinkDirection linkDirection );
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param linkClass
-	 *            the link class
-	 * @param node
-	 *            the node
-	 * @param nodeClass
-	 *            the node class
-	 * @param returnSubTypes
-	 *            the return sub types
-	 * @param linkDirection
-	 *            the link direction
-	 * @return the nodes by link
-	 */
-	<N extends SLNode> Iterable<N> getLinkedNodes(
-			Class<? extends SLLink> linkClass, SLNode node, Class<N> nodeClass,
-			boolean returnSubTypes, SLLinkDirection linkDirection);
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param linkClass the link class
+     * @param node the node
+     * @param nodeClass the node class
+     * @param returnSubTypes the return sub types
+     * @param linkDirection the link direction
+     * @return the nodes by link
+     */
+    <N extends SLNode> Iterable<N> getLinkedNodes(
+                                                   Class<? extends SLLink> linkClass,
+                                                   SLNode node,
+                                                   Class<N> nodeClass,
+                                                   boolean returnSubTypes,
+                                                   SLLinkDirection linkDirection );
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param node
-	 *            the node
-	 * @param nodeClass
-	 *            the node class
-	 * @param returnSubTypes
-	 *            the return sub types
-	 * @return the nodes by link
-	 */
-	<N extends SLNode> Iterable<N> getLinkedNodes(SLNode node,
-			Class<N> nodeClass, boolean returnSubTypes,
-			SLLinkDirection linkDirection);
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param node the node
+     * @param nodeClass the node class
+     * @param returnSubTypes the return sub types
+     * @return the nodes by link
+     */
+    <N extends SLNode> Iterable<N> getLinkedNodes( SLNode node,
+                                                   Class<N> nodeClass,
+                                                   boolean returnSubTypes,
+                                                   SLLinkDirection linkDirection );
 
-	/**
-	 * Gets the nodes by link.
-	 * 
-	 * @param node
-	 *            the node
-	 * @return the nodes by link
-	 */
-	Iterable<SLNode> getLinkedNodes(SLNode node, SLLinkDirection linkDirection);
+    /**
+     * Gets the nodes by link.
+     * 
+     * @param node the node
+     * @return the nodes by link
+     */
+    Iterable<SLNode> getLinkedNodes( SLNode node,
+                                     SLLinkDirection linkDirection );
 
-	/**
-	 * Gets the node.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @param name
-	 *            the name
-	 * @return the node
-	 */
-	<T extends SLNode> T getChildNode(SLNode node, Class<T> clazz, String name);
+    /**
+     * Gets the node.
+     * 
+     * @param clazz the clazz
+     * @param name the name
+     * @return the node
+     */
+    <T extends SLNode> T getChildNode( SLNode node,
+                                       Class<T> clazz,
+                                       String name );
 
-	/**
-	 * Gets the child node.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @return the child node
-	 */
-	<T extends SLNode> Iterable<T> getChildrenNodes(SLNode node, Class<T> clazz);
+    /**
+     * Gets the child node.
+     * 
+     * @param clazz the clazz
+     * @return the child node
+     */
+    <T extends SLNode> Iterable<T> getChildrenNodes( SLNode node,
+                                                     Class<T> clazz );
 
-	/**
-	 * Gets the parent.
-	 * 
-	 * @return the parent
-	 */
-	SLNode getParentNode(SLNode node);
+    /**
+     * Gets the parent.
+     * 
+     * @return the parent
+     */
+    SLNode getParentNode( SLNode node );
 
-	/**
-	 * Gets the meta link.
-	 * 
-	 * @return the meta link
-	 */
-	SLMetaLink getMetaLink(SLLink link);
+    /**
+     * Gets the meta link.
+     * 
+     * @return the meta link
+     */
+    SLMetaLink getMetaLink( SLLink link );
 
-	/**
-	 * Gets the meta node type.
-	 * 
-	 * @return the meta type or null if its a simple node
-	 */
-	SLMetaNodeType getMetaType(SLNode node);
+    /**
+     * Gets the meta node type.
+     * 
+     * @return the meta type or null if its a simple node
+     */
+    SLMetaNodeType getMetaType( SLNode node );
 
-	/**
-	 * Gets the parent.
-	 * 
-	 * @return the parent
-	 */
-	SLContext getContext(SLNode node);
+    /**
+     * Gets the parent.
+     * 
+     * @return the parent
+     */
+    SLContext getContext( SLNode node );
 
-	<T extends SLNode> Iterable<T> findNodes(Class<T> clazz, String name,
-			SLContext context, SLContext... aditionalContexts);
+    <T extends SLNode> Iterable<T> findNodes( Class<T> clazz,
+                                              String name,
+                                              SLContext context,
+                                              SLContext... aditionalContexts );
 
-	Iterable<SLNode> findNodes(String name, SLContext context,
-			SLContext... aditionalContexts);
+    Iterable<SLNode> findNodes( String name,
+                                SLContext context,
+                                SLContext... aditionalContexts );
 
-	<T extends SLNode> Iterable<T> findNodes(Class<T> clazz, SLContext context,
-			SLContext... aditionalContexts);
+    <T extends SLNode> Iterable<T> findNodes( Class<T> clazz,
+                                              SLContext context,
+                                              SLContext... aditionalContexts );
 
-	<T extends SLNode> T findUniqueNode(Class<T> clazz, String name,
-			SLContext context, SLContext... aditionalContexts);
+    <T extends SLNode> T findUniqueNode( Class<T> clazz,
+                                         String name,
+                                         SLContext context,
+                                         SLContext... aditionalContexts );
 
-	SLNode findUniqueNode(String name, SLContext context,
-			SLContext... aditionalContexts);
+    SLNode findUniqueNode( String name,
+                           SLContext context,
+                           SLContext... aditionalContexts );
 
-	<T extends SLNode> T findUniqueNode(Class<T> clazz, SLContext context,
-			SLContext... aditionalContexts);
+    <T extends SLNode> T findUniqueNode( Class<T> clazz,
+                                         SLContext context,
+                                         SLContext... aditionalContexts );
 }

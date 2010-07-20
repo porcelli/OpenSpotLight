@@ -48,10 +48,10 @@
  */
 package org.openspotlight.graph.meta;
 
-import org.openspotlight.graph.SLNode;
-
 import java.util.Collection;
 import java.util.List;
+
+import org.openspotlight.graph.SLNode;
 
 /**
  * The Interface SLMetaLink.
@@ -116,6 +116,5 @@ public interface SLMetaLink extends SLMetaElement {
      * @return the description
      */
     public String getDescription();
-
 
 }

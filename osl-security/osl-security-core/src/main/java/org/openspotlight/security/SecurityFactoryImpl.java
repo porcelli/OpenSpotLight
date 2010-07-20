@@ -58,7 +58,7 @@ import org.openspotlight.storage.STStorageSession;
 
 /**
  * The Class SecurityFactoryImpl.
- *
+ * 
  * @author porcelli
  */
 public class SecurityFactoryImpl extends SecurityFactory {
@@ -67,7 +67,7 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public IdentityManager createIdentityManager(STStorageSession session) {
+    public IdentityManager createIdentityManager( STStorageSession session ) {
         return new IdentityManagerSimpleImpl();
     }
 
@@ -75,7 +75,7 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public PolicyEnforcement createGraphPolicyEnforcement(STStorageSession session) {
+    public PolicyEnforcement createGraphPolicyEnforcement( STStorageSession session ) {
         return new PolicyEnforcementGraphImpl();
     }
 
@@ -95,7 +95,7 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public User createUser(final String id) {
+    public User createUser( final String id ) {
         return new User() {
 
             public String getId() {

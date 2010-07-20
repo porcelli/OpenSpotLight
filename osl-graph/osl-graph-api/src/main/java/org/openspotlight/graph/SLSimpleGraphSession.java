@@ -56,30 +56,27 @@ import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
 
 /**
- * Created by IntelliJ IDEA.
- * User: porcelli
- * Date: 06/07/2010
- * Time: 12:42:51
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: porcelli Date: 06/07/2010 Time: 12:42:51 To change this template use File | Settings | File
+ * Templates.
  */
 public interface SLSimpleGraphSession {
 
-    SLGraphReader location(SLGraphLocation location);
+    SLGraphReader location( SLGraphLocation location );
 
     SLGraphTransientWriter local();
 
-    void flushChangedProperties(SLNode node);
+    void flushChangedProperties( SLNode node );
 
     /**
      * Gets the policy enforcement.
-     *
+     * 
      * @return the policy enforcement
      */
     public PolicyEnforcement getPolicyEnforcement();
 
     /**
      * Gets the user.
-     *
+     * 
      * @return the user
      */
     User getUser();
@@ -87,7 +84,7 @@ public interface SLSimpleGraphSession {
     /**
      * Close.
      */
-    @DisposeMethod(callOnTimeout = true)
+    @DisposeMethod( callOnTimeout = true )
     void close();
 
     void shutdown();

@@ -50,7 +50,11 @@ package org.openspotlight.persist.test;
 
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
-import org.openspotlight.persist.annotation.*;
+import org.openspotlight.persist.annotation.IndexedProperty;
+import org.openspotlight.persist.annotation.KeyProperty;
+import org.openspotlight.persist.annotation.ParentProperty;
+import org.openspotlight.persist.annotation.SetUniqueIdOnThisProperty;
+import org.openspotlight.persist.annotation.SimpleNodeType;
 
 public class LevelOneObj implements SimpleNodeType {
     private String  uuid;

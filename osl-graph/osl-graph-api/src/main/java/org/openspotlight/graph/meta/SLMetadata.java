@@ -48,24 +48,24 @@
  */
 package org.openspotlight.graph.meta;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.exception.SLMetaLinkTypeNotFoundException;
 import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
 
-import java.util.Collection;
-import java.util.List;
-
 /**
  * The Interface SLMetadata.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 public interface SLMetadata {
 
     /**
      * The Enum BooleanOperator.
-     *
+     * 
      * @author porcelli
      */
     public enum BooleanOperator {
@@ -83,7 +83,7 @@ public interface SLMetadata {
 
     /**
      * The Enum LogicOperator.
-     *
+     * 
      * @author porcelli
      */
     public enum LogicOperator {
@@ -111,7 +111,7 @@ public interface SLMetadata {
 
     /**
      * The Enum MetaNodeTypeProperty.
-     *
+     * 
      * @author porcelli
      */
     public enum MetaNodeTypeProperty {
@@ -129,79 +129,79 @@ public interface SLMetadata {
 
     /**
      * Find meta node type.
-     *
+     * 
      * @param nodeClass the node class
      * @return the sL meta node type
      */
-    public SLMetaNodeType getMetaNodeType(Class<? extends SLNode> nodeClass) throws SLMetaNodeTypeNotFoundException;
+    public SLMetaNodeType getMetaNodeType( Class<? extends SLNode> nodeClass ) throws SLMetaNodeTypeNotFoundException;
 
     /**
      * Find meta node type.
-     *
+     * 
      * @param typeName the type name
      * @return the sL meta node type
      */
-    public SLMetaNodeType getMetaNodeType(String typeName) throws SLMetaNodeTypeNotFoundException;
+    public SLMetaNodeType getMetaNodeType( String typeName ) throws SLMetaNodeTypeNotFoundException;
 
     /**
      * Find meta node type by description.
-     *
+     * 
      * @param description the description
      * @return the sL meta node type
      */
-    public SLMetaNodeType getMetaNodeTypeByDescription(String description) throws SLMetaNodeTypeNotFoundException;
+    public SLMetaNodeType getMetaNodeTypeByDescription( String description ) throws SLMetaNodeTypeNotFoundException;
 
     /**
      * Gets the meta link type.
-     *
+     * 
      * @param linkType the link type
      * @return the meta link type
      */
-    public SLMetaLinkType getMetaLinkType(Class<? extends SLLink> linkType) throws SLMetaLinkTypeNotFoundException;
+    public SLMetaLinkType getMetaLinkType( Class<? extends SLLink> linkType ) throws SLMetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link type.
-     *
+     * 
      * @param name the name
      * @return the meta link type
      */
-    public SLMetaLinkType getMetaLinkType(String name) throws SLMetaLinkTypeNotFoundException;
+    public SLMetaLinkType getMetaLinkType( String name ) throws SLMetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link type by description.
-     *
+     * 
      * @param description the description
      * @return the meta link type by description
      */
-    public SLMetaLinkType getMetaLinkTypeByDescription(String description) throws SLMetaLinkTypeNotFoundException;
+    public SLMetaLinkType getMetaLinkTypeByDescription( String description ) throws SLMetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link types.
-     *
+     * 
      * @return the meta link types
      */
     public Collection<SLMetaLinkType> getMetaLinkTypes();
 
     /**
      * Gets the meta nodes types.
-     *
+     * 
      * @return the meta nodes types
      */
     public Collection<SLMetaNodeType> getMetaNodesTypes();
 
     /**
      * Search meta node type.
-     *
+     * 
      * @param property2Find the property2 find
-     * @param logicOp       the logic op
-     * @param booleanOp     the boolean op
-     * @param values        the values
+     * @param logicOp the logic op
+     * @param booleanOp the boolean op
+     * @param values the values
      * @return the collection< sl meta node type>
      */
-    public Collection<SLMetaNodeType> searchMetaNodeType(final MetaNodeTypeProperty property2Find,
-                                                         final LogicOperator logicOp,
-                                                         final BooleanOperator booleanOp,
-                                                         final List<String> values);
+    public Collection<SLMetaNodeType> searchMetaNodeType( final MetaNodeTypeProperty property2Find,
+                                                          final LogicOperator logicOp,
+                                                          final BooleanOperator booleanOp,
+                                                          final List<String> values );
 
     // TODO implement searchMetaLinkType
 }

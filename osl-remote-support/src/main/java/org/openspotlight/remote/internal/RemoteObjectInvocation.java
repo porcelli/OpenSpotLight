@@ -48,13 +48,15 @@
  */
 package org.openspotlight.remote.internal;
 
-import java.io.Serializable;
-
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
-import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.HashCodes.hashOf;
+
+import java.io.Serializable;
 
 /**
  * The Class RemoteObjectInvocation is used to transfer data to invoke objects on the server.

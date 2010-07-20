@@ -49,16 +49,17 @@
 
 package org.openspotlight.storage.domain.key;
 
-import com.google.common.collect.ImmutableSet;
-import org.openspotlight.storage.StringIDSupport;
+import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.sort;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static java.util.Collections.sort;
+import org.openspotlight.storage.StringIDSupport;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:46:52 AM
@@ -66,8 +67,7 @@ import static java.util.Collections.sort;
 public class STLocalKeyImpl implements STLocalKey {
     private final int hashCode;
 
-
-    public STLocalKeyImpl(Set<STKeyEntry> entries, String nodeEntryName) {
+    public STLocalKeyImpl( Set<STKeyEntry> entries, String nodeEntryName ) {
         if (nodeEntryName == null) throw new IllegalArgumentException();
         Set<String> names = newHashSet();
         for (STKeyEntry entry : entries) {
@@ -90,7 +90,7 @@ public class STLocalKeyImpl implements STLocalKey {
 
     private final Set<STKeyEntry> entries;
 
-    private final Set<String> entryNames;
+    private final Set<String>     entryNames;
 
     public Set<String> getEntryNames() {
         return entryNames;
@@ -108,7 +108,6 @@ public class STLocalKeyImpl implements STLocalKey {
 
     private transient String keyAsString = null;
 
-
     @Override
     public String getKeyAsString() {
         String value = keyAsString;
@@ -119,13 +118,12 @@ public class STLocalKeyImpl implements STLocalKey {
         return value;
     }
 
-
     @Override
-    public boolean equals(Object o) {
+    public boolean equals( Object o ) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        STLocalKeyImpl localKey = (STLocalKeyImpl) o;
+        STLocalKeyImpl localKey = (STLocalKeyImpl)o;
         if (this.hashCode != localKey.hashCode) return false;
 
         if (entries != null ? !entries.equals(localKey.entries) : localKey.entries != null) return false;
@@ -140,7 +138,7 @@ public class STLocalKeyImpl implements STLocalKey {
         return hashCode;
     }
 
-    public int compareTo(STLocalKey o) {
+    public int compareTo( STLocalKey o ) {
         int result = this.getNodeEntryName().compareTo(o.getNodeEntryName());
         if (result != 0) return result;
         Iterator<STKeyEntry> thisIt = getEntries().iterator();

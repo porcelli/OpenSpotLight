@@ -49,22 +49,30 @@
 
 package org.openspotlight.common.util;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.common.exception.SLRuntimeException;
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.openspotlight.common.util.Assertions.*;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
  * Helper class to deal with multiple files.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * @author Vitor Hugo Chagas
  */
@@ -72,11 +80,11 @@ public class Files {
 
     /**
      * Delete multiple files.
-     *
+     * 
      * @param path the path
      * @throws SLException the SL exception
      */
-    public static void delete(final File path) throws SLException {
+    public static void delete( final File path ) throws SLException {
         checkNotNull("path", path); //$NON-NLS-1$
         if (!path.exists()) {
             return;
@@ -94,11 +102,11 @@ public class Files {
 
     /**
      * Delete multiple files.
-     *
+     * 
      * @param path the path
      * @throws SLException the SL exception
      */
-    public static void delete(final String path) throws SLException {
+    public static void delete( final String path ) throws SLException {
         checkNotEmpty("path", path); //$NON-NLS-1$
         delete(new File(path));
 
@@ -106,11 +114,11 @@ public class Files {
 
     /**
      * Deletes directory in a recursive way, first excluding its contents.
-     *
+     * 
      * @param dir the dir
      * @throws Exception the exception
      */
-    private static void deleteDir(final File dir) throws Exception {
+    private static void deleteDir( final File dir ) throws Exception {
         checkNotNull("dir", dir); //$NON-NLS-1$
         final File[] files = dir.listFiles();
         if (files != null) {
@@ -127,21 +135,22 @@ public class Files {
 
     /**
      * Delete a file itself.
-     *
+     * 
      * @param file the file
      */
-    private static void deleteFile(final File file) {
+    private static void deleteFile( final File file ) {
         checkNotNull("file", file); //$NON-NLS-1$
         file.delete();
     }
 
     /**
      * Returns the normalized path (in a unix like way).
-     *
+     * 
      * @param f the f
      * @return a normalized file name
      */
-    public static String getNormalizedFileName(String basePath, final File f) {
+    public static String getNormalizedFileName( String basePath,
+                                                final File f ) {
         try {
             String fileName = f.getPath().replaceAll("\\\\", "/");
             return Strings.removeBegginingFrom(basePath, fileName); //$NON-NLS-1$//$NON-NLS-2$
@@ -152,11 +161,11 @@ public class Files {
 
     /**
      * Returns the normalized path (in a unix like way).
-     *
+     * 
      * @param f the f
      * @return a normalized file name
      */
-    public static String getNormalizedFileName(final File f) {
+    public static String getNormalizedFileName( final File f ) {
         try {
             return f.getCanonicalPath().replaceAll("\\\\", "/"); //$NON-NLS-1$//$NON-NLS-2$
         } catch (final Exception e) {
@@ -166,15 +175,15 @@ public class Files {
 
     /**
      * Execute the file listing using recursion to fill the file name set.
-     *
+     * 
      * @param setOfFiles the set of files
-     * @param basePath   the base path
-     * @param file       the file
+     * @param basePath the base path
+     * @param file the file
      * @throws Exception the exception
      */
-    private static void listFileNamesFrom(final Set<String> setOfFiles,
-                                          final String basePath,
-                                          final File file) throws Exception {
+    private static void listFileNamesFrom( final Set<String> setOfFiles,
+                                           final String basePath,
+                                           final File file ) throws Exception {
         checkNotNull("setOfFiles", setOfFiles); //$NON-NLS-1$
         checkNotEmpty("basePath", basePath); //$NON-NLS-1$
         checkNotNull("file", file); //$NON-NLS-1$
@@ -193,13 +202,13 @@ public class Files {
 
     /**
      * Returns a relative path list from an initial directory, or the file path itself if the initialPath is a file.
-     *
+     * 
      * @param basePath the base path
      * @return a relative path list
      * @throws SLException the SL exception
      */
-    public static Set<String> listFileNamesFrom(final String basePath,
-                                                final boolean silent) throws SLException {
+    public static Set<String> listFileNamesFrom( final String basePath,
+                                                 final boolean silent ) throws SLException {
         checkNotEmpty("basePath", basePath); //$NON-NLS-1$
         final File basePathAsFile = new File(basePath);
         if (!silent) {
@@ -222,12 +231,12 @@ public class Files {
 
     /**
      * Reads an streams content and writes it on a byte array.
-     *
+     * 
      * @param inputStream the input stream
      * @return the stream content as bytes
      * @throws SLException the SL exception
      */
-    public static byte[] readBytesFromStream(final InputStream inputStream) throws SLException {
+    public static byte[] readBytesFromStream( final InputStream inputStream ) throws SLException {
         checkNotNull("inputStream", inputStream); //$NON-NLS-1$
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -243,12 +252,12 @@ public class Files {
 
     /**
      * Reads text file lines.
-     *
+     * 
      * @param inputStream
      * @return collection of string lines.
      * @throws SLException
      */
-    public static Collection<String> readLines(final InputStream inputStream) throws SLException {
+    public static Collection<String> readLines( final InputStream inputStream ) throws SLException {
         checkNotNull("inputStream", inputStream);
         final Collection<String> lines = new ArrayList<String>();
         final FileReader fileReader = null;

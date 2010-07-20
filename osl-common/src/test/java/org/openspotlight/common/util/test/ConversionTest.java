@@ -49,21 +49,21 @@
 
 package org.openspotlight.common.util.test;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Conversion;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 /**
  * Test class for {@link Conversion}.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SuppressWarnings("all")
+@SuppressWarnings( "all" )
 public class ConversionTest {
 
     public static enum SomeEnum {
@@ -99,13 +99,12 @@ public class ConversionTest {
         Assert.assertThat(d.toString(), Is.is(asDate.toString()));
     }
 
-    @Test(expected = SLException.class)
+    @Test( expected = SLException.class )
     public void shouldNotWorkWhenThereIsNoTimeZone() throws Exception {
         String date1AsString = "2010-06-02 11:26:44";
         Conversion.convert(date1AsString, Date.class);
-        
-    }
 
+    }
 
     @Test
     public void shouldWorkWithEnums() throws Exception {

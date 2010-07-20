@@ -48,10 +48,10 @@
  */
 package org.openspotlight.graph.meta;
 
+import java.util.Collection;
+
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
-
-import java.util.Collection;
 
 /**
  * The Interface SLMetaLinkType.

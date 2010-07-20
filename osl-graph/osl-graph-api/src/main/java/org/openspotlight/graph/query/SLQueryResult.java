@@ -48,9 +48,9 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.SLNode;
-
 import java.util.List;
+
+import org.openspotlight.graph.SLNode;
 
 /**
  * The Interface SLQueryResult.

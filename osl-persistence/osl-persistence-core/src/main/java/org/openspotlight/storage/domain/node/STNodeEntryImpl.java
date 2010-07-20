@@ -23,25 +23,25 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  *
- * ***********************************************************************
- * OpenSpotLight - Plataforma de Governan�a de TI de C�digo Aberto
- * *
+ ***********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
+ *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribui��o de direito autoral declarada e atribu�da pelo autor.
- * Todas as contribui��es de terceiros est�o distribu�das sob licen�a da
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
  * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
  *
- * Este programa � software livre; voc� pode redistribu�-lo e/ou modific�-lo sob os
- * termos da Licen�a P�blica Geral Menor do GNU conforme publicada pela Free Software
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
  * Foundation.
  *
- * Este programa � distribu�do na expectativa de que seja �til, por�m, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia impl�cita de COMERCIABILIDADE OU ADEQUA��O A UMA
- * FINALIDADE ESPEC�FICA. Consulte a Licen�a P�blica Geral Menor do GNU para mais detalhes.
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
  *
- * Voc� deve ter recebido uma c�pia da Licen�a P�blica Geral Menor do GNU junto com este
- * programa; se n�o, escreva para:
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para:
  * Free Software Foundation, Inc.
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
@@ -49,11 +49,7 @@
 
 package org.openspotlight.storage.domain.node;
 
-import com.google.inject.internal.ImmutableSet;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.key.STLocalKey;
-import org.openspotlight.storage.domain.key.STUniqueKey;
+import static com.google.common.collect.Maps.newHashMap;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -61,16 +57,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import static com.google.common.collect.Maps.newHashMap;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.key.STLocalKey;
+import org.openspotlight.storage.domain.key.STUniqueKey;
 
+import com.google.inject.internal.ImmutableSet;
 
 public class STNodeEntryImpl implements STNodeEntry {
 
     private static final long TIMEOUT = 60 * 1000;
 
-    private long lastLoad;
+    private long              lastLoad;
 
-    public STNodeEntryImpl(STUniqueKey uniqueKey, Set<STProperty> properties, boolean resetTimeout) {
+    public STNodeEntryImpl( STUniqueKey uniqueKey, Set<STProperty> properties, boolean resetTimeout ) {
         this.lastLoad = resetTimeout ? -1 : System.currentTimeMillis();
         this.nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
         if (nodeEntryName == null) throw new IllegalStateException();
@@ -86,26 +86,25 @@ public class STNodeEntryImpl implements STNodeEntry {
         namedChildrenWeakReference = new WeakHashMap<Iterable<STNodeEntry>, String>();
     }
 
-
-    public STNodeEntryImpl(STUniqueKey uniqueKey, boolean resetTimeout) {
+    public STNodeEntryImpl( STUniqueKey uniqueKey, boolean resetTimeout ) {
         this(uniqueKey, null, resetTimeout);
     }
 
-    private final STPartition partition;
+    private final STPartition                          partition;
 
-    private WeakReference<STNodeEntry> parentWeakReference = null;
+    private WeakReference<STNodeEntry>                 parentWeakReference   = null;
 
-    private WeakReference<Iterable<STNodeEntry>> childrenWeakReference = null;
+    private WeakReference<Iterable<STNodeEntry>>       childrenWeakReference = null;
 
     private WeakHashMap<Iterable<STNodeEntry>, String> namedChildrenWeakReference;
 
-    private final Map<String, STProperty> propertiesByName;
+    private final Map<String, STProperty>              propertiesByName;
 
-    private final String nodeEntryName;
+    private final String                               nodeEntryName;
 
-    private final STLocalKey localKey;
+    private final STLocalKey                           localKey;
 
-    private final STUniqueKey uniqueKey;
+    private final STUniqueKey                          uniqueKey;
 
     public void forceReload() {
         this.propertiesByName.clear();
@@ -124,7 +123,8 @@ public class STNodeEntryImpl implements STNodeEntry {
         return uniqueKey;
     }
 
-    public String getPropertyAsString(STStorageSession session, String name) {
+    public String getPropertyAsString( STStorageSession session,
+                                       String name ) {
         STProperty prop = getProperty(session, name);
         if (prop != null) {
             return prop.getValueAsString(session);
@@ -132,7 +132,8 @@ public class STNodeEntryImpl implements STNodeEntry {
         return null;
     }
 
-    public InputStream getPropertyAsStream(STStorageSession session, String name) {
+    public InputStream getPropertyAsStream( STStorageSession session,
+                                            String name ) {
 
         STProperty prop = getProperty(session, name);
         if (prop != null) {
@@ -141,7 +142,8 @@ public class STNodeEntryImpl implements STNodeEntry {
         return null;
     }
 
-    public byte[] getPropertyAsBytes(STStorageSession session, String name) {
+    public byte[] getPropertyAsBytes( STStorageSession session,
+                                      String name ) {
 
         STProperty prop = getProperty(session, name);
         if (prop != null) {
@@ -150,7 +152,8 @@ public class STNodeEntryImpl implements STNodeEntry {
         return null;
     }
 
-    public STProperty getProperty(STStorageSession session, String name) {
+    public STProperty getProperty( STStorageSession session,
+                                   String name ) {
         loadPropertiesOnce(session);
         STProperty result = propertiesByName.get(name);
         if (result == null) {
@@ -160,15 +163,18 @@ public class STNodeEntryImpl implements STNodeEntry {
         return result;
     }
 
-    public Iterable<STNodeEntry> getChildren(STPartition partition, STStorageSession session) {
+    public Iterable<STNodeEntry> getChildren( STPartition partition,
+                                              STStorageSession session ) {
         Iterable<STNodeEntry> children = childrenWeakReference != null ? childrenWeakReference.get() : null;
         if (children == null) {
-            children = getChildrenForcingReload(partition,session);
+            children = getChildrenForcingReload(partition, session);
         }
         return children;
     }
 
-    public Iterable<STNodeEntry> getChildrenNamed(STPartition partition, STStorageSession session, String name) {
+    public Iterable<STNodeEntry> getChildrenNamed( STPartition partition,
+                                                   STStorageSession session,
+                                                   String name ) {
 
         Iterable<STNodeEntry> thisChildren = null;
         if (namedChildrenWeakReference.containsValue(name)) {
@@ -181,24 +187,27 @@ public class STNodeEntryImpl implements STNodeEntry {
         }
 
         if (thisChildren == null) {
-            thisChildren = getChildrenNamedForcingReload(partition,session, name);
+            thisChildren = getChildrenNamedForcingReload(partition, session, name);
         }
         return thisChildren;
     }
 
-    public Iterable<STNodeEntry> getChildrenForcingReload(STPartition partition, STStorageSession session) {
-        Iterable<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetChildren(partition,this);
+    public Iterable<STNodeEntry> getChildrenForcingReload( STPartition partition,
+                                                           STStorageSession session ) {
+        Iterable<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetChildren(partition, this);
         childrenWeakReference = new WeakReference<Iterable<STNodeEntry>>(children);
         return children;
     }
 
-    public Iterable<STNodeEntry> getChildrenNamedForcingReload(STPartition partition, STStorageSession session, String name) {
-        Iterable<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetNamedChildren(partition,this, name);
+    public Iterable<STNodeEntry> getChildrenNamedForcingReload( STPartition partition,
+                                                                STStorageSession session,
+                                                                String name ) {
+        Iterable<STNodeEntry> children = session.withPartition(partition).getInternalMethods().nodeEntryGetNamedChildren(partition, this, name);
         namedChildrenWeakReference.put(children, name);
         return children;
     }
 
-    public STNodeEntry getParent(STStorageSession session) {
+    public STNodeEntry getParent( STStorageSession session ) {
         STNodeEntry parent = parentWeakReference != null ? parentWeakReference.get() : null;
         if (parent == null) {
             parent = session.withPartition(partition).getInternalMethods().nodeEntryGetParent(this);
@@ -207,22 +216,24 @@ public class STNodeEntryImpl implements STNodeEntry {
         return parent;
     }
 
-    public void removeNode(STStorageSession session) {
+    public void removeNode( STStorageSession session ) {
         session.removeNode(this);
     }
 
-    public Set<String> getPropertyNames(STStorageSession session) {
+    public Set<String> getPropertyNames( STStorageSession session ) {
         reloadProperties(session);
         return ImmutableSet.copyOf(propertiesByName.keySet());
     }
 
-    public Set<STProperty> getProperties(STStorageSession session) {
+    public Set<STProperty> getProperties( STStorageSession session ) {
         reloadProperties(session);
         return ImmutableSet.copyOf(propertiesByName.values());
     }
 
     @Override
-    public STProperty setSimpleProperty(STStorageSession session, String name, String value) {
+    public STProperty setSimpleProperty( STStorageSession session,
+                                         String name,
+                                         String value ) {
         if (localKey.getEntryNames().contains(name)) throw new IllegalStateException();
         STProperty currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -235,7 +246,9 @@ public class STNodeEntryImpl implements STNodeEntry {
     }
 
     @Override
-    public STProperty setSimpleProperty(STStorageSession session, String name, InputStream value) {
+    public STProperty setSimpleProperty( STStorageSession session,
+                                         String name,
+                                         InputStream value ) {
         if (localKey.getEntryNames().contains(name)) throw new IllegalStateException();
         STProperty currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -248,7 +261,9 @@ public class STNodeEntryImpl implements STNodeEntry {
     }
 
     @Override
-    public STProperty setSimpleProperty(STStorageSession session, String name, byte[] value) {
+    public STProperty setSimpleProperty( STStorageSession session,
+                                         String name,
+                                         byte[] value ) {
         if (localKey.getEntryNames().contains(name)) throw new IllegalStateException();
         STProperty currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -262,7 +277,9 @@ public class STNodeEntryImpl implements STNodeEntry {
     }
 
     @Override
-    public STProperty setIndexedProperty(STStorageSession session, String name, String value) {
+    public STProperty setIndexedProperty( STStorageSession session,
+                                          String name,
+                                          String value ) {
         if (localKey.getEntryNames().contains(name)) throw new IllegalStateException();
         STProperty currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -274,7 +291,7 @@ public class STNodeEntryImpl implements STNodeEntry {
         return currentProperty;
     }
 
-    private void reloadProperties(STStorageSession session) {
+    private void reloadProperties( STStorageSession session ) {
         boolean tooOld = this.lastLoad < (System.currentTimeMillis() + TIMEOUT);
         boolean empty = propertiesByName.isEmpty();
         if (tooOld && empty) {
@@ -286,24 +303,24 @@ public class STNodeEntryImpl implements STNodeEntry {
         }
     }
 
-    private void loadPropertiesOnce(STStorageSession session) {
+    private void loadPropertiesOnce( STStorageSession session ) {
         if (propertiesByName.isEmpty()) {
             reloadProperties(session);
         }
     }
 
-    public STNodeEntryBuilder createWithName(final STStorageSession session, final String name) {
+    public STNodeEntryBuilder createWithName( final STStorageSession session,
+                                              final String name ) {
         return session.withPartition(partition).getInternalMethods().nodeEntryCreateWithName(this, name);
 
     }
 
-
     @Override
-    public boolean equals(Object o) {
+    public boolean equals( Object o ) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        STNodeEntryImpl that = (STNodeEntryImpl) o;
+        STNodeEntryImpl that = (STNodeEntryImpl)o;
 
         if (localKey != null ? !localKey.equals(that.localKey) : that.localKey != null) return false;
         if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName) : that.nodeEntryName != null)

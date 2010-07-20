@@ -49,13 +49,14 @@
 
 package org.openspotlight.storage.redis.guice;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import org.openspotlight.guice.ThreadLocalProvider;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.JRedisSTStorageSessionImpl;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:57:04 PM
@@ -65,7 +66,8 @@ public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorag
     private final STPartitionFactory partitionFactory;
 
     @Inject
-    public JRedisSTStorageSessionProvider(STStorageSession.STFlushMode flushMode, JRedisFactory factory, STRepositoryPath repositoryPath, STPartitionFactory partitionFactory) {
+    public JRedisSTStorageSessionProvider( STStorageSession.STFlushMode flushMode, JRedisFactory factory,
+                                           STRepositoryPath repositoryPath, STPartitionFactory partitionFactory ) {
         this.flushMode = flushMode;
         this.factory = factory;
         this.repositoryPath = repositoryPath;
@@ -73,12 +75,11 @@ public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorag
     }
 
     private final STStorageSession.STFlushMode flushMode;
-    private final JRedisFactory factory;
-    private final STRepositoryPath repositoryPath;
-
+    private final JRedisFactory                factory;
+    private final STRepositoryPath             repositoryPath;
 
     @Override
     protected STStorageSession createInstance() {
-        return new JRedisSTStorageSessionImpl(flushMode, factory,repositoryPath, partitionFactory);
+        return new JRedisSTStorageSessionImpl(flushMode, factory, repositoryPath, partitionFactory);
     }
 }

@@ -48,15 +48,15 @@
  */
 package org.openspotlight.common.concurrent.test;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 import org.openspotlight.common.concurrent.GossipExecutor;
 import org.openspotlight.common.concurrent.GossipExecutor.TaskListener;
 import org.openspotlight.common.concurrent.GossipExecutor.ThreadListener;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class CautiousExecutorTest {
 

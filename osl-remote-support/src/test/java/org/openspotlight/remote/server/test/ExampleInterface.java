@@ -48,11 +48,11 @@
  */
 package org.openspotlight.remote.server.test;
 
-import org.openspotlight.remote.annotation.CachedInvocation;
-import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
-
 import java.util.Collection;
 import java.util.Map;
+
+import org.openspotlight.remote.annotation.CachedInvocation;
+import org.openspotlight.remote.annotation.UnsupportedRemoteMethod;
 
 public interface ExampleInterface {
 

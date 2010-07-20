@@ -49,10 +49,13 @@
 
 package org.openspotlight.common.util.test;
 
+import static org.openspotlight.common.util.Exceptions.catchAndLog;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
+
 import org.junit.Test;
 import org.openspotlight.common.exception.ConfigurationException;
-
-import static org.openspotlight.common.util.Exceptions.*;
 
 /**
  * Test class for {@link Exceptions}
@@ -99,7 +102,7 @@ public class ExceptionsTest {
             this.dangerousMethod();
         } catch (final Exception e) {
             throw logAndReturnNew("it was so dangerous!", e, //$NON-NLS-1$
-                                  IllegalArgumentException.class);
+            IllegalArgumentException.class);
         }
     }
 
@@ -109,7 +112,7 @@ public class ExceptionsTest {
             this.dangerousMethod();
         } catch (final Exception e) {
             logAndThrowNew("it was so dangerous!", e, //$NON-NLS-1$
-                           IllegalArgumentException.class);
+            IllegalArgumentException.class);
         }
     }
 

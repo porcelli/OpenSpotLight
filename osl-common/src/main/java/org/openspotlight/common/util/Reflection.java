@@ -49,9 +49,14 @@
 
 package org.openspotlight.common.util;
 
-import com.google.common.collect.ImmutableMap;
-import org.openspotlight.common.Pair;
-import org.openspotlight.common.exception.SLRuntimeException;
+import static java.lang.Class.forName;
+import static java.util.EnumSet.of;
+import static org.openspotlight.common.Pair.newPair;
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Equals.eachEquality;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -61,23 +66,21 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import static java.lang.Class.forName;
-import static java.util.EnumSet.of;
-import static org.openspotlight.common.Pair.newPair;
-import static org.openspotlight.common.util.Assertions.*;
-import static org.openspotlight.common.util.Equals.eachEquality;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import org.openspotlight.common.Pair;
+import org.openspotlight.common.exception.SLRuntimeException;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * This class has a set of static methods to use for reflection purposes.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class Reflection {
 
     /**
      * This enum has the inheritance types between two classes.
-     *
+     * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static enum InheritanceType {
@@ -100,7 +103,7 @@ public class Reflection {
 
     /**
      * The Class UnwrappedCollectionTypeFromMethodReturn.
-     *
+     * 
      * @param <T>
      */
     public static class UnwrappedCollectionTypeFromMethodReturn<T> {
@@ -113,16 +116,16 @@ public class Reflection {
         /**
          * The item type.
          */
-        private final Class<T> itemType;
+        private final Class<T>                     itemType;
 
         /**
          * Instantiates a new unwrapped collection type from method return.
-         *
+         * 
          * @param collectionType the collection type
-         * @param itemType       the item type
+         * @param itemType the item type
          */
         UnwrappedCollectionTypeFromMethodReturn(
-                final Class<? extends Iterable<?>> collectionType, final Class<T> itemType) {
+                                                 final Class<? extends Iterable<?>> collectionType, final Class<T> itemType ) {
             checkNotNull("collectionType", collectionType);
             // checkNotNull("itemType", itemType);
             this.collectionType = collectionType;
@@ -131,7 +134,7 @@ public class Reflection {
 
         /**
          * Gets the collection type.
-         *
+         * 
          * @return the collection type
          */
         public Class<? extends Iterable<?>> getCollectionType() {
@@ -140,7 +143,7 @@ public class Reflection {
 
         /**
          * Gets the item type.
-         *
+         * 
          * @return the item type
          */
         public Class<T> getItemType() {
@@ -151,7 +154,7 @@ public class Reflection {
 
     /**
      * The Class UnwrappedMapTypeFromMethodReturn.
-     *
+     * 
      * @param <K>
      * @param <T>
      */
@@ -164,18 +167,18 @@ public class Reflection {
 
         /**
          * Instantiates a new unwrapped map type from method return.
-         *
+         * 
          * @param itemType the item type
          */
         UnwrappedMapTypeFromMethodReturn(
-                final Pair<Class<K>, Class<T>> itemType) {
+                                          final Pair<Class<K>, Class<T>> itemType ) {
             checkNotNull("itemType", itemType);
             this.itemType = itemType;
         }
 
         /**
          * Gets the item type.
-         *
+         * 
          * @return the item type
          */
         public Pair<Class<K>, Class<T>> getItemType() {
@@ -191,13 +194,13 @@ public class Reflection {
 
     /**
      * Search for inheritance type on the given type array.
-     *
-     * @param type  the type
+     * 
+     * @param type the type
      * @param types the types
      * @return the inheritance type between the type and found type in a array
      */
-    public static InheritanceType searchInheritanceType(final Class<?> type,
-                                                        final Class<?>... types) {
+    public static InheritanceType searchInheritanceType( final Class<?> type,
+                                                         final Class<?>... types ) {
         checkNotNull("type", type); //$NON-NLS-1$
         checkNotEmpty("types", types); //$NON-NLS-1$
         for (final Class<?> innerType : types) {
@@ -215,13 +218,13 @@ public class Reflection {
 
     /**
      * Search for a type on the given type array.
-     *
-     * @param type  the type
+     * 
+     * @param type the type
      * @param types the types
      * @return the type (same or inherited) in the given array, or null if it was not found
      */
-    public static Class<?> searchType(final Class<?> type,
-                                      final Class<?>... types) {
+    public static Class<?> searchType( final Class<?> type,
+                                       final Class<?>... types ) {
         checkNotNull("type", type); //$NON-NLS-1$
         checkNotEmpty("types", types); //$NON-NLS-1$
         for (final Class<?> innerType : types) {
@@ -239,14 +242,14 @@ public class Reflection {
 
     /**
      * Unwrap collection from method return.
-     *
+     * 
      * @param <T>
      * @param method the method
      * @return the unwrapped collection type from method return< t>
      * @throws Exception the exception
      */
-    @SuppressWarnings("unchecked")
-    public static <T> UnwrappedCollectionTypeFromMethodReturn<T> unwrapCollectionFromMethodReturn(final Method method)
+    @SuppressWarnings( "unchecked" )
+    public static <T> UnwrappedCollectionTypeFromMethodReturn<T> unwrapCollectionFromMethodReturn( final Method method )
             throws Exception {
         checkNotNull("method", method);
         checkCondition("correctReturnType", Iterable.class.isAssignableFrom(method.getReturnType()));
@@ -254,48 +257,48 @@ public class Reflection {
         final Type genType = method.getGenericReturnType();
 
         if (genType instanceof ParameterizedType) {
-            final ParameterizedType paramType = (ParameterizedType) genType;
+            final ParameterizedType paramType = (ParameterizedType)genType;
             final Type[] actualTypeArgs = paramType.getActualTypeArguments();
             final Type theItemType = actualTypeArgs[0];
             if (theItemType instanceof WildcardType) {
-                final WildcardType wildCardType = (WildcardType) theItemType;
+                final WildcardType wildCardType = (WildcardType)theItemType;
                 final Type[] lowerBounds = wildCardType.getLowerBounds();
                 final Type[] upperBounds = wildCardType.getUpperBounds();
                 if (lowerBounds != null && lowerBounds.length > 0) {
-                    itemType = (Class<T>) lowerBounds[0];
+                    itemType = (Class<T>)lowerBounds[0];
                 } else if (upperBounds != null && upperBounds.length > 0) {
-                    itemType = (Class<T>) upperBounds[0];
+                    itemType = (Class<T>)upperBounds[0];
                 }
 
             } else if (theItemType instanceof Class<?>) {
-                itemType = (Class<T>) actualTypeArgs[0];
+                itemType = (Class<T>)actualTypeArgs[0];
 
             } else if (theItemType instanceof ParameterizedType) {
-                final ParameterizedType valueTypeTyped = (ParameterizedType) theItemType;
-                itemType = (Class<T>) valueTypeTyped.getRawType();
+                final ParameterizedType valueTypeTyped = (ParameterizedType)theItemType;
+                itemType = (Class<T>)valueTypeTyped.getRawType();
             }
 
         }
 
-        final Class<? extends Iterable<?>> retType = (Class<? extends Collection<?>>) method.getReturnType();
+        final Class<? extends Iterable<?>> retType = (Class<? extends Collection<?>>)method.getReturnType();
 
         final UnwrappedCollectionTypeFromMethodReturn<T> result = new UnwrappedCollectionTypeFromMethodReturn<T>(retType,
-                itemType);
+                                                                                                                 itemType);
 
         return result;
     }
 
     /**
      * Unwrap map from method return.
-     *
+     * 
      * @param <K>
      * @param <T>
      * @param method the method
      * @return the unwrapped map type from method return< k, t>
      * @throws Exception the exception
      */
-    @SuppressWarnings("unchecked")
-    public static <K, T> UnwrappedMapTypeFromMethodReturn<K, T> unwrapMapFromMethodReturn(final Method method) throws Exception {
+    @SuppressWarnings( "unchecked" )
+    public static <K, T> UnwrappedMapTypeFromMethodReturn<K, T> unwrapMapFromMethodReturn( final Method method ) throws Exception {
         checkNotNull("method", method);
         checkCondition("correctReturnType", Map.class.isAssignableFrom(method.getReturnType()));
         Class<K> keyType = null;
@@ -303,69 +306,69 @@ public class Reflection {
         final Type genType = method.getGenericReturnType();
 
         if (genType instanceof ParameterizedType) {
-            final ParameterizedType paramType = (ParameterizedType) genType;
+            final ParameterizedType paramType = (ParameterizedType)genType;
             final Type[] actualTypeArgs = paramType.getActualTypeArguments();
             final Type theItemTypeKey = actualTypeArgs[0];
             if (theItemTypeKey instanceof WildcardType) {
-                final WildcardType wildCardType = (WildcardType) theItemTypeKey;
+                final WildcardType wildCardType = (WildcardType)theItemTypeKey;
                 final Type[] lowerBounds = wildCardType.getLowerBounds();
                 final Type[] upperBounds = wildCardType.getUpperBounds();
                 if (lowerBounds != null && lowerBounds.length > 0) {
-                    keyType = (Class<K>) lowerBounds[0];
+                    keyType = (Class<K>)lowerBounds[0];
                 } else if (upperBounds != null && upperBounds.length > 0) {
-                    keyType = (Class<K>) upperBounds[0];
+                    keyType = (Class<K>)upperBounds[0];
                 }
 
             } else if (theItemTypeKey instanceof Class<?>) {
-                keyType = (Class<K>) theItemTypeKey;
+                keyType = (Class<K>)theItemTypeKey;
 
             } else if (theItemTypeKey instanceof ParameterizedType) {
-                final ParameterizedType theItemTypeKeyTyped = (ParameterizedType) theItemTypeKey;
-                keyType = (Class<K>) theItemTypeKeyTyped.getRawType();
+                final ParameterizedType theItemTypeKeyTyped = (ParameterizedType)theItemTypeKey;
+                keyType = (Class<K>)theItemTypeKeyTyped.getRawType();
             }
             final Type theItemTypeValue = actualTypeArgs[1];
             if (theItemTypeValue instanceof WildcardType) {
-                final WildcardType wildCardType = (WildcardType) theItemTypeValue;
+                final WildcardType wildCardType = (WildcardType)theItemTypeValue;
                 final Type[] lowerBounds = wildCardType.getLowerBounds();
                 final Type[] upperBounds = wildCardType.getUpperBounds();
                 if (lowerBounds != null && lowerBounds.length > 0) {
-                    valueType = (Class<T>) lowerBounds[0];
+                    valueType = (Class<T>)lowerBounds[0];
                 } else if (upperBounds != null && upperBounds.length > 0) {
-                    valueType = (Class<T>) upperBounds[0];
+                    valueType = (Class<T>)upperBounds[0];
                 }
 
             } else if (theItemTypeValue instanceof Class<?>) {
-                valueType = (Class<T>) theItemTypeValue;
+                valueType = (Class<T>)theItemTypeValue;
 
             } else if (theItemTypeValue instanceof ParameterizedType) {
-                final ParameterizedType valueTypeTyped = (ParameterizedType) theItemTypeValue;
-                valueType = (Class<T>) valueTypeTyped.getRawType();
+                final ParameterizedType valueTypeTyped = (ParameterizedType)theItemTypeValue;
+                valueType = (Class<T>)valueTypeTyped.getRawType();
             }
 
         }
         final UnwrappedMapTypeFromMethodReturn<K, T> result = new UnwrappedMapTypeFromMethodReturn<K, T>(
-                newPair(
-                        keyType,
-                        valueType));
+                                                                                                         newPair(
+                                                                                                                 keyType,
+                                                                                                                 valueType));
 
         return result;
     }
 
     private static final Map<String, Class<?>> primitiveTypes = ImmutableMap.<String, Class<?>>builder().put("byte", Byte.class).put(
-            "short",
-            Short.class).put(
-            "int",
-            Integer.class).put(
-            "long",
-            Long.class).put(
-            "float",
-            Float.class).put(
-            "double",
-            Double.class).put(
-            "boolean",
-            Boolean.class).build();
+                                                                                                                                     "short",
+                                                                                                                                     Short.class).put(
+                                                                                                                                                      "int",
+                                                                                                                                                      Integer.class).put(
+                                                                                                                                                                         "long",
+                                                                                                                                                                         Long.class).put(
+                                                                                                                                                                                         "float",
+                                                                                                                                                                                         Float.class).put(
+                                                                                                                                                                                                          "double",
+                                                                                                                                                                                                          Double.class).put(
+                                                                                                                                                                                                                            "boolean",
+                                                                                                                                                                                                                            Boolean.class).build();
 
-    public static Class<?> findClassWithoutPrimitives(String name) {
+    public static Class<?> findClassWithoutPrimitives( String name ) {
         try {
             if (primitiveTypes.containsKey(name)) return primitiveTypes.get(name);
             return forName(name);
@@ -374,7 +377,7 @@ public class Reflection {
         }
     }
 
-    public static Class<?> findClassWithoutPrimitives(Class<?> possiblePrimitive) {
+    public static Class<?> findClassWithoutPrimitives( Class<?> possiblePrimitive ) {
         if (possiblePrimitive.isPrimitive()) return primitiveTypes.get(possiblePrimitive.getName());
         return possiblePrimitive;
     }

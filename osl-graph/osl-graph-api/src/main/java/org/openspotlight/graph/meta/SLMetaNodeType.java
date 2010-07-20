@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.meta;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.exception.SLRenderHintNotFoundException;
 import org.openspotlight.graph.meta.SLMetadata.BooleanOperator;
 import org.openspotlight.graph.meta.SLMetadata.LogicOperator;
 import org.openspotlight.graph.meta.SLMetadata.MetaNodeTypeProperty;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.exception.SLRenderHintNotFoundException;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * The Interface SLMetaNodeType.

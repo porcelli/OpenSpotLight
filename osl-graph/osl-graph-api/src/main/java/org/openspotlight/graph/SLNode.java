@@ -62,81 +62,68 @@ import org.openspotlight.log.LogableObject;
  * Note: Its a abstract class to avoid more than one type of element in a node
  */
 /**
- * A node in the graph with properties and relationships to other entities.
- * Along with {@link Relationship relationships}, nodes are the core building
- * blocks of the Neo4j data representation model. Nodes are created by invoking
- * the {@link GraphDatabaseService#createNode} method.
+ * A node in the graph with properties and relationships to other entities. Along with {@link Relationship relationships}, nodes
+ * are the core building blocks of the Neo4j data representation model. Nodes are created by invoking the
+ * {@link GraphDatabaseService#createNode} method.
  * <p>
- * Node has three major groups of operations: operations that deal with
- * relationships, operations that deal with properties (see
- * {@link PropertyContainer}) and operations that create {@link Traverser
- * traversers}.
+ * Node has three major groups of operations: operations that deal with relationships, operations that deal with properties (see
+ * {@link PropertyContainer}) and operations that create {@link Traverser traversers}.
  * <p>
- * The relationship operations provide a number of overloaded accessors (such as
- * <code>getRelationships(...)</code> with "filters" for type, direction, etc),
- * as well as the factory method {@link #createRelationshipTo
- * createRelationshipTo(...)} that connects two nodes with a relationship. It
- * also includes the convenience method {@link #getSingleRelationship
- * getSingleRelationship(...)} for accessing the commonly occurring
- * one-to-zero-or-one association.
+ * The relationship operations provide a number of overloaded accessors (such as <code>getRelationships(...)</code> with "filters"
+ * for type, direction, etc), as well as the factory method {@link #createRelationshipTo createRelationshipTo(...)} that connects
+ * two nodes with a relationship. It also includes the convenience method {@link #getSingleRelationship
+ * getSingleRelationship(...)} for accessing the commonly occurring one-to-zero-or-one association.
  * <p>
- * The property operations give access to the key-value property pairs. Property
- * keys are always strings. Valid property value types are all the Java
- * primitives (<code>int</code>, <code>byte</code>, <code>float</code>, etc),
- * <code>java.lang.String</code>s and arrays of primitives and Strings.
+ * The property operations give access to the key-value property pairs. Property keys are always strings. Valid property value
+ * types are all the Java primitives (<code>int</code>, <code>byte</code>, <code>float</code>, etc), <code>java.lang.String</code>
+ * s and arrays of primitives and Strings.
  * <p>
- * <b>Please note</b> that Neo4j does NOT accept arbitrary objects as property
- * values. {@link #setProperty(String, Object) setProperty()} takes a
- * <code>java.lang.Object</code> only to avoid an explosion of overloaded
- * <code>setProperty()</code> methods. For further documentation see
- * {@link PropertyContainer}.
+ * <b>Please note</b> that Neo4j does NOT accept arbitrary objects as property values. {@link #setProperty(String, Object)
+ * setProperty()} takes a <code>java.lang.Object</code> only to avoid an explosion of overloaded <code>setProperty()</code>
+ * methods. For further documentation see {@link PropertyContainer}.
  * <p>
- * The traversal factory methods instantiate a {@link Traverser traverser} that
- * starts traversing from this node.
+ * The traversal factory methods instantiate a {@link Traverser traverser} that starts traversing from this node.
  * <p>
- * A node's id is unique, but may not be unique over time since neo4j reuses
- * deleted ids. See <a href="http://wiki.neo4j.org/content/Id_Reuse">
- * wiki.neo4j.org/content/Id_Reuse</a>.
+ * A node's id is unique, but may not be unique over time since neo4j reuses deleted ids. See <a
+ * href="http://wiki.neo4j.org/content/Id_Reuse"> wiki.neo4j.org/content/Id_Reuse</a>.
  */
 
 public abstract class SLNode implements Comparable<SLNode>, LogableObject,
-		SLElement {
+        SLElement {
 
-	public abstract String getContextId();
-	
-	public abstract boolean isDirty();
-	
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 */
-	public abstract String getName();
+    public abstract String getContextId();
 
-	/**
-	 * Gets the caption.
-	 * 
-	 * @return the caption
-	 */
-	public abstract String getCaption();
+    public abstract boolean isDirty();
 
-	/**
-	 * Sets the caption.
-	 * 
-	 * @param caption
-	 *            the caption
-	 */
-	public abstract void setCaption(String caption);
+    /**
+     * Gets the name.
+     * 
+     * @return the name
+     */
+    public abstract String getName();
 
-	/**
-	 * Do cast.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @return the t
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends SLNode> T doCast(Class<T> clazz) {
-		return (T) this;
-	}
+    /**
+     * Gets the caption.
+     * 
+     * @return the caption
+     */
+    public abstract String getCaption();
+
+    /**
+     * Sets the caption.
+     * 
+     * @param caption the caption
+     */
+    public abstract void setCaption( String caption );
+
+    /**
+     * Do cast.
+     * 
+     * @param clazz the clazz
+     * @return the t
+     */
+    @SuppressWarnings( "unchecked" )
+    public <T extends SLNode> T doCast( Class<T> clazz ) {
+        return (T)this;
+    }
 }

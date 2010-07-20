@@ -49,9 +49,12 @@
 
 package org.openspotlight.common.util.test;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.openspotlight.common.util.Files;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Files.delete;
+import static org.openspotlight.common.util.Files.listFileNamesFrom;
+import static org.openspotlight.common.util.Files.readBytesFromStream;
+import static org.openspotlight.common.util.Strings.removeBegginingFrom;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -59,10 +62,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Set;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Files.*;
-import static org.openspotlight.common.util.Strings.removeBegginingFrom;
+import org.junit.Before;
+import org.junit.Test;
+import org.openspotlight.common.util.Files;
 
 /**
  * Test class for {@link Files}

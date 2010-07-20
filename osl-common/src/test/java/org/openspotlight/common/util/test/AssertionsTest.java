@@ -49,11 +49,15 @@
 
 package org.openspotlight.common.util.test;
 
-import org.junit.Test;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.common.util.Assertions.*;
+import static org.openspotlight.common.util.Assertions.checkCondition;
+import static org.openspotlight.common.util.Assertions.checkEachParameterNotNull;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
+import static org.openspotlight.common.util.Assertions.checkNotNull;
+import static org.openspotlight.common.util.Assertions.checkNullMandatory;
+
+import org.junit.Test;
 
 /**
  * Test class for {@link Assertions}

@@ -49,9 +49,10 @@
 
 package org.openspotlight.storage.redis;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+
+import java.util.Map;
+
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
@@ -59,23 +60,21 @@ import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.test.AbstractSTStorageSessionTest;
 
-import java.util.Map;
-
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 5:08:39 PM
  */
 public class JRedisStorageSessionTest extends AbstractSTStorageSessionTest {
 
-
     private enum JRedisServerConfigExample implements JRedisServerDetail {
         DEFAULT("localhost", 6379, 0),
         FIRST("localhost", 6379, 1),
         SECOND("localhost", 6379, 2);
 
-        private JRedisServerConfigExample(String serverName, int serverPort, int db) {
+        private JRedisServerConfigExample( String serverName, int serverPort, int db ) {
             this.serverName = serverName;
             this.serverPort = serverPort;
             this.db = db;
@@ -83,7 +82,7 @@ public class JRedisStorageSessionTest extends AbstractSTStorageSessionTest {
 
         private final String serverName;
 
-        private final int db;
+        private final int    db;
 
         public int getDb() {
             return db;
@@ -104,12 +103,10 @@ public class JRedisStorageSessionTest extends AbstractSTStorageSessionTest {
         }
     }
 
-
     final Map<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
-            .put(ExamplePartition.DEFAULT, JRedisServerConfigExample.DEFAULT)
-            .put(ExamplePartition.FIRST, JRedisServerConfigExample.FIRST)
-            .put(ExamplePartition.SECOND, JRedisServerConfigExample.SECOND).build();
-
+                                                                                .put(ExamplePartition.DEFAULT, JRedisServerConfigExample.DEFAULT)
+                                                                                .put(ExamplePartition.FIRST, JRedisServerConfigExample.FIRST)
+                                                                                .put(ExamplePartition.SECOND, JRedisServerConfigExample.SECOND).build();
 
     @Override
     protected Injector createsAutoFlushInjector() {

@@ -1,9 +1,54 @@
+/*
+ * OpenSpotLight - Open Source IT Governance Platform
+ *
+ * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
+ * or third-party contributors as indicated by the @author tags or express
+ * copyright attribution statements applied by the authors.  All third-party
+ * contributions are distributed under license by CARAVELATECH CONSULTORIA E
+ * TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * This copyrighted material is made available to anyone wishing to use, modify,
+ * copy, or redistribute it subject to the terms and conditions of the GNU
+ * Lesser General Public License, as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU Lesser General Public License  for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this distribution; if not, write to:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ *
+ ***********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
+ *
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
+ * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
+ * Todas as contribuições de terceiros estão distribuídas sob licença da
+ * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
+ *
+ * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
+ * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
+ * Foundation.
+ *
+ * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
+ * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
+ *
+ * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
+ * programa; se não, escreva para:
+ * Free Software Foundation, Inc.
+ * 51 Franklin Street, Fifth Floor
+ * Boston, MA  02110-1301  USA
+ */
 package org.openspotlight.storage.domain.node;
 
-import org.apache.commons.io.IOUtils;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,36 +56,38 @@ import java.io.InputStream;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import org.apache.commons.io.IOUtils;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STStorageSession;
 
 /**
- * Created by IntelliJ IDEA.
- * User: feuteston
- * Date: 29/03/2010
- * Time: 08:49:51
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: feuteston Date: 29/03/2010 Time: 08:49:51 To change this template use File | Settings | File
+ * Templates.
  */
 public class STPropertyImpl implements STProperty {
 
     private final STPropertyInternalMethods propertyInternalMethods = new STPropertyInternalMethodsImpl();
 
-    public static STPropertyImpl createSimple(String name, STNodeEntry parent) {
+    public static STPropertyImpl createSimple( String name,
+                                               STNodeEntry parent ) {
         STPropertyImpl property = new STPropertyImpl(name, parent.getUniqueKey().getPartition(), parent, false, false);
         return property;
     }
 
-    public static STPropertyImpl createIndexed(String name, STNodeEntry parent) {
+    public static STPropertyImpl createIndexed( String name,
+                                                STNodeEntry parent ) {
         STPropertyImpl property = new STPropertyImpl(name, parent.getUniqueKey().getPartition(), parent, true, false);
         return property;
     }
 
-    public static STPropertyImpl createKey(String name, STNodeEntry parent) {
+    public static STPropertyImpl createKey( String name,
+                                            STNodeEntry parent ) {
         STPropertyImpl property = new STPropertyImpl(name, parent.getUniqueKey().getPartition(), parent, true, true);
         return property;
     }
 
-
-    private STPropertyImpl(String name, STPartition partition, STNodeEntry parent, boolean indexed, boolean key) {
+    private STPropertyImpl( String name, STPartition partition, STNodeEntry parent, boolean indexed, boolean key ) {
         this.name = name;
         this.partition = partition;
         this.parent = parent;
@@ -56,9 +103,9 @@ public class STPropertyImpl implements STProperty {
 
     private final PropertyValue propertyValue = new PropertyValue();
 
-    private final STPartition partition;
+    private final STPartition   partition;
 
-    private final STNodeEntry parent;
+    private final STNodeEntry   parent;
 
     public boolean isKey() {
         return key;
@@ -73,27 +120,30 @@ public class STPropertyImpl implements STProperty {
     private final boolean key;
 
     @Override
-    public void setStringValue(STStorageSession session, String value) {
+    public void setStringValue( STStorageSession session,
+                                String value ) {
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
         session.withPartition(partition).getInternalMethods().propertySetProperty(this, propertyValue.getValueAsBytes());
     }
 
     @Override
-    public void setBytesValue(STStorageSession session, byte[] value) {
+    public void setBytesValue( STStorageSession session,
+                               byte[] value ) {
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
         session.withPartition(partition).getInternalMethods().propertySetProperty(this, propertyValue.getValueAsBytes());
     }
 
     @Override
-    public void setStreamValue(STStorageSession session, InputStream value) {
+    public void setStreamValue( STStorageSession session,
+                                InputStream value ) {
         propertyValue.setDirty(true);
         propertyValue.setValue(value);
         session.withPartition(partition).getInternalMethods().propertySetProperty(this, propertyValue.getValueAsBytes());
     }
 
-    private void refreshPropertyIfNecessary(STStorageSession session) {
+    private void refreshPropertyIfNecessary( STStorageSession session ) {
         if (!propertyValue.isDirty() && !propertyValue.isLoaded()) {
             propertyValue.setValue(session.withPartition(partition).getInternalMethods().propertyGetValue(this));
             propertyValue.setLoaded(true);
@@ -103,19 +153,19 @@ public class STPropertyImpl implements STProperty {
     }
 
     @Override
-    public String getValueAsString(STStorageSession session) {
+    public String getValueAsString( STStorageSession session ) {
         refreshPropertyIfNecessary(session);
         return propertyValue.getValueAsString();
     }
 
     @Override
-    public byte[] getValueAsBytes(STStorageSession session) {
+    public byte[] getValueAsBytes( STStorageSession session ) {
         refreshPropertyIfNecessary(session);
         return propertyValue.getValueAsBytes();
     }
 
     @Override
-    public InputStream getValueAsStream(STStorageSession session) {
+    public InputStream getValueAsStream( STStorageSession session ) {
         refreshPropertyIfNecessary(session);
         return propertyValue.getValueAsStream();
     }
@@ -132,7 +182,8 @@ public class STPropertyImpl implements STProperty {
     private class STPropertyInternalMethodsImpl implements STPropertyInternalMethods {
 
         @Override
-        public void setStringValueOnLoad(STStorageSession session, String value) {
+        public void setStringValueOnLoad( STStorageSession session,
+                                          String value ) {
             propertyValue.setValue(value);
             propertyValue.setDirty(false);
             propertyValue.setLoaded(true);
@@ -140,14 +191,16 @@ public class STPropertyImpl implements STProperty {
         }
 
         @Override
-        public void setBytesValueOnLoad(STStorageSession session, byte[] value) {
+        public void setBytesValueOnLoad( STStorageSession session,
+                                         byte[] value ) {
             propertyValue.setValue(value);
             propertyValue.setDirty(false);
             propertyValue.setLoaded(true);
         }
 
         @Override
-        public void setStreamValueOnLoad(STStorageSession session, InputStream value) {
+        public void setStreamValueOnLoad( STStorageSession session,
+                                          InputStream value ) {
             propertyValue.setValue(value);
             propertyValue.setDirty(false);
             propertyValue.setLoaded(true);
@@ -158,7 +211,7 @@ public class STPropertyImpl implements STProperty {
             if (!key && !propertyValue.isDirty() && propertyValue.isLoaded()) {
                 if (propertyValue.getValueAsBytes() != null) {
                     if (propertyValue.getValueAsBytes().length > 255) {
-                        propertyValue.setValue((byte[]) null);
+                        propertyValue.setValue((byte[])null);
                         propertyValue.setLoaded(false);
                     }
                 }
@@ -166,21 +219,20 @@ public class STPropertyImpl implements STProperty {
         }
 
         @Override
-        public String getTransientValueAsString(STStorageSession session) {
+        public String getTransientValueAsString( STStorageSession session ) {
             return propertyValue.getValueAsString();
         }
 
         @Override
-        public byte[] getTransientValueAsBytes(STStorageSession session) {
+        public byte[] getTransientValueAsBytes( STStorageSession session ) {
             return propertyValue.getValueAsBytes();
         }
 
         @Override
-        public InputStream getTransientValueAsStream(STStorageSession session) {
+        public InputStream getTransientValueAsStream( STStorageSession session ) {
             return propertyValue.getValueAsStream();
         }
     }
-
 
     private class PropertyValue {
 
@@ -192,7 +244,7 @@ public class STPropertyImpl implements STProperty {
             return loaded;
         }
 
-        public void setLoaded(boolean loaded) {
+        public void setLoaded( boolean loaded ) {
             this.loaded = loaded;
         }
 
@@ -200,31 +252,31 @@ public class STPropertyImpl implements STProperty {
             return dirty;
         }
 
-        public void setDirty(boolean dirty) {
+        public void setDirty( boolean dirty ) {
             this.dirty = dirty;
         }
 
-        private byte[] asBytes(String s) {
+        private byte[] asBytes( String s ) {
             return s != null ? s.getBytes() : null;
         }
 
-        private <T> T getWeakValue(Reference<T> ref) {
+        private <T> T getWeakValue( Reference<T> ref ) {
             return ref != null ? ref.get() : null;
         }
 
-        private String asString(byte[] b) {
+        private String asString( byte[] b ) {
             return b != null ? new String(b) : null;
         }
 
-        private InputStream asStream(byte[] b) {
+        private InputStream asStream( byte[] b ) {
             return b != null ? new ByteArrayInputStream(b) : null;
         }
 
-        private <T> Reference<T> asWeakRef(T t) {
+        private <T> Reference<T> asWeakRef( T t ) {
             return t != null ? new SoftReference<T>(t) : null;
         }
 
-        private byte[] asBytes(InputStream is) {
+        private byte[] asBytes( InputStream is ) {
             if (is == null) return null;
             try {
                 if (is.markSupported()) {
@@ -238,9 +290,9 @@ public class STPropertyImpl implements STProperty {
             }
         }
 
-        private Reference<String> weakValueAsString;
+        private Reference<String>      weakValueAsString;
         private Reference<InputStream> weakValueAsStream;
-        private byte[] realValue;
+        private byte[]                 realValue;
 
         private void nullEverything() {
             weakValueAsString = null;
@@ -248,19 +300,18 @@ public class STPropertyImpl implements STProperty {
             realValue = null;
         }
 
-
-        public void setValue(String value) {
+        public void setValue( String value ) {
             nullEverything();
             this.realValue = asBytes(value);
             this.weakValueAsString = asWeakRef(value);
         }
 
-        public void setValue(InputStream value) {
+        public void setValue( InputStream value ) {
             nullEverything();
             this.realValue = asBytes(value);
         }
 
-        public void setValue(byte[] value) {
+        public void setValue( byte[] value ) {
             nullEverything();
             this.realValue = value;
         }

@@ -49,14 +49,22 @@
 
 package org.openspotlight.common.util;
 
-import org.openspotlight.common.exception.SLException;
-
-import java.io.*;
-
 import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
-import static org.openspotlight.common.util.Exceptions.*;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.Exceptions.logAndThrow;
+import static org.openspotlight.common.util.Exceptions.logAndThrowNew;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+
+import org.openspotlight.common.exception.SLException;
 
 /**
  * Set of static methods for serialization purposes

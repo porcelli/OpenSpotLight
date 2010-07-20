@@ -51,7 +51,7 @@ package org.openspotlight.common;
 
 /**
  * This is a simple class to store a pair of objects.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  * @param <K1>
  * @param <K2>
@@ -59,55 +59,57 @@ package org.openspotlight.common;
 public class Pair<K1, K2> {
 
     public static enum PairEqualsMode {
-        K1, K2, BOTH
+        K1,
+        K2,
+        BOTH
     }
-
 
     /**
      * static factory method
-     *
+     * 
      * @param <K1>
      * @param <K2>
      * @param k1
      * @param k2
      * @return
      */
-    public static <K1, K2> Pair<K1, K2> newPair(K1 k1,
-                                                K2 k2) {
+    public static <K1, K2> Pair<K1, K2> newPair( K1 k1,
+                                                 K2 k2 ) {
         return new Pair<K1, K2>(k1, k2, PairEqualsMode.BOTH);
     }
 
     /**
      * static factory method
-     *
+     * 
      * @param <K1>
      * @param <K2>
      * @param k1
      * @param k2
      * @return
      */
-    public static <K1, K2> Pair<K1, K2> newPair(K1 k1,
-                                                K2 k2, PairEqualsMode equalsMode) {
+    public static <K1, K2> Pair<K1, K2> newPair( K1 k1,
+                                                 K2 k2,
+                                                 PairEqualsMode equalsMode ) {
         return new Pair<K1, K2>(k1, k2, equalsMode);
     }
 
     /**
      * First item.
      */
-    private final K1 k1;
+    private final K1             k1;
     /**
      * Second item.
      */
-    private final K2 k2;
+    private final K2             k2;
 
     private final PairEqualsMode equalsMode;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals( Object o ) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Pair pair = (Pair) o;
+        Pair pair = (Pair)o;
 
         if (PairEqualsMode.BOTH.equals(equalsMode) || PairEqualsMode.K1.equals(equalsMode))
             if (k1 != null ? !k1.equals(pair.k1) : pair.k1 != null) return false;
@@ -129,24 +131,25 @@ public class Pair<K1, K2> {
 
     /**
      * Creates a new pair using the two keys provided.
-     *
+     * 
      * @param k1
      * @param k2
      */
     public Pair(
-            final K1 k1, final K2 k2, final PairEqualsMode equalsMode) {
+                 final K1 k1, final K2 k2, final PairEqualsMode equalsMode ) {
         this.k1 = k1;
         this.k2 = k2;
         this.equalsMode = equalsMode;
     }
+
     /**
      * Creates a new pair using the two keys provided.
-     *
+     * 
      * @param k1
      * @param k2
      */
     public Pair(
-            final K1 k1, final K2 k2) {
+                 final K1 k1, final K2 k2 ) {
         this.k1 = k1;
         this.k2 = k2;
         this.equalsMode = PairEqualsMode.BOTH;

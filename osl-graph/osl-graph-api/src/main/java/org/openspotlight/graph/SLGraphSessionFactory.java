@@ -58,5 +58,5 @@ public interface SLGraphSessionFactory {
 
     public SLFullGraphSession openFull();
 
-    public SLFullGraphSession openFull(String artifactId);
+    public SLFullGraphSession openFull( String artifactId );
 }

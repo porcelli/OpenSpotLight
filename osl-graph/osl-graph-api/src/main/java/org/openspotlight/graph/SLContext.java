@@ -76,5 +76,4 @@ public interface SLContext {
      */
     public SLNode getRootNode();
 
-
 }

@@ -48,15 +48,19 @@
  */
 package org.openspotlight.persist.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.hamcrest.core.Is;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings( "unused" )
 public class SimplePersistVisitorSupportTest {

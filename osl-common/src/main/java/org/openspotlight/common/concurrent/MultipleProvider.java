@@ -48,9 +48,9 @@
  */
 package org.openspotlight.common.concurrent;
 
-import org.openspotlight.common.Disposable;
-
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.openspotlight.common.Disposable;
 
 /**
  * This class wraps a factory to describe if the produced item should be shared between threads or not. In case of multi threaded

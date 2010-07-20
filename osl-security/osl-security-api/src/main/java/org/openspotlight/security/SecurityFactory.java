@@ -69,7 +69,7 @@ public abstract class SecurityFactory extends AbstractFactory {
      * @param session
      * @return the identity manager
      */
-    public abstract IdentityManager createIdentityManager( STStorageSession session);
+    public abstract IdentityManager createIdentityManager( STStorageSession session );
 
     /**
      * Creates a new specialized PolicyEnforcement for Graphs.

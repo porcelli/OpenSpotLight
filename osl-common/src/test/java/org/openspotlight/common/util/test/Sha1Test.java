@@ -49,17 +49,17 @@
 
 package org.openspotlight.common.util.test;
 
-import java.math.BigInteger;
-
-import org.junit.Test;
-
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.openspotlight.common.util.Sha1.getNumericSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1Signature;
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
-import static org.openspotlight.common.util.Sha1.getNumericSha1Signature;
+
+import java.math.BigInteger;
+
+import org.junit.Test;
 
 /**
  * Test class for {@link Sha1}

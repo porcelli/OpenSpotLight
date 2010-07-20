@@ -49,11 +49,11 @@
 
 package org.openspotlight.common.util;
 
-import java.util.Map;
-
 import static java.lang.Double.doubleToLongBits;
 import static java.lang.Float.floatToIntBits;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
+
+import java.util.Map;
 
 /**
  * Helper class to build hashCode methods in a secure and concise way. All the hash functions for primitive types was created

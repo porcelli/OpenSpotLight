@@ -57,7 +57,7 @@ import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 public class STKeyEntryImpl implements STKeyEntry {
     private final int hashCode;
 
-    public STKeyEntryImpl(String propertyName, String value) {
+    public STKeyEntryImpl( String propertyName, String value ) {
         checkNotEmpty("propertyName", propertyName);
         this.value = value;
         this.propertyName = propertyName;
@@ -81,12 +81,12 @@ public class STKeyEntryImpl implements STKeyEntry {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals( Object o ) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        STKeyEntryImpl that = (STKeyEntryImpl) o;
-        if(this.hashCode != that.hashCode) return false;
+        STKeyEntryImpl that = (STKeyEntryImpl)o;
+        if (this.hashCode != that.hashCode) return false;
 
         if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) return false;
         if (value != null ? !value.equals(that.value) : that.value != null) return false;
@@ -99,7 +99,7 @@ public class STKeyEntryImpl implements STKeyEntry {
         return hashCode;
     }
 
-    public int compareTo(STKeyEntry o) {
+    public int compareTo( STKeyEntry o ) {
         int result = propertyName.compareTo(o.getPropertyName());
         return result;
     }
@@ -112,6 +112,4 @@ public class STKeyEntryImpl implements STKeyEntry {
                 '}';
     }
 
-
 }
-

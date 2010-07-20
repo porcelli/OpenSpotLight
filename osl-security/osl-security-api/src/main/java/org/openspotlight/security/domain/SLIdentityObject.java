@@ -49,6 +49,10 @@
 
 package org.openspotlight.security.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.jboss.identity.idm.common.exception.PolicyValidationException;
 import org.jboss.identity.idm.spi.model.IdentityObject;
 import org.jboss.identity.idm.spi.model.IdentityObjectType;
@@ -56,10 +60,6 @@ import org.openspotlight.persist.annotation.IndexedProperty;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 public class SLIdentityObject implements IdentityObject, SimpleNodeType, Serializable {
 

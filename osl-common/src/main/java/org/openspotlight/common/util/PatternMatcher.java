@@ -49,31 +49,31 @@
 
 package org.openspotlight.common.util;
 
-import org.openspotlight.common.MutableType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import static java.util.Collections.unmodifiableSet;
 import static org.apache.tools.ant.types.selectors.SelectorUtils.match;
 import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.openspotlight.common.MutableType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // TODO: Auto-generated Javadoc
 
 /**
  * This class has the necessary logic to filter names using the apache ant pattern.
- *
+ * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 public class PatternMatcher {
 
     /**
      * Result class with the results of a filter matching using the Ant expression syntax.
-     *
+     * 
      * @author Luiz Fernando Teston - feu.teston@caravelatech.com
      */
     public static final class FilterResult implements Serializable {
@@ -105,40 +105,40 @@ public class PatternMatcher {
 
         /**
          * Creates a empty filterResult.
-         *
+         * 
          * @param type the type
          */
         public FilterResult(
-                final MutableType type) {
+                             final MutableType type ) {
             this(new HashSet<String>(), new HashSet<String>(), new HashSet<String>(), new HashSet<String>(), type);
         }
 
         /**
          * Immutable result.
-         *
-         * @param allNames      the all names
+         * 
+         * @param allNames the all names
          * @param includedNames the included names
          * @param excludedNames the excluded names
-         * @param ignoredNames  the ignored names
+         * @param ignoredNames the ignored names
          */
         public FilterResult(
-                final Set<String> allNames, final Set<String> includedNames, final Set<String> excludedNames,
-                final Set<String> ignoredNames) {
+                             final Set<String> allNames, final Set<String> includedNames, final Set<String> excludedNames,
+                             final Set<String> ignoredNames ) {
             this(allNames, includedNames, excludedNames, ignoredNames, MutableType.IMMUTABLE);
         }
 
         /**
          * Mutability optional on this {@link Constructor}.
-         *
-         * @param allNames      the all names
+         * 
+         * @param allNames the all names
          * @param includedNames the included names
          * @param excludedNames the excluded names
-         * @param ignoredNames  the ignored names
-         * @param type          the type
+         * @param ignoredNames the ignored names
+         * @param type the type
          */
         public FilterResult(
-                final Set<String> allNames, final Set<String> includedNames, final Set<String> excludedNames,
-                final Set<String> ignoredNames, final MutableType type) {
+                             final Set<String> allNames, final Set<String> includedNames, final Set<String> excludedNames,
+                             final Set<String> ignoredNames, final MutableType type ) {
             if (MutableType.IMMUTABLE.equals(type)) {
                 this.allNames = unmodifiableSet(allNames);
                 this.includedNames = unmodifiableSet(includedNames);
@@ -154,7 +154,7 @@ public class PatternMatcher {
 
         /**
          * Gets the all names.
-         *
+         * 
          * @return all names passed to be processed
          */
         public Set<String> getAllNames() {
@@ -163,7 +163,7 @@ public class PatternMatcher {
 
         /**
          * Gets the excluded names.
-         *
+         * 
          * @return a set of excluded names
          */
         public Set<String> getExcludedNames() {
@@ -172,7 +172,7 @@ public class PatternMatcher {
 
         /**
          * Gets the ignored names.
-         *
+         * 
          * @return a set of ignored names
          */
         public Set<String> getIgnoredNames() {
@@ -181,7 +181,7 @@ public class PatternMatcher {
 
         /**
          * Gets the included names.
-         *
+         * 
          * @return a set of included names
          */
         public Set<String> getIncludedNames() {
@@ -194,18 +194,18 @@ public class PatternMatcher {
 
     /**
      * Filter the names using the Apache Ant expression syntax (and also the {@link SelectorUtils} class.
-     *
-     * @param namesToFilter    the names to filter
+     * 
+     * @param namesToFilter the names to filter
      * @param includedPatterns the included patterns
      * @param excludedPatterns the excluded patterns
-     * @param caseSensitive    the case sensitive
+     * @param caseSensitive the case sensitive
      * @return a filter result
      */
-    public static FilterResult filterNamesByPattern(final String rootPattern,
-                                                    final Set<String> namesToFilter,
-                                                    final Set<String> includedPatterns,
-                                                    final Set<String> excludedPatterns,
-                                                    final boolean caseSensitive) {
+    public static FilterResult filterNamesByPattern( final String rootPattern,
+                                                     final Set<String> namesToFilter,
+                                                     final Set<String> includedPatterns,
+                                                     final Set<String> excludedPatterns,
+                                                     final boolean caseSensitive ) {
         checkNotNull("namesToFilter", namesToFilter); //$NON-NLS-1$
         checkNotNull("includedPatterns", includedPatterns); //$NON-NLS-1$
         checkNotNull("excludedPatterns", excludedPatterns); //$NON-NLS-1$
@@ -234,7 +234,7 @@ public class PatternMatcher {
 
         if (logger.isDebugEnabled()) {
             final String prefix = "root " + rootPattern + " with parameters included=" + includedPatterns.toString()
-                    + " and excluded=" + excludedPatterns;
+                                  + " and excluded=" + excludedPatterns;
             logger.debug(prefix + " filtering names " + Strings.bigCollectionsToString(namesToFilter));
             logger.debug(prefix + " accepting names " + Strings.bigCollectionsToString(includedNames));
             logger.debug(prefix + " Ignoring names " + Strings.bigCollectionsToString(ignoredNames));
@@ -247,13 +247,13 @@ public class PatternMatcher {
 
     /**
      * Verify if the first parameter matches the pattern passed on second parameter in a non case sensitivness way.
-     *
-     * @param nameToMatch    the name to match
+     * 
+     * @param nameToMatch the name to match
      * @param patternToMatch the pattern to match
      * @return true if nameToMatch matches patternToMatch
      */
-    public static boolean isMatchingWithoutCaseSentitiveness(final String nameToMatch,
-                                                             final String patternToMatch) {
+    public static boolean isMatchingWithoutCaseSentitiveness( final String nameToMatch,
+                                                              final String patternToMatch ) {
         return match(patternToMatch, nameToMatch, false);
     }
 
