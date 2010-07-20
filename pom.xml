@@ -262,6 +262,11 @@
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
+                <artifactId>osl-graph-core-new</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openspotlight</groupId>
                 <artifactId>osl-graph-test-data</artifactId>
                 <version>${pom.version}</version>
             </dependency>
