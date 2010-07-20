@@ -45,6 +45,7 @@ import com.google.common.collect.ImmutableSet;
 
 public class SLNodeFactory {
 
+<<<<<<< HEAD
 	public static interface SLNodeMetadata {
 		public STNodeEntry getCached();
 

@@ -51,93 +51,78 @@ package org.openspotlight.graph;
 import org.openspotlight.log.LogableObject;
 
 /**
- * A node in the graph with properties, name, caption and its metadata information.
- *
- * As SLNode extends the {@link org.openspotlight.graph.SLElement} it has a unique identifier that is calculated based
- * on its composite key information: type, name and parent node.
- * The OpenSpotLight defined by {@link org.openspotlight.graph.annotation.SLDefineHierarchy) annotation.
- *
- * Together with {@link org.openspotlight.graph.SLLink } nodes are are the core of OpenSpotLight data model.
- *
- * Note: Its a abstract class to avoid more than one type of element in a node
- */
-/**
- * A node in the graph with properties and relationships to other entities.
- * Along with {@link Relationship relationships}, nodes are the core building
- * blocks of the Neo4j data representation model. Nodes are created by invoking
- * the {@link GraphDatabaseService#createNode} method.
+ * The SLNode is the base data structure that enables represent any information into OpenSpotLight Graph. Any information can be
+ * modeled as a SLNode using its unique identifiers or properties. <br>
+ * A SLNode is uniquely identified by three properties: Type, Name and ParentNode, and based on these data an algorithm is used to
+ * generate an unique id.
  * <p>
- * Node has three major groups of operations: operations that deal with
- * relationships, operations that deal with properties (see
- * {@link PropertyContainer}) and operations that create {@link Traverser
- * traversers}.
+ * To secure the data consistency its not possible change the unique identifiers of a SLNode. If you need so, you'll have to
+ * delete it and create a new one.
+ * </p>
  * <p>
- * The relationship operations provide a number of overloaded accessors (such as
- * <code>getRelationships(...)</code> with "filters" for type, direction, etc),
- * as well as the factory method {@link #createRelationshipTo
- * createRelationshipTo(...)} that connects two nodes with a relationship. It
- * also includes the convenience method {@link #getSingleRelationship
- * getSingleRelationship(...)} for accessing the commonly occurring
- * one-to-zero-or-one association.
+ * A SLNode defines a information, to relate this data with other you'll have to create {@link SLLink} to connect those nodes.
+ * </p>
  * <p>
- * The property operations give access to the key-value property pairs. Property
- * keys are always strings. Valid property value types are all the Java
- * primitives (<code>int</code>, <code>byte</code>, <code>float</code>, etc),
- * <code>java.lang.String</code>s and arrays of primitives and Strings.
+ * The SLNode type can be promoted to a more specific type and to define the behavior of type promotion and its hierarchy its
+ * necessary to use annotate the top node type on the hierarchy with {@link org.openspotlight.graph.annotation.SLDefineHierarchy}
+ * annotation. <br>
+ * The promotion of the node types are automatically handled by OpenSpotLight Graph engine.
+ * </p>
  * <p>
- * <b>Please note</b> that Neo4j does NOT accept arbitrary objects as property
- * values. {@link #setProperty(String, Object) setProperty()} takes a
- * <code>java.lang.Object</code> only to avoid an explosion of overloaded
- * <code>setProperty()</code> methods. For further documentation see
- * {@link PropertyContainer}.
+ * Nodes can be created as transients by {@link org.openspotlight.graph.manipulation.SLGraphTransientWriter#createTransientNode}
+ * method or as permanent by {@link org.openspotlight.graph.manipulation.SLGraphWriter#createNode(SLNode, Class, String)} or
+ * {@link org.openspotlight.graph.manipulation.SLGraphWriter#createNode(SLNode, Class, String, java.util.Collection, java.util.Collection)}
+ * methods wich are the most common use.
+ * </p>
  * <p>
- * The traversal factory methods instantiate a {@link Traverser traverser} that
- * starts traversing from this node.
+ * Along with {@link org.openspotlight.graph.SLLink}, nodes are are the core of OpenSpotLight Graph data model.
+ * </p>
  * <p>
- * A node's id is unique, but may not be unique over time since neo4j reuses
- * deleted ids. See <a href="http://wiki.neo4j.org/content/Id_Reuse">
- * wiki.neo4j.org/content/Id_Reuse</a>.
+ * <b>Important Notes:</b><br>
+ * &nbsp;1. Its a abstract class to avoid more than one type of element for a node.<br>
+ * &nbsp;2. The same node (uniquely identified by Type, Name and Parent) can be stored in more than one
+ * {@link org.openspotlight.graph.SLContext}.
+ * </p>
  */
 
-public abstract class SLNode implements Comparable<SLNode>, LogableObject,
-		SLElement {
+public abstract class SLNode implements SLElement, Comparable<SLNode>, LogableObject {
 
-	public abstract String getContextId();
-	public abstract String getParentId();
-	
-	public abstract boolean isDirty();
-	
-	/**
-	 * Gets the name.
-	 * 
-	 * @return the name
-	 */
-	public abstract String getName();
+    /**
+     * Returns the name. <br>
+     * The name is one of the three properties ({@link SLNode#getName}, {@link SLNode#getParentId} and {@link SLNode#getTypeName})
+     * that defines uniquely the node.
+     * 
+     * @return the name
+     */
+    public abstract String getName();
 
-	/**
-	 * Gets the caption.
-	 * 
-	 * @return the caption
-	 */
-	public abstract String getCaption();
+    /**
+     * Returns the caption.
+     * 
+     * @return the caption
+     */
+    public abstract String getCaption();
 
-	/**
-	 * Sets the caption.
-	 * 
-	 * @param caption
-	 *            the caption
-	 */
-	public abstract void setCaption(String caption);
+    /**
+     * Sets the caption. Caption is just a simple form to identify (not uniquely) the node.
+     * 
+     * @param caption the caption
+     */
+    public abstract void setCaption( String caption );
 
-	/**
-	 * Do cast.
-	 * 
-	 * @param clazz
-	 *            the clazz
-	 * @return the t
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends SLNode> T doCast(Class<T> clazz) {
-		return (T) this;
-	}
+    /**
+     * Returns the contextId where the node is stored.
+     * 
+     * @return the contextId
+     */
+    public abstract String getContextId();
+
+    /**
+     * Returns the parent's node id. <br>
+     * The parentId is one of the three properties ({@link SLNode#getName}, {@link SLNode#getParentId} and
+     * {@link SLNode#getTypeName}) that defines uniquely the node.
+     * 
+     * @return
+     */
+    public abstract String getParentId();
 }
