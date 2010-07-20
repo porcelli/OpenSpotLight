@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.tools.ant.taskdefs.Java;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.graph.SLContext;
@@ -98,14 +99,14 @@ public abstract class AbstractGraphTest {
 		node1.setTransientValue(transientValue);
 		fullGraphSession.toSync().save();
 
-		Iterable<SLNode> oneNode1 = simpleFromLocation.findNodes(nodeName,
+		Iterable<JavaType> oneNode1 = simpleFromLocation.findNodes(JavaType.class, nodeName,
 				context1);
 		Iterable<JavaType> oneNode3 = simpleFromLocation.findNodes(
 				JavaType.class, nodeName, context1);
 		Iterable<JavaType> oneNode4 = simpleFromLocation.findNodes(
 				JavaType.class, context1);
 
-		Iterator<SLNode> itOneNode1 = oneNode1.iterator();
+		Iterator<JavaType> itOneNode1 = oneNode1.iterator();
 		Iterator<JavaType> itOneNode3 = oneNode3.iterator();
 		Iterator<JavaType> itOneNode4 = oneNode4.iterator();
 

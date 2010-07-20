@@ -1,41 +1,51 @@
 package org.openspotlight.graph;
 
-import java.util.Collection;
+import static com.google.common.collect.Lists.newLinkedList;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.openspotlight.graph.internal.SLNodeFactory;
+import org.openspotlight.graph.manipulation.SLGraphReader;
 import org.openspotlight.graph.manipulation.SLGraphWriter;
+import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
 
 import com.google.inject.Provider;
 
-public class SLGraphWriterImpl implements SLGraphWriter{
+public class SLGraphWriterImpl implements SLGraphWriter {
 
+	private final SLGraphReader graphReader;
 	private final Provider<STStorageSession> sessionProvider;
+	private final STPartitionFactory factory;
 	private final String artifactId;
-	
-	public SLGraphWriterImpl(Provider<STStorageSession> sessionProvider, String artifactId){
+	private final List<SLNode> dirtyNodes = newLinkedList();
+
+	public SLGraphWriterImpl(STPartitionFactory factory,
+			Provider<STStorageSession> sessionProvider, String artifactId,
+			SLGraphReader graphReader) {
 		this.artifactId = artifactId;
+		this.factory = factory;
 		this.sessionProvider = sessionProvider;
+		this.graphReader = graphReader;
 	}
-	
+
 	@Override
 	public <L extends SLLink> L createBidirectionalLink(Class<L> linkClass,
 			SLNode source, SLNode target) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <L extends SLLink> L createLink(Class<L> linkClass, SLNode source,
 			SLNode target) {
-		
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <T extends SLNode> T createNode(SLNode parent, Class<T> clazz,
 			String name) {
-		return null;
+		return createNode(parent, clazz, name, null, null);
 	}
 
 	@Override
@@ -43,39 +53,35 @@ public class SLGraphWriterImpl implements SLGraphWriter{
 			String name,
 			Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
 			Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
-		// TODO Auto-generated method stub
-		return null;
+		STStorageSession session = sessionProvider.get();
+		return SLNodeFactory.createNode(factory, session,
+				parent.getContextId(), parent.getId(), clazz, name,
+				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
 	}
 
 	@Override
-	
 	public void removeContext(SLContext context) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void removeLink(SLLink link) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void removeNode(SLNode node) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void save() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setContextCaption(SLContext context, String caption) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 
 }

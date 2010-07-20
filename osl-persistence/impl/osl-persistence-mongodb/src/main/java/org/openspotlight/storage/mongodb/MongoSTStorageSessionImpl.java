@@ -282,6 +282,10 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
                 STUniqueKeyCriteriaItem uniqueCriteria = (STUniqueKeyCriteriaItem) c;
                 criteriaAsObj.put(ID, uniqueCriteria.getValue().getKeyAsString());
             }
+            if (c instanceof STUniqueKeyAsStringCriteriaItem) {
+            	STUniqueKeyAsStringCriteriaItem uniqueCriteria = (STUniqueKeyAsStringCriteriaItem) c;
+                criteriaAsObj.put(ID, uniqueCriteria.getKeyAsString());
+            }
             if (c instanceof STLocalKeyCriteriaItem) {
                 STLocalKeyCriteriaItem uniqueCriteria = (STLocalKeyCriteriaItem) c;
                 String localHash = uniqueCriteria.getValue().getKeyAsString();

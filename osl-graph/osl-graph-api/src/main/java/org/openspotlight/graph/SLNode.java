@@ -102,6 +102,8 @@ import org.openspotlight.log.LogableObject;
 public abstract class SLNode implements Comparable<SLNode>, LogableObject,
 		SLElement {
 
+	public abstract String getContextId();
+	
 	public abstract boolean isDirty();
 	
 	/**

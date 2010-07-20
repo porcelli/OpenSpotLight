@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.openspotlight.graph.SLGraphModule;
 import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
@@ -18,9 +17,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class RedisGraphTest extends AbstractGraphTest {
-
-	private final STRepositoryPath repositoryPath = new STRepositoryPath(
-			"repository");
 
 	private enum JRedisServerConfigExample implements JRedisServerDetail {
 

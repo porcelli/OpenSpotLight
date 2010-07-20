@@ -65,9 +65,10 @@ public interface STNodeEntryFactory {
 
     interface STNodeEntryBuilder {
         
-        STNodeEntryBuilder withKey(String name, String value);
+        STNodeEntryBuilder withKeyEntry(String name, String value);
 
         STNodeEntryBuilder withParent(STNodeEntry parent);
+        STNodeEntryBuilder withParentAsString(String parentAsString);
         STNodeEntryBuilder withParentKey(STUniqueKey parentKey);
 
         STNodeEntry andCreate();

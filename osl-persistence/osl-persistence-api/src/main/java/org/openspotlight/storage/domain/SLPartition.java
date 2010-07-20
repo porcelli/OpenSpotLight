@@ -16,7 +16,11 @@ public enum SLPartition implements STPartition {
 
 		@Override
 		public STPartition getPartitionByName(String name) {
-			return valueOf(name.toUpperCase());
+			try {
+				return valueOf(name.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				return GRAPH;
+			}
 		}
 
 		@Override

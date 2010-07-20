@@ -114,6 +114,7 @@ public interface STStorageSession {
         STCriteriaBuilder withLocalKey(STLocalKey localKey);
 
         STCriteriaBuilder withUniqueKey(STUniqueKey uniqueKey);
+        STCriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
     }
 
     interface STPropertyCriteriaItem extends STCriteriaItem {
@@ -143,6 +144,11 @@ public interface STStorageSession {
 
     interface STUniqueKeyCriteriaItem extends STCriteriaItem {
         STUniqueKey getValue();
+
+    }
+
+    interface STUniqueKeyAsStringCriteriaItem extends STCriteriaItem {
+        String getKeyAsString();
 
     }
 

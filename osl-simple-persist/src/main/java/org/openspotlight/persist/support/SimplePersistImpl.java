@@ -314,11 +314,11 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             builder.withParent(parentNode);
         }
         for (PropertyDescriptor descriptor : descriptors.keyPropertiesDescriptor) {
-            builder.withKey(descriptor.getName(),
+            builder.withKeyEntry(descriptor.getName(),
                     Conversion.convert(descriptor.getReadMethod().invoke(descriptors.bean), String.class));
         }
         if (propertyName != null) {
-            builder.withKey(NODE_PROPERTY_NAME, propertyName);
+            builder.withKeyEntry(NODE_PROPERTY_NAME, propertyName);
         }
         STNodeEntry newNode = builder.andCreate();
         newNode.setIndexedProperty(currentSession, NODE_ENTRY_TYPE,

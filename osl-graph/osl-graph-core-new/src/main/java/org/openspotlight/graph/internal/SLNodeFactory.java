@@ -1,5 +1,12 @@
 package org.openspotlight.graph.internal;
 
+import static com.google.common.collect.Maps.newHashMap;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.openspotlight.common.Pair.newPair;
+import static org.openspotlight.common.util.Conversion.convert;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Sha1.getNumericSha1Signature;
+
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
@@ -18,32 +25,61 @@ import net.sf.cglib.proxy.MethodProxy;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.Pair.PairEqualsMode;
+import org.openspotlight.graph.ContextSLNode;
+import org.openspotlight.graph.SLContext;
+import org.openspotlight.graph.SLContextImpl;
 import org.openspotlight.graph.SLElement;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 import org.openspotlight.graph.SLTreeLineReference;
 import org.openspotlight.graph.annotation.SLDefineHierarchy;
 import org.openspotlight.graph.exception.PropertyNotFoundException;
+import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.AbstractSTStorageSession.STUniqueKeyBuilderImpl;
-import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import com.google.common.collect.ImmutableSet;
-import static org.openspotlight.common.util.Sha1.getNumericSha1Signature;
-import static org.openspotlight.common.util.Conversion.convert;
-import static com.google.common.collect.Maps.newHashMap;
-import static com.google.common.collect.Sets.newHashSet;
-import static org.openspotlight.common.Pair.newPair;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
 public class SLNodeFactory {
 
+	public static final String WEIGHT = "node_weigth";
+	public static final String CORRECT_CLASS = "node_concrete_class";
+	public static final String NAME = "name";
+
+	private static BigInteger findWeigth(final Class<? extends SLNode> type) {
+		Class<?> currentType = type;
+		int depth = 0;
+		while (currentType != null) {
+			if (!SLNode.class.isAssignableFrom(currentType)) {
+				throw logAndReturn(new IllegalStateException(
+						"No SLNode inherited type found with annotation "
+								+ SLDefineHierarchy.class.getSimpleName()));
+			}
+			if (currentType.isAnnotationPresent(SLDefineHierarchy.class)) {
+				return weightFromClass((Class<? extends SLNode>) currentType)
+						.add(BigInteger.valueOf(depth));
+			}
+			currentType = currentType.getSuperclass();
+			depth++;
+		}
+		throw logAndReturn(new IllegalStateException(
+				"No SLNode inherited type found with annotation "
+						+ SLDefineHierarchy.class.getSimpleName()));
+	}
+
+	private static BigInteger weightFromClass(
+			Class<? extends SLNode> currentType) {
+		return getNumericSha1Signature(currentType.getName());
+	}
+
 	@SuppressWarnings("unchecked")
-	private static <T extends SLNode> T createNode(STStorageSession session,
-			SLNode parent, Class<T> clazz, String name,
+	private static <T extends SLNode> T createNode(STPartitionFactory factory,
+			STStorageSession session, String contextId, String parentId,
+			Class<T> clazz, String name,
 			Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
 			Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion,
 			STRepositoryPath repositoryPath) {
@@ -52,18 +88,28 @@ public class SLNodeFactory {
 		PropertyDescriptor[] descriptors = PropertyUtils
 				.getPropertyDescriptors(clazz);
 		STNodeEntry node = null;
+		if (contextId == null) {
+			if (clazz.equals(ContextSLNode.class)) {
+				contextId = name;
+			} else {
+				throw new IllegalStateException();
+			}
+		}
+		STPartition partition = factory.getPartitionByName(contextId);
 		STUniqueKey internalNodeKey;
+		Class<? extends SLNode> targetNodeType = findTargetClass(clazz);
+
 		if (session != null) {
-			internalNodeKey = session.withPartition(SLPartition.GRAPH)
-					.createKey(clazz.getName()).withEntry("name", name)
+			internalNodeKey = session.withPartition(partition).createKey(
+					targetNodeType.getName()).withEntry(NAME, name)
 					.andCreate();
-			node = session.withPartition(SLPartition.GRAPH).createCriteria()
+			node = session.withPartition(partition).createCriteria()
 					.withUniqueKey(internalNodeKey).buildCriteria()
 					.andFindUnique(session);
 		} else {
-			internalNodeKey = new STUniqueKeyBuilderImpl(clazz.getName(),
-					SLPartition.GRAPH, repositoryPath).withEntry("name", name)
-					.andCreate();
+			internalNodeKey = new STUniqueKeyBuilderImpl(targetNodeType
+					.getName(), partition, repositoryPath).withEntry(NAME,
+					name).andCreate();
 		}
 
 		for (PropertyDescriptor d : descriptors) {
@@ -75,10 +121,23 @@ public class SLNodeFactory {
 			propertyValues.put(d.getName(), value);
 		}
 
-		SLNodeImpl internalNode = new SLNodeImpl(name, clazz, internalNodeKey
-				.getKeyAsString(), propertyTypes, propertyValues);
+		SLNodeImpl internalNode = new SLNodeImpl(name, clazz, targetNodeType,
+				internalNodeKey.getKeyAsString(), propertyTypes,
+				propertyValues, parentId, contextId);
 		if (node != null) {
 			internalNode.cachedEntry = new WeakReference<STNodeEntry>(node);
+			String weigthAsString = node.getPropertyAsString(session, WEIGHT);
+			BigInteger weightFromTargetNodeType = findWeigth(clazz);
+			if (weigthAsString != null) {
+				BigInteger weightAsBigInteger = new BigInteger(weigthAsString);
+				if (weightAsBigInteger.compareTo(weightFromTargetNodeType) > 0) {
+					setWeigthAndTypeOnNode(session, node, clazz,
+							weightFromTargetNodeType);
+				}
+			} else {
+				setWeigthAndTypeOnNode(session, node, clazz,
+						weightFromTargetNodeType);
+			}
 		}
 		final Enhancer e = new Enhancer();
 		e.setSuperclass(clazz);
@@ -86,28 +145,68 @@ public class SLNodeFactory {
 		return (T) e.create(new Class[0], new Object[0]);
 	}
 
-	public static <T extends SLNode> T createNode(
-			STRepositoryPath repositoryPath, SLNode parent, Class<T> clazz,
-			String name,
-			Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
-			Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
-		return createNode(null, parent, clazz, name, linkTypesForLinkDeletion,
-				linkTypesForLinkedNodeDeletion, repositoryPath);
-
+	private static void setWeigthAndTypeOnNode(STStorageSession session,
+			STNodeEntry node, Class<? extends SLNode> type,
+			BigInteger weightFromTargetNodeType) {
+		node.setIndexedProperty(session, WEIGHT, weightFromTargetNodeType
+				.toString());
+		node.setIndexedProperty(session, CORRECT_CLASS, type.getName());
 	}
 
-	public static <T extends SLNode> T createNode(STStorageSession session,
-			SLNode parent, Class<T> clazz, String name,
+	private static Class<? extends SLNode> findTargetClass(
+			final Class<? extends SLNode> type) {
+		Class<?> currentType = type;
+		while (currentType != null) {
+			if (!SLNode.class.isAssignableFrom(currentType)) {
+				throw logAndReturn(new IllegalStateException(
+						"No SLNode inherited type found with annotation "
+								+ SLDefineHierarchy.class.getSimpleName()));
+			}
+			if (currentType.isAnnotationPresent(SLDefineHierarchy.class)) {
+				return (Class<? extends SLNode>) currentType;
+			}
+			currentType = currentType.getSuperclass();
+		}
+		throw logAndReturn(new IllegalStateException(
+				"No SLNode inherited type found with annotation "
+						+ SLDefineHierarchy.class.getSimpleName()));
+	}
+
+	private static STNodeEntry retrievePreviousNode(STPartitionFactory factory,
+			STStorageSession session, SLContext context, SLNodeImpl node) {
+		STNodeEntry internalNode = node.cachedEntry != null ? node.cachedEntry
+				.get() : null;
+		if (internalNode == null) {
+			STPartition partition = factory.getPartitionByName(context.getID());
+			internalNode = session.withPartition(partition).createWithName(
+					node.targetNode.getName()).withKeyEntry(NAME, node.name)
+					.withParentAsString(node.parentId).andCreate();
+			node.cachedEntry = new WeakReference<STNodeEntry>(internalNode);
+		}
+		return internalNode;
+	}
+
+	public static <T extends SLNode> T createNode(STPartitionFactory factory,
+			STStorageSession session, String contextId, String parentId,
+			Class<T> clazz, String name,
 			Collection<Class<? extends SLLink>> linkTypesForLinkDeletion,
 			Collection<Class<? extends SLLink>> linkTypesForLinkedNodeDeletion) {
-		return createNode(session, parent, clazz, name,
+		return createNode(factory, session, contextId, parentId, clazz, name,
 				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion, null);
 
 	}
 
 	private static class SLNodeImpl extends SLNode {
 
+		private final String contextId;
+
+		public String getContextId() {
+			return contextId;
+		}
+
 		private WeakReference<STNodeEntry> cachedEntry;
+
+		private final Class<? extends SLNode> targetNode;
 
 		private String caption;
 
@@ -116,10 +215,13 @@ public class SLNodeFactory {
 		private final Class<? extends SLNode> type;
 
 		private final String id;
+		private final String parentId;
 
 		private final String typeName;
 
 		private final BigInteger weight;
+
+		private SLContext context;
 
 		private final Map<String, Class<? extends Serializable>> propertyTypes;
 		private final Map<String, Serializable> propertyValues;
@@ -128,9 +230,10 @@ public class SLNodeFactory {
 		private Set<String> removedProperties;
 
 		private SLNodeImpl(String name, Class<? extends SLNode> type,
-				String id,
+				Class<? extends SLNode> targetNode, String id,
 				Map<String, Class<? extends Serializable>> propertyTypes,
-				Map<String, Serializable> propertyValues) {
+				Map<String, Serializable> propertyValues, String parentId,
+				String contextId) {
 			dirty = new AtomicBoolean();
 			this.type = type;
 			this.typeName = type.getName();
@@ -140,6 +243,9 @@ public class SLNodeFactory {
 			this.propertyTypes = propertyTypes;
 			this.propertyValues = propertyValues;
 			this.removedProperties = newHashSet();
+			this.targetNode = targetNode;
+			this.parentId = parentId;
+			this.contextId = contextId;
 		}
 
 		public void resetDirtyFlag() {
@@ -157,33 +263,6 @@ public class SLNodeFactory {
 
 		public String getName() {
 			return name;
-		}
-
-		private static BigInteger findWeigth(final Class<? extends SLNode> type) {
-			Class<?> currentType = type;
-			int depth = 0;
-			while (currentType != null) {
-				if (!SLNode.class.isAssignableFrom(currentType)) {
-					throw logAndReturn(new IllegalStateException(
-							"No SLNode inherited type found with annotation "
-									+ SLDefineHierarchy.class.getSimpleName()));
-				}
-				if (currentType.isAnnotationPresent(SLDefineHierarchy.class)) {
-					return weightFromClass(
-							(Class<? extends SLNode>) currentType).add(
-							BigInteger.valueOf(depth));
-				}
-				currentType = currentType.getSuperclass();
-				depth++;
-			}
-			throw logAndReturn(new IllegalStateException(
-					"No SLNode inherited type found with annotation "
-							+ SLDefineHierarchy.class.getSimpleName()));
-		}
-
-		private static BigInteger weightFromClass(
-				Class<? extends SLNode> currentType) {
-			return getNumericSha1Signature(currentType.getName());
 		}
 
 		@Override
@@ -316,7 +395,7 @@ public class SLNodeFactory {
 			boolean methodFromSLNode = declarringClass.equals(SLNode.class)
 					|| declarringClass.equals(SLElement.class);
 			String methodName = method.getName();
-			if (methodFromSLNode && !Modifier.isAbstract(method.getModifiers())) {
+			if (methodFromSLNode && Modifier.isAbstract(method.getModifiers())) {
 				if (isSetterMethod(methodName, method)) {
 					updateValueOnThisImpl(obj, proxy, args);
 				}

@@ -7,42 +7,42 @@ import org.openspotlight.graph.manipulation.SLGraphReader;
 import org.openspotlight.graph.manipulation.SLGraphTransientWriter;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
+import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
 
 import com.google.inject.Provider;
 
 public class SLSimpleGraphSessionImpl implements SLSimpleGraphSession {
 
-	public SLSimpleGraphSessionImpl(Provider<STStorageSession> sessionProvider) {
+	public SLSimpleGraphSessionImpl(Provider<STStorageSession> sessionProvider,
+			STPartitionFactory factory) {
 		this.transientWriter = new SLGraphTransientWriterImpl();
 		this.sessionProvider = sessionProvider;
+		this.factory = factory;
 	}
 
+	private final STPartitionFactory factory;
 	private final SLGraphTransientWriter transientWriter;
 	protected final Provider<STStorageSession> sessionProvider;
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void flushChangedProperties(SLNode node) {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public PolicyEnforcement getPolicyEnforcement() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public User getUser() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class SLSimpleGraphSessionImpl implements SLSimpleGraphSession {
 	public SLGraphReader location(SLGraphLocation location) {
 		SLGraphReader reader = readerCache.get(location);
 		if (reader == null) {
-			reader = new SLGraphReaderImpl(sessionProvider, location);
+			reader = new SLGraphReaderImpl(sessionProvider, location, factory);
 			readerCache.put(location, reader);
 		}
 		return reader;
@@ -64,7 +64,7 @@ public class SLSimpleGraphSessionImpl implements SLSimpleGraphSession {
 
 	@Override
 	public void shutdown() {
-		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
 
 	}
 
