@@ -50,6 +50,7 @@ package org.openspotlight.graph;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Class.forName;
+
 import java.util.Map;
 
 import org.openspotlight.common.collection.IteratorBuilder;
@@ -59,9 +60,9 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.exception.NodeNotFoundException;
 import org.openspotlight.graph.internal.NodeFactory;
 import org.openspotlight.graph.manipulation.GraphReader;
-import org.openspotlight.graph.meta.SLMetaLink;
-import org.openspotlight.graph.meta.SLMetaNodeType;
-import org.openspotlight.graph.meta.SLMetadata;
+import org.openspotlight.graph.metadata.MetaLinkType;
+import org.openspotlight.graph.metadata.MetaNodeType;
+import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryText;
@@ -230,19 +231,18 @@ public class GraphReaderImpl implements GraphReader {
     }
 
     @Override
-    public SLMetaLink getMetaLink( Link link ) {
+    public MetaLinkType getMetaType( Link link ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public MetaNodeType getMetaType( Node node ) {
         throw new UnsupportedOperationException();
 
     }
 
     @Override
-    public SLMetaNodeType getMetaType( Node node ) {
-        throw new UnsupportedOperationException();
-
-    }
-
-    @Override
-    public SLMetadata getMetadata() {
+    public Metadata getMetadata() {
         throw new UnsupportedOperationException();
 
     }

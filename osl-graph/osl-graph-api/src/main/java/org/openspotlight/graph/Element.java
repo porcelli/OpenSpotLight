@@ -50,11 +50,9 @@
 package org.openspotlight.graph;
 
 /**
- * An element defines a common API for both nodes and links. These common features are handling properties and line references as
- * well exposes unique identifier, type name and weight.
- * <p/>
- * Properties are key-value pairs where keys are always strings and value is any serializable object.
- * <p/>
+ * An Element defines a common API for both nodes and links. These common features are extended from {@link BaseIdentifer}
+ * (properties, unique identifier and weight indexing) + type name and line references.
+ * <p>
  * Line references are a complex structure that defines regions in a artifact where the element is referenced.
  * 
  * @author porcelli

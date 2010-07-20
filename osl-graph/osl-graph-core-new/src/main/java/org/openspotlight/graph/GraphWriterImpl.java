@@ -58,7 +58,6 @@ import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphWriter;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import com.google.inject.Provider;
 
@@ -144,6 +143,19 @@ public class GraphWriterImpl implements GraphWriter {
     @Override
     public void setContextCaption( Context context,
                                    String caption ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void copyNode( Node node,
+                          Context target ) {
+        throw new UnsupportedOperationException();
+
+    }
+
+    @Override
+    public void moveNode( Node node,
+                          Context target ) {
         throw new UnsupportedOperationException();
     }
 

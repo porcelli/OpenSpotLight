@@ -54,9 +54,9 @@ import org.openspotlight.graph.Link;
 import org.openspotlight.graph.LinkDirection;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.exception.NodeNotFoundException;
-import org.openspotlight.graph.meta.SLMetaLink;
-import org.openspotlight.graph.meta.SLMetaNodeType;
-import org.openspotlight.graph.meta.SLMetadata;
+import org.openspotlight.graph.metadata.MetaLinkType;
+import org.openspotlight.graph.metadata.MetaNodeType;
+import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryText;
@@ -185,7 +185,7 @@ public interface GraphReader {
      * 
      * @return the metadata
      */
-    SLMetadata getMetadata();
+    Metadata getMetadata();
 
     /**
      * Gets the nodes by link.
@@ -277,14 +277,14 @@ public interface GraphReader {
      * 
      * @return the meta link
      */
-    SLMetaLink getMetaLink( Link link );
+    MetaLinkType getMetaType( Link link );
 
     /**
      * Gets the meta node type.
      * 
      * @return the meta type or null if its a simple node
      */
-    SLMetaNodeType getMetaType( Node node );
+    MetaNodeType getMetaType( Node node );
 
     /**
      * Gets the parent.

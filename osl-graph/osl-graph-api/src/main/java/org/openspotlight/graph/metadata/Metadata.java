@@ -46,10 +46,7 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.meta;
-
-import java.util.Collection;
-import java.util.List;
+package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Link;
 import org.openspotlight.graph.Node;
@@ -61,71 +58,7 @@ import org.openspotlight.graph.exception.MetaNodeTypeNotFoundException;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetadata {
-
-    /**
-     * The Enum BooleanOperator.
-     * 
-     * @author porcelli
-     */
-    public enum BooleanOperator {
-
-        /**
-         * The OR.
-         */
-        OR,
-
-        /**
-         * The AND.
-         */
-        AND
-    }
-
-    /**
-     * The Enum LogicOperator.
-     * 
-     * @author porcelli
-     */
-    public enum LogicOperator {
-
-        /**
-         * The EQUALS.
-         */
-        EQUALS,
-
-        /**
-         * The LIKE begins with.
-         */
-        LIKE_BEGINS_WITH,
-
-        /**
-         * The LIKE ends with.
-         */
-        LIKE_ENDS_WITH,
-
-        /**
-         * The LIKE contains.
-         */
-        LIKE_CONTAINS
-    }
-
-    /**
-     * The Enum MetaNodeTypeProperty.
-     * 
-     * @author porcelli
-     */
-    public enum MetaNodeTypeProperty {
-
-        /**
-         * The NAME.
-         */
-        NAME,
-
-        /**
-         * The DESCRIPTION.
-         */
-        DESCRIPTION
-    }
+public interface Metadata {
 
     /**
      * Find meta node type.
@@ -133,7 +66,15 @@ public interface SLMetadata {
      * @param nodeClass the node class
      * @return the sL meta node type
      */
-    public SLMetaNodeType getMetaNodeType( Class<? extends Node> nodeClass ) throws MetaNodeTypeNotFoundException;
+    public String getMetaContextId();
+
+    /**
+     * Find meta node type.
+     * 
+     * @param nodeClass the node class
+     * @return the sL meta node type
+     */
+    public MetaNodeType getMetaNodeType( Class<? extends Node> nodeClass ) throws MetaNodeTypeNotFoundException;
 
     /**
      * Find meta node type.
@@ -141,15 +82,7 @@ public interface SLMetadata {
      * @param typeName the type name
      * @return the sL meta node type
      */
-    public SLMetaNodeType getMetaNodeType( String typeName ) throws MetaNodeTypeNotFoundException;
-
-    /**
-     * Find meta node type by description.
-     * 
-     * @param description the description
-     * @return the sL meta node type
-     */
-    public SLMetaNodeType getMetaNodeTypeByDescription( String description ) throws MetaNodeTypeNotFoundException;
+    public MetaNodeType getMetaNodeType( String typeName ) throws MetaNodeTypeNotFoundException;
 
     /**
      * Gets the meta link type.
@@ -157,7 +90,7 @@ public interface SLMetadata {
      * @param linkType the link type
      * @return the meta link type
      */
-    public SLMetaLinkType getMetaLinkType( Class<? extends Link> linkType ) throws MetaLinkTypeNotFoundException;
+    public MetaLinkType getMetaLinkType( Class<? extends Link> linkType ) throws MetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link type.
@@ -165,43 +98,20 @@ public interface SLMetadata {
      * @param name the name
      * @return the meta link type
      */
-    public SLMetaLinkType getMetaLinkType( String name ) throws MetaLinkTypeNotFoundException;
-
-    /**
-     * Gets the meta link type by description.
-     * 
-     * @param description the description
-     * @return the meta link type by description
-     */
-    public SLMetaLinkType getMetaLinkTypeByDescription( String description ) throws MetaLinkTypeNotFoundException;
+    public MetaLinkType getMetaLinkType( String name ) throws MetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta link types.
      * 
      * @return the meta link types
      */
-    public Collection<SLMetaLinkType> getMetaLinkTypes();
+    public Iterable<MetaLinkType> getMetaLinkTypes();
 
     /**
      * Gets the meta nodes types.
      * 
      * @return the meta nodes types
      */
-    public Collection<SLMetaNodeType> getMetaNodesTypes();
+    public Iterable<MetaNodeType> getMetaNodesTypes();
 
-    /**
-     * Search meta node type.
-     * 
-     * @param property2Find the property2 find
-     * @param logicOp the logic op
-     * @param booleanOp the boolean op
-     * @param values the values
-     * @return the collection< sl meta node type>
-     */
-    public Collection<SLMetaNodeType> searchMetaNodeType( final MetaNodeTypeProperty property2Find,
-                                                          final LogicOperator logicOp,
-                                                          final BooleanOperator booleanOp,
-                                                          final List<String> values );
-
-    // TODO implement searchMetaLinkType
 }

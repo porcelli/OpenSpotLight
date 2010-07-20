@@ -49,13 +49,21 @@
 package org.openspotlight.graph;
 
 /**
- * The Interface SLContext.
+ * Context is a data agregate in OpenSpotLight Graph and its main goal is concentrate data of a common subject. Context is a
+ * collection of {@link Node}s.
+ * <p>
+ * Context is also a good point of data partition on OpenSpotLight Graph.
  * 
  * @author porcelli
  * @author feuteston
  */
 public abstract class Context implements BaseIdentifer {
 
+    /**
+     * Returns the caption.
+     * 
+     * @return the caption
+     */
     public abstract String getCaption();
 
 }

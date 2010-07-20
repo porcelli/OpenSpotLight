@@ -46,37 +46,29 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.meta;
+package org.openspotlight.graph.metadata;
 
-import java.io.Serializable;
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.annotation.IsMetaType;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Interface SLMetaLinkProperty.
+ * The Interface SLMetaLinkType.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetaLinkProperty extends SLMetaElement {
+@IsMetaType
+public abstract class MetaLinkType extends Node {
 
-    /**
-     * Gets the meta link.
-     * 
-     * @return the meta link
-     */
-    public SLMetaLink getMetaLink();
+    public abstract String getDescription();
 
-    /**
-     * Gets the name.
-     * 
-     * @return the name
-     */
-    public String getName();
+    public abstract int getInitialWeight();
 
-    /**
-     * Gets the type.
-     * 
-     * @return the type
-     */
-    public Class<? extends Serializable> getType();
+    public abstract boolean allowsAutoBidirectional();
+
+    public abstract boolean isMetaType();
+
+    public abstract String getLanguageName();
+
+    public abstract String getTypeGroup();
 
 }

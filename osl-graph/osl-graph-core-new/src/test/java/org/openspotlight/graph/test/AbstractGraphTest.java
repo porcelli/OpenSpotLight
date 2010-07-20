@@ -558,8 +558,8 @@ public abstract class AbstractGraphTest {
         JavaMember rootClass2Node = writer.createNode(context2.getRootNode(),
                                                       JavaMember.class, rootClass1);
         writer.save();
-        assertThat(rootClass1Node.getWeight()
-                                 .equals(rootClass2Node.getWeight()), is(false));
+        assertThat(rootClass1Node.getWeightValue()
+                                 .equals(rootClass2Node.getWeightValue()), is(false));
 
     }
 
@@ -577,10 +577,10 @@ public abstract class AbstractGraphTest {
         JavaTypeClass rootClass2Node = writer.createNode(
                                                          context2.getRootNode(), JavaTypeClass.class, rootClass1);
         writer.save();
-        assertThat(rootClass1Node.getWeight()
-                                 .equals(rootClass2Node.getWeight()), is(false));
-        assertThat(rootClass1Node.getWeight().compareTo(
-                                                        rootClass2Node.getWeight()) < 0, is(true));
+        assertThat(rootClass1Node.getWeightValue()
+                                 .equals(rootClass2Node.getWeightValue()), is(false));
+        assertThat(rootClass1Node.getWeightValue().compareTo(
+                                                        rootClass2Node.getWeightValue()) < 0, is(true));
     }
 
     public void shouldCreateAndRetrieveUnidirectionalLinksOnSameContext()

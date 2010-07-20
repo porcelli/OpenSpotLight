@@ -361,7 +361,7 @@ public class NodeFactory {
 
         @Override
         public int compareTo( Node o ) {
-            return weight.compareTo(o.getWeight());
+            return weight.compareTo(o.getWeightValue());
         }
 
         @Override
@@ -487,7 +487,7 @@ public class NodeFactory {
         }
 
         @Override
-        public int getInitialWeight() {
+        public int getInitialWeightValue() {
             // TODO Auto-generated method stub
             return 0;
         }

@@ -46,20 +46,20 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.meta;
+package org.openspotlight.graph.metadata;
+
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.annotation.IsMetaType;
 
 /**
- * The Interface SLMetaElement.
+ * The Interface SLMetaRenderHint.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLMetaElement {
+@IsMetaType
+public abstract class MetaRenderHint extends Node {
 
-    /**
-     * Gets the metadata.
-     * 
-     * @return the metadata
-     */
-    public SLMetadata getMetadata();
+    public abstract String getName();
 
+    public abstract String getValue();
 }

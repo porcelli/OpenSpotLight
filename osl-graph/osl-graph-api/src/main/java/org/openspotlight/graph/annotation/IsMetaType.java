@@ -46,56 +46,18 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.meta;
 
-import java.util.Collection;
+package org.openspotlight.graph.annotation;
 
-import org.openspotlight.graph.Link;
-import org.openspotlight.graph.Node;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The Interface SLMetaLinkType.
- * 
- * @author Vitor Hugo Chagas
+ * Created by User: feu - Date: Jun 29, 2010 - Time: 2:42:11 PM
  */
-public interface SLMetaLinkType extends SLMetaElement {
-
-    /**
-     * Gets the type.
-     * 
-     * @return the type
-     */
-    public Class<? extends Link> getType();
-
-    /**
-     * Gets the metalinks.
-     * 
-     * @return the metalinks
-     */
-    public Collection<SLMetaLink> getMetalinks();
-
-    /**
-     * Gets the meta links.
-     * 
-     * @param sourceType the source type
-     * @param targetType the target type
-     * @param bidirectional the bidirectional
-     * @return the meta links
-     */
-    public Collection<SLMetaLink> getMetaLinks( Class<? extends Node> sourceType,
-                                                Class<? extends Node> targetType,
-                                                Boolean bidirectional );
-
-    /**
-     * Gets the meta links.
-     * 
-     * @param sourceType the source type
-     * @param targetType the target type
-     * @param bidirectional the bidirectional
-     * @return the meta links
-     */
-    public Collection<SLMetaLink> getMetaLinks( String sourceType,
-                                                String targetType,
-                                                Boolean bidirectional );
-
+@Retention( RetentionPolicy.RUNTIME )
+@Target( {ElementType.TYPE} )
+public @interface IsMetaType {
 }

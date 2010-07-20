@@ -6,6 +6,14 @@ import java.util.Set;
 import org.openspotlight.common.Pair;
 import org.openspotlight.graph.exception.PropertyNotFoundException;
 
+/**
+ * Defines a common API for handling properties on {@link Node}, {@link Link} and {@link Context}.
+ * <p>
+ * Properties are key-value pairs where keys are always strings and values are any serializable object.
+ * 
+ * @author porcelli
+ * @author feuteston
+ */
 public interface PropertyContainer {
 
     /**

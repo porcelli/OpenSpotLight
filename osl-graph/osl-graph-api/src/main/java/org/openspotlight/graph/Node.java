@@ -56,8 +56,8 @@ import org.openspotlight.log.LogableObject;
  * A Node is uniquely identified by three properties: Type, Name and ParentNode, and based on these data an algorithm is used to
  * generate an unique id.
  * <p>
- * To secure the data consistency its not possible change the unique identifiers of a Node. If you need so, you'll have to
- * delete it and create a new one.
+ * To secure the data consistency its not possible change the unique identifiers of a Node. If you need so, you'll have to delete
+ * it and create a new one.
  * </p>
  * <p>
  * A Node defines a information, to relate this data with other you'll have to create {@link Link} to connect those nodes.
@@ -89,8 +89,8 @@ public abstract class Node implements Element, Comparable<Node>, LogableObject {
 
     /**
      * Returns the name. <br>
-     * The name is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and {@link Node#getTypeName})
-     * that defines uniquely the node.
+     * The name is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and {@link Node#getTypeName}) that
+     * defines uniquely the node.
      * 
      * @return the name
      */
@@ -119,8 +119,8 @@ public abstract class Node implements Element, Comparable<Node>, LogableObject {
 
     /**
      * Returns the parent's node id. <br>
-     * The parentId is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and
-     * {@link Node#getTypeName}) that defines uniquely the node.
+     * The parentId is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and {@link Node#getTypeName})
+     * that defines uniquely the node.
      * 
      * @return
      */

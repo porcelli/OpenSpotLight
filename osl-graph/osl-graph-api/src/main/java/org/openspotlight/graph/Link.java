@@ -85,6 +85,7 @@ import org.openspotlight.graph.exception.GraphException;
  * <p>
  * Along with {@link org.openspotlight.graph.Node}, links are are the core of OpenSpotLight Graph data model.
  * </p>
+ * <b>Important Note</b> Its a abstract class to avoid more than one type of element for a node.
  * 
  * @author porcelli
  * @author feuteston
