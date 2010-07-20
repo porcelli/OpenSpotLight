@@ -80,14 +80,28 @@ public interface SLElement {
     String getId();
 
     /**
-     * Returns the type name.
+     * Returns the type name, that is a simple shortcut for getClass().getName();
      * 
      * @return the type name
      */
     String getTypeName();
 
     /**
-     * Returns the weight value. The weight is used internally for indexing purpose.
+     * Returns true if the element has been modified, false otherwise.
+     * 
+     * @return true is modified, false otherwise
+     */
+    boolean isDirty();
+
+    /**
+     * Returns the initial weight value (setted during element creation). The weight is used internally for indexing purpose.
+     * 
+     * @return the element weight.
+     */
+    int getInitialWeight();
+
+    /**
+     * Returns the actual weight value. The weight is used internally for indexing purpose.
      * 
      * @return the element weight.
      */

@@ -436,7 +436,6 @@ public class SLNodeFactory {
         public boolean isDirty() {
             return dirty.get();
         }
-
     }
 
     private static class SLNodeInterceptor implements MethodInterceptor {

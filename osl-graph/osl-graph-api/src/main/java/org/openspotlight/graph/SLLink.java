@@ -49,11 +49,41 @@
 package org.openspotlight.graph;
 
 /**
- * The Interface SLLink.
+ * The SLLink is the way you correlate informations (nodes) in OpenSpotLight Graph. Any relationship between nodes are
+ * materialized by a creation of a link. <br>
+ * A SLLink is uniquely identified by three data: Type, Source Node and Target Node, and based on these data an algorithm is used
+ * to generate an unique id.
+ * <p>
+ * We have two types of links: <br>
+ * &nbsp;- <i>Unidirectional</i> links creates a link between a source and a target node that can be represented as: source ->
+ * target<br>
+ * &nbsp;- <i>Bidirectional</i> links creates a link between two nodes that can be represented as: node1 <-> node2
+ * </p>
+ * <p>
+ * Links can be promoted from unidirectional to bidirectional, but to allow this promotion the link type should use the
+ * {@link org.openspotlight.graph.annotation.SLLinkAutoBidirectional} annotation. <br>
+ * The mechanism that creates this promotion is really simple and can be described as: if you create a link with a link type that
+ * allows auto-bidirectional bettwen a source and a target nodes (node1 -> node2) and later creates the same link with the same
+ * type bettwen target and source (node2 -> node1) it will convert the original link to a bidirectional link (node1 <-> node2).
+ * </p>
+ * <p>
+ * To secure the data consistency its not possible change the unique identifiers of a SLLink. If you need so, you'll have to
+ * delete it and create a new one.
+ * </p>
+ * <p>
+ * Links can be created as transients by {@link org.openspotlight.graph.manipulation.SLGraphTransientWriter#createTransientLink}
+ * or {@link org.openspotlight.graph.manipulation.SLGraphTransientWriter#createTransientBidirectionalLink} methods or as permanent
+ * by {@link org.openspotlight.graph.manipulation.SLGraphWriter#createLink} or
+ * {@link org.openspotlight.graph.manipulation.SLGraphWriter#createBidirectionalLink} methods wich are the most common use.
+ * </p>
+ * <p>
+ * Along with {@link org.openspotlight.graph.SLNode}, links are are the core of OpenSpotLight Graph data model.
+ * </p>
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
-public abstract class SLLink implements Comparable<SLLink>, SLElement {
+public abstract class SLLink implements SLElement, Comparable<SLLink> {
 
     /**
      * Gets the other side.
@@ -93,4 +123,5 @@ public abstract class SLLink implements Comparable<SLLink>, SLElement {
 
     public abstract int getCount();
 
+    public abstract int setCount();
 }

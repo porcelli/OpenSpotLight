@@ -161,7 +161,7 @@ public abstract class AbstractGraphTest {
         assertThat(itOneNode3.hasNext(), is(true));
         assertThat(itOneNode4.hasNext(), is(true));
 
-        JavaType sameNode1 = itOneNode1.next().doCast(JavaType.class);
+        JavaType sameNode1 = itOneNode1.next();
         JavaType sameNode3 = itOneNode3.next();
         JavaType sameNode4 = itOneNode4.next();
 
@@ -244,7 +244,7 @@ public abstract class AbstractGraphTest {
 
         assertThat(itOneNode1.hasNext(), is(true));
 
-        JavaType sameNode1 = itOneNode1.next().doCast(JavaType.class);
+        JavaType sameNode1 = (JavaType)itOneNode1.next();
 
         assertThat(sameNode1, is(notNullValue()));
 
@@ -351,9 +351,7 @@ public abstract class AbstractGraphTest {
         SLGraphWriter writer = fullGraphSession.toSync();
 
         String rootClass1 = "rootClass1";
-        JavaTypeClass rootClass1Node = writer.createNode(
-                                                         context1.getRootNode(), JavaTypeClass.class, rootClass1);
-        rootClass1Node.doCast(JavaMember.class);
+        writer.createNode(context1.getRootNode(), JavaTypeClass.class, rootClass1);
     }
 
     @Test
