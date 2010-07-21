@@ -83,8 +83,10 @@ import org.openspotlight.log.LogableObject;
  * &nbsp;2. The same node (uniquely identified by Type, Name and Parent) can be stored in more than one
  * {@link org.openspotlight.graph.Context}.
  * </p>
+ * 
+ * @author porcelli
+ * @author feuteston
  */
-
 public abstract class Node implements Element, Comparable<Node>, LogableObject {
 
     /**

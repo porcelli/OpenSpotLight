@@ -53,7 +53,7 @@ import java.util.Collection;
 
 import org.openspotlight.graph.Link;
 
-public class GraphManipulationSupport {
+public final class GraphManipulationSupport {
 
     public static Collection<Class<? extends Link>> links( final Class<? extends Link>... linkTypes ) {
         return Arrays.asList(linkTypes);

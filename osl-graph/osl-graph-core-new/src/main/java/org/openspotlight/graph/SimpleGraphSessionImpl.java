@@ -74,11 +74,6 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
     protected final Provider<STStorageSession> sessionProvider;
 
     @Override
-    public void close() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void flushChangedProperties( Node node ) {
         throw new UnsupportedOperationException();
     }
@@ -113,7 +108,6 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
     @Override
     public void shutdown() {
         throw new UnsupportedOperationException();
-
     }
 
 }

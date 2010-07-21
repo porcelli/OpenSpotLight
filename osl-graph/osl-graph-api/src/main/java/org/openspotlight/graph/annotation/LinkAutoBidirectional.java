@@ -53,6 +53,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * This is a mark annotation that defines if a link of that type can be automatically promoted to a bidirectional link.
+ * <p>
+ * The mechanism that creates this promotion is really simple and can be described as: if you create a link with a link type that
+ * allows auto-bidirectional bettwen a source and a target nodes (node1 -> node2) and later creates the same link with the same
+ * type bettwen target and source (node2 -> node1) it will convert the original link to a bidirectional link (node1 <-> node2).
+ * 
+ * @author porcelli
+ * @author feuteston
+ */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
 public @interface LinkAutoBidirectional {

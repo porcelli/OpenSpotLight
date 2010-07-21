@@ -55,7 +55,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by User: feu - Date: Jun 29, 2010 - Time: 2:36:47 PM
+ * Defines the initial weight of {@link org.openspotlight.graph.Element}s or {@link org.openspotlight.graph.Context}s. The initial
+ * weight is also stored as metadata on node and link types.<br>
+ * The weight data are used to indexing.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( {ElementType.TYPE} )

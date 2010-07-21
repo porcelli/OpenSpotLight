@@ -48,6 +48,7 @@
  */
 package org.openspotlight.graph;
 
+
 /**
  * Context is a data agregate in OpenSpotLight Graph and its main goal is concentrate data of a common subject. Context is a
  * collection of {@link Node}s.

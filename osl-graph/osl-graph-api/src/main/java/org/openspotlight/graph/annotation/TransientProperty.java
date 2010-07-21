@@ -53,8 +53,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * This is a mark annotation that defines a property as transient.
+ * 
+ * @author porcelli
+ * @author feuteston
+ */
 @Retention( RetentionPolicy.RUNTIME )
-@Target( {ElementType.TYPE, ElementType.METHOD} )
+@Target( {ElementType.METHOD} )
 public @interface TransientProperty {
 
 }

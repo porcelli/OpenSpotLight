@@ -53,6 +53,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Offers a description for node and link types as well its properties. This description is stored as metadata.
+ * 
+ * @see org.openspotlight.graph.metadata.Metadata
+ * @author porcelli
+ * @author feuteston
+ */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( {ElementType.TYPE, ElementType.METHOD} )
 public @interface Description {

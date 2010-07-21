@@ -63,6 +63,7 @@ import org.openspotlight.security.idm.User;
  * <b>Important Note</b> its important to execute {@link #shutdown} method at end of its use.
  * 
  * @author porcelli
+ * @author feuteston
  */
 public interface SimpleGraphSession {
 

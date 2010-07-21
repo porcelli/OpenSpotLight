@@ -54,12 +54,31 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The Interface SLProperty.
+ * This annotations marks a property (getter or setter) as a node type property as well defines its change behavior. <br>
+ * This information is also added as metadata into node and link types.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.METHOD )
 public @interface Property {
     PropertyChangeBehavior value() default PropertyChangeBehavior.NOT_ALLOW_USER;
+
+    /**
+     * Defines the change behavior of node and link types properties.
+     * 
+     * @author porcelli
+     * @author feuteston
+     */
+    public enum PropertyChangeBehavior {
+        /**
+         * User can modify property value
+         */
+        ALLOW_USER,
+        /**
+         * User cannot modify property value
+         */
+        NOT_ALLOW_USER
+    }
 }

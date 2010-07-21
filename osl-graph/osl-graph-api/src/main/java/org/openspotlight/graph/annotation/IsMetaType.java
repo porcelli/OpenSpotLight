@@ -55,7 +55,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by User: feu - Date: Jun 29, 2010 - Time: 2:42:11 PM
+ * This is a mark annotation that defines the node or link type as a metadata type. This annotations is necessary to not generate
+ * a recursive problem around metadata node and link types.
+ * <p>
+ * 
+ * @author porcelli
+ * @author feuteston
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( {ElementType.TYPE} )

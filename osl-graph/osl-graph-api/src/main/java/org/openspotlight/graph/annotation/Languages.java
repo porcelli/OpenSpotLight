@@ -46,6 +46,7 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
+
 package org.openspotlight.graph.annotation;
 
 import java.lang.annotation.ElementType;
@@ -54,18 +55,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The Interface SLRenderHints.
+ * Adds metadata information related to languages that are associated with a node and link types. <br>
+ * These languages can be used for search/index purpose.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
 @Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.TYPE )
-public @interface RenderHints {
-
-    /**
-     * Value.
-     * 
-     * @return the sL render hint[]
-     */
-    RenderHint[] value();
+@Target( {ElementType.TYPE} )
+public @interface Languages {
+    String[] value();
 }
