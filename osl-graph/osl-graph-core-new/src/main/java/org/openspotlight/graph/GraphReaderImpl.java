@@ -187,7 +187,7 @@ public class GraphReaderImpl implements GraphReader {
     public <L extends Link> L getLink( Class<L> linkClass,
                                        Node source,
                                        Node target,
-                                       LinkDirection linkDirection ) {
+                                       LinkType linkDirection ) {
         throw new UnsupportedOperationException();
 
     }
@@ -201,7 +201,7 @@ public class GraphReaderImpl implements GraphReader {
     @Override
     public Iterable<Node> getLinkedNodes( Class<? extends Link> linkClass,
                                           Node node,
-                                          LinkDirection linkDirection ) {
+                                          LinkType linkDirection ) {
         throw new UnsupportedOperationException();
 
     }
@@ -210,14 +210,14 @@ public class GraphReaderImpl implements GraphReader {
     public <N extends Node> Iterable<N> getLinkedNodes( Node node,
                                                         Class<N> nodeClass,
                                                         boolean returnSubTypes,
-                                                        LinkDirection linkDirection ) {
+                                                        LinkType linkDirection ) {
         throw new UnsupportedOperationException();
 
     }
 
     @Override
     public Iterable<Node> getLinkedNodes( Node node,
-                                          LinkDirection linkDirection ) {
+                                          LinkType linkDirection ) {
         throw new UnsupportedOperationException();
 
     }
@@ -225,7 +225,7 @@ public class GraphReaderImpl implements GraphReader {
     @Override
     public Iterable<Link> getLinks( Node source,
                                     Node target,
-                                    LinkDirection linkDirection ) {
+                                    LinkType linkDirection ) {
         throw new UnsupportedOperationException();
 
     }
@@ -397,7 +397,7 @@ public class GraphReaderImpl implements GraphReader {
                                                         Node node,
                                                         Class<N> nodeClass,
                                                         boolean returnSubTypes,
-                                                        LinkDirection linkDirection ) {
+                                                        LinkType linkDirection ) {
         throw new UnsupportedOperationException();
 
     }

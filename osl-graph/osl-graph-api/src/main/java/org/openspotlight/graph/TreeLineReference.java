@@ -48,71 +48,54 @@
  */
 package org.openspotlight.graph;
 
-import java.util.Collection;
-
 /**
- * The Interface SLTreeLineReference.
+ * This interfaces groups all data related to {@link Element} line references.
  * 
  * @author porcelli
  */
 public interface TreeLineReference {
 
     /**
-     * Gets the id.
+     * Returns the {@link Element#getId()}
      * 
-     * @return the id
+     * @return the element id
      */
     public String getId();
 
     /**
-     * Gets the artifacts.
+     * Returns an iterable of line references by artifacts
      * 
      * @return the artifacts
      */
-    public Collection<ArtifactLineReference> getArtifacts();
+    public Iterable<ArtifactLineReference> getArtifacts();
 
     /**
-     * The Interface SLArtifactLineReference.
+     * This interface represents an artifacts with its line references grouped by statements
      * 
      * @author porcelli
      */
     public interface ArtifactLineReference {
 
         /**
-         * Gets the artifact id.
+         * Returns the Artifactd Id.
          * 
          * @return the artifact id
          */
         public String getArtifactId();
 
         /**
-         * Gets the artifact version.
+         * Returns the artifact version
          * 
          * @return the artifact version
          */
         public String getArtifactVersion();
 
         /**
-         * Gets the statements.
+         * Returns an iterable that groups line references by statements
          * 
          * @return the statements
          */
-        public Collection<StatementLineReference> getStatements();
-
-        /**
-         * Adds the statement.
-         * 
-         * @param statement the statement
-         * @param startLine the start line
-         * @param endLine the end line
-         * @param startColumn the start column
-         * @param endColumn the end column
-         */
-        public void addStatement( String statement,
-                                  Integer startLine,
-                                  Integer endLine,
-                                  Integer startColumn,
-                                  Integer endColumn );
+        public Iterable<StatementLineReference> getStatements();
     }
 
     /**
@@ -123,72 +106,54 @@ public interface TreeLineReference {
     public interface StatementLineReference {
 
         /**
-         * Gets the statement.
+         * Return the statement
          * 
          * @return the statement
          */
         public String getStatement();
 
         /**
-         * Gets the line references.
+         * Returns an iterable of line references
          * 
          * @return the line references
          */
-        public Collection<SimpleLineReference> getLineReferences();
+        public Iterable<SimpleLineReference> getLineReferences();
 
-        /**
-         * Adds the line ref.
-         * 
-         * @param startLine the start line
-         * @param endLine the end line
-         * @param startColumn the start column
-         * @param endColumn the end column
-         */
-        public void addLineRef( Integer startLine,
-                                Integer endLine,
-                                Integer startColumn,
-                                Integer endColumn );
-
-        /**
-         * The Interface SLSimpleLineReference.
-         * 
-         * @author porcelli
-         */
     }
 
     /**
-     * The Interface SLSimpleLineReference.
+     * Interface that represents region of an artifact
      * 
      * @author porcelli
      */
     public interface SimpleLineReference {
 
         /**
-         * Gets the start line.
+         * Returns the initial line
          * 
-         * @return the start line
+         * @return the initial line
          */
-        public Integer getStartLine();
+        public int getBeginLine();
 
         /**
-         * Gets the end line.
+         * Returns the end line
          * 
          * @return the end line
          */
-        public Integer getEndLine();
+        public int getEndLine();
 
         /**
-         * Gets the start column.
+         * Returns the initial column
          * 
-         * @return the start column
+         * @return the initial column
          */
-        public Integer getStartColumn();
+        public int getBeginColumn();
 
         /**
-         * Gets the end column.
+         * Returns the end column
          * 
          * @return the end column
          */
-        public Integer getEndColumn();
+        public int getEndColumn();
     }
 }

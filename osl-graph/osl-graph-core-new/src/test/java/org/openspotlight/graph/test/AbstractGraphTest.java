@@ -64,7 +64,7 @@ import org.openspotlight.graph.FullGraphSession;
 import org.openspotlight.graph.GraphLocation;
 import org.openspotlight.graph.GraphSessionFactory;
 import org.openspotlight.graph.Link;
-import org.openspotlight.graph.LinkDirection;
+import org.openspotlight.graph.LinkType;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.SimpleGraphSession;
 import org.openspotlight.graph.manipulation.GraphReader;
@@ -135,9 +135,9 @@ public abstract class AbstractGraphTest {
         boolean publicClass = true;
 
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         JavaType node1 = writer.createNode(context1.getRootNode(),
                                            JavaType.class, nodeName);
@@ -145,7 +145,7 @@ public abstract class AbstractGraphTest {
         node1.setPublicClass(publicClass);
         node1.setTypeName(typeName);
         node1.setTransientValue(transientValue);
-        fullGraphSession.toSync().save();
+        fullGraphSession.toServer().save();
 
         Iterable<JavaType> oneNode1 = simpleFromLocation.findNodes(JavaType.class, nodeName,
                                                                    context1);
@@ -197,7 +197,7 @@ public abstract class AbstractGraphTest {
     public void shouldNotFindInvalidNode() throws Exception {
         String invalidNodeName = "invalidNodeName";
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
         Iterable<Node> empty1 = simpleFromLocation.findNodes(invalidNodeName,
                                                                context1);
@@ -226,9 +226,9 @@ public abstract class AbstractGraphTest {
         boolean publicClass = true;
 
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         JavaType node1 = writer.createNode(context1.getRootNode(),
                                            JavaType.class, nodeName);
@@ -236,7 +236,7 @@ public abstract class AbstractGraphTest {
         node1.setPublicClass(publicClass);
         node1.setTypeName(typeName);
         node1.setTransientValue(transientValue);
-        fullGraphSession.toSync().save();
+        fullGraphSession.toServer().save();
 
         Iterable<Node> oneNode1 = simpleFromLocation.findNodes(nodeName,
                                                                  context1);
@@ -266,9 +266,9 @@ public abstract class AbstractGraphTest {
     @Test
     public void shouldCreateAnHierarchy() throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaTypeClass rootClass1Node = writer.createNode(
@@ -347,9 +347,9 @@ public abstract class AbstractGraphTest {
     @Test( expected = ClassCastException.class )
     public void shouldNotDoInvalidCasts() throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaTypeClass rootClass1Node = writer.createNode(
@@ -360,9 +360,9 @@ public abstract class AbstractGraphTest {
     @Test
     public void shouldChangeNodeTypeWhenUsingValidNodeType() throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
@@ -390,9 +390,9 @@ public abstract class AbstractGraphTest {
     public void shouldNotChangeNodeTypeWhenUsingInvalidNodeType()
             throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         writer.createNode(context1.getRootNode(), JavaType.class, rootClass1);
@@ -404,9 +404,9 @@ public abstract class AbstractGraphTest {
     @Test
     public void shouldRemoveNode() throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaType rootClassNode1 = writer.createNode(context1.getRootNode(),
@@ -425,9 +425,9 @@ public abstract class AbstractGraphTest {
     public void shouldRemoveChildNode() throws Exception {
 
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaType rootClassNode1 = writer.createNode(context1.getRootNode(),
@@ -456,9 +456,9 @@ public abstract class AbstractGraphTest {
     public void shouldRemoveParentAndChildNode() throws Exception {
 
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaType rootClassNode1 = writer.createNode(context1.getRootNode(),
@@ -490,9 +490,9 @@ public abstract class AbstractGraphTest {
         String secondTypeName = "secondTypeName";
 
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaType rootClassNode1 = writer.createNode(context1.getRootNode(),
@@ -522,10 +522,10 @@ public abstract class AbstractGraphTest {
     @Test
     public void shouldHaveSameNodesOnDifferentContexts() throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
         Context context2 = simpleFromLocation.getContext(context2());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
@@ -547,10 +547,10 @@ public abstract class AbstractGraphTest {
     public void shouldHaveDifferentWeightsForDifferentNodeTypes()
             throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
         Context context2 = simpleFromLocation.getContext(context2());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
@@ -566,10 +566,10 @@ public abstract class AbstractGraphTest {
     @Test
     public void shouldHaveBiggerHeightsForInheritedTypes() throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
         Context context2 = simpleFromLocation.getContext(context2());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
@@ -586,9 +586,9 @@ public abstract class AbstractGraphTest {
     public void shouldCreateAndRetrieveUnidirectionalLinksOnSameContext()
             throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
@@ -606,23 +606,23 @@ public abstract class AbstractGraphTest {
         writer.save();
 
         Set<Link> twoLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                         rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+                                                                         rootClass1Node, null, LinkType.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         Set<Link> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                           rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+                                                                           rootClass1Node, null, LinkType.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         Set<Link> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
+                                                                              null, rootClass2Node, LinkType.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         Set<Link> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
+                                                                              null, rootClass3Node, LinkType.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -632,9 +632,9 @@ public abstract class AbstractGraphTest {
     public void shouldCreateAndRetrieveBidirectionalLinksOnSameContext()
             throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
@@ -660,23 +660,23 @@ public abstract class AbstractGraphTest {
         assertThat(link2, is(link4));
 
         Set<Link> twoLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                         rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+                                                                         rootClass1Node, null, LinkType.BIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         Set<Link> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                           rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+                                                                           rootClass1Node, null, LinkType.UNIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         Set<Link> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass2Node, LinkDirection.BIDIRECTIONAL));
+                                                                              null, rootClass2Node, LinkType.BIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         Set<Link> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass3Node, LinkDirection.BIDIRECTIONAL));
+                                                                              null, rootClass3Node, LinkType.BIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -686,9 +686,9 @@ public abstract class AbstractGraphTest {
             throws Exception {
 
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
@@ -729,42 +729,42 @@ public abstract class AbstractGraphTest {
         assertThat(link2Bid, is(link4Bid));
 
         Set<Link> twoBidLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                            rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
+                                                                            rootClass1BidNode, null, LinkType.BIDIRECTIONAL));
         assertThat(twoBidLinks.size(), is(2));
         assertThat(twoBidLinks.contains(link1Bid), is(true));
         assertThat(twoBidLinks.contains(link2Bid), is(true));
 
         Set<Link> bidLinkFromNode2 = iterableToSet(simpleFromLocation
                                                                        .getLinks(null, rootClass2BidNode,
-                                                                                 LinkDirection.BIDIRECTIONAL));
+                                                                                 LinkType.BIDIRECTIONAL));
         assertThat(bidLinkFromNode2.size(), is(1));
         assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
         assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
 
         Set<Link> bidLinkFromNode3 = iterableToSet(simpleFromLocation
                                                                        .getLinks(null, rootClass3BidNode,
-                                                                                 LinkDirection.BIDIRECTIONAL));
+                                                                                 LinkType.BIDIRECTIONAL));
         assertThat(bidLinkFromNode3.size(), is(1));
         assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
         assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
         Set<Link> twoLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                         rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+                                                                         rootClass1Node, null, LinkType.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         Set<Link> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                           rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+                                                                           rootClass1Node, null, LinkType.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         Set<Link> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
+                                                                              null, rootClass2Node, LinkType.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         Set<Link> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
+                                                                              null, rootClass3Node, LinkType.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -774,10 +774,10 @@ public abstract class AbstractGraphTest {
     public void shouldCreateAndRetrieveUnidirectionalLinksOnDiferentContext()
             throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
         Context context2 = simpleFromLocation.getContext(context2());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
@@ -795,23 +795,23 @@ public abstract class AbstractGraphTest {
         writer.save();
 
         Set<Link> twoLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                         rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+                                                                         rootClass1Node, null, LinkType.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         Set<Link> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                           rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+                                                                           rootClass1Node, null, LinkType.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         Set<Link> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
+                                                                              null, rootClass2Node, LinkType.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         Set<Link> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
+                                                                              null, rootClass3Node, LinkType.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -821,10 +821,10 @@ public abstract class AbstractGraphTest {
     public void shouldCreateAndRetrieveBidirectionalLinksOnDiferentContext()
             throws Exception {
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
         Context context2 = simpleFromLocation.getContext(context2());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
@@ -850,23 +850,23 @@ public abstract class AbstractGraphTest {
         assertThat(link2, is(link4));
 
         Set<Link> twoLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                         rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+                                                                         rootClass1Node, null, LinkType.BIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         Set<Link> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                           rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+                                                                           rootClass1Node, null, LinkType.UNIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         Set<Link> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass2Node, LinkDirection.BIDIRECTIONAL));
+                                                                              null, rootClass2Node, LinkType.BIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         Set<Link> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass3Node, LinkDirection.BIDIRECTIONAL));
+                                                                              null, rootClass3Node, LinkType.BIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -876,10 +876,10 @@ public abstract class AbstractGraphTest {
             throws Exception {
 
         GraphReader simpleFromLocation = simpleGraphSession
-                                                             .location(location());
+                                                             .from(location());
         Context context1 = simpleFromLocation.getContext(context1());
         Context context2 = simpleFromLocation.getContext(context2());
-        GraphWriter writer = fullGraphSession.toSync();
+        GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
@@ -920,42 +920,42 @@ public abstract class AbstractGraphTest {
         assertThat(link2Bid, is(link4Bid));
 
         Set<Link> twoBidLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                            rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
+                                                                            rootClass1BidNode, null, LinkType.BIDIRECTIONAL));
         assertThat(twoBidLinks.size(), is(2));
         assertThat(twoBidLinks.contains(link1Bid), is(true));
         assertThat(twoBidLinks.contains(link2Bid), is(true));
 
         Set<Link> bidLinkFromNode2 = iterableToSet(simpleFromLocation
                                                                        .getLinks(null, rootClass2BidNode,
-                                                                                 LinkDirection.BIDIRECTIONAL));
+                                                                                 LinkType.BIDIRECTIONAL));
         assertThat(bidLinkFromNode2.size(), is(1));
         assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
         assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
 
         Set<Link> bidLinkFromNode3 = iterableToSet(simpleFromLocation
                                                                        .getLinks(null, rootClass3BidNode,
-                                                                                 LinkDirection.BIDIRECTIONAL));
+                                                                                 LinkType.BIDIRECTIONAL));
         assertThat(bidLinkFromNode3.size(), is(1));
         assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
         assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
         Set<Link> twoLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                         rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+                                                                         rootClass1Node, null, LinkType.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         Set<Link> emptyLinks = iterableToSet(simpleFromLocation.getLinks(
-                                                                           rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+                                                                           rootClass1Node, null, LinkType.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         Set<Link> linkFromNode2 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
+                                                                              null, rootClass2Node, LinkType.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         Set<Link> linkFromNode3 = iterableToSet(simpleFromLocation.getLinks(
-                                                                              null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
+                                                                              null, rootClass3Node, LinkType.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));

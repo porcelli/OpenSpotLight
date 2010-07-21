@@ -51,7 +51,7 @@ package org.openspotlight.graph.manipulation;
 
 import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Link;
-import org.openspotlight.graph.LinkDirection;
+import org.openspotlight.graph.LinkType;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.exception.NodeNotFoundException;
 import org.openspotlight.graph.metadata.MetaLinkType;
@@ -111,7 +111,7 @@ public interface GraphReader {
     <L extends Link> L getLink( Class<L> linkClass,
                                   Node source,
                                   Node target,
-                                  LinkDirection linkDirection );
+                                  LinkType linkDirection );
 
     /**
      * Gets the links.
@@ -122,7 +122,7 @@ public interface GraphReader {
      */
     Iterable<Link> getLinks( Node source,
                                Node target,
-                               LinkDirection linkDirection );
+                               LinkType linkDirection );
 
     /**
      * Gets the bidirectional links by side.
@@ -204,7 +204,7 @@ public interface GraphReader {
      */
     Iterable<Node> getLinkedNodes( Class<? extends Link> linkClass,
                                      Node node,
-                                     LinkDirection linkDirection );
+                                     LinkType linkDirection );
 
     /**
      * Gets the nodes by link.
@@ -221,7 +221,7 @@ public interface GraphReader {
                                                    Node node,
                                                    Class<N> nodeClass,
                                                    boolean returnSubTypes,
-                                                   LinkDirection linkDirection );
+                                                   LinkType linkDirection );
 
     /**
      * Gets the nodes by link.
@@ -234,7 +234,7 @@ public interface GraphReader {
     <N extends Node> Iterable<N> getLinkedNodes( Node node,
                                                    Class<N> nodeClass,
                                                    boolean returnSubTypes,
-                                                   LinkDirection linkDirection );
+                                                   LinkType linkDirection );
 
     /**
      * Gets the nodes by link.
@@ -243,7 +243,7 @@ public interface GraphReader {
      * @return the nodes by link
      */
     Iterable<Node> getLinkedNodes( Node node,
-                                     LinkDirection linkDirection );
+                                     LinkType linkDirection );
 
     /**
      * Gets the node.

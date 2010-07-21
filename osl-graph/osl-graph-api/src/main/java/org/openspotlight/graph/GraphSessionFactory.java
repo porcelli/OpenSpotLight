@@ -50,13 +50,34 @@
 package org.openspotlight.graph;
 
 /**
- * Created by User: feu - Date: Jun 29, 2010 - Time: 4:56:14 PM
+ * The main contract here is the creation of different session instances ({@link SimpleGraphSession} and {@link FullGraphSession}
+ * ). Usually an application has a single GraphSessionFactory instance and threads servicing client requests obtain Session
+ * instances from this factory.<br>
+ * The internal state of a GraphSessionFactory is immutable.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
 public interface GraphSessionFactory {
 
+    /**
+     * Opens a simple graph session.
+     * 
+     * @return the simple session
+     */
     public SimpleGraphSession openSimple();
 
+    /**
+     * Opens a full graph session.
+     * 
+     * @return the full session
+     */
     public FullGraphSession openFull();
 
+    /**
+     * Opens a full graph session and based on artifactId feeds the cache.
+     * 
+     * @return the full session
+     */
     public FullGraphSession openFull( String artifactId );
 }

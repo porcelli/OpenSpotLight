@@ -50,12 +50,26 @@
 package org.openspotlight.graph;
 
 /**
- * Created by IntelliJ IDEA. User: porcelli Date: 05/07/2010 Time: 10:33:02 To change this template use File | Settings | File
- * Templates.
+ * Defines the places, or the order of, where data can be retrieved from OpenSpotLight Graph.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
 public enum GraphLocation {
+    /**
+     * Data should be retrieved from cache.
+     */
     CACHE,
+    /**
+     * Data should be retrieved directed from cache.
+     */
     SERVER,
+    /**
+     * Data should be retrieved from cache and, if not found, should try the graph server.
+     */
     CACHE_SERVER,
+    /**
+     * Data should be retrieved from server and, if not found, should try cache.
+     */
     SERVER_CACHE
 }

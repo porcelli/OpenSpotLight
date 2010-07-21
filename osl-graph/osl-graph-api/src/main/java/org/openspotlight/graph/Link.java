@@ -56,7 +56,7 @@ import org.openspotlight.graph.exception.GraphException;
  * A Link is uniquely identified by three data: Type, Source Node and Target Node, and based on these data an algorithm is used to
  * generate an unique id.
  * <p>
- * We have two types of links: <br>
+ * We have two types of links (see {@link LinkType}): <br>
  * &nbsp;- <i>Unidirectional</i> links creates a link between a source and a target node that can be represented as: source ->
  * target<br>
  * &nbsp;- <i>Bidirectional</i> links creates a link between two nodes that can be represented as: node1 <-> node2

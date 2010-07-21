@@ -50,11 +50,22 @@
 package org.openspotlight.graph;
 
 /**
- * Created by User: feu - Date: Jun 29, 2010 - Time: 3:44:42 PM
+ * Defines the link types.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
-//TODO rename to SLLinkType
-public enum LinkDirection {
+public enum LinkType {
+    /**
+     * An unidirectional defines a link between a source and a target node and can be represented as: source -> target
+     */
     UNIDIRECTIONAL,
+    /**
+     * A bidirectional defines a links between two nodes that can be represented as: node1 <-> node2
+     */
     BIDIRECTIONAL,
+    /**
+     * Used to retrieve any type of link (unidirectional or bidirectional).
+     */
     ANY
 }

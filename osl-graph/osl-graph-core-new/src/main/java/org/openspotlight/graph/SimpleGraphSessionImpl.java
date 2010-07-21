@@ -94,14 +94,14 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
     }
 
     @Override
-    public GraphTransientWriter local() {
+    public GraphTransientWriter toTransient() {
         return transientWriter;
     }
 
     private final Map<GraphLocation, GraphReader> readerCache = new HashMap<GraphLocation, GraphReader>();
 
     @Override
-    public GraphReader location( GraphLocation location ) {
+    public GraphReader from( GraphLocation location ) {
         GraphReader reader = readerCache.get(location);
         if (reader == null) {
             reader = new GraphReaderImpl(sessionProvider, location, factory);
