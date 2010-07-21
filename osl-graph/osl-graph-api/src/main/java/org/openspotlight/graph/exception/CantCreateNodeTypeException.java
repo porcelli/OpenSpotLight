@@ -48,46 +48,26 @@
  */
 package org.openspotlight.graph.exception;
 
-import org.openspotlight.common.exception.SLException;
-
 /**
- * The Class SLGraphException.
+ * Thrown when a {@link org.openspotlight.graph.Node} can't be created.<br>
+ * When throwed the graph has a seriosly state damage.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
-public class GraphException extends SLException {
+public class CantCreateNodeTypeException extends GraphRuntimeException {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7949842485637864658L;
 
     /**
-     * Instantiates a new sL graph exception.
+     * Constructs a new CantCreateNodeTypeException with the given node id and its root cause.
      * 
-     * @param message the message
+     * @param nodeId the node id
      * @param cause the cause
      */
-    public GraphException(
-                             String message, Throwable cause ) {
-        super(message, cause);
+    public CantCreateNodeTypeException(
+                                            String nodeId, Throwable cause ) {
+        super("Can't create node with id " + nodeId + ".", cause);
     }
 
-    /**
-     * Instantiates a new sL graph exception.
-     * 
-     * @param message the message
-     */
-    public GraphException(
-                             String message ) {
-        super(message);
-    }
-
-    /**
-     * Instantiates a new sL graph exception.
-     * 
-     * @param cause the cause
-     */
-    public GraphException(
-                             Throwable cause ) {
-        super(cause);
-    }
 }

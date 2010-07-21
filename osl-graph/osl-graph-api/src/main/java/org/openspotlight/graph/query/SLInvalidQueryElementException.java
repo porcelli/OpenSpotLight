@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.exception.GraphException;
+import org.openspotlight.graph.exception.GraphRuntimeException;
 
 /**
  * The Class SLInvalidQueryElementException.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLInvalidQueryElementException extends GraphException {
+public class SLInvalidQueryElementException extends GraphRuntimeException {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;

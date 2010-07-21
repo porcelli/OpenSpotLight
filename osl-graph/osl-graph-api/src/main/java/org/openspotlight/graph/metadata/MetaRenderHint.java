@@ -49,7 +49,9 @@
 package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.annotation.IsMetaType;
+import org.openspotlight.graph.annotation.Property;
 
 /**
  * The Interface SLMetaRenderHint.
@@ -57,9 +59,14 @@ import org.openspotlight.graph.annotation.IsMetaType;
  * @author Vitor Hugo Chagas
  */
 @IsMetaType
+@Description( "Meta Render Hint" )
 public abstract class MetaRenderHint extends Node {
 
+    @Property
+    @Description( "Property Name" )
     public abstract String getName();
 
+    @Property
+    @Description( "Property Value" )
     public abstract String getValue();
 }

@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.exception.GraphException;
 
 /**
  * The Link is the way you correlate informations ({@link Node} instances) in OpenSpotLight Graph. Any relationship between nodes
@@ -98,9 +97,9 @@ public abstract class Link implements Element, Comparable<Link> {
      * 
      * @param node the source or target node of this links
      * @return the other node
-     * @throws GraphException if the given node is neither the source nor target node of this link
+     * @throws IllegalArgumentException if the given node is neither the source nor target node of this link
      */
-    public abstract Node getOtherSide( Node node ) throws GraphException;
+    public abstract Node getOtherSide( Node node ) throws IllegalArgumentException;
 
     /**
      * Returns the two nodes that are attached to this link.

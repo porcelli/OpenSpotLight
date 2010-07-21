@@ -49,24 +49,25 @@
 package org.openspotlight.graph.exception;
 
 /**
- * The Class SLMetaNodeTypeNotFoundException.
+ * Thrown when a {@link org.openspotlight.graph.metadata.MetaLinkType} is not found for a specific link type name.<br>
+ * When throwed the graph has a seriosly state damage.
  * 
  * @author porcelli
+ * @author feuteston
  */
-public class MetaLinkTypeNotFoundException extends GraphException {
+public class MetaLinkTypeNotFoundException extends GraphRuntimeException {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7949842485637864658L;
 
     /**
-     * Instantiates a new sL node not found exception.
+     * Constructs a new MetaLinkTypeNotFoundException with the given link type and its root cause.
      * 
-     * @param metaNodeTypeName the meta node type name
+     * @param metaLinkTypeName the meta link type name
      * @param cause the cause
      */
     public MetaLinkTypeNotFoundException(
-                                            String metaNodeTypeName, Throwable cause ) {
-        super("SLMetaLinkType " + metaNodeTypeName + " not found.", cause);
+                                            String metaLinkTypeName, Throwable cause ) {
+        super("LinkType " + metaLinkTypeName + " not found.", cause);
     }
 
 }

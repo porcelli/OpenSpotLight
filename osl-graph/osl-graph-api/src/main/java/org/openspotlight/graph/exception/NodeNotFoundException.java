@@ -49,24 +49,25 @@
 package org.openspotlight.graph.exception;
 
 /**
- * The Class SLNodeNotFoundException.
+ * Thrown when a {@link org.openspotlight.graph.Node} is not found by its id.<br>
  * 
+ * @author porcelli
+ * @author feuteston
  * @author Vitor Hugo Chagas
  */
-public class NodeNotFoundException extends GraphException {
+public class NodeNotFoundException extends GraphRuntimeException {
 
-    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Instantiates a new sL node not found exception.
+     * Constructs a new NodeNotFoundException with the given id and its root couse.
      * 
-     * @param nodeID the node id
+     * @param nodeId the node id
      * @param cause the cause
      */
     public NodeNotFoundException(
-                                    String nodeID, Throwable cause ) {
-        super("Node of " + nodeID + " not found.", cause);
+                                    String nodeId, Throwable cause ) {
+        super("Node Id " + nodeId + " not found.", cause);
     }
 
 }

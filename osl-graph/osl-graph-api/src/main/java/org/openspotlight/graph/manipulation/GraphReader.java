@@ -98,7 +98,10 @@ public interface GraphReader {
      * @return the node by id
      * @throws org.openspotlight.graph.exception.SLNodeNotFoundException node not found
      */
-    Node getNode( String id ) throws NodeNotFoundException;
+    Node getNode( Context context,
+                  String id ) throws NodeNotFoundException;
+
+    Iterable<Node> getNode( String id ) throws NodeNotFoundException;
 
     /**
      * Gets the links.

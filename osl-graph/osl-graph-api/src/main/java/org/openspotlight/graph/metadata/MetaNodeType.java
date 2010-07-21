@@ -49,7 +49,9 @@
 package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.annotation.IsMetaType;
+import org.openspotlight.graph.annotation.Property;
 
 /**
  * The Interface SLMetaNodeType.
@@ -57,16 +59,27 @@ import org.openspotlight.graph.annotation.IsMetaType;
  * @author Vitor Hugo Chagas
  */
 @IsMetaType
+@Description( "Node Type" )
 public abstract class MetaNodeType extends Node {
 
+    @Property
+    @Description( "Description" )
     public abstract String getDescription();
 
+    @Property
+    @Description( "Initial Weight" )
     public abstract int getInitialWeight();
 
+    @Property
+    @Description( "isMetaType" )
     public abstract boolean isMetaType();
 
-    public abstract String getLanguageName();
+    @Property
+    @Description( "Languages" )
+    public abstract String getLanguages();
 
+    @Property
+    @Description( "Type Group" )
     public abstract String getTypeGroup();
 
 }

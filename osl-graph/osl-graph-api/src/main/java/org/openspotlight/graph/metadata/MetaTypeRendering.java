@@ -49,8 +49,10 @@
 package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.annotation.IsMetaType;
 
 @IsMetaType
+@Description( "Meta Type Rendering" )
 public abstract class MetaTypeRendering extends Link {
 }

@@ -49,44 +49,25 @@
 package org.openspotlight.graph.exception;
 
 /**
- * The Class SLGraphSessionException.
+ * Thrown when a {@link org.openspotlight.graph.Link} can't be created.<br>
+ * When throwed the graph has a seriosly state damage.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
-public class GraphSessionException extends GraphRuntimeException {
+public class CantCreateLinkTypeException extends GraphRuntimeException {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7949842485637864658L;
 
     /**
-     * Instantiates a new sL graph manipulation exception.
+     * Constructs a new CantCreateLinkTypeException with the given link id and its root cause.
      * 
-     * @param message the message
+     * @param linkId the link id
      * @param cause the cause
      */
-    public GraphSessionException(
-                                    String message, Throwable cause ) {
-        super(message, cause);
-    }
-
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param message the message
-     */
-    public GraphSessionException(
-                                    String message ) {
-        super(message);
-    }
-
-    /**
-     * Instantiates a new sL graph manipulation exception.
-     * 
-     * @param cause the cause
-     */
-    public GraphSessionException(
-                                    Throwable cause ) {
-        super(cause);
+    public CantCreateLinkTypeException(
+                                            String linkId, Throwable cause ) {
+        super("Can't create link with id " + linkId + ".", cause);
     }
 
 }

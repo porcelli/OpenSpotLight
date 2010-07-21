@@ -49,7 +49,9 @@
 package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.annotation.IsMetaType;
+import org.openspotlight.graph.annotation.Property;
 
 /**
  * The Interface SLMetaLinkType.
@@ -57,18 +59,31 @@ import org.openspotlight.graph.annotation.IsMetaType;
  * @author Vitor Hugo Chagas
  */
 @IsMetaType
+@Description( "Link Type" )
 public abstract class MetaLinkType extends Node {
 
+    @Property
+    @Description( "Description" )
     public abstract String getDescription();
 
+    @Property
+    @Description( "Initial Weight" )
     public abstract int getInitialWeight();
 
+    @Property
+    @Description( "Allows Auto Bidirectional" )
     public abstract boolean allowsAutoBidirectional();
 
+    @Property
+    @Description( "isMetaType" )
     public abstract boolean isMetaType();
 
-    public abstract String getLanguageName();
+    @Property
+    @Description( "Languages" )
+    public abstract String getLanguages();
 
+    @Property
+    @Description( "Type Group" )
     public abstract String getTypeGroup();
 
 }

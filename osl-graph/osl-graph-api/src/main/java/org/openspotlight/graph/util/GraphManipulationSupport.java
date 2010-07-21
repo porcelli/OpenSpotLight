@@ -51,12 +51,32 @@ package org.openspotlight.graph.util;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Messages;
 import org.openspotlight.graph.Link;
 
+/**
+ * This class contains some useful static methods that makes life easier during graph api interaction.
+ * 
+ * @author feu
+ */
 public final class GraphManipulationSupport {
 
+    /**
+     * Supporter method that generates a list of link types.
+     * 
+     * @param linkTypes link types
+     * @return list of link types
+     */
     public static Collection<Class<? extends Link>> links( final Class<? extends Link>... linkTypes ) {
         return Arrays.asList(linkTypes);
+    }
+
+    /**
+     * Should not be instantiated
+     */
+    private GraphManipulationSupport() {
+        Exceptions.logAndThrow(new IllegalStateException(Messages.getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
 }

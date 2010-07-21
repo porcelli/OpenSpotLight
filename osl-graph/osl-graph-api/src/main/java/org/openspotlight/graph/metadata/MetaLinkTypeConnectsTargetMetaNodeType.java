@@ -49,8 +49,10 @@
 package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.annotation.IsMetaType;
 
 @IsMetaType
+@Description( "Meta Link Type Connects Target Meta Node Type" )
 public abstract class MetaLinkTypeConnectsTargetMetaNodeType extends Link {
 }
