@@ -54,9 +54,11 @@ import org.openspotlight.graph.annotation.IsMetaType;
 import org.openspotlight.graph.annotation.Property;
 
 /**
- * The Interface SLMetaLinkType.
+ * This special node type represents the metadata of a link type, so every link type added to graph should have one MetaLinkType
+ * associated.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
 @IsMetaType
 @Description( "Link Type" )

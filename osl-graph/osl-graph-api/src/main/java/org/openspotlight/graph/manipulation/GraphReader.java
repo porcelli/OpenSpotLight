@@ -53,6 +53,8 @@ import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Link;
 import org.openspotlight.graph.LinkType;
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.MetaLinkTypeNotFoundException;
+import org.openspotlight.graph.exception.MetaNodeTypeNotFoundException;
 import org.openspotlight.graph.exception.NodeNotFoundException;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
@@ -280,14 +282,14 @@ public interface GraphReader {
      * 
      * @return the meta link
      */
-    MetaLinkType getMetaType( Link link );
+    MetaLinkType getMetaType( Link link ) throws MetaLinkTypeNotFoundException;
 
     /**
      * Gets the meta node type.
      * 
      * @return the meta type or null if its a simple node
      */
-    MetaNodeType getMetaType( Node node );
+    MetaNodeType getMetaType( Node node ) throws MetaNodeTypeNotFoundException;
 
     /**
      * Gets the parent.

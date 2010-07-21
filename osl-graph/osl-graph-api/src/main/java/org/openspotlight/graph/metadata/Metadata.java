@@ -50,67 +50,69 @@ package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Link;
 import org.openspotlight.graph.Node;
-import org.openspotlight.graph.exception.MetaLinkTypeNotFoundException;
-import org.openspotlight.graph.exception.MetaNodeTypeNotFoundException;
 
 /**
- * The Interface SLMetadata.
+ * This interface is composed by sugar methods for most simple and common serach around metadata context. If its necessary a more
+ * detailed information around metadata you can query the metadata context using
+ * {@link org.openspotlight.graph.manipulation.GraphReader#createQueryApi} or
+ * {@link org.openspotlight.graph.manipulation.GraphReader#createQueryText} methods.
  * 
+ * @author porcelli
+ * @author feuteston
  * @author Vitor Hugo Chagas
  */
 public interface Metadata {
 
     /**
-     * Find meta node type.
+     * Returns the metadata context id.
      * 
-     * @param nodeClass the node class
-     * @return the sL meta node type
+     * @return the context id
      */
     public String getMetaContextId();
 
     /**
-     * Find meta node type.
+     * Returns a meta node type based on specific node type class
      * 
-     * @param nodeClass the node class
-     * @return the sL meta node type
+     * @param nodeType the node type class
+     * @return the meta node type or null if not found
      */
-    public MetaNodeType getMetaNodeType( Class<? extends Node> nodeClass ) throws MetaNodeTypeNotFoundException;
+    public MetaNodeType getMetaNodeType( Class<? extends Node> nodeType );
 
     /**
-     * Find meta node type.
+     * Returns a meta node type based on specific node type name
      * 
-     * @param typeName the type name
-     * @return the sL meta node type
+     * @param nodeTypeName the node type name
+     * @return the meta node type or null if not found
      */
-    public MetaNodeType getMetaNodeType( String typeName ) throws MetaNodeTypeNotFoundException;
+    public MetaNodeType getMetaNodeType( String nodeTypeName );
 
     /**
-     * Gets the meta link type.
+     * Returns a meta link type based on specific link type class
      * 
-     * @param linkType the link type
-     * @return the meta link type
+     * @param linkType the link type class
+     * @return the meta link type or null if not found
      */
-    public MetaLinkType getMetaLinkType( Class<? extends Link> linkType ) throws MetaLinkTypeNotFoundException;
+    public MetaLinkType getMetaLinkType( Class<? extends Link> linkType );
 
     /**
-     * Gets the meta link type.
+     * Returns a meta link type based on specific link type name
      * 
-     * @param name the name
-     * @return the meta link type
+     * @param linkTypeName the link type name
+     * @return the meta link type or null if not found
      */
-    public MetaLinkType getMetaLinkType( String name ) throws MetaLinkTypeNotFoundException;
+    public MetaLinkType getMetaLinkType( String linkTypeName );
 
     /**
-     * Gets the meta link types.
+     * Returns an iterable of all meta link types registered into metadata context.
      * 
-     * @return the meta link types
+     * @return all registered metadata link types
      */
     public Iterable<MetaLinkType> getMetaLinkTypes();
 
     /**
-     * Gets the meta nodes types.
+     * Returns an iterable of all meta node types registered into metadata context.
      * 
-     * @return the meta nodes types
+     * @return all registered metadata node types
      */
     public Iterable<MetaNodeType> getMetaNodesTypes();
 

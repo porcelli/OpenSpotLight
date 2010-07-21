@@ -54,7 +54,8 @@ import org.openspotlight.graph.annotation.IsMetaType;
 import org.openspotlight.graph.annotation.Property;
 
 /**
- * The Interface SLMetaRenderHint.
+ * Every created key-value {@link org.openspotlight.graph.annotation.RenderHint} declares has a MetaRenderHint node type created
+ * into metadata graph context.
  * 
  * @author Vitor Hugo Chagas
  */
