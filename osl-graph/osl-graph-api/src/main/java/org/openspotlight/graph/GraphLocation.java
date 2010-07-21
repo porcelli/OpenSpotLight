@@ -54,8 +54,8 @@ package org.openspotlight.graph;
  * Templates.
  */
 public enum GraphLocation {
-    LOCAL,
-    CENTRAL,
-    LOCAL_CENTRAL,
-    CENTRAL_LOCAL
+    CACHE,
+    SERVER,
+    CACHE_SERVER,
+    SERVER_CACHE
 }

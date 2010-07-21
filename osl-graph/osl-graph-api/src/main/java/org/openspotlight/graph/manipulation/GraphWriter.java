@@ -125,11 +125,11 @@ public interface GraphWriter {
     public void setContextCaption( Context context,
                                    String caption );
 
-    public void copyNode( Node node,
-                          Context target );
+    public void copyNodeHierarchy( Node node,
+                                   Context target );
 
-    public void moveNode( Node node,
-                          Context target );
+    public void moveNodeHierarchy( Node node,
+                                   Context target );
 
     public void removeNode( Node node );
 

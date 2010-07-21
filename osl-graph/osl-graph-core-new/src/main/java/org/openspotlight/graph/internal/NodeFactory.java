@@ -435,7 +435,7 @@ public class NodeFactory {
         }
 
         @Override
-        public BigInteger getWeight() {
+        public BigInteger getWeightValue() {
             return weight;
         }
 

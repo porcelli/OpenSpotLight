@@ -96,7 +96,7 @@ public abstract class AbstractGraphTest {
     protected abstract void clearData() throws Exception;
 
     protected GraphLocation location() {
-        return GraphLocation.CENTRAL;
+        return GraphLocation.SERVER;
     }
 
     protected String context1() {
@@ -580,7 +580,7 @@ public abstract class AbstractGraphTest {
         assertThat(rootClass1Node.getWeightValue()
                                  .equals(rootClass2Node.getWeightValue()), is(false));
         assertThat(rootClass1Node.getWeightValue().compareTo(
-                                                        rootClass2Node.getWeightValue()) < 0, is(true));
+                                                             rootClass2Node.getWeightValue()) < 0, is(true));
     }
 
     public void shouldCreateAndRetrieveUnidirectionalLinksOnSameContext()

@@ -147,15 +147,15 @@ public class GraphWriterImpl implements GraphWriter {
     }
 
     @Override
-    public void copyNode( Node node,
-                          Context target ) {
+    public void copyNodeHierarchy( Node node,
+                                   Context target ) {
         throw new UnsupportedOperationException();
 
     }
 
     @Override
-    public void moveNode( Node node,
-                          Context target ) {
+    public void moveNodeHierarchy( Node node,
+                                   Context target ) {
         throw new UnsupportedOperationException();
     }
 

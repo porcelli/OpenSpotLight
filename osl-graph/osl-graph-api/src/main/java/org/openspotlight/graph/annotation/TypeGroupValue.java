@@ -47,7 +47,7 @@
  *  Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.graph;
+package org.openspotlight.graph.annotation;
 
 /**
  * Created by User: feu - Date: Jun 29, 2010 - Time: 2:38:26 PM
