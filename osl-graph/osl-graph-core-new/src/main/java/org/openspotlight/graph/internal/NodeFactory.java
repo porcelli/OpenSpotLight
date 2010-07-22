@@ -492,6 +492,12 @@ public class NodeFactory {
             return 0;
         }
 
+		@Override
+		public int getWeightValue() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
     }
 
     private static class NodeInterceptor implements MethodInterceptor {

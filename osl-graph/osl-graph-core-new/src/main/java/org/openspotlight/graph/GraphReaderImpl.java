@@ -50,12 +50,17 @@ package org.openspotlight.graph;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Class.forName;
+import static org.openspotlight.common.util.Conversion.convert;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.common.collection.IteratorBuilder.Converter;
 import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.exception.NodeNotFoundException;
 import org.openspotlight.graph.internal.NodeFactory;
@@ -76,330 +81,321 @@ import com.google.inject.Provider;
 
 public class GraphReaderImpl implements GraphReader {
 
-    private final STPartitionFactory   factory;
-    private final Map<String, Context> contextCache = newHashMap();
+	private final STPartitionFactory factory;
+	private final Map<String, Context> contextCache = newHashMap();
 
-    public GraphReaderImpl( Provider<STStorageSession> sessionProvider,
-                            GraphLocation location, STPartitionFactory factory ) {
-        this.location = location;
-        this.sessionProvider = sessionProvider;
-        this.factory = factory;
-    }
+	public GraphReaderImpl(Provider<STStorageSession> sessionProvider,
+			GraphLocation location, STPartitionFactory factory) {
+		this.location = location;
+		this.sessionProvider = sessionProvider;
+		this.factory = factory;
+	}
 
-    private final Provider<STStorageSession> sessionProvider;
-    private final GraphLocation              location;
+	private final Provider<STStorageSession> sessionProvider;
+	private final GraphLocation location;
 
-    @Override
-    public SLQueryApi createQueryApi() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public SLQueryApi createQueryApi() {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public SLQueryText createQueryText( String slqlInput )
-            throws SLInvalidQuerySyntaxException {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public SLQueryText createQueryText(String slqlInput)
+			throws SLInvalidQuerySyntaxException {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public <L extends Link> Iterable<L> getBidirectionalLinks(
-                                                               Class<L> linkClass,
-                                                               Node side ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public <L extends Link> Iterable<L> getBidirectionalLinks(
+			Class<L> linkClass, Node side) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Iterable<Link> getBidirectionalLinks( Node side ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Iterable<Link> getBidirectionalLinks(Node side) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public <T extends Node> T getChildNode( Node node,
-                                            Class<T> clazz,
-                                            String name ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public <T extends Node> T getChildNode(Node node, Class<T> clazz,
+			String name) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public <T extends Node> Iterable<T> getChildrenNodes( Node node,
-                                                          Class<T> clazz ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public <T extends Node> Iterable<T> getChildrenNodes(Node node,
+			Class<T> clazz) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    private static final String CONTEXT_CAPTION = "context_caption";
+	private static final String CONTEXT_CAPTION = "context_caption";
 
-    @Override
-    public Context getContext( String id ) {
-        Context ctx = contextCache.get(id);
-        if (ctx == null) {
-            STStorageSession session = this.sessionProvider.get();
-            STPartition partition = factory.getPartitionByName(id);
-            STNodeEntry contextNode = session.withPartition(partition)
-                                             .createCriteria().withNodeEntry(id).buildCriteria()
-                                             .andFindUnique(session);
-            String caption = null;
-            if (contextNode == null) {
-                contextNode = session.withPartition(partition)
-                                     .createNewSimpleNode(id);
-                contextNode.setIndexedProperty(session,
-                                               NodeFactory.CORRECT_CLASS, ContextNode.class
-                                                                                           .getName());
-            } else {
-                caption = contextNode.getPropertyAsString(session,
-                                                          CONTEXT_CAPTION);
-            }
-            Node contextAsSLNode = convertToSLNode(null, id, contextNode);
+	@Override
+	public Context getContext(String id) {
+		Context ctx = contextCache.get(id);
+		if (ctx == null) {
+			STStorageSession session = this.sessionProvider.get();
+			STPartition partition = factory.getPartitionByName(id);
+			STNodeEntry contextNode = session.withPartition(partition)
+					.createCriteria().withNodeEntry(id).buildCriteria()
+					.andFindUnique(session);
+			String caption = null;
+			Map<String, Serializable> properties = new HashMap<String, Serializable>();
+			int weigth = ContextImpl.DEFAULT_CONTEXT_WEIGTH;
+			if (contextNode == null) {
+				contextNode = session.withPartition(partition)
+						.createNewSimpleNode(id);
+				contextNode.setIndexedProperty(session,
+						ContextImpl.WEIGTH_PROPERTY, convert(
+								ContextImpl.DEFAULT_CONTEXT_WEIGTH,
+								String.class));
 
-            ctx = new ContextImpl(caption, id, contextAsSLNode);
-            contextCache.put(id, ctx);
-        }
-        return ctx;
+			} else {
+				caption = contextNode.getPropertyAsString(session,
+						CONTEXT_CAPTION);
+				weigth = convert(contextNode.getPropertyAsString(session,
+						CONTEXT_CAPTION), Integer.class);
+				Set<String> names = contextNode.getPropertyNames(session);
+				for (String propertyName : names) {
+					if (propertyName.equals(ContextImpl.WEIGTH_PROPERTY)
+							|| propertyName.equals(CONTEXT_CAPTION)) {
+						continue;
+					}
+					properties.put(propertyName, Conversion.convert(contextNode
+							.getPropertyAsBytes(session, propertyName),
+							Serializable.class));
+				}
 
-    }
+			}
 
-    private Node convertToSLNode( String parentId,
-                                  String contextId,
-                                  STNodeEntry rawStNode ) {
-        try {
-            STStorageSession session = sessionProvider.get();
-            String clazzName = rawStNode.getPropertyAsString(session,
-                                                             NodeFactory.CORRECT_CLASS);
-            if (clazzName == null) {
-                System.err.print("");
-            }
-            Class<?> clazz = forName(clazzName);
-            Node node = NodeFactory.createNode(factory, session, contextId,
-                                               parentId, (Class<? extends Node>)clazz, rawStNode
-                                                                                                .getNodeEntryName(), null, null);
-            return node;
-        } catch (Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
-        }
-    }
+			ctx = new ContextImpl(id, properties, caption, weigth);
+			contextCache.put(id, ctx);
+		}
+		return ctx;
 
-    @Override
-    public Context getContext( Node node ) {
-        return node != null ? getContext(node.getContextId()) : null;
-    }
+	}
 
-    @Override
-    public <L extends Link> L getLink( Class<L> linkClass,
-                                       Node source,
-                                       Node target,
-                                       LinkDirection linkDirection ) {
-        throw new UnsupportedOperationException();
+	private Node convertToSLNode(String parentId, String contextId,
+			STNodeEntry rawStNode) {
+		try {
+			STStorageSession session = sessionProvider.get();
+			String clazzName = rawStNode.getPropertyAsString(session,
+					NodeFactory.CORRECT_CLASS);
+			if (clazzName == null) {
+				System.err.print("");
+			}
+			Class<?> clazz = forName(clazzName);
+			Node node = NodeFactory.createNode(factory, session, contextId,
+					parentId, (Class<? extends Node>) clazz, rawStNode
+							.getNodeEntryName(), null, null);
+			return node;
+		} catch (Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+		}
+	}
 
-    }
+	@Override
+	public Context getContext(Node node) {
+		return node != null ? getContext(node.getContextId()) : null;
+	}
 
-    @Override
-    public Iterable<Node> getLinkedNodes( Class<? extends Link> linkClass ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public <L extends Link> L getLink(Class<L> linkClass, Node source,
+			Node target, LinkDirection linkDirection) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public Iterable<Node> getLinkedNodes( Class<? extends Link> linkClass,
-                                          Node node,
-                                          LinkDirection linkDirection ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public <N extends Node> Iterable<N> getLinkedNodes( Node node,
-                                                        Class<N> nodeClass,
-                                                        boolean returnSubTypes,
-                                                        LinkDirection linkDirection ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass,
+			Node node, LinkDirection linkDirection) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public Iterable<Node> getLinkedNodes( Node node,
-                                          LinkDirection linkDirection ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public <N extends Node> Iterable<N> getLinkedNodes(Node node,
+			Class<N> nodeClass, boolean returnSubTypes,
+			LinkDirection linkDirection) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public Iterable<Link> getLinks( Node source,
-                                    Node target,
-                                    LinkDirection linkDirection ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public Iterable<Node> getLinkedNodes(Node node, LinkDirection linkDirection) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public MetaLinkType getMetaType( Link link ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public Iterable<Link> getLinks(Node source, Node target,
+			LinkDirection linkDirection) {
+		throw new UnsupportedOperationException();
 
-    @Override
-    public MetaNodeType getMetaType( Node node ) {
-        throw new UnsupportedOperationException();
+	}
 
-    }
+	@Override
+	public MetaLinkType getMetaType(Link link) {
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public Metadata getMetadata() {
-        throw new UnsupportedOperationException();
+	@Override
+	public MetaNodeType getMetaType(Node node) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public Node getNode( String id ) throws NodeNotFoundException {
-        STStorageSession session = sessionProvider.get();
-        String contextId = StringIDSupport.getPartitionName(id);
-        STPartition partition = this.factory.getPartitionByName(contextId);
-        STNodeEntry parentStNode = session.withPartition(partition)
-                                          .createCriteria().withUniqueKeyAsString(id).buildCriteria()
-                                          .andFindUnique(session);
-        if (parentStNode == null)
-            return null;
-        return convertToSLNode(parentStNode.getUniqueKey()
-                                           .getParentKeyAsString(), contextId, parentStNode);
+	@Override
+	public Metadata getMetadata() {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public Node getParentNode( Node node ) {
-        STStorageSession session = sessionProvider.get();
-        STPartition partition = this.factory.getPartitionByName(node
-                                                                    .getContextId());
-        STNodeEntry parentStNode = session.withPartition(partition)
-                                          .createCriteria().withUniqueKeyAsString(node.getId())
-                                          .buildCriteria().andFindUnique(session);
+	@Override
+	public Node getNode(String id) throws NodeNotFoundException {
+		STStorageSession session = sessionProvider.get();
+		String contextId = StringIDSupport.getPartitionName(id);
+		STPartition partition = this.factory.getPartitionByName(contextId);
+		STNodeEntry parentStNode = session.withPartition(partition)
+				.createCriteria().withUniqueKeyAsString(id).buildCriteria()
+				.andFindUnique(session);
+		if (parentStNode == null)
+			return null;
+		return convertToSLNode(parentStNode.getUniqueKey()
+				.getParentKeyAsString(), contextId, parentStNode);
 
-        if (parentStNode == null)
-            return null;
-        return convertToSLNode(parentStNode.getUniqueKey()
-                                           .getParentKeyAsString(), node.getContextId(), parentStNode);
+	}
 
-    }
+	@Override
+	public Node getParentNode(Node node) {
+		STStorageSession session = sessionProvider.get();
+		STPartition partition = this.factory.getPartitionByName(node
+				.getContextId());
+		STNodeEntry parentStNode = session.withPartition(partition)
+				.createCriteria().withUniqueKeyAsString(node.getId())
+				.buildCriteria().andFindUnique(session);
 
-    @Override
-    public <L extends Link> Iterable<L> getUnidirectionalLinksBySource(
-                                                                        Class<L> linkClass,
-                                                                        Node source ) {
-        throw new UnsupportedOperationException();
+		if (parentStNode == null)
+			return null;
+		return convertToSLNode(parentStNode.getUniqueKey()
+				.getParentKeyAsString(), node.getContextId(), parentStNode);
 
-    }
+	}
 
-    @Override
-    public Iterable<Link> getUnidirectionalLinksBySource( Node source ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public <L extends Link> Iterable<L> getUnidirectionalLinksBySource(
+			Class<L> linkClass, Node source) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public <L extends Link> Iterable<L> getUnidirectionalLinksByTarget(
-                                                                        Class<L> linkClass,
-                                                                        Node target ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public Iterable<Link> getUnidirectionalLinksBySource(Node source) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public Iterable<Link> getUnidirectionalLinksByTarget( Node target ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public <L extends Link> Iterable<L> getUnidirectionalLinksByTarget(
+			Class<L> linkClass, Node target) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public <T extends Node> Iterable<T> findNodes( Class<T> clazz,
-                                                   String name,
-                                                   final Context context,
-                                                   Context... aditionalContexts ) {
-        STStorageSession session = sessionProvider.get();
-        Iterable<STNodeEntry> nodes = session.withPartition(
-                                                            factory.getPartitionByName(context.getId())).createCriteria()
-                                             .withNodeEntry(clazz.getName())
-                                             .withProperty(NodeFactory.NAME).equalsTo(name)
-                                             .buildCriteria().andFind(session);
-        Iterable<T> result = IteratorBuilder
-                                            .<T, STNodeEntry>createIteratorBuilder().withConverter(
-                                                                                                   new Converter<T, STNodeEntry>() {
+	@Override
+	public Iterable<Link> getUnidirectionalLinksByTarget(Node target) {
+		throw new UnsupportedOperationException();
 
-                                                                                                       @Override
-                                                                                                       public T convert( STNodeEntry o )
-                                                                                                           throws Exception {
-                                                                                                           return (T)convertToSLNode(o.getUniqueKey()
-                                                                                                                                      .getParentKeyAsString(), context
-                                                                                                                                                                      .getId(), o);
-                                                                                                       }
-                                                                                                   }).withItems(nodes).andBuild();
+	}
 
-        return result;
+	@Override
+	public <T extends Node> Iterable<T> findNodes(Class<T> clazz, String name,
+			final Context context, Context... aditionalContexts) {
+		STStorageSession session = sessionProvider.get();
+		Iterable<STNodeEntry> nodes = session.withPartition(
+				factory.getPartitionByName(context.getId())).createCriteria()
+				.withNodeEntry(clazz.getName()).withProperty(NodeFactory.NAME)
+				.equalsTo(name).buildCriteria().andFind(session);
+		Iterable<T> result = IteratorBuilder
+				.<T, STNodeEntry> createIteratorBuilder().withConverter(
+						new Converter<T, STNodeEntry>() {
 
-    }
+							@Override
+							public T convert(STNodeEntry o) throws Exception {
+								return (T) convertToSLNode(o.getUniqueKey()
+										.getParentKeyAsString(), context
+										.getId(), o);
+							}
+						}).withItems(nodes).andBuild();
 
-    @Override
-    public Iterable<Node> findNodes( String name,
-                                     final Context context,
-                                     Context... aditionalContexts ) {
-        throw new UnsupportedOperationException();
-    }
+		return result;
 
-    @Override
-    public <T extends Node> Iterable<T> findNodes( Class<T> clazz,
-                                                   final Context context,
-                                                   Context... aditionalContexts ) {
-        STStorageSession session = sessionProvider.get();
-        Iterable<STNodeEntry> nodes = session.withPartition(
-                                                            factory.getPartitionByName(context.getId())).findNamed(
-                                                                                                                   clazz.getName());
-        Iterable<T> result = IteratorBuilder
-                                            .<T, STNodeEntry>createIteratorBuilder().withConverter(
-                                                                                                   new Converter<T, STNodeEntry>() {
+	}
 
-                                                                                                       @Override
-                                                                                                       public T convert( STNodeEntry o )
-                                                                                                           throws Exception {
-                                                                                                           return (T)convertToSLNode(o.getUniqueKey()
-                                                                                                                                      .getParentKeyAsString(), context
-                                                                                                                                                                      .getId(), o);
-                                                                                                       }
-                                                                                                   }).withItems(nodes).andBuild();
+	@Override
+	public Iterable<Node> findNodes(String name, final Context context,
+			Context... aditionalContexts) {
+		throw new UnsupportedOperationException();
+	}
 
-        return result;
+	@Override
+	public <T extends Node> Iterable<T> findNodes(Class<T> clazz,
+			final Context context, Context... aditionalContexts) {
+		STStorageSession session = sessionProvider.get();
+		Iterable<STNodeEntry> nodes = session.withPartition(
+				factory.getPartitionByName(context.getId())).findNamed(
+				clazz.getName());
+		Iterable<T> result = IteratorBuilder
+				.<T, STNodeEntry> createIteratorBuilder().withConverter(
+						new Converter<T, STNodeEntry>() {
 
-    }
+							@Override
+							public T convert(STNodeEntry o) throws Exception {
+								return (T) convertToSLNode(o.getUniqueKey()
+										.getParentKeyAsString(), context
+										.getId(), o);
+							}
+						}).withItems(nodes).andBuild();
 
-    @Override
-    public <T extends Node> T findUniqueNode( Class<T> clazz,
-                                              String name,
-                                              Context context,
-                                              Context... aditionalContexts ) {
-        throw new UnsupportedOperationException();
+		return result;
 
-    }
+	}
 
-    @Override
-    public Node findUniqueNode( String name,
-                                Context context,
-                                Context... aditionalContexts ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public <T extends Node> T findUniqueNode(Class<T> clazz, String name,
+			Context context, Context... aditionalContexts) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public <T extends Node> T findUniqueNode( Class<T> clazz,
-                                              Context context,
-                                              Context... aditionalContexts ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public Node findUniqueNode(String name, Context context,
+			Context... aditionalContexts) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
 
-    @Override
-    public <N extends Node> Iterable<N> getLinkedNodes(
-                                                        Class<? extends Link> linkClass,
-                                                        Node node,
-                                                        Class<N> nodeClass,
-                                                        boolean returnSubTypes,
-                                                        LinkDirection linkDirection ) {
-        throw new UnsupportedOperationException();
+	@Override
+	public <T extends Node> T findUniqueNode(Class<T> clazz, Context context,
+			Context... aditionalContexts) {
+		throw new UnsupportedOperationException();
 
-    }
+	}
+
+	@Override
+	public <N extends Node> Iterable<N> getLinkedNodes(
+			Class<? extends Link> linkClass, Node node, Class<N> nodeClass,
+			boolean returnSubTypes, LinkDirection linkDirection) {
+		throw new UnsupportedOperationException();
+
+	}
 
 }

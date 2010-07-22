@@ -48,34 +48,134 @@
  */
 package org.openspotlight.graph;
 
-public class ContextImpl implements Context {
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-    public ContextImpl( String caption, String id, Node rootNode ) {
-        this.caption = caption;
-        this.id = id;
-        this.rootNode = rootNode;
-    }
+import org.openspotlight.common.Pair;
+import org.openspotlight.common.util.Conversion;
 
-    private String      caption;
+import com.google.common.collect.ImmutableSet;
 
-    public final String id;
+public class ContextImpl extends Context {
 
-    public final Node   rootNode;
+	public static final int DEFAULT_CONTEXT_WEIGTH = 1;
 
-    public String getCaption() {
-        return caption;
-    }
+	public static final String WEIGTH_PROPERTY="context_weigth";
+	
+	public ContextImpl(String id, Map<String, Serializable> properties,
+			String caption, int weight) {
+		super();
+		this.id = id;
+		this.properties = properties;
+		this.weightValue = weight;
+		this.caption = caption;
+		removedProperties = new HashSet<String>();
+	}
 
-    public void setCaption( String caption ) {
-        this.caption = caption;
-    }
+	private boolean dirty = false;
 
-    public Node getRootNode() {
-        return rootNode;
-    }
+	private String caption;
 
-    public String getId() {
-        return id;
-    }
+	private final String id;
+
+	private final int initialWeightValue = DEFAULT_CONTEXT_WEIGTH;
+
+	private int weightValue;
+
+	private final Map<String, Serializable> properties;
+
+	private final Set<String> removedProperties;
+
+	public String getCaption() {
+		return caption;
+	}
+
+	public void setCaption(String caption) {
+		dirty = true;
+		this.caption = caption;
+	}
+
+	public void resetDirty() {
+		this.dirty = false;
+		removedProperties.clear();
+	}
+
+	public int getWeightValue() {
+		return weightValue;
+	}
+
+	public void setWeightValue(int weightValue) {
+		this.weightValue = weightValue;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public int getInitialWeightValue() {
+		return initialWeightValue;
+	}
+
+	@Override
+	public Set<Pair<String, Serializable>> getProperties() {
+		ImmutableSet.Builder<Pair<String, Serializable>> builder = ImmutableSet
+				.builder();
+		for (Map.Entry<String, Serializable> e : properties.entrySet()) {
+			builder.add(new Pair<String, Serializable>(e.getKey(),
+					e.getValue(), Pair.PairEqualsMode.K1));
+		}
+		return builder.build();
+	}
+
+	@Override
+	public Iterable<String> getPropertyKeys() {
+		return ImmutableSet.copyOf(properties.keySet());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V extends Serializable> V getPropertyValue(String key) {
+		return (V) properties.get(key);
+	}
+
+	@Override
+	public <V extends Serializable> V getPropertyValue(String key,
+			V defaultValue) {
+		V value = getPropertyValue(key);
+		return value != null ? value : defaultValue;
+	}
+
+	@Override
+	public String getPropertyValueAsString(String key) {
+		Serializable value = getPropertyValue(key);
+		if (value == null)
+			return null;
+		return Conversion.convert(value, String.class);
+	}
+
+	@Override
+	public boolean hasProperty(String key) throws IllegalArgumentException {
+		return properties.containsKey(key);
+	}
+
+	@Override
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	@Override
+	public void removeProperty(String key) {
+		dirty = true;
+		properties.remove(key);
+		removedProperties.add(key);
+	}
+
+	@Override
+	public <V extends Serializable> void setProperty(String key, V value) {
+		dirty = true;
+		properties.put(key, value);
+	}
 
 }

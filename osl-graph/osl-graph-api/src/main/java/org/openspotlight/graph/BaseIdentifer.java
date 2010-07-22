@@ -32,6 +32,6 @@ public interface BaseIdentifer extends PropertyContainer {
      * 
      * @return the element weight.
      */
-    BigInteger getWeightValue();
+    int getWeightValue();
 
 }

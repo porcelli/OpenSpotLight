@@ -48,6 +48,9 @@
  */
 package org.openspotlight.graph;
 
+import java.math.BigInteger;
+
+import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.log.LogableObject;
 
 /**
@@ -86,6 +89,19 @@ import org.openspotlight.log.LogableObject;
  */
 
 public abstract class Node implements Element, Comparable<Node>, LogableObject {
+
+	/**
+	 * The numeric type is used to find node types inherited from some type. To understand its use, first it' necessary to understand how it 
+	 * is created: Each node should extend {@link Node} class, but it is possible to have an hierarchy of node inheritance. One of this nodes
+	 * needs to define a hierarchy. For example, a JavaType node defines an hierarchy wich should have JavaTypeClass, JavaTypeInterface, 
+	 * JavaTypeClassEnum and so on. So, this node JavaType is special and needs to be annotated with {@link DefineHierarchy}. To create this 
+	 * numeric type index, first the node associated with the annotation {@link DefineHierarchy} will be used to create a hash key. After this,
+	 * for each inherited type this numeric type will be incremented. So, it is possible to look for a range of types with this numeric types. 
+	 * Example: find the types inherited for this one for at least two leves.
+	 * 
+	 * @return the numeric type associated with this node class
+	 */
+	public abstract BigInteger getNumericType();
 
     /**
      * Returns the name. <br>
