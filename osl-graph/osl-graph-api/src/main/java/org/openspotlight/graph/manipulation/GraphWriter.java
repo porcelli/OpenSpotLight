@@ -56,55 +56,142 @@ import org.openspotlight.graph.Link;
 import org.openspotlight.graph.Node;
 
 /**
- * Created by User: feu - Date: Jun 29, 2010 - Time: 4:29:33 PM
+ * This interfaces has a list of method that can writes into graph server.
+ * 
+ * @see org.openspotlight.graph.SimpleGraphSession
+ * @see org.openspotlight.graph.FullGraphSession
+ * @author porcelli
+ * @author feuteston
  */
 public interface GraphWriter {
 
     //TODO DO NOT FORGET TO USE THE ARTIFACT_ID DURRING CREATE METHODS
 
-    public void setContextCaption( Context context,
-                                   String caption );
+    /**
+     * Sets the caption of a given context.
+     * 
+     * @param context the context
+     * @param caption the caption
+     */
+    void setContextCaption( Context context,
+                            String caption );
 
-    public void removeContext( Context context );
+    /**
+     * Deletes a context and all information (nodes and its links) inside. <br>
+     * <b>Note</b> that this operation cannot be undone.
+     * 
+     * @param context the context
+     */
+    void removeContext( Context context );
 
-    public <T extends Node> T createNode( Context context,
-                                          Class<T> clazz,
-                                          String name );
+    /**
+     * Create a new node, based on the parameter node type, inside the given context.<br>
+     * <b>Note</b> that if node already exists inside context its not duplicated.
+     * 
+     * @param <T> node type
+     * @param context the target context
+     * @param clazz the node type to be created
+     * @param name the node name
+     * @return the created node
+     */
+    <T extends Node> T createNode( Context context,
+                                   Class<T> clazz,
+                                   String name );
 
-    public <T extends Node> T createNode( Node parent,
-                                          Class<T> clazz,
-                                          String name );
+    /**
+     * Add a new child node for the parametered parent of the specified type inside the parents context. <br>
+     * <b>Note</b> that if child node already exists its not duplicated.
+     * 
+     * @param <T> node type
+     * @param parent the parent node
+     * @param clazz the node type to be created
+     * @param name the node name
+     * @return the created node
+     */
+    <T extends Node> T createNode( Node parent,
+                                   Class<T> clazz,
+                                   String name );
 
-    public <T extends Node> T createNode( Node parent,
-                                          Class<T> clazz,
-                                          String name,
-                                          Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                          Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion );
+    <T extends Node> T createNode( Context context,
+                                   Class<T> clazz,
+                                   String name,
+                                   Collection<Class<? extends Link>> linkTypesForLinkDeletion,
+                                   Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion );
 
-    public <T extends Node> T createNode( Context context,
-                                          Class<T> clazz,
-                                          String name,
-                                          Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                          Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion );
+    <T extends Node> T createNode( Node parent,
+                                   Class<T> clazz,
+                                   String name,
+                                   Collection<Class<? extends Link>> linkTypesForLinkDeletion,
+                                   Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion );
 
-    public void copyNodeHierarchy( Node node,
-                                   Context target );
+    /**
+     * Copies all the node hierarchy (parents and children) to the target context.<br>
+     * <b>Note</b> that this operation cannot be undone.
+     * 
+     * @param node the node
+     * @param target the target context
+     */
+    void copyNodeHierarchy( Node node,
+                            Context target );
 
-    public void moveNodeHierarchy( Node node,
-                                   Context target );
+    /**
+     * Moves (copy and remove) all the node hierarchy (parents and children) to the target context. <br>
+     * <b>Note</b> that this operation cannot be undone.
+     * 
+     * @param node the node
+     * @param target the target context
+     */
+    void moveNodeHierarchy( Node node,
+                            Context target );
 
-    public void removeNode( Node node );
+    /**
+     * Deletes the node and all its children and any link that its associated. <br>
+     * <b>Note</b> that this operation cannot be undone.
+     * 
+     * @param node the node to be removed
+     */
+    void removeNode( Node node );
 
-    public <L extends Link> L createLink( Class<L> linkClass,
-                                          Node source,
-                                          Node target );
+    /**
+     * Creates an unidirectional link between the source and target nodes with the specified link type.
+     * <p>
+     * If the link type is marked with {@link org.openspotlight.graph.annotation.LinkAutoBidirectional} annotation and the link
+     * already exists between target and source (target -> source), its automatically converted to a bidirectional link.
+     * <p>
+     * <b>Note</b> that if link already exists its not duplicated.
+     * 
+     * @param <L> link type
+     * @param linkClass the link type to be created
+     * @param source the source node
+     * @param target the target node
+     * @return the created link
+     */
+    <L extends Link> L createLink( Class<L> linkClass,
+                                   Node source,
+                                   Node target );
 
-    public <L extends Link> L createBidirectionalLink( Class<L> linkClass,
-                                                       Node source,
-                                                       Node target );
+    /**
+     * Creates a bidirectional link between nodes with the specified link type. <br>
+     * <b>Note</b> that if link already exists its not duplicated.
+     * 
+     * @param <L> link type
+     * @param linkClass the link type to be created
+     * @param nodea the node
+     * @param nodeb the node
+     * @return the created link
+     */
+    <L extends Link> L createBidirectionalLink( Class<L> linkClass,
+                                                Node nodea,
+                                                Node nodeb );
 
-    public void removeLink( Link link );
+    /**
+     * Deletes the link<br>
+     * <b>Note</b> that this operation cannot be undone.
+     * 
+     * @param link the link
+     */
+    void removeLink( Link link );
 
-    public void save();
+    void save();
 
 }

@@ -69,8 +69,11 @@ import org.openspotlight.log.LogableObject;
  * The promotion of the node types are automatically handled by OpenSpotLight Graph engine.
  * </p>
  * <p>
- * Nodes can be created as transients by {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientNode}
- * method or as permanent by {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Node, Class, String)} or
+ * Nodes can be created as transients by
+ * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientNode(Context, Class, String)} or
+ * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientNode(Node, Class, String)} methods or as
+ * permanent by {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Context, Class, String)},
+ * {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Context, Class, String, java.util.Collection, java.util.Collection)}, {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Node, Class, String)} or
  * {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Node, Class, String, java.util.Collection, java.util.Collection)}
  * methods wich are the most common use.
  * </p>

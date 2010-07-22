@@ -48,7 +48,6 @@
  */
 package org.openspotlight.graph;
 
-
 /**
  * The Link is the way you correlate informations ({@link Node} instances) in OpenSpotLight Graph. Any relationship between nodes
  * are materialized by a creation of a link. <br>
