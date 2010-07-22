@@ -48,21 +48,19 @@
  */
 package org.openspotlight.graph.manipulation;
 
+import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Link;
 import org.openspotlight.graph.Node;
 
-/**
- * The Interface SLSimpleGraphSession. All methods in this interface throw a
- * {@link org.openspotlight.graph.exception.SLGraphSessionException} if any problem ocurr on persistence level. Any security
- * violation throws {@link org.openspotlight.security.SLInvalidCredentialException}.
- * 
- * @author Vitor Hugo Chagas
- */
 public interface GraphTransientWriter {
 
     public <T extends Node> T createTransientNode( Node parent,
                                                      Class<T> clazz,
                                                      String name );
+
+    public <T extends Node> T createTransientNode( Context context,
+                                                   Class<T> clazz,
+                                                   String name );
 
     public <L extends Link> L createTransientLink( Class<L> linkClass,
                                                      Node source,

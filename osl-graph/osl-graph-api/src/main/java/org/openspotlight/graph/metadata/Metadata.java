@@ -112,6 +112,7 @@ public interface Metadata {
     /**
      * Returns an iterable of all source meta node types registered into metadata context of a given meta link type.
      * 
+     * @param metaLinkType the meta link type
      * @return all registered metadata source node types
      */
     public Iterable<MetaNodeType> getSourceMetaNodeTypes( MetaLinkType metaLinkType );
@@ -119,6 +120,7 @@ public interface Metadata {
     /**
      * Returns an iterable of all target meta node types registered into metadata context of a given meta link type.
      * 
+     * @param metaLinkType the meta link type
      * @return all registered metadata source node types
      */
     public Iterable<MetaNodeType> getTargetMetaNodeTypes( MetaLinkType metaLinkType );

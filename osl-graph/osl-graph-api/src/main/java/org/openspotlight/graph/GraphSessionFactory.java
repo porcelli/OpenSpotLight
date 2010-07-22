@@ -77,6 +77,7 @@ public interface GraphSessionFactory {
     /**
      * Opens a full graph session and based on artifactId feeds the cache.
      * 
+     * @param artifactId artifactId
      * @return the full session
      */
     public FullGraphSession openFull( String artifactId );

@@ -48,24 +48,99 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.graph.exception.GraphRuntimeException;
+
 /**
- * The Interface SLQueryApi.
+ * This exception class represents any kind of sysntax error on queries - using api or text.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
  */
-public interface SLQueryApi extends SLQuery, SLSelectFacade {
+public class InvalidQuerySyntaxException extends GraphRuntimeException {
+
+    private static final long serialVersionUID = 400L;
+
+    private String            errorCode        = null;
+    private int               lineNumber;
+    private int               column;
+    private int               offset;
 
     /**
-     * Gets the collator strength.
-     * 
-     * @return the collator strength
+     * @see java.lang.Exception#Exception(String message)
      */
-    public int getCollatorStrength();
+    public InvalidQuerySyntaxException(
+                                          final String message ) {
+        super(message);
+    }
 
     /**
-     * Sets the collator strength.
-     * 
-     * @param collatorStrength the new collator strength
+     * @see java.lang.Exception#Exception(String message, Throwable cause)
      */
-    public void setCollatorStrength( int collatorStrength );
+    public InvalidQuerySyntaxException(
+                                          final String message, final Throwable cause ) {
+        super(message);
+    }
+
+    /**
+     * @see java.lang.Exception#Exception(Throwable cause)
+     */
+    public InvalidQuerySyntaxException(
+                                          final Throwable cause ) {
+        super(cause);
+    }
+
+    /**
+     * SLQueryLanguageParserException constructor.
+     * 
+     * @param errorCode error code
+     * @param message message
+     * @param lineNumber line number
+     * @param column column
+     * @param offset offset
+     * @param cause exception cause
+     */
+    public InvalidQuerySyntaxException(
+                                          String errorCode, String message, int lineNumber, int column, int offset,
+                                          Throwable cause ) {
+        super(message, cause);
+        this.errorCode = errorCode;
+        this.lineNumber = lineNumber;
+        this.column = column;
+        this.offset = offset;
+    }
+
+    public String getMessage() {
+        if (null == errorCode) {
+            return super.getMessage();
+        }
+        return "[" + errorCode + "] " + super.getMessage();
+    }
+
+    /**
+     * getter for error code
+     */
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    /**
+     * getter for line number
+     */
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    /**
+     * getter for column position
+     */
+    public int getColumn() {
+        return column;
+    }
+
+    /**
+     * getter for char offset
+     */
+    public int getOffset() {
+        return offset;
+    }
+
 }

@@ -46,28 +46,26 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.exception;
+package org.openspotlight.graph.query;
 
 /**
- * Thrown when a {@link org.openspotlight.graph.metadata.MetaLinkType} is not found for a specific link type name.<br>
- * When throwed the graph has a seriosly state damage.
+ * The Interface SLQueryApi.
  * 
- * @author porcelli
- * @author feuteston
+ * @author Vitor Hugo Chagas
  */
-public class MetaLinkTypeNotFoundException extends GraphRuntimeException {
-
-    private static final long serialVersionUID = -7949842485637864658L;
+public interface QueryApi extends SLQuery, SLSelectFacade {
 
     /**
-     * Constructs a new MetaLinkTypeNotFoundException with the given link type and its root cause.
+     * Gets the collator strength.
      * 
-     * @param metaLinkTypeName the meta link type name
-     * @param cause the cause
+     * @return the collator strength
      */
-    public MetaLinkTypeNotFoundException(
-                                            String metaLinkTypeName, Throwable cause ) {
-        super("LinkType " + metaLinkTypeName + " not found.", cause);
-    }
+    public int getCollatorStrength();
 
+    /**
+     * Sets the collator strength.
+     * 
+     * @param collatorStrength the new collator strength
+     */
+    public void setCollatorStrength( int collatorStrength );
 }

@@ -63,9 +63,9 @@ import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
 import org.openspotlight.graph.metadata.Metadata;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQueryApi;
-import org.openspotlight.graph.query.SLQueryText;
+import org.openspotlight.graph.query.InvalidQuerySyntaxException;
+import org.openspotlight.graph.query.QueryApi;
+import org.openspotlight.graph.query.QueryText;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
@@ -90,13 +90,13 @@ public class GraphReaderImpl implements GraphReader {
     private final GraphLocation              location;
 
     @Override
-    public SLQueryApi createQueryApi() {
+    public QueryApi createQueryApi() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public SLQueryText createQueryText( String slqlInput )
-            throws SLInvalidQuerySyntaxException {
+    public QueryText createQueryText( String slqlInput )
+            throws InvalidQuerySyntaxException {
         throw new UnsupportedOperationException();
     }
 

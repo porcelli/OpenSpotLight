@@ -82,6 +82,11 @@ public interface SimpleGraphSession {
      */
     GraphTransientWriter toTransient();
 
+    /**
+     * Flush the changed properties of the given node into graph server.
+     * 
+     * @param node the node
+     */
     void flushChangedProperties( Node node );
 
     /**

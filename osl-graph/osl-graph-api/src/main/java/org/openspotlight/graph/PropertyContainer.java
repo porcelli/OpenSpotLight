@@ -25,6 +25,7 @@ public interface PropertyContainer {
     /**
      * Sets the property value for the given key. Null is not an accepted property value.
      * 
+     * @param <V> any serializable type
      * @param key the property key
      * @param value the property value
      * @throws IllegalArgumentException if value is null
@@ -59,6 +60,7 @@ public interface PropertyContainer {
     /**
      * Returns the property value associated with the given key or null if property not found.
      * 
+     * @param <V> any serializable type
      * @param key the property key
      * @return the property value or null if property not found
      */
@@ -67,6 +69,7 @@ public interface PropertyContainer {
     /**
      * Returns the property value associated with the given key, or a default value.
      * 
+     * @param <V> any serializable type
      * @param key the property key
      * @param defaultValue the default value that will be returned if no property value was associated with the given key
      * @return the property value associated with the given key or the default value.

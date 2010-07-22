@@ -62,68 +62,30 @@ public interface GraphWriter {
 
     //TODO DO NOT FORGET TO USE THE ARTIFACT_ID DURRING CREATE METHODS
 
-    /**
-     * Adds the link.
-     * 
-     * @param linkClass the link class
-     * @param source the source
-     * @param target the target
-     * @return the l
-     */
-    public <L extends Link> L createLink( Class<L> linkClass,
-                                            Node source,
-                                            Node target );
-
-    /**
-     * Adds the link.
-     * 
-     * @param linkClass the link class
-     * @param source the source
-     * @param target the target
-     * @return the l
-     */
-    public <L extends Link> L createBidirectionalLink( Class<L> linkClass,
-                                                         Node source,
-                                                         Node target );
-
-    /**
-     * Save.
-     */
-    public void save();
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @return the t
-     */
-    public <T extends Node> T createNode( Node parent,
-                                            Class<T> clazz,
-                                             String name );
-
-    /**
-     * Adds the node.
-     * 
-     * @param clazz the clazz
-     * @param name the name
-     * @param linkTypesForLinkDeletion the link types for link deletion
-     * @param linkTypesForLinkedNodeDeletion the link types for linked node deletion
-     * @return the t
-     */
-    public <T extends Node> T createNode( Node parent,
-                                            Class<T> clazz,
-                                             String name,
-                                             Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                             Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion );
-
-    /**
-     * Sets the caption.
-     * 
-     * @param caption the caption
-     */
     public void setContextCaption( Context context,
                                    String caption );
+
+    public void removeContext( Context context );
+
+    public <T extends Node> T createNode( Context context,
+                                          Class<T> clazz,
+                                          String name );
+
+    public <T extends Node> T createNode( Node parent,
+                                          Class<T> clazz,
+                                          String name );
+
+    public <T extends Node> T createNode( Node parent,
+                                          Class<T> clazz,
+                                          String name,
+                                          Collection<Class<? extends Link>> linkTypesForLinkDeletion,
+                                          Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion );
+
+    public <T extends Node> T createNode( Context context,
+                                          Class<T> clazz,
+                                          String name,
+                                          Collection<Class<? extends Link>> linkTypesForLinkDeletion,
+                                          Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion );
 
     public void copyNodeHierarchy( Node node,
                                    Context target );
@@ -133,8 +95,16 @@ public interface GraphWriter {
 
     public void removeNode( Node node );
 
+    public <L extends Link> L createLink( Class<L> linkClass,
+                                          Node source,
+                                          Node target );
+
+    public <L extends Link> L createBidirectionalLink( Class<L> linkClass,
+                                                       Node source,
+                                                       Node target );
+
     public void removeLink( Link link );
 
-    public void removeContext( Context context );
+    public void save();
 
 }
