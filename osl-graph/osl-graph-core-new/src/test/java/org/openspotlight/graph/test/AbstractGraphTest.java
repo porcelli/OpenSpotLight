@@ -134,8 +134,7 @@ public abstract class AbstractGraphTest {
 		String typeName = "typeName";
 		boolean publicClass = true;
 
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -147,11 +146,11 @@ public abstract class AbstractGraphTest {
 		fullGraphSession.toServer().flush();
 
 		Iterable<JavaType> oneNode1 = simpleFromLocation.findNodesByName(
-				JavaType.class, nodeName, true,context1);
+				JavaType.class, nodeName, true, context1);
 		Iterable<JavaType> oneNode3 = simpleFromLocation.findNodesByName(
-				JavaType.class, nodeName, true,context1);
+				JavaType.class, nodeName, true, context1);
 		Iterable<JavaType> oneNode4 = simpleFromLocation.findNodesByName(
-				JavaType.class, nodeName,true,context1);
+				JavaType.class, nodeName, true, context1);
 
 		Iterator<JavaType> itOneNode1 = oneNode1.iterator();
 		Iterator<JavaType> itOneNode3 = oneNode3.iterator();
@@ -195,15 +194,14 @@ public abstract class AbstractGraphTest {
 	@Test
 	public void shouldNotFindInvalidNode() throws Exception {
 		String invalidNodeName = "invalidNodeName";
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
-		Iterable<Node> empty1 = simpleFromLocation.findNodesByName(invalidNodeName,
-				context1);
+		Iterable<Node> empty1 = simpleFromLocation.findNodesByName(
+				invalidNodeName, context1);
 		Iterable<JavaType> empty3 = simpleFromLocation.findNodesByName(
 				JavaType.class, invalidNodeName, true, context1);
 		Iterable<JavaType> empty4 = simpleFromLocation.findNodesByName(
-				JavaType.class, invalidNodeName,true, context1);
+				JavaType.class, invalidNodeName, true, context1);
 		Iterator<Node> emptyIt1 = empty1.iterator();
 		Iterator<JavaType> emptyIt3 = empty3.iterator();
 		Iterator<JavaType> emptyIt4 = empty4.iterator();
@@ -224,8 +222,7 @@ public abstract class AbstractGraphTest {
 		String typeName = "typeName";
 		boolean publicClass = true;
 
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -254,8 +251,8 @@ public abstract class AbstractGraphTest {
 
 		assertThat(simpleFromLocation.getContext(sameNode1), is(context1));
 
-		Iterable<Node> empty1 = simpleFromLocation.findNodesByName(invalidNodeName,
-				context1);
+		Iterable<Node> empty1 = simpleFromLocation.findNodesByName(
+				invalidNodeName, context1);
 		Iterator<Node> emptyIt1 = empty1.iterator();
 		assertThat(emptyIt1.hasNext(), is(false));
 
@@ -263,8 +260,7 @@ public abstract class AbstractGraphTest {
 
 	@Test
 	public void shouldaddAnHierarchy() throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -318,8 +314,9 @@ public abstract class AbstractGraphTest {
 		assertThat(children2AsSet.contains(child3Node), is(true));
 		assertThat(children2AsSet.size(), is(1));
 
-		Iterable<JavaTypeClass> rootNodes2 = simpleFromLocation.findNodesByName(
-				JavaTypeClass.class, "rootClass2", true, context1);
+		Iterable<JavaTypeClass> rootNodes2 = simpleFromLocation
+				.findNodesByName(JavaTypeClass.class, "rootClass2", true,
+						context1);
 
 		Iterator<JavaTypeClass> rootNodes2It = rootNodes2.iterator();
 
@@ -342,12 +339,9 @@ public abstract class AbstractGraphTest {
 
 	}
 
-	
-
 	@Test
 	public void shouldChangeNodeTypeWhenUsingValidNodeType() throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -356,13 +350,13 @@ public abstract class AbstractGraphTest {
 				rootClass1);
 		writer.flush();
 
-		JavaType rootClass2Node = writer.addNode(context1,
-				JavaTypeClass.class, rootClass1);
+		JavaType rootClass2Node = writer.addNode(context1, JavaTypeClass.class,
+				rootClass1);
 		writer.flush();
 		assertThat(rootClass1Node, is(rootClass2Node));
 
-		JavaType foundNode1 = SLCollections.firstOf(simpleFromLocation.findNodesByName(JavaType.class,
-				rootClass1, true, context1));
+		JavaType foundNode1 = SLCollections.firstOf(simpleFromLocation
+				.findNodesByName(JavaType.class, rootClass1, true, context1));
 		assertThat(foundNode1, is(rootClass2Node));
 		assertThat(foundNode1 instanceof JavaTypeClass, is(true));
 		JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
@@ -376,8 +370,7 @@ public abstract class AbstractGraphTest {
 	@Test(expected = ClassCastException.class)
 	public void shouldNotChangeNodeTypeWhenUsingInvalidNodeType()
 			throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -390,8 +383,7 @@ public abstract class AbstractGraphTest {
 
 	@Test
 	public void shouldRemoveNode() throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -402,8 +394,8 @@ public abstract class AbstractGraphTest {
 		writer.removeNode(rootClassNode1);
 
 		writer.flush();
-		Iterable<JavaType> empty = simpleFromLocation.findNodesByName(JavaType.class,
-				context1);
+		Iterable<JavaType> empty = simpleFromLocation.findNodesByName(
+				JavaType.class, null, true, context1);
 
 		assertThat(empty.iterator().hasNext(), is(false));
 	}
@@ -411,8 +403,7 @@ public abstract class AbstractGraphTest {
 	@Test
 	public void shouldRemoveChildNode() throws Exception {
 
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -423,15 +414,15 @@ public abstract class AbstractGraphTest {
 				JavaType.class, rootClass1);
 		writer.flush();
 		Set<JavaType> nodes = iterableToSet(simpleFromLocation.findNodesByName(
-				JavaType.class, context1));
+				JavaType.class, null, true, context1));
 
 		assertThat(nodes.size(), is(2));
 		assertThat(nodes.contains(rootClassNode1), is(true));
 		assertThat(nodes.contains(rootClassNode2), is(true));
 		writer.removeNode(rootClassNode2);
 		writer.flush();
-		Set<JavaType> nodes2 = iterableToSet(simpleFromLocation.findNodesByName(
-				JavaType.class, context1));
+		Set<JavaType> nodes2 = iterableToSet(simpleFromLocation
+				.findNodesByName(JavaType.class, null, true, context1));
 
 		assertThat(nodes2.size(), is(1));
 		assertThat(nodes2.contains(rootClassNode1), is(true));
@@ -442,8 +433,7 @@ public abstract class AbstractGraphTest {
 	@Test
 	public void shouldRemoveParentAndChildNode() throws Exception {
 
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -454,15 +444,15 @@ public abstract class AbstractGraphTest {
 				JavaType.class, rootClass1);
 		writer.flush();
 		Set<JavaType> nodes = iterableToSet(simpleFromLocation.findNodesByName(
-				JavaType.class, context1));
+				JavaType.class, null, true, context1));
 
 		assertThat(nodes.size(), is(2));
 		assertThat(nodes.contains(rootClassNode1), is(true));
 		assertThat(nodes.contains(rootClassNode2), is(true));
 		writer.removeNode(rootClassNode1);
 		writer.flush();
-		Set<JavaType> nodes2 = iterableToSet(simpleFromLocation.findNodesByName(
-				JavaType.class, context1));
+		Set<JavaType> nodes2 = iterableToSet(simpleFromLocation
+				.findNodesByName(JavaType.class, null, true, context1));
 
 		assertThat(nodes2.size(), is(0));
 	}
@@ -476,8 +466,7 @@ public abstract class AbstractGraphTest {
 		boolean secondPublicClass = !firstPublicClass;
 		String secondTypeName = "secondTypeName";
 
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -488,8 +477,8 @@ public abstract class AbstractGraphTest {
 		rootClassNode1.setPublicClass(firstPublicClass);
 		rootClassNode1.setTypeName(firstTypeName);
 		writer.flush();
-		JavaType firstFound = simpleFromLocation.findUniqueNode(JavaType.class,
-				context1);
+		JavaType firstFound = SLCollections.firstOf(simpleFromLocation
+				.findNodesByName(JavaType.class, null, true, context1));
 		assertThat(firstFound.getCaption(), is(firstCaption));
 		assertThat(firstFound.getTypeName(), is(firstTypeName));
 		assertThat(firstFound.isPublicClass(), is(firstPublicClass));
@@ -498,8 +487,8 @@ public abstract class AbstractGraphTest {
 		firstFound.setTypeName(secondTypeName);
 		simpleGraphSession.flushChangedProperties(firstFound);
 
-		JavaType secondFound = simpleFromLocation.findUniqueNode(
-				JavaType.class, true, context1);
+		JavaType secondFound = SLCollections.firstOf(simpleFromLocation
+				.findNodesByName(JavaType.class, null, true, context1));
 		assertThat(secondFound.getCaption(), is(secondCaption));
 		assertThat(secondFound.getTypeName(), is(secondTypeName));
 		assertThat(secondFound.isPublicClass(), is(secondPublicClass));
@@ -508,8 +497,7 @@ public abstract class AbstractGraphTest {
 
 	@Test
 	public void shouldHaveSameNodesOnDifferentContexts() throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		Context context2 = simpleFromLocation.getContext(context2());
 		GraphWriter writer = fullGraphSession.toServer();
@@ -521,8 +509,8 @@ public abstract class AbstractGraphTest {
 				rootClass1);
 		writer.flush();
 
-		Set<JavaType> result = iterableToSet(simpleFromLocation.findNodesByName(
-				JavaType.class, context1, context2));
+		Set<JavaType> result = iterableToSet(simpleFromLocation
+				.findNodesByName(JavaType.class, null, true, context1, context2));
 		assertThat(result.size(), is(2));
 		assertThat(result.contains(rootClass1Node), is(true));
 		assertThat(result.contains(rootClass2Node), is(true));
@@ -533,8 +521,7 @@ public abstract class AbstractGraphTest {
 	@Test
 	public void shouldHaveDifferentWeightsForDifferentNodeTypes()
 			throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		Context context2 = simpleFromLocation.getContext(context2());
 		GraphWriter writer = fullGraphSession.toServer();
@@ -542,18 +529,17 @@ public abstract class AbstractGraphTest {
 		String rootClass1 = "rootClass1";
 		JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
 				rootClass1);
-		JavaMember rootClass2Node = writer.addNode(context2,
-				JavaMember.class, rootClass1);
+		JavaMember rootClass2Node = writer.addNode(context2, JavaMember.class,
+				rootClass1);
 		writer.flush();
-		assertThat(rootClass1Node.getWeightValue().equals(
-				rootClass2Node.getWeightValue()), is(false));
+		assertThat(rootClass1Node.getNumericType().equals(
+				rootClass2Node.getNumericType()), is(false));
 
 	}
 
 	@Test
 	public void shouldHaveBiggerHeightsForInheritedTypes() throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		Context context2 = simpleFromLocation.getContext(context2());
 		GraphWriter writer = fullGraphSession.toServer();
@@ -564,16 +550,15 @@ public abstract class AbstractGraphTest {
 		JavaTypeClass rootClass2Node = writer.addNode(context2,
 				JavaTypeClass.class, rootClass1);
 		writer.flush();
-		assertThat(rootClass1Node.getWeightValue().equals(
-				rootClass2Node.getWeightValue()), is(false));
-		assertThat(rootClass1Node.getWeightValue().compareTo(
-				rootClass2Node.getWeightValue()) < 0, is(true));
+		assertThat(rootClass1Node.getNumericType().equals(
+				rootClass2Node.getNumericType()), is(false));
+		assertThat(rootClass1Node.getNumericType().compareTo(
+				rootClass2Node.getNumericType()) < 0, is(true));
 	}
 
 	public void shouldaddAndRetrieveUnidirectionalLinksOnSameContext()
 			throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 		String rootClass1 = "rootClass1";
@@ -585,10 +570,10 @@ public abstract class AbstractGraphTest {
 				rootClass2);
 		JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
 				rootClass3);
-		TypeExtends link1 = writer.addLink(TypeExtends.class,
-				rootClass1Node, rootClass2Node);
-		TypeExtends link2 = writer.addLink(TypeExtends.class,
-				rootClass1Node, rootClass3Node);
+		TypeExtends link1 = writer.addLink(TypeExtends.class, rootClass1Node,
+				rootClass2Node);
+		TypeExtends link2 = writer.addLink(TypeExtends.class, rootClass1Node,
+				rootClass3Node);
 
 		writer.flush();
 
@@ -618,8 +603,7 @@ public abstract class AbstractGraphTest {
 
 	public void shouldaddAndRetrieveBidirectionalLinksOnSameContext()
 			throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 		String rootClass1 = "rootClass1";
@@ -672,8 +656,7 @@ public abstract class AbstractGraphTest {
 	public void shouldaddAndRetrieveUniAndBidirectionalLinksOnSameContext()
 			throws Exception {
 
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		GraphWriter writer = fullGraphSession.toServer();
 
@@ -686,29 +669,29 @@ public abstract class AbstractGraphTest {
 				rootClass2);
 		JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
 				rootClass3);
-		TypeExtends link1 = writer.addLink(TypeExtends.class,
-				rootClass1Node, rootClass2Node);
-		TypeExtends link2 = writer.addLink(TypeExtends.class,
-				rootClass1Node, rootClass3Node);
+		TypeExtends link1 = writer.addLink(TypeExtends.class, rootClass1Node,
+				rootClass2Node);
+		TypeExtends link2 = writer.addLink(TypeExtends.class, rootClass1Node,
+				rootClass3Node);
 
 		String rootClass1bid = "rootClass1bid";
 		String rootClass2bid = "rootClass2bid";
 		String rootClass3bid = "rootClass3bid";
-		JavaType rootClass1BidNode = writer.addNode(context1,
-				JavaType.class, rootClass1bid);
-		JavaType rootClass2BidNode = writer.addNode(context1,
-				JavaType.class, rootClass2bid);
-		JavaType rootClass3BidNode = writer.addNode(context1,
-				JavaType.class, rootClass3bid);
-		TypeExtends link1Bid = writer.addBidirectionalLink(
-				TypeExtends.class, rootClass1BidNode, rootClass2BidNode);
-		TypeExtends link2Bid = writer.addBidirectionalLink(
-				TypeExtends.class, rootClass1BidNode, rootClass3BidNode);
+		JavaType rootClass1BidNode = writer.addNode(context1, JavaType.class,
+				rootClass1bid);
+		JavaType rootClass2BidNode = writer.addNode(context1, JavaType.class,
+				rootClass2bid);
+		JavaType rootClass3BidNode = writer.addNode(context1, JavaType.class,
+				rootClass3bid);
+		TypeExtends link1Bid = writer.addBidirectionalLink(TypeExtends.class,
+				rootClass1BidNode, rootClass2BidNode);
+		TypeExtends link2Bid = writer.addBidirectionalLink(TypeExtends.class,
+				rootClass1BidNode, rootClass3BidNode);
 
-		TypeExtends link3Bid = writer.addBidirectionalLink(
-				TypeExtends.class, rootClass2BidNode, rootClass1BidNode);
-		TypeExtends link4Bid = writer.addBidirectionalLink(
-				TypeExtends.class, rootClass3BidNode, rootClass1BidNode);
+		TypeExtends link3Bid = writer.addBidirectionalLink(TypeExtends.class,
+				rootClass2BidNode, rootClass1BidNode);
+		TypeExtends link4Bid = writer.addBidirectionalLink(TypeExtends.class,
+				rootClass3BidNode, rootClass1BidNode);
 
 		writer.flush();
 
@@ -758,8 +741,7 @@ public abstract class AbstractGraphTest {
 
 	public void shouldaddAndRetrieveUnidirectionalLinksOnDiferentContext()
 			throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		Context context2 = simpleFromLocation.getContext(context2());
 		GraphWriter writer = fullGraphSession.toServer();
@@ -772,10 +754,10 @@ public abstract class AbstractGraphTest {
 				rootClass2);
 		JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
 				rootClass3);
-		TypeExtends link1 = writer.addLink(TypeExtends.class,
-				rootClass1Node, rootClass2Node);
-		TypeExtends link2 = writer.addLink(TypeExtends.class,
-				rootClass1Node, rootClass3Node);
+		TypeExtends link1 = writer.addLink(TypeExtends.class, rootClass1Node,
+				rootClass2Node);
+		TypeExtends link2 = writer.addLink(TypeExtends.class, rootClass1Node,
+				rootClass3Node);
 
 		writer.flush();
 
@@ -805,8 +787,7 @@ public abstract class AbstractGraphTest {
 
 	public void shouldaddAndRetrieveBidirectionalLinksOnDiferentContext()
 			throws Exception {
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		Context context2 = simpleFromLocation.getContext(context2());
 		GraphWriter writer = fullGraphSession.toServer();
@@ -860,8 +841,7 @@ public abstract class AbstractGraphTest {
 	public void shouldaddAndRetrieveUniAndBidirectionalLinksOnDiferentContext()
 			throws Exception {
 
-		GraphReader simpleFromLocation = simpleGraphSession
-				.from(location());
+		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
 		Context context2 = simpleFromLocation.getContext(context2());
 		GraphWriter writer = fullGraphSession.toServer();
@@ -875,29 +855,29 @@ public abstract class AbstractGraphTest {
 				rootClass2);
 		JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
 				rootClass3);
-		TypeExtends link1 = writer.addLink(TypeExtends.class,
-				rootClass1Node, rootClass2Node);
-		TypeExtends link2 = writer.addLink(TypeExtends.class,
-				rootClass1Node, rootClass3Node);
+		TypeExtends link1 = writer.addLink(TypeExtends.class, rootClass1Node,
+				rootClass2Node);
+		TypeExtends link2 = writer.addLink(TypeExtends.class, rootClass1Node,
+				rootClass3Node);
 
 		String rootClass1bid = "rootClass1bid";
 		String rootClass2bid = "rootClass2bid";
 		String rootClass3bid = "rootClass3bid";
-		JavaType rootClass1BidNode = writer.addNode(context1,
-				JavaType.class, rootClass1bid);
-		JavaType rootClass2BidNode = writer.addNode(context1,
-				JavaType.class, rootClass2bid);
-		JavaType rootClass3BidNode = writer.addNode(context1,
-				JavaType.class, rootClass3bid);
-		TypeExtends link1Bid = writer.addBidirectionalLink(
-				TypeExtends.class, rootClass1BidNode, rootClass2BidNode);
-		TypeExtends link2Bid = writer.addBidirectionalLink(
-				TypeExtends.class, rootClass1BidNode, rootClass3BidNode);
+		JavaType rootClass1BidNode = writer.addNode(context1, JavaType.class,
+				rootClass1bid);
+		JavaType rootClass2BidNode = writer.addNode(context1, JavaType.class,
+				rootClass2bid);
+		JavaType rootClass3BidNode = writer.addNode(context1, JavaType.class,
+				rootClass3bid);
+		TypeExtends link1Bid = writer.addBidirectionalLink(TypeExtends.class,
+				rootClass1BidNode, rootClass2BidNode);
+		TypeExtends link2Bid = writer.addBidirectionalLink(TypeExtends.class,
+				rootClass1BidNode, rootClass3BidNode);
 
-		TypeExtends link3Bid = writer.addBidirectionalLink(
-				TypeExtends.class, rootClass2BidNode, rootClass1BidNode);
-		TypeExtends link4Bid = writer.addBidirectionalLink(
-				TypeExtends.class, rootClass3BidNode, rootClass1BidNode);
+		TypeExtends link3Bid = writer.addBidirectionalLink(TypeExtends.class,
+				rootClass2BidNode, rootClass1BidNode);
+		TypeExtends link4Bid = writer.addBidirectionalLink(TypeExtends.class,
+				rootClass3BidNode, rootClass1BidNode);
 
 		writer.flush();
 
