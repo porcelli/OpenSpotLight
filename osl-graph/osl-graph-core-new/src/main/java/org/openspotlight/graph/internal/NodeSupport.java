@@ -78,6 +78,7 @@ import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Element;
 import org.openspotlight.graph.Link;
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.PropertyContainer;
 import org.openspotlight.graph.TreeLineReference;
 import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.graph.annotation.InitialWeight;
@@ -194,7 +195,8 @@ public class NodeSupport {
 			savedClass = Conversion.convert(propertyValues.get(CORRECT_CLASS),
 					Class.class);
 		}
-		BigInteger savedClassNumericType = savedClass!=null?findNumericType(savedClass):null;
+		BigInteger savedClassNumericType = savedClass != null ? findNumericType(savedClass)
+				: null;
 		BigInteger proposedClassNumericType = findNumericType(clazz);
 		Class<? extends Node> classToUse = savedClassNumericType != null
 				&& savedClassNumericType.compareTo(proposedClassNumericType) > 0 ? savedClass
@@ -524,8 +526,7 @@ public class NodeSupport {
 
 			Class<?> declarringClass = method.getDeclaringClass();
 			boolean methodFromSuperClasses = declarringClass.equals(Node.class)
-					|| declarringClass.equals(Element.class)
-					|| declarringClass.equals(NodeMetadata.class)
+					|| declarringClass.isInterface()
 					|| declarringClass.equals(Object.class);
 			String methodName = method.getName();
 			if (methodFromSuperClasses
