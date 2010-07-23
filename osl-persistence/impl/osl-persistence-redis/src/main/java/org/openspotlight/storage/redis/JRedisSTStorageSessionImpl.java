@@ -206,6 +206,7 @@ public class JRedisSTStorageSessionImpl extends
     private static final CustomizedFormat SET_WITH_ALL_DEPENDENT_KEYS          = new CustomizedFormat(
                                                                                                       "nuid: :dependent-keys");
     private static final String           SET_WITH_ALL_KEYS                    = "uids";
+    private static final String           SET_WITH_ALL_KEY_NAMES                    = "names";
     private static final CustomizedFormat SET_WITH_ALL_NODE_KEYS_FOR_NAME      = new CustomizedFormat(
                                                                                                       "name: :uids");
     private static final CustomizedFormat SET_WITH_ALL_LOCAL_KEYS              = new CustomizedFormat(
@@ -478,6 +479,7 @@ public class JRedisSTStorageSessionImpl extends
         jredisExec.sadd(SET_WITH_ALL_KEYS, uniqueKey);
         jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entry
                                                                     .getNodeEntryName()), uniqueKey);
+        jredis.sadd(SET_WITH_ALL_KEY_NAMES, entry.getNodeEntryName());
         String parentKeyAsString = entry.getUniqueKey().getParentKeyAsString();
         if (parentKeyAsString != null) {
             jredisExec.set(KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey),
@@ -717,4 +719,10 @@ public class JRedisSTStorageSessionImpl extends
         return transientValueAsString == null ? "null" : transientValueAsString
                                                                                .replaceAll("[ ]|[\n]|[\t]|[\r]", "-");
     }
+
+	@Override
+	protected Iterable<String> internalGetAllNodeNames(STPartition partition) throws Exception{
+        JRedis jredis = factory.getFrom(partition);
+		return listBytesToListString(jredis.smembers(SET_WITH_ALL_KEY_NAMES));
+	}
 }

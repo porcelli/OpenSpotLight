@@ -64,51 +64,55 @@ import com.mongodb.Mongo;
  */
 public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
 
-    private final Mongo            mongo;
-    private final STRepositoryPath repositoryPath;
+	private final Mongo mongo;
+	private final STRepositoryPath repositoryPath;
 
-    public MongoStorageSessionTest() {
-        try {
-            mongo = new Mongo();
-            repositoryPath = new STRepositoryPath("repository");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public MongoStorageSessionTest() {
+		try {
+			mongo = new Mongo();
+			repositoryPath = new STRepositoryPath("repository");
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    @Override
-    protected Injector createsAutoFlushInjector() {
-        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.AUTO, mongo, repositoryPath, ExamplePartition.FACTORY));
-    }
+	@Override
+	protected Injector createsAutoFlushInjector() {
+		return Guice.createInjector(new MongoModule(
+				STStorageSession.STFlushMode.AUTO, mongo, repositoryPath,
+				ExamplePartition.FACTORY));
+	}
 
-    @Override
-    protected Injector createsExplicitFlushInjector() {
-        return Guice.createInjector(new MongoModule(STStorageSession.STFlushMode.EXPLICIT, mongo, repositoryPath, ExamplePartition.FACTORY));
-    }
+	@Override
+	protected Injector createsExplicitFlushInjector() {
+		return Guice.createInjector(new MongoModule(
+				STStorageSession.STFlushMode.EXPLICIT, mongo, repositoryPath,
+				ExamplePartition.FACTORY));
+	}
 
-    @Override
-    protected boolean supportsAutoFlushInjector() {
-        return true;
-    }
+	@Override
+	protected boolean supportsAutoFlushInjector() {
+		return true;
+	}
 
-    @Override
-    protected boolean supportsExplicitFlushInjector() {
-        return true;
-    }
+	@Override
+	protected boolean supportsExplicitFlushInjector() {
+		return true;
+	}
 
-    @Override
-    protected boolean supportsAdvancedQueries() {
-        return true;
-    }
+	@Override
+	protected boolean supportsAdvancedQueries() {
+		return true;
+	}
 
-    @Override
-    protected void internalCleanPreviousData() throws Exception {
-        BasicDBObject dbObject = new BasicDBObject();
-        for (String dbName : mongo.getDatabaseNames()) {
-            DB db = mongo.getDB(dbName);
-            for (String colName : db.getCollectionNames()) {
-                db.getCollection(colName).remove(dbObject);
-            }
-        }
-    }
+	@Override
+	protected void internalCleanPreviousData() throws Exception {
+		BasicDBObject dbObject = new BasicDBObject();
+		for (String dbName : mongo.getDatabaseNames()) {
+			DB db = mongo.getDB(dbName);
+			 for (String colName : db.getCollectionNames()) {
+			 db.getCollection(colName).remove(dbObject);
+			 }
+		}
+	}
 }

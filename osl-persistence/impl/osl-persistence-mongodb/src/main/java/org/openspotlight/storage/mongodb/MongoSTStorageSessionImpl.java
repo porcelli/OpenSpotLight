@@ -60,6 +60,7 @@ import static org.openspotlight.storage.StringIDSupport.getNodeEntryName;
 import static org.openspotlight.storage.StringIDSupport.getPartition;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -596,5 +597,13 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
         this.repositoryPath = repositoryPath;
         this.gridFSMap = newHashMap();
     }
+
+	@Override
+	protected Iterable<String> internalGetAllNodeNames(STPartition partition) {
+		HashSet<String> set = new HashSet<String>();
+		set.addAll(getCachedDbForPartition(partition).getCollectionNames());
+		set.remove("system.indexes");
+		return ImmutableSet.copyOf(set);
+	}
 
 }
