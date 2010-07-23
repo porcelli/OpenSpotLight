@@ -50,9 +50,12 @@ package org.openspotlight.graph.test.node;
 
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.annotation.DefineHierarchy;
+import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.TransientProperty;
 
 @DefineHierarchy
+
+@InitialWeight(6)
 public abstract class JavaType extends Node {
 
     private String  typeName;

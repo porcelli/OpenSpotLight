@@ -48,6 +48,9 @@
  */
 package org.openspotlight.graph.test.node;
 
+import org.openspotlight.graph.annotation.InitialWeight;
+
+@InitialWeight(5)
 public abstract class JavaTypeInterface extends JavaType {
 
 }

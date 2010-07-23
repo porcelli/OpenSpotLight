@@ -102,7 +102,7 @@ public class NodeSupport {
 	}
 
 	public static final String NUMERIC_TYPE = "__node_numeric_type";
-	public static final String CAPTION= "__node_caption";
+	public static final String CAPTION = "__node_caption";
 	public static final String CORRECT_CLASS = "__node_concrete_class";
 	public static final String NAME = "__node_name";
 	public static final String WEIGTH_VALUE = "__node_weigth_value";
@@ -133,7 +133,8 @@ public class NodeSupport {
 		}
 		throw logAndReturn(new IllegalStateException(
 				"No SLNode inherited type found with annotation "
-						+ DefineHierarchy.class.getSimpleName()));
+						+ DefineHierarchy.class.getSimpleName() + " for type"
+						+ type));
 	}
 
 	private static BigInteger numericTypeFromClass(
@@ -181,11 +182,19 @@ public class NodeSupport {
 					.getPropertyType()) : null;
 			propertyValues.put(d.getName(), value);
 		}
-		int weigthValue = Conversion.convert(propertyValues.get(WEIGTH_VALUE),
-				Integer.class);
-		Class<? extends Node> savedClass = Conversion.convert(propertyValues
-				.get(CORRECT_CLASS), Class.class);
-		BigInteger savedClassNumericType = findNumericType(savedClass);
+		int weigthValue;
+		if (propertyValues.containsKey(WEIGTH_VALUE)) {
+			weigthValue = Conversion.convert(propertyValues.get(WEIGTH_VALUE),
+					Integer.class);
+		} else {
+			weigthValue = findInitialWeight(clazz);
+		}
+		Class<? extends Node> savedClass = null;
+		if (propertyValues.containsKey(CORRECT_CLASS)) {
+			savedClass = Conversion.convert(propertyValues.get(CORRECT_CLASS),
+					Class.class);
+		}
+		BigInteger savedClassNumericType = savedClass!=null?findNumericType(savedClass):null;
 		BigInteger proposedClassNumericType = findNumericType(clazz);
 		Class<? extends Node> classToUse = savedClassNumericType != null
 				&& savedClassNumericType.compareTo(proposedClassNumericType) > 0 ? savedClass
@@ -229,8 +238,7 @@ public class NodeSupport {
 		node.setIndexedProperty(session, CORRECT_CLASS, type.getName());
 	}
 
-	public static Class<? extends Node> findTargetClass(
-			final Class<?> type) {
+	public static Class<? extends Node> findTargetClass(final Class<?> type) {
 		Class<?> currentType = type;
 		while (currentType != null) {
 			if (!Node.class.isAssignableFrom(currentType)) {
@@ -350,7 +358,7 @@ public class NodeSupport {
 			this.typeName = type.getName();
 			this.name = name;
 			this.numericType = findNumericType(type);
-			this.initialWeightValue = findInitialWeight(getClass());
+			this.initialWeightValue = findInitialWeight(type);
 			this.weightValue = weightValue;
 			this.id = id;
 			this.propertyTypes = propertyTypes;

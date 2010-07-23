@@ -81,7 +81,6 @@ public class GraphWriterImpl implements GraphWriter {
 		this.graphReader = graphReader;
 	}
 
-
 	@Override
 	public <T extends Node> T addNode(Context context, Class<T> clazz,
 			String name,
@@ -141,8 +140,7 @@ public class GraphWriterImpl implements GraphWriter {
 	@Override
 	public <T extends Node> T addChildNode(Node parent, Class<T> clazz,
 			String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		return addChildNode(parent, clazz, name, null, null);
 	}
 
 	@Override
@@ -151,8 +149,12 @@ public class GraphWriterImpl implements GraphWriter {
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		STStorageSession session = sessionProvider.get();
+		T newNode = NodeSupport.createNode(factory, session, parent
+				.getContextId(), parent.getId(), clazz, name,
+				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+		dirtyNodes.add(newNode);
+		return newNode;
 	}
 
 	@Override
@@ -162,7 +164,6 @@ public class GraphWriterImpl implements GraphWriter {
 		return null;
 	}
 
-
 	@Override
 	public void flush() {
 		STStorageSession session = sessionProvider.get();
@@ -171,17 +172,13 @@ public class GraphWriterImpl implements GraphWriter {
 					.getContext(n.getContextId()), n);
 		}
 		session.flushTransient();
-		
+
 	}
-
-
 
 	@Override
 	public <T extends Node> T addNode(Context context, Class<T> clazz,
 			String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		return addNode(context, clazz, name, null, null);
 	}
-
 
 }

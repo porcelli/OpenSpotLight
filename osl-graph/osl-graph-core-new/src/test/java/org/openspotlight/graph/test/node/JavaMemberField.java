@@ -48,6 +48,9 @@
  */
 package org.openspotlight.graph.test.node;
 
+import org.openspotlight.graph.annotation.InitialWeight;
+
+@InitialWeight(2)
 public abstract class JavaMemberField extends JavaMember {
 
 }

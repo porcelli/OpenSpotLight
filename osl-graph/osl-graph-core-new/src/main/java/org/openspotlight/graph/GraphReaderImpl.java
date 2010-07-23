@@ -150,7 +150,7 @@ public class GraphReaderImpl implements GraphReader {
 				caption = contextNode.getPropertyAsString(session,
 						CONTEXT_CAPTION);
 				weigth = convert(contextNode.getPropertyAsString(session,
-						CONTEXT_CAPTION), Integer.class);
+						NodeSupport.WEIGTH_VALUE), Integer.class);
 				Set<String> names = contextNode.getPropertyNames(session);
 				for (String propertyName : names) {
 					if (propertyName.equals(NodeSupport.WEIGTH_VALUE)
@@ -222,8 +222,9 @@ public class GraphReaderImpl implements GraphReader {
 				.andFindUnique(session);
 		if (parentStNode == null)
 			return null;
-		return SLCollections.iterableOf(convertToSLNode(parentStNode.getUniqueKey()
-				.getParentKeyAsString(), contextId, parentStNode),null);
+		return SLCollections
+				.iterableOf(convertToSLNode(parentStNode.getUniqueKey()
+						.getParentKeyAsString(), contextId, parentStNode), null);
 
 	}
 
@@ -359,7 +360,7 @@ public class GraphReaderImpl implements GraphReader {
 
 	private final Iterable<STPartition> filterGraphPartitions(
 			STPartition[] partition) {
-		//TODO filter
+		// TODO filter
 		return SLCollections.iterableOf(partition);
 
 	}
@@ -367,7 +368,8 @@ public class GraphReaderImpl implements GraphReader {
 	private <T extends Node> Iterable<Node> internalFindNodes(
 			final Class<T> clazz, final boolean returnSubTypes,
 			final String propertyName, final Serializable propertyValue,
-			String nodeName, String caption, final Iterable<Context> initialContexts) {
+			String nodeName, String caption,
+			final Iterable<Context> initialContexts) {
 		STStorageSession session = sessionProvider.get();
 		ImmutableSet.Builder<Iterable<STNodeEntry>> resultBuilder = ImmutableSet
 				.builder();
@@ -382,21 +384,25 @@ public class GraphReaderImpl implements GraphReader {
 						resultBuilder, partition, clzz);
 			}
 		}
-		@SuppressWarnings("unchecked")
-		Iterable<Node> result = IteratorBuilder
-				.<Node, STNodeEntry> createIteratorBuilder().withConverter(
-						new Converter<Node, STNodeEntry>() {
+		
+		ImmutableSet.Builder<Iterable<Node>> result = ImmutableSet.builder();
+		for(Iterable<STNodeEntry> results: resultBuilder.build()){
+			result.add(IteratorBuilder
+					.<Node, STNodeEntry> createIteratorBuilder().withConverter(
+							new Converter<Node, STNodeEntry>() {
 
-							@Override
-							public Node convert(STNodeEntry o) throws Exception {
-								return convertToSLNode(o.getUniqueKey()
-										.getParentKeyAsString(), o
-										.getUniqueKey().getPartition()
-										.getPartitionName(), o);
-							}
-						}).withItems(resultBuilder.build()).andBuild();
+								@Override
+								public Node convert(STNodeEntry o) throws Exception {
+									return convertToSLNode(o.getUniqueKey()
+											.getParentKeyAsString(), o
+											.getUniqueKey().getPartition()
+											.getPartitionName(), o);
+								}
+							}).withItems(results).andBuild());
 
-		return result;
+		}
+		
+		return SLCollections.iterableOfAll(result.build());
 	}
 
 	private void fillResultBuilderWithQueryResults(
@@ -408,8 +414,7 @@ public class GraphReaderImpl implements GraphReader {
 		STCriteriaBuilder criteriaBuilder = session.withPartition(partition)
 				.createCriteria().withNodeEntry(clzz.getName());
 		if (nodeName != null) {
-			criteriaBuilder.withProperty(NodeSupport.NAME).equalsTo(nodeName)
-					.and();
+			criteriaBuilder.withProperty(NodeSupport.NAME).equalsTo(nodeName);
 		}
 		if (caption != null) {
 			criteriaBuilder.withProperty(NodeSupport.CAPTION).equalsTo(caption);
@@ -508,7 +513,6 @@ public class GraphReaderImpl implements GraphReader {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	@Override
 	public <N extends Node> Iterable<N> getLinkedNodes(Node node,
