@@ -52,29 +52,34 @@ import org.openspotlight.graph.manipulation.GraphTransientWriter;
 
 public class GraphTransientWriterImpl implements GraphTransientWriter {
 
-    @Override
-    public <L extends Link> L createTransientBidirectionalLink(
-                                                                  Class<L> linkClass,
-                                                                  Node source,
-                                                                  Node target ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public <T extends Node> T addTransientChildNode(Node parent,
+			Class<T> clazz, String name) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public <L extends Link> L createTransientLink( Class<L> linkClass,
-                                                     Node source,
-                                                     Node target ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public <T extends Node> T addTransientNode(Context context, Class<T> clazz,
+			String name) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public <T extends Node> T addTransientChildNode( Node parent,
-                                                     Class<T> clazz,
-                                                     String name ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public <L extends Link> L createTransientBidirectionalLink(
+			Class<L> linkClass, Node nodea, Node nodeb)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public <L extends Link> L createTransientLink(Class<L> linkClass,
+			Node source, Node target) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+   
 }

@@ -66,7 +66,6 @@ import com.google.inject.Provider;
 
 public class GraphWriterImpl implements GraphWriter {
 
-<<<<<<< HEAD
 	private final GraphReader graphReader;
 	private final Provider<STStorageSession> sessionProvider;
 	private final STPartitionFactory factory;
@@ -82,47 +81,9 @@ public class GraphWriterImpl implements GraphWriter {
 		this.graphReader = graphReader;
 	}
 
-	@Override
-	public <L extends Link> L createBidirectionalLink(Class<L> linkClass,
-			Node source, Node target) {
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
-	public <L extends Link> L createLink(Class<L> linkClass, Node source,
-			Node target) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public <T extends Node> T createNode(Node parent, Class<T> clazz,
-			String name) {
-		return createNode(parent, clazz, name, null, null);
-
-	}
-
-	@Override
-	public <T extends Node> T createNode(Context context, Class<T> clazz,
-			String name) {
-		return createNode(context, clazz, name, null, null);
-
-	}
-
-	@Override
-	public <T extends Node> T createNode(Node parent, Class<T> clazz,
-			String name,
-			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
-		STStorageSession session = sessionProvider.get();
-		T newNode = NodeSupport.createNode(factory, session, parent
-				.getContextId(), parent.getId(), clazz, name,
-				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
-		dirtyNodes.add(newNode);
-		return newNode;
-	}
-
-	@Override
-	public <T extends Node> T createNode(Context context, Class<T> clazz,
+	public <T extends Node> T addNode(Context context, Class<T> clazz,
 			String name,
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
@@ -153,17 +114,6 @@ public class GraphWriterImpl implements GraphWriter {
 	}
 
 	@Override
-	public void save() {
-		STStorageSession session = sessionProvider.get();
-		for (Node n : this.dirtyNodes) {
-			NodeSupport.retrievePreviousNode(factory, session, graphReader
-					.getContext(n.getContextId()), n);
-		}
-		session.flushTransient();
-
-	}
-
-	@Override
 	public void setContextCaption(Context context, String caption) {
 		ContextImpl contextImpl = (ContextImpl) context;
 		contextImpl.setCaption(caption);
@@ -180,102 +130,58 @@ public class GraphWriterImpl implements GraphWriter {
 	public void moveNodeHierarchy(Node node, Context target) {
 		throw new UnsupportedOperationException();
 	}
-=======
-    private final GraphReader                graphReader;
-    private final Provider<STStorageSession> sessionProvider;
-    private final STPartitionFactory         factory;
-    private final String                     artifactId;
-    private final List<Node>                 dirtyNodes = newLinkedList();
 
-    public GraphWriterImpl( STPartitionFactory factory,
-                            Provider<STStorageSession> sessionProvider, String artifactId,
-                            GraphReader graphReader ) {
-        this.artifactId = artifactId;
-        this.factory = factory;
-        this.sessionProvider = sessionProvider;
-        this.graphReader = graphReader;
-    }
+	@Override
+	public <L extends Link> L addBidirectionalLink(Class<L> linkClass,
+			Node nodea, Node nodeb) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public <L extends Link> L addBidirectionalLink( Class<L> linkClass,
-                                                       Node source,
-                                                       Node target ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public <T extends Node> T addChildNode(Node parent, Class<T> clazz,
+			String name) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public <L extends Link> L addLink( Class<L> linkClass,
-                                          Node source,
-                                          Node target ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public <T extends Node> T addChildNode(Node parent, Class<T> clazz,
+			String name,
+			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
+			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public <T extends Node> T addChildNode( Node parent,
-                                          Class<T> clazz,
-                                          String name ) {
-        return addChildNode(parent, clazz, name, null, null);
+	@Override
+	public <L extends Link> L addLink(Class<L> linkClass, Node source,
+			Node target) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    }
 
-    @Override
-    public <T extends Node> T addChildNode( Node parent,
-                                          Class<T> clazz,
-                                          String name,
-                                          Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                          Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion ) {
-        STStorageSession session = sessionProvider.get();
-        T newNode = NodeFactory.createNode(factory, session, parent
-                                                                   .getContextId(), parent.getId(), clazz, name,
-                                           linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
-        dirtyNodes.add(newNode);
-        return newNode;
-    }
+	@Override
+	public void flush() {
+		STStorageSession session = sessionProvider.get();
+		for (Node n : this.dirtyNodes) {
+			NodeSupport.retrievePreviousNode(factory, session, graphReader
+					.getContext(n.getContextId()), n);
+		}
+		session.flushTransient();
+		
+	}
 
-    @Override
-    public void removeContext( Context context ) {
-        throw new UnsupportedOperationException();
-    }
 
-    @Override
-    public void removeLink( Link link ) {
-        throw new UnsupportedOperationException();
-    }
 
-    @Override
-    public void removeNode( Node node ) {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public <T extends Node> T addNode(Context context, Class<T> clazz,
+			String name) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public void flush() {
-        STStorageSession session = sessionProvider.get();
-        for (Node n : this.dirtyNodes) {
-            NodeFactory.retrievePreviousNode(factory, session, graphReader
-                                                                          .getContext(n.getContextId()), n);
-        }
-        session.flushTransient();
-
-    }
-
-    @Override
-    public void setContextCaption( Context context,
-                                   String caption ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void copyNodeHierarchy( Node node,
-                                   Context target ) {
-        throw new UnsupportedOperationException();
-
-    }
-
-    @Override
-    public void moveNodeHierarchy( Node node,
-                                   Context target ) {
-        throw new UnsupportedOperationException();
-    }
->>>>>>> a3df665f2ae13ea607e4a7b9c3350296e74c5237
 
 }
