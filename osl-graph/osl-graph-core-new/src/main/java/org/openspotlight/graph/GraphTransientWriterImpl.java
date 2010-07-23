@@ -52,34 +52,46 @@ import org.openspotlight.graph.manipulation.GraphTransientWriter;
 
 public class GraphTransientWriterImpl implements GraphTransientWriter {
 
-	@Override
-	public <T extends Node> T addTransientChildNode(Node parent,
-			Class<T> clazz, String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T extends Node> T addTransientChildNode( Node parent,
+                                                     Class<T> clazz,
+                                                     String name ) throws IllegalArgumentException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public <T extends Node> T addTransientNode(Context context, Class<T> clazz,
-			String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T extends Node> T addTransientNode( Context context,
+                                                Class<T> clazz,
+                                                String name ) throws IllegalArgumentException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public <L extends Link> L createTransientBidirectionalLink(
-			Class<L> linkClass, Node nodea, Node nodeb)
-			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <L extends Link> L createTransientBidirectionalLink(
+                                                                Class<L> linkClass,
+                                                                Node nodea,
+                                                                Node nodeb )
+            throws IllegalArgumentException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public <L extends Link> L createTransientLink(Class<L> linkClass,
-			Node source, Node target) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <L extends Link> L createTransientLink( Class<L> linkClass,
+                                                   Node source,
+                                                   Node target ) throws IllegalArgumentException {
+        throw new UnsupportedOperationException();
+    }
 
-   
 }

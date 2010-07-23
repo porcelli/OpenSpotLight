@@ -134,15 +134,13 @@ public class GraphWriterImpl implements GraphWriter {
 	@Override
 	public <L extends Link> L addBidirectionalLink(Class<L> linkClass,
 			Node nodea, Node nodeb) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+	    throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <T extends Node> T addChildNode(Node parent, Class<T> clazz,
 			String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+	    throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -151,15 +149,13 @@ public class GraphWriterImpl implements GraphWriter {
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+	    throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <L extends Link> L addLink(Class<L> linkClass, Node source,
 			Node target) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+	    throw new UnsupportedOperationException();
 	}
 
 
@@ -171,7 +167,6 @@ public class GraphWriterImpl implements GraphWriter {
 					.getContext(n.getContextId()), n);
 		}
 		session.flushTransient();
-		
 	}
 
 
@@ -179,8 +174,7 @@ public class GraphWriterImpl implements GraphWriter {
 	@Override
 	public <T extends Node> T addNode(Context context, Class<T> clazz,
 			String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+	    throw new UnsupportedOperationException();
 	}
 
 
