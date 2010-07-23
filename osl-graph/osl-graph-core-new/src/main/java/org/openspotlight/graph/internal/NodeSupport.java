@@ -102,6 +102,7 @@ public class NodeSupport {
 	}
 
 	public static final String NUMERIC_TYPE = "__node_numeric_type";
+	public static final String CAPTION= "__node_caption";
 	public static final String CORRECT_CLASS = "__node_concrete_class";
 	public static final String NAME = "__node_name";
 	public static final String WEIGTH_VALUE = "__node_weigth_value";
@@ -229,7 +230,7 @@ public class NodeSupport {
 	}
 
 	public static Class<? extends Node> findTargetClass(
-			final Class<? extends Node> type) {
+			final Class<?> type) {
 		Class<?> currentType = type;
 		while (currentType != null) {
 			if (!Node.class.isAssignableFrom(currentType)) {

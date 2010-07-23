@@ -55,6 +55,7 @@ import static org.openspotlight.common.util.SLCollections.iterableOf;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,7 +65,6 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.common.util.SLCollections.ReturnOneEntryCommand;
 import org.openspotlight.graph.internal.NodeSupport;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.metadata.MetaLinkType;
@@ -81,6 +81,7 @@ import org.openspotlight.storage.STStorageSession.STCriteriaBuilder;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 import com.google.inject.Provider;
 
 public class GraphReaderImpl implements GraphReader {
@@ -221,8 +222,8 @@ public class GraphReaderImpl implements GraphReader {
 				.andFindUnique(session);
 		if (parentStNode == null)
 			return null;
-		return iterableOf(convertToSLNode(parentStNode.getUniqueKey()
-				.getParentKeyAsString(), contextId, parentStNode));
+		return SLCollections.iterableOf(convertToSLNode(parentStNode.getUniqueKey()
+				.getParentKeyAsString(), contextId, parentStNode),null);
 
 	}
 
@@ -268,159 +269,215 @@ public class GraphReaderImpl implements GraphReader {
 
 	}
 
-	@Override
-	public <T extends Node> Iterable<T> findNodes(Class<T> clazz,
-			final Context context, Context... aditionalContexts) {
-		STStorageSession session = sessionProvider.get();
-		Iterable<STNodeEntry> nodes = session.withPartition(
-				factory.getPartitionByName(context.getId())).findNamed(
-				clazz.getName());
-		Iterable<T> result = IteratorBuilder
-				.<T, STNodeEntry> createIteratorBuilder().withConverter(
-						new Converter<T, STNodeEntry>() {
-
-							@Override
-							public T convert(STNodeEntry o) throws Exception {
-								return (T) convertToSLNode(o.getUniqueKey()
-										.getParentKeyAsString(), context
-										.getId(), o);
-							}
-						}).withItems(nodes).andBuild();
-
-		return result;
-
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterable<T> findNodesByCaption(Class<T> clazz,
 			String caption, boolean returnSubTypes, Context context,
 			Context... aditionalContexts) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
+				returnSubTypes, null, null, null, caption, SLCollections
+						.iterableOf(context, aditionalContexts));
+		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterable<T> findNodesByCaption(Class<T> clazz,
 			String caption, boolean returnSubTypes)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
+				returnSubTypes, null, null, null, caption, null);
+		return result;
 	}
 
 	@Override
 	public Iterable<Node> findNodesByCaption(String caption, Context context,
 			Context... aditionalContexts) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<Node> result = internalFindNodes(null, true, null, null, null,
+				caption, SLCollections.iterableOf(context, aditionalContexts));
+		return result;
 	}
 
 	@Override
 	public Iterable<Node> findNodesByCaption(String caption)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<Node> result = internalFindNodes(null, true, null, null, null,
+				caption, null);
+		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterable<T> findNodesByCustomProperty(
 			Class<T> clazz, String propertyName, Serializable value,
 			boolean returnSubTypes, Context context,
 			Context... aditionalContexts) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
+				returnSubTypes, propertyName, value, null, null, SLCollections
+						.iterableOf(context, aditionalContexts));
+		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterable<T> findNodesByCustomProperty(
 			Class<T> clazz, String propertyName, Serializable value,
 			boolean returnSubTypes) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
+				returnSubTypes, propertyName, value, null, null, null);
+		return result;
 	}
 
 	@Override
 	public Iterable<Node> findNodesByCustomProperty(String propertyName,
 			Serializable value, Context context, Context... aditionalContexts)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<Node> result = internalFindNodes(null, true, propertyName,
+				value, null, null, SLCollections.iterableOf(context,
+						aditionalContexts));
+		return result;
 	}
 
 	@Override
 	public Iterable<Node> findNodesByCustomProperty(String propertyName,
 			Serializable value) throws IllegalArgumentException {
-		Iterable<T> result = internalFindByName(clazz, name, null,
-				returnSubTypes, context, null, null);
-		ImmutableSet.Builder<Iterable<T>> builder = ImmutableSet.builder();
-		builder.add(result);
-		for (Context c : aditionalContexts) {
-			builder.add(internalFindByName(clazz, name, null, returnSubTypes,
-					context, null, null));
-		}
+		Iterable<Node> result = internalFindNodes(null, true, propertyName,
+				value, null, null, null);
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterable<T> findNodesByName(Class<T> clazz,
 			String name, boolean returnSubTypes, final Context context,
 			Context... aditionalContexts) throws IllegalArgumentException {
-		Iterable<T> result = internalFindByName(clazz, name, null,
-				returnSubTypes, context, null, null);
-		ImmutableSet.Builder<Iterable<T>> builder = ImmutableSet.builder();
-		builder.add(result);
-		for (Context c : aditionalContexts) {
-			builder.add(internalFindByName(clazz, name, null, returnSubTypes,
-					context, null, null));
-		}
+		Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
+				returnSubTypes, null, null, name, null, SLCollections
+						.iterableOf(context, aditionalContexts));
 		return result;
 	}
 
-	private <T extends Node> Iterable<T> internalFindByName(
-			final Class<T> clazz, final String name, final String caption,
-			final boolean returnSubTypes, final Context context,
-			final String propertyName, final String propertyValue) {
+	private final Iterable<STPartition> filterGraphPartitions(
+			STPartition[] partition) {
+		//TODO filter
+		return SLCollections.iterableOf(partition);
+
+	}
+
+	private <T extends Node> Iterable<Node> internalFindNodes(
+			final Class<T> clazz, final boolean returnSubTypes,
+			final String propertyName, final Serializable propertyValue,
+			String nodeName, String caption, final Iterable<Context> initialContexts) {
 		STStorageSession session = sessionProvider.get();
-		Class<? extends Node> correctType = NodeSupport.findTargetClass(clazz);
-		STCriteriaBuilder criteriaBuilder = session.withPartition(
-				factory.getPartitionByName(context.getId())).createCriteria()
-				.withNodeEntry(correctType.getName()).withProperty(
-						NodeSupport.NAME).equalsTo(name);
-		if (!returnSubTypes) {
-			criteriaBuilder.and().withProperty(NodeSupport.CORRECT_CLASS)
-					.equals(clazz.getName());
+		ImmutableSet.Builder<Iterable<STNodeEntry>> resultBuilder = ImmutableSet
+				.builder();
+		Iterable<Context> contexts = findContextsIfNecessary(initialContexts);
+		for (Context c : contexts) {
+			STPartition partition = factory.getPartitionByName(c.getId());
+			Iterable<Class<?>> types = findTypesIfNecessary(clazz, session,
+					partition);
+			for (Class<?> clzz : types) {
+				fillResultBuilderWithQueryResults(returnSubTypes, propertyName,
+						propertyValue, nodeName, caption, session,
+						resultBuilder, partition, clzz);
+			}
 		}
-		Iterable<STNodeEntry> nodes = criteriaBuilder.buildCriteria().andFind(
-				session);
 		@SuppressWarnings("unchecked")
-		Iterable<T> result = IteratorBuilder
-				.<T, STNodeEntry> createIteratorBuilder().withConverter(
-						new Converter<T, STNodeEntry>() {
+		Iterable<Node> result = IteratorBuilder
+				.<Node, STNodeEntry> createIteratorBuilder().withConverter(
+						new Converter<Node, STNodeEntry>() {
 
 							@Override
-							public T convert(STNodeEntry o) throws Exception {
-								return (T) convertToSLNode(o.getUniqueKey()
-										.getParentKeyAsString(), context
-										.getId(), o);
+							public Node convert(STNodeEntry o) throws Exception {
+								return convertToSLNode(o.getUniqueKey()
+										.getParentKeyAsString(), o
+										.getUniqueKey().getPartition()
+										.getPartitionName(), o);
 							}
-						}).withItems(nodes).andBuild();
+						}).withItems(resultBuilder.build()).andBuild();
+
 		return result;
 	}
 
-	//
+	private void fillResultBuilderWithQueryResults(
+			final boolean returnSubTypes, final String propertyName,
+			final Serializable propertyValue, String nodeName, String caption,
+			STStorageSession session,
+			ImmutableSet.Builder<Iterable<STNodeEntry>> resultBuilder,
+			STPartition partition, Class<?> clzz) {
+		STCriteriaBuilder criteriaBuilder = session.withPartition(partition)
+				.createCriteria().withNodeEntry(clzz.getName());
+		if (nodeName != null) {
+			criteriaBuilder.withProperty(NodeSupport.NAME).equalsTo(nodeName)
+					.and();
+		}
+		if (caption != null) {
+			criteriaBuilder.withProperty(NodeSupport.CAPTION).equalsTo(caption);
+		}
+		if (propertyName != null) {
+			criteriaBuilder.withProperty(propertyName).equalsTo(
+					Conversion.convert(propertyValue, String.class));
+		}
+		if (!returnSubTypes) {
+			criteriaBuilder.and().withProperty(NodeSupport.CORRECT_CLASS)
+					.equals(clzz.getName());
+		}
+		resultBuilder.add(criteriaBuilder.buildCriteria().andFind(session));
+	}
 
+	private <T> Iterable<Class<?>> findTypesIfNecessary(final Class<T> clazz,
+			STStorageSession session, STPartition partition) {
+		Iterable<Class<?>> typesToFind = clazz != null ? ImmutableSet
+				.<Class<?>> of(NodeSupport.findTargetClass(clazz)) : null;
+		if (typesToFind == null) {
+			Iterable<String> stNodeNames = session.withPartition(partition)
+					.getAllNodeNames();
+			Builder<Class<?>> builder = ImmutableSet.builder();
+			for (String s : stNodeNames) {
+				try {
+					Class<?> stClazz = NodeSupport.findTargetClass(Class
+							.forName(s));
+					if (Node.class.isAssignableFrom(stClazz)) {
+						builder.add(stClazz);
+					}
+				} catch (Exception e) {
+					Exceptions.catchAndLog(e);
+				}
+			}
+			typesToFind = builder.build();
+		}
+		return typesToFind;
+	}
+
+	private Iterable<Context> findContextsIfNecessary(Iterable<Context> contexts) {
+		if (contexts == null || !contexts.iterator().hasNext()) {
+			Iterable<STPartition> partitions = filterGraphPartitions(factory
+					.getValues());
+			ImmutableSet.Builder<Context> builder = ImmutableSet.builder();
+			for (STPartition p : partitions) {
+				builder.add(getContext(p.getPartitionName()));
+			}
+			contexts = builder.build();
+		}
+		return contexts;
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterable<T> findNodesByName(Class<T> clazz,
 			String name, boolean returnSubTypes)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
+				returnSubTypes, null, null, name, null, null);
+		return result;
 	}
 
 	@Override
 	public Iterable<Node> findNodesByName(String name, Context context,
 			Context... aditionalContexts) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		Iterable<Node> result = internalFindNodes(null, true, null, null, name,
+				null, SLCollections.iterableOf(context, aditionalContexts));
+		return result;
 	}
 
 	@Override
@@ -452,14 +509,6 @@ public class GraphReaderImpl implements GraphReader {
 		return null;
 	}
 
-	@Override
-	public <N extends Node> Iterable<N> getLinkedNodes(
-			Class<? extends Link> linkClass, Node node, Class<N> nodeClass,
-			boolean returnSubTypes, LinkType linkDirection)
-			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public <N extends Node> Iterable<N> getLinkedNodes(Node node,
