@@ -96,7 +96,7 @@ public abstract class Link implements Element, Comparable<Link> {
      * 
      * @param node the source or target node of this links
      * @return the other node
-     * @throws IllegalArgumentException if the given node is neither the source nor target node of this link
+     * @throws IllegalArgumentException if the given node is null or neither the source nor target node of this link
      */
     public abstract Node getOtherSide( Node node ) throws IllegalArgumentException;
 

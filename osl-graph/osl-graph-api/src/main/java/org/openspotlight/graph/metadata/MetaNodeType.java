@@ -81,6 +81,10 @@ public abstract class MetaNodeType extends Node {
     public abstract String getLanguages();
 
     @Property
+    @Description( "Defines Hierarchy" )
+    public abstract boolean definesHierarchy();
+
+    @Property
     @Description( "Type Group" )
     public abstract String getTypeGroup();
 

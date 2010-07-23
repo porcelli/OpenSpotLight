@@ -133,8 +133,9 @@ public abstract class Node implements Element, Comparable<Node>, LogableObject {
      * Sets the caption. Caption is just a simple form to identify (not uniquely) the node.
      * 
      * @param caption the caption
+     * @throws IllegalArgumentException if the input param is null
      */
-    public abstract void setCaption( String caption );
+    public abstract void setCaption( String caption )throws IllegalArgumentException;
 
     /**
      * Returns the contextId where the node is stored.

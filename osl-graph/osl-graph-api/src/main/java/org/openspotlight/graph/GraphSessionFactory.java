@@ -79,6 +79,7 @@ public interface GraphSessionFactory {
      * 
      * @param artifactId artifactId
      * @return the full session
+     * @throws IllegalArgumentException if the input param is null
      */
-    public FullGraphSession openFull( String artifactId );
+    public FullGraphSession openFull( String artifactId ) throws IllegalArgumentException;
 }
