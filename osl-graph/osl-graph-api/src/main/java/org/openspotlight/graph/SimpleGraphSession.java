@@ -56,7 +56,7 @@ import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
 
 /**
- * This is the simplest session available of OpenSpotLight graph. <br>
+ * This is the simplest session available of graph. <br>
  * Thru this session you can read any data and write transient data ({@link Node}s and {@link Link}s), this sessions has just a
  * single method that allows update data into graph server: {@link #flushChangedProperties}.
  * <p>

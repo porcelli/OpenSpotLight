@@ -139,13 +139,13 @@ public abstract class AbstractGraphTest {
         Context context1 = simpleFromLocation.getContext(context1());
         GraphWriter writer = fullGraphSession.toServer();
 
-        JavaType node1 = writer.createNode(context1.getRootNode(),
+        JavaType node1 = writer.addChildNode(context1.getRootNode(),
                                            JavaType.class, nodeName);
         node1.setCaption(caption1);
         node1.setPublicClass(publicClass);
         node1.setTypeName(typeName);
         node1.setTransientValue(transientValue);
-        fullGraphSession.toServer().save();
+        fullGraphSession.toServer().flush();
 
         Iterable<JavaType> oneNode1 = simpleFromLocation.findNodes(JavaType.class, nodeName,
                                                                    context1);
@@ -230,13 +230,13 @@ public abstract class AbstractGraphTest {
         Context context1 = simpleFromLocation.getContext(context1());
         GraphWriter writer = fullGraphSession.toServer();
 
-        JavaType node1 = writer.createNode(context1.getRootNode(),
+        JavaType node1 = writer.addChildNode(context1.getRootNode(),
                                            JavaType.class, nodeName);
         node1.setCaption(caption1);
         node1.setPublicClass(publicClass);
         node1.setTypeName(typeName);
         node1.setTransientValue(transientValue);
-        fullGraphSession.toServer().save();
+        fullGraphSession.toServer().flush();
 
         Iterable<Node> oneNode1 = simpleFromLocation.findNodes(nodeName,
                                                                  context1);
@@ -271,32 +271,32 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaTypeClass rootClass1Node = writer.createNode(
+        JavaTypeClass rootClass1Node = writer.addChildNode(
                                                          context1.getRootNode(), JavaTypeClass.class, rootClass1);
         String child1 = "child1";
         String child2 = "child2";
         String child3 = "child3";
-        JavaMemberField child1Node = writer.createNode(rootClass1Node,
+        JavaMemberField child1Node = writer.addChildNode(rootClass1Node,
                                                        JavaMemberField.class, child1);
-        JavaMemberField child2Node = writer.createNode(rootClass1Node,
+        JavaMemberField child2Node = writer.addChildNode(rootClass1Node,
                                                        JavaMemberField.class, child2);
-        JavaTypeInterface child3Node = writer.createNode(rootClass1Node,
+        JavaTypeInterface child3Node = writer.addChildNode(rootClass1Node,
                                                          JavaTypeInterface.class, child3);
 
         String rootClass2 = "rootClass2";
-        JavaTypeClass rootClass2Node = writer.createNode(
+        JavaTypeClass rootClass2Node = writer.addChildNode(
                                                          context1.getRootNode(), JavaTypeClass.class, rootClass2);
         String child4 = "child4";
         String child5 = "child5";
         String child6 = "child6";
-        JavaMemberField child4Node = writer.createNode(rootClass2Node,
+        JavaMemberField child4Node = writer.addChildNode(rootClass2Node,
                                                        JavaMemberField.class, child4);
-        JavaMemberField child5Node = writer.createNode(rootClass2Node,
+        JavaMemberField child5Node = writer.addChildNode(rootClass2Node,
                                                        JavaMemberField.class, child5);
-        JavaTypeInterface child6Node = writer.createNode(rootClass2Node,
+        JavaTypeInterface child6Node = writer.addChildNode(rootClass2Node,
                                                          JavaTypeInterface.class, child6);
 
-        writer.save();
+        writer.flush();
 
         Iterable<JavaTypeClass> rootNodes = simpleFromLocation.findNodes(
                                                                          JavaTypeClass.class, "rootClass1", context1);
@@ -352,7 +352,7 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaTypeClass rootClass1Node = writer.createNode(
+        JavaTypeClass rootClass1Node = writer.addChildNode(
                                                          context1.getRootNode(), JavaTypeClass.class, rootClass1);
         //rootClass1Node.doCast(JavaMember.class);
     }
@@ -365,24 +365,24 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        writer.save();
+        writer.flush();
 
-        JavaType rootClass2Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass2Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaTypeClass.class, rootClass1);
-        writer.save();
+        writer.flush();
         assertThat(rootClass1Node, is(rootClass2Node));
 
         JavaType foundNode1 = simpleFromLocation.findUniqueNode(JavaType.class,
                                                                 rootClass1, context1);
         assertThat(foundNode1, is(rootClass2Node));
         assertThat(foundNode1 instanceof JavaTypeClass, is(true));
-        JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
         assertThat(rootClass3Node instanceof JavaTypeClass, is(true));
 
-        writer.save();
+        writer.flush();
 
     }
 
@@ -395,10 +395,10 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        writer.createNode(context1.getRootNode(), JavaType.class, rootClass1);
-        writer.save();
+        writer.addChildNode(context1.getRootNode(), JavaType.class, rootClass1);
+        writer.flush();
 
-        writer.createNode(context1.getRootNode(), JavaMember.class, rootClass1);
+        writer.addChildNode(context1.getRootNode(), JavaMember.class, rootClass1);
     }
 
     @Test
@@ -409,12 +409,12 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaType rootClassNode1 = writer.createNode(context1.getRootNode(),
+        JavaType rootClassNode1 = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        writer.save();
+        writer.flush();
         writer.removeNode(rootClassNode1);
 
-        writer.save();
+        writer.flush();
         Iterable<JavaType> empty = simpleFromLocation.findNodes(JavaType.class,
                                                                 context1);
 
@@ -430,11 +430,11 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaType rootClassNode1 = writer.createNode(context1.getRootNode(),
+        JavaType rootClassNode1 = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClassNode2 = writer.createNode(rootClassNode1,
+        JavaType rootClassNode2 = writer.addChildNode(rootClassNode1,
                                                     JavaType.class, rootClass1);
-        writer.save();
+        writer.flush();
         Set<JavaType> nodes = iterableToSet(simpleFromLocation.findNodes(
                                                                          JavaType.class, context1));
 
@@ -442,7 +442,7 @@ public abstract class AbstractGraphTest {
         assertThat(nodes.contains(rootClassNode1), is(true));
         assertThat(nodes.contains(rootClassNode2), is(true));
         writer.removeNode(rootClassNode2);
-        writer.save();
+        writer.flush();
         Set<JavaType> nodes2 = iterableToSet(simpleFromLocation.findNodes(
                                                                           JavaType.class, context1));
 
@@ -461,11 +461,11 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaType rootClassNode1 = writer.createNode(context1.getRootNode(),
+        JavaType rootClassNode1 = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClassNode2 = writer.createNode(rootClassNode1,
+        JavaType rootClassNode2 = writer.addChildNode(rootClassNode1,
                                                     JavaType.class, rootClass1);
-        writer.save();
+        writer.flush();
         Set<JavaType> nodes = iterableToSet(simpleFromLocation.findNodes(
                                                                          JavaType.class, context1));
 
@@ -473,7 +473,7 @@ public abstract class AbstractGraphTest {
         assertThat(nodes.contains(rootClassNode1), is(true));
         assertThat(nodes.contains(rootClassNode2), is(true));
         writer.removeNode(rootClassNode1);
-        writer.save();
+        writer.flush();
         Set<JavaType> nodes2 = iterableToSet(simpleFromLocation.findNodes(
                                                                           JavaType.class, context1));
 
@@ -495,12 +495,12 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaType rootClassNode1 = writer.createNode(context1.getRootNode(),
+        JavaType rootClassNode1 = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
         rootClassNode1.setCaption(firstCaption);
         rootClassNode1.setPublicClass(firstPublicClass);
         rootClassNode1.setTypeName(firstTypeName);
-        writer.save();
+        writer.flush();
         JavaType firstFound = simpleFromLocation.findUniqueNode(JavaType.class,
                                                                 context1);
         assertThat(firstFound.getCaption(), is(firstCaption));
@@ -528,11 +528,11 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClass2Node = writer.createNode(context2.getRootNode(),
+        JavaType rootClass2Node = writer.addChildNode(context2.getRootNode(),
                                                     JavaType.class, rootClass1);
-        writer.save();
+        writer.flush();
 
         Set<JavaType> result = iterableToSet(simpleFromLocation.findNodes(
                                                                           JavaType.class, context1, context2));
@@ -553,11 +553,11 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaMember rootClass2Node = writer.createNode(context2.getRootNode(),
+        JavaMember rootClass2Node = writer.addChildNode(context2.getRootNode(),
                                                       JavaMember.class, rootClass1);
-        writer.save();
+        writer.flush();
         assertThat(rootClass1Node.getWeightValue()
                                  .equals(rootClass2Node.getWeightValue()), is(false));
 
@@ -572,11 +572,11 @@ public abstract class AbstractGraphTest {
         GraphWriter writer = fullGraphSession.toServer();
 
         String rootClass1 = "rootClass1";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaTypeClass rootClass2Node = writer.createNode(
+        JavaTypeClass rootClass2Node = writer.addChildNode(
                                                          context2.getRootNode(), JavaTypeClass.class, rootClass1);
-        writer.save();
+        writer.flush();
         assertThat(rootClass1Node.getWeightValue()
                                  .equals(rootClass2Node.getWeightValue()), is(false));
         assertThat(rootClass1Node.getWeightValue().compareTo(
@@ -592,18 +592,18 @@ public abstract class AbstractGraphTest {
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClass2Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass2Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass2);
-        JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass3);
-        TypeExtends link1 = writer.createLink(TypeExtends.class,
+        TypeExtends link1 = writer.addLink(TypeExtends.class,
                                               rootClass1Node, rootClass2Node);
-        TypeExtends link2 = writer.createLink(TypeExtends.class,
+        TypeExtends link2 = writer.addLink(TypeExtends.class,
                                               rootClass1Node, rootClass3Node);
 
-        writer.save();
+        writer.flush();
 
         Set<Link> twoLinks = iterableToSet(simpleFromLocation.getLinks(
                                                                          rootClass1Node, null, LinkType.UNIDIRECTIONAL));
@@ -638,23 +638,23 @@ public abstract class AbstractGraphTest {
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClass2Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass2Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass2);
-        JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass3);
-        TypeExtends link1 = writer.createBidirectionalLink(TypeExtends.class,
+        TypeExtends link1 = writer.addBidirectionalLink(TypeExtends.class,
                                                            rootClass1Node, rootClass2Node);
-        TypeExtends link2 = writer.createBidirectionalLink(TypeExtends.class,
+        TypeExtends link2 = writer.addBidirectionalLink(TypeExtends.class,
                                                            rootClass1Node, rootClass3Node);
 
-        TypeExtends link3 = writer.createBidirectionalLink(TypeExtends.class,
+        TypeExtends link3 = writer.addBidirectionalLink(TypeExtends.class,
                                                            rootClass2Node, rootClass1Node);
-        TypeExtends link4 = writer.createBidirectionalLink(TypeExtends.class,
+        TypeExtends link4 = writer.addBidirectionalLink(TypeExtends.class,
                                                            rootClass3Node, rootClass1Node);
 
-        writer.save();
+        writer.flush();
 
         assertThat(link1, is(link3));
         assertThat(link2, is(link4));
@@ -693,37 +693,37 @@ public abstract class AbstractGraphTest {
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClass2Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass2Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass2);
-        JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass3);
-        TypeExtends link1 = writer.createLink(TypeExtends.class,
+        TypeExtends link1 = writer.addLink(TypeExtends.class,
                                               rootClass1Node, rootClass2Node);
-        TypeExtends link2 = writer.createLink(TypeExtends.class,
+        TypeExtends link2 = writer.addLink(TypeExtends.class,
                                               rootClass1Node, rootClass3Node);
 
         String rootClass1bid = "rootClass1bid";
         String rootClass2bid = "rootClass2bid";
         String rootClass3bid = "rootClass3bid";
-        JavaType rootClass1BidNode = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1BidNode = writer.addChildNode(context1.getRootNode(),
                                                        JavaType.class, rootClass1bid);
-        JavaType rootClass2BidNode = writer.createNode(context1.getRootNode(),
+        JavaType rootClass2BidNode = writer.addChildNode(context1.getRootNode(),
                                                        JavaType.class, rootClass2bid);
-        JavaType rootClass3BidNode = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3BidNode = writer.addChildNode(context1.getRootNode(),
                                                        JavaType.class, rootClass3bid);
-        TypeExtends link1Bid = writer.createBidirectionalLink(
+        TypeExtends link1Bid = writer.addBidirectionalLink(
                                                               TypeExtends.class, rootClass1BidNode, rootClass2BidNode);
-        TypeExtends link2Bid = writer.createBidirectionalLink(
+        TypeExtends link2Bid = writer.addBidirectionalLink(
                                                               TypeExtends.class, rootClass1BidNode, rootClass3BidNode);
 
-        TypeExtends link3Bid = writer.createBidirectionalLink(
+        TypeExtends link3Bid = writer.addBidirectionalLink(
                                                               TypeExtends.class, rootClass2BidNode, rootClass1BidNode);
-        TypeExtends link4Bid = writer.createBidirectionalLink(
+        TypeExtends link4Bid = writer.addBidirectionalLink(
                                                               TypeExtends.class, rootClass3BidNode, rootClass1BidNode);
 
-        writer.save();
+        writer.flush();
 
         assertThat(link1Bid, is(link3Bid));
         assertThat(link2Bid, is(link4Bid));
@@ -781,18 +781,18 @@ public abstract class AbstractGraphTest {
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClass2Node = writer.createNode(context2.getRootNode(),
+        JavaType rootClass2Node = writer.addChildNode(context2.getRootNode(),
                                                     JavaType.class, rootClass2);
-        JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass3);
-        TypeExtends link1 = writer.createLink(TypeExtends.class,
+        TypeExtends link1 = writer.addLink(TypeExtends.class,
                                               rootClass1Node, rootClass2Node);
-        TypeExtends link2 = writer.createLink(TypeExtends.class,
+        TypeExtends link2 = writer.addLink(TypeExtends.class,
                                               rootClass1Node, rootClass3Node);
 
-        writer.save();
+        writer.flush();
 
         Set<Link> twoLinks = iterableToSet(simpleFromLocation.getLinks(
                                                                          rootClass1Node, null, LinkType.UNIDIRECTIONAL));
@@ -828,23 +828,23 @@ public abstract class AbstractGraphTest {
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClass2Node = writer.createNode(context2.getRootNode(),
+        JavaType rootClass2Node = writer.addChildNode(context2.getRootNode(),
                                                     JavaType.class, rootClass2);
-        JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass3);
-        TypeExtends link1 = writer.createBidirectionalLink(TypeExtends.class,
+        TypeExtends link1 = writer.addBidirectionalLink(TypeExtends.class,
                                                            rootClass1Node, rootClass2Node);
-        TypeExtends link2 = writer.createBidirectionalLink(TypeExtends.class,
+        TypeExtends link2 = writer.addBidirectionalLink(TypeExtends.class,
                                                            rootClass1Node, rootClass3Node);
 
-        TypeExtends link3 = writer.createBidirectionalLink(TypeExtends.class,
+        TypeExtends link3 = writer.addBidirectionalLink(TypeExtends.class,
                                                            rootClass2Node, rootClass1Node);
-        TypeExtends link4 = writer.createBidirectionalLink(TypeExtends.class,
+        TypeExtends link4 = writer.addBidirectionalLink(TypeExtends.class,
                                                            rootClass3Node, rootClass1Node);
 
-        writer.save();
+        writer.flush();
 
         assertThat(link1, is(link3));
         assertThat(link2, is(link4));
@@ -884,37 +884,37 @@ public abstract class AbstractGraphTest {
         String rootClass1 = "rootClass1";
         String rootClass2 = "rootClass2";
         String rootClass3 = "rootClass3";
-        JavaType rootClass1Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass1);
-        JavaType rootClass2Node = writer.createNode(context2.getRootNode(),
+        JavaType rootClass2Node = writer.addChildNode(context2.getRootNode(),
                                                     JavaType.class, rootClass2);
-        JavaType rootClass3Node = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3Node = writer.addChildNode(context1.getRootNode(),
                                                     JavaType.class, rootClass3);
-        TypeExtends link1 = writer.createLink(TypeExtends.class,
+        TypeExtends link1 = writer.addLink(TypeExtends.class,
                                               rootClass1Node, rootClass2Node);
-        TypeExtends link2 = writer.createLink(TypeExtends.class,
+        TypeExtends link2 = writer.addLink(TypeExtends.class,
                                               rootClass1Node, rootClass3Node);
 
         String rootClass1bid = "rootClass1bid";
         String rootClass2bid = "rootClass2bid";
         String rootClass3bid = "rootClass3bid";
-        JavaType rootClass1BidNode = writer.createNode(context1.getRootNode(),
+        JavaType rootClass1BidNode = writer.addChildNode(context1.getRootNode(),
                                                        JavaType.class, rootClass1bid);
-        JavaType rootClass2BidNode = writer.createNode(context1.getRootNode(),
+        JavaType rootClass2BidNode = writer.addChildNode(context1.getRootNode(),
                                                        JavaType.class, rootClass2bid);
-        JavaType rootClass3BidNode = writer.createNode(context1.getRootNode(),
+        JavaType rootClass3BidNode = writer.addChildNode(context1.getRootNode(),
                                                        JavaType.class, rootClass3bid);
-        TypeExtends link1Bid = writer.createBidirectionalLink(
+        TypeExtends link1Bid = writer.addBidirectionalLink(
                                                               TypeExtends.class, rootClass1BidNode, rootClass2BidNode);
-        TypeExtends link2Bid = writer.createBidirectionalLink(
+        TypeExtends link2Bid = writer.addBidirectionalLink(
                                                               TypeExtends.class, rootClass1BidNode, rootClass3BidNode);
 
-        TypeExtends link3Bid = writer.createBidirectionalLink(
+        TypeExtends link3Bid = writer.addBidirectionalLink(
                                                               TypeExtends.class, rootClass2BidNode, rootClass1BidNode);
-        TypeExtends link4Bid = writer.createBidirectionalLink(
+        TypeExtends link4Bid = writer.addBidirectionalLink(
                                                               TypeExtends.class, rootClass3BidNode, rootClass1BidNode);
 
-        writer.save();
+        writer.flush();
 
         assertThat(link1Bid, is(link3Bid));
         assertThat(link2Bid, is(link4Bid));

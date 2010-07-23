@@ -79,29 +79,29 @@ public class GraphWriterImpl implements GraphWriter {
     }
 
     @Override
-    public <L extends Link> L createBidirectionalLink( Class<L> linkClass,
+    public <L extends Link> L addBidirectionalLink( Class<L> linkClass,
                                                        Node source,
                                                        Node target ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public <L extends Link> L createLink( Class<L> linkClass,
+    public <L extends Link> L addLink( Class<L> linkClass,
                                           Node source,
                                           Node target ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public <T extends Node> T createNode( Node parent,
+    public <T extends Node> T addChildNode( Node parent,
                                           Class<T> clazz,
                                           String name ) {
-        return createNode(parent, clazz, name, null, null);
+        return addChildNode(parent, clazz, name, null, null);
 
     }
 
     @Override
-    public <T extends Node> T createNode( Node parent,
+    public <T extends Node> T addChildNode( Node parent,
                                           Class<T> clazz,
                                           String name,
                                           Collection<Class<? extends Link>> linkTypesForLinkDeletion,
@@ -130,7 +130,7 @@ public class GraphWriterImpl implements GraphWriter {
     }
 
     @Override
-    public void save() {
+    public void flush() {
         STStorageSession session = sessionProvider.get();
         for (Node n : this.dirtyNodes) {
             NodeFactory.retrievePreviousNode(factory, session, graphReader

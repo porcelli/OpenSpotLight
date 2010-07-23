@@ -52,7 +52,7 @@ package org.openspotlight.graph;
 import org.openspotlight.graph.manipulation.GraphWriter;
 
 /**
- * This is the complete session available of OpenSpotLight graph. <br>
+ * This is the complete session available of the graph. <br>
  * Additionally to {@link SimpleGraphSession} functionallity, this session enables write data ({@link Node}s and {@link Link}s)
  * into into graph server.
  * <p>
