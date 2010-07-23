@@ -70,7 +70,7 @@ public class GraphTransientWriterImpl implements GraphTransientWriter {
     }
 
     @Override
-    public <T extends Node> T createTransientNode( Node parent,
+    public <T extends Node> T addTransientChildNode( Node parent,
                                                      Class<T> clazz,
                                                      String name ) {
         // TODO Auto-generated method stub

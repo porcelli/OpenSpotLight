@@ -49,8 +49,8 @@
 package org.openspotlight.graph;
 
 /**
- * The Link is the way you correlate informations ({@link Node} instances) in OpenSpotLight Graph. Any relationship between nodes
- * are materialized by a creation of a link. <br>
+ * The Link is the way you correlate informations ({@link Node} instances) in graph. Any relationship between nodes are
+ * materialized by a creation of a link. <br>
  * A Link is uniquely identified by three data: Type, Source Node and Target Node, and based on these data an algorithm is used to
  * generate an unique id.
  * <p>
@@ -77,11 +77,11 @@ package org.openspotlight.graph;
  * <p>
  * Links can be created as transients by {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientLink} or
  * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientBidirectionalLink} methods or as permanent by
- * {@link org.openspotlight.graph.manipulation.GraphWriter#createLink} or
- * {@link org.openspotlight.graph.manipulation.GraphWriter#createBidirectionalLink} methods wich are the most common use.
+ * {@link org.openspotlight.graph.manipulation.GraphWriter#addLink} or
+ * {@link org.openspotlight.graph.manipulation.GraphWriter#addBidirectionalLink} methods wich are the most common use.
  * </p>
  * <p>
- * Along with {@link org.openspotlight.graph.Node}, links are are the core of OpenSpotLight Graph data model.
+ * Along with {@link org.openspotlight.graph.Node}, links are are the core of graph data model.
  * </p>
  * <b>Important Note</b> Its a abstract class to avoid more than one type of element for a node.
  * 

@@ -54,8 +54,8 @@ import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.log.LogableObject;
 
 /**
- * The Node is the base data structure that enables represent any information into OpenSpotLight Graph. Any information can be
- * modeled as a Node using its unique identifiers or properties. <br>
+ * The Node is the base data structure that enables represent any information into graph. Any information can be modeled as a Node
+ * using its unique identifiers or properties. <br>
  * A Node is uniquely identified by three properties: Type, Name and ParentNode, and based on these data an algorithm is used to
  * generate an unique id.
  * <p>
@@ -66,22 +66,27 @@ import org.openspotlight.log.LogableObject;
  * A Node defines a information, to relate this data with other you'll have to create {@link Link} to connect those nodes.
  * </p>
  * <p>
- * The Node type can be promoted to a more specific type and to define the behavior of type promotion and its hierarchy its
- * necessary to use annotate the top node type on the hierarchy with {@link org.openspotlight.graph.annotation.DefineHierarchy}
- * annotation. <br>
- * The promotion of the node types are automatically handled by OpenSpotLight Graph engine.
+ * The graph node typing system is very similar to object-oriented languages, where its possible to create a node hierarchy, as
+ * higher in heirarchy more abstract the node type is, and the oposite is true, as lowest the type is in hierarchy is its more
+ * specific. <br>
+ * Its necessary to use the {@link org.openspotlight.graph.annotation.DefineHierarchy} annotation to mark a node as the higher
+ * element in a hierarchy, all node types that extends this node type are in the same hierarchy and are considered more specific.
+ * <br>
+ * The graph has a mechanism that automatically promotes types, if users creates a node that can be considered the same (based on
+ * type hierarchy, parent node and name) the graph system will always keep the node with the more specific node type. <br>
+ * <b>Note</b> that these promotion are automatically handled by graph engine.
  * </p>
  * <p>
  * Nodes can be created as transients by
- * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientNode(Context, Class, String)} or
- * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientNode(Node, Class, String)} methods or as
- * permanent by {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Context, Class, String)},
- * {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Context, Class, String, java.util.Collection, java.util.Collection)}, {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Node, Class, String)} or
- * {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Node, Class, String, java.util.Collection, java.util.Collection)}
+ * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#addTransientNode(Context, Class, String)} or
+ * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#addTransientChildNode(Node, Class, String)} methods or as
+ * permanent by {@link org.openspotlight.graph.manipulation.GraphWriter#addNode(Context, Class, String)},
+ * {@link org.openspotlight.graph.manipulation.GraphWriter#addNode(Context, Class, String, java.util.Collection, java.util.Collection)}, {@link org.openspotlight.graph.manipulation.GraphWriter#addChildNode(Node, Class, String)} or
+ * {@link org.openspotlight.graph.manipulation.GraphWriter#addChildNode(Node, Class, String, java.util.Collection, java.util.Collection)}
  * methods wich are the most common use.
  * </p>
  * <p>
- * Along with {@link org.openspotlight.graph.Link}, nodes are are the core of OpenSpotLight Graph data model.
+ * Along with {@link org.openspotlight.graph.Link}, nodes are are the core of graph data model.
  * </p>
  * <p>
  * <b>Important Notes:</b><br>

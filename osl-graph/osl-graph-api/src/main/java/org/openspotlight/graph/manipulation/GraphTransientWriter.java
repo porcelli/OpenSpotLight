@@ -63,35 +63,37 @@ import org.openspotlight.graph.Node;
 public interface GraphTransientWriter {
 
     /**
-     * Create a new transient node, based on the parameter node type, inside the given context.<br>
+     * Adds a new transient node, based on the parameter node type, inside the given context.<br>
      * <b>Note</b> that if node, transient or not, already exists inside context its not duplicated.
      * 
      * @param <T> node type
      * @param context the target context
      * @param clazz the node type to be created
      * @param name the node name
-     * @return the transient node
+     * @return the added transient node
+     * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T createTransientNode( Context context,
+    <T extends Node> T addTransientNode( Context context,
                                             Class<T> clazz,
-                                            String name );
+                                            String name ) throws IllegalArgumentException;
 
     /**
-     * Add a new transient child node for the parametered parent of the specified type inside the parents context. <br>
+     * Adds a new transient child node for the parametered parent of the specified type inside the parents context. <br>
      * <b>Note</b> that if child node, transient or not, already exists its not duplicated.
      * 
      * @param <T> node type
      * @param parent the parent node
      * @param clazz the node type to be created
      * @param name the node name
-     * @return the transient node
+     * @return the added transient node
+     * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T createTransientNode( Node parent,
-                                            Class<T> clazz,
-                                            String name );
+    <T extends Node> T addTransientChildNode( Node parent,
+                                              Class<T> clazz,
+                                              String name ) throws IllegalArgumentException;
 
     /**
-     * Creates a transient unidirectional link between the source and target nodes with the specified link type.
+     * Adds a transient unidirectional link between the source and target nodes with the specified link type.
      * <p>
      * If the link type is marked with {@link org.openspotlight.graph.annotation.LinkAutoBidirectional} annotation and the link
      * already exists between target and source (target -> source), its automatically converted to a bidirectional link.
@@ -103,13 +105,14 @@ public interface GraphTransientWriter {
      * @param source the source node
      * @param target the target node
      * @return the created link
+     * @throws IllegalArgumentException if any input param is null
      */
     <L extends Link> L createTransientLink( Class<L> linkClass,
                                             Node source,
-                                            Node target );
+                                            Node target ) throws IllegalArgumentException;
 
     /**
-     * Creates a transient bidirectional link between nodes with the specified link type. <br>
+     * Adds a transient bidirectional link between nodes with the specified link type. <br>
      * <b>Note</b> that if link already exists, transient or not, its not duplicated.
      * 
      * @param <L> link type
@@ -117,9 +120,9 @@ public interface GraphTransientWriter {
      * @param nodea the node
      * @param nodeb the node
      * @return the created link
+     * @throws IllegalArgumentException if any input param is null
      */
     <L extends Link> L createTransientBidirectionalLink( Class<L> linkClass,
                                                          Node nodea,
-                                                         Node nodeb );
-
+                                                         Node nodeb ) throws IllegalArgumentException;
 }
