@@ -54,13 +54,40 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.openspotlight.graph.TypeGroupValue;
-
 /**
- * Created by User: feu - Date: Jun 29, 2010 - Time: 2:42:11 PM
+ * Adds metadata about high-level categorization for node and link types. <br>
+ * This information can be used for search/index purpose.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( {ElementType.TYPE} )
 public @interface TypeGroup {
     TypeGroupValue value();
+
+    /**
+     * Highe-level categories available.
+     * 
+     * @author porcelli
+     * @author feuteston
+     */
+    public enum TypeGroupValue {
+        /**
+         * Any information related to data like data types, classes, vaiables, tables, etc.
+         */
+        DATA,
+        /**
+         * Any information related to execution procedures like method, functions, stored procedures, etc.
+         */
+        EXECUTION,
+        /**
+         * Any information related to resources like configuration files.
+         */
+        RESOURCE,
+        /**
+         * Any information related to hardware assets like computers, servers, switches, etc.
+         */
+        HARDWARE
+    }
 }

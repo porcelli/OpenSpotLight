@@ -63,11 +63,11 @@ public class FullGraphSessionImpl extends SimpleGraphSessionImpl implements
                                    String artifactId, STPartitionFactory factory ) {
         super(sessionProvider, factory);
         this.toSync = new GraphWriterImpl(factory, sessionProvider,
-                                            artifactId, this.location(GraphLocation.CENTRAL));
+                                            artifactId, this.from(GraphLocation.SERVER));
     }
 
     @Override
-    public GraphWriter toSync() {
+    public GraphWriter toServer() {
         return toSync;
     }
 

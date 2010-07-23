@@ -49,8 +49,18 @@
 package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.annotation.IsMetaType;
 
+/**
+ * This special link type represents in metadata context represents a link between a link and target meta node type.<br>
+ * Every link type added to graph should have one MetaLinkTypeConnectsTargetMetaNodeType that links the meta link type and the
+ * target meta node type.
+ * 
+ * @author porcelli
+ * @author feuteston
+ */
 @IsMetaType
+@Description( "Meta Link Type Connects Target Meta Node Type" )
 public abstract class MetaLinkTypeConnectsTargetMetaNodeType extends Link {
 }

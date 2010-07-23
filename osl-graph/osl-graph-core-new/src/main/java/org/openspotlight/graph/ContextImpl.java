@@ -55,15 +55,17 @@ import java.util.Set;
 
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.util.Conversion;
+import org.openspotlight.graph.annotation.InitialWeight;
+import org.openspotlight.graph.internal.NodeSupport;
 
 import com.google.common.collect.ImmutableSet;
 
+@InitialWeight(1)
 public class ContextImpl extends Context {
 
-	public static final int DEFAULT_CONTEXT_WEIGTH = 1;
+	private static final int DEFAULT_CONTEXT_WEIGTH = NodeSupport
+			.findInitialWeight(ContextImpl.class);
 
-	public static final String WEIGTH_PROPERTY="context_weigth";
-	
 	public ContextImpl(String id, Map<String, Serializable> properties,
 			String caption, int weight) {
 		super();
@@ -79,8 +81,6 @@ public class ContextImpl extends Context {
 	private String caption;
 
 	private final String id;
-
-	private final int initialWeightValue = DEFAULT_CONTEXT_WEIGTH;
 
 	private int weightValue;
 
@@ -115,7 +115,7 @@ public class ContextImpl extends Context {
 	}
 
 	public int getInitialWeightValue() {
-		return initialWeightValue;
+		return DEFAULT_CONTEXT_WEIGTH;
 	}
 
 	@Override

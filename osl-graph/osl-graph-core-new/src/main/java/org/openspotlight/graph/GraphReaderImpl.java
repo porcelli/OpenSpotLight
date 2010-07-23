@@ -51,6 +51,7 @@ package org.openspotlight.graph;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Class.forName;
 import static org.openspotlight.common.util.Conversion.convert;
+import static org.openspotlight.common.util.SLCollections.iterableOf;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -62,21 +63,24 @@ import org.openspotlight.common.collection.IteratorBuilder.Converter;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.exception.NodeNotFoundException;
-import org.openspotlight.graph.internal.NodeFactory;
+import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.common.util.SLCollections.ReturnOneEntryCommand;
+import org.openspotlight.graph.internal.NodeSupport;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
 import org.openspotlight.graph.metadata.Metadata;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQueryApi;
-import org.openspotlight.graph.query.SLQueryText;
+import org.openspotlight.graph.query.InvalidQuerySyntaxException;
+import org.openspotlight.graph.query.QueryApi;
+import org.openspotlight.graph.query.QueryText;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.StringIDSupport;
+import org.openspotlight.storage.STStorageSession.STCriteriaBuilder;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Provider;
 
 public class GraphReaderImpl implements GraphReader {
@@ -93,17 +97,6 @@ public class GraphReaderImpl implements GraphReader {
 
 	private final Provider<STStorageSession> sessionProvider;
 	private final GraphLocation location;
-
-	@Override
-	public SLQueryApi createQueryApi() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public SLQueryText createQueryText(String slqlInput)
-			throws SLInvalidQuerySyntaxException {
-		throw new UnsupportedOperationException();
-	}
 
 	@Override
 	public <L extends Link> Iterable<L> getBidirectionalLinks(
@@ -143,15 +136,15 @@ public class GraphReaderImpl implements GraphReader {
 					.andFindUnique(session);
 			String caption = null;
 			Map<String, Serializable> properties = new HashMap<String, Serializable>();
-			int weigth = ContextImpl.DEFAULT_CONTEXT_WEIGTH;
+			int weigth;
 			if (contextNode == null) {
+
+				weigth = NodeSupport.findInitialWeight(ContextImpl.class);
 				contextNode = session.withPartition(partition)
 						.createNewSimpleNode(id);
-				contextNode.setIndexedProperty(session,
-						ContextImpl.WEIGTH_PROPERTY, convert(
-								ContextImpl.DEFAULT_CONTEXT_WEIGTH,
-								String.class));
-
+				contextNode
+						.setIndexedProperty(session, NodeSupport.WEIGTH_VALUE,
+								convert(weigth, String.class));
 			} else {
 				caption = contextNode.getPropertyAsString(session,
 						CONTEXT_CAPTION);
@@ -159,7 +152,7 @@ public class GraphReaderImpl implements GraphReader {
 						CONTEXT_CAPTION), Integer.class);
 				Set<String> names = contextNode.getPropertyNames(session);
 				for (String propertyName : names) {
-					if (propertyName.equals(ContextImpl.WEIGTH_PROPERTY)
+					if (propertyName.equals(NodeSupport.WEIGTH_VALUE)
 							|| propertyName.equals(CONTEXT_CAPTION)) {
 						continue;
 					}
@@ -182,12 +175,12 @@ public class GraphReaderImpl implements GraphReader {
 		try {
 			STStorageSession session = sessionProvider.get();
 			String clazzName = rawStNode.getPropertyAsString(session,
-					NodeFactory.CORRECT_CLASS);
+					NodeSupport.CORRECT_CLASS);
 			if (clazzName == null) {
 				System.err.print("");
 			}
 			Class<?> clazz = forName(clazzName);
-			Node node = NodeFactory.createNode(factory, session, contextId,
+			Node node = NodeSupport.createNode(factory, session, contextId,
 					parentId, (Class<? extends Node>) clazz, rawStNode
 							.getNodeEntryName(), null, null);
 			return node;
@@ -199,47 +192,6 @@ public class GraphReaderImpl implements GraphReader {
 	@Override
 	public Context getContext(Node node) {
 		return node != null ? getContext(node.getContextId()) : null;
-	}
-
-	@Override
-	public <L extends Link> L getLink(Class<L> linkClass, Node source,
-			Node target, LinkDirection linkDirection) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass,
-			Node node, LinkDirection linkDirection) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public <N extends Node> Iterable<N> getLinkedNodes(Node node,
-			Class<N> nodeClass, boolean returnSubTypes,
-			LinkDirection linkDirection) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public Iterable<Node> getLinkedNodes(Node node, LinkDirection linkDirection) {
-		throw new UnsupportedOperationException();
-
-	}
-
-	@Override
-	public Iterable<Link> getLinks(Node source, Node target,
-			LinkDirection linkDirection) {
-		throw new UnsupportedOperationException();
-
 	}
 
 	@Override
@@ -260,7 +212,7 @@ public class GraphReaderImpl implements GraphReader {
 	}
 
 	@Override
-	public Node getNode(String id) throws NodeNotFoundException {
+	public Iterable<Node> getNode(String id) {
 		STStorageSession session = sessionProvider.get();
 		String contextId = StringIDSupport.getPartitionName(id);
 		STPartition partition = this.factory.getPartitionByName(contextId);
@@ -269,8 +221,8 @@ public class GraphReaderImpl implements GraphReader {
 				.andFindUnique(session);
 		if (parentStNode == null)
 			return null;
-		return convertToSLNode(parentStNode.getUniqueKey()
-				.getParentKeyAsString(), contextId, parentStNode);
+		return iterableOf(convertToSLNode(parentStNode.getUniqueKey()
+				.getParentKeyAsString(), contextId, parentStNode));
 
 	}
 
@@ -317,36 +269,6 @@ public class GraphReaderImpl implements GraphReader {
 	}
 
 	@Override
-	public <T extends Node> Iterable<T> findNodes(Class<T> clazz, String name,
-			final Context context, Context... aditionalContexts) {
-		STStorageSession session = sessionProvider.get();
-		Iterable<STNodeEntry> nodes = session.withPartition(
-				factory.getPartitionByName(context.getId())).createCriteria()
-				.withNodeEntry(clazz.getName()).withProperty(NodeFactory.NAME)
-				.equalsTo(name).buildCriteria().andFind(session);
-		Iterable<T> result = IteratorBuilder
-				.<T, STNodeEntry> createIteratorBuilder().withConverter(
-						new Converter<T, STNodeEntry>() {
-
-							@Override
-							public T convert(STNodeEntry o) throws Exception {
-								return (T) convertToSLNode(o.getUniqueKey()
-										.getParentKeyAsString(), context
-										.getId(), o);
-							}
-						}).withItems(nodes).andBuild();
-
-		return result;
-
-	}
-
-	@Override
-	public Iterable<Node> findNodes(String name, final Context context,
-			Context... aditionalContexts) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public <T extends Node> Iterable<T> findNodes(Class<T> clazz,
 			final Context context, Context... aditionalContexts) {
 		STStorageSession session = sessionProvider.get();
@@ -370,32 +292,239 @@ public class GraphReaderImpl implements GraphReader {
 	}
 
 	@Override
-	public <T extends Node> T findUniqueNode(Class<T> clazz, String name,
-			Context context, Context... aditionalContexts) {
-		throw new UnsupportedOperationException();
-
+	public <T extends Node> Iterable<T> findNodesByCaption(Class<T> clazz,
+			String caption, boolean returnSubTypes, Context context,
+			Context... aditionalContexts) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public Node findUniqueNode(String name, Context context,
-			Context... aditionalContexts) {
-		throw new UnsupportedOperationException();
-
+	public <T extends Node> Iterable<T> findNodesByCaption(Class<T> clazz,
+			String caption, boolean returnSubTypes)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public <T extends Node> T findUniqueNode(Class<T> clazz, Context context,
-			Context... aditionalContexts) {
-		throw new UnsupportedOperationException();
+	public Iterable<Node> findNodesByCaption(String caption, Context context,
+			Context... aditionalContexts) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public Iterable<Node> findNodesByCaption(String caption)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Node> Iterable<T> findNodesByCustomProperty(
+			Class<T> clazz, String propertyName, Serializable value,
+			boolean returnSubTypes, Context context,
+			Context... aditionalContexts) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Node> Iterable<T> findNodesByCustomProperty(
+			Class<T> clazz, String propertyName, Serializable value,
+			boolean returnSubTypes) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Node> findNodesByCustomProperty(String propertyName,
+			Serializable value, Context context, Context... aditionalContexts)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Node> findNodesByCustomProperty(String propertyName,
+			Serializable value) throws IllegalArgumentException {
+		Iterable<T> result = internalFindByName(clazz, name, null,
+				returnSubTypes, context, null, null);
+		ImmutableSet.Builder<Iterable<T>> builder = ImmutableSet.builder();
+		builder.add(result);
+		for (Context c : aditionalContexts) {
+			builder.add(internalFindByName(clazz, name, null, returnSubTypes,
+					context, null, null));
+		}
+		return result;
+	}
+
+	@Override
+	public <T extends Node> Iterable<T> findNodesByName(Class<T> clazz,
+			String name, boolean returnSubTypes, final Context context,
+			Context... aditionalContexts) throws IllegalArgumentException {
+		Iterable<T> result = internalFindByName(clazz, name, null,
+				returnSubTypes, context, null, null);
+		ImmutableSet.Builder<Iterable<T>> builder = ImmutableSet.builder();
+		builder.add(result);
+		for (Context c : aditionalContexts) {
+			builder.add(internalFindByName(clazz, name, null, returnSubTypes,
+					context, null, null));
+		}
+		return result;
+	}
+
+	private <T extends Node> Iterable<T> internalFindByName(
+			final Class<T> clazz, final String name, final String caption,
+			final boolean returnSubTypes, final Context context,
+			final String propertyName, final String propertyValue) {
+		STStorageSession session = sessionProvider.get();
+		Class<? extends Node> correctType = NodeSupport.findTargetClass(clazz);
+		STCriteriaBuilder criteriaBuilder = session.withPartition(
+				factory.getPartitionByName(context.getId())).createCriteria()
+				.withNodeEntry(correctType.getName()).withProperty(
+						NodeSupport.NAME).equalsTo(name);
+		if (!returnSubTypes) {
+			criteriaBuilder.and().withProperty(NodeSupport.CORRECT_CLASS)
+					.equals(clazz.getName());
+		}
+		Iterable<STNodeEntry> nodes = criteriaBuilder.buildCriteria().andFind(
+				session);
+		@SuppressWarnings("unchecked")
+		Iterable<T> result = IteratorBuilder
+				.<T, STNodeEntry> createIteratorBuilder().withConverter(
+						new Converter<T, STNodeEntry>() {
+
+							@Override
+							public T convert(STNodeEntry o) throws Exception {
+								return (T) convertToSLNode(o.getUniqueKey()
+										.getParentKeyAsString(), context
+										.getId(), o);
+							}
+						}).withItems(nodes).andBuild();
+		return result;
+	}
+
+	//
+
+	@Override
+	public <T extends Node> Iterable<T> findNodesByName(Class<T> clazz,
+			String name, boolean returnSubTypes)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Node> findNodesByName(String name, Context context,
+			Context... aditionalContexts) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Node> findNodesByName(String name)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Node> Iterable<T> getChildrenNodes(Node node)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <L extends Link> L getLink(Class<L> linkTypeClass, Node source,
+			Node target, LinkType linkDirection)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass,
+			Node node, LinkType linkDirection) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public <N extends Node> Iterable<N> getLinkedNodes(
 			Class<? extends Link> linkClass, Node node, Class<N> nodeClass,
-			boolean returnSubTypes, LinkDirection linkDirection) {
-		throw new UnsupportedOperationException();
+			boolean returnSubTypes, LinkType linkDirection)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public <N extends Node> Iterable<N> getLinkedNodes(Node node,
+			Class<N> nodeClass, boolean returnSubTypes, LinkType linkDirection)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Node> getLinkedNodes(Node node, LinkType linkDirection)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Iterable<Link> getLinks(Node source, Node target,
+			LinkType linkDirection) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node getNode(Context context, String id)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Node> Iterable<T> listNodes(Class<T> clazz,
+			boolean returnSubTypes, Context context,
+			Context... aditionalContexts) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Node> Iterable<T> listNodes(Class<T> clazz,
+			boolean returnSubTypes) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public QueryApi createQueryApi() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public QueryText createQueryText(String query)
+			throws IllegalArgumentException, InvalidQuerySyntaxException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <N extends Node> Iterable<N> getLinkedNodes(
+			Class<? extends Link> linkClass, Node node, Class<N> nodeClass,
+			boolean returnSubTypes, LinkType linkDirection)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -72,8 +72,11 @@ import org.openspotlight.log.LogableObject;
  * The promotion of the node types are automatically handled by OpenSpotLight Graph engine.
  * </p>
  * <p>
- * Nodes can be created as transients by {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientNode}
- * method or as permanent by {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Node, Class, String)} or
+ * Nodes can be created as transients by
+ * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientNode(Context, Class, String)} or
+ * {@link org.openspotlight.graph.manipulation.GraphTransientWriter#createTransientNode(Node, Class, String)} methods or as
+ * permanent by {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Context, Class, String)},
+ * {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Context, Class, String, java.util.Collection, java.util.Collection)}, {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Node, Class, String)} or
  * {@link org.openspotlight.graph.manipulation.GraphWriter#createNode(Node, Class, String, java.util.Collection, java.util.Collection)}
  * methods wich are the most common use.
  * </p>
@@ -86,8 +89,10 @@ import org.openspotlight.log.LogableObject;
  * &nbsp;2. The same node (uniquely identified by Type, Name and Parent) can be stored in more than one
  * {@link org.openspotlight.graph.Context}.
  * </p>
+ * 
+ * @author porcelli
+ * @author feuteston
  */
-
 public abstract class Node implements Element, Comparable<Node>, LogableObject {
 
 	/**
@@ -128,6 +133,8 @@ public abstract class Node implements Element, Comparable<Node>, LogableObject {
 
     /**
      * Returns the contextId where the node is stored.
+     * <p>
+     * <b>Note</b> the context is not directly exposed due performance issues.
      * 
      * @return the contextId
      */
@@ -137,8 +144,10 @@ public abstract class Node implements Element, Comparable<Node>, LogableObject {
      * Returns the parent's node id. <br>
      * The parentId is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and {@link Node#getTypeName})
      * that defines uniquely the node.
+     * <p>
+     * <b>Note</b> the parent node is not directly exposed due performance issues.
      * 
-     * @return
+     * @return the parent id
      */
     public abstract String getParentId();
 }

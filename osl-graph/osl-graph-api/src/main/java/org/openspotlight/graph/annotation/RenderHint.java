@@ -49,23 +49,30 @@
 package org.openspotlight.graph.annotation;
 
 /**
- * The Interface SLRenderHint.
+ * This annotations adds information to a node or link type about how it should be rendered. Its a flexible structure of key-value
+ * pairs enabling define any rendering information. Its possible define several RenderHints for a specific node or link type.<br>
+ * This information is stored as metadata associated to node and link types.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
 public @interface RenderHint {
 
     /**
-     * Name.
+     * Render property name.
+     * <p>
+     * Some examples are Color and Shape.
      * 
-     * @return the string
+     * @return the property name
      */
     String name();
 
     /**
-     * Value.
+     * Render property value.
+     * <p>
+     * Some value examples are: Blue (for color) and Square (for shape).
      * 
-     * @return the string
+     * @return the value
      */
     String value();
 }

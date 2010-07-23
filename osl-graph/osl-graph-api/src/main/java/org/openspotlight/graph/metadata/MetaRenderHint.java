@@ -49,17 +49,25 @@
 package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.annotation.IsMetaType;
+import org.openspotlight.graph.annotation.Property;
 
 /**
- * The Interface SLMetaRenderHint.
+ * Every created key-value {@link org.openspotlight.graph.annotation.RenderHint} declares has a MetaRenderHint node type created
+ * into metadata graph context.
  * 
  * @author Vitor Hugo Chagas
  */
 @IsMetaType
+@Description( "Meta Render Hint" )
 public abstract class MetaRenderHint extends Node {
 
+    @Property
+    @Description( "Property Name" )
     public abstract String getName();
 
+    @Property
+    @Description( "Property Value" )
     public abstract String getValue();
 }

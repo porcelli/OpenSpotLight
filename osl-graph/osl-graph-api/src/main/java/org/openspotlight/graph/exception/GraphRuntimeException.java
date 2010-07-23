@@ -51,17 +51,16 @@ package org.openspotlight.graph.exception;
 import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
- * The Class SLGraphException.
+ * Just an abstract exception that every graph related exception should extend.
  * 
  * @author Vitor Hugo Chagas
  */
-public class GraphRuntimeException extends SLRuntimeException {
+public abstract class GraphRuntimeException extends SLRuntimeException {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -393654158315805194L;
 
     /**
-     * Instantiates a new sL graph exception.
+     * Constructs a new graph related exception.
      * 
      * @param message the message
      * @param cause the cause
@@ -72,7 +71,7 @@ public class GraphRuntimeException extends SLRuntimeException {
     }
 
     /**
-     * Instantiates a new sL graph exception.
+     * Constructs a new graph related exception.
      * 
      * @param message the message
      */
@@ -82,7 +81,7 @@ public class GraphRuntimeException extends SLRuntimeException {
     }
 
     /**
-     * Instantiates a new sL graph exception.
+     * Constructs a new graph related exception.
      * 
      * @param cause the cause
      */

@@ -46,27 +46,26 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.exception;
+
+package org.openspotlight.graph;
 
 /**
- * The Class SLNodeNotFoundException.
+ * Defines the link types.
  * 
- * @author Vitor Hugo Chagas
+ * @author porcelli
+ * @author feuteston
  */
-public class NodeNotFoundException extends GraphException {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
-
+public enum LinkType {
     /**
-     * Instantiates a new sL node not found exception.
-     * 
-     * @param nodeID the node id
-     * @param cause the cause
+     * An unidirectional defines a link between a source and a target node and can be represented as: source -> target
      */
-    public NodeNotFoundException(
-                                    String nodeID, Throwable cause ) {
-        super("Node of " + nodeID + " not found.", cause);
-    }
-
+    UNIDIRECTIONAL,
+    /**
+     * A bidirectional defines a links between two nodes that can be represented as: node1 <-> node2
+     */
+    BIDIRECTIONAL,
+    /**
+     * Used to retrieve any type of link (unidirectional or bidirectional).
+     */
+    ANY
 }

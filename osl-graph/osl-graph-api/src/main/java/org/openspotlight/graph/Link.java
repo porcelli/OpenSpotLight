@@ -48,15 +48,13 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.graph.exception.GraphException;
-
 /**
  * The Link is the way you correlate informations ({@link Node} instances) in OpenSpotLight Graph. Any relationship between nodes
  * are materialized by a creation of a link. <br>
  * A Link is uniquely identified by three data: Type, Source Node and Target Node, and based on these data an algorithm is used to
  * generate an unique id.
  * <p>
- * We have two types of links: <br>
+ * We have two types of links (see {@link LinkType}): <br>
  * &nbsp;- <i>Unidirectional</i> links creates a link between a source and a target node that can be represented as: source ->
  * target<br>
  * &nbsp;- <i>Bidirectional</i> links creates a link between two nodes that can be represented as: node1 <-> node2
@@ -98,9 +96,9 @@ public abstract class Link implements Element, Comparable<Link> {
      * 
      * @param node the source or target node of this links
      * @return the other node
-     * @throws GraphException if the given node is neither the source nor target node of this link
+     * @throws IllegalArgumentException if the given node is neither the source nor target node of this link
      */
-    public abstract Node getOtherSide( Node node ) throws GraphException;
+    public abstract Node getOtherSide( Node node ) throws IllegalArgumentException;
 
     /**
      * Returns the two nodes that are attached to this link.

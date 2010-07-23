@@ -55,7 +55,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by User: feu - Date: Jun 29, 2010 - Time: 2:36:47 PM
+ * This is a mark annotation that defines the root of a node hierarchy.
+ * <p>
+ * All node types that extends the root node of an hierarchy are more specific nodes and as more specific they can be promoted.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Target( {ElementType.TYPE} )

@@ -69,6 +69,8 @@ public interface STStorageSession {
 
     interface STPartitionMethods extends STNodeEntryFactory {
 
+    	Iterable<String> getAllNodeNames();
+    	
         STUniqueKeyBuilder createKey( String nodeEntryName );
 
         Iterable<STNodeEntry> findByCriteria( STCriteria criteria );

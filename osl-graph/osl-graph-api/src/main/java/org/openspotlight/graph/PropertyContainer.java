@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 import org.openspotlight.common.Pair;
-import org.openspotlight.graph.exception.PropertyNotFoundException;
 
 /**
  * Defines a common API for handling properties on {@link Node}, {@link Link} and {@link Context}.
@@ -26,6 +25,7 @@ public interface PropertyContainer {
     /**
      * Sets the property value for the given key. Null is not an accepted property value.
      * 
+     * @param <V> any serializable type
      * @param key the property key
      * @param value the property value
      * @throws IllegalArgumentException if value is null
@@ -46,6 +46,7 @@ public interface PropertyContainer {
      * 
      * @param key the property key
      * @return <code>true</code> if this element has a property accessible through the given key, <code>false</code> otherwise
+     * @throws IllegalArgumentException if key is null
      */
     boolean hasProperty( String key ) throws IllegalArgumentException;
 
@@ -57,17 +58,18 @@ public interface PropertyContainer {
     Iterable<String> getPropertyKeys();
 
     /**
-     * Returns the property value associated with the given key.
+     * Returns the property value associated with the given key or null if property not found.
      * 
+     * @param <V> any serializable type
      * @param key the property key
-     * @return the property value
-     * @throws PropertyNotFoundException if there's no property associated with key
+     * @return the property value or null if property not found
      */
-    <V extends Serializable> V getPropertyValue( String key ) throws PropertyNotFoundException;
+    <V extends Serializable> V getPropertyValue( String key );
 
     /**
      * Returns the property value associated with the given key, or a default value.
      * 
+     * @param <V> any serializable type
      * @param key the property key
      * @param defaultValue the default value that will be returned if no property value was associated with the given key
      * @return the property value associated with the given key or the default value.
@@ -76,13 +78,12 @@ public interface PropertyContainer {
                                                  V defaultValue );
 
     /**
-     * Returns the property value as string. (this is just a sugar method)
+     * Returns the property value as string (this is just a sugar method) or null if property not found.
      * 
      * @param key the property key
-     * @return the property value as string
-     * @throws PropertyNotFoundException if there's no property associated with key
+     * @return the property value as string or null if property not found
      */
-    String getPropertyValueAsString( String key ) throws PropertyNotFoundException;
+    String getPropertyValueAsString( String key );
 
     /**
      * Removes the property associated with the given key if exists. If there's no property associated with the key, nothing will

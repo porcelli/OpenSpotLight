@@ -58,7 +58,7 @@ import org.openspotlight.graph.Node;
  * 
  * @author porcelli
  */
-public interface SLQueryText extends SLQuery {
+public interface QueryText extends SLQuery {
 
     /**
      * Checks for target.
@@ -105,7 +105,7 @@ public interface SLQueryText extends SLQuery {
      * @throws SLQueryException the SL query exception
      */
     public SLQueryResult execute( Map<String, ?> variableValues )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -121,7 +121,7 @@ public interface SLQueryText extends SLQuery {
     public SLQueryResult execute( Map<String, ?> variableValues,
                                   Integer limit,
                                   Integer offset )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -135,7 +135,7 @@ public interface SLQueryText extends SLQuery {
      */
     public SLQueryResult execute( Collection<Node> inputNodes,
                                   Map<String, ?> variableValues )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -153,7 +153,7 @@ public interface SLQueryText extends SLQuery {
                                   Map<String, ?> variableValues,
                                   Integer limit,
                                   Integer offset )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -167,7 +167,7 @@ public interface SLQueryText extends SLQuery {
      */
     public SLQueryResult execute( String[] inputNodesIDs,
                                   Map<String, ?> variableValues )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -185,7 +185,7 @@ public interface SLQueryText extends SLQuery {
                                   Map<String, ?> variableValues,
                                   Integer limit,
                                   Integer offset )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -201,7 +201,7 @@ public interface SLQueryText extends SLQuery {
     public SLQueryResult execute( Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -221,7 +221,7 @@ public interface SLQueryText extends SLQuery {
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -239,7 +239,7 @@ public interface SLQueryText extends SLQuery {
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -261,7 +261,7 @@ public interface SLQueryText extends SLQuery {
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -279,7 +279,7 @@ public interface SLQueryText extends SLQuery {
                                   Map<String, ?> variableValues,
                                   SortMode sortMode,
                                   boolean showSLQL )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute.
@@ -301,7 +301,7 @@ public interface SLQueryText extends SLQuery {
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute target query. If there is no target query, returns empty result.
@@ -311,7 +311,7 @@ public interface SLQueryText extends SLQuery {
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      * @throws SLQueryException the SL query exception
      */
-    public SLQueryResult executeTarget() throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+    public SLQueryResult executeTarget() throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
     /**
      * Execute target. If there is no target query, returns empty result.
@@ -325,6 +325,6 @@ public interface SLQueryText extends SLQuery {
      */
     public SLQueryResult executeTarget( SortMode sortMode,
                                         boolean showSLQL )
-        throws SLInvalidQueryElementException, SLInvalidQuerySyntaxException, SLQueryException;
+        throws SLInvalidQueryElementException, InvalidQuerySyntaxException, SLQueryException;
 
 }

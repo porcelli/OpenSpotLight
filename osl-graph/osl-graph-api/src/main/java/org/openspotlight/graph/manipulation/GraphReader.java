@@ -49,273 +49,512 @@
 
 package org.openspotlight.graph.manipulation;
 
+import java.io.Serializable;
+
 import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Link;
-import org.openspotlight.graph.LinkDirection;
+import org.openspotlight.graph.LinkType;
 import org.openspotlight.graph.Node;
-import org.openspotlight.graph.exception.NodeNotFoundException;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
 import org.openspotlight.graph.metadata.Metadata;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQueryApi;
-import org.openspotlight.graph.query.SLQueryText;
+import org.openspotlight.graph.query.InvalidQuerySyntaxException;
+import org.openspotlight.graph.query.QueryApi;
+import org.openspotlight.graph.query.QueryText;
 
 /**
- * Created by IntelliJ IDEA. User: porcelli Date: 06/07/2010 Time: 11:33:31 To change this template use File | Settings | File
- * Templates.
+ * This interfaces has a list of method that can read/query the graph. The location ({@link org.openspotlight.graph.GraphLocation}
+ * where these method should look for data are defined by graph session.
+ * 
+ * @see org.openspotlight.graph.SimpleGraphSession
+ * @see org.openspotlight.graph.FullGraphSession
+ * @author porcelli
+ * @author feuteston
  */
 public interface GraphReader {
     /**
-     * Creates the api query.
+     * Factory method that constructs a query api interface. <br>
+     * The query api is our internal dsl (fluent api), that enables query the graph.
      * 
-     * @return the sL query
+     * @return the query api
      */
-    SLQueryApi createQueryApi();
+    QueryApi createQueryApi();
 
     /**
-     * Creates the text query.
+     * Factory method that constructs a text based query interface. <br>
+     * The query text is our external dsl that enables query the graph.
      * 
-     * @param slqlInput the slql input
-     * @return the sL query
-     * @throws org.openspotlight.graph.query.SLInvalidQuerySyntaxException invalid syntax
+     * @param query the query content
+     * @return the query text
+     * @throws IllegalArgumentException if the input param is null
+     * @throws InvalidQuerySyntaxException if the input query content has invalid syntax
      */
-    SLQueryText createQueryText( String slqlInput )
-            throws SLInvalidQuerySyntaxException;
+    QueryText createQueryText( String query )
+            throws IllegalArgumentException, InvalidQuerySyntaxException;
 
     /**
-     * Gets the context.
+     * Returns the metadata query interface, that contains most common used methods to query the metadata information. If its
+     * necessary more advanced serach capabilities you can query directly the metadata context.
      * 
-     * @param id the id
-     * @return the context
-     */
-    Context getContext( String id );
-
-    /**
-     * Gets the node by id.
-     * 
-     * @param id the id
-     * @return the node by id
-     * @throws org.openspotlight.graph.exception.SLNodeNotFoundException node not found
-     */
-    Node getNode( String id ) throws NodeNotFoundException;
-
-    /**
-     * Gets the links.
-     * 
-     * @param linkClass the link class
-     * @param source the source
-     * @param target the target
-     * @return the links
-     */
-    <L extends Link> L getLink( Class<L> linkClass,
-                                  Node source,
-                                  Node target,
-                                  LinkDirection linkDirection );
-
-    /**
-     * Gets the links.
-     * 
-     * @param source the source
-     * @param target the target
-     * @return the links
-     */
-    Iterable<Link> getLinks( Node source,
-                               Node target,
-                               LinkDirection linkDirection );
-
-    /**
-     * Gets the bidirectional links by side.
-     * 
-     * @param linkClass the link class
-     * @param side the side
-     * @return the bidirectional links by side
-     */
-    <L extends Link> Iterable<L> getBidirectionalLinks( Class<L> linkClass,
-                                                          Node side );
-
-    /**
-     * Gets the unidirectional links by source.
-     * 
-     * @param linkClass the link class
-     * @param source the source
-     * @return the unidirectional links by source
-     */
-    <L extends Link> Iterable<L> getUnidirectionalLinksBySource(
-                                                                   Class<L> linkClass,
-                                                                   Node source );
-
-    /**
-     * Gets the unidirectional links by target.
-     * 
-     * @param linkClass the link class
-     * @param target the target
-     * @return the unidirectional links by target
-     */
-    <L extends Link> Iterable<L> getUnidirectionalLinksByTarget(
-                                                                   Class<L> linkClass,
-                                                                   Node target );
-
-    /**
-     * Gets the bidirectional links by side.
-     * 
-     * @param side the side
-     * @return the bidirectional links by side
-     */
-    Iterable<Link> getBidirectionalLinks( Node side );
-
-    /**
-     * Gets the unidirectional links by source.
-     * 
-     * @param source the source
-     * @return the unidirectional links by source
-     */
-    Iterable<Link> getUnidirectionalLinksBySource( Node source );
-
-    /**
-     * Gets the unidirectional links by target.
-     * 
-     * @param target the target
-     * @return the unidirectional links by target
-     */
-    Iterable<Link> getUnidirectionalLinksByTarget( Node target );
-
-    /**
-     * Gets the metadata.
-     * 
-     * @return the metadata
+     * @return the metadata query interface
      */
     Metadata getMetadata();
 
     /**
-     * Gets the nodes by link.
+     * Returns the meta link type ({@link MetaLinkType} of a specific link.
      * 
-     * @param linkClass the link class
-     * @return the nodes by link
+     * @param link the link instance
+     * @return meta link type or null if not found
+     * @throws IllegalArgumentException if the input param is null
      */
-    Iterable<Node> getLinkedNodes( Class<? extends Link> linkClass );
+    MetaLinkType getMetaType( Link link ) throws IllegalArgumentException;
 
     /**
-     * Gets the nodes by link.
+     * Returns the meta node type ({@link MetaNodeType} of a specific node.
      * 
-     * @param linkClass the link class
-     * @param node the node
-     * @return the nodes by link
+     * @param node the node instance
+     * @return meta link type or null if not found
+     * @throws IllegalArgumentException if the input param is null
      */
-    Iterable<Node> getLinkedNodes( Class<? extends Link> linkClass,
-                                     Node node,
-                                     LinkDirection linkDirection );
+    MetaNodeType getMetaType( Node node ) throws IllegalArgumentException;
 
     /**
-     * Gets the nodes by link.
+     * Returns the context based on its unique id.
      * 
-     * @param linkClass the link class
-     * @param node the node
-     * @param nodeClass the node class
-     * @param returnSubTypes the return sub types
-     * @param linkDirection the link direction
-     * @return the nodes by link
+     * @param id the unique node id
+     * @return the context
+     * @throws IllegalArgumentException if the input param is null
      */
-    <N extends Node> Iterable<N> getLinkedNodes(
-                                                   Class<? extends Link> linkClass,
-                                                   Node node,
-                                                   Class<N> nodeClass,
-                                                   boolean returnSubTypes,
-                                                   LinkDirection linkDirection );
+    Context getContext( String id ) throws IllegalArgumentException;
 
     /**
-     * Gets the nodes by link.
+     * Returns the context of the node.
      * 
      * @param node the node
-     * @param nodeClass the node class
-     * @param returnSubTypes the return sub types
-     * @return the nodes by link
+     * @return the context
+     * @throws IllegalArgumentException if the input param is null
      */
-    <N extends Node> Iterable<N> getLinkedNodes( Node node,
-                                                   Class<N> nodeClass,
-                                                   boolean returnSubTypes,
-                                                   LinkDirection linkDirection );
+    Context getContext( Node node ) throws IllegalArgumentException;
 
     /**
-     * Gets the nodes by link.
+     * Returns the parent node of the input node.
      * 
      * @param node the node
-     * @return the nodes by link
+     * @return the parent node or null if there is no parent node
+     * @throws IllegalArgumentException if the input param is null
      */
-    Iterable<Node> getLinkedNodes( Node node,
-                                     LinkDirection linkDirection );
+    Node getParentNode( Node node ) throws IllegalArgumentException;
 
     /**
-     * Gets the node.
+     * Returns a node based on its unique id inside the specific context.
      * 
-     * @param clazz the clazz
-     * @param name the name
-     * @return the node
+     * @param context the context to be searched
+     * @param id the node id
+     * @return the node or null if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    Node getNode( Context context,
+                  String id ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list node based on its unique id inside the specific context.
+     * 
+     * @param id the unique node id
+     * @return the node list, empty if not found
+     * @throws IllegalArgumentException if the input param is null
+     */
+    Iterable<Node> getNode( String id ) throws IllegalArgumentException;
+
+    /**
+     * Returns the child node that matches uniquely by node type and name.
+     * 
+     * @param <T> the node type
+     * @param node the parent node
+     * @param clazz the child class node type
+     * @param name the node name
+     * @return the child node or null if not found
+     * @throws IllegalArgumentException if any input param is null
      */
     <T extends Node> T getChildNode( Node node,
-                                       Class<T> clazz,
-                                       String name );
+                                     Class<T> clazz,
+                                     String name ) throws IllegalArgumentException;
 
     /**
-     * Gets the child node.
+     * Returns the children node list of the parameter node type.
      * 
-     * @param clazz the clazz
-     * @return the child node
+     * @param <T> the node type
+     * @param node the parent node
+     * @param clazz the child class node type
+     * @return the children node list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
      */
     <T extends Node> Iterable<T> getChildrenNodes( Node node,
-                                                     Class<T> clazz );
+                                                   Class<T> clazz ) throws IllegalArgumentException;
 
     /**
-     * Gets the parent.
+     * Returns the children node list.
      * 
-     * @return the parent
+     * @param <T> the node type
+     * @param node the parent node
+     * @return the children node list, empty if not found
+     * @throws IllegalArgumentException if the input param is null
      */
-    Node getParentNode( Node node );
+    <T extends Node> Iterable<T> getChildrenNodes( Node node ) throws IllegalArgumentException;
 
     /**
-     * Gets the meta link.
+     * Returns a unique link instance defined by input parameters.
      * 
-     * @return the meta link
+     * @param <L> link type
+     * @param linkTypeClass the link type class
+     * @param source the source node
+     * @param target the target node
+     * @param linkDirection the desired direction
+     * @return the link or null if not found
+     * @throws IllegalArgumentException if any input param is null
      */
-    MetaLinkType getMetaType( Link link );
+    <L extends Link> L getLink( Class<L> linkTypeClass,
+                                Node source,
+                                Node target,
+                                LinkType linkDirection ) throws IllegalArgumentException;
 
     /**
-     * Gets the meta node type.
+     * Returns a list of link instances of any link type that match the source, target and direction.
      * 
-     * @return the meta type or null if its a simple node
+     * @param source the source node
+     * @param target the target node
+     * @param linkDirection the desired direction
+     * @return the link list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
      */
-    MetaNodeType getMetaType( Node node );
+    Iterable<Link> getLinks( Node source,
+                             Node target,
+                             LinkType linkDirection ) throws IllegalArgumentException;
 
     /**
-     * Gets the parent.
+     * Returns a list of bidirectional link instances that matches the link type of a given node.
      * 
-     * @return the parent
+     * @param <L> link type
+     * @param linkClass the desired link type
+     * @param side the node
+     * @return the link list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
      */
-    Context getContext( Node node );
+    <L extends Link> Iterable<L> getBidirectionalLinks( Class<L> linkClass,
+                                                        Node side ) throws IllegalArgumentException;
 
-    <T extends Node> Iterable<T> findNodes( Class<T> clazz,
-                                              String name,
+    /**
+     * Returns a list of unidirectional link instances that matches the link type of a given source node.
+     * 
+     * @param <L> link type
+     * @param linkClass the desired link type
+     * @param source the source node
+     * @return the link list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <L extends Link> Iterable<L> getUnidirectionalLinksBySource( Class<L> linkClass,
+                                                                 Node source ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of unidirectional link instances that matches the link type of a given target node.
+     * 
+     * @param <L> link type
+     * @param linkClass the desired link type
+     * @param target the target node
+     * @return the link list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <L extends Link> Iterable<L> getUnidirectionalLinksByTarget( Class<L> linkClass,
+                                                                 Node target ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of any bidirectional link instances of a given node.
+     * 
+     * @param side the input node
+     * @return the link list, empty if not found
+     * @throws IllegalArgumentException if the input param is null
+     */
+    Iterable<Link> getBidirectionalLinks( Node side ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of any unidirectional link instances of a given source node.
+     * 
+     * @param source the source node
+     * @return the link list, empty if not found
+     * @throws IllegalArgumentException if the input param is null
+     */
+    Iterable<Link> getUnidirectionalLinksBySource( Node source ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of any unidirectional link instances of a given target node.
+     * 
+     * @param target the source node
+     * @return the link list, empty if not found
+     * @throws IllegalArgumentException if the input param is null
+     */
+    Iterable<Link> getUnidirectionalLinksByTarget( Node target ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of linked nodes of an input node based on a specific link type and direction.
+     * 
+     * @param linkClass the link type
+     * @param node the input node
+     * @param linkDirection the direction
+     * @return the linked nodes, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    Iterable<Node> getLinkedNodes( Class<? extends Link> linkClass,
+                                   Node node,
+                                   LinkType linkDirection ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of linked nodes of a specific type (and optionally its subtypes) of an input node based on a specific link
+     * type and direction.
+     * 
+     * @param <N> node type
+     * @param linkClass the link type
+     * @param node the input node
+     * @param nodeClass the node type filter
+     * @param returnSubTypes if returns all subtypes of the node type
+     * @param linkDirection the direction
+     * @return the linked nodes, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <N extends Node> Iterable<N> getLinkedNodes( Class<? extends Link> linkClass,
+                                                 Node node,
+                                                 Class<N> nodeClass,
+                                                 boolean returnSubTypes,
+                                                 LinkType linkDirection ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of linked nodes of a specific type (and optionally its subtypes) of an input node just based on direction.
+     * 
+     * @param <N> node type
+     * @param node the input node
+     * @param nodeClass the node type filter
+     * @param returnSubTypes if returns all subtypes of the node type
+     * @param linkDirection the direction
+     * @return the linked nodes, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <N extends Node> Iterable<N> getLinkedNodes( Node node,
+                                                 Class<N> nodeClass,
+                                                 boolean returnSubTypes,
+                                                 LinkType linkDirection ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of linked nodes of an input node just based on direction.
+     * 
+     * @param node the input node
+     * @param linkDirection the direction
+     * @return the linked nodes, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    Iterable<Node> getLinkedNodes( Node node,
+                                   LinkType linkDirection ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of nodes of a given type (and optionally its subtypes) and context list.
+     * 
+     * @param <T> node type
+     * @param clazz the node type to be listed
+     * @param returnSubTypes the flag that indicates if should return subtypes
+     * @param context the main context
+     * @param aditionalContexts the optional context list
+     * @return the node list, empty if not found
+     * @throws IllegalArgumentException if any input param, except the last varargs, is null
+     */
+    <T extends Node> Iterable<T> listNodes( Class<T> clazz,
+                                            boolean returnSubTypes,
+                                            Context context,
+                                            Context... aditionalContexts ) throws IllegalArgumentException;
+
+    /**
+     * Returns a list of nodes of a given type (and optionally its subtypes) on every context.<br>
+     * <b>Note</b> that this operation has a performance penalty because it needs scan every available context.
+     * 
+     * @param <T> node type
+     * @param clazz the node type to be listed
+     * @param returnSubTypes the flag that indicates if should return subtypes
+     * @return the node list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <T extends Node> Iterable<T> listNodes( Class<T> clazz,
+                                            boolean returnSubTypes ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru input contexts based on type (optionally its subtypes) and name.
+     * 
+     * @param <T> node type
+     * @param clazz the node type to be listed
+     * @param name the node name
+     * @param returnSubTypes the flag that indicates if should return subtypes
+     * @param context the main context
+     * @param aditionalContexts the optional context list
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param, except the last varargs, is null
+     */
+    <T extends Node> Iterable<T> findNodesByName( Class<T> clazz,
+                                                  String name,
+                                                  boolean returnSubTypes,
+                                                  Context context,
+                                                  Context... aditionalContexts ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru entire graph based on type (optionally its subtypes) and name. <br>
+     * <b>Note</b> that this operation has a performance penalty because it needs scan every available context.
+     * 
+     * @param <T> node type
+     * @param clazz the node type to be listed
+     * @param name the node name
+     * @param returnSubTypes the flag that indicates if should return subtypes
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <T extends Node> Iterable<T> findNodesByName( Class<T> clazz,
+                                                  String name,
+                                                  boolean returnSubTypes ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru input contexts based on name.
+     * 
+     * @param name the node name
+     * @param context the main context
+     * @param aditionalContexts the optional context list
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param, except the last varargs, is null
+     */
+    Iterable<Node> findNodesByName( String name,
+                                    Context context,
+                                    Context... aditionalContexts ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru entire graph based on name. <br>
+     * <b>Note</b> that this operation has a performance penalty because it needs scan every available context.
+     * 
+     * @param name the node name
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if the input param is null
+     */
+    Iterable<Node> findNodesByName( String name ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru input contexts based on type (optionally its subtypes) and caption.
+     * 
+     * @param <T> node type
+     * @param clazz the node type to be listed
+     * @param caption the node caption
+     * @param returnSubTypes the flag that indicates if should return subtypes
+     * @param context the main context
+     * @param aditionalContexts the optional context list
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param, except the last varargs, is null
+     */
+    <T extends Node> Iterable<T> findNodesByCaption( Class<T> clazz,
+                                                     String caption,
+                                                     boolean returnSubTypes,
+                                                     Context context,
+                                                     Context... aditionalContexts ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru entire graph based on type (optionally its subtypes) and caption. <br>
+     * <b>Note</b> that this operation has a performance penalty because it needs scan every available context.
+     * 
+     * @param <T> node type
+     * @param clazz the node type to be listed
+     * @param caption the node caption
+     * @param returnSubTypes the flag that indicates if should return subtypes
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <T extends Node> Iterable<T> findNodesByCaption( Class<T> clazz,
+                                                     String caption,
+                                                     boolean returnSubTypes ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru input contexts based on caption.
+     * 
+     * @param caption the node caption
+     * @param context the main context
+     * @param aditionalContexts the optional context list
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param, except the last varargs, is null
+     */
+    Iterable<Node> findNodesByCaption( String caption,
+                                       Context context,
+                                       Context... aditionalContexts ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru entire graph based on caption. <br>
+     * <b>Note</b> that this operation has a performance penalty because it needs scan every available context.
+     * 
+     * @param caption the node caption
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if the input param is null
+     */
+    Iterable<Node> findNodesByCaption( String caption ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru input contexts based on type (optionally its subtypes) and a custom property value.
+     * 
+     * @param <T> node type
+     * @param clazz the node type to be listed
+     * @param propertyName the property name to be searched
+     * @param value the property value that should match
+     * @param returnSubTypes the flag that indicates if should return subtypes
+     * @param context the main context
+     * @param aditionalContexts the optional context list
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param, except the last varargs, is null
+     */
+    <T extends Node> Iterable<T> findNodesByCustomProperty( Class<T> clazz,
+                                                            String propertyName,
+                                                            Serializable value,
+                                                            boolean returnSubTypes,
+                                                            Context context,
+                                                            Context... aditionalContexts ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru entire graph based on type (optionally its subtypes) and a custom property value. <br>
+     * <b>Note</b> that this operation has a performance penalty because it needs scan every available context.
+     * 
+     * @param <T> node type
+     * @param clazz the node type to be listed
+     * @param propertyName the property name to be searched
+     * @param value the property value that should match
+     * @param returnSubTypes the flag that indicates if should return subtypes
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <T extends Node> Iterable<T> findNodesByCustomProperty( Class<T> clazz,
+                                                            String propertyName,
+                                                            Serializable value,
+                                                            boolean returnSubTypes ) throws IllegalArgumentException;
+
+    /**
+     * Search for nodes thru input contexts based on a custom property value.
+     * 
+     * @param propertyName the property name to be searched
+     * @param value the property value that should match
+     * @param context the main context
+     * @param aditionalContexts the optional context list
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param, except the last varargs, is null
+     */
+    Iterable<Node> findNodesByCustomProperty( String propertyName,
+                                              Serializable value,
                                               Context context,
-                                              Context... aditionalContexts );
+                                              Context... aditionalContexts ) throws IllegalArgumentException;
 
-    Iterable<Node> findNodes( String name,
-                                Context context,
-                                Context... aditionalContexts );
+    /**
+     * Search for nodes thru entire graph based on a custom property value. <br>
+     * <b>Note</b> that this operation has a performance penalty because it needs scan every available context.
+     * 
+     * @param propertyName the property name to be searched
+     * @param value the property value that should match
+     * @return the found node list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    Iterable<Node> findNodesByCustomProperty( String propertyName,
+                                              Serializable value ) throws IllegalArgumentException;
 
-    <T extends Node> Iterable<T> findNodes( Class<T> clazz,
-                                              Context context,
-                                              Context... aditionalContexts );
-
-    <T extends Node> T findUniqueNode( Class<T> clazz,
-                                         String name,
-                                         Context context,
-                                         Context... aditionalContexts );
-
-    Node findUniqueNode( String name,
-                           Context context,
-                           Context... aditionalContexts );
-
-    <T extends Node> T findUniqueNode( Class<T> clazz,
-                                         Context context,
-                                         Context... aditionalContexts );
 }

@@ -46,48 +46,26 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.exception;
-
-import org.openspotlight.common.exception.SLException;
+package org.openspotlight.graph.query;
 
 /**
- * The Class SLGraphException.
+ * The Interface SLQueryApi.
  * 
  * @author Vitor Hugo Chagas
  */
-public class GraphException extends SLException {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+public interface QueryApi extends SLQuery, SLSelectFacade {
 
     /**
-     * Instantiates a new sL graph exception.
+     * Gets the collator strength.
      * 
-     * @param message the message
-     * @param cause the cause
+     * @return the collator strength
      */
-    public GraphException(
-                             String message, Throwable cause ) {
-        super(message, cause);
-    }
+    public int getCollatorStrength();
 
     /**
-     * Instantiates a new sL graph exception.
+     * Sets the collator strength.
      * 
-     * @param message the message
+     * @param collatorStrength the new collator strength
      */
-    public GraphException(
-                             String message ) {
-        super(message);
-    }
-
-    /**
-     * Instantiates a new sL graph exception.
-     * 
-     * @param cause the cause
-     */
-    public GraphException(
-                             Throwable cause ) {
-        super(cause);
-    }
+    public void setCollatorStrength( int collatorStrength );
 }

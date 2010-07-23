@@ -49,8 +49,15 @@
 package org.openspotlight.graph.metadata;
 
 import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.annotation.IsMetaType;
 
+/**
+ * This link type is created for each the association between a meta node or link type and a meta render hint.
+ * 
+ * @author porcelli
+ */
 @IsMetaType
+@Description( "Meta Type Rendering" )
 public abstract class MetaTypeRendering extends Link {
 }

@@ -56,36 +56,56 @@ import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
 
 /**
- * Created by IntelliJ IDEA. User: porcelli Date: 06/07/2010 Time: 12:42:51 To change this template use File | Settings | File
- * Templates.
+ * This is the simplest session available of OpenSpotLight graph. <br>
+ * Thru this session you can read any data and write transient data ({@link Node}s and {@link Link}s), this sessions has just a
+ * single method that allows update data into graph server: {@link #flushChangedProperties}.
+ * <p>
+ * <b>Important Note</b> its important to execute {@link #shutdown} method at end of its use.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
 public interface SimpleGraphSession {
 
-    GraphReader location( GraphLocation location );
+    /**
+     * Gives access to graph reader operations.
+     * 
+     * @param location where the reader should look for data
+     * @return the graph reader interface
+     */
+    GraphReader from( GraphLocation location );
 
-    GraphTransientWriter local();
+    /**
+     * Gives access to the interface that enables write transient data.
+     * 
+     * @return the transient writter interface
+     */
+    GraphTransientWriter toTransient();
 
+    /**
+     * Flush the changed properties of the given node into graph server.
+     * 
+     * @param node the node
+     */
     void flushChangedProperties( Node node );
 
     /**
-     * Gets the policy enforcement.
-     * 
-     * @return the policy enforcement
-     */
-    public PolicyEnforcement getPolicyEnforcement();
-
-    /**
-     * Gets the user.
+     * Returns the active user.
      * 
      * @return the user
      */
     User getUser();
 
     /**
-     * Close.
+     * Returns the policy enforcement.
+     * 
+     * @return the policy enforcement
+     */
+    PolicyEnforcement getPolicyEnforcement();
+
+    /**
+     * Should be executed after session use, this method cleans the cache and prevent memory leaks.
      */
     @DisposeMethod( callOnTimeout = true )
-    void close();
-
     void shutdown();
 }

@@ -46,15 +46,28 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02110-1301  USA
  */
-
-package org.openspotlight.graph;
+package org.openspotlight.graph.exception;
 
 /**
- * Created by User: feu - Date: Jun 29, 2010 - Time: 2:38:26 PM
+ * Thrown when a {@link org.openspotlight.graph.Node} can't be created.<br>
+ * When throwed the graph has a seriosly state damage.
+ * 
+ * @author porcelli
+ * @author feuteston
  */
-public enum TypeGroupValue {
-    DATA,
-    EXECUTION,
-    RESOURCE,
-    MACHINE
+public class CantCreateNodeTypeException extends GraphRuntimeException {
+
+    private static final long serialVersionUID = -7949842485637864658L;
+
+    /**
+     * Constructs a new CantCreateNodeTypeException with the given node id and its root cause.
+     * 
+     * @param nodeId the node id
+     * @param cause the cause
+     */
+    public CantCreateNodeTypeException(
+                                            String nodeId, Throwable cause ) {
+        super("Can't create node with id " + nodeId + ".", cause);
+    }
+
 }
