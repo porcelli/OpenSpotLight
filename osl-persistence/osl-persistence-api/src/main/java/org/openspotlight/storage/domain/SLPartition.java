@@ -56,49 +56,72 @@ import org.openspotlight.storage.STPartitionFactory;
  */
 public enum SLPartition implements STPartition {
 
-    GRAPH("graph"),
-    FEDERATION("federation"),
-    SYNTAX_HIGHLIGHT(
-                     "syntax_highlight", FEDERATION),
-    LINE_REFERENCE("line_reference",
-                   GRAPH),
-    SECURITY("security"),
-    LOG("log");
+	GRAPH("graph"), FEDERATION("federation"), SYNTAX_HIGHLIGHT(
+			"syntax_highlight", FEDERATION), LINE_REFERENCE("line_reference",
+			GRAPH), SECURITY("security"), LOG("log");
 
-    public static final STPartitionFactory FACTORY = new STPartitionFactory() {
+	private static class STCustomPartition implements STPartition {
 
-                                                       @Override
-                                                       public STPartition getPartitionByName( String name ) {
-                                                           try {
-                                                               return valueOf(name.toUpperCase());
-                                                           } catch (IllegalArgumentException e) {
-                                                               return GRAPH;
-                                                           }
-                                                       }
+		private final String partitionName;
 
-                                                       @Override
-                                                       public STPartition[] getValues() {
-                                                           return values();
-                                                       }
-                                                   };
+		public STCustomPartition(String partitionName) {
+			this.partitionName = partitionName;
+		}
 
-    private String                         partitionName;
-    private SLPartition                    parent;
+		@Override
+		public String getPartitionName() {
+			return partitionName;
+		}
 
-    SLPartition( String partitionName, SLPartition parent ) {
-        this.partitionName = partitionName;
-        this.parent = parent;
-    }
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof STPartition))
+				return false;
+			STPartition that = (STPartition) o;
+			return this.partitionName.equals(that.getPartitionName());
+		}
+		
+		public int hashCode(){
+			return this.partitionName.hashCode();
+		}
 
-    SLPartition( String partitionName ) {
-        this.partitionName = partitionName;
-    }
+	}
 
-    public String getPartitionName() {
-        return partitionName;
-    }
+	public static final STPartitionFactory FACTORY = new STPartitionFactory() {
 
-    public SLPartition getParent() {
-        return parent;
-    }
+		@Override
+		public STPartition getPartitionByName(String name) {
+			try {
+				return valueOf(name.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				return new STCustomPartition(name);
+			}
+		}
+
+		@Override
+		public STPartition[] getValues() {
+			return values();
+		}
+	};
+
+	private String partitionName;
+	private SLPartition parent;
+
+	SLPartition(String partitionName, SLPartition parent) {
+		this.partitionName = partitionName;
+		this.parent = parent;
+	}
+
+	SLPartition(String partitionName) {
+		this.partitionName = partitionName;
+	}
+
+	public String getPartitionName() {
+		return partitionName;
+	}
+
+	public SLPartition getParent() {
+		return parent;
+	}
 }

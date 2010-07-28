@@ -178,4 +178,16 @@ public class ContextImpl extends Context {
 		properties.put(key, value);
 	}
 
+	public int hashCode() {
+		return this.id.hashCode();
+	}
+
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof ContextImpl))
+			return false;
+		ContextImpl that = (ContextImpl) o;
+		return id.equals(that.id);
+	}
 }

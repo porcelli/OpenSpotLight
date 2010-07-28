@@ -69,66 +69,91 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 /**
- * Created by IntelliJ IDEA. User: feuteston Date: 30/03/2010 Time: 17:45:29 To change this template use File | Settings | File
- * Templates.
+ * Created by IntelliJ IDEA. User: feuteston Date: 30/03/2010 Time: 17:45:29 To
+ * change this template use File | Settings | File Templates.
  */
 @Singleton
 public class JRedisFacoryImpl implements JRedisFactory {
 
-    private final Map<STPartition, JRedisServerDetail> mappedServerConfig;
+	private final Map<STPartition, JRedisServerDetail> mappedServerConfig;
 
-    private ThreadLocal<Map<STPartition, JRedis>>      threadLocalCache = new ThreadLocal<Map<STPartition, JRedis>>();
+	private JRedisServerDetail defaultImpl = null;
 
-    @Inject
-    JRedisFacoryImpl( Map<STPartition, JRedisServerDetail> mappedServerConfig, @StartRedisLocally boolean needsToStart ) {
-        this.mappedServerConfig = mappedServerConfig;
-        if (needsToStart) {
-            STPartition samplePartition = mappedServerConfig.keySet().iterator().next();
-            RedisServerExecutor.INSTANCE.startServerIfNecessary(samplePartition, this);
-        }
-    }
+	private ThreadLocal<Map<STPartition, JRedis>> threadLocalCache = new ThreadLocal<Map<STPartition, JRedis>>();
 
-    public JRedis getFrom( STPartition partition ) {
-        final JRedisServerDetail serverDetail = mappedServerConfig.get(partition);
-        Map<STPartition, JRedis> cache = threadLocalCache.get();
-        if (cache == null) {
-            cache = new HashMap();
-            threadLocalCache.set(cache);
-        }
-        JRedis jRedis = cache.get(partition);
-        try {
-            if (jRedis == null) {
+	@Inject
+	JRedisFacoryImpl(Map<STPartition, JRedisServerDetail> mappedServerConfig,
+			@StartRedisLocally boolean needsToStart) {
+		this.mappedServerConfig = mappedServerConfig;
+		for (JRedisServerDetail d : this.mappedServerConfig.values()) {
+			if (d.isDefaultConfig()) {
+				this.defaultImpl = d;
+				break;
+			}
+		}
+		if (needsToStart) {
+			STPartition samplePartition = mappedServerConfig.keySet()
+					.iterator().next();
+			RedisServerExecutor.INSTANCE.startServerIfNecessary(
+					samplePartition, this);
+		}
+	}
 
-                jRedis = (JRedis)Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[] {JRedis.class}, new InvocationHandler() {
+	public JRedis getFrom(STPartition partition) {
+		JRedisServerDetail tmpServerDetail = mappedServerConfig.get(partition);
+		if (tmpServerDetail == null)
+			tmpServerDetail = defaultImpl;
+		if (tmpServerDetail == null)
+			throw new IllegalArgumentException(
+					"there's no server configured for partition "
+							+ partition.getPartitionName()
+							+ " and no defaultServer created also");
+		final JRedisServerDetail serverDetail = tmpServerDetail;
+		Map<STPartition, JRedis> cache = threadLocalCache.get();
+		if (cache == null) {
+			cache = new HashMap();
+			threadLocalCache.set(cache);
+		}
+		JRedis jRedis = cache.get(partition);
+		try {
+			if (jRedis == null) {
 
-                    private final JRedis redis = new JRedisClient(serverDetail.getServerName(), serverDetail.getServerPort(), serverDetail.getPassword(), serverDetail.getDb());
+				jRedis = (JRedis) Proxy.newProxyInstance(getClass()
+						.getClassLoader(), new Class<?>[] { JRedis.class },
+						new InvocationHandler() {
 
-                    @Override
-                    public Object invoke( Object proxy,
-                                          Method method,
-                                          Object[] args ) throws Throwable {
-                        //                        System.out.println(">>> " + method.getName() + " " + Arrays.toString(args));
-                        return method.invoke(redis, args);
+							private final JRedis redis = new JRedisClient(
+									serverDetail.getServerName(), serverDetail
+											.getServerPort(), serverDetail
+											.getPassword(), serverDetail
+											.getDb());
 
-                    }
-                });
-                cache.put(partition, jRedis);
-            }
-        } catch (Exception e) {
-            throw logAndReturnNew(e, SLRuntimeException.class);
-        }
-        return jRedis;
-    }
+							@Override
+							public Object invoke(Object proxy, Method method,
+									Object[] args) throws Throwable {
+								// System.out.println(">>> " + method.getName()
+								// + " " + Arrays.toString(args));
+								return method.invoke(redis, args);
 
-    public Set<JRedis> getAllActive() {
-        Set<JRedis> result;
-        Map<STPartition, JRedis> cache = threadLocalCache.get();
-        if (cache != null) {
-            result = ImmutableSet.copyOf(cache.values());
-        } else {
-            result = emptySet();
-        }
-        return result;
-    }
+							}
+						});
+				cache.put(partition, jRedis);
+			}
+		} catch (Exception e) {
+			throw logAndReturnNew(e, SLRuntimeException.class);
+		}
+		return jRedis;
+	}
+
+	public Set<JRedis> getAllActive() {
+		Set<JRedis> result;
+		Map<STPartition, JRedis> cache = threadLocalCache.get();
+		if (cache != null) {
+			result = ImmutableSet.copyOf(cache.values());
+		} else {
+			result = emptySet();
+		}
+		return result;
+	}
 
 }

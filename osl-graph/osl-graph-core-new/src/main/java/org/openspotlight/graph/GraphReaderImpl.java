@@ -79,6 +79,7 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.STStorageSession.STCriteriaBuilder;
 import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.w3c.dom.traversal.NodeFilter;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -146,11 +147,13 @@ public class GraphReaderImpl implements GraphReader {
 				contextNode
 						.setIndexedProperty(session, NodeSupport.WEIGTH_VALUE,
 								convert(weigth, String.class));
+				session.flushTransient();
 			} else {
 				caption = contextNode.getPropertyAsString(session,
 						CONTEXT_CAPTION);
-				weigth = convert(contextNode.getPropertyAsString(session,
-						NodeSupport.WEIGTH_VALUE), Integer.class);
+				String weigthAsString = contextNode.getPropertyAsString(session,
+						NodeSupport.WEIGTH_VALUE);
+				weigth = convert(weigthAsString, Integer.class);
 				Set<String> names = contextNode.getPropertyNames(session);
 				for (String propertyName : names) {
 					if (propertyName.equals(NodeSupport.WEIGTH_VALUE)
@@ -183,7 +186,8 @@ public class GraphReaderImpl implements GraphReader {
 			Class<?> clazz = forName(clazzName);
 			Node node = NodeSupport.createNode(factory, session, contextId,
 					parentId, (Class<? extends Node>) clazz, rawStNode
-							.getNodeEntryName(), null, null);
+							.getPropertyAsString(session, NodeSupport.NAME),
+					null, null);
 			return node;
 		} catch (Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -384,15 +388,16 @@ public class GraphReaderImpl implements GraphReader {
 						resultBuilder, partition, clzz);
 			}
 		}
-		
+
 		ImmutableSet.Builder<Iterable<Node>> result = ImmutableSet.builder();
-		for(Iterable<STNodeEntry> results: resultBuilder.build()){
+		for (Iterable<STNodeEntry> results : resultBuilder.build()) {
 			result.add(IteratorBuilder
 					.<Node, STNodeEntry> createIteratorBuilder().withConverter(
 							new Converter<Node, STNodeEntry>() {
 
 								@Override
-								public Node convert(STNodeEntry o) throws Exception {
+								public Node convert(STNodeEntry o)
+										throws Exception {
 									return convertToSLNode(o.getUniqueKey()
 											.getParentKeyAsString(), o
 											.getUniqueKey().getPartition()
@@ -401,7 +406,7 @@ public class GraphReaderImpl implements GraphReader {
 							}).withItems(results).andBuild());
 
 		}
-		
+
 		return SLCollections.iterableOfAll(result.build());
 	}
 

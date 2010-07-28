@@ -66,6 +66,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.text.html.FormSubmitEvent.MethodType;
+
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -74,6 +76,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.Pair.PairEqualsMode;
 import org.openspotlight.common.util.Conversion;
+import org.openspotlight.common.util.Reflection;
+import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Element;
 import org.openspotlight.graph.Link;
@@ -83,6 +87,7 @@ import org.openspotlight.graph.TreeLineReference;
 import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.IsMetaType;
+import org.openspotlight.graph.annotation.TransientProperty;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
@@ -107,6 +112,7 @@ public class NodeSupport {
 	public static final String CORRECT_CLASS = "__node_concrete_class";
 	public static final String NAME = "__node_name";
 	public static final String WEIGTH_VALUE = "__node_weigth_value";
+	public static final String NODE_ID = "__node_weigth_value";
 
 	public static int findInitialWeight(final Class<?> clazz) {
 		return clazz.getAnnotation(InitialWeight.class).value();
@@ -176,8 +182,9 @@ public class NodeSupport {
 
 		for (PropertyDescriptor d : descriptors) {
 
-			propertyTypes.put(d.getName(), (Class<? extends Serializable>) d
-					.getPropertyType());
+			propertyTypes.put(d.getName(),
+					(Class<? extends Serializable>) Reflection
+							.findClassWithoutPrimitives(d.getPropertyType()));
 			Serializable value = node != null ? (Serializable) convert(node
 					.getPropertyAsString(session, d.getName()), d
 					.getPropertyType()) : null;
@@ -208,6 +215,11 @@ public class NodeSupport {
 		if (node != null) {
 			internalNode.cachedEntry = new WeakReference<STNodeEntry>(node);
 			fixTypeData(session, clazz, node);
+			String captionAsString = node.getPropertyAsString(session, CAPTION);
+			if (captionAsString != null) {
+				internalNode.setCaption(captionAsString);
+			}
+
 		}
 		final Enhancer e = new Enhancer();
 		e.setSuperclass(clazz);
@@ -271,6 +283,14 @@ public class NodeSupport {
 			fixTypeData(session, (Class<? extends Node>) node.getClass()
 					.getSuperclass(), internalNode);
 			metadata.setCached(internalNode);
+			internalNode
+					.setIndexedProperty(session, CAPTION, node.getCaption());
+			for (String propName : node.getPropertyKeys()) {
+				Serializable value = node.getPropertyValue(propName);
+				internalNode.setIndexedProperty(session, propName, Conversion
+						.convert(value, String.class));
+			}
+
 		}
 		return internalNode;
 	}
@@ -460,11 +480,13 @@ public class NodeSupport {
 
 		@Override
 		public boolean hasProperty(String key) throws IllegalArgumentException {
-			return propertyTypes.containsKey(key);
+			return propertyTypes.containsKey(Strings
+					.firstLetterToLowerCase(key));
 		}
 
 		@Override
 		public void removeProperty(String key) {
+			key = Strings.firstLetterToLowerCase(key);
 			propertyTypes.remove(key);
 			propertyValues.remove(key);
 			removedProperties.add(key);
@@ -474,15 +496,24 @@ public class NodeSupport {
 		@Override
 		public <V extends Serializable> void setProperty(String key, V value)
 				throws IllegalArgumentException {
+			key = Strings.firstLetterToLowerCase(key);
 			if (!hasProperty(key))
 				throw logAndReturn(new IllegalArgumentException(
 						"invalid property key " + key + " for type "
 								+ getTypeName()));
-			if (value != null && !propertyTypes.get(key).isInstance(value)) {
-				throw logAndReturn(new IllegalArgumentException(
-						"invalid property type " + value.getClass().getName()
-								+ " for type " + getTypeName() + " (should be "
-								+ propertyTypes.get(key).getName() + ")"));
+			Class<? extends Serializable> propType = propertyTypes.get(key);
+			if (value != null) {
+				Class<?> valueType = Reflection
+						.findClassWithoutPrimitives(value.getClass());
+				if (!valueType.isAssignableFrom(propType)) {
+					throw logAndReturn(new IllegalArgumentException(
+							"invalid property type "
+									+ value.getClass().getName() + " for type "
+									+ getTypeName() + " (should be "
+									+ propertyTypes.get(key).getName() + ")"));
+
+				}
+
 			}
 			propertyValues.put(key, value);
 			dirty.set(true);
@@ -529,42 +560,59 @@ public class NodeSupport {
 					|| declarringClass.isInterface()
 					|| declarringClass.equals(Object.class);
 			String methodName = method.getName();
-			if (methodFromSuperClasses
-					&& (declarringClass.equals(Object.class) || Modifier
-							.isAbstract(method.getModifiers()))) {
-				if (isSetterMethod(methodName, method)) {
-					updateValueOnThisImpl(obj, proxy, args);
-				}
+			if (methodFromSuperClasses) {
 				return method.invoke(internalNodeImpl, args);
 			} else {
-				if (isSetterMethod(methodName, method)) {
-					updateValueOnInternalImpl(methodName, method, args);
+				switch (getMethodType(methodName, method)) {
+				case GETTER:
+					return invokeGetter(methodName);
+				case SETTER:
+					return invokeSetter(obj, methodName, method, args, proxy);
 				}
 				return proxy.invokeSuper(obj, args);
 			}
+
 		}
 
-		private void updateValueOnThisImpl(Object obj, MethodProxy method,
-				Object[] args) throws Throwable {
-			method.invokeSuper(obj, args);
-		}
-
-		private void updateValueOnInternalImpl(String methodName,
-				Method method, Object[] args) {
+		private Object invokeSetter(Object obj, String methodName,
+				Method method, Object[] args, MethodProxy methodProxy)
+				throws Throwable {
 			internalNodeImpl.setProperty(methodName.substring(3),
 					(Serializable) args[0]);
+			return null;
+		}
+
+		private Serializable invokeGetter(String methodName) {
+
+			String propertyName = methodName.startsWith("get") ? Strings
+					.firstLetterToLowerCase(methodName.substring(3)) : Strings
+					.firstLetterToLowerCase(methodName.substring(2));// is
+			return internalNodeImpl.getPropertyValue(propertyName);
 
 		}
 
-		private boolean isSetterMethod(String methodName, Method method) {
+		private MethodType getMethodType(String methodName, Method method) {
+			if (method.isAnnotationPresent(TransientProperty.class))
+				return MethodType.OTHER;
 			if (methodName.startsWith("set")
 					&& method.getParameterTypes().length == 1
 					&& internalNodeImpl.hasProperty(methodName.substring(3))) {
-				return true;
+				return MethodType.SETTER;
+			} else if (methodName.startsWith("get")
+					&& method.getParameterTypes().length == 0
+					&& internalNodeImpl.hasProperty(methodName.substring(3))) {
+				return MethodType.GETTER;
+			} else if (methodName.startsWith("is")
+					&& method.getParameterTypes().length == 0
+					&& internalNodeImpl.hasProperty(methodName.substring(2))) {
+				return MethodType.GETTER;
 			}
-			return false;
+			return MethodType.OTHER;
 		}
 
+		private static enum MethodType {
+			SETTER, GETTER, OTHER
+		}
 	}
 
 }

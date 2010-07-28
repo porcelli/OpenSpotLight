@@ -69,74 +69,88 @@ import com.google.inject.Injector;
  */
 public class JRedisStorageSessionTest extends AbstractSTStorageSessionTest {
 
-    private enum JRedisServerConfigExample implements JRedisServerDetail {
-        DEFAULT("localhost", 6379, 0),
-        FIRST("localhost", 6379, 1),
-        SECOND("localhost", 6379, 2);
+	private enum JRedisServerConfigExample implements JRedisServerDetail {
+		DEFAULT("localhost", 6379, 0, false), FIRST("localhost", 6379, 1, false), SECOND(
+				"localhost", 6379, 2, false);
 
-        private JRedisServerConfigExample( String serverName, int serverPort, int db ) {
-            this.serverName = serverName;
-            this.serverPort = serverPort;
-            this.db = db;
-        }
+		private JRedisServerConfigExample(String serverName, int serverPort,
+				int db, boolean defaultConfig) {
+			this.serverName = serverName;
+			this.serverPort = serverPort;
+			this.db = db;
+			this.defaultConfig = defaultConfig;
+		}
 
-        private final String serverName;
+		private final boolean defaultConfig;
+		private final String serverName;
 
-        private final int    db;
+		private final int db;
 
-        public int getDb() {
-            return db;
-        }
+		public int getDb() {
+			return db;
+		}
 
-        public String getPassword() {
-            return null;
-        }
+		public String getPassword() {
+			return null;
+		}
 
-        private final int serverPort;
+		private final int serverPort;
 
-        public String getServerName() {
-            return serverName;
-        }
+		public String getServerName() {
+			return serverName;
+		}
 
-        public int getServerPort() {
-            return serverPort;
-        }
-    }
+		public int getServerPort() {
+			return serverPort;
+		}
 
-    final Map<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap.<STPartition, JRedisServerDetail>builder()
-                                                                                .put(ExamplePartition.DEFAULT, JRedisServerConfigExample.DEFAULT)
-                                                                                .put(ExamplePartition.FIRST, JRedisServerConfigExample.FIRST)
-                                                                                .put(ExamplePartition.SECOND, JRedisServerConfigExample.SECOND).build();
+		@Override
+		public boolean isDefaultConfig() {
+			return defaultConfig;
+		}
+	}
 
-    @Override
-    protected Injector createsAutoFlushInjector() {
-        return Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO, mappedServerConfig, repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
-    }
+	final Map<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap
+			.<STPartition, JRedisServerDetail> builder()
+			.put(ExamplePartition.DEFAULT, JRedisServerConfigExample.DEFAULT)
+			.put(ExamplePartition.FIRST, JRedisServerConfigExample.FIRST).put(
+					ExamplePartition.SECOND, JRedisServerConfigExample.SECOND)
+			.build();
 
-    @Override
-    protected Injector createsExplicitFlushInjector() {
-        return Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.EXPLICIT, mappedServerConfig, repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
-    }
+	@Override
+	protected Injector createsAutoFlushInjector() {
+		return Guice.createInjector(new JRedisStorageModule(
+				STStorageSession.STFlushMode.AUTO, mappedServerConfig,
+				repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
+	}
 
-    @Override
-    protected boolean supportsAutoFlushInjector() {
-        return true;
-    }
+	@Override
+	protected Injector createsExplicitFlushInjector() {
+		return Guice.createInjector(new JRedisStorageModule(
+				STStorageSession.STFlushMode.EXPLICIT, mappedServerConfig,
+				repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
+	}
 
-    @Override
-    protected boolean supportsExplicitFlushInjector() {
-        return true;
-    }
+	@Override
+	protected boolean supportsAutoFlushInjector() {
+		return true;
+	}
 
-    @Override
-    protected boolean supportsAdvancedQueries() {
-        return false;
-    }
+	@Override
+	protected boolean supportsExplicitFlushInjector() {
+		return true;
+	}
 
-    @Override
-    protected void internalCleanPreviousData() throws Exception {
-        JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
-        autoFlushFactory.getFrom(ExamplePartition.DEFAULT).flushall();
-        autoFlushFactory.getFrom(ExamplePartition.DEFAULT).save();
-    }
+	@Override
+	protected boolean supportsAdvancedQueries() {
+		return false;
+	}
+
+	@Override
+	protected void internalCleanPreviousData() throws Exception {
+		JRedisFactory autoFlushFactory = autoFlushInjector
+				.getInstance(JRedisFactory.class);
+		autoFlushFactory.getFrom(ExamplePartition.DEFAULT).flushall();
+		autoFlushFactory.getFrom(ExamplePartition.DEFAULT).save();
+	}
 }

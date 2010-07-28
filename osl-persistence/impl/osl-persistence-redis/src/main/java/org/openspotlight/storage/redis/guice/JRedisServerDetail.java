@@ -54,6 +54,8 @@ package org.openspotlight.storage.redis.guice;
  */
 public interface JRedisServerDetail {
 
+	public boolean isDefaultConfig();
+	
     String getServerName();
 
     int getServerPort();

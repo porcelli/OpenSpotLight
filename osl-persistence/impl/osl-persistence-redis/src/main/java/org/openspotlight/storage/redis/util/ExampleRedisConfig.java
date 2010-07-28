@@ -59,48 +59,57 @@ import com.google.common.collect.ImmutableMap;
  */
 public enum ExampleRedisConfig implements JRedisServerDetail {
 
-    EXAMPLE("localhost", 6379, 0, null);
+	EXAMPLE("localhost", 6379, 0, null, false);
 
-    private final ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig;
+	private final ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig;
 
-    public ImmutableMap<STPartition, JRedisServerDetail> getMappedServerConfig() {
-        return mappedServerConfig;
-    }
+	private final boolean defaultConfig;
 
-    private ExampleRedisConfig( String serverName, int serverPort, int db, String password ) {
-        this.serverName = serverName;
-        this.serverPort = serverPort;
-        this.db = db;
-        this.password = password;
+	public ImmutableMap<STPartition, JRedisServerDetail> getMappedServerConfig() {
+		return mappedServerConfig;
+	}
 
-        ImmutableMap.Builder<STPartition, JRedisServerDetail> builder = ImmutableMap.<STPartition, JRedisServerDetail>builder();
-        for (SLPartition p : SLPartition.values()) {
-            builder.put(p, this);
-        }
-        this.mappedServerConfig = builder.build();
-    }
+	private ExampleRedisConfig(String serverName, int serverPort, int db,
+			String password, boolean defaultConfig) {
+		this.serverName = serverName;
+		this.serverPort = serverPort;
+		this.db = db;
+		this.password = password;
+		this.defaultConfig = defaultConfig;
+		ImmutableMap.Builder<STPartition, JRedisServerDetail> builder = ImmutableMap
+				.<STPartition, JRedisServerDetail> builder();
+		for (SLPartition p : SLPartition.values()) {
+			builder.put(p, this);
+		}
+		this.mappedServerConfig = builder.build();
+	}
 
-    private final String serverName;
+	private final String serverName;
 
-    private final int    serverPort;
+	private final int serverPort;
 
-    private final int    db;
+	private final int db;
 
-    private final String password;
+	private final String password;
 
-    public String getServerName() {
-        return serverName;
-    }
+	public String getServerName() {
+		return serverName;
+	}
 
-    public int getServerPort() {
-        return serverPort;
-    }
+	public int getServerPort() {
+		return serverPort;
+	}
 
-    public int getDb() {
-        return db;
-    }
+	public int getDb() {
+		return db;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public boolean isDefaultConfig() {
+		return defaultConfig;
+	}
 }

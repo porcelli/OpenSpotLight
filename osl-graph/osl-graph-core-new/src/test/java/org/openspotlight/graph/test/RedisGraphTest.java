@@ -68,24 +68,27 @@ public class RedisGraphTest extends AbstractGraphTest {
 
     private enum JRedisServerConfigExample implements JRedisServerDetail {
 
-        GRAPH("localhost", 6379, 0),
-        FEDERATION("localhost", 6379, 1),
+        GRAPH("localhost", 6379, 0,true),
+        FEDERATION("localhost", 6379, 1,false),
         SYNTAX_HIGHLIGHT(
-                         "localhost", 6379, 2),
-        LINE_REFERENCE("localhost", 6379, 3),
+                         "localhost", 6379, 2,false),
+        LINE_REFERENCE("localhost", 6379, 3,false),
         SECURITY(
-                 "localhost", 6379, 4),
-        LOG("localhost", 6379, 5);
+                 "localhost", 6379, 4,false),
+        LOG("localhost", 6379, 5,false);
 
         private JRedisServerConfigExample( String serverName, int serverPort,
-                                           int db ) {
+                                           int db, boolean defaultConfig ) {
             this.serverName = serverName;
             this.serverPort = serverPort;
             this.db = db;
+            this.defaultConfig = defaultConfig;
         }
 
         private final String serverName;
 
+        private final boolean defaultConfig;
+        
         private final int    db;
 
         public int getDb() {
@@ -105,6 +108,11 @@ public class RedisGraphTest extends AbstractGraphTest {
         public int getServerPort() {
             return serverPort;
         }
+
+		@Override
+		public boolean isDefaultConfig() {
+			return defaultConfig;
+		}
     }
 
     final Map<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap
