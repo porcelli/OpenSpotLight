@@ -86,7 +86,7 @@ public class StringIDSupport {
 
     public static String getUniqueKeyAsStringHash( STUniqueKey uniqueKey ) {
         return new StringBuilder().append(uniqueKey.getRepositoryPath().getRepositoryPathAsString()).append(SEP)
-                                  .append(uniqueKey.getPartition()).append(SEP)
+                                  .append(uniqueKey.getPartition().getPartitionName()).append(SEP)
                                   .append(uniqueKey.getLocalKey().getNodeEntryName()).append(SEP)
                                   .append(getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey))).toString();
     }

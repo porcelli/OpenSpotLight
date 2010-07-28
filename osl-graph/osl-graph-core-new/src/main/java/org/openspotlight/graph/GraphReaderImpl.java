@@ -51,21 +51,21 @@ package org.openspotlight.graph;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.Class.forName;
 import static org.openspotlight.common.util.Conversion.convert;
-import static org.openspotlight.common.util.SLCollections.iterableOf;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.common.collection.IteratorBuilder.Converter;
+import org.openspotlight.common.collection.IteratorBuilder.NextItemReferee;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.graph.internal.NodeSupport;
+import org.openspotlight.graph.internal.NodeSupport.NodeMetadata;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
@@ -79,7 +79,6 @@ import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.STStorageSession.STCriteriaBuilder;
 import org.openspotlight.storage.domain.node.STNodeEntry;
-import org.w3c.dom.traversal.NodeFilter;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -118,11 +117,54 @@ public class GraphReaderImpl implements GraphReader {
 
 	}
 
+	private Iterable<Node> internalGetChildrenNodes(Node node, Class<?> clazz,
+			final String name) {
+		final STStorageSession session = sessionProvider.get();
+		STPartition partition = this.factory.getPartitionByName(node
+				.getContextId());
+		NodeMetadata md = (NodeMetadata) node;
+
+		STNodeEntry parentStNode = md.getCached();
+		if (parentStNode == null) {
+			parentStNode = session.withPartition(partition).createCriteria()
+					.withUniqueKeyAsString(node.getId()).buildCriteria()
+					.andFindUnique(session);
+		}
+		Iterable<STNodeEntry> children;
+		if (clazz != null) {
+			children = parentStNode.getChildrenNamed(partition, session, clazz
+					.getName());
+		} else {
+			children = parentStNode.getChildren(partition, session);
+		}
+		return IteratorBuilder.<Node, STNodeEntry> createIteratorBuilder()
+				.withConverter(new Converter<Node, STNodeEntry>() {
+
+					@Override
+					public Node convert(STNodeEntry o) throws Exception {
+						return convertToSLNode(o.getUniqueKey()
+								.getKeyAsString(), o.getUniqueKey()
+								.getPartition().getPartitionName(), o);
+					}
+				}).withItems(children).withReferee(
+						new NextItemReferee<STNodeEntry>() {
+							public boolean canAcceptAsNewItem(STNodeEntry o)
+									throws Exception {
+								if (name == null)
+									return true;
+								return name.equals(o.getPropertyAsString(
+										session, NodeSupport.NAME));
+
+							}
+						}).andBuild();
+
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterable<T> getChildrenNodes(Node node,
 			Class<T> clazz) {
-		throw new UnsupportedOperationException();
-
+		return (Iterable<T>) internalGetChildrenNodes(node, clazz, null);
 	}
 
 	private static final String CONTEXT_CAPTION = "context_caption";
@@ -151,8 +193,8 @@ public class GraphReaderImpl implements GraphReader {
 			} else {
 				caption = contextNode.getPropertyAsString(session,
 						CONTEXT_CAPTION);
-				String weigthAsString = contextNode.getPropertyAsString(session,
-						NodeSupport.WEIGTH_VALUE);
+				String weigthAsString = contextNode.getPropertyAsString(
+						session, NodeSupport.WEIGTH_VALUE);
 				weigth = convert(weigthAsString, Integer.class);
 				Set<String> names = contextNode.getPropertyNames(session);
 				for (String propertyName : names) {
@@ -494,14 +536,13 @@ public class GraphReaderImpl implements GraphReader {
 	public Iterable<Node> findNodesByName(String name)
 			throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public <T extends Node> Iterable<T> getChildrenNodes(Node node)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		return (Iterable<T>) internalGetChildrenNodes(node, null, null);
 	}
 
 	@Override
@@ -509,14 +550,16 @@ public class GraphReaderImpl implements GraphReader {
 			Node target, LinkType linkDirection)
 			throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
 	public Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass,
 			Node node, LinkType linkDirection) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
@@ -524,28 +567,32 @@ public class GraphReaderImpl implements GraphReader {
 			Class<N> nodeClass, boolean returnSubTypes, LinkType linkDirection)
 			throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
 	public Iterable<Node> getLinkedNodes(Node node, LinkType linkDirection)
 			throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
 	public Iterable<Link> getLinks(Node source, Node target,
 			LinkType linkDirection) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
 	public Node getNode(Context context, String id)
 			throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
@@ -553,27 +600,31 @@ public class GraphReaderImpl implements GraphReader {
 			boolean returnSubTypes, Context context,
 			Context... aditionalContexts) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
 	public <T extends Node> Iterable<T> listNodes(Class<T> clazz,
 			boolean returnSubTypes) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
 	public QueryApi createQueryApi() {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
 	public QueryText createQueryText(String query)
 			throws IllegalArgumentException, InvalidQuerySyntaxException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 	@Override
@@ -582,7 +633,8 @@ public class GraphReaderImpl implements GraphReader {
 			boolean returnSubTypes, LinkType linkDirection)
 			throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+
 	}
 
 }
