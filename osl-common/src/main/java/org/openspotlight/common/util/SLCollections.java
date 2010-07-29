@@ -55,19 +55,20 @@ import static java.util.Collections.unmodifiableMap;
 import static java.util.Collections.unmodifiableSet;
 import static org.openspotlight.common.util.Exceptions.logAndThrow;
 
-import java.awt.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -234,11 +235,11 @@ public class SLCollections {
 		return temp;
 	}
 
-	public static <T> Set<T> iterableToSet(Iterable<T> iterable) {
+	public static <T> java.util.List<T> iterableToList(Iterable<T> iterable) {
 		if (iterable == null)
-			return Collections.emptySet();
+			return Collections.emptyList();
 		Iterator<T> it = iterable.iterator();
-		ImmutableSet.Builder<T> builder = ImmutableSet.builder();
+		ImmutableList.Builder<T> builder = ImmutableList.builder();
 		while (it.hasNext()) {
 			builder.add(it.next());
 		}

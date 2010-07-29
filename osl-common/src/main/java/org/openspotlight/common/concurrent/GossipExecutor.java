@@ -100,6 +100,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
          */
         public Thread newThread( final Runnable r ) {
             final Thread t = wrapped.newThread(r);
+            t.setDaemon(true);
             t.setName(poolName + "_" + t.getName());
             for (final ThreadListener l : listeners) {
                 l.afterCreatingThread(t);

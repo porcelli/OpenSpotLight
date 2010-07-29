@@ -62,6 +62,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -76,6 +77,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.Pair.PairEqualsMode;
 import org.openspotlight.common.util.Conversion;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.Context;
@@ -152,7 +155,7 @@ public class NodeSupport {
 	@SuppressWarnings("unchecked")
 	private static <T extends Node> T createNode(STPartitionFactory factory,
 			STStorageSession session, String contextId, String parentId,
-			Class<T> clazz, String name,
+			Class<T> clazz, String name, boolean needsToVerifyType,
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion,
 			STRepositoryPath repositoryPath) {
@@ -191,16 +194,18 @@ public class NodeSupport {
 			propertyValues.put(d.getName(), value);
 		}
 		int weigthValue;
-		if (propertyValues.containsKey(WEIGTH_VALUE)) {
-			weigthValue = Conversion.convert(propertyValues.get(WEIGTH_VALUE),
-					Integer.class);
+		Set<String> stNodeProperties = node != null ? node
+				.getPropertyNames(session) : Collections.<String> emptySet();
+		if (stNodeProperties.contains(WEIGTH_VALUE)) {
+			weigthValue = Conversion.convert(node.getPropertyAsString(session,
+					WEIGTH_VALUE), Integer.class);
 		} else {
 			weigthValue = findInitialWeight(clazz);
 		}
 		Class<? extends Node> savedClass = null;
-		if (propertyValues.containsKey(CORRECT_CLASS)) {
-			savedClass = Conversion.convert(propertyValues.get(CORRECT_CLASS),
-					Class.class);
+		if (stNodeProperties.contains(CORRECT_CLASS)) {
+			savedClass = Conversion.convert(node.getPropertyAsString(session,
+					CORRECT_CLASS), Class.class);
 		}
 		BigInteger savedClassNumericType = savedClass != null ? findNumericType(savedClass)
 				: null;
@@ -214,7 +219,9 @@ public class NodeSupport {
 				propertyValues, parentId, contextId, weigthValue);
 		if (node != null) {
 			internalNode.cachedEntry = new WeakReference<STNodeEntry>(node);
-			fixTypeData(session, clazz, node);
+			if (needsToVerifyType) {
+				fixTypeData(session, classToUse, node);
+			}
 			String captionAsString = node.getPropertyAsString(session, CAPTION);
 			if (captionAsString != null) {
 				internalNode.setCaption(captionAsString);
@@ -222,7 +229,7 @@ public class NodeSupport {
 
 		}
 		final Enhancer e = new Enhancer();
-		e.setSuperclass(clazz);
+		e.setSuperclass(classToUse);
 		e.setInterfaces(new Class<?>[] { NodeMetadata.class });
 		e.setCallback(new NodeInterceptor(internalNode));
 		return (T) e.create(new Class[0], new Object[0]);
@@ -230,17 +237,20 @@ public class NodeSupport {
 
 	private static void fixTypeData(STStorageSession session,
 			Class<? extends Node> clazz, STNodeEntry node) {
-		String weigthAsString = node.getPropertyAsString(session, NUMERIC_TYPE);
-		BigInteger weightFromTargetNodeType = findNumericType(clazz);
-		if (weigthAsString != null) {
-			BigInteger weightAsBigInteger = new BigInteger(weigthAsString);
-			if (weightAsBigInteger.compareTo(weightFromTargetNodeType) > 0) {
+		String numericTypeAsString = node.getPropertyAsString(session,
+				NUMERIC_TYPE);
+		BigInteger numericTypeFromTargetNodeType = findNumericType(clazz);
+		if (numericTypeAsString != null) {
+			BigInteger numericTypeAsBigInteger = new BigInteger(
+					numericTypeAsString);
+			if (numericTypeFromTargetNodeType
+					.compareTo(numericTypeAsBigInteger) > 0) {
 				setWeigthAndTypeOnNode(session, node, clazz,
-						weightFromTargetNodeType);
+						numericTypeFromTargetNodeType);
 			}
 		} else {
 			setWeigthAndTypeOnNode(session, node, clazz,
-					weightFromTargetNodeType);
+					numericTypeFromTargetNodeType);
 		}
 	}
 
@@ -250,6 +260,7 @@ public class NodeSupport {
 		node.setIndexedProperty(session, NUMERIC_TYPE, weightFromTargetNodeType
 				.toString());
 		node.setIndexedProperty(session, CORRECT_CLASS, type.getName());
+
 	}
 
 	public static Class<? extends Node> findTargetClass(final Class<?> type) {
@@ -271,7 +282,8 @@ public class NodeSupport {
 	}
 
 	public static STNodeEntry retrievePreviousNode(STPartitionFactory factory,
-			STStorageSession session, Context context, Node node) {
+			STStorageSession session, Context context, Node node,
+			boolean needsToVerifyType) {
 		NodeMetadata metadata = (NodeMetadata) node;
 		STNodeEntry internalNode = metadata.getCached();
 		if (internalNode == null) {
@@ -280,8 +292,10 @@ public class NodeSupport {
 					findTargetClass(node.getClass()).getName()).withKeyEntry(
 					NAME, node.getName())
 					.withParentAsString(node.getParentId()).andCreate();
-			fixTypeData(session, (Class<? extends Node>) node.getClass()
-					.getSuperclass(), internalNode);
+			if (needsToVerifyType) {
+				fixTypeData(session, (Class<? extends Node>) node.getClass()
+						.getSuperclass(), internalNode);
+			}
 			metadata.setCached(internalNode);
 			internalNode
 					.setIndexedProperty(session, CAPTION, node.getCaption());
@@ -297,11 +311,12 @@ public class NodeSupport {
 
 	public static <T extends Node> T createNode(STPartitionFactory factory,
 			STStorageSession session, String contextId, String parentId,
-			Class<T> clazz, String name,
+			Class<T> clazz, String name, boolean needsToVerifyType,
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
 		return createNode(factory, session, contextId, parentId, clazz, name,
-				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion, null);
+				needsToVerifyType, linkTypesForLinkDeletion,
+				linkTypesForLinkedNodeDeletion, null);
 
 	}
 
@@ -324,12 +339,39 @@ public class NodeSupport {
 			if (!(obj instanceof Node))
 				return false;
 			Node slnode = (Node) obj;
-			return getId().equals(slnode.getId());
+
+			boolean result = getId().equals(slnode.getId())
+					&& Equals.eachEquality(getParentId(), slnode.getParentId())
+					&& Equals.eachEquality(getContextId(), slnode
+							.getContextId());
+			// if (!result) {
+			// System.out.println(result + " ------------------------");
+			// System.out.println(" >>> this.name      " + getName());
+			// System.out.println(" >>> this.id        " + getId());
+			// System.out.println(" >>> this.parentId  " + getParentId());
+			// System.out.println(" >>> this.contextId " + getContextId());
+			// System.out.println(" >>> that.name      " + slnode.getName());
+			// System.out.println(" >>> that.id        " + slnode.getId());
+			// System.out.println(" >>> that.parentId  " +
+			// slnode.getParentId());
+			// System.out.println(" >>> that.contextId "
+			// + slnode.getContextId());
+			// System.out.println(" ------------------------");
+			// }
+			return result;
 		}
+
+		private volatile int hashCode = 0;
 
 		@Override
 		public int hashCode() {
-			return getId().hashCode();
+			int result = hashCode;
+			if (result == 0) {
+				result = HashCodes.hashOf(getId(), getParentId(),
+						getContextId());
+				hashCode = result;
+			}
+			return result;
 		}
 
 		@Override

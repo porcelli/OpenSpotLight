@@ -62,7 +62,7 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.Reflection.unwrapCollectionFromMethodReturn;
 import static org.openspotlight.common.util.Reflection.unwrapMapFromMethodReturn;
-import static org.openspotlight.common.util.SLCollections.iterableToSet;
+import static org.openspotlight.common.util.SLCollections.iterableToList;
 
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
@@ -306,7 +306,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             for (SimpleNodeType beanBeenSaved : data.childrenToSave) {
                 internalConvertBeanToNode(context, data.propertyName, beanBeenSaved, newNodeEntry);
             }
-            context.allNodes.addAll(iterableToSet(newNodeEntry.getChildrenNamed(currentPartition, currentSession, internalGetNodeName(data.nodeType))));
+            context.allNodes.addAll(iterableToList(newNodeEntry.getChildrenNamed(currentPartition, currentSession, internalGetNodeName(data.nodeType))));
         }
 
     }
@@ -525,11 +525,9 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
 
             if (!SimpleNodeType.class.isAssignableFrom(nodeType)) throw new IllegalStateException("wrong child type");
             String childrenName = internalGetNodeName(nodeType);
-            Set<STNodeEntry> children = iterableToSet(node.getChildrenNamed(currentPartition, currentSession, childrenName));
+            Iterable<STNodeEntry> children = iterableToList(node.getChildrenNamed(currentPartition, currentSession, childrenName));
             children = filterChildrenWithProperty(children, descriptor.getName());
             List<Object> childrenAsBeans = newLinkedList();
-            if ((!isMultiple) && children.size() > 1)
-                throw new IllegalStateException("more than one child on a unique property");
             for (STNodeEntry child : children) {
                 childrenAsBeans.add(internalConvertNodeToBean(context, child, bean));
             }
@@ -548,10 +546,10 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
         }
     }
 
-    private Set<STNodeEntry> filterChildrenWithProperty( Set<STNodeEntry> children,
+    private Iterable<STNodeEntry> filterChildrenWithProperty( Iterable<STNodeEntry> children,
                                                          String name ) {
         if (name == null) return children;
-        Set<STNodeEntry> filtered = newHashSet();
+        List<STNodeEntry> filtered = newLinkedList();
         for (STNodeEntry e : children) {
             String propertyValue = e.getPropertyAsString(currentSession, NODE_PROPERTY_NAME);
             if (name.equals(propertyValue)) filtered.add(e);

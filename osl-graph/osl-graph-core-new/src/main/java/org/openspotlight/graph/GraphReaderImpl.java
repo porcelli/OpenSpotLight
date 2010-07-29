@@ -117,7 +117,7 @@ public class GraphReaderImpl implements GraphReader {
 
 	}
 
-	private Iterable<Node> internalGetChildrenNodes(Node node, Class<?> clazz,
+	private Iterable<Node> internalGetChildrenNodes(final Node node, Class<?> clazz,
 			final String name) {
 		final STStorageSession session = sessionProvider.get();
 		STPartition partition = this.factory.getPartitionByName(node
@@ -142,9 +142,8 @@ public class GraphReaderImpl implements GraphReader {
 
 					@Override
 					public Node convert(STNodeEntry o) throws Exception {
-						return convertToSLNode(o.getUniqueKey()
-								.getKeyAsString(), o.getUniqueKey()
-								.getPartition().getPartitionName(), o);
+						return convertToSLNode(node.getId(), o.getUniqueKey()
+								.getPartition().getPartitionName(), o, false);
 					}
 				}).withItems(children).withReferee(
 						new NextItemReferee<STNodeEntry>() {
@@ -217,19 +216,16 @@ public class GraphReaderImpl implements GraphReader {
 	}
 
 	private Node convertToSLNode(String parentId, String contextId,
-			STNodeEntry rawStNode) {
+			STNodeEntry rawStNode, boolean needsToVerifyType) {
 		try {
 			STStorageSession session = sessionProvider.get();
 			String clazzName = rawStNode.getPropertyAsString(session,
 					NodeSupport.CORRECT_CLASS);
-			if (clazzName == null) {
-				System.err.print("");
-			}
 			Class<?> clazz = forName(clazzName);
 			Node node = NodeSupport.createNode(factory, session, contextId,
 					parentId, (Class<? extends Node>) clazz, rawStNode
 							.getPropertyAsString(session, NodeSupport.NAME),
-					null, null);
+					needsToVerifyType, null, null);
 			return node;
 		} catch (Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -268,9 +264,9 @@ public class GraphReaderImpl implements GraphReader {
 				.andFindUnique(session);
 		if (parentStNode == null)
 			return null;
-		return SLCollections
-				.iterableOf(convertToSLNode(parentStNode.getUniqueKey()
-						.getParentKeyAsString(), contextId, parentStNode), null);
+		return SLCollections.iterableOf(convertToSLNode(parentStNode
+				.getUniqueKey().getParentKeyAsString(), contextId,
+				parentStNode, false), null);
 
 	}
 
@@ -286,7 +282,8 @@ public class GraphReaderImpl implements GraphReader {
 		if (parentStNode == null)
 			return null;
 		return convertToSLNode(parentStNode.getUniqueKey()
-				.getParentKeyAsString(), node.getContextId(), parentStNode);
+				.getParentKeyAsString(), node.getContextId(), parentStNode,
+				false);
 
 	}
 
@@ -443,7 +440,7 @@ public class GraphReaderImpl implements GraphReader {
 									return convertToSLNode(o.getUniqueKey()
 											.getParentKeyAsString(), o
 											.getUniqueKey().getPartition()
-											.getPartitionName(), o);
+											.getPartitionName(), o, false);
 								}
 							}).withItems(results).andBuild());
 

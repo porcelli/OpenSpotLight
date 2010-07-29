@@ -88,7 +88,7 @@ public class GraphWriterImpl implements GraphWriter {
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
 		STStorageSession session = sessionProvider.get();
 		T newNode = NodeSupport.createNode(factory, session, context.getId(),
-				null, clazz, name, linkTypesForLinkDeletion,
+				null, clazz, name, true, linkTypesForLinkDeletion,
 				linkTypesForLinkedNodeDeletion);
 		dirtyNodes.add(newNode);
 		return newNode;
@@ -108,7 +108,8 @@ public class GraphWriterImpl implements GraphWriter {
 	public void removeNode(Node node) {
 		STStorageSession session = sessionProvider.get();
 		STNodeEntry stNodeEntry = NodeSupport.retrievePreviousNode(factory,
-				session, graphReader.getContext(node.getContextId()), node);
+				session, graphReader.getContext(node.getContextId()), node,
+				true);
 		session.removeNode(stNodeEntry);
 	}
 
@@ -151,7 +152,7 @@ public class GraphWriterImpl implements GraphWriter {
 			throws IllegalArgumentException {
 		STStorageSession session = sessionProvider.get();
 		T newNode = NodeSupport.createNode(factory, session, parent
-				.getContextId(), parent.getId(), clazz, name,
+				.getContextId(), parent.getId(), clazz, name, true,
 				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
 		dirtyNodes.add(newNode);
 		return newNode;
@@ -169,7 +170,7 @@ public class GraphWriterImpl implements GraphWriter {
 		STStorageSession session = sessionProvider.get();
 		for (Node n : this.dirtyNodes) {
 			NodeSupport.retrievePreviousNode(factory, session, graphReader
-					.getContext(n.getContextId()), n);
+					.getContext(n.getContextId()), n, true);
 		}
 		session.flushTransient();
 
