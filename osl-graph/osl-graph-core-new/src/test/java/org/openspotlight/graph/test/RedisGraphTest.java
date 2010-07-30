@@ -66,81 +66,79 @@ import com.google.inject.Injector;
 
 public class RedisGraphTest extends AbstractGraphTest {
 
-    private enum JRedisServerConfigExample implements JRedisServerDetail {
+	private enum JRedisServerConfigExample implements JRedisServerDetail {
 
-        GRAPH("localhost", 6379, 0,true),
-        FEDERATION("localhost", 6379, 1,false),
-        SYNTAX_HIGHLIGHT(
-                         "localhost", 6379, 2,false),
-        LINE_REFERENCE("localhost", 6379, 3,false),
-        SECURITY(
-                 "localhost", 6379, 4,false),
-        LOG("localhost", 6379, 5,false);
+		GRAPH("localhost", 6379, 0, true), FEDERATION("localhost", 6379, 1,
+				false), SYNTAX_HIGHLIGHT("localhost", 6379, 2, false), LINE_REFERENCE(
+				"localhost", 6379, 3, false), SECURITY("localhost", 6379, 4,
+				false), LOG("localhost", 6379, 5, false);
 
-        private JRedisServerConfigExample( String serverName, int serverPort,
-                                           int db, boolean defaultConfig ) {
-            this.serverName = serverName;
-            this.serverPort = serverPort;
-            this.db = db;
-            this.defaultConfig = defaultConfig;
-        }
+		private JRedisServerConfigExample(String serverName, int serverPort,
+				int db, boolean defaultConfig) {
+			this.serverName = serverName;
+			this.serverPort = serverPort;
+			this.db = db;
+			this.defaultConfig = defaultConfig;
+		}
 
-        private final String serverName;
+		private final String serverName;
 
-        private final boolean defaultConfig;
-        
-        private final int    db;
+		private final boolean defaultConfig;
 
-        public int getDb() {
-            return db;
-        }
+		private final int db;
 
-        public String getPassword() {
-            return null;
-        }
+		public int getDb() {
+			return db;
+		}
 
-        private final int serverPort;
+		public String getPassword() {
+			return null;
+		}
 
-        public String getServerName() {
-            return serverName;
-        }
+		private final int serverPort;
 
-        public int getServerPort() {
-            return serverPort;
-        }
+		public String getServerName() {
+			return serverName;
+		}
+
+		public int getServerPort() {
+			return serverPort;
+		}
 
 		@Override
 		public boolean isDefaultConfig() {
 			return defaultConfig;
 		}
-    }
+	}
 
-    final Map<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap
-                                                                                .<STPartition, JRedisServerDetail>builder().put(
-                                                                                                                                SLPartition.FEDERATION,
-                                                                                                                                JRedisServerConfigExample.FEDERATION).put(
-                                                                                                                                                                          SLPartition.GRAPH, JRedisServerConfigExample.GRAPH).put(
-                                                                                                                                                                                                                                  SLPartition.LINE_REFERENCE,
-                                                                                                                                                                                                                                  JRedisServerConfigExample.LINE_REFERENCE).put(
-                                                                                                                                                                                                                                                                                SLPartition.LOG, JRedisServerConfigExample.LOG).put(
-                                                                                                                                                                                                                                                                                                                                    SLPartition.SECURITY, JRedisServerConfigExample.SECURITY)
-                                                                                .put(SLPartition.SYNTAX_HIGHLIGHT,
-                                                                                     JRedisServerConfigExample.SYNTAX_HIGHLIGHT).build();
+	final Map<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap
+			.<STPartition, JRedisServerDetail> builder().put(
 
-    @Override
-    protected void clearData() throws Exception {
-        JRedisFactory autoFlushFactory = injector
-                                                 .getInstance(JRedisFactory.class);
-        autoFlushFactory.getFrom(SLPartition.GRAPH).flushall();
-        autoFlushFactory.getFrom(SLPartition.GRAPH).save();
-    }
+			SLPartition.FACTORY.getPartitionByName("graph"),
+					JRedisServerConfigExample.GRAPH).put(
+					SLPartition.FEDERATION,
+					JRedisServerConfigExample.FEDERATION).put(
+					SLPartition.LINE_REFERENCE,
+					JRedisServerConfigExample.LINE_REFERENCE).put(
+					SLPartition.LOG, JRedisServerConfigExample.LOG).put(
+					SLPartition.SECURITY, JRedisServerConfigExample.SECURITY)
+			.put(SLPartition.SYNTAX_HIGHLIGHT,
+					JRedisServerConfigExample.SYNTAX_HIGHLIGHT).build();
 
-    @Override
-    protected Injector createInjector() throws Exception {
-        return Guice.createInjector(new JRedisStorageModule(
-                                                            STStorageSession.STFlushMode.AUTO, mappedServerConfig,
-                                                            repositoryPath("repositoryPath"), SLPartition.FACTORY),
-                                    new GraphModule());
-    }
+	@Override
+	protected void clearData() throws Exception {
+		JRedisFactory autoFlushFactory = injector
+				.getInstance(JRedisFactory.class);
+		autoFlushFactory.getFrom(SLPartition.FEDERATION).flushall();
+		autoFlushFactory.getFrom(SLPartition.FEDERATION).save();
+	}
+
+	@Override
+	protected Injector createInjector() throws Exception {
+		return Guice.createInjector(new JRedisStorageModule(
+				STStorageSession.STFlushMode.AUTO, mappedServerConfig,
+				repositoryPath("repositoryPath"), SLPartition.FACTORY),
+				new GraphModule());
+	}
 
 }

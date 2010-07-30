@@ -56,9 +56,8 @@ import org.openspotlight.storage.STPartitionFactory;
  */
 public enum SLPartition implements STPartition {
 
-	GRAPH("graph"), FEDERATION("federation"), SYNTAX_HIGHLIGHT(
-			"syntax_highlight", FEDERATION), LINE_REFERENCE("line_reference",
-			GRAPH), SECURITY("security"), LOG("log");
+	FEDERATION("federation"), SYNTAX_HIGHLIGHT("syntax_highlight", FEDERATION), LINE_REFERENCE(
+			"line_reference"), SECURITY("security"), LOG("log");
 
 	private static class STCustomPartition implements STPartition {
 
@@ -81,8 +80,8 @@ public enum SLPartition implements STPartition {
 			STPartition that = (STPartition) o;
 			return this.partitionName.equals(that.getPartitionName());
 		}
-		
-		public int hashCode(){
+
+		public int hashCode() {
 			return this.partitionName.hashCode();
 		}
 

@@ -450,6 +450,8 @@ public abstract class AbstractGraphTest {
 		List<JavaType> nodes2 = SLCollections.iterableToList(simpleFromLocation
 				.findNodesByName(JavaType.class, null, true, context1));
 
+		assertThat(nodes2.contains(rootClassNode1), is(false));
+		assertThat(nodes2.contains(rootClassNode2), is(false));
 		assertThat(nodes2.size(), is(0));
 	}
 

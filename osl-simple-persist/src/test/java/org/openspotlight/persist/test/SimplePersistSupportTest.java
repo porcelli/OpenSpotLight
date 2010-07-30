@@ -101,10 +101,10 @@ public class SimplePersistSupportTest {
      */
     @Before
     public void setupSession() throws Exception {
-        JRedis jRedis = autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
+        JRedis jRedis = autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.FEDERATION);
         jRedis.flushall();
         session = autoFlushInjector.getInstance(STStorageSession.class);
-        simplePersist = new SimplePersistImpl(session, SLPartition.GRAPH);
+        simplePersist = new SimplePersistImpl(session, SLPartition.FEDERATION);
     }
 
     @Test
@@ -761,7 +761,7 @@ public class SimplePersistSupportTest {
         propertyObj.setName("name");
         propertyObj.setValue(2);
         obj2.setPropertyObj(propertyObj);
-        STNodeEntry parentNode = session.withPartition(SLPartition.GRAPH).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final STNodeEntry node = simplePersist.convertBeanToNode(parentNode, obj3);
 
@@ -788,7 +788,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindCollectionItemsWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.GRAPH).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final RootObj root = new RootObj();
         final LevelOneObj levelOne = new LevelOneObj();
@@ -818,7 +818,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindJcrNodeByItsKeyWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.GRAPH).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
@@ -891,7 +891,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindJcrNodeByItsPropertiesWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.GRAPH).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
         final LevelTwoObj obj2 = new LevelTwoObj();
@@ -967,7 +967,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKeyWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.GRAPH).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final ComposedKeyObject object1 = new ComposedKeyObject();
         object1.setKey1("same key");
@@ -993,7 +993,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindObjectsByNullParameterWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.GRAPH).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final LevelOneObj obj1 = new LevelOneObj();
         obj1.setProperty("prop");
@@ -1011,7 +1011,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindPropertyItemsWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.GRAPH).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final LevelTwoObj levelTwo = new LevelTwoObj();
         final PropertyObj propertyObj = new PropertyObj();

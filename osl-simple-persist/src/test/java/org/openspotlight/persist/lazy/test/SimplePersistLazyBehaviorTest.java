@@ -81,9 +81,9 @@ public class SimplePersistLazyBehaviorTest {
     @Before
     public void cleanPreviousData() throws Exception {
         JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
-        autoFlushFactory.getFrom(SLPartition.GRAPH).flushall();
+        autoFlushFactory.getFrom(SLPartition.FEDERATION).flushall();
         this.session = autoFlushInjector.getInstance(STStorageSession.class);
-        this.simplePersist = new SimplePersistImpl(session, SLPartition.GRAPH);
+        this.simplePersist = new SimplePersistImpl(session, SLPartition.FEDERATION);
     }
 
     @Test

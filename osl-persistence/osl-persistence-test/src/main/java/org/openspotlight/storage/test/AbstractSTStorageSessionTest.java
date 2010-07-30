@@ -62,7 +62,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -166,6 +165,50 @@ public abstract class AbstractSTStorageSessionTest {
 		assertThat(nodeNames1.contains("a2"), is(false));
 		assertThat(nodeNames1.contains("b2"), is(false));
 		assertThat(nodeNames1.contains("c2"), is(false));
+	}
+
+	@Test
+	public void shouldExcludeParentAndChildrenOnExplicitFlush() throws Exception {
+		STStorageSession session = explicitFlushInjector
+				.getInstance(STStorageSession.class);
+		STNodeEntry c1 = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("a1", "b1", "c1");
+		session.flushTransient();
+		STNodeEntry b1 = c1.getParent(session);
+		STNodeEntry a1 = b1.getParent(session);
+		a1.removeNode(session);
+		session.flushTransient();
+		Iterable<STNodeEntry> foundA1 = session.withPartition(
+				ExamplePartition.DEFAULT).findNamed("a1");
+		Iterable<STNodeEntry> foundB1 = session.withPartition(
+				ExamplePartition.DEFAULT).findNamed("b1");
+		Iterable<STNodeEntry> foundC1 = session.withPartition(
+				ExamplePartition.DEFAULT).findNamed("c1");
+		assertThat(foundA1.iterator().hasNext(), is(false));
+		assertThat(foundB1.iterator().hasNext(), is(false));
+		assertThat(foundC1.iterator().hasNext(), is(false));
+
+	}
+
+	@Test
+	public void shouldExcludeParentAndChildrenOnAutoFlush() throws Exception {
+		STStorageSession session = autoFlushInjector
+				.getInstance(STStorageSession.class);
+		STNodeEntry c1 = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("a1", "b1", "c1");
+		STNodeEntry b1 = c1.getParent(session);
+		STNodeEntry a1 = b1.getParent(session);
+		a1.removeNode(session);
+		Iterable<STNodeEntry> foundA1 = session.withPartition(
+				ExamplePartition.DEFAULT).findNamed("a1");
+		Iterable<STNodeEntry> foundB1 = session.withPartition(
+				ExamplePartition.DEFAULT).findNamed("b1");
+		Iterable<STNodeEntry> foundC1 = session.withPartition(
+				ExamplePartition.DEFAULT).findNamed("c1");
+		assertThat(foundA1.iterator().hasNext(), is(false));
+		assertThat(foundB1.iterator().hasNext(), is(false));
+		assertThat(foundC1.iterator().hasNext(), is(false));
+
 	}
 
 	@Test

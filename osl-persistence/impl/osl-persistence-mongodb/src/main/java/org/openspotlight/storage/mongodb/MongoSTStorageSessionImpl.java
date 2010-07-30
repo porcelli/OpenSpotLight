@@ -589,7 +589,7 @@ public class MongoSTStorageSessionImpl extends AbstractSTStorageSession<DBObject
     @Inject
     public MongoSTStorageSessionImpl( Mongo mongo, STFlushMode flushMode, STRepositoryPath repositoryPath,
                                       STPartitionFactory partitionFactory, int maxCacheSize ) {
-        super(flushMode, repositoryPath);
+        super(flushMode, repositoryPath,partitionFactory);
         this.partitionFactory = partitionFactory;
         this.maxCacheSize = maxCacheSize;
         this.partitionMap = newHashMap();

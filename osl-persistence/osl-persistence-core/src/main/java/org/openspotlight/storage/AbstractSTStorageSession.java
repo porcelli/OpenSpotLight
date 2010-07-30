@@ -56,12 +56,15 @@ import static org.openspotlight.common.Pair.newPair;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STKeyEntryImpl;
 import org.openspotlight.storage.domain.key.STLocalKey;
@@ -70,9 +73,9 @@ import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.key.STUniqueKeyImpl;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
-import org.openspotlight.storage.domain.node.STNodeEntryFactory.STNodeEntryBuilder;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
+import org.openspotlight.storage.domain.node.STNodeEntryFactory.STNodeEntryBuilder;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -846,13 +849,31 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	public void removeNode(STNodeEntry stNodeEntry) {
-		handleRemovedItem(stNodeEntry);
+		List<STNodeEntry> removedItems = new LinkedList<STNodeEntry>();
+		searchItemsToRemove(stNodeEntry, removedItems);
+		Collections.reverse(removedItems);
+		for (STNodeEntry r : removedItems) {
+			handleRemovedItem(r);
+		}
+	}
+
+	private void searchItemsToRemove(STNodeEntry stNodeEntry,
+			List<STNodeEntry> removedItems) {
+		removedItems.add(stNodeEntry);
+		Iterable<STPartition> partitions = SLCollections.iterableOf(stNodeEntry.getUniqueKey().getPartition(), partitionFactory.getValues());
+		for (STPartition p : partitions) {
+			Iterable<STNodeEntry> children = stNodeEntry.getChildren(p, this);
+			for (STNodeEntry e : children) {
+				searchItemsToRemove(e, removedItems);
+			}
+		}
 	}
 
 	protected AbstractSTStorageSession(STFlushMode flushMode,
-			STRepositoryPath repositoryPath) {
+			STRepositoryPath repositoryPath, STPartitionFactory partitionFactory) {
 		this.flushMode = flushMode;
 		this.repositoryPath = repositoryPath;
+		this.partitionFactory = partitionFactory;
 	}
 
 	public STPartitionMethods withPartition(STPartition partition) {
@@ -869,6 +890,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			throw (RuntimeException) e;
 		throw new RuntimeException(e);
 	}
+
+	private final STPartitionFactory partitionFactory;
 
 	private final STFlushMode flushMode;
 
@@ -982,10 +1005,6 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 		public Iterable<STNodeEntry> nodeEntryGetChildren(
 				STPartition partition, STNodeEntry stNodeEntry) {
-			if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
-				throw new IllegalArgumentException(
-						"wrong partition for this node entry");
-
 			try {
 				return internalNodeEntryGetChildren(partition, stNodeEntry);
 			} catch (Exception e) {

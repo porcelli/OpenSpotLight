@@ -239,7 +239,7 @@ public class JRedisSTStorageSessionImpl extends
     public JRedisSTStorageSessionImpl( STFlushMode flushMode,
                                        JRedisFactory factory, STRepositoryPath repositoryPath,
                                        STPartitionFactory partitionFactory ) {
-        super(flushMode, repositoryPath);
+        super(flushMode, repositoryPath,partitionFactory);
         this.factory = factory;
         this.partitionFactory = partitionFactory;
     }
