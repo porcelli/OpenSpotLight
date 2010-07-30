@@ -297,14 +297,13 @@ public class NodeSupport {
 						.getSuperclass(), internalNode);
 			}
 			metadata.setCached(internalNode);
-			internalNode
-					.setIndexedProperty(session, CAPTION, node.getCaption());
-			for (String propName : node.getPropertyKeys()) {
-				Serializable value = node.getPropertyValue(propName);
-				internalNode.setIndexedProperty(session, propName, Conversion
-						.convert(value, String.class));
-			}
 
+		}
+		internalNode.setIndexedProperty(session, CAPTION, node.getCaption());
+		for (String propName : node.getPropertyKeys()) {
+			Serializable value = node.getPropertyValue(propName);
+			internalNode.setIndexedProperty(session, propName, Conversion
+					.convert(value, String.class));
 		}
 		return internalNode;
 	}

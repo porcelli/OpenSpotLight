@@ -487,9 +487,9 @@ public abstract class AbstractGraphTest {
 
 		JavaType secondFound = SLCollections.firstOf(simpleFromLocation
 				.findNodesByName(JavaType.class, null, true, context1));
-		assertThat(secondFound.getCaption(), is(secondCaption));
 		assertThat(secondFound.getTypeName(), is(secondTypeName));
 		assertThat(secondFound.isPublicClass(), is(secondPublicClass));
+		assertThat(secondFound.getCaption(), is(secondCaption));
 
 	}
 
