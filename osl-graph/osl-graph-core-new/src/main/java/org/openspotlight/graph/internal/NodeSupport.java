@@ -76,8 +76,10 @@ import net.sf.cglib.proxy.MethodProxy;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.Pair.PairEqualsMode;
+import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.Reflection;
 import org.openspotlight.common.util.Strings;
@@ -184,13 +186,15 @@ public class NodeSupport {
 		}
 
 		for (PropertyDescriptor d : descriptors) {
-
+			if (d.getName().equals("class"))
+				continue;
 			propertyTypes.put(d.getName(),
 					(Class<? extends Serializable>) Reflection
 							.findClassWithoutPrimitives(d.getPropertyType()));
-			Serializable value = node != null ? (Serializable) convert(node
-					.getPropertyAsString(session, d.getName()), d
-					.getPropertyType()) : null;
+			Object rawValue = node != null ? node.getPropertyAsString(session,
+					d.getName()) : null;
+			Serializable value = (Serializable) (rawValue != null ? Conversion
+					.convert(rawValue, d.getPropertyType()) : null);
 			propertyValues.put(d.getName(), value);
 		}
 		int weigthValue;
@@ -284,28 +288,40 @@ public class NodeSupport {
 	public static STNodeEntry retrievePreviousNode(STPartitionFactory factory,
 			STStorageSession session, Context context, Node node,
 			boolean needsToVerifyType) {
-		NodeMetadata metadata = (NodeMetadata) node;
-		STNodeEntry internalNode = metadata.getCached();
-		if (internalNode == null) {
-			STPartition partition = factory.getPartitionByName(context.getId());
-			internalNode = session.withPartition(partition).createWithName(
-					findTargetClass(node.getClass()).getName()).withKeyEntry(
-					NAME, node.getName())
-					.withParentAsString(node.getParentId()).andCreate();
-			if (needsToVerifyType) {
-				fixTypeData(session, (Class<? extends Node>) node.getClass()
-						.getSuperclass(), internalNode);
-			}
-			metadata.setCached(internalNode);
+		try {
+			NodeMetadata metadata = (NodeMetadata) node;
+			STNodeEntry internalNode = metadata.getCached();
+			if (internalNode == null) {
+				STPartition partition = factory.getPartitionByName(context
+						.getId());
+				internalNode = session.withPartition(partition).createWithName(
+						findTargetClass(node.getClass()).getName())
+						.withKeyEntry(NAME, node.getName()).withParentAsString(
+								node.getParentId()).andCreate();
+				if (needsToVerifyType) {
+					fixTypeData(session, (Class<? extends Node>) node
+							.getClass().getSuperclass(), internalNode);
+				}
+				metadata.setCached(internalNode);
 
+			}
+			internalNode
+					.setIndexedProperty(session, CAPTION, node.getCaption());
+			for (String propName : node.getPropertyKeys()) {
+				Serializable value = node.getPropertyValue(propName);
+				if (!PropertyUtils.getPropertyDescriptor(node, propName)
+						.getReadMethod().isAnnotationPresent(
+								TransientProperty.class)) {
+					internalNode.setIndexedProperty(session, propName,
+							Conversion.convert(value, String.class));
+
+				}
+
+			}
+			return internalNode;
+		} catch (Exception e) {
+			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
-		internalNode.setIndexedProperty(session, CAPTION, node.getCaption());
-		for (String propName : node.getPropertyKeys()) {
-			Serializable value = node.getPropertyValue(propName);
-			internalNode.setIndexedProperty(session, propName, Conversion
-					.convert(value, String.class));
-		}
-		return internalNode;
 	}
 
 	public static <T extends Node> T createNode(STPartitionFactory factory,
