@@ -1128,15 +1128,6 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 				handleException(e);
 			}
 		}
-		for (STNodeEntry removedNode : removedNodes) {
-			try {
-				partitions.add(removedNode.getUniqueKey().getPartition());
-				flushRemovedItem(removedNode.getUniqueKey().getPartition(),
-						removedNode);
-			} catch (Exception e) {
-				handleException(e);
-			}
-		}
 		for (STNodeEntry nodeWithDirtyProperties : dirtyProperties.keySet()) {
 			partitions.add(nodeWithDirtyProperties.getUniqueKey()
 					.getPartition());
@@ -1154,6 +1145,15 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 				}
 			}
 
+		}
+		for (STNodeEntry removedNode : removedNodes) {
+			try {
+				partitions.add(removedNode.getUniqueKey().getPartition());
+				flushRemovedItem(removedNode.getUniqueKey().getPartition(),
+						removedNode);
+			} catch (Exception e) {
+				handleException(e);
+			}
 		}
 		try {
 

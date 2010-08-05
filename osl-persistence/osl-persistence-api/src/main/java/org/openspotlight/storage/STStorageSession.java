@@ -53,175 +53,193 @@ import java.util.Set;
 
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
+import org.openspotlight.storage.domain.node.STLinkEntry;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STProperty;
 
 /**
- * This class is an abstraction of a current state of storage session. The implementation classes must not store any kind of
- * connection state. This implementation must not be shared between threads.
+ * This class is an abstraction of a current state of storage session. The
+ * implementation classes must not store any kind of connection state. This
+ * implementation must not be shared between threads.
  */
 public interface STStorageSession {
 
-    public STRepositoryPath getRepositoryPath();
+	public STRepositoryPath getRepositoryPath();
 
-    STPartitionMethods withPartition( STPartition partition );
+	STPartitionMethods withPartition(STPartition partition);
 
-    interface STPartitionMethods extends STNodeEntryFactory {
+	interface STPartitionMethods extends STNodeEntryFactory {
 
-    	Iterable<String> getAllNodeNames();
-    	
-        STUniqueKeyBuilder createKey( String nodeEntryName );
+		Iterable<String> getAllNodeNames();
 
-        Iterable<STNodeEntry> findByCriteria( STCriteria criteria );
+		STUniqueKeyBuilder createKey(String nodeEntryName);
 
-        Iterable<STNodeEntry> findNamed( String nodeEntryName );
+		Iterable<STNodeEntry> findByCriteria(STCriteria criteria);
 
-        STNodeEntry findUniqueByCriteria( STCriteria criteria );
+		Iterable<STNodeEntry> findNamed(String nodeEntryName);
 
-        public STCriteriaBuilder createCriteria();
+		STNodeEntry findUniqueByCriteria(STCriteria criteria);
 
-        STNodeEntryBuilder createWithName( String name );
+		public STCriteriaBuilder createCriteria();
 
-        STStorageSessionInternalMethods getInternalMethods();
+		STNodeEntryBuilder createWithName(String name);
 
-        STUniqueKey createNewSimpleKey( String... nodePaths );
+		STStorageSessionInternalMethods getInternalMethods();
 
-        STNodeEntry createNewSimpleNode( String... nodePaths );
+		STUniqueKey createNewSimpleKey(String... nodePaths);
 
-    }
+		STNodeEntry createNewSimpleNode(String... nodePaths);
 
-    void removeNode( org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry );
+	}
 
-    interface STCriteriaBuilder {
+	void removeNode(
+			org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 
-        STCriteriaBuilder withProperty( String propertyName );
+	interface STCriteriaBuilder {
 
-        STCriteriaBuilder withNodeEntry( String nodeName );
+		STCriteriaBuilder withProperty(String propertyName);
 
-        STCriteriaBuilder equalsTo( String value );
+		STCriteriaBuilder withNodeEntry(String nodeName);
 
-        STCriteriaBuilder containsString( String value );
+		STCriteriaBuilder equalsTo(String value);
 
-        STCriteriaBuilder startsWithString( String value );
+		STCriteriaBuilder containsString(String value);
 
-        STCriteriaBuilder endsWithString( String value );
+		STCriteriaBuilder startsWithString(String value);
 
-        STCriteriaBuilder and();
+		STCriteriaBuilder endsWithString(String value);
 
-        STCriteria buildCriteria();
+		STCriteriaBuilder and();
 
-        STCriteriaBuilder withLocalKey( STLocalKey localKey );
+		STCriteria buildCriteria();
 
-        STCriteriaBuilder withUniqueKey( STUniqueKey uniqueKey );
+		STCriteriaBuilder withLocalKey(STLocalKey localKey);
 
-        STCriteriaBuilder withUniqueKeyAsString( String uniqueKeyAsString );
-    }
+		STCriteriaBuilder withUniqueKey(STUniqueKey uniqueKey);
 
-    interface STPropertyCriteriaItem extends STCriteriaItem {
+		STCriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
+	}
 
-        String getValue();
+	interface STPropertyCriteriaItem extends STCriteriaItem {
 
-        String getPropertyName();
+		String getValue();
 
-    }
+		String getPropertyName();
 
-    interface STPropertyContainsString extends STCriteriaItem {
-        String getValue();
+	}
 
-        String getPropertyName();
-    }
+	interface STPropertyContainsString extends STCriteriaItem {
+		String getValue();
 
-    interface STPropertyStartsWithString extends STCriteriaItem {
-        String getValue();
+		String getPropertyName();
+	}
 
-        String getPropertyName();
-    }
+	interface STPropertyStartsWithString extends STCriteriaItem {
+		String getValue();
 
-    interface STPropertyEndsWithString extends STCriteriaItem {
-        String getValue();
+		String getPropertyName();
+	}
 
-        String getPropertyName();
-    }
+	interface STPropertyEndsWithString extends STCriteriaItem {
+		String getValue();
 
-    interface STUniqueKeyCriteriaItem extends STCriteriaItem {
-        STUniqueKey getValue();
+		String getPropertyName();
+	}
 
-    }
+	interface STUniqueKeyCriteriaItem extends STCriteriaItem {
+		STUniqueKey getValue();
 
-    interface STUniqueKeyAsStringCriteriaItem extends STCriteriaItem {
-        String getKeyAsString();
+	}
 
-    }
+	interface STUniqueKeyAsStringCriteriaItem extends STCriteriaItem {
+		String getKeyAsString();
 
-    interface STLocalKeyCriteriaItem extends STCriteriaItem {
-        STLocalKey getValue();
-    }
+	}
 
-    interface STCriteriaItem {
+	interface STLocalKeyCriteriaItem extends STCriteriaItem {
+		STLocalKey getValue();
+	}
 
-        String getNodeEntryName();
+	interface STCriteriaItem {
 
-    }
+		String getNodeEntryName();
 
-    interface STCriteria {
+	}
 
-        STPartition getPartition();
+	interface STCriteria {
 
-        String getNodeName();
+		STPartition getPartition();
 
-        Set<STCriteriaItem> getCriteriaItems();
+		String getNodeName();
 
-        Iterable<STNodeEntry> andFind( STStorageSession session );
+		Set<STCriteriaItem> getCriteriaItems();
 
-        STNodeEntry andFindUnique( STStorageSession session );
+		Iterable<STNodeEntry> andFind(STStorageSession session);
 
-    }
+		STNodeEntry andFindUnique(STStorageSession session);
 
-    static enum STFlushMode {
-        AUTO,
-        EXPLICIT
-    }
+	}
 
-    STFlushMode getFlushMode();
+	static enum STFlushMode {
+		AUTO, EXPLICIT
+	}
 
-    interface STStorageSessionInternalMethods {
+	STFlushMode getFlushMode();
 
-        STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName( STNodeEntry stNodeEntry,
-                                                                       String name );
+	interface STStorageSessionInternalMethods {
 
-        void propertySetProperty( org.openspotlight.storage.domain.node.STProperty stProperty,
-                                  byte[] value );
+		STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(
+				STNodeEntry stNodeEntry, String name);
 
-        Set<STProperty> nodeEntryLoadProperties( org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry );
+		void propertySetProperty(
+				org.openspotlight.storage.domain.node.STProperty stProperty,
+				byte[] value);
 
-        STNodeEntry nodeEntryGetParent( org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry );
+		Set<STProperty> nodeEntryLoadProperties(
+				org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 
-        Iterable<STNodeEntry> nodeEntryGetChildren( STPartition partition,
-                                                    STNodeEntry stNodeEntry );
+		STNodeEntry nodeEntryGetParent(
+				org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 
-        byte[] propertyGetValue( STProperty stProperty );
+		Iterable<STNodeEntry> nodeEntryGetChildren(STPartition partition,
+				STNodeEntry stNodeEntry);
 
-        Iterable<STNodeEntry> nodeEntryGetNamedChildren( STPartition partition,
-                                                         STNodeEntry stNodeEntry,
-                                                         String name );
-    }
+		byte[] propertyGetValue(STProperty stProperty);
 
-    interface STUniqueKeyBuilder {
+		Iterable<STNodeEntry> nodeEntryGetNamedChildren(STPartition partition,
+				STNodeEntry stNodeEntry, String name);
+	}
 
-        STUniqueKeyBuilder withEntry( String propertyName,
-                                      String value );
+	interface STUniqueKeyBuilder {
 
-        STUniqueKeyBuilder withParent( STPartition partition,
-                                       String nodeEntryName );
+		STUniqueKeyBuilder withEntry(String propertyName, String value);
 
-        STUniqueKeyBuilder withParent( String parentId );
+		STUniqueKeyBuilder withParent(STPartition partition,
+				String nodeEntryName);
 
-        STUniqueKey andCreate();
+		STUniqueKeyBuilder withParent(String parentId);
 
-    }
+		STUniqueKey andCreate();
 
-    void discardTransient();
+	}
 
-    void flushTransient();
+	void discardTransient();
+
+	void flushTransient();
+
+	STLinkEntry addLink(STNodeEntry origin, STNodeEntry destiny, String name);
+
+	void removeLink(STNodeEntry origin, STNodeEntry destiny, String name);
+	
+	void removeLink(STLinkEntry link);
+
+	Iterable<STLinkEntry> findLinks(STNodeEntry origin);
+
+	Iterable<STLinkEntry> findLinks(STNodeEntry origin, String name);
+
+	STLinkEntry getLink(STNodeEntry origin, STNodeEntry destiny, String name);
+
+	Iterable<STLinkEntry> findLinks(STNodeEntry origin, STNodeEntry destiny);
+
 }

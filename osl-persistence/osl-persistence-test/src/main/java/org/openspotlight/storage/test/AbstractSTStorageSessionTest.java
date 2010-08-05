@@ -69,9 +69,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.node.STLinkEntry;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import com.google.inject.Injector;
@@ -168,7 +170,8 @@ public abstract class AbstractSTStorageSessionTest {
 	}
 
 	@Test
-	public void shouldExcludeParentAndChildrenOnExplicitFlush() throws Exception {
+	public void shouldExcludeParentAndChildrenOnExplicitFlush()
+			throws Exception {
 		STStorageSession session = explicitFlushInjector
 				.getInstance(STStorageSession.class);
 		STNodeEntry c1 = session.withPartition(ExamplePartition.DEFAULT)
@@ -1446,6 +1449,334 @@ public abstract class AbstractSTStorageSessionTest {
 			assertThat(theSameNodes.contains(root2), is(false));
 			assertThat(theSameNodes.size(), is(2));
 		}
+	}
+
+	@Test
+	public void shouldAddAndRetriveLinksOnSamePartitionWithAutoFlushInjector()
+			throws Exception {
+		STStorageSession session = autoFlushInjector
+				.getInstance(STStorageSession.class);
+		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("a", "b", "c");
+		STNodeEntry b = c.getParent(session);
+		STNodeEntry a = b.getParent(session);
+
+		STLinkEntry aToCLink = session.addLink(a, c, "AtoC");
+		STLinkEntry aToBLink = session.addLink(a, b, "AtoB");
+		STLinkEntry cToALink = session.addLink(c, a, "CtoA");
+
+		assertThat(aToCLink.getOrigin(), is(a));
+		assertThat(aToCLink.getTarget(), is(c));
+
+		assertThat(aToBLink.getOrigin(), is(a));
+		assertThat(aToBLink.getTarget(), is(b));
+
+		assertThat(cToALink.getOrigin(), is(c));
+		assertThat(cToALink.getTarget(), is(a));
+
+		STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
+		assertThat(cToALink, is(foundCtoALink));
+		List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+		assertThat(foundALinks.size(), is(2));
+		assertThat(foundALinks.contains(aToCLink), is(true));
+		assertThat(foundALinks.contains(aToBLink), is(true));
+
+		List<STLinkEntry> foundBLinks = iterableToList(session.findLinks(b));
+		assertThat(foundBLinks.size(), is(0));
+
+		List<STLinkEntry> foundAToCLinks = iterableToList(session.findLinks(a,
+				"AtoC"));
+
+		assertThat(foundAToCLinks.size(), is(1));
+		assertThat(foundAToCLinks.contains(aToCLink), is(true));
+
+		List<STLinkEntry> foundAToBLinks = iterableToList(session.findLinks(a,
+				b));
+		assertThat(foundAToBLinks.size(), is(1));
+		assertThat(foundAToBLinks.contains(aToBLink), is(true));
+
+	}
+
+	@Test
+	public void shouldAddAndRetriveLinksOnDifferentPartitionsWithAutoFlushInjector()
+			throws Exception {
+		STStorageSession session = autoFlushInjector
+				.getInstance(STStorageSession.class);
+		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("c");
+		STNodeEntry b = session.withPartition(ExamplePartition.FIRST)
+				.createNewSimpleNode("c");
+		STNodeEntry a = session.withPartition(ExamplePartition.SECOND)
+				.createNewSimpleNode("c");
+
+		STLinkEntry aToCLink = session.addLink(a, c, "AtoC");
+		STLinkEntry aToBLink = session.addLink(a, b, "AtoB");
+		STLinkEntry cToALink = session.addLink(c, a, "CtoA");
+
+		assertThat(aToCLink.getOrigin(), is(a));
+		assertThat(aToCLink.getTarget(), is(c));
+
+		assertThat(aToBLink.getOrigin(), is(a));
+		assertThat(aToBLink.getTarget(), is(b));
+
+		assertThat(cToALink.getOrigin(), is(c));
+		assertThat(cToALink.getTarget(), is(a));
+
+		STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
+		assertThat(cToALink, is(foundCtoALink));
+		List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+		assertThat(foundALinks.size(), is(2));
+		assertThat(foundALinks.contains(aToCLink), is(true));
+		assertThat(foundALinks.contains(aToBLink), is(true));
+
+		List<STLinkEntry> foundBLinks = iterableToList(session.findLinks(b));
+		assertThat(foundBLinks.size(), is(0));
+
+		List<STLinkEntry> foundAToCLinks = iterableToList(session.findLinks(a,
+				"AtoC"));
+
+		assertThat(foundAToCLinks.size(), is(1));
+		assertThat(foundAToCLinks.contains(aToCLink), is(true));
+
+		List<STLinkEntry> foundAToBLinks = iterableToList(session.findLinks(a,
+				b));
+		assertThat(foundAToBLinks.size(), is(1));
+		assertThat(foundAToBLinks.contains(aToBLink), is(true));
+
+	}
+
+	@Test
+	public void shouldAddAndRetriveLinksOnSamePartitionWithExplicitFlushInjector()
+			throws Exception {
+		STStorageSession session = explicitFlushInjector
+				.getInstance(STStorageSession.class);
+		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("a", "b", "c");
+		STNodeEntry b = c.getParent(session);
+		STNodeEntry a = b.getParent(session);
+
+		STLinkEntry aToCLink = session.addLink(a, c, "AtoC");
+		STLinkEntry aToBLink = session.addLink(a, b, "AtoB");
+		STLinkEntry cToALink = session.addLink(c, a, "CtoA");
+		session.flushTransient();
+		assertThat(aToCLink.getOrigin(), is(a));
+		assertThat(aToCLink.getTarget(), is(c));
+
+		assertThat(aToBLink.getOrigin(), is(a));
+		assertThat(aToBLink.getTarget(), is(b));
+
+		assertThat(cToALink.getOrigin(), is(c));
+		assertThat(cToALink.getTarget(), is(a));
+
+		STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
+		assertThat(cToALink, is(foundCtoALink));
+		List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+		assertThat(foundALinks.size(), is(2));
+		assertThat(foundALinks.contains(aToCLink), is(true));
+		assertThat(foundALinks.contains(aToBLink), is(true));
+
+		List<STLinkEntry> foundBLinks = iterableToList(session.findLinks(b));
+		assertThat(foundBLinks.size(), is(0));
+
+		List<STLinkEntry> foundAToCLinks = iterableToList(session.findLinks(a,
+				"AtoC"));
+
+		assertThat(foundAToCLinks.size(), is(1));
+		assertThat(foundAToCLinks.contains(aToCLink), is(true));
+
+		List<STLinkEntry> foundAToBLinks = iterableToList(session.findLinks(a,
+				b));
+		assertThat(foundAToBLinks.size(), is(1));
+		assertThat(foundAToBLinks.contains(aToBLink), is(true));
+
+	}
+
+	@Test
+	public void shouldAddAndRetriveLinksOnDifferentPartitionsWithExplicitFlushInjector()
+			throws Exception {
+		STStorageSession session = explicitFlushInjector
+				.getInstance(STStorageSession.class);
+		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("c");
+		STNodeEntry b = session.withPartition(ExamplePartition.FIRST)
+				.createNewSimpleNode("c");
+		STNodeEntry a = session.withPartition(ExamplePartition.SECOND)
+				.createNewSimpleNode("c");
+
+		STLinkEntry aToCLink = session.addLink(a, c, "AtoC");
+		STLinkEntry aToBLink = session.addLink(a, b, "AtoB");
+		STLinkEntry cToALink = session.addLink(c, a, "CtoA");
+		session.flushTransient();
+		assertThat(aToCLink.getOrigin(), is(a));
+		assertThat(aToCLink.getTarget(), is(c));
+
+		assertThat(aToBLink.getOrigin(), is(a));
+		assertThat(aToBLink.getTarget(), is(b));
+
+		assertThat(cToALink.getOrigin(), is(c));
+		assertThat(cToALink.getTarget(), is(a));
+
+		STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
+		assertThat(cToALink, is(foundCtoALink));
+		List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+		assertThat(foundALinks.size(), is(2));
+		assertThat(foundALinks.contains(aToCLink), is(true));
+		assertThat(foundALinks.contains(aToBLink), is(true));
+
+		List<STLinkEntry> foundBLinks = iterableToList(session.findLinks(b));
+		assertThat(foundBLinks.size(), is(0));
+
+		List<STLinkEntry> foundAToCLinks = iterableToList(session.findLinks(a,
+				"AtoC"));
+
+		assertThat(foundAToCLinks.size(), is(1));
+		assertThat(foundAToCLinks.contains(aToCLink), is(true));
+
+		List<STLinkEntry> foundAToBLinks = iterableToList(session.findLinks(a,
+				b));
+		assertThat(foundAToBLinks.size(), is(1));
+		assertThat(foundAToBLinks.contains(aToBLink), is(true));
+
+	}
+
+	@Test
+	public void shouldCreateAndRemoveLinksWithPropertiesOnSamePartitionWithAutoFlushInjector()
+			throws Exception {
+		STStorageSession session = autoFlushInjector
+				.getInstance(STStorageSession.class);
+
+		STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("b");
+		STNodeEntry a = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("a");
+
+		STLinkEntry link = session.addLink(a, b, "AtoB");
+		STLinkEntry link2 = session.addLink(a, b, "AtoB2");
+		link.setIndexedProperty(session, "sample", "value");
+
+		STLinkEntry foundLink = session.getLink(a, b, "AtoB");
+		STLinkEntry foundLink2 = session.getLink(a, b, "AtoB2");
+		assertThat(foundLink, is(link));
+		assertThat(foundLink2, is(link2));
+		assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
+				.getPropertyAsString(session, "sample")));
+		assertThat(foundLink.getPropertyAsString(session, "sample"),
+				is("value"));
+
+		session.removeLink(a, b, "AtoB");
+		session.removeLink(link2);
+
+		STLinkEntry notFoundLink = session.getLink(a, b, "AtoB");
+		STLinkEntry notFoundLink2 = session.getLink(a, b, "AtoB2");
+
+		assertThat(notFoundLink, is(nullValue()));
+		assertThat(notFoundLink2, is(nullValue()));
+
+	}
+
+	@Test
+	public void shouldCreateAndRemoveLinksWithPropertiesOnSamePartitionWithExplicitFlushInjector()
+			throws Exception {
+		STStorageSession session = explicitFlushInjector
+				.getInstance(STStorageSession.class);
+
+		STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("b");
+		STNodeEntry a = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("a");
+
+		STLinkEntry link = session.addLink(a, b, "AtoB");
+		STLinkEntry link2 = session.addLink(a, b, "AtoB2");
+		link.setIndexedProperty(session, "sample", "value");
+		session.flushTransient();
+		STLinkEntry foundLink = session.getLink(a, b, "AtoB");
+		STLinkEntry foundLink2 = session.getLink(a, b, "AtoB2");
+		assertThat(foundLink, is(link));
+		assertThat(foundLink2, is(link2));
+		assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
+				.getPropertyAsString(session, "sample")));
+		assertThat(foundLink.getPropertyAsString(session, "sample"),
+				is("value"));
+
+		session.removeLink(a, b, "AtoB");
+		session.removeLink(link2);
+		session.flushTransient();
+		STLinkEntry notFoundLink = session.getLink(a, b, "AtoB");
+		STLinkEntry notFoundLink2 = session.getLink(a, b, "AtoB2");
+
+		assertThat(notFoundLink, is(nullValue()));
+		assertThat(notFoundLink2, is(nullValue()));
+
+	}
+
+	@Test
+	public void shouldCreateAndRemoveLinksWithPropertiesOnDifferentPartitionsWithAutoFlushInjector()
+			throws Exception {
+		STStorageSession session = autoFlushInjector
+				.getInstance(STStorageSession.class);
+
+		STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("b");
+		STNodeEntry a = session.withPartition(ExamplePartition.FIRST)
+				.createNewSimpleNode("a");
+
+		STLinkEntry link = session.addLink(a, b, "AtoB");
+		STLinkEntry link2 = session.addLink(a, b, "AtoB2");
+		link.setIndexedProperty(session, "sample", "value");
+
+		STLinkEntry foundLink = session.getLink(a, b, "AtoB");
+		STLinkEntry foundLink2 = session.getLink(a, b, "AtoB2");
+		assertThat(foundLink, is(link));
+		assertThat(foundLink2, is(link2));
+		assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
+				.getPropertyAsString(session, "sample")));
+		assertThat(foundLink.getPropertyAsString(session, "sample"),
+				is("value"));
+
+		session.removeLink(a, b, "AtoB");
+		session.removeLink(link2);
+
+		STLinkEntry notFoundLink = session.getLink(a, b, "AtoB");
+		STLinkEntry notFoundLink2 = session.getLink(a, b, "AtoB2");
+
+		assertThat(notFoundLink, is(nullValue()));
+		assertThat(notFoundLink2, is(nullValue()));
+
+	}
+
+	@Test
+	public void shouldCreateAndRemoveLinksWithPropertiesOnDifferentPartitionsWithExplicitFlushInjector()
+			throws Exception {
+		STStorageSession session = explicitFlushInjector
+				.getInstance(STStorageSession.class);
+
+		STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
+				.createNewSimpleNode("b");
+		STNodeEntry a = session.withPartition(ExamplePartition.FIRST)
+				.createNewSimpleNode("a");
+
+		STLinkEntry link = session.addLink(a, b, "AtoB");
+		STLinkEntry link2 = session.addLink(a, b, "AtoB2");
+		link.setIndexedProperty(session, "sample", "value");
+		session.flushTransient();
+		STLinkEntry foundLink = session.getLink(a, b, "AtoB");
+		STLinkEntry foundLink2 = session.getLink(a, b, "AtoB2");
+		assertThat(foundLink, is(link));
+		assertThat(foundLink2, is(link2));
+		assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
+				.getPropertyAsString(session, "sample")));
+		assertThat(foundLink.getPropertyAsString(session, "sample"),
+				is("value"));
+
+		session.removeLink(a, b, "AtoB");
+		session.removeLink(link2);
+		session.flushTransient();
+		STLinkEntry notFoundLink = session.getLink(a, b, "AtoB");
+		STLinkEntry notFoundLink2 = session.getLink(a, b, "AtoB2");
+
+		assertThat(notFoundLink, is(nullValue()));
+		assertThat(notFoundLink2, is(nullValue()));
+
 	}
 
 }
