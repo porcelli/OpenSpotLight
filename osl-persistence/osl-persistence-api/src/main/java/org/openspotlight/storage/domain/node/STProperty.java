@@ -58,7 +58,7 @@ import org.openspotlight.storage.STStorageSession;
  */
 public interface STProperty {
 
-    STNodeEntry getParent();
+    STPropertyContainer getParent();
 
     public boolean isIndexed();
 

@@ -57,6 +57,7 @@ import org.openspotlight.storage.domain.node.STLinkEntry;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STProperty;
+import org.openspotlight.storage.domain.node.STPropertyContainer;
 
 /**
  * This class is an abstraction of a current state of storage session. The
@@ -196,8 +197,7 @@ public interface STStorageSession {
 				org.openspotlight.storage.domain.node.STProperty stProperty,
 				byte[] value);
 
-		Set<STProperty> nodeEntryLoadProperties(
-				org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
+		Set<STProperty> propertyContainerLoadProperties(STPropertyContainer stNodeEntry);
 
 		STNodeEntry nodeEntryGetParent(
 				org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);

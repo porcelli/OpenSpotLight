@@ -49,73 +49,36 @@
 
 package org.openspotlight.storage.domain.node;
 
-import java.io.InputStream;
-import java.util.Set;
-
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.STAData;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 
-public interface STNodeEntry extends STAData, STNodeEntryFactory {
+public interface STNodeEntry extends STAData, STNodeEntryFactory,
+		STPropertyContainer {
 
-    public void forceReload();
+	public void forceReload();
 
-    String getNodeEntryName();
+	String getNodeEntryName();
 
-    STLocalKey getLocalKey();
+	STLocalKey getLocalKey();
 
-    STUniqueKey getUniqueKey();
+	STUniqueKey getUniqueKey();
 
-    STProperty getProperty( STStorageSession session,
-                            String name );
+	Iterable<STNodeEntry> getChildren(STPartition partition,
+			STStorageSession session);
 
-    String getPropertyAsString( STStorageSession session,
-                                String name );
+	Iterable<STNodeEntry> getChildrenNamed(STPartition partition,
+			STStorageSession session, String name);
 
-    InputStream getPropertyAsStream( STStorageSession session,
-                                     String name );
+	Iterable<STNodeEntry> getChildrenForcingReload(STPartition partition,
+			STStorageSession session);
 
-    byte[] getPropertyAsBytes( STStorageSession session,
-                               String name );
+	Iterable<STNodeEntry> getChildrenNamedForcingReload(STPartition partition,
+			STStorageSession session, String name);
 
-    Iterable<STNodeEntry> getChildren( STPartition partition,
-                                       STStorageSession session );
+	STNodeEntry getParent(STStorageSession session);
 
-    Iterable<STNodeEntry> getChildrenNamed( STPartition partition,
-                                            STStorageSession session,
-                                            String name );
-
-    Iterable<STNodeEntry> getChildrenForcingReload( STPartition partition,
-                                                    STStorageSession session );
-
-    Iterable<STNodeEntry> getChildrenNamedForcingReload( STPartition partition,
-                                                         STStorageSession session,
-                                                         String name );
-
-    STNodeEntry getParent( STStorageSession session );
-
-    void removeNode( STStorageSession session );
-
-    Set<String> getPropertyNames( STStorageSession session );
-
-    Set<STProperty> getProperties( STStorageSession session );
-
-    STProperty setSimpleProperty( STStorageSession session,
-                                  String name,
-                                  String value );
-
-    STProperty setSimpleProperty( STStorageSession session,
-                                  String name,
-                                  InputStream value );
-
-    STProperty setSimpleProperty( STStorageSession session,
-                                  String name,
-                                  byte[] value );
-
-    STProperty setIndexedProperty( STStorageSession session,
-                                   String name,
-                                   String value );
-
+	void removeNode(STStorageSession session);
 }

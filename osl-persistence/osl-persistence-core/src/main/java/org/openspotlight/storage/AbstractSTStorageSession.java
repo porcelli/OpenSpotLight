@@ -75,6 +75,7 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
+import org.openspotlight.storage.domain.node.STPropertyContainer;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory.STNodeEntryBuilder;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -860,7 +861,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	private void searchItemsToRemove(STNodeEntry stNodeEntry,
 			List<STNodeEntry> removedItems) {
 		removedItems.add(stNodeEntry);
-		Iterable<STPartition> partitions = SLCollections.iterableOf(stNodeEntry.getUniqueKey().getPartition(), partitionFactory.getValues());
+		Iterable<STPartition> partitions = SLCollections.iterableOf(stNodeEntry
+				.getUniqueKey().getPartition(), partitionFactory.getValues());
 		for (STPartition p : partitions) {
 			Iterable<STNodeEntry> children = stNodeEntry.getChildren(p, this);
 			for (STNodeEntry e : children) {
@@ -897,7 +899,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 	protected final Set<Pair<STNodeEntry, R>> newNodes = newLinkedHashSet();
 
-	protected final Multimap<STNodeEntry, STProperty> dirtyProperties = ArrayListMultimap
+	protected final Multimap<STPropertyContainer, STProperty> dirtyProperties = ArrayListMultimap
 			.create();
 
 	protected final Set<STNodeEntry> removedNodes = newLinkedHashSet();
@@ -963,8 +965,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 
 		public void propertySetProperty(STProperty stProperty, byte[] value) {
-			if (!partition.equals(stProperty.getParent().getUniqueKey()
-					.getPartition()))
+			if (!partition.equals(stProperty.getParent().getPartition()))
 				throw new IllegalArgumentException(
 						"wrong partition for this property");
 
@@ -976,13 +977,14 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 		}
 
-		public Set<STProperty> nodeEntryLoadProperties(STNodeEntry stNodeEntry) {
-			if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
+		public Set<STProperty> propertyContainerLoadProperties(
+				STPropertyContainer stNodeEntry) {
+			if (!partition.equals(stNodeEntry.getPartition()))
 				throw new IllegalArgumentException(
 						"wrong partition for this node entry");
 
 			try {
-				return internalNodeEntryLoadProperties(null, partition,
+				return internalPropertyContainerLoadProperties(null, partition,
 						stNodeEntry);
 			} catch (Exception e) {
 				handleException(e);
@@ -1017,7 +1019,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		public byte[] propertyGetValue(STProperty stProperty) {
 			try {
 				return internalPropertyGetValue(stProperty.getParent()
-						.getUniqueKey().getPartition(), stProperty);
+						.getPartition(), stProperty);
 			} catch (Exception e) {
 				handleException(e);
 			}
@@ -1128,14 +1130,14 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 				handleException(e);
 			}
 		}
-		for (STNodeEntry nodeWithDirtyProperties : dirtyProperties.keySet()) {
-			partitions.add(nodeWithDirtyProperties.getUniqueKey()
+		for (STPropertyContainer nodeWithDirtyProperties : dirtyProperties.keySet()) {
+			partitions.add(nodeWithDirtyProperties
 					.getPartition());
 
 			R reference = referenceMap.get(nodeWithDirtyProperties);
 			if (reference == null) {
 				reference = createReferenceIfNecessary(nodeWithDirtyProperties
-						.getUniqueKey().getPartition(), nodeWithDirtyProperties);
+						.getPartition(), nodeWithDirtyProperties);
 			}
 			for (STProperty data : dirtyProperties.get(nodeWithDirtyProperties)) {
 				try {
@@ -1170,7 +1172,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		try {
 
 			internalFlushSimpleProperty(reference, dirtyProperty.getParent()
-					.getUniqueKey().getPartition(), dirtyProperty);
+					.getPartition(), dirtyProperty);
 
 		} catch (Exception e) {
 			handleException(e);
@@ -1273,8 +1275,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	protected abstract STNodeEntry internalNodeEntryGetParent(
 			STPartition partition, STNodeEntry stNodeEntry) throws Exception;
 
-	protected abstract Set<STProperty> internalNodeEntryLoadProperties(
-			R reference, STPartition partition, STNodeEntry stNodeEntry)
+	protected abstract Set<STProperty> internalPropertyContainerLoadProperties(
+			R reference, STPartition partition, STPropertyContainer stNodeEntry)
 			throws Exception;
 
 	protected abstract Iterable<STNodeEntry> internalFindNamed(
