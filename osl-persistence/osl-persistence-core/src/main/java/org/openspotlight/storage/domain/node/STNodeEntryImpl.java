@@ -51,7 +51,6 @@ package org.openspotlight.storage.domain.node;
 
 import static com.google.common.collect.Maps.newHashMap;
 
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.Set;
@@ -61,8 +60,6 @@ import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STUniqueKey;
-
-import com.google.inject.internal.ImmutableSet;
 
 public class STNodeEntryImpl extends STPropertyContainerImpl implements
 		STNodeEntry {

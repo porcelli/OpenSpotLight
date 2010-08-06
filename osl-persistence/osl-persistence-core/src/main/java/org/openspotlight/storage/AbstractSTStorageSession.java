@@ -72,6 +72,7 @@ import org.openspotlight.storage.domain.key.STLocalKeyImpl;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.key.STUniqueKeyImpl;
 import org.openspotlight.storage.domain.node.STLinkEntry;
+import org.openspotlight.storage.domain.node.STLinkEntryImpl;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
@@ -899,11 +900,13 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	private final STFlushMode flushMode;
 
 	protected final Set<Pair<STNodeEntry, R>> newNodes = newLinkedHashSet();
+	protected final Set<Pair<STLinkEntry, R>> newLinks = newLinkedHashSet();
 
 	protected final Multimap<STPropertyContainer, STProperty> dirtyProperties = ArrayListMultimap
 			.create();
 
 	protected final Set<STNodeEntry> removedNodes = newLinkedHashSet();
+	protected final Set<STLinkEntry> removedLinks = newLinkedHashSet();
 
 	private R handleNewItem(STNodeEntry entry) {
 		try {
@@ -1294,18 +1297,26 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	protected abstract Iterable<STNodeEntry> internalFindNamed(
 			STPartition partition, String nodeEntryName) throws Exception;
 
-	protected abstract STLinkEntry internalAddLink(STPartition partition,
-			STNodeEntry origin, STNodeEntry destiny, String name);
-
 	protected abstract Iterable<STLinkEntry> internalFindLinks(
 			STPartition partition, STNodeEntry origin, STNodeEntry destiny,
 			String name);
 
 	@Override
-	public STLinkEntry addLink(STNodeEntry origin, STNodeEntry destiny,
+	public STLinkEntry addLink(STNodeEntry origin, STNodeEntry target,
 			String name) {
-		return internalAddLink(origin.getPartition(), origin, destiny, name);
+		STLinkEntry link = new STLinkEntryImpl(name, origin, target, true);
+		if (getFlushMode().equals(STFlushMode.AUTO)) {
+
+			this.handleNewLink(link);
+		} else {
+			R ref = createLinkReferenceIfNecessary(origin.getPartition(), link);
+			Pair<STLinkEntry, R> pair = newPair(link, ref);
+			AbstractSTStorageSession.this.newLinks.add(pair);
+		}
+		return link;
 	}
+
+	protected abstract void handleNewLink(STLinkEntry link);
 
 	@Override
 	public Iterable<STLinkEntry> findLinks(STNodeEntry origin,
@@ -1332,15 +1343,26 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 	@Override
 	public void removeLink(STLinkEntry link) {
-		removeLink(link.getOrigin(), link.getTarget(), link.getLinkName());
+		try {
+			switch (getFlushMode()) {
+			case AUTO:
+				flushRemovedLink(link.getPartition(), link);
+				break;
+			case EXPLICIT:
+				removedLinks.add(link);
+				break;
+			}
+		} catch (Exception e) {
+			handleException(e);
+		}
 	}
+
+	protected abstract void flushRemovedLink(STPartition partition,
+			STLinkEntry link);
 
 	@Override
-	public void removeLink(STNodeEntry origin, STNodeEntry destiny, String name) {
-		internalRemoveLink(origin.getPartition(), origin, destiny, name);
+	public void removeLink(STNodeEntry origin, STNodeEntry target, String name) {
+		removeLink(new STLinkEntryImpl(name, origin, target, false));
 	}
-
-	protected abstract void internalRemoveLink(STPartition partition,
-			STNodeEntry origin, STNodeEntry destiny, String name);
 
 }

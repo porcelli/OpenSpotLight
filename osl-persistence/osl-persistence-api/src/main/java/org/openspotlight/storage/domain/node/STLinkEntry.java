@@ -1,6 +1,5 @@
 package org.openspotlight.storage.domain.node;
 
-import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.domain.STAData;
 
 public interface STLinkEntry extends STAData, STPropertyContainer {
@@ -12,6 +11,4 @@ public interface STLinkEntry extends STAData, STPropertyContainer {
 	String getLinkName();
 
 	String getLinkId();
-
-	STPartition getLinkPartition();
 }
