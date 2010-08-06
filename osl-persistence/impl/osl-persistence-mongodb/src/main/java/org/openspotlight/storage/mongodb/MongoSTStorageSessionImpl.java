@@ -80,6 +80,7 @@ import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
+import org.openspotlight.storage.domain.node.STPropertyContainer;
 import org.openspotlight.storage.domain.node.STPropertyImpl;
 
 import com.google.common.collect.HashMultimap;
@@ -104,7 +105,7 @@ public class MongoSTStorageSessionImpl extends
 	private final LinkedList<Pair<STUniqueKey, DBObject>> objectCache = newLinkedList();
 	private final int maxCacheSize;
 	private static final String NULL_VALUE = "!!!NULL!!!";
-	private Multimap<STPartition, Pair<STNodeEntry, DBObject>> transientObjects = HashMultimap
+	private Multimap<STPartition, Pair<STPropertyContainer, DBObject>> transientObjects = HashMultimap
 			.create();
 	private final Map<String, DB> partitionMap;
 	private final Map<String, GridFS> gridFSMap;
@@ -191,7 +192,7 @@ public class MongoSTStorageSessionImpl extends
 	}
 
 	private DBObject findReferenceOrReturnNull(STPartition partition,
-			STNodeEntry entry) {
+			STPropertyContainer entry) {
 		DBObject basicDBObject = null;// TODO fix with fakePair and/or find
 		// cache
 
@@ -235,7 +236,8 @@ public class MongoSTStorageSessionImpl extends
 			STProperty stProperty) throws Exception {
 		byte[] value = null;
 		if (stProperty.isKey()) {
-			for (STKeyEntry e : stProperty.getParent().getUniqueKey()
+			STNodeEntry parent = (STNodeEntry) stProperty.getParent();
+			for (STKeyEntry e : parent.getUniqueKey()
 					.getLocalKey().getEntries()) {
 				if (e.getPropertyName().equals(stProperty.getPropertyName())) {
 					value = e.getValue() != null ? e.getValue().getBytes()
