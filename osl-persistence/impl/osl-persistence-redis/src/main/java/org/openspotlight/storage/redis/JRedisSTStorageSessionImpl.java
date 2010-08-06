@@ -245,7 +245,7 @@ public class JRedisSTStorageSessionImpl extends
     }
 
     @Override
-    protected Nothing createReferenceIfNecessary( STPartition partition,
+    protected Nothing createNodeReferenceIfNecessary( STPartition partition,
                                                   STNodeEntry entry ) {
         return Nothing.NOTHING;
     }

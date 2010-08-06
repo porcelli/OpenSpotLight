@@ -71,6 +71,7 @@ import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STLocalKeyImpl;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.key.STUniqueKeyImpl;
+import org.openspotlight.storage.domain.node.STLinkEntry;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
@@ -909,14 +910,14 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			R reference;
 			switch (getFlushMode()) {
 			case AUTO:
-				reference = createReferenceIfNecessary(entry.getUniqueKey()
+				reference = createNodeReferenceIfNecessary(entry.getUniqueKey()
 						.getPartition(), entry);
 				flushNewItem(reference, entry.getUniqueKey().getPartition(),
 						entry);
 				return reference;
 
 			case EXPLICIT:
-				reference = createReferenceIfNecessary(entry.getUniqueKey()
+				reference = createNodeReferenceIfNecessary(entry.getUniqueKey()
 						.getPartition(), entry);
 				newNodes.add(newPair(entry, reference));
 				return reference;
@@ -930,8 +931,11 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		return null;
 	}
 
-	protected abstract R createReferenceIfNecessary(STPartition partition,
+	protected abstract R createNodeReferenceIfNecessary(STPartition partition,
 			STNodeEntry entry);
+
+	protected abstract R createLinkReferenceIfNecessary(STPartition partition,
+			STLinkEntry entry);
 
 	private void handleRemovedItem(STNodeEntry entry) {
 		try {
@@ -1102,7 +1106,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 				AbstractSTStorageSession.this.handleNewItem(result);
 			} else {
 				R ref = AbstractSTStorageSession.this
-						.createReferenceIfNecessary(partition, result);
+						.createNodeReferenceIfNecessary(partition, result);
 				Pair<STNodeEntry, R> pair = newPair((STNodeEntry) result, ref);
 				AbstractSTStorageSession.this.newNodes.add(pair);
 			}
@@ -1119,7 +1123,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 	public void flushTransient() {
 		Set<STPartition> partitions = newHashSet();
-		Map<STNodeEntry, R> referenceMap = newHashMap();
+		Map<STPropertyContainer, R> referenceMap = newHashMap();
 		for (Pair<STNodeEntry, R> newNode : newNodes) {
 			try {
 				partitions.add(newNode.getK1().getUniqueKey().getPartition());
@@ -1130,16 +1134,24 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 				handleException(e);
 			}
 		}
-		for (STPropertyContainer nodeWithDirtyProperties : dirtyProperties.keySet()) {
-			partitions.add(nodeWithDirtyProperties
-					.getPartition());
+		for (STPropertyContainer propertyContainer : dirtyProperties.keySet()) {
+			partitions.add(propertyContainer.getPartition());
 
-			R reference = referenceMap.get(nodeWithDirtyProperties);
+			R reference = referenceMap.get(propertyContainer);
 			if (reference == null) {
-				reference = createReferenceIfNecessary(nodeWithDirtyProperties
-						.getPartition(), nodeWithDirtyProperties);
+				if (propertyContainer instanceof STNodeEntry) {
+					reference = createNodeReferenceIfNecessary(
+							propertyContainer.getPartition(),
+							(STNodeEntry) propertyContainer);
+				} else if (propertyContainer instanceof STLinkEntry) {
+					reference = createLinkReferenceIfNecessary(
+							propertyContainer.getPartition(),
+							(STLinkEntry) propertyContainer);
+				} else {
+					throw new IllegalStateException();
+				}
 			}
-			for (STProperty data : dirtyProperties.get(nodeWithDirtyProperties)) {
+			for (STProperty data : dirtyProperties.get(propertyContainer)) {
 				try {
 					flushDirtyProperty(reference, data);
 				} catch (Exception e) {
@@ -1281,5 +1293,54 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 	protected abstract Iterable<STNodeEntry> internalFindNamed(
 			STPartition partition, String nodeEntryName) throws Exception;
+
+	protected abstract STLinkEntry internalAddLink(STPartition partition,
+			STNodeEntry origin, STNodeEntry destiny, String name);
+
+	protected abstract Iterable<STLinkEntry> internalFindLinks(
+			STPartition partition, STNodeEntry origin, STNodeEntry destiny,
+			String name);
+
+	@Override
+	public STLinkEntry addLink(STNodeEntry origin, STNodeEntry destiny,
+			String name) {
+		return internalAddLink(origin.getPartition(), origin, destiny, name);
+	}
+
+	@Override
+	public Iterable<STLinkEntry> findLinks(STNodeEntry origin,
+			STNodeEntry destiny) {
+		return internalFindLinks(origin.getPartition(), origin, destiny, null);
+	}
+
+	@Override
+	public Iterable<STLinkEntry> findLinks(STNodeEntry origin, String name) {
+		return internalFindLinks(origin.getPartition(), origin, null, name);
+	}
+
+	@Override
+	public Iterable<STLinkEntry> findLinks(STNodeEntry origin) {
+		return internalFindLinks(origin.getPartition(), origin, null, null);
+	}
+
+	@Override
+	public STLinkEntry getLink(STNodeEntry origin, STNodeEntry destiny,
+			String name) {
+		return SLCollections.firstOf(internalFindLinks(origin.getPartition(),
+				origin, destiny, name));
+	}
+
+	@Override
+	public void removeLink(STLinkEntry link) {
+		removeLink(link.getOrigin(), link.getTarget(), link.getLinkName());
+	}
+
+	@Override
+	public void removeLink(STNodeEntry origin, STNodeEntry destiny, String name) {
+		internalRemoveLink(origin.getPartition(), origin, destiny, name);
+	}
+
+	protected abstract void internalRemoveLink(STPartition partition,
+			STNodeEntry origin, STNodeEntry destiny, String name);
 
 }

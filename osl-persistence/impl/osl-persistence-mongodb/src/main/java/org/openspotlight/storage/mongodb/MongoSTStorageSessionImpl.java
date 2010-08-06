@@ -180,7 +180,7 @@ public class MongoSTStorageSessionImpl extends
 	}
 
 	@Override
-	protected DBObject createReferenceIfNecessary(STPartition partition,
+	protected DBObject createNodeReferenceIfNecessary(STPartition partition,
 			STNodeEntry entry) {
 		DBObject basicDBObject = findReferenceOrReturnNull(partition, entry);
 		Pair<STNodeEntry, DBObject> p = newPair(entry, basicDBObject,
@@ -451,7 +451,7 @@ public class MongoSTStorageSessionImpl extends
 	protected void internalFlushSimpleProperty(DBObject possibleReference,
 			STPartition partition, STProperty dirtyProperty) throws Exception {
 		DBObject reference = possibleReference != null ? possibleReference
-				: createReferenceIfNecessary(partition, dirtyProperty
+				: createNodeReferenceIfNecessary(partition, dirtyProperty
 						.getParent());
 		String objName = null;
 		Object value = null;
@@ -585,7 +585,7 @@ public class MongoSTStorageSessionImpl extends
 			builder.add(p);
 		}
 		DBObject reference = possibleReference != null ? possibleReference
-				: createReferenceIfNecessary(partition, stNodeEntry);
+				: createNodeReferenceIfNecessary(partition, stNodeEntry);
 		DBObject indexed = (DBObject) reference.get(INDEXED);
 		List<String> keyNames = (List<String>) reference.get(KEY_NAMES);
 		if (indexed != null) {
