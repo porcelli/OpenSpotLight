@@ -1552,6 +1552,7 @@ public abstract class AbstractSTStorageSessionTest {
 				.getInstance(STStorageSession.class);
 		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("a", "b", "c");
+		session.flushTransient();
 		STNodeEntry b = c.getParent(session);
 		STNodeEntry a = b.getParent(session);
 

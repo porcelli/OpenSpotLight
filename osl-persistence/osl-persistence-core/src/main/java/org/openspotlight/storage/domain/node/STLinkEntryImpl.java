@@ -53,4 +53,16 @@ public class STLinkEntryImpl extends STPropertyContainerImpl implements
 		return originPartition;
 	}
 
+	public boolean equals(Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof STLinkEntry))
+			return false;
+		return getKeyAsString().equals(((STLinkEntry) o).getKeyAsString());
+	}
+
+	public int hashCode() {
+		return getKeyAsString().hashCode();
+	}
+
 }

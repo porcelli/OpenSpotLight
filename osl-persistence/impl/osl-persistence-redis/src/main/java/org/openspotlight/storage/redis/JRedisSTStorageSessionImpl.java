@@ -70,6 +70,7 @@ import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.StringIDSupport;
+import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STLinkEntry;
 import org.openspotlight.storage.domain.node.STLinkEntryImpl;
@@ -467,9 +468,32 @@ public class JRedisSTStorageSessionImpl extends
 	@Override
 	protected void flushNewItem(Nothing reference, STPartition partition,
 			STNodeEntry entry) throws Exception {
+		String uniqueKey = entry.getUniqueKey().getKeyAsString();
+		JRedis jredis = factory.getFrom(partition);
+		JRedisLoggedExecution jredisExec = new JRedisLoggedExecution(uniqueKey,
+				jredis);
+		jredisExec.sadd(SET_WITH_ALL_KEYS, uniqueKey);
+		jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entry
+				.getNodeEntryName()), uniqueKey);
+		jredis.sadd(SET_WITH_ALL_KEY_NAMES, entry.getNodeEntryName());
+		String parentKeyAsString = entry.getUniqueKey().getParentKeyAsString();
+		if (parentKeyAsString != null) {
+			jredisExec.set(KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey),
+					parentKeyAsString);
 
-		flushRemoved(partition, entry, entry.getNodeEntryName());
+			jredisExec.sadd(SET_WITH_NODE_CHILDREN_KEYS
+					.format(parentKeyAsString), uniqueKey);
+			jredisExec.sadd(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(
+					parentKeyAsString, entry.getNodeEntryName()), uniqueKey);
+		}
+		String localKey = entry.getLocalKey().getKeyAsString();
+		jredisExec.sadd(SET_WITH_ALL_LOCAL_KEYS.format(localKey), uniqueKey);
+		for (STKeyEntry k : entry.getLocalKey().getEntries()) {
+			internalFlushSimplePropertyAndCreateIndex(jredisExec, partition, k
+					.getPropertyName(), k.getValue() != null ? k.getValue()
+					.getBytes() : null, uniqueKey, PropertyType.KEY);
 
+		}
 	}
 
 	private void flushRemoved(STPartition partition, STPropertyContainer entry,
@@ -527,52 +551,7 @@ public class JRedisSTStorageSessionImpl extends
 	@Override
 	protected void flushRemovedItem(STPartition partition, STNodeEntry entry)
 			throws Exception {
-		JRedis jredis = factory.getFrom(partition);
-
-		String uniqueKey = entry.getUniqueKey().getKeyAsString();
-		jredis.srem(SET_WITH_ALL_KEYS, uniqueKey);
-		jredis.srem(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entry
-				.getNodeEntryName()), uniqueKey);
-		String simpleProperties = SET_WITH_NODE_PROPERTY_SIMPLE_NAMES
-				.format(uniqueKey);
-		String keyProperties = SET_WITH_NODE_PROPERTY_KEY_NAMES
-				.format(uniqueKey);
-		String indexedProperties = SET_WITH_NODE_PROPERTY_INDEXED_NAMES
-				.format(uniqueKey);
-		List<String> allPropertyNames = newLinkedList();
-		allPropertyNames.addAll(listBytesToListString(jredis
-				.smembers(simpleProperties)));
-		allPropertyNames.addAll(listBytesToListString(jredis
-				.smembers(keyProperties)));
-		allPropertyNames.addAll(listBytesToListString(jredis
-				.smembers(indexedProperties)));
-		for (String s : allPropertyNames) {
-			jredis.del(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(uniqueKey, s),
-					KEY_WITH_PROPERTY_VALUE.format(uniqueKey, s));
-		}
-		jredis.del(simpleProperties, keyProperties, indexedProperties,
-				SET_WITH_NODE_CHILDREN_KEYS.format(uniqueKey),
-				KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey));
-
-		String dependentKeys = SET_WITH_ALL_DEPENDENT_KEYS.format(uniqueKey);
-		List<String> keys = listBytesToListString(jredis
-				.smembers(dependentKeys));
-
-		for (String key : keys) {
-			if (key.contains(uniqueKey)) {
-				jredis.del(key);
-			} else {
-				List<String> possibleValues = listBytesToListString(jredis
-						.smembers(key));
-				for (String possibleValue : possibleValues) {
-					if (possibleValue.contains(uniqueKey)) {
-						jredis.srem(key, possibleValue);
-					}
-				}
-
-			}
-		}
-		jredis.del(dependentKeys);
+		flushRemoved(partition, entry, entry.getNodeEntryName());
 	}
 
 	@Override
@@ -672,7 +651,7 @@ public class JRedisSTStorageSessionImpl extends
 			JRedisLoggedExecution exec, STPartition partition,
 			String propertyName, byte[] propertyValue, String uniqueKey,
 			PropertyType propertyType) throws Exception {
-
+		
 		JRedis jredis = factory.getFrom(partition);
 		String setName = propertyType.getSetName(uniqueKey);
 		exec.sadd(setName, propertyName);
