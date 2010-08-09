@@ -75,8 +75,11 @@ import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
+import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.domain.key.STKeyEntry;
 import org.openspotlight.storage.domain.key.STUniqueKey;
+import org.openspotlight.storage.domain.node.STLinkEntry;
+import org.openspotlight.storage.domain.node.STLinkEntryImpl;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
 import org.openspotlight.storage.domain.node.STProperty;
@@ -112,9 +115,9 @@ public class MongoSTStorageSessionImpl extends
 	private final Map<Pair<String, String>, DBCollection> collectionsMap = newHashMap();
 
 	private static final String ID = "_id", LOCAL_ID = "node_local_id",
-			PARENT_ID = "node_parent_id", MPP_KEY = "mpp_key",
-			KEY_NAMES = "node_key_names", PROPERTIES = "node_properties",
-			INDEXED = "node_indexed", ENTRY_NAME = "node_entry_name";
+			PARENT_ID = "node_parent_id", KEY_NAMES = "node_key_names",
+			PROPERTIES = "node_properties", INDEXED = "node_indexed",
+			ENTRY_NAME = "node_entry_name";
 
 	private final Mongo mongo;
 	private final STRepositoryPath repositoryPath;
@@ -169,26 +172,24 @@ public class MongoSTStorageSessionImpl extends
 	protected void internalSavePartitions(STPartition... partitions)
 			throws Exception {
 		for (STPartition partition : partitions) {
-			for (Pair<STNodeEntry, DBObject> p : transientObjects
+			for (Pair<STPropertyContainer, DBObject> p : transientObjects
 					.get(partition)) {
-				DBCollection coll = getCachedCollection(partition, p.getK1()
-						.getNodeEntryName());
-				coll.save(p.getK2());
+				if (p.getK1() instanceof STNodeEntry) {
+					STNodeEntry n = (STNodeEntry) p.getK1();
+					DBCollection coll = getCachedCollection(partition, n
+							.getNodeEntryName());
+					coll.save(p.getK2());
+
+				} else if (p.getK1() instanceof STLinkEntry) {
+					STLinkEntry l = (STLinkEntry) p.getK1();
+					DBCollection coll = getCachedCollection(partition, l
+							.getOrigin().getNodeEntryName());
+					coll.save(p.getK2());
+				}
 			}
 		}
 		transientObjects.clear();
 
-	}
-
-	@Override
-	protected DBObject createNodeReferenceIfNecessary(STPartition partition,
-			STNodeEntry entry) {
-		DBObject basicDBObject = findReferenceOrReturnNull(partition, entry);
-		Pair<STNodeEntry, DBObject> p = newPair(entry, basicDBObject,
-				Pair.PairEqualsMode.K1);
-		if (!transientObjects.get(partition).contains(p))
-			transientObjects.put(partition, p);
-		return basicDBObject;
 	}
 
 	private DBObject findReferenceOrReturnNull(STPartition partition,
@@ -196,10 +197,11 @@ public class MongoSTStorageSessionImpl extends
 		DBObject basicDBObject = null;// TODO fix with fakePair and/or find
 		// cache
 
-		Pair<STNodeEntry, DBObject> p = newPair(entry, null,
-				Pair.PairEqualsMode.K1);
+		Pair<STPropertyContainer, DBObject> p = Pair
+				.<STPropertyContainer, DBObject> newPair(entry, null,
+						Pair.PairEqualsMode.K1);
 		if (transientObjects.get(partition).contains(p)) {
-			for (Pair<STNodeEntry, DBObject> pair : transientObjects
+			for (Pair<STPropertyContainer, DBObject> pair : transientObjects
 					.get(partition)) {
 				if (pair.equals(p)) {
 					basicDBObject = pair.getK2();
@@ -207,23 +209,35 @@ public class MongoSTStorageSessionImpl extends
 				}
 			}
 		}
-		Pair<STUniqueKey, DBObject> p1 = newPair(entry.getUniqueKey(), null,
+		STUniqueKey key;
+		String collectionName;
+		if (entry instanceof STNodeEntry) {
+			key = ((STNodeEntry) entry).getUniqueKey();
+			collectionName = ((STNodeEntry) entry).getNodeEntryName();
+		} else if (entry instanceof STLinkEntry) {
+			key = ((STLinkEntry) entry).getOrigin().getUniqueKey();
+			collectionName = ((STLinkEntry) entry).getOrigin()
+					.getNodeEntryName();
+		} else {
+			throw new IllegalStateException();
+		}
+
+		Pair<STUniqueKey, DBObject> p1 = newPair(key, null,
 				Pair.PairEqualsMode.K1);
 		int idx = objectCache.indexOf(p1);
 		if (idx != -1) {
 			basicDBObject = objectCache.get(idx).getK2();
 		}
 		if (basicDBObject == null) {
-			DBCollection coll = getCachedCollection(partition, entry
-					.getNodeEntryName());
+			DBCollection coll = getCachedCollection(partition, collectionName);
 			BasicDBObject queryObject = new BasicDBObject();
-			queryObject.put(ID, entry.getUniqueKey().getKeyAsString());
+			queryObject.put(ID, key.getKeyAsString());
 			basicDBObject = coll.findOne(queryObject);
 			if (basicDBObject == null) {
 				basicDBObject = new BasicDBObject();
-				basicDBObject.put(ID, entry.getUniqueKey().getKeyAsString());
+				basicDBObject.put(ID, key.getKeyAsString());
 			}
-			objectCache.addFirst(newPair(entry.getUniqueKey(), basicDBObject,
+			objectCache.addFirst(newPair(key, basicDBObject,
 					Pair.PairEqualsMode.K1));
 			if (objectCache.size() > maxCacheSize)
 				objectCache.removeLast();
@@ -237,8 +251,8 @@ public class MongoSTStorageSessionImpl extends
 		byte[] value = null;
 		if (stProperty.isKey()) {
 			STNodeEntry parent = (STNodeEntry) stProperty.getParent();
-			for (STKeyEntry e : parent.getUniqueKey()
-					.getLocalKey().getEntries()) {
+			for (STKeyEntry e : parent.getUniqueKey().getLocalKey()
+					.getEntries()) {
 				if (e.getPropertyName().equals(stProperty.getPropertyName())) {
 					value = e.getValue() != null ? e.getValue().getBytes()
 							: null;
@@ -391,8 +405,9 @@ public class MongoSTStorageSessionImpl extends
 					.getNodeEntryName());
 			col.save(reference);
 		} else {
-			Pair<STNodeEntry, DBObject> p = newPair(entry, reference,
-					Pair.PairEqualsMode.K1);
+			Pair<STPropertyContainer, DBObject> p = Pair
+					.<STPropertyContainer, DBObject> newPair(entry, reference,
+							Pair.PairEqualsMode.K1);
 			if (!transientObjects.get(partition).contains(p))
 				transientObjects.put(partition, p);
 		}
@@ -452,14 +467,32 @@ public class MongoSTStorageSessionImpl extends
 	@Override
 	protected void internalFlushSimpleProperty(DBObject possibleReference,
 			STPartition partition, STProperty dirtyProperty) throws Exception {
-		DBObject reference = possibleReference != null ? possibleReference
-				: createNodeReferenceIfNecessary(partition, dirtyProperty
-						.getParent());
+		DBObject reference;
+		String collectionName;
+		boolean isLink = dirtyProperty.getParent()instanceof STLinkEntry;
+		if (possibleReference != null) {
+			reference = possibleReference;
+			collectionName = StringIDSupport
+					.getNodeEntryName((String) reference.get(ID));
+		} else if (dirtyProperty.getParent() instanceof STNodeEntry) {
+			reference = createNodeReferenceIfNecessary(partition,
+					(STNodeEntry) dirtyProperty.getParent());
+			collectionName = ((STNodeEntry) dirtyProperty.getParent())
+					.getNodeEntryName();
+		} else if (dirtyProperty.getParent() instanceof STNodeEntry) {
+			reference = createLinkReferenceIfNecessary(partition,
+					(STLinkEntry) dirtyProperty.getParent());
+			collectionName = ((STLinkEntry) dirtyProperty.getParent())
+					.getOrigin().getNodeEntryName();
+
+		} else {
+			throw new IllegalStateException();
+		}
+
 		String objName = null;
 		Object value = null;
 		if (dirtyProperty.isIndexed()) {
-			ensureIndexed(partition, dirtyProperty.getParent()
-					.getNodeEntryName(), INDEXED, dirtyProperty
+			ensureIndexed(partition, collectionName, INDEXED, dirtyProperty
 					.getPropertyName());
 			objName = INDEXED;
 			value = dirtyProperty.getInternalMethods()
@@ -574,46 +607,6 @@ public class MongoSTStorageSessionImpl extends
 		return convertToNode(parentPartition, result);
 	}
 
-	@Override
-	protected Set<STProperty> internalNodeEntryLoadProperties(
-			DBObject possibleReference, STPartition partition,
-			STNodeEntry stNodeEntry) throws Exception {
-		ImmutableSet.Builder<STProperty> builder = ImmutableSet.builder();
-		for (STKeyEntry entry : stNodeEntry.getUniqueKey().getLocalKey()
-				.getEntries()) {
-			STPropertyImpl p = STPropertyImpl.createKey(
-					entry.getPropertyName(), stNodeEntry);
-			p.getInternalMethods().setStringValueOnLoad(this, entry.getValue());
-			builder.add(p);
-		}
-		DBObject reference = possibleReference != null ? possibleReference
-				: createNodeReferenceIfNecessary(partition, stNodeEntry);
-		DBObject indexed = (DBObject) reference.get(INDEXED);
-		List<String> keyNames = (List<String>) reference.get(KEY_NAMES);
-		if (indexed != null) {
-			for (String s : indexed.keySet()) {
-				if (!keyNames.contains(s)) {
-					STPropertyImpl p = STPropertyImpl.createIndexed(s,
-							stNodeEntry);
-					String value = (String) indexed.get(s);
-					if(NULL_VALUE.equals(value)) value=null;
-					p.getInternalMethods().setStringValueOnLoad(this,
-							value);
-					builder.add(p);
-				}
-			}
-		}
-
-		DBObject properties = (DBObject) reference.get(PROPERTIES);
-		if (properties != null) {
-			for (String s : properties.keySet()) {
-				STPropertyImpl p = STPropertyImpl.createSimple(s, stNodeEntry);
-				builder.add(p);
-			}
-		}
-
-		return builder.build();
-	}
 
 	@Override
 	protected Iterable<STNodeEntry> internalFindNamed(STPartition partition,
@@ -671,6 +664,85 @@ public class MongoSTStorageSessionImpl extends
 		set.addAll(getCachedDbForPartition(partition).getCollectionNames());
 		set.remove("system.indexes");
 		return ImmutableSet.copyOf(set);
+	}
+
+	@Override
+	protected DBObject createLinkReferenceIfNecessary(STPartition partition,
+			STLinkEntry entry) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected void flushRemovedLink(STPartition partition, STLinkEntry link) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void handleNewLink(STLinkEntry link) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected Iterable<STLinkEntry> internalFindLinks(STPartition partition,
+			STNodeEntry origin, STNodeEntry destiny, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Set<STProperty> internalPropertyContainerLoadProperties(
+			DBObject reference, STPartition partition,
+			STPropertyContainer stNodeEntry) throws Exception {
+		ImmutableSet.Builder<STProperty> builder = ImmutableSet.builder();
+		for (STKeyEntry entry : stNodeEntry.getUniqueKey().getLocalKey()
+				.getEntries()) {
+			STPropertyImpl p = STPropertyImpl.createKey(
+					entry.getPropertyName(), stNodeEntry);
+			p.getInternalMethods().setStringValueOnLoad(this, entry.getValue());
+			builder.add(p);
+		}
+		DBObject reference = possibleReference != null ? possibleReference
+				: createNodeReferenceIfNecessary(partition, stNodeEntry);
+		DBObject indexed = (DBObject) reference.get(INDEXED);
+		List<String> keyNames = (List<String>) reference.get(KEY_NAMES);
+		if (indexed != null) {
+			for (String s : indexed.keySet()) {
+				if (!keyNames.contains(s)) {
+					STPropertyImpl p = STPropertyImpl.createIndexed(s,
+							stNodeEntry);
+					String value = (String) indexed.get(s);
+					if (NULL_VALUE.equals(value))
+						value = null;
+					p.getInternalMethods().setStringValueOnLoad(this, value);
+					builder.add(p);
+				}
+			}
+		}
+
+		DBObject properties = (DBObject) reference.get(PROPERTIES);
+		if (properties != null) {
+			for (String s : properties.keySet()) {
+				STPropertyImpl p = STPropertyImpl.createSimple(s, stNodeEntry);
+				builder.add(p);
+			}
+		}
+
+		return builder.build();
+	}
+
+	@Override
+	protected DBObject createNodeReferenceIfNecessary(STPartition partition,
+			STNodeEntry entry) {
+		DBObject basicDBObject = findReferenceOrReturnNull(partition, entry);
+		Pair<STPropertyContainer, DBObject> p = Pair
+				.<STPropertyContainer, DBObject> newPair(entry, basicDBObject,
+						Pair.PairEqualsMode.K1);
+		if (!transientObjects.get(partition).contains(p))
+			transientObjects.put(partition, p);
+		return basicDBObject;
 	}
 
 }
