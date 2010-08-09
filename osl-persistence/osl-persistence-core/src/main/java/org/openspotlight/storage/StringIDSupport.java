@@ -65,6 +65,8 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
  */
 public class StringIDSupport {
 	private static final String SEP = "__";
+	private static final String NODE_KEY_SEP = ":";
+	private static final String LINK_KEY_SEP = "::";
 
 	public static String getNodeEntryName(String uniqueKeyAsString) {
 		return uniqueKeyAsString.split(SEP)[2];
@@ -111,8 +113,8 @@ public class StringIDSupport {
 				.getEntries());
 		Collections.sort(ordered);
 		for (STKeyEntry entry : ordered) {
-			sb.append(":").append(entry.getPropertyName()).append(":").append(
-					":").append(entry.getValue());
+			sb.append(NODE_KEY_SEP).append(entry.getPropertyName()).append(
+					NODE_KEY_SEP).append(NODE_KEY_SEP).append(entry.getValue());
 		}
 		return sb.toString();
 	}
@@ -131,11 +133,23 @@ public class StringIDSupport {
 		StringBuilder sb = new StringBuilder();
 		STUniqueKey originKey = origin.getUniqueKey();
 		sb.append(originKey.getKeyAsString());
-		sb.append(":");
+		sb.append(LINK_KEY_SEP);
 		sb.append(target.getKeyAsString());
-		sb.append(":");
+		sb.append(LINK_KEY_SEP);
 		sb.append(linkName);
 		return sb.toString();
+	}
+
+	public static String getLinkNameFromLinkKey(String linkKey) {
+		return linkKey.split("[:][:]")[2];
+	}
+
+	public static String getOriginKeyAsStringFromLinkKey(String linkKey) {
+		return linkKey.split("[:][:]")[0];
+	}
+
+	public static String getTargeyKeyAsStringFromLinkKey(String linkKey) {
+		return linkKey.split("[:][:]")[1];
 	}
 
 }

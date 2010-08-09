@@ -57,18 +57,22 @@ import static org.openspotlight.storage.StringIDSupport.getPartition;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.jredis.JRedis;
 import org.openspotlight.common.CustomizedFormat;
+import org.openspotlight.common.collection.IteratorBuilder;
+import org.openspotlight.common.collection.IteratorBuilder.Converter;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.domain.key.STKeyEntry;
+import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.node.STLinkEntry;
+import org.openspotlight.storage.domain.node.STLinkEntryImpl;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.domain.node.STProperty;
 import org.openspotlight.storage.domain.node.STPropertyContainer;
@@ -192,6 +196,13 @@ public class JRedisSTStorageSessionImpl extends
 				jredis.sadd(usedKeys, s);
 		}
 	}
+
+	private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_NAME = new CustomizedFormat(
+			"lname: :uids");
+	private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_ORIGIN = new CustomizedFormat(
+			"lorigin: :uids");
+	private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_TARGET = new CustomizedFormat(
+			"ltarget: :uids");
 
 	private static final CustomizedFormat SET_WITH_INDEX_ENTRY = new CustomizedFormat(
 			"index: :pname: :uid");
@@ -457,32 +468,59 @@ public class JRedisSTStorageSessionImpl extends
 	protected void flushNewItem(Nothing reference, STPartition partition,
 			STNodeEntry entry) throws Exception {
 
-		String uniqueKey = entry.getUniqueKey().getKeyAsString();
+		flushRemoved(partition, entry, entry.getNodeEntryName());
+
+	}
+
+	private void flushRemoved(STPartition partition, STPropertyContainer entry,
+			String entryName) throws Exception {
 		JRedis jredis = factory.getFrom(partition);
-		JRedisLoggedExecution jredisExec = new JRedisLoggedExecution(uniqueKey,
-				jredis);
-		jredisExec.sadd(SET_WITH_ALL_KEYS, uniqueKey);
-		jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entry
-				.getNodeEntryName()), uniqueKey);
-		jredis.sadd(SET_WITH_ALL_KEY_NAMES, entry.getNodeEntryName());
-		String parentKeyAsString = entry.getUniqueKey().getParentKeyAsString();
-		if (parentKeyAsString != null) {
-			jredisExec.set(KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey),
-					parentKeyAsString);
 
-			jredisExec.sadd(SET_WITH_NODE_CHILDREN_KEYS
-					.format(parentKeyAsString), uniqueKey);
-			jredisExec.sadd(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(
-					parentKeyAsString, entry.getNodeEntryName()), uniqueKey);
+		String uniqueKey = entry.getKeyAsString();
+		jredis.srem(SET_WITH_ALL_KEYS, uniqueKey);
+		if (entryName != null)
+			jredis.srem(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entryName),
+					uniqueKey);
+		String simpleProperties = SET_WITH_NODE_PROPERTY_SIMPLE_NAMES
+				.format(uniqueKey);
+		String keyProperties = SET_WITH_NODE_PROPERTY_KEY_NAMES
+				.format(uniqueKey);
+		String indexedProperties = SET_WITH_NODE_PROPERTY_INDEXED_NAMES
+				.format(uniqueKey);
+		List<String> allPropertyNames = newLinkedList();
+		allPropertyNames.addAll(listBytesToListString(jredis
+				.smembers(simpleProperties)));
+		allPropertyNames.addAll(listBytesToListString(jredis
+				.smembers(keyProperties)));
+		allPropertyNames.addAll(listBytesToListString(jredis
+				.smembers(indexedProperties)));
+		for (String s : allPropertyNames) {
+			jredis.del(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(uniqueKey, s),
+					KEY_WITH_PROPERTY_VALUE.format(uniqueKey, s));
 		}
-		String localKey = entry.getLocalKey().getKeyAsString();
-		jredisExec.sadd(SET_WITH_ALL_LOCAL_KEYS.format(localKey), uniqueKey);
-		for (STKeyEntry k : entry.getLocalKey().getEntries()) {
-			internalFlushSimplePropertyAndCreateIndex(jredisExec, partition, k
-					.getPropertyName(), k.getValue() != null ? k.getValue()
-					.getBytes() : null, uniqueKey, PropertyType.KEY);
+		jredis.del(simpleProperties, keyProperties, indexedProperties,
+				SET_WITH_NODE_CHILDREN_KEYS.format(uniqueKey),
+				KEY_WITH_PARENT_UNIQUE_ID.format(uniqueKey));
 
+		String dependentKeys = SET_WITH_ALL_DEPENDENT_KEYS.format(uniqueKey);
+		List<String> keys = listBytesToListString(jredis
+				.smembers(dependentKeys));
+
+		for (String key : keys) {
+			if (key.contains(uniqueKey)) {
+				jredis.del(key);
+			} else {
+				List<String> possibleValues = listBytesToListString(jredis
+						.smembers(key));
+				for (String possibleValue : possibleValues) {
+					if (possibleValue.contains(uniqueKey)) {
+						jredis.srem(key, possibleValue);
+					}
+				}
+
+			}
 		}
+		jredis.del(dependentKeys);
 
 	}
 
@@ -678,27 +716,84 @@ public class JRedisSTStorageSessionImpl extends
 	@Override
 	protected Nothing createLinkReferenceIfNecessary(STPartition partition,
 			STLinkEntry entry) {
-		// TODO Auto-generated method stub
-		return null;
+		return Nothing.NOTHING;
 	}
 
 	@Override
-	protected void flushRemovedLink(STPartition partition, STLinkEntry link) {
-		// TODO Auto-generated method stub
-
+	protected void flushRemovedLink(STPartition partition, STLinkEntry link)
+			throws Exception {
+		JRedis jredis = factory.getFrom(partition);
+		jredis.srem(SET_WITH_ALL_LINKS_FOR_NAME.format(link.getLinkName()),
+				link.getKeyAsString());
+		jredis.srem(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getOrigin()
+				.getKeyAsString()), link.getKeyAsString());
+		jredis.srem(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget()
+				.getKeyAsString()), link.getKeyAsString());
+		flushRemoved(partition, link, null);
 	}
 
 	@Override
-	protected void handleNewLink(STLinkEntry link) {
-		// TODO Auto-generated method stub
+	protected void handleNewLink(STPartition partition, STNodeEntry origin,
+			STLinkEntry link) throws Exception {
+		JRedis jredis = factory.getFrom(partition);
+		jredis.sadd(SET_WITH_ALL_LINKS_FOR_NAME.format(link.getLinkName()),
+				link.getKeyAsString());
+		jredis.sadd(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getOrigin()
+				.getKeyAsString()), link.getKeyAsString());
+		jredis.sadd(SET_WITH_ALL_LINKS_FOR_TARGET.format(link.getTarget()
+				.getKeyAsString()), link.getKeyAsString());
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	protected Iterable<STLinkEntry> internalFindLinks(STPartition partition,
-			STNodeEntry origin, STNodeEntry destiny, String name) {
-		// TODO Auto-generated method stub
-		return null;
+	protected Iterable<STLinkEntry> internalFindLinks(
+			final STPartition partition, STNodeEntry origin,
+			STNodeEntry destiny, String name) throws Exception {
+		JRedis jredis = factory.getFrom(partition);
+		List<String> linkIds = listBytesToListString(jredis
+				.smembers(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(origin
+						.getKeyAsString())));
+		if (destiny != null) {
+			List<String> newIds = listBytesToListString(jredis
+					.smembers(SET_WITH_ALL_LINKS_FOR_TARGET.format(destiny
+							.getKeyAsString())));
+			linkIds.retainAll(newIds);
+		}
+		if (name != null) {
+			List<String> newIds = listBytesToListString(jredis
+					.smembers(SET_WITH_ALL_LINKS_FOR_NAME.format(name)));
+			linkIds.retainAll(newIds);
+		}
+		if (linkIds.size() == 0)
+			return Collections.emptyList();
+		return IteratorBuilder.<STLinkEntry, String> createIteratorBuilder()
+				.withItems(linkIds).withConverter(
+						new Converter<STLinkEntry, String>() {
+
+							@Override
+							public STLinkEntry convert(String o)
+									throws Exception {
+								STNodeEntry originNode = JRedisSTStorageSessionImpl.this
+										.loadNodeOrReturnNull(
+												StringIDSupport
+														.getOriginKeyAsStringFromLinkKey(o),
+												partition);
+								String targetId = StringIDSupport
+										.getTargeyKeyAsStringFromLinkKey(o);
+								STPartition targetPartition = StringIDSupport
+										.getPartition(
+												targetId,
+												JRedisSTStorageSessionImpl.this.partitionFactory);
+								STNodeEntry targetNode = JRedisSTStorageSessionImpl.this
+										.loadNodeOrReturnNull(targetId,
+												targetPartition);
+
+								return new STLinkEntryImpl(StringIDSupport
+										.getLinkNameFromLinkKey(o), originNode,
+										targetNode, true);
+							}
+						}).andBuild();
 	}
 
 	@Override

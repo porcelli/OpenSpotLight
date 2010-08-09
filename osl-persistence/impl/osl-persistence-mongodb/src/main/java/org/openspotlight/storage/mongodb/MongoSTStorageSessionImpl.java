@@ -491,6 +491,8 @@ public class MongoSTStorageSessionImpl extends
 
 		String objName = null;
 		Object value = null;
+		String propertyName = dirtyProperty.getPropertyName();
+		
 		if (dirtyProperty.isIndexed()) {
 			ensureIndexed(partition, collectionName, INDEXED, dirtyProperty
 					.getPropertyName());

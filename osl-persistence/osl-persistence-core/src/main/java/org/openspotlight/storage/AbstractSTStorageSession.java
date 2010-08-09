@@ -1299,15 +1299,19 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 	protected abstract Iterable<STLinkEntry> internalFindLinks(
 			STPartition partition, STNodeEntry origin, STNodeEntry destiny,
-			String name);
+			String name) throws Exception;
 
 	@Override
 	public STLinkEntry addLink(STNodeEntry origin, STNodeEntry target,
 			String name) {
 		STLinkEntry link = new STLinkEntryImpl(name, origin, target, true);
 		if (getFlushMode().equals(STFlushMode.AUTO)) {
-
-			this.handleNewLink(link);
+			try {
+				this.handleNewLink(link.getOrigin().getPartition(), link
+						.getOrigin(), link);
+			} catch (Exception e) {
+				handleException(e);
+			}
 		} else {
 			R ref = createLinkReferenceIfNecessary(origin.getPartition(), link);
 			Pair<STLinkEntry, R> pair = newPair(link, ref);
@@ -1316,29 +1320,51 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		return link;
 	}
 
-	protected abstract void handleNewLink(STLinkEntry link);
+	protected abstract void handleNewLink(STPartition partition,
+			STNodeEntry origin, STLinkEntry link) throws Exception;
 
 	@Override
 	public Iterable<STLinkEntry> findLinks(STNodeEntry origin,
 			STNodeEntry destiny) {
-		return internalFindLinks(origin.getPartition(), origin, destiny, null);
+		try {
+			return internalFindLinks(origin.getPartition(), origin, destiny,
+					null);
+		} catch (Exception e) {
+			handleException(e);
+			return null;
+		}
 	}
 
 	@Override
 	public Iterable<STLinkEntry> findLinks(STNodeEntry origin, String name) {
-		return internalFindLinks(origin.getPartition(), origin, null, name);
+		try {
+			return internalFindLinks(origin.getPartition(), origin, null, name);
+		} catch (Exception e) {
+			handleException(e);
+			return null;
+		}
 	}
 
 	@Override
 	public Iterable<STLinkEntry> findLinks(STNodeEntry origin) {
-		return internalFindLinks(origin.getPartition(), origin, null, null);
+		try {
+			return internalFindLinks(origin.getPartition(), origin, null, null);
+		} catch (Exception e) {
+			handleException(e);
+			return null;
+		}
 	}
 
 	@Override
 	public STLinkEntry getLink(STNodeEntry origin, STNodeEntry destiny,
 			String name) {
-		return SLCollections.firstOf(internalFindLinks(origin.getPartition(),
-				origin, destiny, name));
+		try {
+			return SLCollections.firstOf(internalFindLinks(origin
+					.getPartition(), origin, destiny, name));
+		} catch (Exception e) {
+			handleException(e);
+			return null;
+		}
 	}
 
 	@Override
@@ -1358,7 +1384,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	protected abstract void flushRemovedLink(STPartition partition,
-			STLinkEntry link);
+			STLinkEntry link) throws Exception;
 
 	@Override
 	public void removeLink(STNodeEntry origin, STNodeEntry target, String name) {
