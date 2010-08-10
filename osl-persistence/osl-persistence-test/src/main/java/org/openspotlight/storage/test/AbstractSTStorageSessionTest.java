@@ -1570,8 +1570,8 @@ public abstract class AbstractSTStorageSessionTest {
 		assertThat(cToALink.getTarget(), is(a));
 
 		STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
-		assertThat(cToALink, is(foundCtoALink));
 		List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+		assertThat(cToALink, is(foundCtoALink));
 		assertThat(foundALinks.size(), is(2));
 		assertThat(foundALinks.contains(aToCLink), is(true));
 		assertThat(foundALinks.contains(aToBLink), is(true));

@@ -1172,6 +1172,21 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 				handleException(e);
 			}
 		}
+		for (Pair<STLinkEntry, R> p : this.newLinks) {
+			try {
+				handleNewLink(p.getK1().getPartition(), p.getK1().getOrigin(),
+						p.getK1());
+			} catch (Exception e) {
+				handleException(e);
+			}
+		}
+		for (STLinkEntry link : this.removedLinks) {
+			try {
+				flushRemovedLink(link.getPartition(), link);
+			} catch (Exception e) {
+				handleException(e);
+			}
+		}
 		try {
 
 			internalSavePartitions(partitions
