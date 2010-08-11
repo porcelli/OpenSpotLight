@@ -60,6 +60,7 @@ import static org.openspotlight.storage.StringIDSupport.getNodeEntryName;
 import static org.openspotlight.storage.StringIDSupport.getPartition;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,6 +71,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.collection.IteratorBuilder;
+import org.openspotlight.common.collection.IteratorBuilder.Converter;
+import org.openspotlight.common.collection.IteratorBuilder.SimpleIteratorBuilder;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.storage.AbstractSTStorageSession;
 import org.openspotlight.storage.STPartition;
@@ -87,8 +90,10 @@ import org.openspotlight.storage.domain.node.STPropertyContainer;
 import org.openspotlight.storage.domain.node.STPropertyImpl;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -108,7 +113,7 @@ public class MongoSTStorageSessionImpl extends
 	private final LinkedList<Pair<STUniqueKey, DBObject>> objectCache = newLinkedList();
 	private final int maxCacheSize;
 	private static final String NULL_VALUE = "!!!NULL!!!";
-	private Multimap<STPartition, Pair<STPropertyContainer, DBObject>> transientObjects = HashMultimap
+	private Multimap<STPartition, Pair<STNodeEntry, DBObject>> transientObjects = HashMultimap
 			.create();
 	private final Map<String, DB> partitionMap;
 	private final Map<String, GridFS> gridFSMap;
@@ -117,7 +122,7 @@ public class MongoSTStorageSessionImpl extends
 	private static final String ID = "_id", LOCAL_ID = "node_local_id",
 			PARENT_ID = "node_parent_id", KEY_NAMES = "node_key_names",
 			PROPERTIES = "node_properties", INDEXED = "node_indexed",
-			ENTRY_NAME = "node_entry_name";
+			LINKS = "links", ENTRY_NAME = "node_entry_name";
 
 	private final Mongo mongo;
 	private final STRepositoryPath repositoryPath;
@@ -172,20 +177,12 @@ public class MongoSTStorageSessionImpl extends
 	protected void internalSavePartitions(STPartition... partitions)
 			throws Exception {
 		for (STPartition partition : partitions) {
-			for (Pair<STPropertyContainer, DBObject> p : transientObjects
+			for (Pair<STNodeEntry, DBObject> p : transientObjects
 					.get(partition)) {
-				if (p.getK1() instanceof STNodeEntry) {
-					STNodeEntry n = (STNodeEntry) p.getK1();
-					DBCollection coll = getCachedCollection(partition, n
-							.getNodeEntryName());
-					coll.save(p.getK2());
-
-				} else if (p.getK1() instanceof STLinkEntry) {
-					STLinkEntry l = (STLinkEntry) p.getK1();
-					DBCollection coll = getCachedCollection(partition, l
-							.getOrigin().getNodeEntryName());
-					coll.save(p.getK2());
-				}
+				STNodeEntry n = (STNodeEntry) p.getK1();
+				DBCollection coll = getCachedCollection(partition, n
+						.getNodeEntryName());
+				coll.save(p.getK2());
 			}
 		}
 		transientObjects.clear();
@@ -197,11 +194,19 @@ public class MongoSTStorageSessionImpl extends
 		DBObject basicDBObject = null;// TODO fix with fakePair and/or find
 		// cache
 
-		Pair<STPropertyContainer, DBObject> p = Pair
-				.<STPropertyContainer, DBObject> newPair(entry, null,
-						Pair.PairEqualsMode.K1);
+		STNodeEntry node;
+		if (entry instanceof STNodeEntry) {
+			node = (STNodeEntry) entry;
+		} else if (entry instanceof STLinkEntry) {
+			node = ((STLinkEntry) entry).getOrigin();
+		} else {
+			throw new IllegalStateException();
+		}
+
+		Pair<STNodeEntry, DBObject> p = Pair.<STNodeEntry, DBObject> newPair(
+				node, null, Pair.PairEqualsMode.K1);
 		if (transientObjects.get(partition).contains(p)) {
-			for (Pair<STPropertyContainer, DBObject> pair : transientObjects
+			for (Pair<STNodeEntry, DBObject> pair : transientObjects
 					.get(partition)) {
 				if (pair.equals(p)) {
 					basicDBObject = pair.getK2();
@@ -211,16 +216,8 @@ public class MongoSTStorageSessionImpl extends
 		}
 		STUniqueKey key;
 		String collectionName;
-		if (entry instanceof STNodeEntry) {
-			key = ((STNodeEntry) entry).getUniqueKey();
-			collectionName = ((STNodeEntry) entry).getNodeEntryName();
-		} else if (entry instanceof STLinkEntry) {
-			key = ((STLinkEntry) entry).getOrigin().getUniqueKey();
-			collectionName = ((STLinkEntry) entry).getOrigin()
-					.getNodeEntryName();
-		} else {
-			throw new IllegalStateException();
-		}
+		key = node.getUniqueKey();
+		collectionName = node.getNodeEntryName();
 
 		Pair<STUniqueKey, DBObject> p1 = newPair(key, null,
 				Pair.PairEqualsMode.K1);
@@ -378,7 +375,7 @@ public class MongoSTStorageSessionImpl extends
 			STNodeEntry entry) throws Exception {
 		reference.put(LOCAL_ID, entry.getUniqueKey().getLocalKey()
 				.getKeyAsString());
-		ensureIndexed(partition, entry.getNodeEntryName(), null, LOCAL_ID);
+		ensureIndexed(partition, entry.getNodeEntryName(), null, LOCAL_ID,  );
 
 		final STUniqueKey uniqueId = entry.getUniqueKey();
 		final String parentId = uniqueId.getParentKeyAsString();
@@ -405,8 +402,8 @@ public class MongoSTStorageSessionImpl extends
 					.getNodeEntryName());
 			col.save(reference);
 		} else {
-			Pair<STPropertyContainer, DBObject> p = Pair
-					.<STPropertyContainer, DBObject> newPair(entry, reference,
+			Pair<STNodeEntry, DBObject> p = Pair
+					.<STNodeEntry, DBObject> newPair(entry, reference,
 							Pair.PairEqualsMode.K1);
 			if (!transientObjects.get(partition).contains(p))
 				transientObjects.put(partition, p);
@@ -469,7 +466,6 @@ public class MongoSTStorageSessionImpl extends
 			STPartition partition, STProperty dirtyProperty) throws Exception {
 		DBObject reference;
 		String collectionName;
-		boolean isLink = dirtyProperty.getParent()instanceof STLinkEntry;
 		if (possibleReference != null) {
 			reference = possibleReference;
 			collectionName = StringIDSupport
@@ -479,7 +475,7 @@ public class MongoSTStorageSessionImpl extends
 					(STNodeEntry) dirtyProperty.getParent());
 			collectionName = ((STNodeEntry) dirtyProperty.getParent())
 					.getNodeEntryName();
-		} else if (dirtyProperty.getParent() instanceof STNodeEntry) {
+		} else if (dirtyProperty.getParent() instanceof STLinkEntry) {
 			reference = createLinkReferenceIfNecessary(partition,
 					(STLinkEntry) dirtyProperty.getParent());
 			collectionName = ((STLinkEntry) dirtyProperty.getParent())
@@ -492,7 +488,7 @@ public class MongoSTStorageSessionImpl extends
 		String objName = null;
 		Object value = null;
 		String propertyName = dirtyProperty.getPropertyName();
-		
+
 		if (dirtyProperty.isIndexed()) {
 			ensureIndexed(partition, collectionName, INDEXED, dirtyProperty
 					.getPropertyName());
@@ -518,13 +514,22 @@ public class MongoSTStorageSessionImpl extends
 		} else {
 			obj.removeField(getBigPropertyName(dirtyProperty));
 			obj.put(dirtyProperty.getPropertyName(), value);
-			if (STFlushMode.AUTO.equals(getFlushMode())) {
-				getCachedCollection(partition,
-						dirtyProperty.getParent().getNodeEntryName()).save(
-						reference);
+			STNodeEntry nodeEntry;
+			if (dirtyProperty.getParent() instanceof STNodeEntry) {
+				nodeEntry = (STNodeEntry) dirtyProperty.getParent();
+			} else if (dirtyProperty.getParent() instanceof STLinkEntry) {
+				nodeEntry = ((STLinkEntry) dirtyProperty.getParent())
+						.getOrigin();
 			} else {
-				Pair<STNodeEntry, DBObject> p = newPair(dirtyProperty
-						.getParent(), reference, Pair.PairEqualsMode.K1);
+				throw new IllegalStateException();
+			}
+
+			if (STFlushMode.AUTO.equals(getFlushMode())) {
+				getCachedCollection(partition, nodeEntry.getNodeEntryName())
+						.save(reference);
+			} else {
+				Pair<STNodeEntry, DBObject> p = newPair(nodeEntry, reference,
+						Pair.PairEqualsMode.K1);
 				if (!transientObjects.get(partition).contains(p))
 					transientObjects.put(partition, p);
 
@@ -549,10 +554,19 @@ public class MongoSTStorageSessionImpl extends
 
 	}
 
-	private String getFileName(STPartition partition, STProperty property) {
+	private String getFileName(STPartition partition, STProperty dirtyProperty) {
+		STNodeEntry nodeEntry;
+		if (dirtyProperty.getParent() instanceof STNodeEntry) {
+			nodeEntry = (STNodeEntry) dirtyProperty.getParent();
+		} else if (dirtyProperty.getParent() instanceof STLinkEntry) {
+			nodeEntry = ((STLinkEntry) dirtyProperty.getParent()).getOrigin();
+		} else {
+			throw new IllegalStateException();
+		}
+
 		String key = partition.getPartitionName() + _
-				+ property.getParent().getUniqueKey().getKeyAsString() + _
-				+ property.getPropertyName();
+				+ nodeEntry.getUniqueKey().getKeyAsString() + _
+				+ dirtyProperty.getPropertyName();
 		return key;
 	}
 
@@ -573,7 +587,8 @@ public class MongoSTStorageSessionImpl extends
 	Set<String> allIndexes = newHashSet();
 
 	private void ensureIndexed(STPartition partition, String parentName,
-			String groupName, String propertyName) {
+			String groupName, String propertyName,
+			STLinkEntry possibleParentAsLink) {
 		String key = partition.getPartitionName() + parentName + groupName
 				+ propertyName;
 		if (!allIndexes.contains(key)) {
@@ -608,7 +623,6 @@ public class MongoSTStorageSessionImpl extends
 		DBObject result = collection.findOne(parameter);
 		return convertToNode(parentPartition, result);
 	}
-
 
 	@Override
 	protected Iterable<STNodeEntry> internalFindNamed(STPartition partition,
@@ -670,28 +684,120 @@ public class MongoSTStorageSessionImpl extends
 
 	@Override
 	protected DBObject createLinkReferenceIfNecessary(STPartition partition,
-			STLinkEntry entry) {
-		// TODO Auto-generated method stub
-		return null;
+			STLinkEntry link) {
+		STNodeEntry origin = link.getOrigin();
+		DBObject nodeRef = createNodeReferenceIfNecessary(partition, origin);
+		DBObject linkRef = null;
+		@SuppressWarnings("unchecked")
+		List<DBObject> links = (List<DBObject>) nodeRef.get(LINKS);
+		if (links == null) {
+			links = new ArrayList<DBObject>();
+			linkRef = new BasicDBObject();
+			links.add(linkRef);
+			linkRef.put(ID, link.getLinkId());
+			nodeRef.put(LINKS, links);
+		} else {
+			for (DBObject possibleLink : links) {
+				if (possibleLink.get(ID).equals(link.getKeyAsString())) {
+					linkRef = possibleLink;
+					break;
+				}
+			}
+			if (linkRef == null) {
+				linkRef = new BasicDBObject();
+				links.add(linkRef);
+				linkRef.put(ID, link.getLinkId());
+			}
+		}
+
+		nodeRef.put(LINKS, links);
+		return linkRef;
 	}
 
 	@Override
 	protected void flushRemovedLink(STPartition partition, STLinkEntry link) {
-		// TODO Auto-generated method stub
-
+		DBObject basicDBObject = findReferenceOrReturnNull(partition, link
+				.getOrigin());
+		if (basicDBObject != null) {
+			@SuppressWarnings("unchecked")
+			List<DBObject> links = (List<DBObject>) basicDBObject.get(LINKS);
+			if (links != null) {
+				for (DBObject possibleLink : links) {
+					if (possibleLink.get(ID).equals(link.getKeyAsString())) {
+						links.remove(possibleLink);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	@Override
-	protected void handleNewLink(STLinkEntry link) {
-		// TODO Auto-generated method stub
+	protected Iterable<STLinkEntry> internalFindLinks(
+			final STPartition partition, final STNodeEntry origin,
+			final STNodeEntry destiny, final String name) {
+		Builder<String> rawItems = ImmutableList.builder();
+		DBObject basicDBObject = findReferenceOrReturnNull(partition, origin);
+		if (basicDBObject != null) {
+			@SuppressWarnings("unchecked")
+			List<DBObject> links = (List<DBObject>) basicDBObject.get(LINKS);
+			if (links != null) {
+				for (DBObject possibleLink : links) {
+					String linkId = (String) possibleLink.get(ID);
+					if (name != null && destiny != null) {
+						if (StringIDSupport.getLinkNameFromLinkKey(linkId)
+								.equals(name)
+								&& StringIDSupport
+										.getTargeyKeyAsStringFromLinkKey(linkId)
+										.equals(destiny.getKeyAsString())) {
+							rawItems.add(linkId);
 
-	}
+						}
 
-	@Override
-	protected Iterable<STLinkEntry> internalFindLinks(STPartition partition,
-			STNodeEntry origin, STNodeEntry destiny, String name) {
-		// TODO Auto-generated method stub
-		return null;
+					} else if (name != null) {
+						if (StringIDSupport.getLinkNameFromLinkKey(linkId)
+								.equals(name)) {
+							rawItems.add(linkId);
+						}
+					} else if (destiny != null) {
+						if (StringIDSupport.getTargeyKeyAsStringFromLinkKey(
+								linkId).equals(destiny.getKeyAsString())) {
+							rawItems.add(linkId);
+
+						}
+					} else {
+						rawItems.add(linkId);
+					}
+				}
+			}
+		}
+		@SuppressWarnings("unchecked")
+		SimpleIteratorBuilder<STLinkEntry, String> result = IteratorBuilder
+				.<STLinkEntry, String> createIteratorBuilder().withItems(
+						rawItems.build()).withConverter(
+						new Converter<STLinkEntry, String>() {
+
+							@Override
+							public STLinkEntry convert(String o)
+									throws Exception {
+								STNodeEntry foundTarget = destiny;
+								if (foundTarget == null) {
+									String targetId = StringIDSupport
+											.getTargeyKeyAsStringFromLinkKey(o);
+									foundTarget = withPartition(partition)
+											.createCriteria()
+											.withUniqueKeyAsString(targetId)
+											.buildCriteria()
+											.andFindUnique(
+													MongoSTStorageSessionImpl.this);
+								}
+								String foundName = StringIDSupport
+										.getLinkNameFromLinkKey(o);
+								return new STLinkEntryImpl(foundName, origin,
+										foundTarget, true);
+							}
+						});
+		return result.andBuild();
 	}
 
 	@Override
@@ -739,12 +845,18 @@ public class MongoSTStorageSessionImpl extends
 	protected DBObject createNodeReferenceIfNecessary(STPartition partition,
 			STNodeEntry entry) {
 		DBObject basicDBObject = findReferenceOrReturnNull(partition, entry);
-		Pair<STPropertyContainer, DBObject> p = Pair
-				.<STPropertyContainer, DBObject> newPair(entry, basicDBObject,
-						Pair.PairEqualsMode.K1);
+		Pair<STNodeEntry, DBObject> p = Pair.<STNodeEntry, DBObject> newPair(
+				entry, basicDBObject, Pair.PairEqualsMode.K1);
 		if (!transientObjects.get(partition).contains(p))
 			transientObjects.put(partition, p);
 		return basicDBObject;
+	}
+
+	@Override
+	protected void handleNewLink(STPartition partition, STNodeEntry origin,
+			STLinkEntry link) throws Exception {
+		createLinkReferenceIfNecessary(partition, link);
+
 	}
 
 }
