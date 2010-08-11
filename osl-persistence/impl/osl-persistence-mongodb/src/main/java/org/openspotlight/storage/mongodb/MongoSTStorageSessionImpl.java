@@ -191,8 +191,7 @@ public class MongoSTStorageSessionImpl extends
 
 	private DBObject findReferenceOrReturnNull(STPartition partition,
 			STPropertyContainer entry) {
-		DBObject basicDBObject = null;// TODO fix with fakePair and/or find
-		// cache
+		DBObject basicDBObject = null;
 
 		STNodeEntry node;
 		if (entry instanceof STNodeEntry) {
@@ -375,7 +374,7 @@ public class MongoSTStorageSessionImpl extends
 			STNodeEntry entry) throws Exception {
 		reference.put(LOCAL_ID, entry.getUniqueKey().getLocalKey()
 				.getKeyAsString());
-		ensureIndexed(partition, entry.getNodeEntryName(), null, LOCAL_ID,  );
+		ensureIndexed(partition, entry.getNodeEntryName(), null, LOCAL_ID, null);
 
 		final STUniqueKey uniqueId = entry.getUniqueKey();
 		final String parentId = uniqueId.getParentKeyAsString();
@@ -390,7 +389,7 @@ public class MongoSTStorageSessionImpl extends
 					keyEntry.getValue() != null ? keyEntry.getValue()
 							: NULL_VALUE);
 			ensureIndexed(partition, entry.getNodeEntryName(), INDEXED,
-					keyEntry.getPropertyName());
+					keyEntry.getPropertyName(), null);
 
 		}
 		reference.put(ID, uniqueId.getKeyAsString());
@@ -491,7 +490,7 @@ public class MongoSTStorageSessionImpl extends
 
 		if (dirtyProperty.isIndexed()) {
 			ensureIndexed(partition, collectionName, INDEXED, dirtyProperty
-					.getPropertyName());
+					.getPropertyName(), null);// TODO
 			objName = INDEXED;
 			value = dirtyProperty.getInternalMethods()
 					.getTransientValueAsString(this);
@@ -802,43 +801,57 @@ public class MongoSTStorageSessionImpl extends
 
 	@Override
 	protected Set<STProperty> internalPropertyContainerLoadProperties(
-			DBObject reference, STPartition partition,
-			STPropertyContainer stNodeEntry) throws Exception {
-		ImmutableSet.Builder<STProperty> builder = ImmutableSet.builder();
-		for (STKeyEntry entry : stNodeEntry.getUniqueKey().getLocalKey()
-				.getEntries()) {
-			STPropertyImpl p = STPropertyImpl.createKey(
-					entry.getPropertyName(), stNodeEntry);
-			p.getInternalMethods().setStringValueOnLoad(this, entry.getValue());
-			builder.add(p);
-		}
-		DBObject reference = possibleReference != null ? possibleReference
-				: createNodeReferenceIfNecessary(partition, stNodeEntry);
-		DBObject indexed = (DBObject) reference.get(INDEXED);
-		List<String> keyNames = (List<String>) reference.get(KEY_NAMES);
-		if (indexed != null) {
-			for (String s : indexed.keySet()) {
-				if (!keyNames.contains(s)) {
-					STPropertyImpl p = STPropertyImpl.createIndexed(s,
-							stNodeEntry);
-					String value = (String) indexed.get(s);
-					if (NULL_VALUE.equals(value))
-						value = null;
-					p.getInternalMethods().setStringValueOnLoad(this, value);
+			DBObject possibleReference, STPartition partition,
+			STPropertyContainer propertyContainer) throws Exception {
+
+		if (propertyContainer instanceof STNodeEntry) {
+			STNodeEntry nodeEntry = (STNodeEntry) propertyContainer;
+			ImmutableSet.Builder<STProperty> builder = ImmutableSet.builder();
+			for (STKeyEntry entry : nodeEntry.getUniqueKey().getLocalKey()
+					.getEntries()) {
+				STPropertyImpl p = STPropertyImpl.createKey(entry
+						.getPropertyName(), propertyContainer);
+				p.getInternalMethods().setStringValueOnLoad(this,
+						entry.getValue());
+				builder.add(p);
+			}
+			DBObject reference = possibleReference == null ? createNodeReferenceIfNecessary(
+					partition, nodeEntry)
+					: possibleReference;
+			DBObject indexed = (DBObject) reference.get(INDEXED);
+			List<String> keyNames = (List<String>) reference.get(KEY_NAMES);
+			if (indexed != null) {
+				for (String s : indexed.keySet()) {
+					if (!keyNames.contains(s)) {
+						STPropertyImpl p = STPropertyImpl.createIndexed(s,
+								propertyContainer);
+						String value = (String) indexed.get(s);
+						if (NULL_VALUE.equals(value))
+							value = null;
+						p.getInternalMethods()
+								.setStringValueOnLoad(this, value);
+						builder.add(p);
+					}
+				}
+			}
+
+			DBObject properties = (DBObject) reference.get(PROPERTIES);
+			if (properties != null) {
+				for (String s : properties.keySet()) {
+					STPropertyImpl p = STPropertyImpl.createSimple(s,
+							propertyContainer);
 					builder.add(p);
 				}
 			}
-		}
 
-		DBObject properties = (DBObject) reference.get(PROPERTIES);
-		if (properties != null) {
-			for (String s : properties.keySet()) {
-				STPropertyImpl p = STPropertyImpl.createSimple(s, stNodeEntry);
-				builder.add(p);
-			}
-		}
+			return builder.build();
 
-		return builder.build();
+		} else if (propertyContainer instanceof STLinkEntry) {
+			// TODO
+			throw new UnsupportedOperationException();
+		} else {
+			throw new IllegalStateException();
+		}
 	}
 
 	@Override
