@@ -486,11 +486,10 @@ public class MongoSTStorageSessionImpl extends
 
 		String objName = null;
 		Object value = null;
-		String propertyName = dirtyProperty.getPropertyName();
 
 		if (dirtyProperty.isIndexed()) {
 			ensureIndexed(partition, collectionName, INDEXED, dirtyProperty
-					.getPropertyName(), null);// TODO
+					.getPropertyName(), null);
 			objName = INDEXED;
 			value = dirtyProperty.getInternalMethods()
 					.getTransientValueAsString(this);
@@ -783,12 +782,15 @@ public class MongoSTStorageSessionImpl extends
 								if (foundTarget == null) {
 									String targetId = StringIDSupport
 											.getTargeyKeyAsStringFromLinkKey(o);
-									foundTarget = withPartition(partition)
+									STPartition targetPartition = partitionFactory.getPartitionByName(StringIDSupport.getPartitionName(targetId));
+									
+									foundTarget = withPartition(targetPartition)
 											.createCriteria()
 											.withUniqueKeyAsString(targetId)
 											.buildCriteria()
 											.andFindUnique(
 													MongoSTStorageSessionImpl.this);
+									if(foundTarget==null) throw new IllegalStateException();
 								}
 								String foundName = StringIDSupport
 										.getLinkNameFromLinkKey(o);
@@ -847,8 +849,33 @@ public class MongoSTStorageSessionImpl extends
 			return builder.build();
 
 		} else if (propertyContainer instanceof STLinkEntry) {
-			// TODO
-			throw new UnsupportedOperationException();
+			STLinkEntry linkEntry = (STLinkEntry) propertyContainer;
+			ImmutableSet.Builder<STProperty> builder = ImmutableSet.builder();
+			DBObject reference = createLinkReferenceIfNecessary(partition,
+					linkEntry);
+			DBObject indexed = (DBObject) reference.get(INDEXED);
+			if (indexed != null) {
+				for (String s : indexed.keySet()) {
+					STPropertyImpl p = STPropertyImpl.createIndexed(s,
+							propertyContainer);
+					String value = (String) indexed.get(s);
+					if (NULL_VALUE.equals(value))
+						value = null;
+					p.getInternalMethods().setStringValueOnLoad(this, value);
+					builder.add(p);
+				}
+			}
+
+			DBObject properties = (DBObject) reference.get(PROPERTIES);
+			if (properties != null) {
+				for (String s : properties.keySet()) {
+					STPropertyImpl p = STPropertyImpl.createSimple(s,
+							propertyContainer);
+					builder.add(p);
+				}
+			}
+
+			return builder.build();
 		} else {
 			throw new IllegalStateException();
 		}
@@ -869,7 +896,13 @@ public class MongoSTStorageSessionImpl extends
 	protected void handleNewLink(STPartition partition, STNodeEntry origin,
 			STLinkEntry link) throws Exception {
 		createLinkReferenceIfNecessary(partition, link);
+		if (getFlushMode().equals(STFlushMode.AUTO)) {
+			DBObject nodeRef = createNodeReferenceIfNecessary(partition, origin);
+			DBCollection col = getCachedCollection(partition, origin
+					.getNodeEntryName());
+			col.save(nodeRef);
 
+		}
 	}
 
 }
