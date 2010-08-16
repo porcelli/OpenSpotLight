@@ -25,7 +25,7 @@ import org.openspotlight.storage.Criteria.CriteriaBuilder;
 import org.openspotlight.storage.domain.Link;
 import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.NodeFactory;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
 
 /**
  * This class is an abstraction of a current state of storage session. The implementation classes must not store any kind of
@@ -53,7 +53,7 @@ public interface StorageSession {
 
         NodeBuilder createWithName(String name);
 
-        UniqueKey createNewSimpleKey(String... nodePaths);
+        NodeKey createNewSimpleKey(String... nodePaths);
 
         Node createNewSimpleNode(String... nodePaths);
 
@@ -81,7 +81,7 @@ public interface StorageSession {
 
         UniqueKeyBuilder withParent(String parentId);
 
-        UniqueKey andCreate();
+        NodeKey andCreate();
 
     }
 
@@ -110,9 +110,5 @@ public interface StorageSession {
 
     Iterable<Link> findLinks(Node origin,
                                      Node destiny);
-    /*
-     * void propertySetProperty( org.openspotlight.storage.domain.Property property, byte[] value ); byte[] propertyGetValue(
-     * Property stProperty );
-     */
 
 }

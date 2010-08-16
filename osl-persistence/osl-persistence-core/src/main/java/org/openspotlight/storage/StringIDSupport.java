@@ -29,9 +29,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openspotlight.storage.domain.Node;
-import org.openspotlight.storage.domain.key.Key;
-import org.openspotlight.storage.domain.key.LocalKey;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 
 /**
  * Created by User: feu - Date: Jun 9, 2010 - Time: 4:51:47 PM
@@ -65,7 +65,7 @@ public class StringIDSupport {
     }
 
     public static String getUniqueKeyAsStringHash(
-                                                  final UniqueKey uniqueKey) {
+                                                  final NodeKey uniqueKey) {
         return new StringBuilder()
             .append(
             uniqueKey.getRepositoryPath()
@@ -81,18 +81,18 @@ public class StringIDSupport {
     }
 
     public static String getLocalKeyAsStringHash(
-                                                 final LocalKey uniqueKey) {
+                                                 final CompositeKey uniqueKey) {
         return getSha1SignatureEncodedAsBase64(getLocalKeyAsSimpleString(uniqueKey));
     }
 
     private static String getLocalKeyAsSimpleString(
-                                                    final LocalKey localKey) {
+                                                    final CompositeKey localKey) {
         final StringBuilder sb = new StringBuilder();
         sb.append(localKey.getNodeEntryName());
-        final List<Key> ordered = new ArrayList<Key>(localKey
+        final List<SimpleKey> ordered = new ArrayList<SimpleKey>(localKey
             .getEntries());
         Collections.sort(ordered);
-        for (final Key entry: ordered) {
+        for (final SimpleKey entry: ordered) {
             sb.append(NODE_KEY_SEP).append(entry.getPropertyName()).append(
                 NODE_KEY_SEP).append(NODE_KEY_SEP).append(entry.getValue());
         }
@@ -100,7 +100,7 @@ public class StringIDSupport {
     }
 
     private static String getUniqueKeyAsSimpleString(
-                                                     final UniqueKey uniqueKey) {
+                                                     final NodeKey uniqueKey) {
         final StringBuilder sb = new StringBuilder();
         sb.append(uniqueKey.getRepositoryPath().getRepositoryPathAsString())
             .append(":");
@@ -117,11 +117,11 @@ public class StringIDSupport {
 
     public static String getLinkKeyAsString(
                                             final Partition originPartition,
-                                            final String linkName, String originKeyAsString, final String targetKeyAsString) {
+                                            final String linkName, final String originAsString, final String targetAsString) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(originKeyAsString);
+        sb.append(originAsString);
         sb.append(LINK_KEY_SEP);
-        sb.append(targetKeyAsString);
+        sb.append(targetAsString);
         sb.append(LINK_KEY_SEP);
         sb.append(linkName);
         return sb.toString();

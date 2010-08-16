@@ -64,8 +64,8 @@ import org.openspotlight.storage.domain.Link;
 import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
-import org.openspotlight.storage.domain.key.Key;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 import org.openspotlight.storage.domain.node.LinkImpl;
 import org.openspotlight.storage.domain.node.NodeImpl;
 import org.openspotlight.storage.domain.node.PropertyImpl;
@@ -91,7 +91,7 @@ import com.mongodb.gridfs.GridFSInputFile;
  */
 public class MongoStorageSessionImpl extends
         AbstractStorageSession<DBObject> {
-    private final LinkedList<Pair<UniqueKey, DBObject>>     objectCache      = newLinkedList();
+    private final LinkedList<Pair<NodeKey, DBObject>>     objectCache      = newLinkedList();
     private final int                                       maxCacheSize;
     private static final String                             NULL_VALUE       = "!!!NULL!!!";
     private final Multimap<Partition, Pair<Node, DBObject>> transientObjects = HashMultimap
@@ -194,12 +194,12 @@ public class MongoStorageSessionImpl extends
                 }
             }
         }
-        UniqueKey key;
+        NodeKey key;
         String collectionName;
         key = node.getUniqueKey();
         collectionName = node.getNodeEntryName();
 
-        final Pair<UniqueKey, DBObject> p1 = newPair(key, null,
+        final Pair<NodeKey, DBObject> p1 = newPair(key, null,
                                                Pair.PairEqualsMode.K1);
         final int idx = objectCache.indexOf(p1);
         if (idx != -1) {
@@ -230,7 +230,7 @@ public class MongoStorageSessionImpl extends
         byte[] value = null;
         if (stProperty.isKey()) {
             final Node parent = (Node) stProperty.getParent();
-            for (final Key e: parent.getUniqueKey().getLocalKey()
+            for (final SimpleKey e: parent.getUniqueKey().getLocalKey()
                                .getEntries()) {
                 if (e.getPropertyName().equals(stProperty.getPropertyName())) {
                     value = e.getValue() != null ? e.getValue().getBytes()
@@ -369,14 +369,14 @@ public class MongoStorageSessionImpl extends
                                      .getKeyAsString());
         ensureIndexed(partition, entry.getNodeEntryName(), null, LOCAL_ID, null);
 
-        final UniqueKey uniqueId = entry.getUniqueKey();
+        final NodeKey uniqueId = entry.getUniqueKey();
         final String parentId = uniqueId.getParentKeyAsString();
         if (parentId != null) {
             reference.put(PARENT_ID, parentId);
         }
         final BasicDBObject key = new BasicDBObject();
         final List<String> keyNames = newArrayList();
-        for (final Key keyEntry: uniqueId.getLocalKey().getEntries()) {
+        for (final SimpleKey keyEntry: uniqueId.getLocalKey().getEntries()) {
             keyNames.add(keyEntry.getPropertyName());
             key.put(keyEntry.getPropertyName(),
                     keyEntry.getValue() != null ? keyEntry.getValue()
@@ -662,7 +662,7 @@ public class MongoStorageSessionImpl extends
         if (parentId != null) {
             keyBuilder.withParent(parentId);
         }
-        final UniqueKey uniqueKey = keyBuilder.andCreate();
+        final NodeKey uniqueKey = keyBuilder.andCreate();
         final Node node = new NodeImpl(uniqueKey, false);
         return node;
     }
@@ -844,7 +844,7 @@ public class MongoStorageSessionImpl extends
         if (propertyContainer instanceof Node) {
             final Node nodeEntry = (Node) propertyContainer;
             final ImmutableSet.Builder<Property> builder = ImmutableSet.builder();
-            for (final Key entry: nodeEntry.getUniqueKey().getLocalKey()
+            for (final SimpleKey entry: nodeEntry.getUniqueKey().getLocalKey()
                                       .getEntries()) {
                 final PropertyImpl p = PropertyImpl.createKey(entry
                                                              .getPropertyName(), propertyContainer);

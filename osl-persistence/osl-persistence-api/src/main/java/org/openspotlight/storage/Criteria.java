@@ -3,8 +3,8 @@ package org.openspotlight.storage;
 import java.util.Set;
 
 import org.openspotlight.storage.domain.Node;
-import org.openspotlight.storage.domain.key.LocalKey;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
 public interface Criteria {
 
@@ -31,7 +31,7 @@ public interface Criteria {
         }
 
         public interface LocalKeyCriteriaItem extends CriteriaItem {
-            LocalKey getValue();
+            CompositeKey getValue();
         }
 
         public interface PropertyEndsWithString extends CriteriaItem {
@@ -52,7 +52,7 @@ public interface Criteria {
         }
 
         public interface UniqueKeyCriteriaItem extends CriteriaItem {
-            UniqueKey getValue();
+            NodeKey getValue();
 
         }
 
@@ -82,9 +82,9 @@ public interface Criteria {
 
         Criteria buildCriteria();
 
-        CriteriaBuilder withLocalKey(LocalKey localKey);
+        CriteriaBuilder withLocalKey(CompositeKey localKey);
 
-        CriteriaBuilder withUniqueKey(UniqueKey uniqueKey);
+        CriteriaBuilder withUniqueKey(NodeKey uniqueKey);
 
         CriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
     }

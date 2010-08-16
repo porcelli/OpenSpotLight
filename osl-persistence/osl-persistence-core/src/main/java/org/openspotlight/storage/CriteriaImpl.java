@@ -12,8 +12,8 @@ import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
 import org.openspotlight.storage.Criteria.CriteriaItem.UniqueKeyAsStringCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.UniqueKeyCriteriaItem;
 import org.openspotlight.storage.domain.Node;
-import org.openspotlight.storage.domain.key.LocalKey;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -113,18 +113,18 @@ public class CriteriaImpl implements Criteria {
 
     private static class UniqueKeyCriteriaItemImpl implements
         UniqueKeyCriteriaItem {
-        private UniqueKeyCriteriaItemImpl(final UniqueKey value,
+        private UniqueKeyCriteriaItemImpl(final NodeKey value,
                                           final String nodeEntryName) {
             this.value = value;
             this.nodeEntryName = nodeEntryName;
         }
 
-        private final UniqueKey value;
+        private final NodeKey value;
 
         private final String    nodeEntryName;
 
         @Override
-        public UniqueKey getValue() {
+        public NodeKey getValue() {
             return value;
         }
 
@@ -160,18 +160,18 @@ public class CriteriaImpl implements Criteria {
 
     private static class LocalKeyCriteriaItemImpl implements
         LocalKeyCriteriaItem {
-        private LocalKeyCriteriaItemImpl(final LocalKey value,
+        private LocalKeyCriteriaItemImpl(final CompositeKey value,
                                          final String nodeEntryName) {
             this.value = value;
             this.nodeEntryName = nodeEntryName;
         }
 
-        private final LocalKey value;
+        private final CompositeKey value;
 
         private final String   nodeEntryName;
 
         @Override
-        public LocalKey getValue() {
+        public CompositeKey getValue() {
             return value;
         }
 
@@ -447,9 +447,9 @@ public class CriteriaImpl implements Criteria {
 
         private String          transientPropertyName;
 
-        private UniqueKey       transientUniqueKey;
+        private NodeKey       transientUniqueKey;
 
-        private LocalKey        transientLocalKey;
+        private CompositeKey        transientLocalKey;
 
         private String          transientPropertyValue;
 
@@ -594,8 +594,9 @@ public class CriteriaImpl implements Criteria {
             transientLocalKey = null;
             transientPropertyValue = null;
             transientIdAsString = null;
-            if (item != null)
+            if (item != null) {
                 items.add(item);
+            }
 
             return this;
         }
@@ -611,7 +612,7 @@ public class CriteriaImpl implements Criteria {
 
         @Override
         public CriteriaBuilder withLocalKey(
-                                            final LocalKey localKey) {
+                                            final CompositeKey localKey) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientPropertyName);
             breakIfNotNull(transientPropertyValue);
@@ -626,7 +627,7 @@ public class CriteriaImpl implements Criteria {
 
         @Override
         public CriteriaBuilder withUniqueKey(
-                                             final UniqueKey uniqueKey) {
+                                             final NodeKey uniqueKey) {
 
             breakIfNotNull(transientLocalKey);
             breakIfNotNull(transientPropertyName);
