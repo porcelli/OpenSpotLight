@@ -46,38 +46,25 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.storage;
 
-package org.openspotlight.storage.domain;
+import org.openspotlight.storage.domain.RegularPartitions;
 
-import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.key.LocalKey;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import com.google.inject.Singleton;
 
-public interface STNodeEntry extends StorageDataMarker, NodeFactory,
-		PropertyContainer {
+/**
+ * Created by User: feu - Date: Jun 14, 2010 - Time: 3:30:12 PM
+ */
+@Singleton
+public class DefaultPartitionFactory implements PartitionFactory {
 
-	public void forceReload();
+    @Override
+    public Partition getPartitionByName( String name ) {
+        return RegularPartitions.valueOf(name.toUpperCase());
+    }
 
-	String getNodeEntryName();
-
-	LocalKey getLocalKey();
-
-	UniqueKey getUniqueKey();
-
-	Iterable<STNodeEntry> getChildren(Partition partition,
-			StorageSession session);
-
-	Iterable<STNodeEntry> getChildrenNamed(Partition partition,
-			StorageSession session, String name);
-
-	Iterable<STNodeEntry> getChildrenForcingReload(Partition partition,
-			StorageSession session);
-
-	Iterable<STNodeEntry> getChildrenNamedForcingReload(Partition partition,
-			StorageSession session, String name);
-
-	STNodeEntry getParent(StorageSession session);
-
-	void removeNode(StorageSession session);
+    @Override
+    public Partition[] getValues() {
+        return RegularPartitions.values();
+    }
 }

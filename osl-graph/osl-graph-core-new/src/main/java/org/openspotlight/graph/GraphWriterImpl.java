@@ -104,7 +104,7 @@ public class GraphWriterImpl implements GraphWriter {
 	@Override
 	public void removeNode(Node node) {
 		StorageSession session = sessionProvider.get();
-		org.openspotlight.storage.domain.STNodeEntry stNodeEntry = NodeAndLinkSupport.retrievePreviousNode(factory,
+		org.openspotlight.storage.domain.Node stNodeEntry = NodeAndLinkSupport.retrievePreviousNode(factory,
 				session, graphReader.getContext(node.getContextId()), node,
 				true);
 		session.removeNode(stNodeEntry);

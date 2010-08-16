@@ -23,9 +23,9 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  *
- ***********************************************************************
+ * ***********************************************************************
  * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
+ * *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
  * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
@@ -47,32 +47,72 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.storage.domain;
+package org.openspotlight.storage.domain.key;
 
-import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 3:10:03 PM To change this template use File | Settings | File
- * Templates.
+ * Created by User: feu - Date: Mar 23, 2010 - Time: 10:42:37 AM
  */
-public interface NodeFactory {
+public class KeyImpl implements Key {
 
-    NodeBuilder createWithName( StorageSession session,
-                                       String name );
+    private static final long serialVersionUID = -1370685091918627295L;
 
-    interface NodeBuilder {
+    private final int         hashCode;
 
-        NodeBuilder withKeyEntry( String name,
-                                         String value );
+    public KeyImpl( String propertyName, String value ) {
+        checkNotEmpty("propertyName", propertyName);
+        this.value = value;
+        this.propertyName = propertyName;
+        int result = value != null ? value.hashCode() : 0;
+        result = 31 * result + (propertyName != null ? propertyName.hashCode() : 0);
+        hashCode = result;
 
-        NodeBuilder withParent( Node parent );
+    }
 
-        NodeBuilder withParentAsString( String parentAsString );
+    private final String value;
 
-        NodeBuilder withParentKey( UniqueKey parentKey );
+    private final String propertyName;
 
-        Node andCreate();
+    public String getValue() {
+        return value;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        KeyImpl that = (KeyImpl)o;
+        if (this.hashCode != that.hashCode) return false;
+
+        if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) return false;
+        if (value != null ? !value.equals(that.value) : that.value != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+
+    public int compareTo( Key o ) {
+        int result = propertyName.compareTo(o.getPropertyName());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "STKeyEntryImpl{" +
+                ", value=" + value +
+                ", propertyName='" + propertyName + '\'' +
+                '}';
     }
 
 }

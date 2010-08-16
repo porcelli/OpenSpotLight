@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.key.Key;
 import org.openspotlight.storage.domain.key.LocalKey;
 import org.openspotlight.storage.domain.key.UniqueKey;
@@ -129,7 +129,7 @@ public class StringIDSupport {
 	}
 
 	public static String getLinkKeyAsString(Partition originPartition,
-			String linkName, STNodeEntry origin, STNodeEntry target) {
+			String linkName, Node origin, Node target) {
 		StringBuilder sb = new StringBuilder();
 		UniqueKey originKey = origin.getUniqueKey();
 		sb.append(originKey.getKeyAsString());

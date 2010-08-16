@@ -91,7 +91,7 @@ import org.openspotlight.security.domain.SLPasswordEntry;
 import org.openspotlight.security.domain.SLTransientIdentityObjectAttribute;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.RegularPartitions;
-import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Node;
 
 import com.google.inject.Injector;
 
@@ -103,10 +103,10 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
 
     private String                                              id;
 
-    private STNodeEntry                                         rootNode;
+    private Node                                         rootNode;
 
     private FeaturesMetaData                                    supportedFeatures;
-    private SimplePersistCapable<STNodeEntry, StorageSession> simplePersist;
+    private SimplePersistCapable<Node, StorageSession> simplePersist;
 
     public SLIdentityStoreImpl() {
     }

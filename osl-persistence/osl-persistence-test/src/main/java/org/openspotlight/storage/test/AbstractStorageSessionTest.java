@@ -73,8 +73,8 @@ import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.STLinkEntry;
-import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Link;
+import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.node.PropertyImpl;
 
 import com.google.inject.Injector;
@@ -177,18 +177,18 @@ public abstract class AbstractStorageSessionTest {
             throws Exception {
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry c1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node c1 = session.withPartition(ExamplePartition.DEFAULT)
                                 .createNewSimpleNode("a1", "b1", "c1");
         session.flushTransient();
-        STNodeEntry b1 = c1.getParent(session);
-        STNodeEntry a1 = b1.getParent(session);
+        Node b1 = c1.getParent(session);
+        Node a1 = b1.getParent(session);
         a1.removeNode(session);
         session.flushTransient();
-        Iterable<STNodeEntry> foundA1 = session.withPartition(
+        Iterable<Node> foundA1 = session.withPartition(
                                                               ExamplePartition.DEFAULT).findNamed("a1");
-        Iterable<STNodeEntry> foundB1 = session.withPartition(
+        Iterable<Node> foundB1 = session.withPartition(
                                                               ExamplePartition.DEFAULT).findNamed("b1");
-        Iterable<STNodeEntry> foundC1 = session.withPartition(
+        Iterable<Node> foundC1 = session.withPartition(
                                                               ExamplePartition.DEFAULT).findNamed("c1");
         assertThat(foundA1.iterator().hasNext(), is(false));
         assertThat(foundB1.iterator().hasNext(), is(false));
@@ -200,16 +200,16 @@ public abstract class AbstractStorageSessionTest {
     public void shouldExcludeParentAndChildrenOnAutoFlush() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry c1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node c1 = session.withPartition(ExamplePartition.DEFAULT)
                                 .createNewSimpleNode("a1", "b1", "c1");
-        STNodeEntry b1 = c1.getParent(session);
-        STNodeEntry a1 = b1.getParent(session);
+        Node b1 = c1.getParent(session);
+        Node a1 = b1.getParent(session);
         a1.removeNode(session);
-        Iterable<STNodeEntry> foundA1 = session.withPartition(
+        Iterable<Node> foundA1 = session.withPartition(
                                                               ExamplePartition.DEFAULT).findNamed("a1");
-        Iterable<STNodeEntry> foundB1 = session.withPartition(
+        Iterable<Node> foundB1 = session.withPartition(
                                                               ExamplePartition.DEFAULT).findNamed("b1");
-        Iterable<STNodeEntry> foundC1 = session.withPartition(
+        Iterable<Node> foundC1 = session.withPartition(
                                                               ExamplePartition.DEFAULT).findNamed("c1");
         assertThat(foundA1.iterator().hasNext(), is(false));
         assertThat(foundB1.iterator().hasNext(), is(false));
@@ -251,7 +251,7 @@ public abstract class AbstractStorageSessionTest {
                                                   .getInstance(StorageSession.class);
         session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
                                                                             "a", "b", "c");
-        Iterable<STNodeEntry> result = session.withPartition(
+        Iterable<Node> result = session.withPartition(
                                                              ExamplePartition.DEFAULT).findNamed("c");
         assertThat(result.iterator().hasNext(), is(true));
 
@@ -261,10 +261,10 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindSimpleNodeWithStringIdOnAutoFlush() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode = session.withPartition(ExamplePartition.DEFAULT)
                                      .createNewSimpleNode("a", "b", "c");
         String nodeIdAsString = newNode.getUniqueKey().getKeyAsString();
-        STNodeEntry result = session.withPartition(ExamplePartition.DEFAULT)
+        Node result = session.withPartition(ExamplePartition.DEFAULT)
                                     .createCriteria().withUniqueKeyAsString(nodeIdAsString)
                                     .buildCriteria().andFindUnique(session);
         assertThat(result, is(newNode));
@@ -276,11 +276,11 @@ public abstract class AbstractStorageSessionTest {
             throws Exception {
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode = session.withPartition(ExamplePartition.DEFAULT)
                                      .createNewSimpleNode("a", "b", "c");
         session.flushTransient();
         String nodeIdAsString = newNode.getUniqueKey().getKeyAsString();
-        STNodeEntry result = session.withPartition(ExamplePartition.DEFAULT)
+        Node result = session.withPartition(ExamplePartition.DEFAULT)
                                     .createCriteria().withUniqueKeyAsString(nodeIdAsString)
                                     .buildCriteria().andFindUnique(session);
         assertThat(result, is(newNode));
@@ -318,10 +318,10 @@ public abstract class AbstractStorageSessionTest {
     public void shouldCreateTheSameKey() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("newNode1").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry sameNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node sameNode = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
         String aKeyAsString = aNode.getUniqueKey().getKeyAsString();
@@ -334,16 +334,16 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindByUniqueKey() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("newNode1").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry theSameNode = session.withPartition(
+        Node theSameNode = session.withPartition(
                                                         ExamplePartition.DEFAULT).createCriteria().withUniqueKey(
                                                                                                                  aNode.getUniqueKey()).buildCriteria().andFindUnique(session);
         assertThat(aNode, is(theSameNode));
         assertThat(theSameNode.getProperty(session, "name").getValueAsString(
                                                                              session), is("name"));
-        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node nullNode = session.withPartition(ExamplePartition.DEFAULT)
                                       .createCriteria().withUniqueKey(
                                                                       session.withPartition(ExamplePartition.DEFAULT)
                                                                              .createKey("invalid").andCreate())
@@ -356,20 +356,20 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindByLocalKey() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("root1").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("root2").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root2).andCreate();
 
-        List<STNodeEntry> theSameNodes = iterableToList(session.withPartition(
+        List<Node> theSameNodes = iterableToList(session.withPartition(
                                                                               ExamplePartition.DEFAULT).createCriteria().withLocalKey(
                                                                                                                                       aNode1.getUniqueKey().getLocalKey()).buildCriteria().andFind(
                                                                                                                                                                                                    session));
@@ -384,23 +384,23 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindByProperties() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("root1").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("root2").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root2).andCreate();
         aNode1.setIndexedProperty(session, "parameter", "value");
         aNode2.setIndexedProperty(session, "parameter", "value");
         aNode1.setIndexedProperty(session, "parameter1", "value1");
         aNode2.setIndexedProperty(session, "parameter1", "value2");
-        List<STNodeEntry> theSameNodes = iterableToList(session.withPartition(
+        List<Node> theSameNodes = iterableToList(session.withPartition(
                                                                               ExamplePartition.DEFAULT).createCriteria()
                                                                .withNodeEntry("node").withProperty("parameter").equalsTo(
                                                                                                                          "value").buildCriteria().andFind(session));
@@ -410,7 +410,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
-        List<STNodeEntry> onlyOneNode = iterableToList(session.withPartition(
+        List<Node> onlyOneNode = iterableToList(session.withPartition(
                                                                              ExamplePartition.DEFAULT).createCriteria()
                                                               .withNodeEntry("node").withProperty("parameter1").equalsTo(
                                                                                                                          "value1").buildCriteria().andFind(session));
@@ -426,17 +426,17 @@ public abstract class AbstractStorageSessionTest {
         if (supportsAdvancedQueries()) {
             StorageSession session = autoFlushInjector
                                                       .getInstance(StorageSession.class);
-            STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("node").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name1").andCreate();
-            STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("node").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name2").andCreate();
-            STNodeEntry aNode1 = session
+            Node aNode1 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "node").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                    "name", "name1").withParent(root1).andCreate();
-            STNodeEntry aNode2 = session
+            Node aNode2 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "node").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                    "name", "name2").withParent(root2).andCreate();
@@ -444,7 +444,7 @@ public abstract class AbstractStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "aeiou");
             root1.setIndexedProperty(session, "parameter", "foo");
             root2.setIndexedProperty(session, "parameter", "bar");
-            List<STNodeEntry> theSameNodes = iterableToList(session
+            List<Node> theSameNodes = iterableToList(session
                                                                    .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                                                    .withNodeEntry("node").withProperty("parameter")
                                                                    .containsString("io").buildCriteria().andFind(session));
@@ -460,23 +460,23 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindByPropertiesWithNullValue() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("node").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "a").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("node").withKeyEntry("sequence", "2")
                                    .withKeyEntry("name", "b").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name1").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name2").withParent(root2).andCreate();
         aNode1.setIndexedProperty(session, "parameter", "io");
         aNode2.setIndexedProperty(session, "parameter", "aeiou");
         root1.setIndexedProperty(session, "parameter", null);
         root2.setIndexedProperty(session, "parameter", null);
-        List<STNodeEntry> theSameNodes = iterableToList(session.withPartition(
+        List<Node> theSameNodes = iterableToList(session.withPartition(
                                                                               ExamplePartition.DEFAULT).createCriteria()
                                                                .withNodeEntry("node").withProperty("parameter").equalsTo(null)
                                                                .buildCriteria().andFind(session));
@@ -492,17 +492,17 @@ public abstract class AbstractStorageSessionTest {
         if (supportsAdvancedQueries()) {
             StorageSession session = autoFlushInjector
                                                       .getInstance(StorageSession.class);
-            STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("node").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name1").andCreate();
-            STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("node").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name2").andCreate();
-            STNodeEntry aNode1 = session
+            Node aNode1 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "node").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                    "name", "name1").withParent(root1).andCreate();
-            STNodeEntry aNode2 = session
+            Node aNode2 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "node").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                    "name", "name2").withParent(root2).andCreate();
@@ -510,7 +510,7 @@ public abstract class AbstractStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "iou");
             root1.setIndexedProperty(session, "parameter", "fooiou");
             root2.setIndexedProperty(session, "parameter", "baior");
-            List<STNodeEntry> theSameNodes = iterableToList(session
+            List<Node> theSameNodes = iterableToList(session
                                                                    .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                                                    .withNodeEntry("node").withProperty("parameter")
                                                                    .startsWithString("io").buildCriteria().andFind(session));
@@ -527,17 +527,17 @@ public abstract class AbstractStorageSessionTest {
         if (supportsAdvancedQueries()) {
             StorageSession session = autoFlushInjector
                                                       .getInstance(StorageSession.class);
-            STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("node").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name1").andCreate();
-            STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("node").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name2").andCreate();
-            STNodeEntry aNode1 = session
+            Node aNode1 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "node").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                    "name", "name1").withParent(root1).andCreate();
-            STNodeEntry aNode2 = session
+            Node aNode2 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "node").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                    "name", "name2").withParent(root2).andCreate();
@@ -545,7 +545,7 @@ public abstract class AbstractStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "uio");
             root1.setIndexedProperty(session, "parameter", "fooiou");
             root2.setIndexedProperty(session, "parameter", "baior");
-            List<STNodeEntry> theSameNodes = iterableToList(session
+            List<Node> theSameNodes = iterableToList(session
                                                                    .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                                                    .withNodeEntry("node").withProperty("parameter")
                                                                    .endsWithString("io").buildCriteria().andFind(session));
@@ -561,23 +561,23 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindByLocalKeyAndProperties() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("root1").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("root2").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root2).andCreate();
         aNode1.setIndexedProperty(session, "parameter", "value");
         aNode2.setIndexedProperty(session, "parameter", "value");
         aNode1.setIndexedProperty(session, "parameter1", "value1");
         aNode2.setIndexedProperty(session, "parameter1", "value2");
-        List<STNodeEntry> theSameNodes = iterableToList(session.withPartition(
+        List<Node> theSameNodes = iterableToList(session.withPartition(
                                                                               ExamplePartition.DEFAULT).createCriteria().withLocalKey(
                                                                                                                                       aNode1.getUniqueKey().getLocalKey()).withProperty("parameter")
                                                                .equalsTo("value").buildCriteria().andFind(session));
@@ -586,7 +586,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
-        List<STNodeEntry> onlyOneNode = iterableToList(session.withPartition(
+        List<Node> onlyOneNode = iterableToList(session.withPartition(
                                                                              ExamplePartition.DEFAULT).createCriteria().withLocalKey(
                                                                                                                                      aNode1.getUniqueKey().getLocalKey()).withProperty("parameter1")
                                                               .equalsTo("value1").buildCriteria().andFind(session));
@@ -601,27 +601,27 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindNamedNodes() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("root1").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("root2").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("node").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root2).andCreate();
 
-        List<STNodeEntry> onlyOneNode = iterableToList(session.withPartition(
+        List<Node> onlyOneNode = iterableToList(session.withPartition(
                                                                              ExamplePartition.DEFAULT).findNamed("root1"));
         assertThat(onlyOneNode.size(), is(1));
         assertThat(onlyOneNode.contains(aNode1), is(false));
         assertThat(onlyOneNode.contains(aNode2), is(false));
         assertThat(onlyOneNode.contains(root1), is(true));
         assertThat(onlyOneNode.contains(root2), is(false));
-        List<STNodeEntry> twoNodes = iterableToList(session.withPartition(
+        List<Node> twoNodes = iterableToList(session.withPartition(
                                                                           ExamplePartition.DEFAULT).findNamed("node"));
         assertThat(twoNodes.size(), is(2));
         assertThat(twoNodes.contains(aNode1), is(true));
@@ -649,14 +649,14 @@ public abstract class AbstractStorageSessionTest {
     public void shouldInsertNewNodeEntryAndFindUniqueWithAutoFlush() {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry foundNewNode1 = session.withPartition(
+        Node foundNewNode1 = session.withPartition(
                                                           ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                    "newNode1").withProperty("sequence").equalsTo("1")
                                            .withProperty("name").equalsTo("name").buildCriteria()
                                            .andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
         foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT)
@@ -672,14 +672,14 @@ public abstract class AbstractStorageSessionTest {
 
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry foundNewNode1 = session.withPartition(
+        Node foundNewNode1 = session.withPartition(
                                                           ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                    "newNode1").withProperty("sequence").equalsTo("1")
                                            .withProperty("name").equalsTo("name").buildCriteria()
                                            .andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
         foundNewNode1 = session.withPartition(ExamplePartition.DEFAULT)
@@ -688,7 +688,7 @@ public abstract class AbstractStorageSessionTest {
                                .equalsTo("name").buildCriteria().andFindUnique(session);
         assertThat(foundNewNode1, is(nullValue()));
         session.flushTransient();
-        STNodeEntry foundNewNode2 = session.withPartition(
+        Node foundNewNode2 = session.withPartition(
                                                           ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                    "newNode1").withProperty("sequence").equalsTo("1")
                                            .withProperty("name").equalsTo("name").buildCriteria()
@@ -703,26 +703,26 @@ public abstract class AbstractStorageSessionTest {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
 
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("sameName").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("sameName").withParent(newNode1).withKeyEntry(
                                                                                                     "sequence", "1").withKeyEntry("name", "name")
                                       .andCreate();
-        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode3 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("sameName").withParent(newNode2).withKeyEntry(
                                                                                                     "sequence", "3").withKeyEntry("name", "name")
                                       .andCreate();
 
-        STNodeEntry foundNewNode3 = session.withPartition(
+        Node foundNewNode3 = session.withPartition(
                                                           ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                    "sameName").withProperty("sequence").equalsTo("3")
                                            .withProperty("name").equalsTo("name").buildCriteria()
                                            .andFindUnique(session);
         assertThat(foundNewNode3, is(notNullValue()));
-        STNodeEntry foundNewNode2 = foundNewNode3.getParent(session);
-        STNodeEntry foundNewNode1 = foundNewNode2.getParent(session);
+        Node foundNewNode2 = foundNewNode3.getParent(session);
+        Node foundNewNode1 = foundNewNode2.getParent(session);
         assertThat(foundNewNode3, is(newNode3));
         assertThat(foundNewNode2, is(newNode2));
         assertThat(foundNewNode1, is(newNode1));
@@ -750,43 +750,43 @@ public abstract class AbstractStorageSessionTest {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
 
-        STNodeEntry root = session.withPartition(ExamplePartition.DEFAULT)
+        Node root = session.withPartition(ExamplePartition.DEFAULT)
                                   .createWithName("root").withKeyEntry("sequence", "1")
                                   .withKeyEntry("name", "name").andCreate();
-        STNodeEntry child1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node child1 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("child").withParent(root).withKeyEntry(
                                                                                            "sequence", "1").withKeyEntry("name", "name")
                                     .andCreate();
-        STNodeEntry child2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node child2 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("child").withParent(root).withKeyEntry(
                                                                                            "sequence", "2").withKeyEntry("name", "name")
                                     .andCreate();
-        STNodeEntry child3 = session.withPartition(ExamplePartition.DEFAULT)
+        Node child3 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("child").withParent(root).withKeyEntry(
                                                                                            "sequence", "3").withKeyEntry("name", "name")
                                     .andCreate();
-        STNodeEntry child4 = session.withPartition(ExamplePartition.DEFAULT)
+        Node child4 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("child").withParent(root).withKeyEntry(
                                                                                            "sequence", "4").withKeyEntry("name", "name")
                                     .andCreate();
-        STNodeEntry childAnotherType1 = session.withPartition(
+        Node childAnotherType1 = session.withPartition(
                                                               ExamplePartition.DEFAULT).createWithName("childAnotherType")
                                                .withParent(root).withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                             "name", "name").andCreate();
-        STNodeEntry childAnotherType2 = session.withPartition(
+        Node childAnotherType2 = session.withPartition(
                                                               ExamplePartition.DEFAULT).createWithName("childAnotherType")
                                                .withParent(root).withKeyEntry("sequence", "2").withKeyEntry(
                                                                                                             "name", "name").andCreate();
-        STNodeEntry childAnotherType3 = session.withPartition(
+        Node childAnotherType3 = session.withPartition(
                                                               ExamplePartition.DEFAULT).createWithName("childAnotherType")
                                                .withParent(root).withKeyEntry("sequence", "3").withKeyEntry(
                                                                                                             "name", "name").andCreate();
-        STNodeEntry childAnotherType4 = session.withPartition(
+        Node childAnotherType4 = session.withPartition(
                                                               ExamplePartition.DEFAULT).createWithName("childAnotherType")
                                                .withParent(root).withKeyEntry("sequence", "4").withKeyEntry(
                                                                                                             "name", "name").andCreate();
 
-        List<STNodeEntry> allChildren = iterableToList(root.getChildren(
+        List<Node> allChildren = iterableToList(root.getChildren(
                                                                         ExamplePartition.DEFAULT, session));
         assertThat(allChildren.size(), is(8));
         assertThat(allChildren.contains(child1), is(true));
@@ -798,7 +798,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(allChildren.contains(childAnotherType3), is(true));
         assertThat(allChildren.contains(childAnotherType4), is(true));
 
-        List<STNodeEntry> childrenType2 = iterableToList(root.getChildrenNamed(
+        List<Node> childrenType2 = iterableToList(root.getChildrenNamed(
                                                                                ExamplePartition.DEFAULT, session, "childAnotherType"));
 
         assertThat(childrenType2.size(), is(4));
@@ -807,7 +807,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(childrenType2.contains(childAnotherType3), is(true));
         assertThat(childrenType2.contains(childAnotherType4), is(true));
 
-        List<STNodeEntry> childrenType1 = iterableToList(root.getChildrenNamed(
+        List<Node> childrenType1 = iterableToList(root.getChildrenNamed(
                                                                                ExamplePartition.DEFAULT, session, "child"));
 
         assertThat(childrenType1.size(), is(4));
@@ -832,21 +832,21 @@ public abstract class AbstractStorageSessionTest {
         session.withPartition(ExamplePartition.SECOND).createWithName("root")
                 .withKeyEntry("sequence", "1").withKeyEntry("name", "name")
                 .andCreate();
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createCriteria().withUniqueKey(
                                                                    session.withPartition(ExamplePartition.DEFAULT)
                                                                           .createKey("root").withEntry("sequence", "1")
                                                                           .withEntry("name", "name").andCreate())
                                    .buildCriteria().andFindUnique(session);
 
-        STNodeEntry root2 = session.withPartition(ExamplePartition.FIRST)
+        Node root2 = session.withPartition(ExamplePartition.FIRST)
                                    .createCriteria().withUniqueKey(
                                                                    session.withPartition(ExamplePartition.FIRST)
                                                                           .createKey("root").withEntry("sequence", "1")
                                                                           .withEntry("name", "name").andCreate())
                                    .buildCriteria().andFindUnique(session);
 
-        STNodeEntry root3 = session.withPartition(ExamplePartition.SECOND)
+        Node root3 = session.withPartition(ExamplePartition.SECOND)
                                    .createCriteria().withUniqueKey(
                                                                    session.withPartition(ExamplePartition.SECOND)
                                                                           .createKey("root").withEntry("sequence", "1")
@@ -863,11 +863,11 @@ public abstract class AbstractStorageSessionTest {
 
         assertThat(root2, is(not(root3)));
 
-        List<STNodeEntry> list1 = iterableToList(session.withPartition(
+        List<Node> list1 = iterableToList(session.withPartition(
                                                                        ExamplePartition.DEFAULT).findNamed("root"));
-        List<STNodeEntry> list2 = iterableToList(session.withPartition(
+        List<Node> list2 = iterableToList(session.withPartition(
                                                                        ExamplePartition.DEFAULT).findNamed("root"));
-        List<STNodeEntry> list3 = iterableToList(session.withPartition(
+        List<Node> list3 = iterableToList(session.withPartition(
                                                                        ExamplePartition.DEFAULT).findNamed("root"));
 
         assertThat(list1.size(), is(1));
@@ -881,11 +881,11 @@ public abstract class AbstractStorageSessionTest {
 
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode = session.withPartition(ExamplePartition.DEFAULT)
                                      .createWithName("newNode1").withKeyEntry("sequence", "1")
                                      .withKeyEntry("name", "name").andCreate();
 
-        STNodeEntry loadedNode = session
+        Node loadedNode = session
                                         .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                         .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
                                                                                                      "1").withProperty("name").equalsTo("name")
@@ -895,7 +895,7 @@ public abstract class AbstractStorageSessionTest {
 
         session.flushTransient();
 
-        STNodeEntry loadedNode1 = session.withPartition(
+        Node loadedNode1 = session.withPartition(
                                                         ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                  "newNode1").withProperty("sequence").equalsTo("1")
                                          .withProperty("name").equalsTo("name").buildCriteria()
@@ -913,7 +913,7 @@ public abstract class AbstractStorageSessionTest {
                    is(nullValue()));
 
         session.flushTransient();
-        STNodeEntry loadedNode2 = session.withPartition(
+        Node loadedNode2 = session.withPartition(
                                                         ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                  "newNode1").withProperty("sequence").equalsTo("1")
                                          .withProperty("name").equalsTo("name").buildCriteria()
@@ -942,12 +942,12 @@ public abstract class AbstractStorageSessionTest {
         Date newDate = new Date();
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode = session.withPartition(ExamplePartition.DEFAULT)
                                      .createWithName("newNode1").withKeyEntry("sequence", "1")
                                      .withKeyEntry("name", "name").andCreate();
         newNode.setIndexedProperty(session, "stringProperty", "value");
 
-        STNodeEntry loadedNode = session
+        Node loadedNode = session
                                         .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                         .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
                                                                                                      "1").withProperty("name").equalsTo("name")
@@ -963,14 +963,14 @@ public abstract class AbstractStorageSessionTest {
         assertThat(loadedNode.getPropertyAsString(session, "stringProperty"),
                    is("value"));
 
-        STNodeEntry anotherLoadedNode = session.withPartition(
+        Node anotherLoadedNode = session.withPartition(
                                                               ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                        "newNode1").withProperty("stringProperty").equalsTo("value")
                                                .buildCriteria().andFindUnique(session);
 
         assertThat(anotherLoadedNode, is(loadedNode));
 
-        STNodeEntry noLoadedNode = session.withPartition(
+        Node noLoadedNode = session.withPartition(
                                                          ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                   "newNode1").withProperty("stringProperty").equalsTo("invalid")
                                           .buildCriteria().andFindUnique(session);
@@ -1033,7 +1033,7 @@ public abstract class AbstractStorageSessionTest {
 
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode = session.withPartition(ExamplePartition.DEFAULT)
                                      .createWithName("newNode1").withKeyEntry("sequence", "1")
                                      .withKeyEntry("name", "name").andCreate();
 
@@ -1041,14 +1041,14 @@ public abstract class AbstractStorageSessionTest {
 
         newNode.setSimpleProperty(session, "streamProperty", stream);
 
-        STNodeEntry nullNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node nullNode = session.withPartition(ExamplePartition.DEFAULT)
                                       .createCriteria().withNodeEntry("newNode1").withProperty(
                                                                                                "sequence").equalsTo("1").withProperty("name")
                                       .equalsTo("name").buildCriteria().andFindUnique(session);
 
         assertThat(nullNode, is(nullValue()));
         session.flushTransient();
-        STNodeEntry loadedNode = session
+        Node loadedNode = session
                                         .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                         .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
                                                                                                      "1").withProperty("name").equalsTo("name")
@@ -1080,7 +1080,7 @@ public abstract class AbstractStorageSessionTest {
 
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode = session.withPartition(ExamplePartition.DEFAULT)
                                      .createWithName("newNode1").withKeyEntry("sequence", "1")
                                      .withKeyEntry("name", "name").andCreate();
 
@@ -1088,7 +1088,7 @@ public abstract class AbstractStorageSessionTest {
 
         newNode.setSimpleProperty(session, "streamProperty", stream);
 
-        STNodeEntry loadedNode = session
+        Node loadedNode = session
                                         .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                         .withNodeEntry("newNode1").withProperty("sequence").equalsTo(
                                                                                                      "1").withProperty("name").equalsTo("name")
@@ -1119,19 +1119,19 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindMultipleResults() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "2")
                                       .withKeyEntry("name", "name").andCreate();
-        STNodeEntry newNode3 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode3 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "another name").andCreate();
-        STNodeEntry newNode4 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode4 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("anotherName").withKeyEntry("sequence", "2")
                                       .withKeyEntry("name", "name").andCreate();
-        List<STNodeEntry> result = iterableToList(session.withPartition(
+        List<Node> result = iterableToList(session.withPartition(
                                                                         ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                                  "newNode1").withProperty("name").equalsTo("name")
                                                          .buildCriteria().andFind(session));
@@ -1149,14 +1149,14 @@ public abstract class AbstractStorageSessionTest {
     public void shouldRemoveNodesOnAutoFlush() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "2")
                                       .withKeyEntry("name", "name").andCreate();
 
-        List<STNodeEntry> result = iterableToList(session.withPartition(
+        List<Node> result = iterableToList(session.withPartition(
                                                                         ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(result.size(), is(2));
@@ -1164,7 +1164,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(result.contains(newNode2), is(true));
 
         newNode1.removeNode(session);
-        List<STNodeEntry> newResult = iterableToList(session.withPartition(
+        List<Node> newResult = iterableToList(session.withPartition(
                                                                            ExamplePartition.DEFAULT).findNamed("newNode1"));
         assertThat(newResult.size(), is(1));
         assertThat(newResult.contains(newNode1), is(false));
@@ -1181,14 +1181,14 @@ public abstract class AbstractStorageSessionTest {
     public void shouldRemoveNodesOnExplicitFlush() throws Exception {
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "2")
                                       .withKeyEntry("name", "name").andCreate();
         session.flushTransient();
-        List<STNodeEntry> result = iterableToList(session.withPartition(
+        List<Node> result = iterableToList(session.withPartition(
                                                                         ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(result.size(), is(2));
@@ -1196,7 +1196,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(result.contains(newNode2), is(true));
 
         newNode1.removeNode(session);
-        List<STNodeEntry> resultNotChanged = iterableToList(session
+        List<Node> resultNotChanged = iterableToList(session
                                                                    .withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(resultNotChanged.size(), is(2));
@@ -1205,7 +1205,7 @@ public abstract class AbstractStorageSessionTest {
 
         session.flushTransient();
 
-        List<STNodeEntry> newResult = iterableToList(session.withPartition(
+        List<Node> newResult = iterableToList(session.withPartition(
                                                                            ExamplePartition.DEFAULT).findNamed("newNode1"));
         assertThat(newResult.size(), is(1));
         assertThat(newResult.contains(newNode1), is(false));
@@ -1223,14 +1223,14 @@ public abstract class AbstractStorageSessionTest {
     public void shouldDiscardTransientNodesOnExplicitFlush() throws Exception {
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
-        STNodeEntry newNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "2")
                                       .withKeyEntry("name", "name").andCreate();
         session.flushTransient();
-        List<STNodeEntry> result = iterableToList(session.withPartition(
+        List<Node> result = iterableToList(session.withPartition(
                                                                         ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(result.size(), is(2));
@@ -1238,7 +1238,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(result.contains(newNode2), is(true));
 
         newNode1.removeNode(session);
-        List<STNodeEntry> resultNotChanged = iterableToList(session
+        List<Node> resultNotChanged = iterableToList(session
                                                                    .withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(resultNotChanged.size(), is(2));
@@ -1247,7 +1247,7 @@ public abstract class AbstractStorageSessionTest {
 
         session.discardTransient();
 
-        List<STNodeEntry> resultStillNotChanged = iterableToList(session
+        List<Node> resultStillNotChanged = iterableToList(session
                                                                         .withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(resultStillNotChanged.size(), is(2));
@@ -1255,7 +1255,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(resultStillNotChanged.contains(newNode2), is(true));
 
         session.flushTransient();
-        List<STNodeEntry> resultNotChangedAgain = iterableToList(session
+        List<Node> resultNotChangedAgain = iterableToList(session
                                                                         .withPartition(ExamplePartition.DEFAULT).findNamed("newNode1"));
 
         assertThat(resultNotChangedAgain.size(), is(2));
@@ -1268,11 +1268,11 @@ public abstract class AbstractStorageSessionTest {
     public void shouldUpdatePropertyAndFindWithUpdatedValue() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
         newNode1.setIndexedProperty(session, "parameter", "firstValue");
-        List<STNodeEntry> found = iterableToList(session.withPartition(
+        List<Node> found = iterableToList(session.withPartition(
                                                                        ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                                 "newNode1").withProperty("parameter").equalsTo("firstValue")
                                                         .buildCriteria().andFind(session));
@@ -1281,13 +1281,13 @@ public abstract class AbstractStorageSessionTest {
         newNode1.getProperty(session, "parameter").setStringValue(session,
                                                                   "secondValue");
 
-        List<STNodeEntry> notFound = iterableToList(session.withPartition(
+        List<Node> notFound = iterableToList(session.withPartition(
                                                                           ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                                    "newNode1").withProperty("parameter").equalsTo("firstValue")
                                                            .buildCriteria().andFind(session));
         assertThat(notFound.size(), is(0));
 
-        List<STNodeEntry> foundAgain = iterableToList(session.withPartition(
+        List<Node> foundAgain = iterableToList(session.withPartition(
                                                                             ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
                                                                                                                                      "newNode1").withProperty("parameter").equalsTo("secondValue")
                                                              .buildCriteria().andFind(session));
@@ -1300,7 +1300,7 @@ public abstract class AbstractStorageSessionTest {
     public void shouldNotSetKeyProperty() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node newNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                       .createWithName("newNode1").withKeyEntry("sequence", "1")
                                       .withKeyEntry("name", "name").andCreate();
         newNode1.setSimpleProperty(session, "sequence", "3");
@@ -1311,23 +1311,23 @@ public abstract class AbstractStorageSessionTest {
     public void shouldFindByPropertiesWithoutNodeName() throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("abc").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                    .createWithName("def").withKeyEntry("sequence", "1")
                                    .withKeyEntry("name", "name").andCreate();
-        STNodeEntry aNode1 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode1 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("ghi").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root1).andCreate();
-        STNodeEntry aNode2 = session.withPartition(ExamplePartition.DEFAULT)
+        Node aNode2 = session.withPartition(ExamplePartition.DEFAULT)
                                     .createWithName("jkl").withKeyEntry("sequence", "1")
                                     .withKeyEntry("name", "name").withParent(root2).andCreate();
         aNode1.setIndexedProperty(session, "parameter", "value");
         aNode2.setIndexedProperty(session, "parameter", "value");
         aNode1.setIndexedProperty(session, "parameter1", "value1");
         aNode2.setIndexedProperty(session, "parameter1", "value2");
-        List<STNodeEntry> theSameNodes = iterableToList(session.withPartition(
+        List<Node> theSameNodes = iterableToList(session.withPartition(
                                                                               ExamplePartition.DEFAULT).createCriteria().withProperty(
                                                                                                                                       "parameter").equalsTo("value").buildCriteria().andFind(session));
         assertThat(theSameNodes.size(), is(2));
@@ -1335,7 +1335,7 @@ public abstract class AbstractStorageSessionTest {
         assertThat(theSameNodes.contains(aNode2), is(true));
         assertThat(theSameNodes.contains(root1), is(false));
         assertThat(theSameNodes.contains(root2), is(false));
-        List<STNodeEntry> onlyOneNode = iterableToList(session.withPartition(
+        List<Node> onlyOneNode = iterableToList(session.withPartition(
                                                                              ExamplePartition.DEFAULT).createCriteria().withProperty(
                                                                                                                                      "parameter1").equalsTo("value1").buildCriteria().andFind(
                                                                                                                                                                                               session));
@@ -1352,17 +1352,17 @@ public abstract class AbstractStorageSessionTest {
         if (supportsAdvancedQueries()) {
             StorageSession session = autoFlushInjector
                                                       .getInstance(StorageSession.class);
-            STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("abc").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name1").andCreate();
-            STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("def").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name2").andCreate();
-            STNodeEntry aNode1 = session
+            Node aNode1 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "ghi").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                   "name", "name1").withParent(root1).andCreate();
-            STNodeEntry aNode2 = session
+            Node aNode2 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "jkl").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                   "name", "name2").withParent(root2).andCreate();
@@ -1370,7 +1370,7 @@ public abstract class AbstractStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "aeiou");
             root1.setIndexedProperty(session, "parameter", "foo");
             root2.setIndexedProperty(session, "parameter", "bar");
-            List<STNodeEntry> theSameNodes = iterableToList(session
+            List<Node> theSameNodes = iterableToList(session
                                                                    .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                                                    .withProperty("parameter").containsString("io")
                                                                    .buildCriteria().andFind(session));
@@ -1388,17 +1388,17 @@ public abstract class AbstractStorageSessionTest {
         if (supportsAdvancedQueries()) {
             StorageSession session = autoFlushInjector
                                                       .getInstance(StorageSession.class);
-            STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("abc").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name1").andCreate();
-            STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("def").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name2").andCreate();
-            STNodeEntry aNode1 = session
+            Node aNode1 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "ghi").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                   "name", "name1").withParent(root1).andCreate();
-            STNodeEntry aNode2 = session
+            Node aNode2 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "jkl").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                   "name", "name2").withParent(root2).andCreate();
@@ -1406,7 +1406,7 @@ public abstract class AbstractStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "iou");
             root1.setIndexedProperty(session, "parameter", "fooiou");
             root2.setIndexedProperty(session, "parameter", "baior");
-            List<STNodeEntry> theSameNodes = iterableToList(session
+            List<Node> theSameNodes = iterableToList(session
                                                                    .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                                                    .withProperty("parameter").startsWithString("io")
                                                                    .buildCriteria().andFind(session));
@@ -1424,17 +1424,17 @@ public abstract class AbstractStorageSessionTest {
         if (supportsAdvancedQueries()) {
             StorageSession session = autoFlushInjector
                                                       .getInstance(StorageSession.class);
-            STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root1 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("abc").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name1").andCreate();
-            STNodeEntry root2 = session.withPartition(ExamplePartition.DEFAULT)
+            Node root2 = session.withPartition(ExamplePartition.DEFAULT)
                                        .createWithName("def").withKeyEntry("sequence", "1")
                                        .withKeyEntry("name", "name2").andCreate();
-            STNodeEntry aNode1 = session
+            Node aNode1 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "ghi").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                   "name", "name1").withParent(root1).andCreate();
-            STNodeEntry aNode2 = session
+            Node aNode2 = session
                                         .withPartition(ExamplePartition.DEFAULT).createWithName(
                                                                                                 "jkl").withKeyEntry("sequence", "1").withKeyEntry(
                                                                                                                                                   "name", "name2").withParent(root2).andCreate();
@@ -1442,7 +1442,7 @@ public abstract class AbstractStorageSessionTest {
             aNode2.setIndexedProperty(session, "parameter", "uio");
             root1.setIndexedProperty(session, "parameter", "fooiou");
             root2.setIndexedProperty(session, "parameter", "baior");
-            List<STNodeEntry> theSameNodes = iterableToList(session
+            List<Node> theSameNodes = iterableToList(session
                                                                    .withPartition(ExamplePartition.DEFAULT).createCriteria()
                                                                    .withProperty("parameter").endsWithString("io")
                                                                    .buildCriteria().andFind(session));
@@ -1459,14 +1459,14 @@ public abstract class AbstractStorageSessionTest {
             throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
+        Node c = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("a", "b", "c");
-        STNodeEntry b = c.getParent(session);
-        STNodeEntry a = b.getParent(session);
+        Node b = c.getParent(session);
+        Node a = b.getParent(session);
 
-        STLinkEntry aToCLink = session.addLink(a, c, "AtoC");
-        STLinkEntry aToBLink = session.addLink(a, b, "AtoB");
-        STLinkEntry cToALink = session.addLink(c, a, "CtoA");
+        Link aToCLink = session.addLink(a, c, "AtoC");
+        Link aToBLink = session.addLink(a, b, "AtoB");
+        Link cToALink = session.addLink(c, a, "CtoA");
 
         assertThat(aToCLink.getOrigin(), is(a));
         assertThat(aToCLink.getTarget(), is(c));
@@ -1477,23 +1477,23 @@ public abstract class AbstractStorageSessionTest {
         assertThat(cToALink.getOrigin(), is(c));
         assertThat(cToALink.getTarget(), is(a));
 
-        STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
+        Link foundCtoALink = session.getLink(c, a, "CtoA");
         assertThat(cToALink, is(foundCtoALink));
-        List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+        List<Link> foundALinks = iterableToList(session.findLinks(a));
         assertThat(foundALinks.size(), is(2));
         assertThat(foundALinks.contains(aToCLink), is(true));
         assertThat(foundALinks.contains(aToBLink), is(true));
 
-        List<STLinkEntry> foundBLinks = iterableToList(session.findLinks(b));
+        List<Link> foundBLinks = iterableToList(session.findLinks(b));
         assertThat(foundBLinks.size(), is(0));
 
-        List<STLinkEntry> foundAToCLinks = iterableToList(session.findLinks(a,
+        List<Link> foundAToCLinks = iterableToList(session.findLinks(a,
                                                                             "AtoC"));
 
         assertThat(foundAToCLinks.size(), is(1));
         assertThat(foundAToCLinks.contains(aToCLink), is(true));
 
-        List<STLinkEntry> foundAToBLinks = iterableToList(session.findLinks(a,
+        List<Link> foundAToBLinks = iterableToList(session.findLinks(a,
                                                                             b));
         assertThat(foundAToBLinks.size(), is(1));
         assertThat(foundAToBLinks.contains(aToBLink), is(true));
@@ -1505,16 +1505,16 @@ public abstract class AbstractStorageSessionTest {
             throws Exception {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
-        STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
+        Node c = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("c");
-        STNodeEntry b = session.withPartition(ExamplePartition.FIRST)
+        Node b = session.withPartition(ExamplePartition.FIRST)
                                .createNewSimpleNode("c");
-        STNodeEntry a = session.withPartition(ExamplePartition.SECOND)
+        Node a = session.withPartition(ExamplePartition.SECOND)
                                .createNewSimpleNode("c");
 
-        STLinkEntry aToCLink = session.addLink(a, c, "AtoC");
-        STLinkEntry aToBLink = session.addLink(a, b, "AtoB");
-        STLinkEntry cToALink = session.addLink(c, a, "CtoA");
+        Link aToCLink = session.addLink(a, c, "AtoC");
+        Link aToBLink = session.addLink(a, b, "AtoB");
+        Link cToALink = session.addLink(c, a, "CtoA");
 
         assertThat(aToCLink.getOrigin(), is(a));
         assertThat(aToCLink.getTarget(), is(c));
@@ -1525,23 +1525,23 @@ public abstract class AbstractStorageSessionTest {
         assertThat(cToALink.getOrigin(), is(c));
         assertThat(cToALink.getTarget(), is(a));
 
-        STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
+        Link foundCtoALink = session.getLink(c, a, "CtoA");
         assertThat(cToALink, is(foundCtoALink));
-        List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+        List<Link> foundALinks = iterableToList(session.findLinks(a));
         assertThat(foundALinks.size(), is(2));
         assertThat(foundALinks.contains(aToCLink), is(true));
         assertThat(foundALinks.contains(aToBLink), is(true));
 
-        List<STLinkEntry> foundBLinks = iterableToList(session.findLinks(b));
+        List<Link> foundBLinks = iterableToList(session.findLinks(b));
         assertThat(foundBLinks.size(), is(0));
 
-        List<STLinkEntry> foundAToCLinks = iterableToList(session.findLinks(a,
+        List<Link> foundAToCLinks = iterableToList(session.findLinks(a,
                                                                             "AtoC"));
 
         assertThat(foundAToCLinks.size(), is(1));
         assertThat(foundAToCLinks.contains(aToCLink), is(true));
 
-        List<STLinkEntry> foundAToBLinks = iterableToList(session.findLinks(a,
+        List<Link> foundAToBLinks = iterableToList(session.findLinks(a,
                                                                             b));
         assertThat(foundAToBLinks.size(), is(1));
         assertThat(foundAToBLinks.contains(aToBLink), is(true));
@@ -1553,15 +1553,15 @@ public abstract class AbstractStorageSessionTest {
             throws Exception {
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
+        Node c = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("a", "b", "c");
         session.flushTransient();
-        STNodeEntry b = c.getParent(session);
-        STNodeEntry a = b.getParent(session);
+        Node b = c.getParent(session);
+        Node a = b.getParent(session);
 
-        STLinkEntry aToCLink = session.addLink(a, c, "AtoC");
-        STLinkEntry aToBLink = session.addLink(a, b, "AtoB");
-        STLinkEntry cToALink = session.addLink(c, a, "CtoA");
+        Link aToCLink = session.addLink(a, c, "AtoC");
+        Link aToBLink = session.addLink(a, b, "AtoB");
+        Link cToALink = session.addLink(c, a, "CtoA");
         session.flushTransient();
         assertThat(aToCLink.getOrigin(), is(a));
         assertThat(aToCLink.getTarget(), is(c));
@@ -1572,23 +1572,23 @@ public abstract class AbstractStorageSessionTest {
         assertThat(cToALink.getOrigin(), is(c));
         assertThat(cToALink.getTarget(), is(a));
 
-        STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
-        List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+        Link foundCtoALink = session.getLink(c, a, "CtoA");
+        List<Link> foundALinks = iterableToList(session.findLinks(a));
         assertThat(cToALink, is(foundCtoALink));
         assertThat(foundALinks.size(), is(2));
         assertThat(foundALinks.contains(aToCLink), is(true));
         assertThat(foundALinks.contains(aToBLink), is(true));
 
-        List<STLinkEntry> foundBLinks = iterableToList(session.findLinks(b));
+        List<Link> foundBLinks = iterableToList(session.findLinks(b));
         assertThat(foundBLinks.size(), is(0));
 
-        List<STLinkEntry> foundAToCLinks = iterableToList(session.findLinks(a,
+        List<Link> foundAToCLinks = iterableToList(session.findLinks(a,
                                                                             "AtoC"));
 
         assertThat(foundAToCLinks.size(), is(1));
         assertThat(foundAToCLinks.contains(aToCLink), is(true));
 
-        List<STLinkEntry> foundAToBLinks = iterableToList(session.findLinks(a,
+        List<Link> foundAToBLinks = iterableToList(session.findLinks(a,
                                                                             b));
         assertThat(foundAToBLinks.size(), is(1));
         assertThat(foundAToBLinks.contains(aToBLink), is(true));
@@ -1600,16 +1600,16 @@ public abstract class AbstractStorageSessionTest {
             throws Exception {
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
-        STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
+        Node c = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("c");
-        STNodeEntry b = session.withPartition(ExamplePartition.FIRST)
+        Node b = session.withPartition(ExamplePartition.FIRST)
                                .createNewSimpleNode("c");
-        STNodeEntry a = session.withPartition(ExamplePartition.SECOND)
+        Node a = session.withPartition(ExamplePartition.SECOND)
                                .createNewSimpleNode("c");
 
-        STLinkEntry aToCLink = session.addLink(a, c, "AtoC");
-        STLinkEntry aToBLink = session.addLink(a, b, "AtoB");
-        STLinkEntry cToALink = session.addLink(c, a, "CtoA");
+        Link aToCLink = session.addLink(a, c, "AtoC");
+        Link aToBLink = session.addLink(a, b, "AtoB");
+        Link cToALink = session.addLink(c, a, "CtoA");
         session.flushTransient();
         assertThat(aToCLink.getOrigin(), is(a));
         assertThat(aToCLink.getTarget(), is(c));
@@ -1620,23 +1620,23 @@ public abstract class AbstractStorageSessionTest {
         assertThat(cToALink.getOrigin(), is(c));
         assertThat(cToALink.getTarget(), is(a));
 
-        STLinkEntry foundCtoALink = session.getLink(c, a, "CtoA");
+        Link foundCtoALink = session.getLink(c, a, "CtoA");
         assertThat(cToALink, is(foundCtoALink));
-        List<STLinkEntry> foundALinks = iterableToList(session.findLinks(a));
+        List<Link> foundALinks = iterableToList(session.findLinks(a));
         assertThat(foundALinks.size(), is(2));
         assertThat(foundALinks.contains(aToCLink), is(true));
         assertThat(foundALinks.contains(aToBLink), is(true));
 
-        List<STLinkEntry> foundBLinks = iterableToList(session.findLinks(b));
+        List<Link> foundBLinks = iterableToList(session.findLinks(b));
         assertThat(foundBLinks.size(), is(0));
 
-        List<STLinkEntry> foundAToCLinks = iterableToList(session.findLinks(a,
+        List<Link> foundAToCLinks = iterableToList(session.findLinks(a,
                                                                             "AtoC"));
 
         assertThat(foundAToCLinks.size(), is(1));
         assertThat(foundAToCLinks.contains(aToCLink), is(true));
 
-        List<STLinkEntry> foundAToBLinks = iterableToList(session.findLinks(a,
+        List<Link> foundAToBLinks = iterableToList(session.findLinks(a,
                                                                             b));
         assertThat(foundAToBLinks.size(), is(1));
         assertThat(foundAToBLinks.contains(aToBLink), is(true));
@@ -1649,17 +1649,17 @@ public abstract class AbstractStorageSessionTest {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
 
-        STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
+        Node b = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("b");
-        STNodeEntry a = session.withPartition(ExamplePartition.DEFAULT)
+        Node a = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("a");
 
-        STLinkEntry link = session.addLink(a, b, "AtoB");
-        STLinkEntry link2 = session.addLink(a, b, "AtoB2");
+        Link link = session.addLink(a, b, "AtoB");
+        Link link2 = session.addLink(a, b, "AtoB2");
         link.setIndexedProperty(session, "sample", "value");
 
-        STLinkEntry foundLink = session.getLink(a, b, "AtoB");
-        STLinkEntry foundLink2 = session.getLink(a, b, "AtoB2");
+        Link foundLink = session.getLink(a, b, "AtoB");
+        Link foundLink2 = session.getLink(a, b, "AtoB2");
         assertThat(foundLink, is(link));
         assertThat(foundLink2, is(link2));
         assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
@@ -1670,8 +1670,8 @@ public abstract class AbstractStorageSessionTest {
         session.removeLink(a, b, "AtoB");
         session.removeLink(link2);
 
-        STLinkEntry notFoundLink = session.getLink(a, b, "AtoB");
-        STLinkEntry notFoundLink2 = session.getLink(a, b, "AtoB2");
+        Link notFoundLink = session.getLink(a, b, "AtoB");
+        Link notFoundLink2 = session.getLink(a, b, "AtoB2");
 
         assertThat(notFoundLink, is(nullValue()));
         assertThat(notFoundLink2, is(nullValue()));
@@ -1684,17 +1684,17 @@ public abstract class AbstractStorageSessionTest {
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
 
-        STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
+        Node b = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("b");
-        STNodeEntry a = session.withPartition(ExamplePartition.DEFAULT)
+        Node a = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("a");
 
-        STLinkEntry link = session.addLink(a, b, "AtoB");
-        STLinkEntry link2 = session.addLink(a, b, "AtoB2");
+        Link link = session.addLink(a, b, "AtoB");
+        Link link2 = session.addLink(a, b, "AtoB2");
         link.setIndexedProperty(session, "sample", "value");
         session.flushTransient();
-        STLinkEntry foundLink = session.getLink(a, b, "AtoB");
-        STLinkEntry foundLink2 = session.getLink(a, b, "AtoB2");
+        Link foundLink = session.getLink(a, b, "AtoB");
+        Link foundLink2 = session.getLink(a, b, "AtoB2");
         assertThat(foundLink, is(link));
         assertThat(foundLink2, is(link2));
         assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
@@ -1705,8 +1705,8 @@ public abstract class AbstractStorageSessionTest {
         session.removeLink(a, b, "AtoB");
         session.removeLink(link2);
         session.flushTransient();
-        STLinkEntry notFoundLink = session.getLink(a, b, "AtoB");
-        STLinkEntry notFoundLink2 = session.getLink(a, b, "AtoB2");
+        Link notFoundLink = session.getLink(a, b, "AtoB");
+        Link notFoundLink2 = session.getLink(a, b, "AtoB2");
 
         assertThat(notFoundLink, is(nullValue()));
         assertThat(notFoundLink2, is(nullValue()));
@@ -1719,17 +1719,17 @@ public abstract class AbstractStorageSessionTest {
         StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
 
-        STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
+        Node b = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("b");
-        STNodeEntry a = session.withPartition(ExamplePartition.FIRST)
+        Node a = session.withPartition(ExamplePartition.FIRST)
                                .createNewSimpleNode("a");
 
-        STLinkEntry link = session.addLink(a, b, "AtoB");
-        STLinkEntry link2 = session.addLink(a, b, "AtoB2");
+        Link link = session.addLink(a, b, "AtoB");
+        Link link2 = session.addLink(a, b, "AtoB2");
         link.setIndexedProperty(session, "sample", "value");
 
-        STLinkEntry foundLink = session.getLink(a, b, "AtoB");
-        STLinkEntry foundLink2 = session.getLink(a, b, "AtoB2");
+        Link foundLink = session.getLink(a, b, "AtoB");
+        Link foundLink2 = session.getLink(a, b, "AtoB2");
         assertThat(foundLink, is(link));
         assertThat(foundLink2, is(link2));
         assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
@@ -1740,8 +1740,8 @@ public abstract class AbstractStorageSessionTest {
         session.removeLink(a, b, "AtoB");
         session.removeLink(link2);
 
-        STLinkEntry notFoundLink = session.getLink(a, b, "AtoB");
-        STLinkEntry notFoundLink2 = session.getLink(a, b, "AtoB2");
+        Link notFoundLink = session.getLink(a, b, "AtoB");
+        Link notFoundLink2 = session.getLink(a, b, "AtoB2");
 
         assertThat(notFoundLink, is(nullValue()));
         assertThat(notFoundLink2, is(nullValue()));
@@ -1754,17 +1754,17 @@ public abstract class AbstractStorageSessionTest {
         StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
 
-        STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
+        Node b = session.withPartition(ExamplePartition.DEFAULT)
                                .createNewSimpleNode("b");
-        STNodeEntry a = session.withPartition(ExamplePartition.FIRST)
+        Node a = session.withPartition(ExamplePartition.FIRST)
                                .createNewSimpleNode("a");
 
-        STLinkEntry link = session.addLink(a, b, "AtoB");
-        STLinkEntry link2 = session.addLink(a, b, "AtoB2");
+        Link link = session.addLink(a, b, "AtoB");
+        Link link2 = session.addLink(a, b, "AtoB2");
         link.setIndexedProperty(session, "sample", "value");
         session.flushTransient();
-        STLinkEntry foundLink = session.getLink(a, b, "AtoB");
-        STLinkEntry foundLink2 = session.getLink(a, b, "AtoB2");
+        Link foundLink = session.getLink(a, b, "AtoB");
+        Link foundLink2 = session.getLink(a, b, "AtoB2");
         assertThat(foundLink, is(link));
         assertThat(foundLink2, is(link2));
         assertThat(foundLink.getPropertyAsString(session, "sample"), is(link
@@ -1775,8 +1775,8 @@ public abstract class AbstractStorageSessionTest {
         session.removeLink(a, b, "AtoB");
         session.removeLink(link2);
         session.flushTransient();
-        STLinkEntry notFoundLink = session.getLink(a, b, "AtoB");
-        STLinkEntry notFoundLink2 = session.getLink(a, b, "AtoB2");
+        Link notFoundLink = session.getLink(a, b, "AtoB");
+        Link notFoundLink2 = session.getLink(a, b, "AtoB2");
 
         assertThat(notFoundLink, is(nullValue()));
         assertThat(notFoundLink2, is(nullValue()));

@@ -23,9 +23,9 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  *
- ***********************************************************************
+ * ***********************************************************************
  * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
+ * *
  * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
  * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
  * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
@@ -47,32 +47,39 @@
  * Boston, MA  02110-1301  USA
  */
 
-package org.openspotlight.storage.domain;
+package org.openspotlight.storage.redis.guice;
 
+import org.openspotlight.guice.ThreadLocalProvider;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.redis.JRedisStorageSessionImpl;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 3:10:03 PM To change this template use File | Settings | File
- * Templates.
+ * Created by User: feu - Date: Mar 23, 2010 - Time: 4:57:04 PM
  */
-public interface NodeFactory {
+@Singleton
+public class JRedisStorageSessionProvider extends ThreadLocalProvider<StorageSession> {
+    private final PartitionFactory partitionFactory;
 
-    NodeBuilder createWithName( StorageSession session,
-                                       String name );
-
-    interface NodeBuilder {
-
-        NodeBuilder withKeyEntry( String name,
-                                         String value );
-
-        NodeBuilder withParent( Node parent );
-
-        NodeBuilder withParentAsString( String parentAsString );
-
-        NodeBuilder withParentKey( UniqueKey parentKey );
-
-        Node andCreate();
+    @Inject
+    public JRedisStorageSessionProvider( StorageSession.FlushMode flushMode, JRedisFactory factory,
+                                           RepositoryPath repositoryPath, PartitionFactory partitionFactory ) {
+        this.flushMode = flushMode;
+        this.factory = factory;
+        this.repositoryPath = repositoryPath;
+        this.partitionFactory = partitionFactory;
     }
 
+    private final StorageSession.FlushMode flushMode;
+    private final JRedisFactory                factory;
+    private final RepositoryPath             repositoryPath;
+
+    @Override
+    protected StorageSession createInstance() {
+        return new JRedisStorageSessionImpl(flushMode, factory, repositoryPath, partitionFactory);
+    }
 }

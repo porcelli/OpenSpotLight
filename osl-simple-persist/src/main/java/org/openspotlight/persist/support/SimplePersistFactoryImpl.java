@@ -50,7 +50,7 @@ package org.openspotlight.persist.support;
 
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Node;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -70,7 +70,7 @@ public class SimplePersistFactoryImpl implements SimplePersistFactory {
         this.sessionProvider = sessionProvider;
     }
 
-    public SimplePersistCapable<STNodeEntry, StorageSession> createSimplePersist( Partition partition ) {
+    public SimplePersistCapable<Node, StorageSession> createSimplePersist( Partition partition ) {
         return new SimplePersistImpl(sessionProvider.get(), partition);
     }
 }

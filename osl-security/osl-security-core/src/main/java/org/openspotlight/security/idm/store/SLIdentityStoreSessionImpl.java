@@ -55,30 +55,30 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Node;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
 public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
-    private final SimplePersistCapable<STNodeEntry, StorageSession> simplePersist;
+    private final SimplePersistCapable<Node, StorageSession> simplePersist;
 
-    public STNodeEntry getRootNode() {
+    public Node getRootNode() {
         return rootNode;
     }
 
-    public SimplePersistCapable<STNodeEntry, StorageSession> getSimplePersist() {
+    public SimplePersistCapable<Node, StorageSession> getSimplePersist() {
         return simplePersist;
     }
 
     private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(this);
 
-    private final STNodeEntry                   rootNode;
+    private final Node                   rootNode;
 
     @Inject
     public SLIdentityStoreSessionImpl(
-                                       SimplePersistCapable<STNodeEntry, StorageSession> simplePersist ) {
+                                       SimplePersistCapable<Node, StorageSession> simplePersist ) {
         this.simplePersist = simplePersist;
         this.rootNode = simplePersist.getCurrentSession().withPartition(simplePersist.getCurrentPartition()).createNewSimpleNode(
                                                                                                                                  "security");
@@ -117,7 +117,7 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
     }
 
     public void remove( final SimpleNodeType bean ) throws Exception {
-        final STNodeEntry asNode = simplePersist.convertBeanToNode(this.rootNode, bean);
+        final Node asNode = simplePersist.convertBeanToNode(this.rootNode, bean);
         simplePersist.getCurrentSession().removeNode(asNode);
         simplePersist.getCurrentSession().flushTransient();
 

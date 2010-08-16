@@ -52,8 +52,8 @@ package org.openspotlight.storage;
 import java.util.Set;
 
 import org.openspotlight.storage.domain.NodeFactory;
-import org.openspotlight.storage.domain.STLinkEntry;
-import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Link;
+import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.key.LocalKey;
 import org.openspotlight.storage.domain.key.UniqueKey;
 
@@ -73,11 +73,11 @@ public interface StorageSession {
 
         UniqueKeyBuilder createKey( String nodeEntryName );
 
-        Iterable<STNodeEntry> findByCriteria( Criteria criteria );
+        Iterable<Node> findByCriteria( Criteria criteria );
 
-        Iterable<STNodeEntry> findNamed( String nodeEntryName );
+        Iterable<Node> findNamed( String nodeEntryName );
 
-        STNodeEntry findUniqueByCriteria( Criteria criteria );
+        Node findUniqueByCriteria( Criteria criteria );
 
         public CriteriaBuilder createCriteria();
 
@@ -85,14 +85,14 @@ public interface StorageSession {
 
         UniqueKey createNewSimpleKey( String... nodePaths );
 
-        STNodeEntry createNewSimpleNode( String... nodePaths );
+        Node createNewSimpleNode( String... nodePaths );
 
     }
 
-    STNodeEntry findNodeByStringId( String idAsString );
+    Node findNodeByStringId( String idAsString );
 
     void removeNode(
-                     org.openspotlight.storage.domain.STNodeEntry stNodeEntry );
+                     org.openspotlight.storage.domain.Node stNodeEntry );
 
     interface CriteriaBuilder {
 
@@ -173,9 +173,9 @@ public interface StorageSession {
 
         Set<CriteriaItem> getCriteriaItems();
 
-        Iterable<STNodeEntry> andFind( StorageSession session );
+        Iterable<Node> andFind( StorageSession session );
 
-        STNodeEntry andFindUnique( StorageSession session );
+        Node andFindUnique( StorageSession session );
 
     }
 
@@ -204,27 +204,27 @@ public interface StorageSession {
 
     void flushTransient();
 
-    STLinkEntry addLink( STNodeEntry origin,
-                         STNodeEntry destiny,
+    Link addLink( Node origin,
+                         Node destiny,
                          String name );
 
-    void removeLink( STNodeEntry origin,
-                     STNodeEntry destiny,
+    void removeLink( Node origin,
+                     Node destiny,
                      String name );
 
-    void removeLink( STLinkEntry link );
+    void removeLink( Link link );
 
-    Iterable<STLinkEntry> findLinks( STNodeEntry origin );
+    Iterable<Link> findLinks( Node origin );
 
-    Iterable<STLinkEntry> findLinks( STNodeEntry origin,
+    Iterable<Link> findLinks( Node origin,
                                      String name );
 
-    STLinkEntry getLink( STNodeEntry origin,
-                         STNodeEntry destiny,
+    Link getLink( Node origin,
+                         Node destiny,
                          String name );
 
-    Iterable<STLinkEntry> findLinks( STNodeEntry origin,
-                                     STNodeEntry destiny );
+    Iterable<Link> findLinks( Node origin,
+                                     Node destiny );
 /*
     void propertySetProperty(
                               org.openspotlight.storage.domain.Property property,

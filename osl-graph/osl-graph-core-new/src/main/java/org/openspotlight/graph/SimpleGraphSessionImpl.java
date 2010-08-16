@@ -77,7 +77,7 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
 	@Override
 	public void flushChangedProperties(Node node) {
 		StorageSession session = sessionProvider.get();
-		org.openspotlight.storage.domain.STNodeEntry stNode = NodeAndLinkSupport.retrievePreviousNode(factory, session,
+		org.openspotlight.storage.domain.Node stNode = NodeAndLinkSupport.retrievePreviousNode(factory, session,
 				from(GraphLocation.SERVER).getContext(node), node, false);
 		session.flushTransient();
 	}

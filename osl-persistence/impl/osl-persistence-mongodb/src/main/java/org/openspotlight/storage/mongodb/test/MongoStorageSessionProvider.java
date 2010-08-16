@@ -46,33 +46,44 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.storage.mongodb.test;
 
-package org.openspotlight.storage.domain;
-
+import org.openspotlight.guice.ThreadLocalProvider;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.mongodb.MongoMaxCacheSize;
+import org.openspotlight.storage.mongodb.MongoStorageSessionImpl;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.mongodb.Mongo;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 3:10:03 PM To change this template use File | Settings | File
- * Templates.
+ * Created by User: feu - Date: Jun 11, 2010 - Time: 10:22:50 AM
  */
-public interface NodeFactory {
+@Singleton
+public class MongoStorageSessionProvider extends ThreadLocalProvider<StorageSession> {
+    private final int maxCacheSize;
 
-    NodeBuilder createWithName( StorageSession session,
-                                       String name );
-
-    interface NodeBuilder {
-
-        NodeBuilder withKeyEntry( String name,
-                                         String value );
-
-        NodeBuilder withParent( Node parent );
-
-        NodeBuilder withParentAsString( String parentAsString );
-
-        NodeBuilder withParentKey( UniqueKey parentKey );
-
-        Node andCreate();
+    @Inject
+    public MongoStorageSessionProvider( StorageSession.FlushMode flushMode, RepositoryPath repositoryPath, Mongo mongo,
+                                          PartitionFactory partitionFactory, @MongoMaxCacheSize int maxCacheSize ) {
+        this.flushMode = flushMode;
+        this.repositoryPath = repositoryPath;
+        this.mongo = mongo;
+        this.partitionFactory = partitionFactory;
+        this.maxCacheSize = maxCacheSize;
     }
 
+    private final Mongo                        mongo;
+    private final RepositoryPath             repositoryPath;
+    private final StorageSession.FlushMode flushMode;
+
+    private final PartitionFactory           partitionFactory;
+
+    @Override
+    protected StorageSession createInstance() {
+        return new MongoStorageSessionImpl(mongo, flushMode, repositoryPath, partitionFactory, maxCacheSize);
+    }
 }

@@ -49,30 +49,35 @@
 
 package org.openspotlight.storage.domain;
 
+import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.key.LocalKey;
 import org.openspotlight.storage.domain.key.UniqueKey;
 
-/**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 3:10:03 PM To change this template use File | Settings | File
- * Templates.
- */
-public interface NodeFactory {
+public interface Node extends StorageDataMarker, NodeFactory,
+		PropertyContainer {
 
-    NodeBuilder createWithName( StorageSession session,
-                                       String name );
+	public void forceReload();
 
-    interface NodeBuilder {
+	String getNodeEntryName();
 
-        NodeBuilder withKeyEntry( String name,
-                                         String value );
+	LocalKey getLocalKey();
 
-        NodeBuilder withParent( Node parent );
+	UniqueKey getUniqueKey();
 
-        NodeBuilder withParentAsString( String parentAsString );
+	Iterable<Node> getChildren(Partition partition,
+			StorageSession session);
 
-        NodeBuilder withParentKey( UniqueKey parentKey );
+	Iterable<Node> getChildrenNamed(Partition partition,
+			StorageSession session, String name);
 
-        Node andCreate();
-    }
+	Iterable<Node> getChildrenForcingReload(Partition partition,
+			StorageSession session);
 
+	Iterable<Node> getChildrenNamedForcingReload(Partition partition,
+			StorageSession session, String name);
+
+	Node getParent(StorageSession session);
+
+	void removeNode(StorageSession session);
 }

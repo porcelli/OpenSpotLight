@@ -63,7 +63,7 @@ import org.openspotlight.common.util.Sha1;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.key.UniqueKey;
 
 /**
@@ -89,7 +89,7 @@ public final class LazyProperty<T> implements Serializable {
     private final Class<T> type;
 
     private String         sha1;
-    private STNodeEntry    node;
+    private Node    node;
 
     /**
      * Factory class.
@@ -124,7 +124,7 @@ public final class LazyProperty<T> implements Serializable {
      */
     public final class Metadata implements Serializable {
 
-        public void setSavedNode( STNodeEntry node ) {
+        public void setSavedNode( Node node ) {
             LazyProperty.this.node = node;
         }
 
@@ -181,7 +181,7 @@ public final class LazyProperty<T> implements Serializable {
          * @return
          */
         @SuppressWarnings( "unchecked" )
-        public T getCached( SimplePersistCapable<STNodeEntry, StorageSession> simplePersist ) {
+        public T getCached( SimplePersistCapable<Node, StorageSession> simplePersist ) {
             try {
                 lock.lock();
                 final T cachedValue = cached == null ? null : cached.get();
@@ -354,7 +354,7 @@ public final class LazyProperty<T> implements Serializable {
      * 
      * @return
      */
-    public T get( SimplePersistCapable<STNodeEntry, StorageSession> simplePersist ) {
+    public T get( SimplePersistCapable<Node, StorageSession> simplePersist ) {
         try {
             lock.lock();
             T value = metadata.getTransient();

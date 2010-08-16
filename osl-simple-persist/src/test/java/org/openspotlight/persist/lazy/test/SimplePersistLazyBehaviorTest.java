@@ -60,7 +60,7 @@ import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.RegularPartitions;
-import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -76,7 +76,7 @@ public class SimplePersistLazyBehaviorTest {
                                                                                                                          repositoryPath("repository")));
 
     StorageSession                                    session;
-    SimplePersistCapable<STNodeEntry, StorageSession> simplePersist;
+    SimplePersistCapable<Node, StorageSession> simplePersist;
 
     @Before
     public void cleanPreviousData() throws Exception {
@@ -95,7 +95,7 @@ public class SimplePersistLazyBehaviorTest {
         bean.getBigPojoProperty().setTransient(new SerializablePojoProperty());
         bean.getBigPojoProperty().get(simplePersist).setAnotherProperty("test");
         assertThat(bean.getBigPojoProperty().getMetadata().getTransient(), is(notNullValue()));
-        final STNodeEntry node = simplePersist.convertBeanToNode(bean);
+        final Node node = simplePersist.convertBeanToNode(bean);
         bean = simplePersist.convertNodeToBean(node);
         assertThat(bean.getBigPojoProperty().get(simplePersist), is(notNullValue()));
 
@@ -121,7 +121,7 @@ public class SimplePersistLazyBehaviorTest {
         bean.getBigPojoProperty().setTransient(new SerializablePojoProperty());
         bean.getBigPojoProperty().get(simplePersist).setAnotherProperty("test");
         assertThat(bean.getBigPojoProperty().getMetadata().getTransient(), is(notNullValue()));
-        final STNodeEntry node = simplePersist.convertBeanToNode(bean);
+        final Node node = simplePersist.convertBeanToNode(bean);
 
         bean = simplePersist.convertNodeToBean(node);
         assertThat(bean.getBigPojoProperty().getMetadata().getCached(simplePersist), is(notNullValue()));
