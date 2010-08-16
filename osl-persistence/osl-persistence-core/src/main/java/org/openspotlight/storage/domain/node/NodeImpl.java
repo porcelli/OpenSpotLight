@@ -8,15 +8,16 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
  * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
  * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
- * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
- * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
- * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
- * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
- * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
- * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
- * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH
+ * CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de
+ * terceiros estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é
+ * software livre; você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme
+ * publicada pela Free Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença
+ * Pública Geral Menor do GNU para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU
+ * junto com este programa; se não, escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA
+ * 02110-1301 USA
  */
 
 package org.openspotlight.storage.domain.node;
@@ -37,17 +38,18 @@ import org.openspotlight.storage.domain.key.LocalKey;
 import org.openspotlight.storage.domain.key.UniqueKey;
 
 public class NodeImpl extends PropertyContainerImpl implements
-        Node {
+    Node {
 
     private static final long serialVersionUID = -4545520206784316277L;
 
     @Override
-    protected void verifyBeforeSet(final String propertyName) {
+    protected void verifyBeforeSet(
+                                   final String propertyName) {
         if (localKey.getEntryNames().contains(propertyName)) { throw new IllegalStateException(); }
     }
 
     public NodeImpl(final UniqueKey uniqueKey, final Set<Property> properties,
-                            final boolean resetTimeout)
+                    final boolean resetTimeout)
         throws IllegalArgumentException {
         super(resetTimeout);
         nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
@@ -101,11 +103,12 @@ public class NodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public Iterable<Node> getChildren(final Partition partition,
-                                              final StorageSession session) {
+    public Iterable<Node> getChildren(
+                                      final Partition partition,
+                                      final StorageSession session) {
         Iterable<Node> children = childrenWeakReference != null ? childrenWeakReference
-                                                                                              .get()
-                : null;
+            .get()
+            : null;
         if (children == null) {
             children = getChildrenForcingReload(partition, session);
         }
@@ -113,14 +116,15 @@ public class NodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public Iterable<Node> getChildrenNamed(final Partition partition,
-                                                   final StorageSession session,
-                                                   final String name) {
+    public Iterable<Node> getChildrenNamed(
+                                           final Partition partition,
+                                           final StorageSession session,
+                                           final String name) {
 
         Iterable<Node> thisChildren = null;
         if (namedChildrenWeakReference.containsValue(name)) {
             for (final Map.Entry<Iterable<Node>, String> entry: namedChildrenWeakReference
-                                                                                            .entrySet()) {
+                .entrySet()) {
                 if (name.equals(entry.getValue())) {
                     thisChildren = entry.getKey();
                     break;
@@ -130,71 +134,75 @@ public class NodeImpl extends PropertyContainerImpl implements
 
         if (thisChildren == null) {
             thisChildren = getChildrenNamedForcingReload(partition, session,
-                                                         name);
+                name);
         }
         return thisChildren;
     }
 
     @Override
     public Iterable<Node> getChildrenForcingReload(
-                                                           final Partition partition,
-                                                           final StorageSession session) {
+                                                   final Partition partition,
+                                                   final StorageSession session) {
         final Iterable<Node> children =
-            ((AbstractStorageSession<?>) session.withPartition(partition)).nodeEntryGetChildren(partition, this);
+            ((AbstractStorageSession<?>) session).nodeEntryGetChildren(partition, this);
         childrenWeakReference = new WeakReference<Iterable<Node>>(
-                                                                         children);
+            children);
         return children;
     }
 
     @Override
     public Iterable<Node> getChildrenNamedForcingReload(
-                                                                final Partition partition,
-                                                                final StorageSession session,
-                                                                final String name) {
+                                                        final Partition partition,
+                                                        final StorageSession session,
+                                                        final String name) {
         final Iterable<Node> children =
-            ((AbstractStorageSession<?>) session.withPartition(partition))
-                                                                                                   .nodeEntryGetNamedChildren(
-                                                                                                       partition, this, name);
+            ((AbstractStorageSession<?>) session)
+            .nodeEntryGetNamedChildren(
+            partition, this, name);
         namedChildrenWeakReference.put(children, name);
         return children;
     }
 
     @Override
-    public Node getParent(final StorageSession session) {
+    public Node getParent(
+                          final StorageSession session) {
         Node parent = parentWeakReference != null ? parentWeakReference
-                                                                              .get() : null;
+            .get() : null;
         if (parent == null) {
-            parent = ((AbstractStorageSession<?>) session.withPartition(partition)).nodeEntryGetParent(this);
+            parent = ((AbstractStorageSession<?>) session).nodeEntryGetParent(this);
             parentWeakReference = new WeakReference<Node>(parent);
         }
         return parent;
     }
 
     @Override
-    public void removeNode(final StorageSession session) {
+    public void removeNode(
+                           final StorageSession session) {
         session.removeNode(this);
     }
 
     @Override
-    public NodeBuilder createWithName(final StorageSession session,
-                                              final String name) {
+    public NodeBuilder createWithName(
+                                      final StorageSession session,
+                                      final String name) {
         return ((AbstractStorageSession<?>) session.withPartition(partition)).nodeEntryCreateWithName(this, name);
 
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(
+                          final Object o) {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
 
         final NodeImpl that = (NodeImpl) o;
 
         if (localKey != null ? !localKey.equals(that.localKey)
-                : that.localKey != null) { return false; }
+            : that.localKey != null) { return false; }
         if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName)
-                : that.nodeEntryName != null) { return false; }
+            : that.nodeEntryName != null) { return false; }
         return !(uniqueKey != null ? !uniqueKey.equals(that.uniqueKey)
-                : that.uniqueKey != null);
+            : that.uniqueKey != null);
     }
 
     @Override
@@ -208,8 +216,8 @@ public class NodeImpl extends PropertyContainerImpl implements
     @Override
     public String toString() {
         return "STNodeEntryImpl{" + "partition=" + partition
-                + ", nodeEntryName='" + nodeEntryName + '\'' + ", uniqueKey="
-                + uniqueKey + '}';
+            + ", nodeEntryName='" + nodeEntryName + '\'' + ", uniqueKey="
+            + uniqueKey + '}';
     }
 
     @Override

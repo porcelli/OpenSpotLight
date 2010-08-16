@@ -27,18 +27,19 @@ public class CriteriaImpl implements Criteria {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(
+                          final Object o) {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }
 
         final CriteriaImpl that = (CriteriaImpl) o;
 
         if (criteriaItems != null ? !criteriaItems
-                                               .equals(that.criteriaItems) : that.criteriaItems != null) { return false; }
+            .equals(that.criteriaItems) : that.criteriaItems != null) { return false; }
         if (nodeName != null ? !nodeName.equals(that.nodeName)
-             : that.nodeName != null) { return false; }
+            : that.nodeName != null) { return false; }
         if (partition != null ? !partition.equals(that.partition)
-             : that.partition != null) { return false; }
+            : that.partition != null) { return false; }
 
         return true;
     }
@@ -47,9 +48,9 @@ public class CriteriaImpl implements Criteria {
     public int hashCode() {
         int result = nodeName != null ? nodeName.hashCode() : 0;
         result = 31 * result
-              + (partition != null ? partition.hashCode() : 0);
+            + (partition != null ? partition.hashCode() : 0);
         result = 31 * result
-              + (criteriaItems != null ? criteriaItems.hashCode() : 0);
+            + (criteriaItems != null ? criteriaItems.hashCode() : 0);
         return result;
     }
 
@@ -75,17 +76,19 @@ public class CriteriaImpl implements Criteria {
     }
 
     @Override
-    public Iterable<Node> andFind(final StorageSession session) {
+    public Iterable<Node> andFind(
+                                  final StorageSession session) {
         return session.withPartition(partition).findByCriteria(this);
     }
 
     @Override
-    public Node andFindUnique(final StorageSession session) {
+    public Node andFindUnique(
+                              final StorageSession session) {
         return session.withPartition(partition).findUniqueByCriteria(this);
     }
 
     private static class UniqueKeyAsStringCriteriaItemImpl implements
-            UniqueKeyAsStringCriteriaItem {
+        UniqueKeyAsStringCriteriaItem {
 
         public UniqueKeyAsStringCriteriaItemImpl(final String keyAsString) {
             this.keyAsString = keyAsString;
@@ -109,9 +112,9 @@ public class CriteriaImpl implements Criteria {
     }
 
     private static class UniqueKeyCriteriaItemImpl implements
-            UniqueKeyCriteriaItem {
+        UniqueKeyCriteriaItem {
         private UniqueKeyCriteriaItemImpl(final UniqueKey value,
-                                             final String nodeEntryName) {
+                                          final String nodeEntryName) {
             this.value = value;
             this.nodeEntryName = nodeEntryName;
         }
@@ -131,14 +134,15 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(
+                              final Object o) {
             if (this == o) { return true; }
             if (o == null || getClass() != o.getClass()) { return false; }
 
             final UniqueKeyCriteriaItemImpl that = (UniqueKeyCriteriaItemImpl) o;
 
             if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
+                .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
             if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
 
             return true;
@@ -148,16 +152,16 @@ public class CriteriaImpl implements Criteria {
         public int hashCode() {
             int result = value != null ? value.hashCode() : 0;
             result = 31 * result
-                     + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
+                + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
 
     }
 
     private static class LocalKeyCriteriaItemImpl implements
-            LocalKeyCriteriaItem {
+        LocalKeyCriteriaItem {
         private LocalKeyCriteriaItemImpl(final LocalKey value,
-                                            final String nodeEntryName) {
+                                         final String nodeEntryName) {
             this.value = value;
             this.nodeEntryName = nodeEntryName;
         }
@@ -177,14 +181,15 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(
+                              final Object o) {
             if (this == o) { return true; }
             if (o == null || getClass() != o.getClass()) { return false; }
 
             final LocalKeyCriteriaItemImpl that = (LocalKeyCriteriaItemImpl) o;
 
             if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
+                .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
             if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
 
             return true;
@@ -194,16 +199,16 @@ public class CriteriaImpl implements Criteria {
         public int hashCode() {
             int result = value != null ? value.hashCode() : 0;
             result = 31 * result
-                     + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
+                + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
 
     }
 
     private static class PropertyCriteriaItemImpl implements
-            PropertyCriteriaItem {
+        PropertyCriteriaItem {
         private PropertyCriteriaItemImpl(final String propertyName, final String value,
-                                            final String nodeEntryName) {
+                                         final String nodeEntryName) {
             this.value = value;
             this.propertyName = propertyName;
             this.nodeEntryName = nodeEntryName;
@@ -231,16 +236,17 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(
+                              final Object o) {
             if (this == o) { return true; }
             if (o == null || getClass() != o.getClass()) { return false; }
 
             final PropertyCriteriaItemImpl that = (PropertyCriteriaItemImpl) o;
 
             if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
+                .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
             if (propertyName != null ? !propertyName.equals(that.propertyName)
-                    : that.propertyName != null) { return false; }
+                : that.propertyName != null) { return false; }
             if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
 
             return true;
@@ -250,19 +256,19 @@ public class CriteriaImpl implements Criteria {
         public int hashCode() {
             int result = value != null ? value.hashCode() : 0;
             result = 31 * result
-                     + (propertyName != null ? propertyName.hashCode() : 0);
+                + (propertyName != null ? propertyName.hashCode() : 0);
             result = 31 * result
-                     + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
+                + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
             return result;
         }
 
     }
 
     private static class PropertyEndsWithStringImpl implements
-            PropertyEndsWithString {
+        PropertyEndsWithString {
 
         private PropertyEndsWithStringImpl(final String nodeEntryName,
-                                              final String propertyName, final String value) {
+                                           final String propertyName, final String value) {
             this.nodeEntryName = nodeEntryName;
             this.propertyName = propertyName;
             this.value = value;
@@ -290,16 +296,17 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(
+                              final Object o) {
             if (this == o) { return true; }
             if (o == null || getClass() != o.getClass()) { return false; }
 
             final PropertyEndsWithStringImpl that = (PropertyEndsWithStringImpl) o;
 
             if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
+                .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
             if (propertyName != null ? !propertyName.equals(that.propertyName)
-                    : that.propertyName != null) { return false; }
+                : that.propertyName != null) { return false; }
             if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
 
             return true;
@@ -309,17 +316,17 @@ public class CriteriaImpl implements Criteria {
         public int hashCode() {
             int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
             result = 31 * result
-                     + (propertyName != null ? propertyName.hashCode() : 0);
+                + (propertyName != null ? propertyName.hashCode() : 0);
             result = 31 * result + (value != null ? value.hashCode() : 0);
             return result;
         }
     }
 
     private static class PropertyStartsWithStringImpl implements
-            PropertyStartsWithString {
+        PropertyStartsWithString {
 
         private PropertyStartsWithStringImpl(final String nodeEntryName,
-                                                final String propertyName, final String value) {
+                                             final String propertyName, final String value) {
             this.nodeEntryName = nodeEntryName;
             this.propertyName = propertyName;
             this.value = value;
@@ -348,16 +355,17 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(
+                              final Object o) {
             if (this == o) { return true; }
             if (o == null || getClass() != o.getClass()) { return false; }
 
             final PropertyStartsWithStringImpl that = (PropertyStartsWithStringImpl) o;
 
             if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
+                .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
             if (propertyName != null ? !propertyName.equals(that.propertyName)
-                    : that.propertyName != null) { return false; }
+                : that.propertyName != null) { return false; }
             if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
 
             return true;
@@ -367,17 +375,17 @@ public class CriteriaImpl implements Criteria {
         public int hashCode() {
             int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
             result = 31 * result
-                     + (propertyName != null ? propertyName.hashCode() : 0);
+                + (propertyName != null ? propertyName.hashCode() : 0);
             result = 31 * result + (value != null ? value.hashCode() : 0);
             return result;
         }
     }
 
     private static class PropertyContainsStringImpl implements
-            PropertyContainsString {
+        PropertyContainsString {
 
         private PropertyContainsStringImpl(final String nodeEntryName,
-                                              final String propertyName, final String value) {
+                                           final String propertyName, final String value) {
             this.nodeEntryName = nodeEntryName;
             this.propertyName = propertyName;
             this.value = value;
@@ -405,16 +413,17 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(
+                              final Object o) {
             if (this == o) { return true; }
             if (o == null || getClass() != o.getClass()) { return false; }
 
             final PropertyContainsStringImpl that = (PropertyContainsStringImpl) o;
 
             if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
+                .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
             if (propertyName != null ? !propertyName.equals(that.propertyName)
-                    : that.propertyName != null) { return false; }
+                : that.propertyName != null) { return false; }
             if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
 
             return true;
@@ -424,7 +433,7 @@ public class CriteriaImpl implements Criteria {
         public int hashCode() {
             int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
             result = 31 * result
-                     + (propertyName != null ? propertyName.hashCode() : 0);
+                + (propertyName != null ? propertyName.hashCode() : 0);
             result = 31 * result + (value != null ? value.hashCode() : 0);
             return result;
         }
@@ -457,16 +466,19 @@ public class CriteriaImpl implements Criteria {
             items = newLinkedHashSet();
         }
 
-        private void breakIfNotNull(final Object o) {
+        private void breakIfNotNull(
+                                    final Object o) {
             if (o != null) { throw new IllegalStateException(); }
         }
 
-        private void breakIfNull(final Object o) {
+        private void breakIfNull(
+                                 final Object o) {
             if (o == null) { throw new IllegalStateException(); }
         }
 
         @Override
-        public CriteriaBuilder withProperty(final String propertyName) {
+        public CriteriaBuilder withProperty(
+                                            final String propertyName) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientPropertyValue);
             breakIfNotNull(transientLocalKey);
@@ -478,14 +490,16 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public CriteriaBuilder withNodeEntry(final String nodeName) {
+        public CriteriaBuilder withNodeEntry(
+                                             final String nodeName) {
             breakIfNotNull(transientNodeEntryName);
             transientNodeEntryName = nodeName;
             return this;
         }
 
         @Override
-        public CriteriaBuilder equalsTo(final String value) {
+        public CriteriaBuilder equalsTo(
+                                        final String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
 
@@ -497,7 +511,8 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public CriteriaBuilder containsString(final String value) {
+        public CriteriaBuilder containsString(
+                                              final String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
 
@@ -509,7 +524,8 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public CriteriaBuilder startsWithString(final String value) {
+        public CriteriaBuilder startsWithString(
+                                                final String value) {
 
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
@@ -522,7 +538,8 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public CriteriaBuilder endsWithString(final String value) {
+        public CriteriaBuilder endsWithString(
+                                              final String value) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientLocalKey);
 
@@ -539,37 +556,37 @@ public class CriteriaImpl implements Criteria {
                 breakIfNull(transientNodeEntryName);
 
                 item = new UniqueKeyCriteriaItemImpl(transientUniqueKey,
-                                                       transientNodeEntryName);
+                    transientNodeEntryName);
 
             } else if (transientLocalKey != null) {
                 breakIfNull(transientNodeEntryName);
 
                 item = new LocalKeyCriteriaItemImpl(transientLocalKey,
-                                                      transientNodeEntryName);
+                    transientNodeEntryName);
 
             } else if (transientIdAsString != null) {
 
                 item = new UniqueKeyAsStringCriteriaItemImpl(
-                                                               transientIdAsString);
+                    transientIdAsString);
 
             } else if (transientPropertyName != null) {
 
                 if (startsWith != null) {
                     item = new PropertyStartsWithStringImpl(
-                                                              transientNodeEntryName, transientPropertyName,
-                                                              startsWith);
+                        transientNodeEntryName, transientPropertyName,
+                        startsWith);
                 } else if (endsWith != null) {
                     item = new PropertyEndsWithStringImpl(
-                                                            transientNodeEntryName, transientPropertyName,
-                                                            endsWith);
+                        transientNodeEntryName, transientPropertyName,
+                        endsWith);
                 } else if (contains != null) {
                     item = new PropertyContainsStringImpl(
-                                                            transientNodeEntryName, transientPropertyName,
-                                                            contains);
+                        transientNodeEntryName, transientPropertyName,
+                        contains);
                 } else {
                     item = new PropertyCriteriaItemImpl(
-                                                          transientPropertyName, transientPropertyValue,
-                                                          transientNodeEntryName);
+                        transientPropertyName, transientPropertyValue,
+                        transientNodeEntryName);
                 }
             }
             transientPropertyName = null;
@@ -577,7 +594,8 @@ public class CriteriaImpl implements Criteria {
             transientLocalKey = null;
             transientPropertyValue = null;
             transientIdAsString = null;
-            items.add(item);
+            if (item != null)
+                items.add(item);
 
             return this;
         }
@@ -586,13 +604,14 @@ public class CriteriaImpl implements Criteria {
         public Criteria buildCriteria() {
             and();
             final CriteriaImpl result = new CriteriaImpl(transientNodeEntryName,
-                                                       items, partition);
+                items, partition);
 
             return result;
         }
 
         @Override
-        public CriteriaBuilder withLocalKey(final LocalKey localKey) {
+        public CriteriaBuilder withLocalKey(
+                                            final LocalKey localKey) {
             breakIfNotNull(transientUniqueKey);
             breakIfNotNull(transientPropertyName);
             breakIfNotNull(transientPropertyValue);
@@ -606,7 +625,8 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public CriteriaBuilder withUniqueKey(final UniqueKey uniqueKey) {
+        public CriteriaBuilder withUniqueKey(
+                                             final UniqueKey uniqueKey) {
 
             breakIfNotNull(transientLocalKey);
             breakIfNotNull(transientPropertyName);
@@ -621,7 +641,8 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public CriteriaBuilder withUniqueKeyAsString(final String uniqueKeyAsString) {
+        public CriteriaBuilder withUniqueKeyAsString(
+                                                     final String uniqueKeyAsString) {
             transientIdAsString = uniqueKeyAsString;
             and();
             return this;

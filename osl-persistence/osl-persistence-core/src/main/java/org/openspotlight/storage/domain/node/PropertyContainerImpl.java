@@ -111,7 +111,7 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         final boolean empty = propertiesByName.isEmpty();
         if (tooOld && empty) {
             final Set<Property> result =
-                ((AbstractStorageSession<?>) session.withPartition(getPartition())).propertyContainerLoadProperties(this);
+                ((AbstractStorageSession<?>) session).propertyContainerLoadProperties(this);
             for (final Property property: result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
