@@ -21,7 +21,9 @@
 package org.openspotlight.graph.test.link;
 
 import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.InitialWeight;
 
+@InitialWeight(4)
 public abstract class TypeExtends extends Link {
     private String  extendsName;
     private boolean extendsFlag;

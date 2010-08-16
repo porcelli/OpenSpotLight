@@ -8,15 +8,16 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
  * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
  * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
- * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
- * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
- * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
- * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
- * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
- * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
- * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH
+ * CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de
+ * terceiros estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é
+ * software livre; você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme
+ * publicada pela Free Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
+ * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença
+ * Pública Geral Menor do GNU para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU
+ * junto com este programa; se não, escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA
+ * 02110-1301 USA
  */
 package org.openspotlight.storage;
 
@@ -40,87 +41,104 @@ public class StringIDSupport {
     private static final String NODE_KEY_SEP = ":";
     private static final String LINK_KEY_SEP = "::";
 
-    public static String getNodeEntryName(final String uniqueKeyAsString) {
+    public static String getNodeEntryName(
+                                          final String uniqueKeyAsString) {
         return uniqueKeyAsString.split(SEP)[2];
 
     }
 
-    public static RepositoryPath getRepositoryPath(final String uniqueKeyAsString) {
+    public static RepositoryPath getRepositoryPath(
+                                                   final String uniqueKeyAsString) {
         return repositoryPath(uniqueKeyAsString.split(SEP)[0]);
 
     }
 
-    public static Partition getPartition(final String uniqueKeyAsString,
+    public static Partition getPartition(
+                                         final String uniqueKeyAsString,
                                          final PartitionFactory factory) {
         return factory.getPartitionByName(getPartitionName(uniqueKeyAsString));
     }
 
-    public static String getPartitionName(final String uniqueKeyAsString) {
+    public static String getPartitionName(
+                                          final String uniqueKeyAsString) {
         return uniqueKeyAsString.split(SEP)[1];
     }
 
-    public static String getUniqueKeyAsStringHash(final UniqueKey uniqueKey) {
+    public static String getUniqueKeyAsStringHash(
+                                                  final UniqueKey uniqueKey) {
         return new StringBuilder()
-                .append(
-                        uniqueKey.getRepositoryPath()
-                                .getRepositoryPathAsString())
-                .append(SEP)
-                .append(uniqueKey.getPartition().getPartitionName())
-                .append(SEP)
-                .append(uniqueKey.getLocalKey().getNodeEntryName())
-                .append(SEP)
-                .append(
-                        getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey)))
-                .toString();
+            .append(
+            uniqueKey.getRepositoryPath()
+            .getRepositoryPathAsString())
+            .append(SEP)
+            .append(uniqueKey.getPartition().getPartitionName())
+            .append(SEP)
+            .append(uniqueKey.getLocalKey().getNodeEntryName())
+            .append(SEP)
+            .append(
+            getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey)))
+            .toString();
     }
 
-    public static String getLocalKeyAsStringHash(final LocalKey uniqueKey) {
+    public static String getLocalKeyAsStringHash(
+                                                 final LocalKey uniqueKey) {
         return getSha1SignatureEncodedAsBase64(getLocalKeyAsSimpleString(uniqueKey));
     }
 
-    private static String getLocalKeyAsSimpleString(final LocalKey localKey) {
+    private static String getLocalKeyAsSimpleString(
+                                                    final LocalKey localKey) {
         final StringBuilder sb = new StringBuilder();
         sb.append(localKey.getNodeEntryName());
         final List<Key> ordered = new ArrayList<Key>(localKey
-                .getEntries());
+            .getEntries());
         Collections.sort(ordered);
         for (final Key entry: ordered) {
             sb.append(NODE_KEY_SEP).append(entry.getPropertyName()).append(
-                    NODE_KEY_SEP).append(NODE_KEY_SEP).append(entry.getValue());
+                NODE_KEY_SEP).append(NODE_KEY_SEP).append(entry.getValue());
         }
         return sb.toString();
     }
 
-    private static String getUniqueKeyAsSimpleString(final UniqueKey uniqueKey) {
+    private static String getUniqueKeyAsSimpleString(
+                                                     final UniqueKey uniqueKey) {
         final StringBuilder sb = new StringBuilder();
         sb.append(uniqueKey.getRepositoryPath().getRepositoryPathAsString())
-                .append(":");
+            .append(":");
         sb.append(uniqueKey.getParentKeyAsString()).append(":");
         sb.append(getLocalKeyAsSimpleString(uniqueKey.getLocalKey()));
         return sb.toString();
     }
 
-    public static String getLinkKeyAsString(final Partition originPartition,
+    public static String getLinkKeyAsString(
+                                            final Partition originPartition,
                                             final String linkName, final Node origin, final Node target) {
+        return getLinkKeyAsString(originPartition, linkName, origin.getKeyAsString(), target.getKeyAsString());
+    }
+
+    public static String getLinkKeyAsString(
+                                            final Partition originPartition,
+                                            final String linkName, String originKeyAsString, final String targetKeyAsString) {
         final StringBuilder sb = new StringBuilder();
-        final UniqueKey originKey = origin.getUniqueKey();
-        sb.append(originKey.getKeyAsString());
+        sb.append(originKeyAsString);
         sb.append(LINK_KEY_SEP);
-        sb.append(target.getKeyAsString());
+        sb.append(targetKeyAsString);
         sb.append(LINK_KEY_SEP);
         sb.append(linkName);
         return sb.toString();
     }
 
-    public static String getLinkNameFromLinkKey(final String linkKey) {
+    public static String getLinkNameFromLinkKey(
+                                                final String linkKey) {
         return linkKey.split("[:][:]")[2];
     }
 
-    public static String getOriginKeyAsStringFromLinkKey(final String linkKey) {
+    public static String getOriginKeyAsStringFromLinkKey(
+                                                         final String linkKey) {
         return linkKey.split("[:][:]")[0];
     }
 
-    public static String getTargeyKeyAsStringFromLinkKey(final String linkKey) {
+    public static String getTargeyKeyAsStringFromLinkKey(
+                                                         final String linkKey) {
         return linkKey.split("[:][:]")[1];
     }
 
