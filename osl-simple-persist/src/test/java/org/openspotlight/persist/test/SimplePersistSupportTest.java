@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.persist.test;
 
@@ -71,8 +43,8 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.domain.Node;
+import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -86,7 +58,7 @@ import com.google.inject.Injector;
 public class SimplePersistSupportTest {
 
     SimplePersistCapable<Node, StorageSession> simplePersist;
-    private StorageSession                            session;
+    private StorageSession                     session;
 
     public SimplePersistSupportTest() {
         autoFlushInjector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
@@ -100,15 +72,17 @@ public class SimplePersistSupportTest {
      * Setup session.
      */
     @Before
-    public void setupSession() throws Exception {
-        JRedis jRedis = autoFlushInjector.getInstance(JRedisFactory.class).getFrom(RegularPartitions.FEDERATION);
+    public void setupSession()
+        throws Exception {
+        final JRedis jRedis = autoFlushInjector.getInstance(JRedisFactory.class).getFrom(RegularPartitions.FEDERATION);
         jRedis.flushall();
         session = autoFlushInjector.getInstance(StorageSession.class);
         simplePersist = new SimplePersistImpl(session, RegularPartitions.FEDERATION);
     }
 
     @Test
-    public void shouldAddAndRemoveNodeOnAnotherNode() throws Exception {
+    public void shouldAddAndRemoveNodeOnAnotherNode()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj levelOne = new LevelOneObj();
         levelOne.setRootObj(root);
@@ -137,7 +111,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldAddAndRemoveNodeOnCollection() throws Exception {
+    public void shouldAddAndRemoveNodeOnCollection()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj levelOne = new LevelOneObj();
         levelOne.setRootObj(root);
@@ -176,7 +151,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldAddAndRemoveNodeOnMapProperty() throws Exception {
+    public void shouldAddAndRemoveNodeOnMapProperty()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj levelOne = new LevelOneObj();
         levelOne.setRootObj(root);
@@ -198,7 +174,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldAddAndRemoveSimpleTypeOnCollection() throws Exception {
+    public void shouldAddAndRemoveSimpleTypeOnCollection()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj levelOne = new LevelOneObj();
         levelOne.setRootObj(root);
@@ -338,7 +315,8 @@ public class SimplePersistSupportTest {
      * @throws Exception the exception
      */
     @Test
-    public void shouldConvertJcrNodeToBean() throws Exception {
+    public void shouldConvertJcrNodeToBean()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
         final LevelTwoObj obj2 = new LevelTwoObj();
@@ -405,7 +383,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldFindCollectionItems() throws Exception {
+    public void shouldFindCollectionItems()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj levelOne = new LevelOneObj();
         levelOne.setRootObj(root);
@@ -432,7 +411,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldFindJcrNodeByItsKey() throws Exception {
+    public void shouldFindJcrNodeByItsKey()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
         final LevelTwoObj obj2 = new LevelTwoObj();
@@ -503,7 +483,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldFindJcrNodeByItsProperties() throws Exception {
+    public void shouldFindJcrNodeByItsProperties()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
         final LevelTwoObj obj2 = new LevelTwoObj();
@@ -578,7 +559,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKey() throws Exception {
+    public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKey()
+        throws Exception {
         final ComposedKeyObject object1 = new ComposedKeyObject();
         object1.setKey1("same key");
         object1.setKey2(1);
@@ -595,14 +577,15 @@ public class SimplePersistSupportTest {
         final Iterable<ComposedKeyObject> foundNodes = simplePersist.findByProperties(ComposedKeyObject.class,
                                                                                       new String[] {"key1"},
                                                                                       new Object[] {"same key"});
-        Iterator<ComposedKeyObject> it = foundNodes.iterator();
+        final Iterator<ComposedKeyObject> it = foundNodes.iterator();
         assertThat(it.next(), is(notNullValue()));
         assertThat(it.next(), is(notNullValue()));
         assertThat(it.hasNext(), is(false));
     }
 
     @Test
-    public void shouldFindObjectsByNullParameter() throws Exception {
+    public void shouldFindObjectsByNullParameter()
+        throws Exception {
         final LevelOneObj obj1 = new LevelOneObj();
         obj1.setProperty("prop");
         final LevelOneObj obj2 = new LevelOneObj();
@@ -612,13 +595,14 @@ public class SimplePersistSupportTest {
         simplePersist.convertBeanToNode(obj2);
         final Iterable<LevelOneObj> result = simplePersist.findByProperties(LevelOneObj.class, new String[] {"property"},
                                                                             new Object[] {null});
-        Iterator<LevelOneObj> it = result.iterator();
+        final Iterator<LevelOneObj> it = result.iterator();
         assertThat(it.next(), is(notNullValue()));
         assertThat(it.hasNext(), is(false));
     }
 
     @Test
-    public void shouldFindPropertyItems() throws Exception {
+    public void shouldFindPropertyItems()
+        throws Exception {
 
         final LevelTwoObj levelTwo = new LevelTwoObj();
         final PropertyObj propertyObj = new PropertyObj();
@@ -629,7 +613,7 @@ public class SimplePersistSupportTest {
 
         final Iterable<PropertyObj> result = simplePersist.findByProperties(PropertyObj.class, new String[] {"name"},
                                                                             new Object[] {"obj 1"});
-        Iterator<PropertyObj> it = result.iterator();
+        final Iterator<PropertyObj> it = result.iterator();
         final PropertyObj item = it.next();
         assertThat(item.getName(), Is.is("obj 1"));
         assertThat(item.getValue(), Is.is(5));
@@ -640,7 +624,9 @@ public class SimplePersistSupportTest {
     @Test
     @Ignore
     //this test becames invalid since it can't iterate all items to reorder
-    public void shouldMaintainOrder() throws Exception {
+        public
+        void shouldMaintainOrder()
+            throws Exception {
         final int count = 20;
 
         final ArrayList<SimpleObject> objs = new ArrayList<SimpleObject>();
@@ -656,20 +642,22 @@ public class SimplePersistSupportTest {
         final Iterable<SimpleObject> nodes = simplePersist.findByProperties(SimpleObject.class, new String[] {}, new Object[] {});
 
         int i = 0;
-        for (final SimpleObject obj : nodes) {
+        for (final SimpleObject obj: nodes) {
             assertThat(obj.getId(), Is.is(i));
             i++;
         }
 
     }
 
-    @Test( expected = SLRuntimeException.class )
-    public void shouldNotFindWithWrongPropertyName() throws Exception {
+    @Test(expected = SLRuntimeException.class)
+    public void shouldNotFindWithWrongPropertyName()
+        throws Exception {
         simplePersist.findByProperties(RootObj.class, new String[] {"invalidProperty"}, new Object[] {null});
     }
 
     @Test
-    public void shouldPersistAndReadStreamProperty() throws Exception {
+    public void shouldPersistAndReadStreamProperty()
+        throws Exception {
         final ObjectWithInputStream pojo = new ObjectWithInputStream();
         final String contentAsString = "content";
         final InputStream content = new ByteArrayInputStream(contentAsString.getBytes());
@@ -683,9 +671,11 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldPersistPropertyAsStream() throws Exception {
+    public void shouldPersistPropertyAsStream()
+        throws Exception {
         final RootObj obj = new RootObj();
-        final ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType = new ObjectThatDoesntImplementSimpleNodeType();
+        final ObjectThatDoesntImplementSimpleNodeType objectThatDoesntImplementSimpleNodeType =
+            new ObjectThatDoesntImplementSimpleNodeType();
         objectThatDoesntImplementSimpleNodeType.setName("name");
         objectThatDoesntImplementSimpleNodeType.setNumber(3);
         objectThatDoesntImplementSimpleNodeType.setParent(obj);
@@ -700,7 +690,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldPersistTwoDifferentNodesWhenUsingComposedKeys() throws Exception {
+    public void shouldPersistTwoDifferentNodesWhenUsingComposedKeys()
+        throws Exception {
 
         final ComposedKeyObject object1 = new ComposedKeyObject();
         object1.setKey1("same");
@@ -720,7 +711,8 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldConvertJcrNodeToBeanWithParent() throws Exception {
+    public void shouldConvertJcrNodeToBeanWithParent()
+        throws Exception {
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
         final LevelTwoObj obj2 = new LevelTwoObj();
@@ -761,7 +753,7 @@ public class SimplePersistSupportTest {
         propertyObj.setName("name");
         propertyObj.setValue(2);
         obj2.setPropertyObj(propertyObj);
-        Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+        final Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final Node node = simplePersist.convertBeanToNode(parentNode, obj3);
 
@@ -787,8 +779,9 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldFindCollectionItemsWithParent() throws Exception {
-        Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+    public void shouldFindCollectionItemsWithParent()
+        throws Exception {
+        final Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final RootObj root = new RootObj();
         final LevelOneObj levelOne = new LevelOneObj();
@@ -817,8 +810,9 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldFindJcrNodeByItsKeyWithParent() throws Exception {
-        Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+    public void shouldFindJcrNodeByItsKeyWithParent()
+        throws Exception {
+        final Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
@@ -890,8 +884,9 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldFindJcrNodeByItsPropertiesWithParent() throws Exception {
-        Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+    public void shouldFindJcrNodeByItsPropertiesWithParent()
+        throws Exception {
+        final Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
         final LevelTwoObj obj2 = new LevelTwoObj();
@@ -966,8 +961,9 @@ public class SimplePersistSupportTest {
     }
 
     @Test
-    public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKeyWithParent() throws Exception {
-        Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+    public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKeyWithParent()
+        throws Exception {
+        final Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final ComposedKeyObject object1 = new ComposedKeyObject();
         object1.setKey1("same key");
@@ -985,15 +981,16 @@ public class SimplePersistSupportTest {
         final Iterable<ComposedKeyObject> foundNodes = simplePersist.findByProperties(parentNode, ComposedKeyObject.class,
                                                                                       new String[] {"key1"},
                                                                                       new Object[] {"same key"});
-        Iterator<ComposedKeyObject> it = foundNodes.iterator();
+        final Iterator<ComposedKeyObject> it = foundNodes.iterator();
         assertThat(it.next(), is(notNullValue()));
         assertThat(it.next(), is(notNullValue()));
         assertThat(it.hasNext(), is(false));
     }
 
     @Test
-    public void shouldFindObjectsByNullParameterWithParent() throws Exception {
-        Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+    public void shouldFindObjectsByNullParameterWithParent()
+        throws Exception {
+        final Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final LevelOneObj obj1 = new LevelOneObj();
         obj1.setProperty("prop");
@@ -1004,28 +1001,29 @@ public class SimplePersistSupportTest {
         simplePersist.convertBeanToNode(parentNode, obj2);
         final Iterable<LevelOneObj> result = simplePersist.findByProperties(parentNode, LevelOneObj.class,
                                                                             new String[] {"property"}, new Object[] {null});
-        Iterator<LevelOneObj> it = result.iterator();
+        final Iterator<LevelOneObj> it = result.iterator();
         assertThat(it.next(), is(notNullValue()));
         assertThat(it.hasNext(), is(false));
     }
 
     @Test
-    public void shouldFindPropertyItemsWithParent() throws Exception {
-        Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
+    public void shouldFindPropertyItemsWithParent()
+        throws Exception {
+        final Node parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final LevelTwoObj levelTwo = new LevelTwoObj();
         final PropertyObj propertyObj = new PropertyObj();
         propertyObj.setName("obj 1");
         propertyObj.setValue(5);
         levelTwo.setPropertyObj(propertyObj);
-        Node newnode = simplePersist.convertBeanToNode(parentNode, levelTwo);
+        final Node newnode = simplePersist.convertBeanToNode(parentNode, levelTwo);
         System.err.println(">>> " + newnode.getUniqueKey().getKeyAsString());
         System.err.println(">>> " + newnode.getParent(session));
         System.err.println(">>> " + newnode.getParent(session).getParent(session));
 
         final Iterable<PropertyObj> result = simplePersist.findByProperties(parentNode, PropertyObj.class, new String[] {"name"},
                                                                             new Object[] {"obj 1"});
-        Iterator<PropertyObj> it = result.iterator();
+        final Iterator<PropertyObj> it = result.iterator();
         final PropertyObj item = it.next();
         assertThat(item.getName(), Is.is("obj 1"));
         assertThat(item.getValue(), Is.is(5));

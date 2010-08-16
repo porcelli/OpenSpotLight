@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.common.task.test;
 
@@ -72,13 +44,14 @@ public class TaskManagerTest {
         private final boolean      sleeping;
 
         public Worker(
-                       final String description, final List<String> list, final boolean sleeping ) {
+                       final String description, final List<String> list, final boolean sleeping) {
             this.description = description;
             this.list = list;
             this.sleeping = sleeping;
         }
 
-        public void run() throws Exception {
+        public void run()
+            throws Exception {
             if (sleeping) {
                 Thread.currentThread();
                 Thread.sleep(random.nextInt(100));
@@ -90,162 +63,266 @@ public class TaskManagerTest {
 
     private static final Random random = new Random();
 
-    public static void main( final String... args ) throws Exception {
+    public static void main(final String... args)
+        throws Exception {
         new TaskManagerTest().shouldExecuteTasksOnPoolWithEigth();
     }
 
-    private void createSleepingTasks( final TaskExecPool pool,
-                                      final List<String> list ) {
+    private void createSleepingTasks(final TaskExecPool pool,
+                                      final List<String> list) {
         createTasks(pool, list, true);
     }
 
-    private void createTasks( final TaskExecPool pool,
-                              final List<String> list ) {
+    private void createTasks(final TaskExecPool pool,
+                              final List<String> list) {
         createTasks(pool, list, false);
     }
 
-    private void createTasks( final TaskExecPool pool,
+    private void createTasks(final TaskExecPool pool,
                               final List<String> list,
-                              final boolean sleeping ) {
+                              final boolean sleeping) {
         final TaskExecGroup group2 = pool.createTaskGroup("group-2", 2);
         final TaskExecGroup group1 = pool.createTaskGroup("group-1", 1);
-        final TaskExec task5 = group2.prepareTask().withReadableDescription("thisThread").withUniqueId("5").withRunnable(
+        final TaskExec task5 =
+            group2
+                .prepareTask()
+                .withReadableDescription("thisThread")
+                .withUniqueId("5")
+                .withRunnable(
                                                                                                                          new Worker(
                                                                                                                                     "5",
                                                                                                                                     list,
-                                                                                                                                    sleeping)).andPublishTask();
-        final TaskExec task6 = group2.prepareTask().withReadableDescription("thisThread").withUniqueId("6").withRunnable(
+                                                                                                                                    sleeping))
+                .andPublishTask();
+        final TaskExec task6 =
+            group2
+                .prepareTask()
+                .withReadableDescription("thisThread")
+                .withUniqueId("6")
+                .withRunnable(
                                                                                                                          new Worker(
                                                                                                                                     "6",
                                                                                                                                     list,
-                                                                                                                                    sleeping)).withParentTasks(
-                                                                                                                                                               task5).andPublishTask();
-        group2.prepareTask().withReadableDescription("thisThread").withUniqueId("7").withRunnable(new Worker("7", list, sleeping)).withParentTasks(
-                                                                                                                                                   task6).andPublishTask();
+                                                                                                                                    sleeping))
+                .withParentTasks(
+                                                                                                                                                               task5)
+                .andPublishTask();
+        group2
+            .prepareTask()
+            .withReadableDescription("thisThread")
+            .withUniqueId("7")
+            .withRunnable(new Worker("7", list, sleeping))
+            .withParentTasks(
+                                                                                                                                                   task6)
+            .andPublishTask();
 
-        final TaskExec task1 = group1.prepareTask().withReadableDescription("thisThread").withUniqueId("1").withRunnable(
+        final TaskExec task1 =
+            group1
+                .prepareTask()
+                .withReadableDescription("thisThread")
+                .withUniqueId("1")
+                .withRunnable(
                                                                                                                          new Worker(
                                                                                                                                     "1",
                                                                                                                                     list,
-                                                                                                                                    sleeping)).andPublishTask();
+                                                                                                                                    sleeping))
+                .andPublishTask();
 
-        final TaskExec task1_1 = group1.prepareTask().withReadableDescription("thisThread-1_1").withUniqueId("1_1").withRunnable(
+        final TaskExec task1_1 =
+            group1
+                .prepareTask()
+                .withReadableDescription("thisThread-1_1")
+                .withUniqueId("1_1")
+                .withRunnable(
                                                                                                                                  new Worker(
                                                                                                                                             "1_1",
                                                                                                                                             list,
-                                                                                                                                            sleeping)).withParentTasks(
-                                                                                                                                                                       task1).andPublishTask();
+                                                                                                                                            sleeping))
+                .withParentTasks(
+                                                                                                                                                                       task1)
+                .andPublishTask();
 
-        final TaskExec task1_2 = group1.prepareTask().withReadableDescription("thisThread-1_2").withUniqueId("1_2").withRunnable(
+        final TaskExec task1_2 =
+            group1
+                .prepareTask()
+                .withReadableDescription("thisThread-1_2")
+                .withUniqueId("1_2")
+                .withRunnable(
                                                                                                                                  new Worker(
                                                                                                                                             "1_2",
                                                                                                                                             list,
-                                                                                                                                            sleeping)).withParentTasks(
+                                                                                                                                            sleeping))
+                .withParentTasks(
                                                                                                                                                                        task1,
-                                                                                                                                                                       task1_1).andPublishTask();
+                                                                                                                                                                       task1_1)
+                .andPublishTask();
 
-        final TaskExec task1_3 = group1.prepareTask().withReadableDescription("thisThread-1_3").withUniqueId("1_3").withRunnable(
+        final TaskExec task1_3 =
+            group1
+                .prepareTask()
+                .withReadableDescription("thisThread-1_3")
+                .withUniqueId("1_3")
+                .withRunnable(
                                                                                                                                  new Worker(
                                                                                                                                             "1_3",
                                                                                                                                             list,
-                                                                                                                                            sleeping)).withParentTasks(
+                                                                                                                                            sleeping))
+                .withParentTasks(
                                                                                                                                                                        task1,
-                                                                                                                                                                       task1_2).andPublishTask();
+                                                                                                                                                                       task1_2)
+                .andPublishTask();
 
-        final TaskExec task1_4 = group1.prepareTask().withReadableDescription("thisThread-1_4").withUniqueId("1_4").withRunnable(
+        final TaskExec task1_4 =
+            group1
+                .prepareTask()
+                .withReadableDescription("thisThread-1_4")
+                .withUniqueId("1_4")
+                .withRunnable(
                                                                                                                                  new Worker(
                                                                                                                                             "1_4",
                                                                                                                                             list,
-                                                                                                                                            sleeping)).withParentTasks(
+                                                                                                                                            sleeping))
+                .withParentTasks(
                                                                                                                                                                        task1,
-                                                                                                                                                                       task1_3).andPublishTask();
+                                                                                                                                                                       task1_3)
+                .andPublishTask();
 
-        group1.prepareTask().withReadableDescription("thisThread-taskFactory").withUniqueId("thisThread-taskFactory").withRunnable(
+        group1
+            .prepareTask()
+            .withReadableDescription("thisThread-taskFactory")
+            .withUniqueId("thisThread-taskFactory")
+            .withRunnable(
                                                                                                                                    new RunnableWithException() {
 
-                                                                                                                                       public void run()
-                                                                                                                                           throws Exception {
-                                                                                                                                           final TaskExec task2_1 = group1.prepareTask().withReadableDescription(
-                                                                                                                                                                                                                 "thisThread-2_1").withUniqueId(
-                                                                                                                                                                                                                                                "2_1").withRunnable(
+                                                                                                                                       public
+                                                                                                                                           void
+                                                                                                                                           run()
+                                                                                                                                               throws Exception {
+                                                                                                                                           final TaskExec task2_1 =
+                                                                                                                                               group1
+                                                                                                                                                   .prepareTask()
+                                                                                                                                                   .withReadableDescription(
+                                                                                                                                                                                                                 "thisThread-2_1")
+                                                                                                                                                   .withUniqueId(
+                                                                                                                                                                                                                                                "2_1")
+                                                                                                                                                   .withRunnable(
                                                                                                                                                                                                                                                                     new Worker(
                                                                                                                                                                                                                                                                                "2_1",
                                                                                                                                                                                                                                                                                list,
-                                                                                                                                                                                                                                                                               sleeping)).withParentTasks(
+                                                                                                                                                                                                                                                                               sleeping))
+                                                                                                                                                   .withParentTasks(
                                                                                                                                                                                                                                                                                                           task1_1,
                                                                                                                                                                                                                                                                                                           task1_2,
                                                                                                                                                                                                                                                                                                           task1_3,
-                                                                                                                                                                                                                                                                                                          task1_4).andPublishTask();
+                                                                                                                                                                                                                                                                                                          task1_4)
+                                                                                                                                                   .andPublishTask();
 
-                                                                                                                                           final TaskExec task2_2 = group1.prepareTask().withReadableDescription(
-                                                                                                                                                                                                                 "thisThread-2_2").withUniqueId(
-                                                                                                                                                                                                                                                "2_2").withRunnable(
+                                                                                                                                           final TaskExec task2_2 =
+                                                                                                                                               group1
+                                                                                                                                                   .prepareTask()
+                                                                                                                                                   .withReadableDescription(
+                                                                                                                                                                                                                 "thisThread-2_2")
+                                                                                                                                                   .withUniqueId(
+                                                                                                                                                                                                                                                "2_2")
+                                                                                                                                                   .withRunnable(
                                                                                                                                                                                                                                                                     new Worker(
                                                                                                                                                                                                                                                                                "2_2",
                                                                                                                                                                                                                                                                                list,
-                                                                                                                                                                                                                                                                               sleeping)).withParentTasks(
+                                                                                                                                                                                                                                                                               sleeping))
+                                                                                                                                                   .withParentTasks(
                                                                                                                                                                                                                                                                                                           task1_1,
                                                                                                                                                                                                                                                                                                           task1_2,
                                                                                                                                                                                                                                                                                                           task1_3,
                                                                                                                                                                                                                                                                                                           task1_4,
-                                                                                                                                                                                                                                                                                                          task2_1).andPublishTask();
+                                                                                                                                                                                                                                                                                                          task2_1)
+                                                                                                                                                   .andPublishTask();
 
-                                                                                                                                           final TaskExec task2_3 = group1.prepareTask().withReadableDescription(
-                                                                                                                                                                                                                 "thisThread-2_3").withUniqueId(
-                                                                                                                                                                                                                                                "2_3").withRunnable(
+                                                                                                                                           final TaskExec task2_3 =
+                                                                                                                                               group1
+                                                                                                                                                   .prepareTask()
+                                                                                                                                                   .withReadableDescription(
+                                                                                                                                                                                                                 "thisThread-2_3")
+                                                                                                                                                   .withUniqueId(
+                                                                                                                                                                                                                                                "2_3")
+                                                                                                                                                   .withRunnable(
                                                                                                                                                                                                                                                                     new Worker(
                                                                                                                                                                                                                                                                                "2_3",
                                                                                                                                                                                                                                                                                list,
-                                                                                                                                                                                                                                                                               sleeping)).withParentTasks(
+                                                                                                                                                                                                                                                                               sleeping))
+                                                                                                                                                   .withParentTasks(
                                                                                                                                                                                                                                                                                                           task1_1,
                                                                                                                                                                                                                                                                                                           task1_2,
                                                                                                                                                                                                                                                                                                           task1_3,
                                                                                                                                                                                                                                                                                                           task1_4,
-                                                                                                                                                                                                                                                                                                          task2_2).andPublishTask();
+                                                                                                                                                                                                                                                                                                          task2_2)
+                                                                                                                                                   .andPublishTask();
 
-                                                                                                                                           final TaskExec task2_4 = group1.prepareTask().withReadableDescription(
-                                                                                                                                                                                                                 "thisThread-2_4").withUniqueId(
-                                                                                                                                                                                                                                                "2_4").withRunnable(
+                                                                                                                                           final TaskExec task2_4 =
+                                                                                                                                               group1
+                                                                                                                                                   .prepareTask()
+                                                                                                                                                   .withReadableDescription(
+                                                                                                                                                                                                                 "thisThread-2_4")
+                                                                                                                                                   .withUniqueId(
+                                                                                                                                                                                                                                                "2_4")
+                                                                                                                                                   .withRunnable(
                                                                                                                                                                                                                                                                     new Worker(
                                                                                                                                                                                                                                                                                "2_4",
                                                                                                                                                                                                                                                                                list,
-                                                                                                                                                                                                                                                                               sleeping)).withParentTasks(
+                                                                                                                                                                                                                                                                               sleeping))
+                                                                                                                                                   .withParentTasks(
                                                                                                                                                                                                                                                                                                           task1_1,
                                                                                                                                                                                                                                                                                                           task1_2,
                                                                                                                                                                                                                                                                                                           task1_3,
                                                                                                                                                                                                                                                                                                           task1_4,
-                                                                                                                                                                                                                                                                                                          task2_3).andPublishTask();
+                                                                                                                                                                                                                                                                                                          task2_3)
+                                                                                                                                                   .andPublishTask();
 
-                                                                                                                                           final TaskExec task3 = group1.prepareTask().withReadableDescription(
-                                                                                                                                                                                                               "thisThread-3").withUniqueId(
-                                                                                                                                                                                                                                            "3").withRunnable(
+                                                                                                                                           final TaskExec task3 =
+                                                                                                                                               group1
+                                                                                                                                                   .prepareTask()
+                                                                                                                                                   .withReadableDescription(
+                                                                                                                                                                                                               "thisThread-3")
+                                                                                                                                                   .withUniqueId(
+                                                                                                                                                                                                                                            "3")
+                                                                                                                                                   .withRunnable(
                                                                                                                                                                                                                                                               new Worker(
                                                                                                                                                                                                                                                                          "3",
                                                                                                                                                                                                                                                                          list,
-                                                                                                                                                                                                                                                                         sleeping)).withParentTasks(
+                                                                                                                                                                                                                                                                         sleeping))
+                                                                                                                                                   .withParentTasks(
                                                                                                                                                                                                                                                                                                     task2_1,
                                                                                                                                                                                                                                                                                                     task2_2,
                                                                                                                                                                                                                                                                                                     task2_3,
-                                                                                                                                                                                                                                                                                                    task2_4).andPublishTask();
+                                                                                                                                                                                                                                                                                                    task2_4)
+                                                                                                                                                   .andPublishTask();
 
-                                                                                                                                           group1.prepareTask().withReadableDescription(
-                                                                                                                                                                                        "thisThread-4").withUniqueId(
-                                                                                                                                                                                                                     "4").withRunnable(
+                                                                                                                                           group1
+                                                                                                                                               .prepareTask()
+                                                                                                                                               .withReadableDescription(
+                                                                                                                                                                                        "thisThread-4")
+                                                                                                                                               .withUniqueId(
+                                                                                                                                                                                                                     "4")
+                                                                                                                                               .withRunnable(
                                                                                                                                                                                                                                        new Worker(
                                                                                                                                                                                                                                                   "4",
                                                                                                                                                                                                                                                   list,
-                                                                                                                                                                                                                                                  sleeping)).withParentTasks(
-                                                                                                                                                                                                                                                                             task3).andPublishTask();
+                                                                                                                                                                                                                                                  sleeping))
+                                                                                                                                               .withParentTasks(
+                                                                                                                                                                                                                                                                             task3)
+                                                                                                                                               .andPublishTask();
 
                                                                                                                                        }
-                                                                                                                                   }).withParentTasks(
+                                                                                                                                   })
+            .withParentTasks(
                                                                                                                                                       task1,
-                                                                                                                                                      task1_4).andPublishTask();
+                                                                                                                                                      task1_4)
+            .andPublishTask();
 
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnPoolWithEigth() throws Exception {
+    public void shouldExecuteSleepingTasksOnPoolWithEigth()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 8);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -256,7 +333,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnPoolWithFive() throws Exception {
+    public void shouldExecuteSleepingTasksOnPoolWithFive()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 5);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -267,7 +345,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnPoolWithFour() throws Exception {
+    public void shouldExecuteSleepingTasksOnPoolWithFour()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 4);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -278,7 +357,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnPoolWithSeven() throws Exception {
+    public void shouldExecuteSleepingTasksOnPoolWithSeven()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 7);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -289,7 +369,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnPoolWithSix() throws Exception {
+    public void shouldExecuteSleepingTasksOnPoolWithSix()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 6);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -300,7 +381,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnPoolWithSixteen() throws Exception {
+    public void shouldExecuteSleepingTasksOnPoolWithSixteen()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 16);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -311,7 +393,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnPoolWithThree() throws Exception {
+    public void shouldExecuteSleepingTasksOnPoolWithThree()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 3);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -322,7 +405,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnPoolWithTwoTasks() throws Exception {
+    public void shouldExecuteSleepingTasksOnPoolWithTwoTasks()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 2);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -333,7 +417,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteSleepingTasksOnSinglePool() throws Exception {
+    public void shouldExecuteSleepingTasksOnSinglePool()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 1);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -344,7 +429,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnPoolWithEigth() throws Exception {
+    public void shouldExecuteTasksOnPoolWithEigth()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 8);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -355,7 +441,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnPoolWithFive() throws Exception {
+    public void shouldExecuteTasksOnPoolWithFive()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 5);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -366,7 +453,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnPoolWithFour() throws Exception {
+    public void shouldExecuteTasksOnPoolWithFour()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 4);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -377,7 +465,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnPoolWithSeven() throws Exception {
+    public void shouldExecuteTasksOnPoolWithSeven()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 7);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -388,7 +477,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnPoolWithSix() throws Exception {
+    public void shouldExecuteTasksOnPoolWithSix()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 6);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -399,7 +489,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnPoolWithSixteen() throws Exception {
+    public void shouldExecuteTasksOnPoolWithSixteen()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 16);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -410,7 +501,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnPoolWithThree() throws Exception {
+    public void shouldExecuteTasksOnPoolWithThree()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 3);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -421,7 +513,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnPoolWithTwoTasks() throws Exception {
+    public void shouldExecuteTasksOnPoolWithTwoTasks()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 2);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -432,7 +525,8 @@ public class TaskManagerTest {
     }
 
     @Test
-    public void shouldExecuteTasksOnSinglePool() throws Exception {
+    public void shouldExecuteTasksOnSinglePool()
+        throws Exception {
 
         final TaskExecPool pool = TaskExecManager.INSTANCE.createTaskPool("test-pool", 1);
         final List<String> list = new CopyOnWriteArrayList<String>();
@@ -443,7 +537,8 @@ public class TaskManagerTest {
     }
 
     @After
-    public void sleep() throws Exception {
+    public void sleep()
+        throws Exception {
         Thread.sleep(250);
     }
 

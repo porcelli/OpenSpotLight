@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.persist.util;
 
@@ -62,7 +34,7 @@ import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
-@SuppressWarnings( "unused" )
+@SuppressWarnings("unused")
 public class SimplePersistVisitorSupportTest {
 
     private static class NodeNameVisitor implements SimpleNodeTypeVisitor<NodeObject> {
@@ -72,7 +44,8 @@ public class SimplePersistVisitorSupportTest {
             return names;
         }
 
-        public void visitBean( final NodeObject bean ) {
+        @Override
+        public void visitBean(final NodeObject bean) {
             bean.getName().toString();
             names.add(bean.getName());
         }
@@ -100,15 +73,15 @@ public class SimplePersistVisitorSupportTest {
             return parent;
         }
 
-        public void setChildren( final List<NodeObject> children ) {
+        public void setChildren(final List<NodeObject> children) {
             this.children = children;
         }
 
-        public void setName( final String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
-        public void setParent( final NodeObject parent ) {
+        public void setParent(final NodeObject parent) {
             this.parent = parent;
         }
 
@@ -141,19 +114,19 @@ public class SimplePersistVisitorSupportTest {
             return flag;
         }
 
-        public void setAnotherChildren( final List<SimpleObject2> anotherChildren ) {
+        public void setAnotherChildren(final List<SimpleObject2> anotherChildren) {
             this.anotherChildren = anotherChildren;
         }
 
-        public void setChildren( final List<SimpleObject2> children ) {
+        public void setChildren(final List<SimpleObject2> children) {
             this.children = children;
         }
 
-        public void setFlag( final boolean flag ) {
+        public void setFlag(final boolean flag) {
             this.flag = flag;
         }
 
-        public void setName( final String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
@@ -187,19 +160,19 @@ public class SimplePersistVisitorSupportTest {
             return flag;
         }
 
-        public void setFlag( final boolean flag ) {
+        public void setFlag(final boolean flag) {
             this.flag = flag;
         }
 
-        public void setMap( final Map<String, SimpleObject3> map ) {
+        public void setMap(final Map<String, SimpleObject3> map) {
             this.map = map;
         }
 
-        public void setName( final String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
-        public void setParent( final SimpleObject1 parent ) {
+        public void setParent(final SimpleObject1 parent) {
             this.parent = parent;
         }
 
@@ -233,19 +206,19 @@ public class SimplePersistVisitorSupportTest {
             return flag;
         }
 
-        public void setChild( final SimpleObject4 child ) {
+        public void setChild(final SimpleObject4 child) {
             this.child = child;
         }
 
-        public void setFlag( final boolean flag ) {
+        public void setFlag(final boolean flag) {
             this.flag = flag;
         }
 
-        public void setName( final String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
-        public void setParent( final SimpleObject2 parent ) {
+        public void setParent(final SimpleObject2 parent) {
             this.parent = parent;
         }
 
@@ -283,23 +256,23 @@ public class SimplePersistVisitorSupportTest {
             return flag;
         }
 
-        public void setAutoRelationShip( final SimpleObject4 autoRelationShip ) {
+        public void setAutoRelationShip(final SimpleObject4 autoRelationShip) {
             this.autoRelationShip = autoRelationShip;
         }
 
-        public void setFlag( final boolean flag ) {
+        public void setFlag(final boolean flag) {
             this.flag = flag;
         }
 
-        public void setName( final String name ) {
+        public void setName(final String name) {
             this.name = name;
         }
 
-        public void setParent( final SimpleObject3 parent ) {
+        public void setParent(final SimpleObject3 parent) {
             this.parent = parent;
         }
 
-        public void setParentObj4( final SimpleObject4 parentObj4 ) {
+        public void setParentObj4(final SimpleObject4 parentObj4) {
             this.parentObj4 = parentObj4;
         }
 
@@ -341,12 +314,14 @@ public class SimplePersistVisitorSupportTest {
     }
 
     @Test
-    public void shouldVisitCollectionProperties() throws Exception {
+    public void shouldVisitCollectionProperties()
+        throws Exception {
         final SimpleObject1 root = createSampleData();
         final AtomicInteger count = new AtomicInteger(0);
         SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject2.class, root, new SimpleNodeTypeVisitor<SimpleObject2>() {
 
-            public void visitBean( final SimpleObject2 bean ) {
+            @Override
+            public void visitBean(final SimpleObject2 bean) {
                 count.incrementAndGet();
 
             }
@@ -355,7 +330,8 @@ public class SimplePersistVisitorSupportTest {
     }
 
     @Test
-    public void shouldVisitInCorrectOrder() throws Exception {
+    public void shouldVisitInCorrectOrder()
+        throws Exception {
         final NodeObject root = new NodeObject();
         root.setName("0");
         final NodeObject child1 = new NodeObject();
@@ -410,12 +386,14 @@ public class SimplePersistVisitorSupportTest {
     }
 
     @Test
-    public void shouldVisitMapValueProperties() throws Exception {
+    public void shouldVisitMapValueProperties()
+        throws Exception {
         final SimpleObject1 root = createSampleData();
         final AtomicInteger count = new AtomicInteger(0);
         SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject3.class, root, new SimpleNodeTypeVisitor<SimpleObject3>() {
 
-            public void visitBean( final SimpleObject3 bean ) {
+            @Override
+            public void visitBean(final SimpleObject3 bean) {
                 count.incrementAndGet();
 
             }
@@ -424,12 +402,14 @@ public class SimplePersistVisitorSupportTest {
     }
 
     @Test
-    public void shouldVisitSimpleProperties() throws Exception {
+    public void shouldVisitSimpleProperties()
+        throws Exception {
         final SimpleObject1 root = createSampleData();
         final AtomicInteger count = new AtomicInteger(0);
         SimpleNodeTypeVisitorSupport.acceptVisitorOn(SimpleObject4.class, root, new SimpleNodeTypeVisitor<SimpleObject4>() {
 
-            public void visitBean( final SimpleObject4 bean ) {
+            @Override
+            public void visitBean(final SimpleObject4 bean) {
                 count.incrementAndGet();
 
             }

@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.security.idm.store.test;
 
@@ -89,15 +61,19 @@ public class SLIdentityStoreImplTest {
 
         private SLIdentityStoreSessionImpl session;
 
-        public void begin() throws Exception {
+        @Override
+        public void begin()
+            throws Exception {
 
-            final IdentityConfigurationMetaData configurationMD = JAXB2IdentityConfiguration.createConfigurationMetaData("slstore.xml");
+            final IdentityConfigurationMetaData configurationMD =
+                JAXB2IdentityConfiguration.createConfigurationMetaData("slstore.xml");
 
-            final IdentityConfigurationContextRegistry registry = (IdentityConfigurationContextRegistry)new IdentityConfigurationImpl().configure(configurationMD);
+            final IdentityConfigurationContextRegistry registry =
+                (IdentityConfigurationContextRegistry) new IdentityConfigurationImpl().configure(configurationMD);
 
             IdentityStoreConfigurationMetaData storeMD = null;
 
-            for (final IdentityStoreConfigurationMetaData metaData : configurationMD.getIdentityStores()) {
+            for (final IdentityStoreConfigurationMetaData metaData: configurationMD.getIdentityStores()) {
                 if (metaData.getId().equals("SLStore")) {
                     storeMD = metaData;
                     break;
@@ -107,40 +83,49 @@ public class SLIdentityStoreImplTest {
             final IdentityStoreConfigurationContext context = new IdentityStoreConfigurationContextImpl(configurationMD,
                                                                                                         registry, storeMD);
 
-            this.store = new SLIdentityStoreImpl();
-            this.store.bootstrap(context);
-            this.session = (SLIdentityStoreSessionImpl)this.store.createIdentityStoreSession();
+            store = new SLIdentityStoreImpl();
+            store.bootstrap(context);
+            session = (SLIdentityStoreSessionImpl) store.createIdentityStoreSession();
         }
 
-        public void commit() throws Exception {
-            this.session.commitTransaction();
-
-        }
-
-        public void flush() throws Exception {
-            this.session.save();
+        @Override
+        public void commit()
+            throws Exception {
+            session.commitTransaction();
 
         }
 
+        @Override
+        public void flush()
+            throws Exception {
+            session.save();
+
+        }
+
+        @Override
         public IdentityStoreInvocationContext getCtx() {
             return new IdentityStoreInvocationContext() {
 
+                @Override
                 public IdentityStoreSession getIdentityStoreSession() {
-                    return SLIdStoreTestContext.this.session;
+                    return session;
                 }
 
+                @Override
                 public String getRealmId() {
                     return "abc";
                 }
 
+                @Override
                 public String getSessionId() {
                     return "abc";
                 }
             };
         }
 
+        @Override
         public IdentityStore getStore() {
-            return this.store;
+            return store;
         }
 
     }
@@ -148,7 +133,8 @@ public class SLIdentityStoreImplTest {
     private final CommonIdentityStoreTest test = new CommonIdentityStoreTest(new SLIdStoreTestContext());
 
     @BeforeClass
-    public static void startInjector() throws Exception {
+    public static void startInjector()
+        throws Exception {
 
         autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
                                                                          StorageSession.FlushMode.AUTO,
@@ -165,47 +151,56 @@ public class SLIdentityStoreImplTest {
     }
 
     @Before
-    public void clearAllData() throws Exception {
+    public void clearAllData()
+        throws Exception {
         autoFlushInjector.getInstance(JRedisFactory.class).getFrom(RegularPartitions.SECURITY).flushall();
     }
 
     @Test
     @Ignore
-    public void testAttributes() throws Exception {
-        this.test.testAttributes();
+    public void testAttributes()
+        throws Exception {
+        test.testAttributes();
     }
 
     @Test
     @Ignore
     // actually isn't possible to persist "large" binary values on simple
     // persist, since it needs array support and also input stream support.
-    public void testBinaryCredential() throws Exception {
-        this.test.testBinaryCredential();
+        public
+        void testBinaryCredential()
+            throws Exception {
+        test.testBinaryCredential();
     }
 
     @Test
-    public void testCriteria() throws Exception {
-        this.test.testCriteria();
+    public void testCriteria()
+        throws Exception {
+        test.testCriteria();
     }
 
     @Test
-    public void testFindMethods() throws Exception {
-        this.test.testFindMethods();
+    public void testFindMethods()
+        throws Exception {
+        test.testFindMethods();
     }
 
     @Test
-    public void testPasswordCredential() throws Exception {
-        this.test.testPasswordCredential();
+    public void testPasswordCredential()
+        throws Exception {
+        test.testPasswordCredential();
     }
 
     @Test
     @Ignore
-    public void testRelationships() throws Exception {
-        this.test.testRelationships();
+    public void testRelationships()
+        throws Exception {
+        test.testRelationships();
     }
 
     @Test
-    public void testStorePersistence() throws Exception {
-        this.test.testStorePersistence();
+    public void testStorePersistence()
+        throws Exception {
+        test.testStorePersistence();
     }
 }

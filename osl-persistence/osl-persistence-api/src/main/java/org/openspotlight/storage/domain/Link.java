@@ -1,13 +1,12 @@
 package org.openspotlight.storage.domain;
 
-
 public interface Link extends StorageDataMarker, PropertyContainer {
 
-	Node getOrigin();
+    Node getOrigin();
 
-	Node getTarget();
+    Node getTarget();
 
-	String getLinkName();
+    String getLinkName();
 
-	String getLinkId();
+    String getLinkId();
 }

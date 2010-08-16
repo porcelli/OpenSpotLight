@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.common.util.reflection;
 
@@ -81,52 +53,36 @@ public class MethodIdentificationSupport {
          * @param parameters the parameters
          */
         public MethodWithParametersKey(
-                                        final String key, final Object... parameters ) {
-            if (parameters == null) {
-                throw new IllegalArgumentException();
-            }
-            if (key == null) {
-                throw new IllegalArgumentException();
-            }
-            if (key.length() == 0) {
-                throw new IllegalArgumentException();
-            }
+                                        final String key, final Object... parameters) {
+            if (parameters == null) { throw new IllegalArgumentException(); }
+            if (key == null) { throw new IllegalArgumentException(); }
+            if (key.length() == 0) { throw new IllegalArgumentException(); }
             this.key = key;
             this.parameters = parameters;
             int hashing = 7;
             hashing = 31 * hashing + key.hashCode();
-            for (final Object parameter : parameters) {
+            for (final Object parameter: parameters) {
                 hashing = 31 * hashing + (parameter == null ? 0 : parameter.hashCode());
             }
-            this.hashcode = hashing;
+            hashcode = hashing;
         }
 
         @Override
-        public boolean equals( final Object obj ) {
-            if (obj == this) {
-                return true;
-            }
-            if (!(obj instanceof MethodWithParametersKey)) {
-                return false;
-            }
-            final MethodWithParametersKey that = (MethodWithParametersKey)obj;
-            if (that.parameters.length != this.parameters.length) {
-                return false;
-            }
-            if (!isEquals(this.key, that.key)) {
-                return false;
-            }
-            for (int i = 0, size = this.parameters.length; i < size; i++) {
-                if (!isEquals(this.parameters[i], that.parameters[i])) {
-                    return false;
-                }
+        public boolean equals(final Object obj) {
+            if (obj == this) { return true; }
+            if (!(obj instanceof MethodWithParametersKey)) { return false; }
+            final MethodWithParametersKey that = (MethodWithParametersKey) obj;
+            if (that.parameters.length != parameters.length) { return false; }
+            if (!isEquals(key, that.key)) { return false; }
+            for (int i = 0, size = parameters.length; i < size; i++) {
+                if (!isEquals(parameters[i], that.parameters[i])) { return false; }
             }
             return true;
         }
 
         @Override
         public int hashCode() {
-            return this.hashcode;
+            return hashcode;
         }
 
     }
@@ -150,7 +106,7 @@ public class MethodIdentificationSupport {
      * @param arg1 the arg1
      * @return the method unique name
      */
-    public static String getMethodUniqueName( final Method arg1 ) {
+    public static String getMethodUniqueName(final Method arg1) {
         final Class<?>[] parameterTypes = arg1.getParameterTypes();
         final StringBuilder nameBuff = new StringBuilder();
         nameBuff.append(arg1.getName());
@@ -173,17 +129,11 @@ public class MethodIdentificationSupport {
      * @param o2 the o2
      * @return true, if is equals
      */
-    static boolean isEquals( final Object o1,
-                             final Object o2 ) {
-        if (o1 == o2) {
-            return true;
-        }
-        if (o1 == null) {
-            return false;
-        }
-        if (o2 == null) {
-            return false;
-        }
+    static boolean isEquals(final Object o1,
+                             final Object o2) {
+        if (o1 == o2) { return true; }
+        if (o1 == null) { return false; }
+        if (o2 == null) { return false; }
         return o1.equals(o2);
     }
 

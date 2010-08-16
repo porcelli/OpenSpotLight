@@ -15,12 +15,12 @@ import com.google.inject.internal.ImmutableSet;
 public abstract class PropertyContainerImpl implements PropertyContainer {
 
     public void forceReload() {
-        this.propertiesByName.clear();
-        this.lastLoad = -1;
+        propertiesByName.clear();
+        lastLoad = -1;
     }
 
-    protected PropertyContainerImpl( boolean resetTimeout ) {
-        this.lastLoad = resetTimeout ? -1 : System.currentTimeMillis();
+    protected PropertyContainerImpl(final boolean resetTimeout) {
+        lastLoad = resetTimeout ? -1 : System.currentTimeMillis();
     }
 
     private static final long           TIMEOUT          = 60 * 1000;
@@ -29,24 +29,26 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
 
     private final Map<String, Property> propertiesByName = new HashMap<String, Property>();
 
-    public Set<String> getPropertyNames( StorageSession session ) {
+    @Override
+    public Set<String> getPropertyNames(final StorageSession session) {
         reloadProperties(session);
         return ImmutableSet.copyOf(propertiesByName.keySet());
     }
 
-    public Set<Property> getProperties( StorageSession session ) {
+    @Override
+    public Set<Property> getProperties(final StorageSession session) {
         reloadProperties(session);
         return ImmutableSet.copyOf(propertiesByName.values());
     }
 
-    protected void verifyBeforeSet( String propertyName ) {
+    protected void verifyBeforeSet(final String propertyName) {
 
     }
 
     @Override
-    public Property setSimpleProperty( StorageSession session,
-                                       String name,
-                                       String value ) {
+    public Property setSimpleProperty(final StorageSession session,
+                                       final String name,
+                                       final String value) {
         verifyBeforeSet(name);
         Property currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -59,9 +61,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     }
 
     @Override
-    public Property setSimpleProperty( StorageSession session,
-                                       String name,
-                                       InputStream value ) {
+    public Property setSimpleProperty(final StorageSession session,
+                                       final String name,
+                                       final InputStream value) {
         verifyBeforeSet(name);
         Property currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -74,9 +76,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     }
 
     @Override
-    public Property setSimpleProperty( StorageSession session,
-                                       String name,
-                                       byte[] value ) {
+    public Property setSimpleProperty(final StorageSession session,
+                                       final String name,
+                                       final byte[] value) {
         verifyBeforeSet(name);
         Property currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -90,9 +92,9 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
     }
 
     @Override
-    public Property setIndexedProperty( StorageSession session,
-                                        String name,
-                                        String value ) {
+    public Property setIndexedProperty(final StorageSession session,
+                                        final String name,
+                                        final String value) {
         verifyBeforeSet(name);
         Property currentProperty = getProperty(session, name);
         if (currentProperty == null) {
@@ -104,55 +106,54 @@ public abstract class PropertyContainerImpl implements PropertyContainer {
         return currentProperty;
     }
 
-    private void reloadProperties( StorageSession session ) {
-        boolean tooOld = this.lastLoad < (System.currentTimeMillis() + TIMEOUT);
-        boolean empty = propertiesByName.isEmpty();
+    private void reloadProperties(final StorageSession session) {
+        final boolean tooOld = lastLoad < (System.currentTimeMillis() + TIMEOUT);
+        final boolean empty = propertiesByName.isEmpty();
         if (tooOld && empty) {
-            Set<Property> result = ((AbstractStorageSession<?>)session.withPartition(getPartition())).propertyContainerLoadProperties(this);
-            for (Property property : result) {
+            final Set<Property> result =
+                ((AbstractStorageSession<?>) session.withPartition(getPartition())).propertyContainerLoadProperties(this);
+            for (final Property property: result) {
                 propertiesByName.put(property.getPropertyName(), property);
             }
-            this.lastLoad = System.currentTimeMillis();
+            lastLoad = System.currentTimeMillis();
         }
     }
 
-    private void loadPropertiesOnce( StorageSession session ) {
+    private void loadPropertiesOnce(final StorageSession session) {
         if (propertiesByName.isEmpty()) {
             reloadProperties(session);
         }
     }
 
-    public String getPropertyAsString( StorageSession session,
-                                       String name ) {
-        Property prop = getProperty(session, name);
-        if (prop != null) {
-            return prop.getValueAsString(session);
-        }
+    @Override
+    public String getPropertyAsString(final StorageSession session,
+                                       final String name) {
+        final Property prop = getProperty(session, name);
+        if (prop != null) { return prop.getValueAsString(session); }
         return null;
     }
 
-    public InputStream getPropertyAsStream( StorageSession session,
-                                            String name ) {
+    @Override
+    public InputStream getPropertyAsStream(final StorageSession session,
+                                            final String name) {
 
-        Property prop = getProperty(session, name);
-        if (prop != null) {
-            return prop.getValueAsStream(session);
-        }
+        final Property prop = getProperty(session, name);
+        if (prop != null) { return prop.getValueAsStream(session); }
         return null;
     }
 
-    public byte[] getPropertyAsBytes( StorageSession session,
-                                      String name ) {
+    @Override
+    public byte[] getPropertyAsBytes(final StorageSession session,
+                                      final String name) {
 
-        Property prop = getProperty(session, name);
-        if (prop != null) {
-            return prop.getValueAsBytes(session);
-        }
+        final Property prop = getProperty(session, name);
+        if (prop != null) { return prop.getValueAsBytes(session); }
         return null;
     }
 
-    public Property getProperty( StorageSession session,
-                                 String name ) {
+    @Override
+    public Property getProperty(final StorageSession session,
+                                 final String name) {
         loadPropertiesOnce(session);
         Property result = propertiesByName.get(name);
         if (result == null) {

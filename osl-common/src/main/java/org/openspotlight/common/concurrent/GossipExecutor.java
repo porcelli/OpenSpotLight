@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.common.concurrent;
 
@@ -79,7 +51,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
          * @param wrapped the wrapped
          */
         public DelegateThreadFactory(
-                                      final ThreadFactory wrapped, final String poolName ) {
+                                      final ThreadFactory wrapped, final String poolName) {
             this.wrapped = wrapped;
             this.poolName = poolName;
         }
@@ -89,20 +61,20 @@ public class GossipExecutor extends ThreadPoolExecutor {
          * 
          * @param l the l
          */
-        public void addThreadListener( final ThreadListener l ) {
+        public void addThreadListener(final ThreadListener l) {
             listeners.add(l);
         }
 
         /*
          * (non-Javadoc)
-         * 
          * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
          */
-        public Thread newThread( final Runnable r ) {
+        @Override
+        public Thread newThread(final Runnable r) {
             final Thread t = wrapped.newThread(r);
             t.setDaemon(true);
             t.setName(poolName + "_" + t.getName());
-            for (final ThreadListener l : listeners) {
+            for (final ThreadListener l: listeners) {
                 l.afterCreatingThread(t);
             }
             return t;
@@ -113,7 +85,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
          * 
          * @param l the l
          */
-        public void removeThreadListener( final ThreadListener l ) {
+        public void removeThreadListener(final ThreadListener l) {
             listeners.remove(l);
         }
     }
@@ -135,8 +107,8 @@ public class GossipExecutor extends ThreadPoolExecutor {
          * @param r the r
          * @param t the t
          */
-        public void afterExecutingTask( Runnable r,
-                                        Throwable t );
+        public void afterExecutingTask(Runnable r,
+                                        Throwable t);
 
         /**
          * Before executing task.
@@ -144,8 +116,8 @@ public class GossipExecutor extends ThreadPoolExecutor {
          * @param t the t
          * @param r the r
          */
-        public void beforeExecutingTask( Thread t,
-                                         Runnable r );
+        public void beforeExecutingTask(Thread t,
+                                         Runnable r);
     }
 
     /**
@@ -164,7 +136,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
          * 
          * @param t the t
          */
-        public void afterCreatingThread( Thread t );
+        public void afterCreatingThread(Thread t);
     }
 
     /**
@@ -173,8 +145,8 @@ public class GossipExecutor extends ThreadPoolExecutor {
      * @param nThreads the n threads
      * @return the cautious executor
      */
-    public static GossipExecutor newFixedThreadPool( final int nThreads,
-                                                     final String poolName ) {
+    public static GossipExecutor newFixedThreadPool(final int nThreads,
+                                                     final String poolName) {
 
         final GossipExecutor ex = new GossipExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS,
                                                      new LinkedBlockingQueue<Runnable>(), poolName);
@@ -199,7 +171,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
      */
     private GossipExecutor(
                             final int corePoolSize, final int maximumPoolSize, final long keepAliveTime, final TimeUnit unit,
-                            final BlockingQueue<Runnable> workQueue, final String poolName ) {
+                            final BlockingQueue<Runnable> workQueue, final String poolName) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
         delegateThreadFactory = new DelegateThreadFactory(getThreadFactory(), poolName);
         setThreadFactory(delegateThreadFactory);
@@ -211,7 +183,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
      * 
      * @param l the l
      */
-    public void addTaskListener( final TaskListener l ) {
+    public void addTaskListener(final TaskListener l) {
         listeners.add(l);
     }
 
@@ -220,21 +192,18 @@ public class GossipExecutor extends ThreadPoolExecutor {
      * 
      * @param l the l
      */
-    public void addThreadListener( final ThreadListener l ) {
+    public void addThreadListener(final ThreadListener l) {
         delegateThreadFactory.addThreadListener(l);
     }
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * java.util.concurrent.ThreadPoolExecutor#afterExecute(java.lang.Runnable,
-     * java.lang.Throwable)
+     * @see java.util.concurrent.ThreadPoolExecutor#afterExecute(java.lang.Runnable, java.lang.Throwable)
      */
     @Override
-    protected void afterExecute( final Runnable r,
-                                 final Throwable t ) {
-        for (final TaskListener l : listeners) {
+    protected void afterExecute(final Runnable r,
+                                 final Throwable t) {
+        for (final TaskListener l: listeners) {
             l.afterExecutingTask(r, t);
         }
         super.afterExecute(r, t);
@@ -242,15 +211,12 @@ public class GossipExecutor extends ThreadPoolExecutor {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * java.util.concurrent.ThreadPoolExecutor#beforeExecute(java.lang.Thread,
-     * java.lang.Runnable)
+     * @see java.util.concurrent.ThreadPoolExecutor#beforeExecute(java.lang.Thread, java.lang.Runnable)
      */
     @Override
-    protected void beforeExecute( final Thread t,
-                                  final Runnable r ) {
-        for (final TaskListener l : listeners) {
+    protected void beforeExecute(final Thread t,
+                                  final Runnable r) {
+        for (final TaskListener l: listeners) {
             l.beforeExecutingTask(t, r);
         }
     }
@@ -260,7 +226,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
      * 
      * @param l the l
      */
-    public void removeTaskListener( final TaskListener l ) {
+    public void removeTaskListener(final TaskListener l) {
         listeners.remove(l);
     }
 
@@ -269,7 +235,7 @@ public class GossipExecutor extends ThreadPoolExecutor {
      * 
      * @param l the l
      */
-    public void removeThreadListener( final ThreadListener l ) {
+    public void removeThreadListener(final ThreadListener l) {
         delegateThreadFactory.removeThreadListener(l);
     }
 

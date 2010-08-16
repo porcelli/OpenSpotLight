@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.common.util;
@@ -76,7 +48,7 @@ public class Exceptions {
      * 
      * @param exception
      */
-    public static void catchAndLog( final Exception exception ) {
+    public static void catchAndLog(final Exception exception) {
         logger.error(exception.getMessage(), exception);
     }
 
@@ -94,8 +66,8 @@ public class Exceptions {
      * @param message
      * @param exception
      */
-    public static void catchAndLog( final String message,
-                                    final Throwable exception ) {
+    public static void catchAndLog(final String message,
+                                    final Throwable exception) {
         logger.error(message, exception);
     }
 
@@ -114,7 +86,7 @@ public class Exceptions {
      * @param exception
      * @return the same exception
      */
-    public static <E extends Throwable> E logAndReturn( final E exception ) {
+    public static <E extends Throwable> E logAndReturn(final E exception) {
         logger.error(exception.getMessage(), exception);
         return exception;
     }
@@ -135,8 +107,8 @@ public class Exceptions {
      * @param exception
      * @return the same exception
      */
-    public static <E extends Throwable> E logAndReturn( final String message,
-                                                        final E exception ) {
+    public static <E extends Throwable> E logAndReturn(final String message,
+                                                        final E exception) {
         logger.error(message);
         logger.error(exception.getMessage(), exception);
         return exception;
@@ -158,13 +130,11 @@ public class Exceptions {
      * @param newExceptionClass that has a constructor to wrap the original exception
      * @return a new exception wich type is the same as passed on parameter
      */
-    @SuppressWarnings( "unchecked" )
-    public static <E extends Exception> E logAndReturnNew( final Exception baseException,
-                                                           final Class<E> newExceptionClass ) {
+    @SuppressWarnings("unchecked")
+    public static <E extends Exception> E logAndReturnNew(final Exception baseException,
+                                                           final Class<E> newExceptionClass) {
         logger.error(baseException.getMessage(), baseException);
-        if (baseException.getClass().equals(newExceptionClass)) {
-            return (E)baseException;
-        }
+        if (baseException.getClass().equals(newExceptionClass)) { return (E) baseException; }
         E newException;
         try {
             newException = newExceptionClass.getDeclaredConstructor(Throwable.class).newInstance(baseException);
@@ -192,9 +162,9 @@ public class Exceptions {
      * @param newExceptionClass that has a constructor to wrap the original exception
      * @return a new exception wich type is the same as passed on parameter
      */
-    public static <E extends Exception> E logAndReturnNew( final String message,
+    public static <E extends Exception> E logAndReturnNew(final String message,
                                                            final Exception baseException,
-                                                           final Class<E> newExceptionClass ) {
+                                                           final Class<E> newExceptionClass) {
         logger.error(message, baseException);
         E newException;
         try {
@@ -222,7 +192,8 @@ public class Exceptions {
      * @param exception
      * @throws E
      */
-    public static <E extends Throwable> void logAndThrow( final E exception ) throws E {
+    public static <E extends Throwable> void logAndThrow(final E exception)
+        throws E {
         logger.error(exception.getMessage(), exception);
         throw exception;
     }
@@ -243,13 +214,12 @@ public class Exceptions {
      * @param newExceptionClass that has a constructor to wrap the original exception
      * @throws E the new exception
      */
-    @SuppressWarnings( "unchecked" )
-    public static <E extends Exception> void logAndThrowNew( final Exception baseException,
-                                                             final Class<E> newExceptionClass ) throws E {
+    @SuppressWarnings("unchecked")
+    public static <E extends Exception> void logAndThrowNew(final Exception baseException,
+                                                             final Class<E> newExceptionClass)
+        throws E {
         logger.error(baseException.getMessage(), baseException);
-        if (baseException.getClass().equals(newExceptionClass)) {
-            throw (E)baseException;
-        }
+        if (baseException.getClass().equals(newExceptionClass)) { throw (E) baseException; }
         E newException;
         try {
             newException = newExceptionClass.getDeclaredConstructor(Throwable.class).newInstance(baseException);
@@ -277,9 +247,10 @@ public class Exceptions {
      * @param newExceptionClass that has a constructor to wrap the original exception
      * @throws E the new exception
      */
-    public static <E extends Exception> void logAndThrowNew( final String message,
+    public static <E extends Exception> void logAndThrowNew(final String message,
                                                              final Exception baseException,
-                                                             final Class<E> newExceptionClass ) throws E {
+                                                             final Class<E> newExceptionClass)
+        throws E {
         logger.error(message, baseException);
         E newException;
         try {

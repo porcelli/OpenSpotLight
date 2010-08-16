@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.common.util;
@@ -125,7 +97,7 @@ public class Reflection {
          * @param itemType the item type
          */
         UnwrappedCollectionTypeFromMethodReturn(
-                                                 final Class<? extends Iterable<?>> collectionType, final Class<T> itemType ) {
+                                                 final Class<? extends Iterable<?>> collectionType, final Class<T> itemType) {
             checkNotNull("collectionType", collectionType);
             // checkNotNull("itemType", itemType);
             this.collectionType = collectionType;
@@ -171,7 +143,7 @@ public class Reflection {
          * @param itemType the item type
          */
         UnwrappedMapTypeFromMethodReturn(
-                                          final Pair<Class<K>, Class<T>> itemType ) {
+                                          final Pair<Class<K>, Class<T>> itemType) {
             checkNotNull("itemType", itemType);
             this.itemType = itemType;
         }
@@ -199,19 +171,15 @@ public class Reflection {
      * @param types the types
      * @return the inheritance type between the type and found type in a array
      */
-    public static InheritanceType searchInheritanceType( final Class<?> type,
-                                                         final Class<?>... types ) {
+    public static InheritanceType searchInheritanceType(final Class<?> type,
+                                                         final Class<?>... types) {
         checkNotNull("type", type); //$NON-NLS-1$
         checkNotEmpty("types", types); //$NON-NLS-1$
-        for (final Class<?> innerType : types) {
-            if (eachEquality(type, innerType)) {
-                return InheritanceType.SAME_CLASS;
-            }
+        for (final Class<?> innerType: types) {
+            if (eachEquality(type, innerType)) { return InheritanceType.SAME_CLASS; }
         }
-        for (final Class<?> innerType : types) {
-            if (innerType.isAssignableFrom(type)) {
-                return InheritanceType.INHERITED_CLASS;
-            }
+        for (final Class<?> innerType: types) {
+            if (innerType.isAssignableFrom(type)) { return InheritanceType.INHERITED_CLASS; }
         }
         return InheritanceType.NO_INHERITANCE;
     }
@@ -223,19 +191,15 @@ public class Reflection {
      * @param types the types
      * @return the type (same or inherited) in the given array, or null if it was not found
      */
-    public static Class<?> searchType( final Class<?> type,
-                                       final Class<?>... types ) {
+    public static Class<?> searchType(final Class<?> type,
+                                       final Class<?>... types) {
         checkNotNull("type", type); //$NON-NLS-1$
         checkNotEmpty("types", types); //$NON-NLS-1$
-        for (final Class<?> innerType : types) {
-            if (eachEquality(type, innerType)) {
-                return innerType;
-            }
+        for (final Class<?> innerType: types) {
+            if (eachEquality(type, innerType)) { return innerType; }
         }
-        for (final Class<?> innerType : types) {
-            if (innerType.isAssignableFrom(type)) {
-                return innerType;
-            }
+        for (final Class<?> innerType: types) {
+            if (innerType.isAssignableFrom(type)) { return innerType; }
         }
         return null;
     }
@@ -248,8 +212,8 @@ public class Reflection {
      * @return the unwrapped collection type from method return< t>
      * @throws Exception the exception
      */
-    @SuppressWarnings( "unchecked" )
-    public static <T> UnwrappedCollectionTypeFromMethodReturn<T> unwrapCollectionFromMethodReturn( final Method method )
+    @SuppressWarnings("unchecked")
+    public static <T> UnwrappedCollectionTypeFromMethodReturn<T> unwrapCollectionFromMethodReturn(final Method method)
             throws Exception {
         checkNotNull("method", method);
         checkCondition("correctReturnType", Iterable.class.isAssignableFrom(method.getReturnType()));
@@ -257,30 +221,30 @@ public class Reflection {
         final Type genType = method.getGenericReturnType();
 
         if (genType instanceof ParameterizedType) {
-            final ParameterizedType paramType = (ParameterizedType)genType;
+            final ParameterizedType paramType = (ParameterizedType) genType;
             final Type[] actualTypeArgs = paramType.getActualTypeArguments();
             final Type theItemType = actualTypeArgs[0];
             if (theItemType instanceof WildcardType) {
-                final WildcardType wildCardType = (WildcardType)theItemType;
+                final WildcardType wildCardType = (WildcardType) theItemType;
                 final Type[] lowerBounds = wildCardType.getLowerBounds();
                 final Type[] upperBounds = wildCardType.getUpperBounds();
                 if (lowerBounds != null && lowerBounds.length > 0) {
-                    itemType = (Class<T>)lowerBounds[0];
+                    itemType = (Class<T>) lowerBounds[0];
                 } else if (upperBounds != null && upperBounds.length > 0) {
-                    itemType = (Class<T>)upperBounds[0];
+                    itemType = (Class<T>) upperBounds[0];
                 }
 
             } else if (theItemType instanceof Class<?>) {
-                itemType = (Class<T>)actualTypeArgs[0];
+                itemType = (Class<T>) actualTypeArgs[0];
 
             } else if (theItemType instanceof ParameterizedType) {
-                final ParameterizedType valueTypeTyped = (ParameterizedType)theItemType;
-                itemType = (Class<T>)valueTypeTyped.getRawType();
+                final ParameterizedType valueTypeTyped = (ParameterizedType) theItemType;
+                itemType = (Class<T>) valueTypeTyped.getRawType();
             }
 
         }
 
-        final Class<? extends Iterable<?>> retType = (Class<? extends Collection<?>>)method.getReturnType();
+        final Class<? extends Iterable<?>> retType = (Class<? extends Collection<?>>) method.getReturnType();
 
         final UnwrappedCollectionTypeFromMethodReturn<T> result = new UnwrappedCollectionTypeFromMethodReturn<T>(retType,
                                                                                                                  itemType);
@@ -297,8 +261,9 @@ public class Reflection {
      * @return the unwrapped map type from method return< k, t>
      * @throws Exception the exception
      */
-    @SuppressWarnings( "unchecked" )
-    public static <K, T> UnwrappedMapTypeFromMethodReturn<K, T> unwrapMapFromMethodReturn( final Method method ) throws Exception {
+    @SuppressWarnings("unchecked")
+    public static <K, T> UnwrappedMapTypeFromMethodReturn<K, T> unwrapMapFromMethodReturn(final Method method)
+        throws Exception {
         checkNotNull("method", method);
         checkCondition("correctReturnType", Map.class.isAssignableFrom(method.getReturnType()));
         Class<K> keyType = null;
@@ -306,43 +271,43 @@ public class Reflection {
         final Type genType = method.getGenericReturnType();
 
         if (genType instanceof ParameterizedType) {
-            final ParameterizedType paramType = (ParameterizedType)genType;
+            final ParameterizedType paramType = (ParameterizedType) genType;
             final Type[] actualTypeArgs = paramType.getActualTypeArguments();
             final Type theItemTypeKey = actualTypeArgs[0];
             if (theItemTypeKey instanceof WildcardType) {
-                final WildcardType wildCardType = (WildcardType)theItemTypeKey;
+                final WildcardType wildCardType = (WildcardType) theItemTypeKey;
                 final Type[] lowerBounds = wildCardType.getLowerBounds();
                 final Type[] upperBounds = wildCardType.getUpperBounds();
                 if (lowerBounds != null && lowerBounds.length > 0) {
-                    keyType = (Class<K>)lowerBounds[0];
+                    keyType = (Class<K>) lowerBounds[0];
                 } else if (upperBounds != null && upperBounds.length > 0) {
-                    keyType = (Class<K>)upperBounds[0];
+                    keyType = (Class<K>) upperBounds[0];
                 }
 
             } else if (theItemTypeKey instanceof Class<?>) {
-                keyType = (Class<K>)theItemTypeKey;
+                keyType = (Class<K>) theItemTypeKey;
 
             } else if (theItemTypeKey instanceof ParameterizedType) {
-                final ParameterizedType theItemTypeKeyTyped = (ParameterizedType)theItemTypeKey;
-                keyType = (Class<K>)theItemTypeKeyTyped.getRawType();
+                final ParameterizedType theItemTypeKeyTyped = (ParameterizedType) theItemTypeKey;
+                keyType = (Class<K>) theItemTypeKeyTyped.getRawType();
             }
             final Type theItemTypeValue = actualTypeArgs[1];
             if (theItemTypeValue instanceof WildcardType) {
-                final WildcardType wildCardType = (WildcardType)theItemTypeValue;
+                final WildcardType wildCardType = (WildcardType) theItemTypeValue;
                 final Type[] lowerBounds = wildCardType.getLowerBounds();
                 final Type[] upperBounds = wildCardType.getUpperBounds();
                 if (lowerBounds != null && lowerBounds.length > 0) {
-                    valueType = (Class<T>)lowerBounds[0];
+                    valueType = (Class<T>) lowerBounds[0];
                 } else if (upperBounds != null && upperBounds.length > 0) {
-                    valueType = (Class<T>)upperBounds[0];
+                    valueType = (Class<T>) upperBounds[0];
                 }
 
             } else if (theItemTypeValue instanceof Class<?>) {
-                valueType = (Class<T>)theItemTypeValue;
+                valueType = (Class<T>) theItemTypeValue;
 
             } else if (theItemTypeValue instanceof ParameterizedType) {
-                final ParameterizedType valueTypeTyped = (ParameterizedType)theItemTypeValue;
-                valueType = (Class<T>)valueTypeTyped.getRawType();
+                final ParameterizedType valueTypeTyped = (ParameterizedType) theItemTypeValue;
+                valueType = (Class<T>) valueTypeTyped.getRawType();
             }
 
         }
@@ -354,31 +319,41 @@ public class Reflection {
         return result;
     }
 
-    private static final Map<String, Class<?>> primitiveTypes = ImmutableMap.<String, Class<?>>builder().put("byte", Byte.class).put(
+    private static final Map<String, Class<?>> primitiveTypes =
+                                                                  ImmutableMap
+                                                                      .<String, Class<?>>builder()
+                                                                      .put("byte", Byte.class)
+                                                                      .put(
                                                                                                                                      "short",
-                                                                                                                                     Short.class).put(
+                                                                                                                                     Short.class)
+                                                                      .put(
                                                                                                                                                       "int",
-                                                                                                                                                      Integer.class).put(
+                                                                                                                                                      Integer.class)
+                                                                      .put(
                                                                                                                                                                          "long",
-                                                                                                                                                                         Long.class).put(
+                                                                                                                                                                         Long.class)
+                                                                      .put(
                                                                                                                                                                                          "float",
-                                                                                                                                                                                         Float.class).put(
+                                                                                                                                                                                         Float.class)
+                                                                      .put(
                                                                                                                                                                                                           "double",
-                                                                                                                                                                                                          Double.class).put(
+                                                                                                                                                                                                          Double.class)
+                                                                      .put(
                                                                                                                                                                                                                             "boolean",
-                                                                                                                                                                                                                            Boolean.class).build();
+                                                                                                                                                                                                                            Boolean.class)
+                                                                      .build();
 
-    public static Class<?> findClassWithoutPrimitives( String name ) {
+    public static Class<?> findClassWithoutPrimitives(final String name) {
         try {
-            if (primitiveTypes.containsKey(name)) return primitiveTypes.get(name);
+            if (primitiveTypes.containsKey(name)) { return primitiveTypes.get(name); }
             return forName(name);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
-    public static Class<?> findClassWithoutPrimitives( Class<?> possiblePrimitive ) {
-        if (possiblePrimitive.isPrimitive()) return primitiveTypes.get(possiblePrimitive.getName());
+    public static Class<?> findClassWithoutPrimitives(final Class<?> possiblePrimitive) {
+        if (possiblePrimitive.isPrimitive()) { return primitiveTypes.get(possiblePrimitive.getName()); }
         return possiblePrimitive;
     }
 

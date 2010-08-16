@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.common.util;
@@ -80,7 +52,7 @@ public class Sha1 {
      * @param content
      * @return a byte array representing the signature
      */
-    public static byte[] getSha1Signature( final byte[] content ) {
+    public static byte[] getSha1Signature(final byte[] content) {
         checkNotNull("content", content);//$NON-NLS-1$
         try {
             return DIGESTER.digest(content);
@@ -89,11 +61,11 @@ public class Sha1 {
         }
     }
 
-    public static BigInteger getNumericSha1Signature( final byte[] content ) {
+    public static BigInteger getNumericSha1Signature(final byte[] content) {
         return new BigInteger(getSha1Signature(content));
     }
 
-    public static BigInteger getNumericSha1Signature( final String content ) {
+    public static BigInteger getNumericSha1Signature(final String content) {
         return new BigInteger(getSha1Signature(content));
     }
 
@@ -103,13 +75,17 @@ public class Sha1 {
      * @param content
      * @return a byte array representing the signature
      */
-    public static byte[] getSha1Signature( final InputStream content ) {
+    public static byte[] getSha1Signature(final InputStream content) {
         checkNotNull("content", content);//$NON-NLS-1$
         try {
-            if (content.markSupported()) content.reset();
+            if (content.markSupported()) {
+                content.reset();
+            }
             final ByteArrayOutputStream output = new ByteArrayOutputStream();
             IOUtils.copy(content, output);
-            if (content.markSupported()) content.reset();
+            if (content.markSupported()) {
+                content.reset();
+            }
             return DIGESTER.digest(output.toByteArray());
         } catch (final Exception e) {
             throw logAndReturnNew(e, SLRuntimeException.class);
@@ -122,7 +98,7 @@ public class Sha1 {
      * @param content
      * @return a byte array representing the signature
      */
-    public static byte[] getSha1Signature( final String content ) {
+    public static byte[] getSha1Signature(final String content) {
         return getSha1Signature(content.getBytes());
     }
 
@@ -132,7 +108,7 @@ public class Sha1 {
      * @param content
      * @return a base64 string representing the signature
      */
-    public static String getSha1SignatureEncodedAsBase64( final byte[] content ) {
+    public static String getSha1SignatureEncodedAsBase64(final byte[] content) {
         checkNotNull("content", content);//$NON-NLS-1$
         try {
             final byte[] sha1 = getSha1Signature(content);
@@ -149,7 +125,7 @@ public class Sha1 {
      * @param content
      * @return a base64 string representing the signature
      */
-    public static String getSha1SignatureEncodedAsBase64( final InputStream content ) {
+    public static String getSha1SignatureEncodedAsBase64(final InputStream content) {
         checkNotNull("content", content);//$NON-NLS-1$
         try {
             final byte[] sha1 = getSha1Signature(content);
@@ -166,7 +142,7 @@ public class Sha1 {
      * @param content
      * @return sha-1 base64 string
      */
-    public static String getSha1SignatureEncodedAsBase64( final String content ) {
+    public static String getSha1SignatureEncodedAsBase64(final String content) {
         return getSha1SignatureEncodedAsBase64(content.getBytes());
     }
 
@@ -176,7 +152,7 @@ public class Sha1 {
      * @param content
      * @return a base64 string representing the signature
      */
-    public static String getSha1SignatureEncodedAsHexa( final byte[] content ) {
+    public static String getSha1SignatureEncodedAsHexa(final byte[] content) {
         checkNotNull("content", content);//$NON-NLS-1$
         try {
             final byte[] sha1 = getSha1Signature(content);
@@ -192,13 +168,13 @@ public class Sha1 {
      * @param content
      * @return a base64 string representing the signature
      */
-    public static String getSha1SignatureEncodedAsHexa( final String content ) {
+    public static String getSha1SignatureEncodedAsHexa(final String content) {
         return getSha1SignatureEncodedAsHexa(content.getBytes());
     }
 
-    private static String toHexa( final byte[] bytes ) {
+    private static String toHexa(final byte[] bytes) {
         final StringBuilder s = new StringBuilder();
-        for (final byte b : bytes) {
+        for (final byte b: bytes) {
             final int parteAlta = (b >> 4 & 0xf) << 4;
             final int parteBaixa = b & 0xf;
             if (parteAlta == 0) {

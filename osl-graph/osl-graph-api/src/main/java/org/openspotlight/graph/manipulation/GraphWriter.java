@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- *  Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- *  or third-party contributors as indicated by the @author tags or express
- *  copyright attribution statements applied by the authors.  All third-party
- *  contributions are distributed under license by CARAVELATECH CONSULTORIA E
- *  TECNOLOGIA EM INFORMATICA LTDA.
- *
- *  This copyrighted material is made available to anyone wishing to use, modify,
- *  copy, or redistribute it subject to the terms and conditions of the GNU
- *  Lesser General Public License, as published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- *  See the GNU Lesser General Public License  for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this distribution; if not, write to:
- *  Free Software Foundation, Inc.
- *  51 Franklin Street, Fifth Floor
- *  Boston, MA  02110-1301  USA
- *
- * **********************************************************************
- *  OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- *  Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- *  EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- *  @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- *  Todas as contribuições de terceiros estão distribuídas sob licença da
- *  CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- *  Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- *  termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- *  Foundation.
- *
- *  Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- *  GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- *  FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- *  Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- *  programa; se não, escreva para:
- *  Free Software Foundation, Inc.
- *  51 Franklin Street, Fifth Floor
- *  Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA **********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.graph.manipulation;
@@ -77,8 +49,9 @@ public interface GraphWriter {
      * @param caption the caption
      * @throws IllegalArgumentException if any input param is null
      */
-    void setContextCaption( Context context,
-                            String caption ) throws IllegalArgumentException;
+    void setContextCaption(Context context,
+                            String caption)
+        throws IllegalArgumentException;
 
     /**
      * Removes a context and all information (nodes and its links) inside. <br>
@@ -87,7 +60,8 @@ public interface GraphWriter {
      * @param context the context
      * @throws IllegalArgumentException if the input param is null
      */
-    void removeContext( Context context ) throws IllegalArgumentException;
+    void removeContext(Context context)
+        throws IllegalArgumentException;
 
     /**
      * Adds a new node, based on the parameter node type, inside the parent context.<br>
@@ -109,9 +83,10 @@ public interface GraphWriter {
      * @return the added node
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addNode( Context context,
+    <T extends Node> T addNode(Context context,
                                 Class<T> clazz,
-                                String name ) throws IllegalArgumentException;
+                                String name)
+        throws IllegalArgumentException;
 
     /**
      * Adds a new child node, based on the parameter node type, inside the parent context.<br>
@@ -134,9 +109,10 @@ public interface GraphWriter {
      * @return the added node
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addChildNode( Node parent,
+    <T extends Node> T addChildNode(Node parent,
                                      Class<T> clazz,
-                                     String name ) throws IllegalArgumentException;
+                                     String name)
+        throws IllegalArgumentException;
 
     /**
      * Adds a new node, based on the parameter node type, inside the parent context.<br>
@@ -171,11 +147,11 @@ public interface GraphWriter {
      * @return the added node
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addNode( Context context,
+    <T extends Node> T addNode(Context context,
                                 Class<T> clazz,
                                 String name,
                                 Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion )
+                                Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
         throws IllegalArgumentException;
 
     /**
@@ -212,11 +188,11 @@ public interface GraphWriter {
      * @return the added node
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T addChildNode( Node parent,
+    <T extends Node> T addChildNode(Node parent,
                                      Class<T> clazz,
                                      String name,
                                      Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                     Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion )
+                                     Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
         throws IllegalArgumentException;
 
     /**
@@ -227,8 +203,9 @@ public interface GraphWriter {
      * @param target the target context
      * @throws IllegalArgumentException if any input param is null
      */
-    void copyNodeHierarchy( Node node,
-                            Context target ) throws IllegalArgumentException;
+    void copyNodeHierarchy(Node node,
+                            Context target)
+        throws IllegalArgumentException;
 
     /**
      * Moves (copy and remove) all the node hierarchy (parents and children) to the target context. <br>
@@ -238,8 +215,9 @@ public interface GraphWriter {
      * @param target the target context
      * @throws IllegalArgumentException if any input param is null
      */
-    void moveNodeHierarchy( Node node,
-                            Context target ) throws IllegalArgumentException;
+    void moveNodeHierarchy(Node node,
+                            Context target)
+        throws IllegalArgumentException;
 
     /**
      * Removes the node and all its children and any link that its associated. <br>
@@ -248,7 +226,8 @@ public interface GraphWriter {
      * @param node the node to be removed
      * @throws IllegalArgumentException if the input param is null
      */
-    void removeNode( Node node ) throws IllegalArgumentException;
+    void removeNode(Node node)
+        throws IllegalArgumentException;
 
     /**
      * Adds an unidirectional link between the source and target nodes with the specified link type.
@@ -265,9 +244,10 @@ public interface GraphWriter {
      * @return the added link
      * @throws IllegalArgumentException if any input param is null
      */
-    <L extends Link> L addLink( Class<L> linkClass,
+    <L extends Link> L addLink(Class<L> linkClass,
                                    Node source,
-                                   Node target ) throws IllegalArgumentException;
+                                   Node target)
+        throws IllegalArgumentException;
 
     /**
      * Adds a bidirectional link between nodes with the specified link type. <br>
@@ -280,9 +260,10 @@ public interface GraphWriter {
      * @return the added link
      * @throws IllegalArgumentException if any input param is null
      */
-    <L extends Link> L addBidirectionalLink( Class<L> linkClass,
+    <L extends Link> L addBidirectionalLink(Class<L> linkClass,
                                                 Node nodea,
-                                                Node nodeb ) throws IllegalArgumentException;
+                                                Node nodeb)
+        throws IllegalArgumentException;
 
     /**
      * Removes the link<br>
@@ -291,7 +272,8 @@ public interface GraphWriter {
      * @param link the link
      * @throws IllegalArgumentException if the input param is null
      */
-    void removeLink( Link link ) throws IllegalArgumentException;
+    void removeLink(Link link)
+        throws IllegalArgumentException;
 
     /**
      * Executes a general data flush on pending updates as well process all tagged data to be removed (more information about this

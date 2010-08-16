@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.remote.client;
 
@@ -108,7 +80,7 @@ public class RemoteObjectFactory {
              * @param throwable the throwable
              */
             public ExceptionWrapper(
-                                     final Throwable throwable ) {
+                                     final Throwable throwable) {
                 super();
                 this.throwable = throwable;
             }
@@ -128,7 +100,8 @@ public class RemoteObjectFactory {
         private static final Object                        NULL_VALUE        = new Object();
 
         /** The method result cache. */
-        private final Map<MethodWithParametersKey, Object> methodResultCache = new ConcurrentHashMap<MethodWithParametersKey, Object>();
+        private final Map<MethodWithParametersKey, Object> methodResultCache =
+                                                                                 new ConcurrentHashMap<MethodWithParametersKey, Object>();
 
         /** The remote reference. */
         private final RemoteReference<T>                   remoteReference;
@@ -146,7 +119,7 @@ public class RemoteObjectFactory {
          * @param remoteReference the remote reference
          */
         public RemoteReferenceHandler(
-                                       final RemoteObjectServer fromServer, final RemoteReference<T> remoteReference ) {
+                                       final RemoteObjectServer fromServer, final RemoteReference<T> remoteReference) {
             checkNotNull("fromServer", fromServer);
             checkNotNull("remoteReference", remoteReference);
 
@@ -165,26 +138,22 @@ public class RemoteObjectFactory {
 
         /*
          * (non-Javadoc)
-         * 
-         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
-         * java.lang.reflect.Method, java.lang.Object[])
+         * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
          */
-        @SuppressWarnings( "unchecked" )
-        public Object invoke( final Object proxy,
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object invoke(final Object proxy,
                               final Method method,
-                              final Object[] args ) throws Throwable {
-            if (method.isAnnotationPresent(UnsupportedRemoteMethod.class)) {
-                throw new UnsupportedOperationException();
-            }
+                              final Object[] args)
+            throws Throwable {
+            if (method.isAnnotationPresent(UnsupportedRemoteMethod.class)) { throw new UnsupportedOperationException(); }
 
             final Class<?>[] parameterTypes = method.getParameterTypes();
             MethodWithParametersKey key = null;
             if (method.isAnnotationPresent(CachedInvocation.class)) {
                 final String uniqueName = MethodIdentificationSupport.getMethodUniqueName(method);
                 key = new MethodWithParametersKey(uniqueName, args == null ? EMPTY_ARR : args);
-                if (this.methodResultCache.containsKey(key)) {
-                    return this.returnResultFromCache(key);
-                }
+                if (this.methodResultCache.containsKey(key)) { return this.returnResultFromCache(key); }
             }
 
             if (args != null) {
@@ -193,11 +162,11 @@ public class RemoteObjectFactory {
                         if (Proxy.isProxyClass(args[i].getClass())) {
                             final InvocationHandler invocationHandler = Proxy.getInvocationHandler(args[i]);
                             if (invocationHandler instanceof RemoteReferenceHandler<?>) {
-                                final RemoteReferenceHandler<?> handler = (RemoteReferenceHandler<?>)invocationHandler;
+                                final RemoteReferenceHandler<?> handler = (RemoteReferenceHandler<?>) invocationHandler;
                                 args[i] = handler.getRemoteReference();
                             }
                         } else if (args[i] instanceof Collection) {
-                            final Collection<?> collection = (Collection<?>)args[i];
+                            final Collection<?> collection = (Collection<?>) args[i];
                             if (collection.size() > 0) {
                                 final Iterator<?> it = collection.iterator();
                                 Object o = null;
@@ -210,14 +179,19 @@ public class RemoteObjectFactory {
                                         // here, it *needs* to wrap only the
                                         // references before sending it to the
                                         // server
-                                        final Collection<Object> newCollection = SLCollections.createNewCollection(
-                                                                                                                   collection.getClass(),
-                                                                                                                   collection.size());
-                                        for (final Object item : collection) {
+                                        final Collection<Object> newCollection =
+                                            SLCollections
+                                                .createNewCollection(
+                                                                                                                   collection
+                                                                                                                       .getClass(),
+                                                                                                                   collection
+                                                                                                                       .size());
+                                        for (final Object item: collection) {
                                             if (item != null) {
                                                 final InvocationHandler invocationHandler = Proxy.getInvocationHandler(item);
                                                 if (invocationHandler instanceof RemoteReferenceHandler<?>) {
-                                                    final RemoteReferenceHandler<?> handler = (RemoteReferenceHandler<?>)invocationHandler;
+                                                    final RemoteReferenceHandler<?> handler =
+                                                        (RemoteReferenceHandler<?>) invocationHandler;
                                                     final Object newO = handler.getRemoteReference();
                                                     newCollection.add(newO);
                                                 } else {
@@ -233,7 +207,7 @@ public class RemoteObjectFactory {
 
                             }
                         } else if (args[i] instanceof Map) {
-                            final Map<Object, Object> map = (Map<Object, Object>)args[i];
+                            final Map<Object, Object> map = (Map<Object, Object>) args[i];
                             if (map.size() > 0) {
                                 final Iterator<Entry<Object, Object>> it = map.entrySet().iterator();
                                 Object o = null;
@@ -247,11 +221,13 @@ public class RemoteObjectFactory {
                                         // references before sending it to the
                                         // server
                                         final Map<Object, Object> newMap = new HashMap<Object, Object>();
-                                        for (final Entry<Object, Object> item : map.entrySet()) {
+                                        for (final Entry<Object, Object> item: map.entrySet()) {
                                             if (item.getValue() != null) {
-                                                final InvocationHandler invocationHandler = Proxy.getInvocationHandler(item.getValue());
+                                                final InvocationHandler invocationHandler =
+                                                    Proxy.getInvocationHandler(item.getValue());
                                                 if (invocationHandler instanceof RemoteReferenceHandler<?>) {
-                                                    final RemoteReferenceHandler<?> handler = (RemoteReferenceHandler<?>)invocationHandler;
+                                                    final RemoteReferenceHandler<?> handler =
+                                                        (RemoteReferenceHandler<?>) invocationHandler;
                                                     final Object newO = handler.getRemoteReference();
                                                     newMap.put(item.getKey(), newO);
                                                 } else {
@@ -279,38 +255,47 @@ public class RemoteObjectFactory {
 
                 final AbstractInvocationResponse<Object> result = this.fromServer.invokeRemoteMethod(invocation);
                 if (result instanceof LocalCopyInvocationResponse<?>) {
-                    final LocalCopyInvocationResponse<Object> localCopy = (LocalCopyInvocationResponse<Object>)result;
+                    final LocalCopyInvocationResponse<Object> localCopy = (LocalCopyInvocationResponse<Object>) result;
                     resultFromMethod = localCopy.getLocalCopy();
                 } else if (result instanceof RemoteReferenceInvocationResponse<?>) {
-                    final RemoteReferenceInvocationResponse<Object> remoteReferenceResponse = (RemoteReferenceInvocationResponse<Object>)result;
+                    final RemoteReferenceInvocationResponse<Object> remoteReferenceResponse =
+                        (RemoteReferenceInvocationResponse<Object>) result;
                     final RemoteReference<Object> methodResponseRemoteReference = remoteReferenceResponse.getRemoteReference();
                     if (methodResponseRemoteReference == null) {
                         resultFromMethod = null;
                     } else {
-                        resultFromMethod = Proxy.newProxyInstance(
+                        resultFromMethod =
+                            Proxy
+                                .newProxyInstance(
                                                                   this.getClass().getClassLoader(),
                                                                   methodResponseRemoteReference.getInterfaces(),
-                                                                  new RemoteReferenceHandler<Object>(this.fromServer,
+                                                                  new RemoteReferenceHandler<Object>(
+                                                                      this.fromServer,
                                                                                                      methodResponseRemoteReference));
                     }
 
                 } else if (result instanceof CollectionOfRemoteInvocationResponse) {
 
-                    final CollectionOfRemoteInvocationResponse resultCollection = (CollectionOfRemoteInvocationResponse)result;
-                    final Collection<Object> remoteResultCollection = (Collection<Object>)SLCollections.createNewCollection(
-                                                                                                                            resultCollection.getResultType(),
+                    final CollectionOfRemoteInvocationResponse resultCollection = (CollectionOfRemoteInvocationResponse) result;
+                    final Collection<Object> remoteResultCollection =
+                        SLCollections
+                            .createNewCollection(
+                                                                                                                        resultCollection
+                                                                                                                            .getResultType(),
 
-                                                                                                                            resultCollection.getResult().size());
+                                resultCollection.getResult().size());
 
                     final Collection<RemoteReference<Object>> colection = resultCollection.getResult();
-                    for (final RemoteReference<Object> remoteRef : colection) {
+                    for (final RemoteReference<Object> remoteRef: colection) {
                         if (remoteRef != null) {
-                            final Object proxyInstance = Proxy.newProxyInstance(
+                            final Object proxyInstance =
+                                Proxy
+                                    .newProxyInstance(
                                                                                 this.getClass().getClassLoader(),
                                                                                 remoteRef.getInterfaces(),
                                                                                 new RemoteReferenceHandler<Object>(
                                                                                                                    this.fromServer,
-                                                                                                                   (RemoteReference<Object>)remoteRef));
+                                                                                                                   remoteRef));
 
                             remoteResultCollection.add(proxyInstance);
                         } else {
@@ -319,19 +304,22 @@ public class RemoteObjectFactory {
                     }
                     resultFromMethod = remoteResultCollection;
                 } else if (result instanceof MapOfRemoteInvocationResponse) {
-                    final MapOfRemoteInvocationResponse resultMap = (MapOfRemoteInvocationResponse)result;
+                    final MapOfRemoteInvocationResponse resultMap = (MapOfRemoteInvocationResponse) result;
                     final Map<Object, Object> remoteResultMap = new HashMap<Object, Object>();
                     final Set<Entry<Object, Object>> entrySet = resultMap.getResult().entrySet();
-                    for (final Entry<Object, Object> remoteRef : entrySet) {
-                        final RemoteReference<?> remoteRefValue = (RemoteReference<?>)remoteRef.getValue();
+                    for (final Entry<Object, Object> remoteRef: entrySet) {
+                        final RemoteReference<?> remoteRefValue = (RemoteReference<?>) remoteRef.getValue();
                         if (remoteRefValue != null) {
 
-                            final Object proxyInstance = Proxy.newProxyInstance(
+                            final Object proxyInstance =
+                                Proxy
+                                    .newProxyInstance(
                                                                                 this.getClass().getClassLoader(),
                                                                                 remoteRefValue.getInterfaces(),
                                                                                 new RemoteReferenceHandler<Object>(
                                                                                                                    this.fromServer,
-                                                                                                                   (RemoteReference<Object>)remoteRef.getValue()));
+                                                                                                                   (RemoteReference<Object>) remoteRef
+                                                                                                                       .getValue()));
 
                             remoteResultMap.put(remoteRef.getKey(), proxyInstance);
                         } else {
@@ -366,14 +354,13 @@ public class RemoteObjectFactory {
          * @return the object
          * @throws Throwable the throwable
          */
-        private Object returnResultFromCache( final MethodWithParametersKey key ) throws Throwable {
+        private Object returnResultFromCache(final MethodWithParametersKey key)
+            throws Throwable {
             final Object value = this.methodResultCache.get(key);
-            if (value == NULL_VALUE) {
-                return null;
-            }
+            if (value == NULL_VALUE) { return null; }
 
             if (value instanceof ExceptionWrapper) {
-                final ExceptionWrapper ex = (ExceptionWrapper)value;
+                final ExceptionWrapper ex = (ExceptionWrapper) value;
                 throw ex.getThrowable();
             }
 
@@ -386,8 +373,8 @@ public class RemoteObjectFactory {
          * @param key the key
          * @param resultFromMethod the result from method
          */
-        private void storeResultOnCache( final MethodWithParametersKey key,
-                                         final Object resultFromMethod ) {
+        private void storeResultOnCache(final MethodWithParametersKey key,
+                                         final Object resultFromMethod) {
 
             if (resultFromMethod == null) {
                 this.methodResultCache.put(key, NULL_VALUE);
@@ -416,20 +403,20 @@ public class RemoteObjectFactory {
      * @throws AccessDeniedException the access denied exception
      */
     public RemoteObjectFactory(
-                                final String host, final int port, final String userName, final String password )
+                                final String host, final int port, final String userName, final String password)
         throws CantConnectException, AccessDeniedException {
         String clientHost;
         try {
             clientHost = InetAddress.getLocalHost().getHostAddress().toString();
             final String connectionString = format("//{0}:{1}/RemoteObjectServer", host, new Integer(port).toString());
-            this.fromServer = (RemoteObjectServer)TransparentItemProxy.getItem(connectionString,
+            fromServer = (RemoteObjectServer) TransparentItemProxy.getItem(connectionString,
                                                                                new Class<?>[] {RemoteObjectServer.class});
 
         } catch (final Exception e) {
             throw logAndReturnNew(e, CantConnectException.class);
         }
 
-        this.userToken = this.fromServer.createUserToken(userName, password, clientHost);
+        userToken = fromServer.createUserToken(userName, password, clientHost);
     }
 
     /**
@@ -440,13 +427,14 @@ public class RemoteObjectFactory {
      * @return the T
      * @throws InvalidReferenceTypeException the invalid reference type exception
      */
-    @SuppressWarnings( "unchecked" )
-    public <T> T createRemoteObject( final Class<T> remoteObjectType,
-                                     final Object... parameters ) throws InvalidReferenceTypeException {
-        final RemoteReference<T> remoteReference = this.fromServer.createRemoteReference(this.userToken, remoteObjectType,
+    @SuppressWarnings("unchecked")
+    public <T> T createRemoteObject(final Class<T> remoteObjectType,
+                                     final Object... parameters)
+        throws InvalidReferenceTypeException {
+        final RemoteReference<T> remoteReference = fromServer.createRemoteReference(userToken, remoteObjectType,
                                                                                          parameters);
-        final T newObjectProxy = (T)Proxy.newProxyInstance(this.getClass().getClassLoader(), remoteReference.getInterfaces(),
-                                                           new RemoteReferenceHandler(this.fromServer, remoteReference));
+        final T newObjectProxy = (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), remoteReference.getInterfaces(),
+                                                           new RemoteReferenceHandler(fromServer, remoteReference));
         return newObjectProxy;
     }
 

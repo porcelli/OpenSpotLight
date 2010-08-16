@@ -30,8 +30,9 @@ public interface PropertyContainer {
      * @param value the property value
      * @throws IllegalArgumentException if any input param is null
      */
-    <V extends Serializable> void setProperty( String key,
-                                               V value ) throws IllegalArgumentException;
+    <V extends Serializable> void setProperty(String key,
+                                               V value)
+        throws IllegalArgumentException;
 
     /**
      * Returns a list of properties pairs (key-value).
@@ -48,7 +49,8 @@ public interface PropertyContainer {
      * @return <code>true</code> if this element has a property accessible through the given key, <code>false</code> otherwise
      * @throws IllegalArgumentException if the input param is null
      */
-    boolean hasProperty( String key ) throws IllegalArgumentException;
+    boolean hasProperty(String key)
+        throws IllegalArgumentException;
 
     /**
      * Returns all existing property keys, or an empty iterable if this element has no properties.
@@ -65,7 +67,8 @@ public interface PropertyContainer {
      * @return the property value or null if property not found
      * @throws IllegalArgumentException if the input param is null
      */
-    <V extends Serializable> V getPropertyValue( String key ) throws IllegalArgumentException;
+    <V extends Serializable> V getPropertyValue(String key)
+        throws IllegalArgumentException;
 
     /**
      * Returns the property value associated with the given key, or a default value.
@@ -76,8 +79,9 @@ public interface PropertyContainer {
      * @return the property value associated with the given key or the default value.
      * @throws IllegalArgumentException if any input param is null
      */
-    <V extends Serializable> V getPropertyValue( String key,
-                                                 V defaultValue ) throws IllegalArgumentException;
+    <V extends Serializable> V getPropertyValue(String key,
+                                                 V defaultValue)
+        throws IllegalArgumentException;
 
     /**
      * Returns the property value as string (this is just a sugar method) or null if property not found.
@@ -86,7 +90,8 @@ public interface PropertyContainer {
      * @return the property value as string or null if property not found
      * @throws IllegalArgumentException if the input param is null
      */
-    String getPropertyValueAsString( String key ) throws IllegalArgumentException;
+    String getPropertyValueAsString(String key)
+        throws IllegalArgumentException;
 
     /**
      * Removes the property associated with the given key if exists. If there's no property associated with the key, nothing will
@@ -95,6 +100,7 @@ public interface PropertyContainer {
      * @param key the property key
      * @throws IllegalArgumentException if the input param is null
      */
-    void removeProperty( String key ) throws IllegalArgumentException;
+    void removeProperty(String key)
+        throws IllegalArgumentException;
 
 }

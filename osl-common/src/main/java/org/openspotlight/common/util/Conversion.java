@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.common.util;
@@ -107,13 +79,14 @@ public class Conversion {
         Conversion.CONVERTERS.put(Float.class, new FloatConverter());
         Conversion.CONVERTERS.put(Date.class, new Converter() {
 
-            @SuppressWarnings( "unchecked" )
-            public Object convert( final Class type,
-                                   final Object value ) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object convert(final Class type,
+                                   final Object value) {
                 try {
                     if (type.equals(Date.class) && value instanceof String
-                            && ((String)value).isEmpty() == false) {
-                        final String newValue = (String)value;
+                            && ((String) value).isEmpty() == false) {
+                        final String newValue = (String) value;
                         return new Date(Long.parseLong(newValue));
                     }
                 } catch (final Exception e) {
@@ -125,21 +98,22 @@ public class Conversion {
         });
         Conversion.CONVERTERS.put(String.class, new Converter() {
 
-            @SuppressWarnings( "unchecked" )
-            public Object convert( final Class type,
-                                   final Object value ) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object convert(final Class type,
+                                   final Object value) {
                 try {
                     if (value == null) {
                         return null;
                     }
                     if (type.equals(String.class) && value instanceof Date) {
-                        return Long.toString(((Date)value).getTime());
+                        return Long.toString(((Date) value).getTime());
                     }
                     if (type.equals(String.class) && value instanceof Class) {
-                        return ((Class)value).getName();
+                        return ((Class) value).getName();
                     }
                     if (type.equals(String.class) && value instanceof byte[]) {
-                        return new String((byte[])value);
+                        return new String((byte[]) value);
                     }
                     return value.toString();
                 } catch (final Exception e) {
@@ -162,12 +136,13 @@ public class Conversion {
         Conversion.CONVERTERS.put(BigInteger.class, new BigIntegerConverter());
         Conversion.CONVERTERS.put(Class.class, new Converter() {
 
-            @SuppressWarnings( "unchecked" )
-            public Object convert( final Class type,
-                                   final Object value ) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Object convert(final Class type,
+                                   final Object value) {
                 try {
                     if (type.equals(Class.class) && value instanceof String) {
-                        String newValue = (String)value;
+                        String newValue = (String) value;
                         if (newValue.startsWith("class ")) {
                             newValue = Strings.removeBegginingFrom("class ", newValue);
                         }
@@ -191,25 +166,24 @@ public class Conversion {
      * @return a new value from a converted type
      * @throws SLException
      */
-    @SuppressWarnings( "unchecked" )
-    public static <E> E convert( final Object rawValue,
-                                 final Class<E> targetType ) {
+    @SuppressWarnings("unchecked")
+    public static <E> E convert(final Object rawValue,
+                                 final Class<E> targetType) {
         Assertions.checkNotNull("targetType", targetType); //$NON-NLS-1$
-        Assertions.checkCondition(
+        Assertions
+            .checkCondition(
                                   "validTargetType:" + targetType.getName(), Conversion.CONVERTERS.containsKey(targetType) || targetType.isEnum()); //$NON-NLS-1$
-        if (rawValue == null) {
-            return null;
-        }
+        if (rawValue == null) { return null; }
 
         try {
             if (targetType.isEnum()) {
                 final String rawValueAsString = rawValue.toString();
                 final Field[] flds = targetType.getDeclaredFields();
-                for (final Field f : flds) {
+                for (final Field f: flds) {
                     if (f.isEnumConstant()) {
                         if (f.getName().equals(rawValueAsString)) {
                             final Object value = f.get(null);
-                            return (E)value;
+                            return (E) value;
 
                         }
                     }
@@ -218,14 +192,14 @@ public class Conversion {
                                                                      targetType));
             }
             final Converter converter = Conversion.CONVERTERS.get(targetType);
-            final E converted = (E)converter.convert(targetType, rawValue);
+            final E converted = (E) converter.convert(targetType, rawValue);
             return converted;
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
-    public static Class<?> getPrimitiveClass( final String name ) {
+    public static Class<?> getPrimitiveClass(final String name) {
         return Conversion.PRIMITIVE_TYPES.get(name);
     }
 

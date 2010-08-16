@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.persist.lazy.test;
 
@@ -59,8 +31,8 @@ import org.junit.Test;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.domain.Node;
+import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -70,24 +42,29 @@ import com.google.inject.Injector;
 
 public class SimplePersistLazyBehaviorTest {
 
-    final Injector                                      autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
+    final Injector                             autoFlushInjector =
+                                                                     Guice
+                                                                         .createInjector(new JRedisStorageModule(
                                                                                                                          StorageSession.FlushMode.AUTO,
-                                                                                                                         ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+                                                                                                                         ExampleRedisConfig.EXAMPLE
+                                                                                                                             .getMappedServerConfig(),
                                                                                                                          repositoryPath("repository")));
 
-    StorageSession                                    session;
+    StorageSession                             session;
     SimplePersistCapable<Node, StorageSession> simplePersist;
 
     @Before
-    public void cleanPreviousData() throws Exception {
-        JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
+    public void cleanPreviousData()
+        throws Exception {
+        final JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
         autoFlushFactory.getFrom(RegularPartitions.FEDERATION).flushall();
-        this.session = autoFlushInjector.getInstance(StorageSession.class);
-        this.simplePersist = new SimplePersistImpl(session, RegularPartitions.FEDERATION);
+        session = autoFlushInjector.getInstance(StorageSession.class);
+        simplePersist = new SimplePersistImpl(session, RegularPartitions.FEDERATION);
     }
 
     @Test
-    public void shouldLoadSavedValue() throws Exception {
+    public void shouldLoadSavedValue()
+        throws Exception {
 
         ClassWithLazyProperty bean = new ClassWithLazyProperty();
         bean.setTest("test");
@@ -102,7 +79,8 @@ public class SimplePersistLazyBehaviorTest {
     }
 
     @Test
-    public void shouldLooseWeakValue() throws Exception {
+    public void shouldLooseWeakValue()
+        throws Exception {
         final ClassWithLazyProperty bean = new ClassWithLazyProperty();
         bean.setTest("test");
         bean.getBigPojoProperty().getMetadata().setCached(new SerializablePojoProperty());
@@ -114,7 +92,8 @@ public class SimplePersistLazyBehaviorTest {
     }
 
     @Test
-    public void shouldSaveTransientValue() throws Exception {
+    public void shouldSaveTransientValue()
+        throws Exception {
         ClassWithLazyProperty bean = new ClassWithLazyProperty();
         bean.setTest("test");
 

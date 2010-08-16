@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.common.util;
@@ -113,7 +85,7 @@ public class HashCodes {
      * @param b
      * @return the hash code
      */
-    public static int hashOf( final boolean b ) {
+    public static int hashOf(final boolean b) {
         return b ? 1 : 0;
     }
 
@@ -140,7 +112,7 @@ public class HashCodes {
      * @param b
      * @return the hash code
      */
-    public static int hashOf( final byte b ) {
+    public static int hashOf(final byte b) {
         return b;
     }
 
@@ -167,7 +139,7 @@ public class HashCodes {
      * @param c
      * @return the hash code
      */
-    public static int hashOf( final char c ) {
+    public static int hashOf(final char c) {
         return c;
     }
 
@@ -194,7 +166,7 @@ public class HashCodes {
      * @param d
      * @return the hash code
      */
-    public static int hashOf( final double d ) {
+    public static int hashOf(final double d) {
         return hashOf(doubleToLongBits(d));
     }
 
@@ -221,7 +193,7 @@ public class HashCodes {
      * @param f
      * @return the hash code
      */
-    public static int hashOf( final float f ) {
+    public static int hashOf(final float f) {
         return floatToIntBits(f);
     }
 
@@ -248,7 +220,7 @@ public class HashCodes {
      * @param i
      * @return the hash code
      */
-    public static int hashOf( final int i ) {
+    public static int hashOf(final int i) {
         return i;
     }
 
@@ -269,9 +241,9 @@ public class HashCodes {
      * @param iterable
      * @return the hash code
      */
-    public static int hashOf( final Iterable<?> iterable ) {
+    public static int hashOf(final Iterable<?> iterable) {
         int result = 17;
-        for (final Object attribute : iterable) {
+        for (final Object attribute: iterable) {
             result = 31 * result + hashOf(attribute);
         }
         return result;
@@ -300,8 +272,8 @@ public class HashCodes {
      * @param l
      * @return the hash code
      */
-    public static int hashOf( final long l ) {
-        return (int)(l ^ (l >>> 32));
+    public static int hashOf(final long l) {
+        return (int) (l ^ (l >>> 32));
     }
 
     /**
@@ -321,9 +293,9 @@ public class HashCodes {
      * @param map
      * @return the hash code
      */
-    public static int hashOf( final Map<?, ?> map ) {
+    public static int hashOf(final Map<?, ?> map) {
         int result = 17;
-        for (final Map.Entry<?, ?> entry : map.entrySet()) {
+        for (final Map.Entry<?, ?> entry: map.entrySet()) {
             result = 31 * result + hashOf(entry.getKey());
             result = 31 * result + hashOf(entry.getValue());
         }
@@ -353,7 +325,7 @@ public class HashCodes {
      * @param o
      * @return the hash code
      */
-    public static int hashOf( final Object o ) {
+    public static int hashOf(final Object o) {
         return o == null ? 0 : o.hashCode();
     }
 
@@ -374,13 +346,13 @@ public class HashCodes {
      * @param attributes
      * @return the hash code
      */
-    public static int hashOf( final Object... attributes ) {
+    public static int hashOf(final Object... attributes) {
         int result = 17;
-        for (final Object attribute : attributes) {
+        for (final Object attribute: attributes) {
             if (attribute instanceof Iterable<?>) {
-                result = 31 * result + hashOf((Iterable<?>)attribute);
+                result = 31 * result + hashOf((Iterable<?>) attribute);
             } else if (attribute instanceof Map<?, ?>) {
-                result = 31 * result + hashOf((Map<?, ?>)attribute);
+                result = 31 * result + hashOf((Map<?, ?>) attribute);
             } else {
                 result = 31 * result + hashOf(attribute);
             }
@@ -412,7 +384,7 @@ public class HashCodes {
      * @param s
      * @return the hash code
      */
-    public static int hashOf( final short s ) {
+    public static int hashOf(final short s) {
         return s;
     }
 

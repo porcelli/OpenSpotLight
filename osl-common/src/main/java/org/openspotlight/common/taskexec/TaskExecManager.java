@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.common.taskexec;
 
@@ -91,10 +63,11 @@ public enum TaskExecManager {
         private final CopyOnWriteArrayList<TaskExec> parents     = new CopyOnWriteArrayList<TaskExec>();
 
         public TaskBuilderImpl(
-                                final TaskGroupImpl taskGroup ) {
+                                final TaskGroupImpl taskGroup) {
             this.taskGroup = taskGroup;
         }
 
+        @Override
         public TaskExec andPublishTask() {
             checkCondition("notPublished", published.get() == false);
             final TaskImpl task = new TaskImpl(parents, description, thisRunnable, taskId);
@@ -103,23 +76,26 @@ public enum TaskExecManager {
             return task;
         }
 
-        public TaskExecBuilder withParentTasks( final Iterable<TaskExec> parent ) {
+        @Override
+        public TaskExecBuilder withParentTasks(final Iterable<TaskExec> parent) {
             checkCondition("notStarted", started.get() == false);
-            for (final TaskExec t : parent) {
+            for (final TaskExec t: parent) {
                 parents.add(t);
             }
             return this;
         }
 
-        public TaskExecBuilder withParentTasks( final TaskExec... parent ) {
+        @Override
+        public TaskExecBuilder withParentTasks(final TaskExec... parent) {
             checkCondition("notStarted", started.get() == false);
-            for (final TaskExec t : parent) {
+            for (final TaskExec t: parent) {
                 parents.add(t);
             }
             return this;
         }
 
-        public TaskExecBuilder withReadableDescription( final String readableDescription ) {
+        @Override
+        public TaskExecBuilder withReadableDescription(final String readableDescription) {
             checkNotEmpty("readableDescription", readableDescription);
             checkCondition("notPublished", published.get() == false);
             checkCondition("notStarded", started.get() == false);
@@ -128,14 +104,16 @@ public enum TaskExecManager {
             return this;
         }
 
-        public TaskExecBuilder withReadableDescriptionAndUniqueId( final String readableDescriptionAndUniqueId ) {
+        @Override
+        public TaskExecBuilder withReadableDescriptionAndUniqueId(final String readableDescriptionAndUniqueId) {
             checkNotEmpty("readableDescriptionAndUniqueId", readableDescriptionAndUniqueId);
             withUniqueId(readableDescriptionAndUniqueId);
             withReadableDescription(readableDescriptionAndUniqueId);
             return this;
         }
 
-        public TaskExecBuilder withRunnable( final RunnableWithException runnable ) {
+        @Override
+        public TaskExecBuilder withRunnable(final RunnableWithException runnable) {
             checkNotNull("runnable", runnable);
             checkCondition("notPublished", published.get() == false);
             checkCondition("notStarded", started.get() == false);
@@ -144,7 +122,8 @@ public enum TaskExecManager {
             return this;
         }
 
-        public TaskExecBuilder withUniqueId( final String uniqueId ) {
+        @Override
+        public TaskExecBuilder withUniqueId(final String uniqueId) {
             checkNotEmpty("uniqueId", uniqueId);
             checkCondition("notPublished", published.get() == false);
             checkCondition("notStarded", started.get() == false);
@@ -179,7 +158,7 @@ public enum TaskExecManager {
                               final BlockingQueue<TaskImpl> queue, final List<String> alreadyRunnedTaskIds,
                               final List<String> runningTaskIds, final ReentrantLock lock,
                               final AtomicReference<Priority> currentPriorityRunning,
-                              final LinkedBlockingQueue<TaskImpl> tasksForThisPriority, final String name, final String poolName ) {
+                              final LinkedBlockingQueue<TaskImpl> tasksForThisPriority, final String name, final String poolName) {
             this.thisGroupPriority = thisGroupPriority;
             this.stopped = stopped;
             this.queue = queue;
@@ -192,7 +171,7 @@ public enum TaskExecManager {
             this.poolName = poolName;
         }
 
-        public void addTaskToPool( final TaskExec task )
+        public void addTaskToPool(final TaskExec task)
             throws TaskAlreadyOnPoolException, TaskAlreadyRunnedException, TaskRunningException, PoolAlreadyStoppedException,
             RunningPriorityBigger {
             try {
@@ -214,7 +193,7 @@ public enum TaskExecManager {
                     if (queue.contains(task)) {
                         Exceptions.logAndThrow(new TaskAlreadyOnPoolException());
                     }
-                    queue.add((TaskImpl)task);
+                    queue.add((TaskImpl) task);
                     if (logger.isDebugEnabled()) {
                         logger.debug("added task " + task.getUniqueId() + " " + task.getReadableDescription()
                                      + " to the current pool " + poolName + " and group " + name);
@@ -223,7 +202,7 @@ public enum TaskExecManager {
                     if (tasksForThisPriority.contains(task)) {
                         Exceptions.logAndThrow(new TaskAlreadyOnPoolException());
                     }
-                    tasksForThisPriority.add((TaskImpl)task);
+                    tasksForThisPriority.add((TaskImpl) task);
                     if (logger.isDebugEnabled()) {
                         logger.debug("added task " + task.getUniqueId() + " " + task.getReadableDescription()
                                      + " to the future pool " + poolName + " and group " + name);
@@ -234,14 +213,17 @@ public enum TaskExecManager {
             }
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public Priority getPriority() {
             return thisGroupPriority;
         }
 
+        @Override
         public TaskExecBuilder prepareTask() {
             return new TaskBuilderImpl(this);
         }
@@ -263,18 +245,20 @@ public enum TaskExecManager {
 
         public TaskImpl(
                          final List<TaskExec> parentTasks, final String readableDescription,
-                         final RunnableWithException runnable, final String uniqueId ) {
+                         final RunnableWithException runnable, final String uniqueId) {
             this.parentTasks = parentTasks;
             this.readableDescription = readableDescription;
             this.runnable = runnable;
             this.uniqueId = uniqueId;
         }
 
-        public void awaitToRun() throws InterruptedException {
+        @Override
+        public void awaitToRun()
+            throws InterruptedException {
             if (logger.isDebugEnabled()) {
                 logger.debug("verifying if parents did run for task " + getUniqueId() + " " + getReadableDescription());
             }
-            for (final TaskExec parent : parentTasks) {
+            for (final TaskExec parent: parentTasks) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("verifying if parent " + parent.getUniqueId() + " " + parent.getReadableDescription()
                                  + " did run for task " + getUniqueId() + " " + getReadableDescription());
@@ -290,32 +274,41 @@ public enum TaskExecManager {
             }
         }
 
-        public void awaitToRunChild() throws InterruptedException {
+        @Override
+        public void awaitToRunChild()
+            throws InterruptedException {
 
             latch.await();
         }
 
+        @Override
         public boolean didRun() {
             return latch.getCount() == 0l;
         }
 
+        @Override
         public List<TaskExec> getParentTasks() {
             return parentTasks;
         }
 
+        @Override
         public String getReadableDescription() {
             return readableDescription;
         }
 
+        @Override
         public RunnableWithException getRunnable() {
             return runnable;
         }
 
+        @Override
         public String getUniqueId() {
             return uniqueId;
         }
 
-        public void run() throws Exception {
+        @Override
+        public void run()
+            throws Exception {
             if (didRun()) {
                 Exceptions.logAndThrow(new IllegalArgumentException("trying to run a task more than once: "
                                                                     + getReadableDescription()));
@@ -341,23 +334,28 @@ public enum TaskExecManager {
 
         private final AtomicReference<Priority>              currentPriorityRunning = new AtomicReference<Priority>();
         private final BlockingQueue<Priority>                existentPriorities     = new PriorityBlockingQueue<Priority>();
-        private final Map<Priority, BlockingQueue<TaskImpl>> taskMap                = new ConcurrentHashMap<Priority, BlockingQueue<TaskImpl>>();
+        private final Map<Priority, BlockingQueue<TaskImpl>> taskMap                =
+                                                                                        new ConcurrentHashMap<Priority, BlockingQueue<TaskImpl>>();
 
-        private final CopyOnWriteArrayList<RunnableListener> listeners              = new CopyOnWriteArrayList<RunnableListener>();
+        private final CopyOnWriteArrayList<RunnableListener> listeners              =
+                                                                                        new CopyOnWriteArrayList<RunnableListener>();
 
         public TaskPoolImpl(
-                             final String poolName, final int poolSize ) {
+                             final String poolName, final int poolSize) {
             this.poolName = poolName;
             this.poolSize = poolSize;
             executor = GossipExecutor.newFixedThreadPool(poolSize, poolName);
         }
 
-        public void addListener( final RunnableListener listener ) {
+        @Override
+        public void addListener(final RunnableListener listener) {
             listeners.add(listener);
         }
 
-        public TaskExecGroup createTaskGroup( final String taskGroupName,
-                                              final int... priorities ) throws RunningPriorityBigger {
+        @Override
+        public TaskExecGroup createTaskGroup(final String taskGroupName,
+                                              final int... priorities)
+            throws RunningPriorityBigger {
             try {
                 lock.lock();
                 final Priority priorityAsObj = Priority.createPriority(priorities);
@@ -377,24 +375,30 @@ public enum TaskExecManager {
             }
         }
 
+        @Override
         public String getPoolName() {
             return poolName;
         }
 
+        @Override
         public boolean isRunningAnyTask() {
 
             return runningTaskIds.size() > 0;
         }
 
-        public void removeListener( final RunnableListener listener ) {
+        @Override
+        public void removeListener(final RunnableListener listener) {
             listeners.remove(listener);
         }
 
-        public void startExecutorBlockingUntilFinish() throws InterruptedException {
+        @Override
+        public void startExecutorBlockingUntilFinish()
+            throws InterruptedException {
             startExecutorOnBackground();
             stopped.await();
         }
 
+        @Override
         public void startExecutorOnBackground() {
             for (int i = 0; i < poolSize; i++) {
                 executor.execute(new Worker(listeners, poolName + "_" + i, stopped, queue, alreadyRunnedTaskIds, runningTaskIds,
@@ -426,7 +430,7 @@ public enum TaskExecManager {
                        final CountDownLatch stopped, final BlockingQueue<TaskImpl> queue,
                        final List<String> alreadyRunnedTaskIds, final List<String> runningTaskIds, final ReentrantLock lock,
                        final AtomicReference<Priority> currentPriorityRunning, final BlockingQueue<Priority> existentPriorities,
-                       final Map<Priority, BlockingQueue<TaskImpl>> taskMap ) {
+                       final Map<Priority, BlockingQueue<TaskImpl>> taskMap) {
             this.stopped = stopped;
             this.queue = queue;
             this.alreadyRunnedTaskIds = alreadyRunnedTaskIds;
@@ -440,9 +444,10 @@ public enum TaskExecManager {
 
         }
 
+        @Override
         public void run() {
             try {
-                for (final RunnableListener l : listeners) {
+                for (final RunnableListener l: listeners) {
                     l.beforeSetupWorker(threadLocalMap);
                 }
 
@@ -505,7 +510,7 @@ public enum TaskExecManager {
                     }
                     currentTask.set(task);
                     try {
-                        for (final RunnableListener l : listeners) {
+                        for (final RunnableListener l: listeners) {
                             l.beforeRunningTask(threadLocalMap, task.getRunnable());
                         }
                     } catch (final Exception e) {
@@ -519,7 +524,7 @@ public enum TaskExecManager {
                     }
                     task.run();
                     try {
-                        for (final RunnableListener l : listeners) {
+                        for (final RunnableListener l: listeners) {
                             l.afterRunningTask(threadLocalMap, task.getRunnable());
                         }
                     } catch (final Exception e) {
@@ -565,7 +570,7 @@ public enum TaskExecManager {
                 logger.debug("stopping worker " + workerId);
             }
             try {
-                for (final RunnableListener l : listeners) {
+                for (final RunnableListener l: listeners) {
                     l.beforeShutdownWorker(threadLocalMap);
                 }
 
@@ -575,8 +580,8 @@ public enum TaskExecManager {
         }
     }
 
-    public TaskExecPool createTaskPool( final String poolName,
-                                        final int poolSize ) {
+    public TaskExecPool createTaskPool(final String poolName,
+                                        final int poolSize) {
         checkNotEmpty("poolName", poolName);
         return new TaskPoolImpl(poolName, poolSize);
     }

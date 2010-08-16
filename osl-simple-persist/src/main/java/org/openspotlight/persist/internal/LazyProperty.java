@@ -1,50 +1,22 @@
 /*
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.persist.internal;
 
@@ -89,7 +61,7 @@ public final class LazyProperty<T> implements Serializable {
     private final Class<T> type;
 
     private String         sha1;
-    private Node    node;
+    private Node           node;
 
     /**
      * Factory class.
@@ -105,14 +77,13 @@ public final class LazyProperty<T> implements Serializable {
          * @param parent
          * @return
          */
-        public static <T> LazyProperty<T> create( Class<? super T> type,
-                                                  final SimpleNodeType parent ) {
+        public static <T> LazyProperty<T> create(final Class<? super T> type,
+                                                  final SimpleNodeType parent) {
             Assertions.checkNotNull("parent", parent);
-            return new LazyProperty<T>(parent, (Class<T>)type);
+            return new LazyProperty<T>(parent, (Class<T>) type);
         }
 
-        private Factory() {
-        }
+        private Factory() {}
 
     }
 
@@ -124,7 +95,7 @@ public final class LazyProperty<T> implements Serializable {
      */
     public final class Metadata implements Serializable {
 
-        public void setSavedNode( Node node ) {
+        public void setSavedNode(final Node node) {
             LazyProperty.this.node = node;
         }
 
@@ -136,23 +107,23 @@ public final class LazyProperty<T> implements Serializable {
             return sha1;
         }
 
-        private String createSha1( T content ) {
-            if (content == null) return null;
+        private String createSha1(final T content) {
+            if (content == null) { return null; }
             try {
                 if (content instanceof Serializable) {
 
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ObjectOutputStream oos = new ObjectOutputStream(baos);
+                    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    final ObjectOutputStream oos = new ObjectOutputStream(baos);
                     oos.writeObject(content);
                     oos.flush();
                     oos.close();
                     return Sha1.getSha1SignatureEncodedAsBase64(baos.toByteArray());
                 } else {
-                    InputStream is = (InputStream)content;
+                    final InputStream is = (InputStream) content;
                     return Sha1.getSha1SignatureEncodedAsBase64(is);
 
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
             }
         }
@@ -162,7 +133,7 @@ public final class LazyProperty<T> implements Serializable {
          * 
          * @param sha1
          */
-        public void internalSetSha1( String sha1 ) {
+        public void internalSetSha1(final String sha1) {
             LazyProperty.this.sha1 = sha1;
         }
 
@@ -171,8 +142,7 @@ public final class LazyProperty<T> implements Serializable {
          */
         private static final long serialVersionUID = -31577246921422934L;
 
-        private Metadata() {
-        }
+        private Metadata() {}
 
         /**
          * Return the cached value. If there's no cached value, the session will be used to load a new one. The session isn't
@@ -180,36 +150,41 @@ public final class LazyProperty<T> implements Serializable {
          * 
          * @return
          */
-        @SuppressWarnings( "unchecked" )
-        public T getCached( SimplePersistCapable<Node, StorageSession> simplePersist ) {
+        @SuppressWarnings("unchecked")
+        public T getCached(final SimplePersistCapable<Node, StorageSession> simplePersist) {
             try {
                 lock.lock();
                 final T cachedValue = cached == null ? null : cached.get();
                 if (cachedValue == null) {
-                    if (simplePersist == null && parentKey == null) {
-                        return null;
-                    }
-                    if (simplePersist == null) {
-                        throw Exceptions.logAndReturn(new IllegalStateException("trying to retrieve a value with a null session"));
-                    }
+                    if (simplePersist == null && parentKey == null) { return null; }
+                    if (simplePersist == null) { throw Exceptions.logAndReturn(new IllegalStateException(
+                        "trying to retrieve a value with a null session")); }
                     Assertions.checkNotNull("parentKey", parentKey);
                     Assertions.checkNotEmpty("propertyName", propertyName);
                     try {
                         if (node == null) {
 
-                            node = simplePersist.getCurrentSession().withPartition(
-                                                                                   simplePersist.getCurrentPartition()).createCriteria().withUniqueKey(
-                                                                                                                                                       parentKey).buildCriteria().andFindUnique(
-                                                                                                                                                                                                simplePersist.getCurrentSession());
+                            node =
+                                simplePersist
+                                    .getCurrentSession()
+                                    .withPartition(
+                                                                                   simplePersist.getCurrentPartition())
+                                    .createCriteria()
+                                    .withUniqueKey(
+                                                                                                                                                       parentKey)
+                                    .buildCriteria()
+                                    .andFindUnique(
+                                                                                                                                                                                                simplePersist
+                                                                                                                                                                                                    .getCurrentSession());
 
                         }
-                        InputStream o = node.getPropertyAsStream(simplePersist.getCurrentSession(), propertyName);
-                        InputStream is = (InputStream)o;
+                        final InputStream o = node.getPropertyAsStream(simplePersist.getCurrentSession(), propertyName);
+                        final InputStream is = o;
                         if (is != null && is.markSupported()) {
                             is.reset();
                         }
-                        T s = (T)SerializationUtil.deserialize(o);
-                        simplePersist.getInternalMethods().beforeUnConvert((SimpleNodeType)parent, (Serializable)s, null);
+                        final T s = (T) SerializationUtil.deserialize(o);
+                        simplePersist.getInternalMethods().beforeUnConvert(parent, (Serializable) s, null);
                         setCached(s);
                         return s;
 
@@ -304,7 +279,7 @@ public final class LazyProperty<T> implements Serializable {
             }
         }
 
-        public void setCached( final T cached ) {
+        public void setCached(final T cached) {
             try {
                 lock.lock();
                 LazyProperty.this.cached = new WeakReference<T>(cached);
@@ -313,17 +288,17 @@ public final class LazyProperty<T> implements Serializable {
             }
         }
 
-        public void setParentKey( final UniqueKey parentKey ) {
+        public void setParentKey(final UniqueKey parentKey) {
             LazyProperty.this.parentKey = parentKey;
         }
 
-        public void setPropertyName( final String propertyName ) {
+        public void setPropertyName(final String propertyName) {
             LazyProperty.this.propertyName = propertyName;
         }
 
     }
 
-    private UniqueKey                parentKey;
+    private UniqueKey                  parentKey;
 
     private String                     propertyName;
 
@@ -342,7 +317,7 @@ public final class LazyProperty<T> implements Serializable {
     private boolean                    needsSave        = false;
 
     private LazyProperty(
-                          final SimpleNodeType parent, Class<T> type ) {
+                          final SimpleNodeType parent, final Class<T> type) {
         this.parent = parent;
 
         this.type = type;
@@ -354,7 +329,7 @@ public final class LazyProperty<T> implements Serializable {
      * 
      * @return
      */
-    public T get( SimplePersistCapable<Node, StorageSession> simplePersist ) {
+    public T get(final SimplePersistCapable<Node, StorageSession> simplePersist) {
         try {
             lock.lock();
             T value = metadata.getTransient();
@@ -376,7 +351,7 @@ public final class LazyProperty<T> implements Serializable {
      * 
      * @param newValue
      */
-    public void setTransient( final T newValue ) {
+    public void setTransient(final T newValue) {
         try {
             lock.lock();
             this.transientValue = newValue;
