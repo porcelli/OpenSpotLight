@@ -64,8 +64,8 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.graph.internal.NodeSupport;
-import org.openspotlight.graph.internal.NodeSupport.NodeMetadata;
+import org.openspotlight.graph.internal.NodeAndLinkSupport;
+import org.openspotlight.graph.internal.NodeAndLinkSupport.NodeMetadata;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
@@ -152,7 +152,7 @@ public class GraphReaderImpl implements GraphReader {
 								if (name == null)
 									return true;
 								return name.equals(o.getPropertyAsString(
-										session, NodeSupport.NAME));
+										session, NodeAndLinkSupport.NAME));
 
 							}
 						}).andBuild();
@@ -182,22 +182,22 @@ public class GraphReaderImpl implements GraphReader {
 			int weigth;
 			if (contextNode == null) {
 
-				weigth = NodeSupport.findInitialWeight(ContextImpl.class);
+				weigth = NodeAndLinkSupport.findInitialWeight(ContextImpl.class);
 				contextNode = session.withPartition(partition)
 						.createNewSimpleNode(id);
 				contextNode
-						.setIndexedProperty(session, NodeSupport.WEIGTH_VALUE,
+						.setIndexedProperty(session, NodeAndLinkSupport.WEIGTH_VALUE,
 								convert(weigth, String.class));
 				session.flushTransient();
 			} else {
 				caption = contextNode.getPropertyAsString(session,
 						CONTEXT_CAPTION);
 				String weigthAsString = contextNode.getPropertyAsString(
-						session, NodeSupport.WEIGTH_VALUE);
+						session, NodeAndLinkSupport.WEIGTH_VALUE);
 				weigth = convert(weigthAsString, Integer.class);
 				Set<String> names = contextNode.getPropertyNames(session);
 				for (String propertyName : names) {
-					if (propertyName.equals(NodeSupport.WEIGTH_VALUE)
+					if (propertyName.equals(NodeAndLinkSupport.WEIGTH_VALUE)
 							|| propertyName.equals(CONTEXT_CAPTION)) {
 						continue;
 					}
@@ -220,11 +220,11 @@ public class GraphReaderImpl implements GraphReader {
 		try {
 			STStorageSession session = sessionProvider.get();
 			String clazzName = rawStNode.getPropertyAsString(session,
-					NodeSupport.CORRECT_CLASS);
+					NodeAndLinkSupport.CORRECT_CLASS);
 			Class<?> clazz = forName(clazzName);
-			Node node = NodeSupport.createNode(factory, session, contextId,
+			Node node = NodeAndLinkSupport.createNode(factory, session, contextId,
 					parentId, (Class<? extends Node>) clazz, rawStNode
-							.getPropertyAsString(session, NodeSupport.NAME),
+							.getPropertyAsString(session, NodeAndLinkSupport.NAME),
 					needsToVerifyType, null, null);
 			return node;
 		} catch (Exception e) {
@@ -458,17 +458,17 @@ public class GraphReaderImpl implements GraphReader {
 		STCriteriaBuilder criteriaBuilder = session.withPartition(partition)
 				.createCriteria().withNodeEntry(clzz.getName());
 		if (nodeName != null) {
-			criteriaBuilder.withProperty(NodeSupport.NAME).equalsTo(nodeName);
+			criteriaBuilder.withProperty(NodeAndLinkSupport.NAME).equalsTo(nodeName);
 		}
 		if (caption != null) {
-			criteriaBuilder.withProperty(NodeSupport.CAPTION).equalsTo(caption);
+			criteriaBuilder.withProperty(NodeAndLinkSupport.CAPTION).equalsTo(caption);
 		}
 		if (propertyName != null) {
 			criteriaBuilder.withProperty(propertyName).equalsTo(
 					Conversion.convert(propertyValue, String.class));
 		}
 		if (!returnSubTypes) {
-			criteriaBuilder.and().withProperty(NodeSupport.CORRECT_CLASS)
+			criteriaBuilder.and().withProperty(NodeAndLinkSupport.CORRECT_CLASS)
 					.equals(clzz.getName());
 		}
 		resultBuilder.add(criteriaBuilder.buildCriteria().andFind(session));
@@ -477,14 +477,14 @@ public class GraphReaderImpl implements GraphReader {
 	private <T> Iterable<Class<?>> findTypesIfNecessary(final Class<T> clazz,
 			STStorageSession session, STPartition partition) {
 		Iterable<Class<?>> typesToFind = clazz != null ? ImmutableSet
-				.<Class<?>> of(NodeSupport.findTargetClass(clazz)) : null;
+				.<Class<?>> of(NodeAndLinkSupport.findTargetClass(clazz)) : null;
 		if (typesToFind == null) {
 			Iterable<String> stNodeNames = session.withPartition(partition)
 					.getAllNodeNames();
 			Builder<Class<?>> builder = ImmutableSet.builder();
 			for (String s : stNodeNames) {
 				try {
-					Class<?> stClazz = NodeSupport.findTargetClass(Class
+					Class<?> stClazz = NodeAndLinkSupport.findTargetClass(Class
 							.forName(s));
 					if (Node.class.isAssignableFrom(stClazz)) {
 						builder.add(stClazz);

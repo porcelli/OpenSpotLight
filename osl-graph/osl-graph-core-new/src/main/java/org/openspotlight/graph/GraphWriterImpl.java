@@ -53,7 +53,7 @@ import static com.google.common.collect.Lists.newLinkedList;
 import java.util.Collection;
 import java.util.List;
 
-import org.openspotlight.graph.internal.NodeSupport;
+import org.openspotlight.graph.internal.NodeAndLinkSupport;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphWriter;
 import org.openspotlight.storage.STPartitionFactory;
@@ -87,7 +87,7 @@ public class GraphWriterImpl implements GraphWriter {
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
 		STStorageSession session = sessionProvider.get();
-		T newNode = NodeSupport.createNode(factory, session, context.getId(),
+		T newNode = NodeAndLinkSupport.createNode(factory, session, context.getId(),
 				null, clazz, name, true, linkTypesForLinkDeletion,
 				linkTypesForLinkedNodeDeletion);
 		dirtyNodes.add(newNode);
@@ -107,7 +107,7 @@ public class GraphWriterImpl implements GraphWriter {
 	@Override
 	public void removeNode(Node node) {
 		STStorageSession session = sessionProvider.get();
-		STNodeEntry stNodeEntry = NodeSupport.retrievePreviousNode(factory,
+		STNodeEntry stNodeEntry = NodeAndLinkSupport.retrievePreviousNode(factory,
 				session, graphReader.getContext(node.getContextId()), node,
 				true);
 		session.removeNode(stNodeEntry);
@@ -151,7 +151,7 @@ public class GraphWriterImpl implements GraphWriter {
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
 			throws IllegalArgumentException {
 		STStorageSession session = sessionProvider.get();
-		T newNode = NodeSupport.createNode(factory, session, parent
+		T newNode = NodeAndLinkSupport.createNode(factory, session, parent
 				.getContextId(), parent.getId(), clazz, name, true,
 				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
 		dirtyNodes.add(newNode);
@@ -169,7 +169,7 @@ public class GraphWriterImpl implements GraphWriter {
 	public void flush() {
 		STStorageSession session = sessionProvider.get();
 		for (Node n : this.dirtyNodes) {
-			NodeSupport.retrievePreviousNode(factory, session, graphReader
+			NodeAndLinkSupport.retrievePreviousNode(factory, session, graphReader
 					.getContext(n.getContextId()), n, true);
 		}
 		session.flushTransient();

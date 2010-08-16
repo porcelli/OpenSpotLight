@@ -89,6 +89,16 @@ import com.google.common.collect.Multimap;
  */
 public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
+	@Override
+	public STNodeEntry findNodeByStringId(String idAsString) {
+
+		STPartition partition = partitionFactory
+				.getPartitionByName(StringIDSupport
+						.getPartitionName(idAsString));
+		return withPartition(partition).createCriteria().withUniqueKeyAsString(
+				idAsString).buildCriteria().andFindUnique(this);
+	}
+
 	protected abstract void internalSavePartitions(STPartition... partitions)
 			throws Exception;
 

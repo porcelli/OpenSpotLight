@@ -51,7 +51,7 @@ package org.openspotlight.graph;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openspotlight.graph.internal.NodeSupport;
+import org.openspotlight.graph.internal.NodeAndLinkSupport;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphTransientWriter;
 import org.openspotlight.security.authz.PolicyEnforcement;
@@ -78,7 +78,7 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
 	@Override
 	public void flushChangedProperties(Node node) {
 		STStorageSession session = sessionProvider.get();
-		STNodeEntry stNode = NodeSupport.retrievePreviousNode(factory, session,
+		STNodeEntry stNode = NodeAndLinkSupport.retrievePreviousNode(factory, session,
 				from(GraphLocation.SERVER).getContext(node), node, false);
 		session.flushTransient();
 	}

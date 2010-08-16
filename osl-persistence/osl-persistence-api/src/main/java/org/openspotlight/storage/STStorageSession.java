@@ -94,6 +94,8 @@ public interface STStorageSession {
 
 	}
 
+	STNodeEntry findNodeByStringId(String idAsString);
+	
 	void removeNode(
 			org.openspotlight.storage.domain.node.STNodeEntry stNodeEntry);
 

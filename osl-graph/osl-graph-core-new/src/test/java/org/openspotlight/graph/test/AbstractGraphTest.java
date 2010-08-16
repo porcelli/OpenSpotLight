@@ -554,7 +554,7 @@ public abstract class AbstractGraphTest {
 				rootClass2Node.getNumericType()) < 0, is(true));
 	}
 
-	public void shouldaddAndRetrieveUnidirectionalLinksOnSameContext()
+@Test public void shouldaddAndRetrieveUnidirectionalLinksOnSameContext()
 			throws Exception {
 		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
@@ -599,7 +599,7 @@ public abstract class AbstractGraphTest {
 
 	}
 
-	public void shouldaddAndRetrieveBidirectionalLinksOnSameContext()
+@Test public void shouldaddAndRetrieveBidirectionalLinksOnSameContext()
 			throws Exception {
 		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
@@ -651,7 +651,7 @@ public abstract class AbstractGraphTest {
 		assertThat(linkFromNode3.contains(link1), is(false));
 	}
 
-	public void shouldaddAndRetrieveUniAndBidirectionalLinksOnSameContext()
+@Test public void shouldaddAndRetrieveUniAndBidirectionalLinksOnSameContext()
 			throws Exception {
 
 		GraphReader simpleFromLocation = simpleGraphSession.from(location());
@@ -737,7 +737,7 @@ public abstract class AbstractGraphTest {
 
 	}
 
-	public void shouldaddAndRetrieveUnidirectionalLinksOnDiferentContext()
+@Test public void shouldaddAndRetrieveUnidirectionalLinksOnDiferentContext()
 			throws Exception {
 		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
@@ -783,7 +783,7 @@ public abstract class AbstractGraphTest {
 
 	}
 
-	public void shouldaddAndRetrieveBidirectionalLinksOnDiferentContext()
+@Test public void shouldaddAndRetrieveBidirectionalLinksOnDiferentContext()
 			throws Exception {
 		GraphReader simpleFromLocation = simpleGraphSession.from(location());
 		Context context1 = simpleFromLocation.getContext(context1());
@@ -836,6 +836,7 @@ public abstract class AbstractGraphTest {
 		assertThat(linkFromNode3.contains(link1), is(false));
 	}
 
+	@Test
 	public void shouldaddAndRetrieveUniAndBidirectionalLinksOnDiferentContext()
 			throws Exception {
 

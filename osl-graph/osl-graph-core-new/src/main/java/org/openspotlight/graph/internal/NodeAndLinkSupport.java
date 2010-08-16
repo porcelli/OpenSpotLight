@@ -86,6 +86,7 @@ import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Element;
 import org.openspotlight.graph.Link;
+import org.openspotlight.graph.LinkType;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.PropertyContainer;
 import org.openspotlight.graph.TreeLineReference;
@@ -97,13 +98,15 @@ import org.openspotlight.storage.STPartition;
 import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STRepositoryPath;
 import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.AbstractSTStorageSession.STUniqueKeyBuilderImpl;
 import org.openspotlight.storage.domain.key.STUniqueKey;
+import org.openspotlight.storage.domain.node.STLinkEntry;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import com.google.common.collect.ImmutableSet;
 
-public class NodeSupport {
+public class NodeAndLinkSupport {
 
 	public static interface NodeMetadata {
 		public STNodeEntry getCached();
@@ -235,7 +238,7 @@ public class NodeSupport {
 		final Enhancer e = new Enhancer();
 		e.setSuperclass(classToUse);
 		e.setInterfaces(new Class<?>[] { NodeMetadata.class });
-		e.setCallback(new NodeInterceptor(internalNode));
+		e.setCallback(new PropertyContainerInterceptor(internalNode));
 		return (T) e.create(new Class[0], new Object[0]);
 	}
 
@@ -324,6 +327,81 @@ public class NodeSupport {
 		}
 	}
 
+	public static <T extends Link> T createLink(STPartitionFactory factory,
+			STStorageSession session, Class<T> clazz, Node rawOrigin,
+			Node rawTarget, LinkType type, boolean createIfDontExists) {
+		Map<String, Class<? extends Serializable>> propertyTypes = newHashMap();
+		Map<String, Serializable> propertyValues = newHashMap();
+		PropertyDescriptor[] descriptors = PropertyUtils
+				.getPropertyDescriptors(clazz);
+
+		STLinkEntry linkEntry = null;
+		Node origin, target;
+
+		if (LinkType.BIDIRECTIONAL.equals(type)
+				&& rawOrigin.compareTo(rawTarget) < 0) {
+			origin = rawTarget;
+			target = rawOrigin;
+		} else {
+			origin = rawOrigin;
+			target = rawTarget;
+		}
+		String linkId = null;
+		if (session != null) {
+			STNodeEntry originAsSTNode = session.findNodeByStringId(origin
+					.getId());
+			STNodeEntry targetAsSTNode = session.findNodeByStringId(target
+					.getId());
+
+			linkEntry = session.getLink(originAsSTNode, targetAsSTNode, clazz
+					.getName());
+			if (linkEntry == null && createIfDontExists) {
+
+				linkEntry = session.addLink(originAsSTNode, targetAsSTNode,
+						clazz.getName());
+			}
+			linkId = linkEntry != null ? linkEntry.getKeyAsString()
+					: StringIDSupport.getLinkKeyAsString(originAsSTNode
+							.getPartition(), clazz.getName(), originAsSTNode,
+							targetAsSTNode);
+		}
+
+		for (PropertyDescriptor d : descriptors) {
+			if (d.getName().equals("class"))
+				continue;
+			propertyTypes.put(d.getName(),
+					(Class<? extends Serializable>) Reflection
+							.findClassWithoutPrimitives(d.getPropertyType()));
+			Object rawValue = linkEntry != null ? linkEntry
+					.getPropertyAsString(session, d.getName()) : null;
+			Serializable value = (Serializable) (rawValue != null ? Conversion
+					.convert(rawValue, d.getPropertyType()) : null);
+			propertyValues.put(d.getName(), value);
+		}
+		int weigthValue;
+		Set<String> stNodeProperties = linkEntry != null ? linkEntry
+				.getPropertyNames(session) : Collections.<String> emptySet();
+		if (stNodeProperties.contains(WEIGTH_VALUE)) {
+			weigthValue = Conversion.convert(linkEntry.getPropertyAsString(
+					session, WEIGTH_VALUE), Integer.class);
+		} else {
+			weigthValue = findInitialWeight(clazz);
+		}
+		LinkImpl internalLink = new LinkImpl(linkId, clazz.getName(), clazz,
+				propertyTypes, propertyValues, findInitialWeight(clazz),
+				weigthValue, origin, target, LinkType.BIDIRECTIONAL
+						.equals(type));
+		if (linkEntry != null) {
+			internalLink.cachedEntry = new WeakReference<STLinkEntry>(linkEntry);
+
+		}
+		final Enhancer e = new Enhancer();
+		e.setSuperclass(clazz);
+		e.setInterfaces(new Class<?>[] { NodeMetadata.class });
+		e.setCallback(new PropertyContainerInterceptor(internalLink));
+		return (T) e.create(new Class[0], new Object[0]);
+	}
+
 	public static <T extends Node> T createNode(STPartitionFactory factory,
 			STStorageSession session, String contextId, String parentId,
 			Class<T> clazz, String name, boolean needsToVerifyType,
@@ -335,139 +413,208 @@ public class NodeSupport {
 
 	}
 
-	private static class NodeImpl extends Node implements NodeMetadata {
+	private static class LinkImpl extends Link {
 
-		public int getInitialWeightValue() {
+		private WeakReference<STLinkEntry> cachedEntry;
+
+		public LinkImpl(String id, String linkName,
+				Class<? extends Link> linkType,
+				Map<String, Class<? extends Serializable>> propertyTypes,
+				Map<String, Serializable> propertyValues,
+				int initialWeigthValue, int weightValue, Node source,
+				Node target, boolean bidirectional) {
+			this.propertyContainerImpl = new PropertyContainerImpl(id, linkType
+					.getName(), propertyTypes, propertyValues,
+					initialWeigthValue, weightValue);
+			this.sides[SOURCE] = source;
+			this.sides[TARGET] = target;
+
+		}
+
+		private final PropertyContainerImpl propertyContainerImpl;
+
+		public void createLineReference(int beginLine, int endLine,
+				int beginColumn, int endColumn, String statement,
+				String artifactId) {
+			propertyContainerImpl.createLineReference(beginLine, endLine,
+					beginColumn, endColumn, statement, artifactId);
+		}
+
+		public boolean equals(Object obj) {
+			return propertyContainerImpl.equals(obj);
+		}
+
+		public String getId() {
+			return propertyContainerImpl.getId();
+		}
+
+		public final int getInitialWeightValue() {
+			return propertyContainerImpl.getInitialWeightValue();
+		}
+
+		public Set<Pair<String, Serializable>> getProperties() {
+			return propertyContainerImpl.getProperties();
+		}
+
+		public Iterable<String> getPropertyKeys() {
+			return propertyContainerImpl.getPropertyKeys();
+		}
+
+		public <V extends Serializable> V getPropertyValue(String key,
+				V defaultValue) {
+			return propertyContainerImpl.getPropertyValue(key, defaultValue);
+		}
+
+		public <V extends Serializable> V getPropertyValue(String key) {
+			return propertyContainerImpl.getPropertyValue(key);
+		}
+
+		public String getPropertyValueAsString(String key) {
+			return propertyContainerImpl.getPropertyValueAsString(key);
+		}
+
+		public TreeLineReference getTreeLineReferences() {
+			return propertyContainerImpl.getTreeLineReferences();
+		}
+
+		public TreeLineReference getTreeLineReferences(String artifactId) {
+			return propertyContainerImpl.getTreeLineReferences(artifactId);
+		}
+
+		public String getTypeName() {
+			return propertyContainerImpl.getTypeName();
+		}
+
+		public final int getWeightValue() {
+			return propertyContainerImpl.getWeightValue();
+		}
+
+		public int hashCode() {
+			return propertyContainerImpl.hashCode();
+		}
+
+		public boolean hasProperty(String key) throws IllegalArgumentException {
+			return propertyContainerImpl.hasProperty(key);
+		}
+
+		public boolean isDirty() {
+			return propertyContainerImpl.isDirty();
+		}
+
+		public void removeProperty(String key) {
+			propertyContainerImpl.removeProperty(key);
+		}
+
+		public void resetDirtyFlag() {
+			propertyContainerImpl.resetDirtyFlag();
+		}
+
+		public <V extends Serializable> void setProperty(String key, V value)
+				throws IllegalArgumentException {
+			propertyContainerImpl.setProperty(key, value);
+		}
+
+		public String toString() {
+			return propertyContainerImpl.toString();
+		}
+
+		private static final int SOURCE = 0;
+		private static final int TARGET = 1;
+
+		private int count;
+		private boolean bidirectional;
+
+		private final Node[] sides = new Node[2];
+
+		@Override
+		public Node getOtherSide(Node node) throws IllegalArgumentException {
+			if (node.equals(sides[SOURCE]))
+				return sides[TARGET];
+			if (node.equals(sides[TARGET]))
+				return sides[SOURCE];
+			throw new IllegalArgumentException();
+		}
+
+		@Override
+		public Node[] getSides() {
+			return new Node[] { sides[SOURCE], sides[TARGET] };
+		}
+
+		@Override
+		public Node getSource() {
+			return sides[SOURCE];
+		}
+
+		@Override
+		public Node getTarget() {
+			return sides[TARGET];
+		}
+
+		@Override
+		public int getCount() {
+			return count;
+		}
+
+		@Override
+		public boolean isBidirectional() {
+			return bidirectional;
+		}
+
+		@Override
+		public void setCount(int value) {
+			this.count = value;
+			this.propertyContainerImpl.markAsDirty();
+
+		}
+
+		@Override
+		public int compareTo(Link o) {
+			return getId().compareTo(o.getId());
+		}
+
+	}
+
+	private static class PropertyContainerImpl implements Element {
+
+		public final int getInitialWeightValue() {
 			return initialWeightValue;
 		}
 
-		public int getWeightValue() {
+		public final int getWeightValue() {
 			return weightValue;
 		}
 
-		public BigInteger getNumericType() {
-			return numericType;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof Node))
-				return false;
-			Node slnode = (Node) obj;
-
-			boolean result = getId().equals(slnode.getId())
-					&& Equals.eachEquality(getParentId(), slnode.getParentId())
-					&& Equals.eachEquality(getContextId(), slnode
-							.getContextId());
-			// if (!result) {
-			// System.out.println(result + " ------------------------");
-			// System.out.println(" >>> this.name      " + getName());
-			// System.out.println(" >>> this.id        " + getId());
-			// System.out.println(" >>> this.parentId  " + getParentId());
-			// System.out.println(" >>> this.contextId " + getContextId());
-			// System.out.println(" >>> that.name      " + slnode.getName());
-			// System.out.println(" >>> that.id        " + slnode.getId());
-			// System.out.println(" >>> that.parentId  " +
-			// slnode.getParentId());
-			// System.out.println(" >>> that.contextId "
-			// + slnode.getContextId());
-			// System.out.println(" ------------------------");
-			// }
-			return result;
-		}
-
-		private volatile int hashCode = 0;
-
-		@Override
-		public int hashCode() {
-			int result = hashCode;
-			if (result == 0) {
-				result = HashCodes.hashOf(getId(), getParentId(),
-						getContextId());
-				hashCode = result;
-			}
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return getName() + ":" + getId();
-		}
-
-		private final String contextId;
-
-		public String getContextId() {
-			return contextId;
-		}
-
-		private WeakReference<STNodeEntry> cachedEntry;
-
-		private final Class<? extends Node> targetNode;
-
-		private String caption;
-
-		private final String name;
-
-		private final Class<? extends Node> type;
-
 		private final String id;
-		private final String parentId;
-
-		public String getParentId() {
-			return parentId;
-		}
 
 		private final String typeName;
-
-		private Context context;
 
 		private final Map<String, Class<? extends Serializable>> propertyTypes;
 		private final Map<String, Serializable> propertyValues;
 		private final AtomicBoolean dirty;
 
+		public void markAsDirty() {
+			this.dirty.set(true);
+		}
+
 		private Set<String> removedProperties;
 
-		private NodeImpl(String name, Class<? extends Node> type,
-				Class<? extends Node> targetNode, String id,
+		public PropertyContainerImpl(String id, String typeName,
 				Map<String, Class<? extends Serializable>> propertyTypes,
-				Map<String, Serializable> propertyValues, String parentId,
-				String contextId, int weightValue) {
+				Map<String, Serializable> propertyValues,
+				int initialWeigthValue, int weightValue) {
 			dirty = new AtomicBoolean();
-			this.type = type;
-			this.typeName = type.getName();
-			this.name = name;
-			this.numericType = findNumericType(type);
-			this.initialWeightValue = findInitialWeight(type);
+			this.typeName = typeName;
+			this.initialWeightValue = initialWeigthValue;
 			this.weightValue = weightValue;
 			this.id = id;
 			this.propertyTypes = propertyTypes;
 			this.propertyValues = propertyValues;
 			this.removedProperties = newHashSet();
-			this.targetNode = targetNode;
-			this.parentId = parentId;
-			this.contextId = contextId;
 		}
 
 		public void resetDirtyFlag() {
 			dirty.set(false);
 			removedProperties.clear();
-		}
-
-		public String getCaption() {
-			return caption;
-		}
-
-		public void setCaption(String caption) {
-			this.caption = caption;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		@Override
-		public int compareTo(Node o) {
-			return numericType.compareTo(o.getNumericType());
 		}
 
 		@Override
@@ -476,7 +623,7 @@ public class NodeSupport {
 				String artifactId) {
 			throw new UnsupportedOperationException(
 					"Should be lazy property? :D");
-
+			// TODO implement
 		}
 
 		@Override
@@ -501,11 +648,13 @@ public class NodeSupport {
 			return ImmutableSet.copyOf(propertyTypes.keySet());
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <V extends Serializable> V getPropertyValue(String key) {
 			return (V) propertyValues.get(key);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <V extends Serializable> V getPropertyValue(String key,
 				V defaultValue) {
@@ -581,6 +730,179 @@ public class NodeSupport {
 			return dirty.get();
 		}
 
+		private final int initialWeightValue;
+
+		private final int weightValue;
+
+	}
+
+	private static class NodeImpl extends Node implements NodeMetadata {
+
+		private final PropertyContainerImpl propertyContainerImpl;
+
+		public void createLineReference(int beginLine, int endLine,
+				int beginColumn, int endColumn, String statement,
+				String artifactId) {
+			propertyContainerImpl.createLineReference(beginLine, endLine,
+					beginColumn, endColumn, statement, artifactId);
+		}
+
+		public String getId() {
+			return propertyContainerImpl.getId();
+		}
+
+		public final int getInitialWeightValue() {
+			return propertyContainerImpl.getInitialWeightValue();
+		}
+
+		public Set<Pair<String, Serializable>> getProperties() {
+			return propertyContainerImpl.getProperties();
+		}
+
+		public Iterable<String> getPropertyKeys() {
+			return propertyContainerImpl.getPropertyKeys();
+		}
+
+		public <V extends Serializable> V getPropertyValue(String key,
+				V defaultValue) {
+			return propertyContainerImpl.getPropertyValue(key, defaultValue);
+		}
+
+		public <V extends Serializable> V getPropertyValue(String key) {
+			return propertyContainerImpl.getPropertyValue(key);
+		}
+
+		public String getPropertyValueAsString(String key) {
+			return propertyContainerImpl.getPropertyValueAsString(key);
+		}
+
+		public TreeLineReference getTreeLineReferences() {
+			return propertyContainerImpl.getTreeLineReferences();
+		}
+
+		public TreeLineReference getTreeLineReferences(String artifactId) {
+			return propertyContainerImpl.getTreeLineReferences(artifactId);
+		}
+
+		public String getTypeName() {
+			return propertyContainerImpl.getTypeName();
+		}
+
+		public final int getWeightValue() {
+			return propertyContainerImpl.getWeightValue();
+		}
+
+		public boolean hasProperty(String key) throws IllegalArgumentException {
+			return propertyContainerImpl.hasProperty(key);
+		}
+
+		public boolean isDirty() {
+			return propertyContainerImpl.isDirty();
+		}
+
+		public void removeProperty(String key) {
+			propertyContainerImpl.removeProperty(key);
+		}
+
+		public <V extends Serializable> void setProperty(String key, V value)
+				throws IllegalArgumentException {
+			propertyContainerImpl.setProperty(key, value);
+		}
+
+		public BigInteger getNumericType() {
+			return numericType;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof Node))
+				return false;
+			Node slnode = (Node) obj;
+
+			boolean result = getId().equals(slnode.getId())
+					&& Equals.eachEquality(getParentId(), slnode.getParentId())
+					&& Equals.eachEquality(getContextId(), slnode
+							.getContextId());
+			return result;
+		}
+
+		private volatile int hashCode = 0;
+
+		@Override
+		public int hashCode() {
+			int result = hashCode;
+			if (result == 0) {
+				result = HashCodes.hashOf(getId(), getParentId(),
+						getContextId());
+				hashCode = result;
+			}
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return getName() + ":" + getId();
+		}
+
+		private final String contextId;
+
+		public String getContextId() {
+			return contextId;
+		}
+
+		private WeakReference<STNodeEntry> cachedEntry;
+
+		private final Class<? extends Node> targetNode;
+
+		private String caption;
+
+		private final String name;
+
+		private final Class<? extends Node> type;
+
+		private final String parentId;
+
+		public String getParentId() {
+			return parentId;
+		}
+
+		private NodeImpl(String name, Class<? extends Node> type,
+				Class<? extends Node> targetNode, String id,
+				Map<String, Class<? extends Serializable>> propertyTypes,
+				Map<String, Serializable> propertyValues, String parentId,
+				String contextId, int weightValue) {
+			this.propertyContainerImpl = new PropertyContainerImpl(id, type
+					.getName(), propertyTypes, propertyValues,
+					findInitialWeight(type), weightValue);
+			this.type = type;
+			this.name = name;
+			this.numericType = findNumericType(type);
+			this.targetNode = targetNode;
+			this.parentId = parentId;
+			this.contextId = contextId;
+		}
+
+		public void resetDirtyFlag() {
+			propertyContainerImpl.resetDirtyFlag();
+		}
+
+		public String getCaption() {
+			return caption;
+		}
+
+		public void setCaption(String caption) {
+			this.caption = caption;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public int compareTo(Node o) {
+			return numericType.compareTo(o.getNumericType());
+		}
+
 		@Override
 		public STNodeEntry getCached() {
 			return cachedEntry != null ? cachedEntry.get() : null;
@@ -592,20 +914,18 @@ public class NodeSupport {
 
 		}
 
-		private final int initialWeightValue;
-
-		private final int weightValue;
-
 		private final BigInteger numericType;
 
 	}
 
-	private static class NodeInterceptor implements MethodInterceptor {
+	private static class PropertyContainerInterceptor implements
+			MethodInterceptor {
 
-		private final NodeImpl internalNodeImpl;
+		private final PropertyContainer internalPropertyContainerImpl;
 
-		public NodeInterceptor(NodeImpl nodeImpl) {
-			this.internalNodeImpl = nodeImpl;
+		public PropertyContainerInterceptor(
+				PropertyContainer propertyContainerImpl) {
+			this.internalPropertyContainerImpl = propertyContainerImpl;
 		}
 
 		@Override
@@ -614,11 +934,13 @@ public class NodeSupport {
 
 			Class<?> declarringClass = method.getDeclaringClass();
 			boolean methodFromSuperClasses = declarringClass.equals(Node.class)
+					|| declarringClass.equals(Link.class)
+					|| declarringClass.equals(PropertyContainerImpl.class)
 					|| declarringClass.isInterface()
 					|| declarringClass.equals(Object.class);
 			String methodName = method.getName();
 			if (methodFromSuperClasses) {
-				return method.invoke(internalNodeImpl, args);
+				return method.invoke(internalPropertyContainerImpl, args);
 			} else {
 				switch (getMethodType(methodName, method)) {
 				case GETTER:
@@ -634,7 +956,7 @@ public class NodeSupport {
 		private Object invokeSetter(Object obj, String methodName,
 				Method method, Object[] args, MethodProxy methodProxy)
 				throws Throwable {
-			internalNodeImpl.setProperty(methodName.substring(3),
+			internalPropertyContainerImpl.setProperty(methodName.substring(3),
 					(Serializable) args[0]);
 			return null;
 		}
@@ -644,7 +966,7 @@ public class NodeSupport {
 			String propertyName = methodName.startsWith("get") ? Strings
 					.firstLetterToLowerCase(methodName.substring(3)) : Strings
 					.firstLetterToLowerCase(methodName.substring(2));// is
-			return internalNodeImpl.getPropertyValue(propertyName);
+			return internalPropertyContainerImpl.getPropertyValue(propertyName);
 
 		}
 
@@ -653,15 +975,18 @@ public class NodeSupport {
 				return MethodType.OTHER;
 			if (methodName.startsWith("set")
 					&& method.getParameterTypes().length == 1
-					&& internalNodeImpl.hasProperty(methodName.substring(3))) {
+					&& internalPropertyContainerImpl.hasProperty(methodName
+							.substring(3))) {
 				return MethodType.SETTER;
 			} else if (methodName.startsWith("get")
 					&& method.getParameterTypes().length == 0
-					&& internalNodeImpl.hasProperty(methodName.substring(3))) {
+					&& internalPropertyContainerImpl.hasProperty(methodName
+							.substring(3))) {
 				return MethodType.GETTER;
 			} else if (methodName.startsWith("is")
 					&& method.getParameterTypes().length == 0
-					&& internalNodeImpl.hasProperty(methodName.substring(2))) {
+					&& internalPropertyContainerImpl.hasProperty(methodName
+							.substring(2))) {
 				return MethodType.GETTER;
 			}
 			return MethodType.OTHER;

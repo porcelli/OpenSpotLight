@@ -56,14 +56,14 @@ import java.util.Set;
 import org.openspotlight.common.Pair;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.graph.annotation.InitialWeight;
-import org.openspotlight.graph.internal.NodeSupport;
+import org.openspotlight.graph.internal.NodeAndLinkSupport;
 
 import com.google.common.collect.ImmutableSet;
 
 @InitialWeight(1)
 public class ContextImpl extends Context {
 
-	private static final int DEFAULT_CONTEXT_WEIGTH = NodeSupport
+	private static final int DEFAULT_CONTEXT_WEIGTH = NodeAndLinkSupport
 			.findInitialWeight(ContextImpl.class);
 
 	public ContextImpl(String id, Map<String, Serializable> properties,
