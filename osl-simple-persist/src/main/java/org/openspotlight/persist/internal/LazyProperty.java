@@ -62,9 +62,9 @@ import org.openspotlight.common.util.SerializationUtil;
 import org.openspotlight.common.util.Sha1;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.key.STUniqueKey;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.key.UniqueKey;
 
 /**
  * This class should wrap any {@link SimpleNodeType} lazy property. This class has a control on few stuff, such as caching value
@@ -181,7 +181,7 @@ public final class LazyProperty<T> implements Serializable {
          * @return
          */
         @SuppressWarnings( "unchecked" )
-        public T getCached( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+        public T getCached( SimplePersistCapable<STNodeEntry, StorageSession> simplePersist ) {
             try {
                 lock.lock();
                 final T cachedValue = cached == null ? null : cached.get();
@@ -241,7 +241,7 @@ public final class LazyProperty<T> implements Serializable {
             return parent;
         }
 
-        public STUniqueKey getParentKey() {
+        public UniqueKey getParentKey() {
             return parentKey;
         }
 
@@ -313,7 +313,7 @@ public final class LazyProperty<T> implements Serializable {
             }
         }
 
-        public void setParentKey( final STUniqueKey parentKey ) {
+        public void setParentKey( final UniqueKey parentKey ) {
             LazyProperty.this.parentKey = parentKey;
         }
 
@@ -323,7 +323,7 @@ public final class LazyProperty<T> implements Serializable {
 
     }
 
-    private STUniqueKey                parentKey;
+    private UniqueKey                parentKey;
 
     private String                     propertyName;
 
@@ -354,7 +354,7 @@ public final class LazyProperty<T> implements Serializable {
      * 
      * @return
      */
-    public T get( SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+    public T get( SimplePersistCapable<STNodeEntry, StorageSession> simplePersist ) {
         try {
             lock.lock();
             T value = metadata.getTransient();

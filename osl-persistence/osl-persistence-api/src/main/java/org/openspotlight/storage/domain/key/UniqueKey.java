@@ -49,15 +49,24 @@
 
 package org.openspotlight.storage.domain.key;
 
-import org.openspotlight.storage.domain.STAData;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.domain.StorageDataMarker;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:47:15 PM To change this template use File | Settings | File
+ * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:57:04 PM To change this template use File | Settings | File
  * Templates.
  */
-public interface STKeyEntry extends STAData, Comparable<STKeyEntry> {
+public interface UniqueKey extends StorageDataMarker, Comparable<UniqueKey> {
 
-    String getPropertyName();
+    public String getKeyAsString();
 
-    String getValue();
+    Partition getPartition();
+
+    LocalKey getLocalKey();
+
+    String getParentKeyAsString();
+
+    RepositoryPath getRepositoryPath();
+
 }

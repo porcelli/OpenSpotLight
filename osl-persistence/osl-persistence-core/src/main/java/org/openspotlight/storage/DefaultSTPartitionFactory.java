@@ -48,7 +48,7 @@
  */
 package org.openspotlight.storage;
 
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.RegularPartitions;
 
 import com.google.inject.Singleton;
 
@@ -56,15 +56,15 @@ import com.google.inject.Singleton;
  * Created by User: feu - Date: Jun 14, 2010 - Time: 3:30:12 PM
  */
 @Singleton
-public class DefaultSTPartitionFactory implements STPartitionFactory {
+public class DefaultSTPartitionFactory implements PartitionFactory {
 
     @Override
-    public STPartition getPartitionByName( String name ) {
-        return SLPartition.valueOf(name.toUpperCase());
+    public Partition getPartitionByName( String name ) {
+        return RegularPartitions.valueOf(name.toUpperCase());
     }
 
     @Override
-    public STPartition[] getValues() {
-        return SLPartition.values();
+    public Partition[] getValues() {
+        return RegularPartitions.values();
     }
 }

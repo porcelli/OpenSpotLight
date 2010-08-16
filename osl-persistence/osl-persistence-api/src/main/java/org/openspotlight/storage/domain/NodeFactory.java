@@ -46,49 +46,33 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.storage;
+
+package org.openspotlight.storage.domain;
+
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.key.UniqueKey;
 
 /**
- * Created by User: feu - Date: Apr 19, 2010 - Time: 9:34:57 AM
+ * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 3:10:03 PM To change this template use File | Settings | File
+ * Templates.
  */
-public class STRepositoryPath {
+public interface NodeFactory {
 
-    public static STRepositoryPath repositoryPath( String repositoryPath ) {
-        return new STRepositoryPath(repositoryPath);
+    NodeBuilder createWithName( StorageSession session,
+                                       String name );
+
+    interface NodeBuilder {
+
+        NodeBuilder withKeyEntry( String name,
+                                         String value );
+
+        NodeBuilder withParent( STNodeEntry parent );
+
+        NodeBuilder withParentAsString( String parentAsString );
+
+        NodeBuilder withParentKey( UniqueKey parentKey );
+
+        STNodeEntry andCreate();
     }
 
-    private final String repositoryPath;
-
-    public STRepositoryPath( String repositoryPath ) {
-        this.repositoryPath = repositoryPath;
-    }
-
-    public String getRepositoryPathAsString() {
-        return repositoryPath;
-    }
-
-    @Override
-    public boolean equals( Object o ) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        STRepositoryPath that = (STRepositoryPath)o;
-
-        if (repositoryPath != null ? !repositoryPath.equals(that.repositoryPath) : that.repositoryPath != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return repositoryPath != null ? repositoryPath.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return "STRepositoryPath{" +
-                "repositoryPath='" + repositoryPath + '\'' +
-                '}';
-    }
 }

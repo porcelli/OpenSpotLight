@@ -49,8 +49,8 @@
 package org.openspotlight.graph;
 
 import org.openspotlight.graph.manipulation.GraphWriter;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.StorageSession;
 
 import com.google.inject.Provider;
 
@@ -59,8 +59,8 @@ public class FullGraphSessionImpl extends SimpleGraphSessionImpl implements
 
     private final GraphWriter toSync;
 
-    public FullGraphSessionImpl( Provider<STStorageSession> sessionProvider,
-                                   String artifactId, STPartitionFactory factory ) {
+    public FullGraphSessionImpl( Provider<StorageSession> sessionProvider,
+                                   String artifactId, PartitionFactory factory ) {
         super(sessionProvider, factory);
         this.toSync = new GraphWriterImpl(factory, sessionProvider,
                                             artifactId, this.from(GraphLocation.SERVER));

@@ -73,13 +73,13 @@ import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.InvalidQuerySyntaxException;
 import org.openspotlight.graph.query.QueryApi;
 import org.openspotlight.graph.query.QueryText;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
-import org.openspotlight.storage.STStorageSession.STCriteriaBuilder;
-import org.openspotlight.storage.domain.node.STLinkEntry;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSession.CriteriaBuilder;
+import org.openspotlight.storage.domain.STLinkEntry;
+import org.openspotlight.storage.domain.STNodeEntry;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -87,17 +87,17 @@ import com.google.inject.Provider;
 
 public class GraphReaderImpl implements GraphReader {
 
-	private final STPartitionFactory factory;
+	private final PartitionFactory factory;
 	private final Map<String, Context> contextCache = newHashMap();
 
-	public GraphReaderImpl(Provider<STStorageSession> sessionProvider,
-			GraphLocation location, STPartitionFactory factory) {
+	public GraphReaderImpl(Provider<StorageSession> sessionProvider,
+			GraphLocation location, PartitionFactory factory) {
 		this.location = location;
 		this.sessionProvider = sessionProvider;
 		this.factory = factory;
 	}
 
-	private final Provider<STStorageSession> sessionProvider;
+	private final Provider<StorageSession> sessionProvider;
 	private final GraphLocation location;
 
 	@Override
@@ -120,8 +120,8 @@ public class GraphReaderImpl implements GraphReader {
 
 	private Iterable<Node> internalGetChildrenNodes(final Node node,
 			Class<?> clazz, final String name) {
-		final STStorageSession session = sessionProvider.get();
-		STPartition partition = this.factory.getPartitionByName(node
+		final StorageSession session = sessionProvider.get();
+		Partition partition = this.factory.getPartitionByName(node
 				.getContextId());
 		NodeMetadata md = (NodeMetadata) node;
 
@@ -173,8 +173,8 @@ public class GraphReaderImpl implements GraphReader {
 	public Context getContext(String id) {
 		Context ctx = contextCache.get(id);
 		if (ctx == null) {
-			STStorageSession session = this.sessionProvider.get();
-			STPartition partition = factory.getPartitionByName(id);
+			StorageSession session = this.sessionProvider.get();
+			Partition partition = factory.getPartitionByName(id);
 			STNodeEntry contextNode = session.withPartition(partition)
 					.createCriteria().withNodeEntry(id).buildCriteria()
 					.andFindUnique(session);
@@ -220,7 +220,7 @@ public class GraphReaderImpl implements GraphReader {
 	private Node convertToSLNode(String parentId, String contextId,
 			STNodeEntry rawStNode, boolean needsToVerifyType) {
 		try {
-			STStorageSession session = sessionProvider.get();
+			StorageSession session = sessionProvider.get();
 			String clazzName = rawStNode.getPropertyAsString(session,
 					NodeAndLinkSupport.CORRECT_CLASS);
 			Class<?> clazz = forName(clazzName);
@@ -259,9 +259,9 @@ public class GraphReaderImpl implements GraphReader {
 
 	@Override
 	public Iterable<Node> getNode(String id) {
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 		String contextId = StringIDSupport.getPartitionName(id);
-		STPartition partition = this.factory.getPartitionByName(contextId);
+		Partition partition = this.factory.getPartitionByName(contextId);
 		STNodeEntry parentStNode = session.withPartition(partition)
 				.createCriteria().withUniqueKeyAsString(id).buildCriteria()
 				.andFindUnique(session);
@@ -275,8 +275,8 @@ public class GraphReaderImpl implements GraphReader {
 
 	@Override
 	public Node getParentNode(Node node) {
-		STStorageSession session = sessionProvider.get();
-		STPartition partition = this.factory.getPartitionByName(node
+		StorageSession session = sessionProvider.get();
+		Partition partition = this.factory.getPartitionByName(node
 				.getContextId());
 		STNodeEntry parentStNode = session.withPartition(partition)
 				.createCriteria().withUniqueKeyAsString(node.getId())
@@ -404,8 +404,8 @@ public class GraphReaderImpl implements GraphReader {
 		return result;
 	}
 
-	private final Iterable<STPartition> filterGraphPartitions(
-			STPartition[] partition) {
+	private final Iterable<Partition> filterGraphPartitions(
+			Partition[] partition) {
 		// TODO filter
 		return SLCollections.iterableOf(partition);
 
@@ -416,12 +416,12 @@ public class GraphReaderImpl implements GraphReader {
 			final String propertyName, final Serializable propertyValue,
 			String nodeName, String caption,
 			final Iterable<Context> initialContexts) {
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 		ImmutableSet.Builder<Iterable<STNodeEntry>> resultBuilder = ImmutableSet
 				.builder();
 		Iterable<Context> contexts = findContextsIfNecessary(initialContexts);
 		for (Context c : contexts) {
-			STPartition partition = factory.getPartitionByName(c.getId());
+			Partition partition = factory.getPartitionByName(c.getId());
 			Iterable<Class<?>> types = findTypesIfNecessary(clazz, session,
 					partition);
 			for (Class<?> clzz : types) {
@@ -455,10 +455,10 @@ public class GraphReaderImpl implements GraphReader {
 	private void fillResultBuilderWithQueryResults(
 			final boolean returnSubTypes, final String propertyName,
 			final Serializable propertyValue, String nodeName, String caption,
-			STStorageSession session,
+			StorageSession session,
 			ImmutableSet.Builder<Iterable<STNodeEntry>> resultBuilder,
-			STPartition partition, Class<?> clzz) {
-		STCriteriaBuilder criteriaBuilder = session.withPartition(partition)
+			Partition partition, Class<?> clzz) {
+		CriteriaBuilder criteriaBuilder = session.withPartition(partition)
 				.createCriteria().withNodeEntry(clzz.getName());
 		if (nodeName != null) {
 			criteriaBuilder.withProperty(NodeAndLinkSupport.NAME).equalsTo(
@@ -481,7 +481,7 @@ public class GraphReaderImpl implements GraphReader {
 	}
 
 	private <T> Iterable<Class<?>> findTypesIfNecessary(final Class<T> clazz,
-			STStorageSession session, STPartition partition) {
+			StorageSession session, Partition partition) {
 		Iterable<Class<?>> typesToFind = clazz != null ? ImmutableSet
 				.<Class<?>> of(NodeAndLinkSupport.findTargetClass(clazz))
 				: null;
@@ -507,10 +507,10 @@ public class GraphReaderImpl implements GraphReader {
 
 	private Iterable<Context> findContextsIfNecessary(Iterable<Context> contexts) {
 		if (contexts == null || !contexts.iterator().hasNext()) {
-			Iterable<STPartition> partitions = filterGraphPartitions(factory
+			Iterable<Partition> partitions = filterGraphPartitions(factory
 					.getValues());
 			ImmutableSet.Builder<Context> builder = ImmutableSet.builder();
-			for (STPartition p : partitions) {
+			for (Partition p : partitions) {
 				builder.add(getContext(p.getPartitionName()));
 			}
 			contexts = builder.build();
@@ -643,7 +643,7 @@ public class GraphReaderImpl implements GraphReader {
 			return internalGetLinks(linkType, rawTarget, rawOrigin,
 					linkDirection);
 		}
-		final STStorageSession session = sessionProvider.get();
+		final StorageSession session = sessionProvider.get();
 		Iterable<STLinkEntry> links;
 		if (rawTarget != null && linkType != null) {
 			links = SLCollections.iterableOf(
@@ -700,9 +700,9 @@ public class GraphReaderImpl implements GraphReader {
 	@Override
 	public Node getNode(Context context, String id)
 			throws IllegalArgumentException {
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 		String contextId = context.getId();
-		STPartition partition = this.factory.getPartitionByName(contextId);
+		Partition partition = this.factory.getPartitionByName(contextId);
 		STNodeEntry parentStNode = session.withPartition(partition)
 				.createCriteria().withUniqueKeyAsString(id).buildCriteria()
 				.andFindUnique(session);

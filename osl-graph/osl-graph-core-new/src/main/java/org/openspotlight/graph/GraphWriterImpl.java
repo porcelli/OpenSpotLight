@@ -56,9 +56,9 @@ import java.util.List;
 import org.openspotlight.graph.internal.NodeAndLinkSupport;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphWriter;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.STNodeEntry;
 
 import antlr.CppCodeGenerator;
 
@@ -67,13 +67,13 @@ import com.google.inject.Provider;
 public class GraphWriterImpl implements GraphWriter {
 
 	private final GraphReader graphReader;
-	private final Provider<STStorageSession> sessionProvider;
-	private final STPartitionFactory factory;
+	private final Provider<StorageSession> sessionProvider;
+	private final PartitionFactory factory;
 	private final String artifactId;
 	private final List<Node> dirtyNodes = newLinkedList();
 
-	public GraphWriterImpl(STPartitionFactory factory,
-			Provider<STStorageSession> sessionProvider, String artifactId,
+	public GraphWriterImpl(PartitionFactory factory,
+			Provider<StorageSession> sessionProvider, String artifactId,
 			GraphReader graphReader) {
 		this.artifactId = artifactId;
 		this.factory = factory;
@@ -86,7 +86,7 @@ public class GraphWriterImpl implements GraphWriter {
 			String name,
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 		T newNode = NodeAndLinkSupport.createNode(factory, session, context.getId(),
 				null, clazz, name, true, linkTypesForLinkDeletion,
 				linkTypesForLinkedNodeDeletion);
@@ -106,7 +106,7 @@ public class GraphWriterImpl implements GraphWriter {
 
 	@Override
 	public void removeNode(Node node) {
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 		STNodeEntry stNodeEntry = NodeAndLinkSupport.retrievePreviousNode(factory,
 				session, graphReader.getContext(node.getContextId()), node,
 				true);
@@ -117,7 +117,7 @@ public class GraphWriterImpl implements GraphWriter {
 	public void setContextCaption(Context context, String caption) {
 		ContextImpl contextImpl = (ContextImpl) context;
 		contextImpl.setCaption(caption);
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class GraphWriterImpl implements GraphWriter {
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
 			throws IllegalArgumentException {
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 		T newNode = NodeAndLinkSupport.createNode(factory, session, parent
 				.getContextId(), parent.getId(), clazz, name, true,
 				linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
@@ -167,7 +167,7 @@ public class GraphWriterImpl implements GraphWriter {
 
 	@Override
 	public void flush() {
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 		for (Node n : this.dirtyNodes) {
 			NodeAndLinkSupport.retrievePreviousNode(factory, session, graphReader
 					.getContext(n.getContextId()), n, true);

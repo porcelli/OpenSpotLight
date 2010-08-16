@@ -49,8 +49,8 @@
 
 package org.openspotlight.storage.mongodb.test;
 
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.test.AbstractSTStorageSessionTest;
 
 import com.google.inject.Guice;
@@ -65,12 +65,12 @@ import com.mongodb.Mongo;
 public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
 
 	private final Mongo mongo;
-	private final STRepositoryPath repositoryPath;
+	private final RepositoryPath repositoryPath;
 
 	public MongoStorageSessionTest() {
 		try {
 			mongo = new Mongo();
-			repositoryPath = new STRepositoryPath("repository");
+			repositoryPath = new RepositoryPath("repository");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -79,14 +79,14 @@ public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
 	@Override
 	protected Injector createsAutoFlushInjector() {
 		return Guice.createInjector(new MongoModule(
-				STStorageSession.STFlushMode.AUTO, mongo, repositoryPath,
+				StorageSession.FlushMode.AUTO, mongo, repositoryPath,
 				ExamplePartition.FACTORY));
 	}
 
 	@Override
 	protected Injector createsExplicitFlushInjector() {
 		return Guice.createInjector(new MongoModule(
-				STStorageSession.STFlushMode.EXPLICIT, mongo, repositoryPath,
+				StorageSession.FlushMode.EXPLICIT, mongo, repositoryPath,
 				ExamplePartition.FACTORY));
 	}
 

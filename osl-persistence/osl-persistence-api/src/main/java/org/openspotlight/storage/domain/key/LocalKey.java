@@ -51,15 +51,15 @@ package org.openspotlight.storage.domain.key;
 
 import java.util.Set;
 
-import org.openspotlight.storage.domain.STAData;
+import org.openspotlight.storage.domain.StorageDataMarker;
 
 /**
  * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:51:50 PM To change this template use File | Settings | File
  * Templates.
  */
-public interface STLocalKey extends STAData, Comparable<STLocalKey> {
+public interface LocalKey extends StorageDataMarker, Comparable<LocalKey> {
 
-    Set<STKeyEntry> getEntries();
+    Set<Key> getEntries();
 
     Set<String> getEntryNames();
 

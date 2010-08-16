@@ -46,27 +46,13 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-
-package org.openspotlight.storage.domain.key;
-
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.domain.STAData;
+package org.openspotlight.storage;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:57:04 PM To change this template use File | Settings | File
+ * Created by IntelliJ IDEA. User: feuteston Date: 31/03/2010 Time: 11:17:31 To change this template use File | Settings | File
  * Templates.
  */
-public interface STUniqueKey extends STAData, Comparable<STUniqueKey> {
-
-    public String getKeyAsString();
-
-    STPartition getPartition();
-
-    STLocalKey getLocalKey();
-
-    String getParentKeyAsString();
-
-    STRepositoryPath getRepositoryPath();
+public interface Partition {
+    String getPartitionName();
 
 }

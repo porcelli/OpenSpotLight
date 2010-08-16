@@ -56,28 +56,28 @@ import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphTransientWriter;
 import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.STNodeEntry;
 
 import com.google.inject.Provider;
 
 public class SimpleGraphSessionImpl implements SimpleGraphSession {
 
-	public SimpleGraphSessionImpl(Provider<STStorageSession> sessionProvider,
-			STPartitionFactory factory) {
+	public SimpleGraphSessionImpl(Provider<StorageSession> sessionProvider,
+			PartitionFactory factory) {
 		this.transientWriter = new GraphTransientWriterImpl();
 		this.sessionProvider = sessionProvider;
 		this.factory = factory;
 	}
 
-	private final STPartitionFactory factory;
+	private final PartitionFactory factory;
 	private final GraphTransientWriter transientWriter;
-	protected final Provider<STStorageSession> sessionProvider;
+	protected final Provider<StorageSession> sessionProvider;
 
 	@Override
 	public void flushChangedProperties(Node node) {
-		STStorageSession session = sessionProvider.get();
+		StorageSession session = sessionProvider.get();
 		STNodeEntry stNode = NodeAndLinkSupport.retrievePreviousNode(factory, session,
 				from(GraphLocation.SERVER).getContext(node), node, false);
 		session.flushTransient();

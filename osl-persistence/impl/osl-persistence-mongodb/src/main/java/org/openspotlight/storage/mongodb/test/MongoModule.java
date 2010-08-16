@@ -49,9 +49,9 @@
 package org.openspotlight.storage.mongodb.test;
 
 import org.openspotlight.storage.DefaultSTPartitionFactory;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.mongodb.MongoMaxCacheSize;
 
 import com.google.inject.AbstractModule;
@@ -62,23 +62,23 @@ import com.mongodb.Mongo;
  */
 public class MongoModule extends AbstractModule {
 
-    private final STStorageSession.STFlushMode flushMode;
+    private final StorageSession.FlushMode flushMode;
 
     private final Mongo                        mongo;
 
-    private final STRepositoryPath             repositoryPath;
+    private final RepositoryPath             repositoryPath;
 
-    private final STPartitionFactory           factory;
+    private final PartitionFactory           factory;
 
-    public MongoModule( STStorageSession.STFlushMode flushMode, Mongo mongo, STRepositoryPath repositoryPath ) {
+    public MongoModule( StorageSession.FlushMode flushMode, Mongo mongo, RepositoryPath repositoryPath ) {
         this.flushMode = flushMode;
         this.mongo = mongo;
         this.repositoryPath = repositoryPath;
         this.factory = new DefaultSTPartitionFactory();
     }
 
-    public MongoModule( STStorageSession.STFlushMode flushMode, Mongo mongo, STRepositoryPath repositoryPath,
-                        STPartitionFactory factory ) {
+    public MongoModule( StorageSession.FlushMode flushMode, Mongo mongo, RepositoryPath repositoryPath,
+                        PartitionFactory factory ) {
         this.flushMode = flushMode;
         this.mongo = mongo;
         this.repositoryPath = repositoryPath;
@@ -87,11 +87,11 @@ public class MongoModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(STPartitionFactory.class).toInstance(factory);
+        bind(PartitionFactory.class).toInstance(factory);
         bind(Mongo.class).toInstance(mongo);
-        bind(STRepositoryPath.class).toInstance(repositoryPath);
-        bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
-        bind(STStorageSession.class).toProvider(MongoSTStorageSessionProvider.class);
+        bind(RepositoryPath.class).toInstance(repositoryPath);
+        bind(StorageSession.FlushMode.class).toInstance(flushMode);
+        bind(StorageSession.class).toProvider(MongoSTStorageSessionProvider.class);
         bind(int.class)
                        .annotatedWith(MongoMaxCacheSize.class).toInstance(256);
 

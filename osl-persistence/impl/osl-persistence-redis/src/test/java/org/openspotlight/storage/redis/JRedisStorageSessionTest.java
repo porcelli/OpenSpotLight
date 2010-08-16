@@ -49,12 +49,12 @@
 
 package org.openspotlight.storage.redis;
 
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import java.util.Map;
 
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
@@ -110,8 +110,8 @@ public class JRedisStorageSessionTest extends AbstractSTStorageSessionTest {
 		}
 	}
 
-	final Map<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap
-			.<STPartition, JRedisServerDetail> builder()
+	final Map<Partition, JRedisServerDetail> mappedServerConfig = ImmutableMap
+			.<Partition, JRedisServerDetail> builder()
 			.put(ExamplePartition.DEFAULT, JRedisServerConfigExample.DEFAULT)
 			.put(ExamplePartition.FIRST, JRedisServerConfigExample.FIRST).put(
 					ExamplePartition.SECOND, JRedisServerConfigExample.SECOND)
@@ -120,14 +120,14 @@ public class JRedisStorageSessionTest extends AbstractSTStorageSessionTest {
 	@Override
 	protected Injector createsAutoFlushInjector() {
 		return Guice.createInjector(new JRedisStorageModule(
-				STStorageSession.STFlushMode.AUTO, mappedServerConfig,
+				StorageSession.FlushMode.AUTO, mappedServerConfig,
 				repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
 	}
 
 	@Override
 	protected Injector createsExplicitFlushInjector() {
 		return Guice.createInjector(new JRedisStorageModule(
-				STStorageSession.STFlushMode.EXPLICIT, mappedServerConfig,
+				StorageSession.FlushMode.EXPLICIT, mappedServerConfig,
 				repositoryPath("repositoryPath"), ExamplePartition.FACTORY));
 	}
 

@@ -46,61 +46,38 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.storage.domain.node;
 
-import java.io.InputStream;
+package org.openspotlight.storage.domain;
 
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.key.LocalKey;
+import org.openspotlight.storage.domain.key.UniqueKey;
 
-/**
- * Created by IntelliJ IDEA. User: feuteston Date: 28/03/2010 Time: 10:27:26 To change this template use File | Settings | File
- * Templates.
- */
-public interface STProperty {
+public interface STNodeEntry extends StorageDataMarker, NodeFactory,
+		PropertyContainer {
 
-    STPropertyContainer getParent();
+	public void forceReload();
 
-    public boolean isIndexed();
+	String getNodeEntryName();
 
-    public boolean isKey();
+	LocalKey getLocalKey();
 
-    void setStringValue( STStorageSession session,
-                         String value );
+	UniqueKey getUniqueKey();
 
-    void setBytesValue( STStorageSession session,
-                        byte[] value );
+	Iterable<STNodeEntry> getChildren(Partition partition,
+			StorageSession session);
 
-    void setStreamValue( STStorageSession session,
-                         InputStream value );
+	Iterable<STNodeEntry> getChildrenNamed(Partition partition,
+			StorageSession session, String name);
 
-    String getValueAsString( STStorageSession session );
+	Iterable<STNodeEntry> getChildrenForcingReload(Partition partition,
+			StorageSession session);
 
-    byte[] getValueAsBytes( STStorageSession session );
+	Iterable<STNodeEntry> getChildrenNamedForcingReload(Partition partition,
+			StorageSession session, String name);
 
-    InputStream getValueAsStream( STStorageSession session );
+	STNodeEntry getParent(StorageSession session);
 
-    String getPropertyName();
-
-    public STPropertyInternalMethods getInternalMethods();
-
-    interface STPropertyInternalMethods {
-        void setStringValueOnLoad( STStorageSession session,
-                                   String value );
-
-        void setBytesValueOnLoad( STStorageSession session,
-                                  byte[] value );
-
-        void setStreamValueOnLoad( STStorageSession session,
-                                   InputStream value );
-
-        void removeTransientValueIfExpensive();
-
-        String getTransientValueAsString( STStorageSession session );
-
-        byte[] getTransientValueAsBytes( STStorageSession session );
-
-        InputStream getTransientValueAsStream( STStorageSession session );
-
-    }
-
+	void removeNode(StorageSession session);
 }

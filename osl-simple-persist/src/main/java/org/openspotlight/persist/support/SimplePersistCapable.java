@@ -52,8 +52,8 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.openspotlight.persist.annotation.SimpleNodeType;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
 
 /**
  * Created by IntelliJ IDEA. User: feuteston Date: 05/04/2010 Time: 12:15:53 To change this template use File | Settings | File
@@ -61,11 +61,11 @@ import org.openspotlight.storage.STStorageSession;
  */
 public interface SimplePersistCapable<N, S> {
 
-    STStorageSession getCurrentSession();
+    StorageSession getCurrentSession();
 
-    STPartition getCurrentPartition();
+    Partition getCurrentPartition();
 
-    STStorageSession.STPartitionMethods getPartitionMethods();
+    StorageSession.PartitionMethods getPartitionMethods();
 
     public <T> Iterable<N> convertBeansToNodes( final Iterable<T> beans );
 

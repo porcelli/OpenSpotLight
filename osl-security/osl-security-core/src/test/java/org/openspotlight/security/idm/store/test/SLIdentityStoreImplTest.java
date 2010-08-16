@@ -48,7 +48,7 @@
  */
 package org.openspotlight.security.idm.store.test;
 
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import org.jboss.identity.idm.impl.configuration.IdentityConfigurationImpl;
 import org.jboss.identity.idm.impl.configuration.IdentityStoreConfigurationContextImpl;
@@ -71,8 +71,8 @@ import org.openspotlight.persist.support.SimplePersistFactoryImpl;
 import org.openspotlight.security.idm.store.SLIdentityStoreImpl;
 import org.openspotlight.security.idm.store.SLIdentityStoreSessionImpl;
 import org.openspotlight.security.idm.store.StaticInjector;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -151,7 +151,7 @@ public class SLIdentityStoreImplTest {
     public static void startInjector() throws Exception {
 
         autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
-                                                                         STStorageSession.STFlushMode.AUTO,
+                                                                         StorageSession.FlushMode.AUTO,
                                                                          ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                                                                          repositoryPath("repositoryPath")) {
 
@@ -166,7 +166,7 @@ public class SLIdentityStoreImplTest {
 
     @Before
     public void clearAllData() throws Exception {
-        autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.SECURITY).flushall();
+        autoFlushInjector.getInstance(JRedisFactory.class).getFrom(RegularPartitions.SECURITY).flushall();
     }
 
     @Test

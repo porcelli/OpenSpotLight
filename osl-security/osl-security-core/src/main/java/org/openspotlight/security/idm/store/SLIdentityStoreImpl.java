@@ -89,9 +89,9 @@ import org.openspotlight.security.domain.SLIdentityObjectRelationshipType;
 import org.openspotlight.security.domain.SLIdentityObjectType;
 import org.openspotlight.security.domain.SLPasswordEntry;
 import org.openspotlight.security.domain.SLTransientIdentityObjectAttribute;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.STNodeEntry;
 
 import com.google.inject.Injector;
 
@@ -106,7 +106,7 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
     private STNodeEntry                                         rootNode;
 
     private FeaturesMetaData                                    supportedFeatures;
-    private SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    private SimplePersistCapable<STNodeEntry, StorageSession> simplePersist;
 
     public SLIdentityStoreImpl() {
     }
@@ -151,10 +151,10 @@ public class SLIdentityStoreImpl implements IdentityStore, Serializable {
                                                          java.util.Collections.<IdentityObjectSearchCriteriaType>emptySet(),
                                                          true, true, java.util.Collections.<String>emptySet());
             Injector injector = StaticInjector.INSTANCE.getInjector();
-            STStorageSession session = injector.getInstance(STStorageSession.class);
+            StorageSession session = injector.getInstance(StorageSession.class);
 
             SimplePersistFactory factory = injector.getInstance(SimplePersistFactory.class);
-            simplePersist = factory.createSimplePersist(SLPartition.SECURITY);
+            simplePersist = factory.createSimplePersist(RegularPartitions.SECURITY);
 
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, IdentityException.class);

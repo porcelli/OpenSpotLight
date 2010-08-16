@@ -55,7 +55,7 @@ import java.io.File;
 
 import org.jredis.JRedis;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 
 /**
@@ -71,7 +71,7 @@ public enum RedisServerExecutor {
     private Process             currentProcess        = null;
     private static final String ERROR_COMPILING_REDIS = "Error on redis compilation. The executable wasn't found after the make call.";
 
-    public synchronized void startServerIfNecessary( final STPartition somePartition,
+    public synchronized void startServerIfNecessary( final Partition somePartition,
                                                      final JRedisFactory factory ) {
         if (currentProcess == null) {
             String oslHome = getVar("OSL_HOME");

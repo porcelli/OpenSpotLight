@@ -54,8 +54,11 @@ import static org.openspotlight.common.util.Assertions.checkNotEmpty;
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:42:37 AM
  */
-public class STKeyEntryImpl implements STKeyEntry {
-    private final int hashCode;
+public class STKeyEntryImpl implements Key {
+
+    private static final long serialVersionUID = -1370685091918627295L;
+
+    private final int         hashCode;
 
     public STKeyEntryImpl( String propertyName, String value ) {
         checkNotEmpty("propertyName", propertyName);
@@ -99,7 +102,7 @@ public class STKeyEntryImpl implements STKeyEntry {
         return hashCode;
     }
 
-    public int compareTo( STKeyEntry o ) {
+    public int compareTo( Key o ) {
         int result = propertyName.compareTo(o.getPropertyName());
         return result;
     }

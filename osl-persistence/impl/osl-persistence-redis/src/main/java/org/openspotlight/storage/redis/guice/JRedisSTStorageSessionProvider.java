@@ -50,9 +50,9 @@
 package org.openspotlight.storage.redis.guice;
 
 import org.openspotlight.guice.ThreadLocalProvider;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.JRedisSTStorageSessionImpl;
 
 import com.google.inject.Inject;
@@ -62,24 +62,24 @@ import com.google.inject.Singleton;
  * Created by User: feu - Date: Mar 23, 2010 - Time: 4:57:04 PM
  */
 @Singleton
-public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<STStorageSession> {
-    private final STPartitionFactory partitionFactory;
+public class JRedisSTStorageSessionProvider extends ThreadLocalProvider<StorageSession> {
+    private final PartitionFactory partitionFactory;
 
     @Inject
-    public JRedisSTStorageSessionProvider( STStorageSession.STFlushMode flushMode, JRedisFactory factory,
-                                           STRepositoryPath repositoryPath, STPartitionFactory partitionFactory ) {
+    public JRedisSTStorageSessionProvider( StorageSession.FlushMode flushMode, JRedisFactory factory,
+                                           RepositoryPath repositoryPath, PartitionFactory partitionFactory ) {
         this.flushMode = flushMode;
         this.factory = factory;
         this.repositoryPath = repositoryPath;
         this.partitionFactory = partitionFactory;
     }
 
-    private final STStorageSession.STFlushMode flushMode;
+    private final StorageSession.FlushMode flushMode;
     private final JRedisFactory                factory;
-    private final STRepositoryPath             repositoryPath;
+    private final RepositoryPath             repositoryPath;
 
     @Override
-    protected STStorageSession createInstance() {
+    protected StorageSession createInstance() {
         return new JRedisSTStorageSessionImpl(flushMode, factory, repositoryPath, partitionFactory);
     }
 }

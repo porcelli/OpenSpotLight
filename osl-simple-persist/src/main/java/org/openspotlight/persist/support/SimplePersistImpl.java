@@ -99,10 +99,10 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.internal.LazyProperty;
 import org.openspotlight.persist.internal.StreamPropertyWithParent;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
-import org.openspotlight.storage.domain.node.STNodeEntryFactory;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.NodeFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -114,31 +114,31 @@ import com.google.inject.Singleton;
  * Templates.
  */
 @Singleton
-public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STStorageSession> {
+public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, StorageSession> {
 
     private static final String    NODE_ENTRY_TYPE    = "internal-node-entry-type";
     private static final String    NODE_PROPERTY_NAME = "internal-node-proeprty-name";
     private static final String    SHA1_PROPERTY_NAME = "internal-{0}-sha1";
 
-    private final STStorageSession currentSession;
+    private final StorageSession currentSession;
 
-    private final STPartition      currentPartition;
+    private final Partition      currentPartition;
 
     public SimplePersistImpl(
-                              STStorageSession currentSession, STPartition currentPartition ) {
+                              StorageSession currentSession, Partition currentPartition ) {
         this.currentSession = currentSession;
         this.currentPartition = currentPartition;
     }
 
-    public STStorageSession getCurrentSession() {
+    public StorageSession getCurrentSession() {
         return currentSession;
     }
 
-    public STPartition getCurrentPartition() {
+    public Partition getCurrentPartition() {
         return currentPartition;
     }
 
-    public STStorageSession.STPartitionMethods getPartitionMethods() {
+    public StorageSession.PartitionMethods getPartitionMethods() {
         return currentSession.withPartition(currentPartition);
     }
 
@@ -374,7 +374,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
                                            Descriptors descriptors,
                                            String propertyName ) throws Exception {
         String name = internalGetNodeName(descriptors.bean);
-        STNodeEntryFactory.STNodeEntryBuilder builder = currentSession.withPartition(currentPartition).createWithName(name);
+        NodeFactory.NodeBuilder builder = currentSession.withPartition(currentPartition).createWithName(name);
 
         if (parentNode != null) {
             builder.withParent(parentNode);
@@ -757,7 +757,7 @@ public class SimplePersistImpl implements SimplePersistCapable<STNodeEntry, STSt
             checkNotNull("propertyValues", propertyValues);
             checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
 
-            STStorageSession.STCriteriaBuilder builder = currentSession.withPartition(currentPartition).createCriteria().withNodeEntry(internalGetNodeName(beanType));
+            StorageSession.CriteriaBuilder builder = currentSession.withPartition(currentPartition).createCriteria().withNodeEntry(internalGetNodeName(beanType));
             Map<String, PropertyDescriptor> allDescriptors = createMapWith(PropertyUtils.getPropertyDescriptors(beanType));
 
             for (int i = 0, size = propertyNames.length; i < size; i++) {

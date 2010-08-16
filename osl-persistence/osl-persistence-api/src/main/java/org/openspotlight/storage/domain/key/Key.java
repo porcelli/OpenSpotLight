@@ -46,81 +46,18 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.storage.domain;
 
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STPartitionFactory;
+package org.openspotlight.storage.domain.key;
+
+import org.openspotlight.storage.domain.StorageDataMarker;
 
 /**
- * Created by User: feu - Date: Apr 20, 2010 - Time: 9:33:28 AM
+ * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:47:15 PM To change this template use File | Settings | File
+ * Templates.
  */
-public enum SLPartition implements STPartition {
+public interface Key extends StorageDataMarker, Comparable<Key> {
 
-	FEDERATION("federation"), SYNTAX_HIGHLIGHT("syntax_highlight", FEDERATION), LINE_REFERENCE(
-			"line_reference"), SECURITY("security"), LOG("log");
+    String getPropertyName();
 
-	private static class STCustomPartition implements STPartition {
-
-		private final String partitionName;
-
-		public STCustomPartition(String partitionName) {
-			this.partitionName = partitionName;
-		}
-
-		@Override
-		public String getPartitionName() {
-			return partitionName;
-		}
-
-		public boolean equals(Object o) {
-			if (o == this)
-				return true;
-			if (!(o instanceof STPartition))
-				return false;
-			STPartition that = (STPartition) o;
-			return this.partitionName.equals(that.getPartitionName());
-		}
-
-		public int hashCode() {
-			return this.partitionName.hashCode();
-		}
-
-	}
-
-	public static final STPartitionFactory FACTORY = new STPartitionFactory() {
-
-		@Override
-		public STPartition getPartitionByName(String name) {
-			try {
-				return valueOf(name.toUpperCase());
-			} catch (IllegalArgumentException e) {
-				return new STCustomPartition(name);
-			}
-		}
-
-		@Override
-		public STPartition[] getValues() {
-			return values();
-		}
-	};
-
-	private String partitionName;
-	private SLPartition parent;
-
-	SLPartition(String partitionName, SLPartition parent) {
-		this.partitionName = partitionName;
-		this.parent = parent;
-	}
-
-	SLPartition(String partitionName) {
-		this.partitionName = partitionName;
-	}
-
-	public String getPartitionName() {
-		return partitionName;
-	}
-
-	public SLPartition getParent() {
-		return parent;
-	}
+    String getValue();
 }

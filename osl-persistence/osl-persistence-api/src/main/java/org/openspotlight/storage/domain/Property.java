@@ -46,39 +46,39 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
+package org.openspotlight.storage.domain;
 
-package org.openspotlight.storage.domain.node;
+import java.io.InputStream;
 
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.STAData;
-import org.openspotlight.storage.domain.key.STLocalKey;
-import org.openspotlight.storage.domain.key.STUniqueKey;
+import org.openspotlight.storage.StorageSession;
 
-public interface STNodeEntry extends STAData, STNodeEntryFactory,
-		STPropertyContainer {
+/**
+ * Created by IntelliJ IDEA. User: feuteston Date: 28/03/2010 Time: 10:27:26 To change this template use File | Settings | File
+ * Templates.
+ */
+public interface Property {
 
-	public void forceReload();
+    PropertyContainer getParent();
 
-	String getNodeEntryName();
+    public boolean isIndexed();
 
-	STLocalKey getLocalKey();
+    public boolean isKey();
 
-	STUniqueKey getUniqueKey();
+    void setStringValue( StorageSession session,
+                         String value );
 
-	Iterable<STNodeEntry> getChildren(STPartition partition,
-			STStorageSession session);
+    void setBytesValue( StorageSession session,
+                        byte[] value );
 
-	Iterable<STNodeEntry> getChildrenNamed(STPartition partition,
-			STStorageSession session, String name);
+    void setStreamValue( StorageSession session,
+                         InputStream value );
 
-	Iterable<STNodeEntry> getChildrenForcingReload(STPartition partition,
-			STStorageSession session);
+    String getValueAsString( StorageSession session );
 
-	Iterable<STNodeEntry> getChildrenNamedForcingReload(STPartition partition,
-			STStorageSession session, String name);
+    byte[] getValueAsBytes( StorageSession session );
 
-	STNodeEntry getParent(STStorageSession session);
+    InputStream getValueAsStream( StorageSession session );
 
-	void removeNode(STStorageSession session);
+    String getPropertyName();
+
 }

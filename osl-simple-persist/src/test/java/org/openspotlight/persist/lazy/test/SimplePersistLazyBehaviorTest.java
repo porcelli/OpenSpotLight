@@ -52,15 +52,15 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -71,19 +71,19 @@ import com.google.inject.Injector;
 public class SimplePersistLazyBehaviorTest {
 
     final Injector                                      autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
-                                                                                                                         STStorageSession.STFlushMode.AUTO,
+                                                                                                                         StorageSession.FlushMode.AUTO,
                                                                                                                          ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                                                                                                                          repositoryPath("repository")));
 
-    STStorageSession                                    session;
-    SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    StorageSession                                    session;
+    SimplePersistCapable<STNodeEntry, StorageSession> simplePersist;
 
     @Before
     public void cleanPreviousData() throws Exception {
         JRedisFactory autoFlushFactory = autoFlushInjector.getInstance(JRedisFactory.class);
-        autoFlushFactory.getFrom(SLPartition.FEDERATION).flushall();
-        this.session = autoFlushInjector.getInstance(STStorageSession.class);
-        this.simplePersist = new SimplePersistImpl(session, SLPartition.FEDERATION);
+        autoFlushFactory.getFrom(RegularPartitions.FEDERATION).flushall();
+        this.session = autoFlushInjector.getInstance(StorageSession.class);
+        this.simplePersist = new SimplePersistImpl(session, RegularPartitions.FEDERATION);
     }
 
     @Test

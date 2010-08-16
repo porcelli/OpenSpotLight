@@ -65,20 +65,20 @@ import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.storage.domain.key.STKeyEntry;
+import org.openspotlight.storage.domain.NodeFactory;
+import org.openspotlight.storage.domain.NodeFactory.NodeBuilder;
+import org.openspotlight.storage.domain.Property;
+import org.openspotlight.storage.domain.PropertyContainer;
+import org.openspotlight.storage.domain.STLinkEntry;
+import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.key.Key;
+import org.openspotlight.storage.domain.key.LocalKey;
 import org.openspotlight.storage.domain.key.STKeyEntryImpl;
-import org.openspotlight.storage.domain.key.STLocalKey;
 import org.openspotlight.storage.domain.key.STLocalKeyImpl;
-import org.openspotlight.storage.domain.key.STUniqueKey;
 import org.openspotlight.storage.domain.key.STUniqueKeyImpl;
-import org.openspotlight.storage.domain.node.STLinkEntry;
+import org.openspotlight.storage.domain.key.UniqueKey;
 import org.openspotlight.storage.domain.node.STLinkEntryImpl;
-import org.openspotlight.storage.domain.node.STNodeEntry;
-import org.openspotlight.storage.domain.node.STNodeEntryFactory;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
-import org.openspotlight.storage.domain.node.STProperty;
-import org.openspotlight.storage.domain.node.STPropertyContainer;
-import org.openspotlight.storage.domain.node.STNodeEntryFactory.STNodeEntryBuilder;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -87,26 +87,26 @@ import com.google.common.collect.Multimap;
 /**
  * Created by User: feu - Date: Mar 22, 2010 - Time: 2:19:49 PM
  */
-public abstract class AbstractSTStorageSession<R> implements STStorageSession {
+public abstract class AbstractSTStorageSession<R> implements StorageSession {
 
 	@Override
 	public STNodeEntry findNodeByStringId(String idAsString) {
 
-		STPartition partition = partitionFactory
+		Partition partition = partitionFactory
 				.getPartitionByName(StringIDSupport
 						.getPartitionName(idAsString));
 		return withPartition(partition).createCriteria().withUniqueKeyAsString(
 				idAsString).buildCriteria().andFindUnique(this);
 	}
 
-	protected abstract void internalSavePartitions(STPartition... partitions)
+	protected abstract void internalSavePartitions(Partition... partitions)
 			throws Exception;
 
-	public STRepositoryPath getRepositoryPath() {
+	public RepositoryPath getRepositoryPath() {
 		return repositoryPath;
 	}
 
-	protected final STRepositoryPath repositoryPath;
+	protected final RepositoryPath repositoryPath;
 
 	public void discardTransient() {
 		this.newNodes.clear();
@@ -114,37 +114,37 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		this.dirtyProperties.clear();
 	}
 
-	private final Map<STPartition, STPartitionMethods> partitionMethods = newHashMap();
+	private final Map<Partition, PartitionMethods> partitionMethods = newHashMap();
 
-	private class STPartitionMethodsImpl implements STPartitionMethods {
+	public class STPartitionMethodsImpl implements PartitionMethods {
 
-		public STNodeEntryFactory.STNodeEntryBuilder createWithName(
-				STStorageSession session, String name) {
+		public NodeFactory.NodeBuilder createWithName(
+				StorageSession session, String name) {
 			return new STNodeEntryBuilderImpl(name, partition);
 		}
 
-		public STNodeEntryFactory.STNodeEntryBuilder createWithName(String name) {
+		public NodeFactory.NodeBuilder createWithName(String name) {
 			return this.createWithName(AbstractSTStorageSession.this, name);
 		}
 
-		public Iterable<STNodeEntry> findByCriteria(STCriteria criteria) {
+		public Iterable<STNodeEntry> findByCriteria(Criteria criteria) {
 			try {
 				if (!criteria.getPartition().equals(partition))
 					throw new IllegalArgumentException();
 				boolean hasGlobal = false;
 				boolean hasOther = false;
-				for (STCriteriaItem item : criteria.getCriteriaItems()) {
-					if (item instanceof STPropertyCriteriaItem) {
+				for (CriteriaItem item : criteria.getCriteriaItems()) {
+					if (item instanceof PropertyCriteriaItem) {
 						hasOther = true;
-					} else if (item instanceof STLocalKeyCriteriaItem) {
+					} else if (item instanceof LocalKeyCriteriaItem) {
 						hasOther = true;
-					} else if (item instanceof STPropertyContainsString) {
+					} else if (item instanceof PropertyContainsString) {
 						hasOther = true;
-					} else if (item instanceof STPropertyStartsWithString) {
+					} else if (item instanceof PropertyStartsWithString) {
 						hasOther = true;
-					} else if (item instanceof STPropertyEndsWithString) {
+					} else if (item instanceof PropertyEndsWithString) {
 						hasOther = true;
-					} else if (item instanceof STUniqueKeyCriteriaItem) {
+					} else if (item instanceof UniqueKeyCriteriaItem) {
 						hasGlobal = true;
 					}
 					if (hasOther && hasGlobal)
@@ -166,7 +166,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			}
 		}
 
-		public STNodeEntry findUniqueByCriteria(STCriteria criteria) {
+		public STNodeEntry findUniqueByCriteria(Criteria criteria) {
 			try {
 				Iterable<STNodeEntry> result = findByCriteria(criteria);
 				if (result == null)
@@ -182,21 +182,21 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			}
 		}
 
-		private final STStorageSessionInternalMethods internalMethods;
+		private final StorageSessionInternalMethods internalMethods;
 
-		public STCriteriaBuilder createCriteria() {
+		public CriteriaBuilder createCriteria() {
 			return new STCriteriaBuilderImpl(partition);
 		}
 
-		public STStorageSessionInternalMethods getInternalMethods() {
+		public StorageSessionInternalMethods getInternalMethods() {
 			return internalMethods;
 		}
 
-		public STUniqueKey createNewSimpleKey(String... nodePaths) {
-			STUniqueKey parentKey = null;
+		public UniqueKey createNewSimpleKey(String... nodePaths) {
+			UniqueKey parentKey = null;
 			for (String path : nodePaths) {
 				parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections
-						.<STKeyEntry> emptySet(), path), parentKey
+						.<Key> emptySet(), path), parentKey
 						.getKeyAsString(), partition, repositoryPath);
 			}
 			return parentKey;
@@ -204,10 +204,10 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 		public STNodeEntry createNewSimpleNode(String... nodePaths) {
 			STNodeEntry parent = null;
-			STUniqueKey parentKey = null;
+			UniqueKey parentKey = null;
 			for (String nodePath : nodePaths) {
 				parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections
-						.<STKeyEntry> emptySet(), nodePath),
+						.<Key> emptySet(), nodePath),
 						parentKey != null ? parentKey.getKeyAsString() : null,
 						partition, repositoryPath);
 				parent = new STNodeEntryImpl(parentKey, false);
@@ -217,16 +217,16 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return parent;
 		}
 
-		public STUniqueKeyBuilder createKey(String nodeEntryName) {
+		public UniqueKeyBuilder createKey(String nodeEntryName) {
 			return new STUniqueKeyBuilderImpl(nodeEntryName, partition,
 					repositoryPath);
 		}
 
-		private final STPartition partition;
+		private final Partition partition;
 
-		private STPartitionMethodsImpl(STPartition currentPartition) {
+		private STPartitionMethodsImpl(Partition currentPartition) {
 			this.partition = currentPartition;
-			internalMethods = new STStorageSessionInternalMethodsImpl(partition);
+			internalMethods = new StorageSessionInternalMethods(partition);
 		}
 
 		@Override
@@ -241,14 +241,10 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	protected abstract Iterable<String> internalGetAllNodeNames(
-			STPartition partition) throws Exception;
-
-	protected final STNodeEntry createFoundEntryWithKey(STUniqueKey uniqueKey) {
-		return new STNodeEntryImpl(uniqueKey, true);
-	}
+			Partition partition) throws Exception;
 
 	private static class STUniqueKeyAsStringCriteriaItemImpl implements
-			STUniqueKeyAsStringCriteriaItem {
+			UniqueKeyAsStringCriteriaItem {
 
 		public STUniqueKeyAsStringCriteriaItemImpl(String keyAsString) {
 			this.keyAsString = keyAsString;
@@ -270,18 +266,18 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	private static class STUniqueKeyCriteriaItemImpl implements
-			STUniqueKeyCriteriaItem {
-		private STUniqueKeyCriteriaItemImpl(STUniqueKey value,
+			UniqueKeyCriteriaItem {
+		private STUniqueKeyCriteriaItemImpl(UniqueKey value,
 				String nodeEntryName) {
 			this.value = value;
 			this.nodeEntryName = nodeEntryName;
 		}
 
-		private final STUniqueKey value;
+		private final UniqueKey value;
 
 		private final String nodeEntryName;
 
-		public STUniqueKey getValue() {
+		public UniqueKey getValue() {
 			return value;
 		}
 
@@ -318,18 +314,18 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	private static class STLocalKeyCriteriaItemImpl implements
-			STLocalKeyCriteriaItem {
-		private STLocalKeyCriteriaItemImpl(STLocalKey value,
+			LocalKeyCriteriaItem {
+		private STLocalKeyCriteriaItemImpl(LocalKey value,
 				String nodeEntryName) {
 			this.value = value;
 			this.nodeEntryName = nodeEntryName;
 		}
 
-		private final STLocalKey value;
+		private final LocalKey value;
 
 		private final String nodeEntryName;
 
-		public STLocalKey getValue() {
+		public LocalKey getValue() {
 			return value;
 		}
 
@@ -366,7 +362,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	private static class STPropertyCriteriaItemImpl implements
-			STPropertyCriteriaItem {
+			PropertyCriteriaItem {
 		private STPropertyCriteriaItemImpl(String propertyName, String value,
 				String nodeEntryName) {
 			this.value = value;
@@ -426,7 +422,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	private static class STPropertyEndsWithStringImpl implements
-			STPropertyEndsWithString {
+			PropertyEndsWithString {
 
 		private STPropertyEndsWithStringImpl(String nodeEntryName,
 				String propertyName, String value) {
@@ -485,7 +481,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	private static class STPropertyStartsWithStringImpl implements
-			STPropertyStartsWithString {
+			PropertyStartsWithString {
 
 		private STPropertyStartsWithStringImpl(String nodeEntryName,
 				String propertyName, String value) {
@@ -545,7 +541,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	private static class STPropertyContainsStringImpl implements
-			STPropertyContainsString {
+			PropertyContainsString {
 
 		private STPropertyContainsStringImpl(String nodeEntryName,
 				String propertyName, String value) {
@@ -603,9 +599,9 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 	}
 
-	private static class STCriteriaImpl implements STCriteria {
+	private static class STCriteriaImpl implements Criteria {
 		private STCriteriaImpl(String nodeName,
-				Set<STCriteriaItem> criteriaItems, STPartition partition) {
+				Set<CriteriaItem> criteriaItems, Partition partition) {
 			this.nodeName = nodeName;
 			this.partition = partition;
 			this.criteriaItems = ImmutableSet.copyOf(criteriaItems);
@@ -645,42 +641,42 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 		private final String nodeName;
 
-		private final STPartition partition;
+		private final Partition partition;
 
-		private final Set<STCriteriaItem> criteriaItems;
+		private final Set<CriteriaItem> criteriaItems;
 
 		public String getNodeName() {
 			return nodeName;
 		}
 
-		public STPartition getPartition() {
+		public Partition getPartition() {
 			return partition;
 		}
 
-		public Set<STCriteriaItem> getCriteriaItems() {
+		public Set<CriteriaItem> getCriteriaItems() {
 			return criteriaItems;
 		}
 
-		public Iterable<STNodeEntry> andFind(STStorageSession session) {
+		public Iterable<STNodeEntry> andFind(StorageSession session) {
 			return session.withPartition(partition).findByCriteria(this);
 		}
 
-		public STNodeEntry andFindUnique(STStorageSession session) {
+		public STNodeEntry andFindUnique(StorageSession session) {
 			return session.withPartition(partition).findUniqueByCriteria(this);
 		}
 	}
 
-	private static class STCriteriaBuilderImpl implements STCriteriaBuilder {
+	private static class STCriteriaBuilderImpl implements CriteriaBuilder {
 
-		private final STPartition partition;
+		private final Partition partition;
 
 		private String transientNodeEntryName;
 
 		private String transientPropertyName;
 
-		private STUniqueKey transientUniqueKey;
+		private UniqueKey transientUniqueKey;
 
-		private STLocalKey transientLocalKey;
+		private LocalKey transientLocalKey;
 
 		private String transientPropertyValue;
 
@@ -690,9 +686,9 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		private String endsWith;
 		private String contains;
 
-		Set<STCriteriaItem> items;
+		Set<CriteriaItem> items;
 
-		public STCriteriaBuilderImpl(STPartition partition) {
+		public STCriteriaBuilderImpl(Partition partition) {
 			this.partition = partition;
 			items = newLinkedHashSet();
 		}
@@ -707,7 +703,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 				throw new IllegalStateException();
 		}
 
-		public STCriteriaBuilder withProperty(String propertyName) {
+		public CriteriaBuilder withProperty(String propertyName) {
 			breakIfNotNull(transientUniqueKey);
 			breakIfNotNull(transientPropertyValue);
 			breakIfNotNull(transientLocalKey);
@@ -718,13 +714,13 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return this;
 		}
 
-		public STCriteriaBuilder withNodeEntry(String nodeName) {
+		public CriteriaBuilder withNodeEntry(String nodeName) {
 			breakIfNotNull(transientNodeEntryName);
 			this.transientNodeEntryName = nodeName;
 			return this;
 		}
 
-		public STCriteriaBuilder equalsTo(String value) {
+		public CriteriaBuilder equalsTo(String value) {
 			breakIfNotNull(transientUniqueKey);
 			breakIfNotNull(transientLocalKey);
 
@@ -735,7 +731,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return this;
 		}
 
-		public STCriteriaBuilder containsString(String value) {
+		public CriteriaBuilder containsString(String value) {
 			breakIfNotNull(transientUniqueKey);
 			breakIfNotNull(transientLocalKey);
 
@@ -746,7 +742,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 		}
 
-		public STCriteriaBuilder startsWithString(String value) {
+		public CriteriaBuilder startsWithString(String value) {
 
 			breakIfNotNull(transientUniqueKey);
 			breakIfNotNull(transientLocalKey);
@@ -758,7 +754,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 		}
 
-		public STCriteriaBuilder endsWithString(String value) {
+		public CriteriaBuilder endsWithString(String value) {
 			breakIfNotNull(transientUniqueKey);
 			breakIfNotNull(transientLocalKey);
 
@@ -768,8 +764,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return this;
 		}
 
-		public STCriteriaBuilder and() {
-			STCriteriaItem item = null;
+		public CriteriaBuilder and() {
+			CriteriaItem item = null;
 			if (transientUniqueKey != null) {
 				breakIfNull(transientNodeEntryName);
 
@@ -817,16 +813,15 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return this;
 		}
 
-		public STCriteria buildCriteria() {
-
+		public Criteria buildCriteria() {
+            and();
 			STCriteriaImpl result = new STCriteriaImpl(transientNodeEntryName,
 					this.items, partition);
-			and();
 
 			return result;
 		}
 
-		public STCriteriaBuilder withLocalKey(STLocalKey localKey) {
+		public CriteriaBuilder withLocalKey(LocalKey localKey) {
 			breakIfNotNull(transientUniqueKey);
 			breakIfNotNull(transientPropertyName);
 			breakIfNotNull(transientPropertyValue);
@@ -839,7 +834,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return this;
 		}
 
-		public STCriteriaBuilder withUniqueKey(STUniqueKey uniqueKey) {
+		public CriteriaBuilder withUniqueKey(UniqueKey uniqueKey) {
 
 			breakIfNotNull(transientLocalKey);
 			breakIfNotNull(transientPropertyName);
@@ -854,7 +849,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 
 		@Override
-		public STCriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString) {
+		public CriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString) {
 			this.transientIdAsString = uniqueKeyAsString;
 			and();
 			return this;
@@ -873,9 +868,9 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	private void searchItemsToRemove(STNodeEntry stNodeEntry,
 			List<STNodeEntry> removedItems) {
 		removedItems.add(stNodeEntry);
-		Iterable<STPartition> partitions = SLCollections.iterableOf(stNodeEntry
+		Iterable<Partition> partitions = SLCollections.iterableOf(stNodeEntry
 				.getUniqueKey().getPartition(), partitionFactory.getValues());
-		for (STPartition p : partitions) {
+		for (Partition p : partitions) {
 			Iterable<STNodeEntry> children = stNodeEntry.getChildren(p, this);
 			for (STNodeEntry e : children) {
 				searchItemsToRemove(e, removedItems);
@@ -883,15 +878,15 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 	}
 
-	protected AbstractSTStorageSession(STFlushMode flushMode,
-			STRepositoryPath repositoryPath, STPartitionFactory partitionFactory) {
+	protected AbstractSTStorageSession(FlushMode flushMode,
+			RepositoryPath repositoryPath, PartitionFactory partitionFactory) {
 		this.flushMode = flushMode;
 		this.repositoryPath = repositoryPath;
 		this.partitionFactory = partitionFactory;
 	}
 
-	public STPartitionMethods withPartition(STPartition partition) {
-		STPartitionMethods result = partitionMethods.get(partition);
+	public PartitionMethods withPartition(Partition partition) {
+		PartitionMethods result = partitionMethods.get(partition);
 		if (result == null) {
 			result = new STPartitionMethodsImpl(partition);
 			partitionMethods.put(partition, result);
@@ -905,20 +900,20 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		throw new RuntimeException(e);
 	}
 
-	private final STPartitionFactory partitionFactory;
+	private final PartitionFactory partitionFactory;
 
-	private final STFlushMode flushMode;
+	private final FlushMode flushMode;
 
 	protected final Set<Pair<STNodeEntry, R>> newNodes = newLinkedHashSet();
 	protected final Set<Pair<STLinkEntry, R>> newLinks = newLinkedHashSet();
 
-	protected final Multimap<STPropertyContainer, STProperty> dirtyProperties = ArrayListMultimap
+	protected final Multimap<PropertyContainer, Property> dirtyProperties = ArrayListMultimap
 			.create();
 
 	protected final Set<STNodeEntry> removedNodes = newLinkedHashSet();
 	protected final Set<STLinkEntry> removedLinks = newLinkedHashSet();
 
-	private R handleNewItem(STNodeEntry entry) {
+	private void handleNewItem(STNodeEntry entry) {
 		try {
 			R reference;
 			switch (getFlushMode()) {
@@ -927,27 +922,22 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 						.getPartition(), entry);
 				flushNewItem(reference, entry.getUniqueKey().getPartition(),
 						entry);
-				return reference;
-
 			case EXPLICIT:
 				reference = createNodeReferenceIfNecessary(entry.getUniqueKey()
 						.getPartition(), entry);
 				newNodes.add(newPair(entry, reference));
-				return reference;
 			default:
 				throw new IllegalStateException();
 			}
 		} catch (Exception e) {
 			handleException(e);
-
 		}
-		return null;
 	}
 
-	protected abstract R createNodeReferenceIfNecessary(STPartition partition,
+	protected abstract R createNodeReferenceIfNecessary(Partition partition,
 			STNodeEntry entry);
 
-	protected abstract R createLinkReferenceIfNecessary(STPartition partition,
+	protected abstract R createLinkReferenceIfNecessary(Partition partition,
 			STLinkEntry entry);
 
 	private void handleRemovedItem(STNodeEntry entry) {
@@ -965,28 +955,27 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 	}
 
-	private final class STStorageSessionInternalMethodsImpl implements
-			STStorageSessionInternalMethods {
+	public final class StorageSessionInternalMethods {
 
-		private final STPartition partition;
+		private final Partition partition;
 
-		public STStorageSessionInternalMethodsImpl(STPartition partition) {
+		public StorageSessionInternalMethods(Partition partition) {
 			this.partition = partition;
 		}
 
-		public STNodeEntryFactory.STNodeEntryBuilder nodeEntryCreateWithName(
+		public NodeFactory.NodeBuilder nodeEntryCreateWithName(
 				STNodeEntry stNodeEntry, String name) {
 			return withPartition(partition).createWithName(
 					AbstractSTStorageSession.this, name)
 					.withParent(stNodeEntry);
 		}
 
-		public void propertySetProperty(STProperty stProperty, byte[] value) {
+		public void propertySetProperty(Property stProperty, byte[] value) {
 			if (!partition.equals(stProperty.getParent().getPartition()))
 				throw new IllegalArgumentException(
 						"wrong partition for this property");
 
-			if (flushMode.equals(STFlushMode.AUTO)) {
+			if (flushMode.equals(FlushMode.AUTO)) {
 				flushDirtyProperty(null, stProperty);
 			} else {
 				dirtyProperties.put(stProperty.getParent(), stProperty);
@@ -994,8 +983,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 		}
 
-		public Set<STProperty> propertyContainerLoadProperties(
-				STPropertyContainer stNodeEntry) {
+		public Set<Property> propertyContainerLoadProperties(
+				PropertyContainer stNodeEntry) {
 			if (!partition.equals(stNodeEntry.getPartition()))
 				throw new IllegalArgumentException(
 						"wrong partition for this node entry");
@@ -1023,7 +1012,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 
 		public Iterable<STNodeEntry> nodeEntryGetChildren(
-				STPartition partition, STNodeEntry stNodeEntry) {
+				Partition partition, STNodeEntry stNodeEntry) {
 			try {
 				return internalNodeEntryGetChildren(partition, stNodeEntry);
 			} catch (Exception e) {
@@ -1032,8 +1021,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return null;
 		}
 
-		@Override
-		public byte[] propertyGetValue(STProperty stProperty) {
+		public byte[] propertyGetValue(Property stProperty) {
 			try {
 				return internalPropertyGetValue(stProperty.getParent()
 						.getPartition(), stProperty);
@@ -1044,7 +1032,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 
 		public Iterable<STNodeEntry> nodeEntryGetNamedChildren(
-				STPartition partition, STNodeEntry stNodeEntry, String name) {
+				Partition partition, STNodeEntry stNodeEntry, String name) {
 			if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
 				throw new IllegalArgumentException(
 						"wrong partition for this node entry");
@@ -1061,31 +1049,31 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 	}
 
-	protected abstract byte[] internalPropertyGetValue(STPartition partition,
-			STProperty stProperty) throws Exception;
+	protected abstract byte[] internalPropertyGetValue(Partition partition,
+			Property stProperty) throws Exception;
 
-	public STFlushMode getFlushMode() {
+	public FlushMode getFlushMode() {
 		return flushMode;
 	}
 
 	private final class STNodeEntryBuilderImpl implements
-			STNodeEntryFactory.STNodeEntryBuilder {
+			NodeFactory.NodeBuilder {
 
-		private STNodeEntryBuilderImpl(String name, STPartition partition) {
+		private STNodeEntryBuilderImpl(String name, Partition partition) {
 			this.name = name;
 			this.partition = partition;
 		}
 
-		private final STPartition partition;
+		private final Partition partition;
 
 		private final String name;
 
 		private String parentKey = null;
 
-		private Set<STKeyEntry> keys = newHashSet();
+		private Set<Key> keys = newHashSet();
 		private Set<String> keyNames = newHashSet();
 
-		public STNodeEntryFactory.STNodeEntryBuilder withKeyEntry(String name,
+		public NodeFactory.NodeBuilder withKeyEntry(String name,
 				String value) {
 			if (keyNames.contains(name))
 				throw new IllegalStateException("key name already inserted");
@@ -1094,8 +1082,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return this;
 		}
 
-		public STNodeEntryFactory.STNodeEntryBuilder withParentKey(
-				STUniqueKey parentKey) {
+		public NodeFactory.NodeBuilder withParentKey(
+				UniqueKey parentKey) {
 			if (this.parentKey != null) {
 				throw new IllegalStateException();
 			}
@@ -1103,7 +1091,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			return this;
 		}
 
-		public STNodeEntryFactory.STNodeEntryBuilder withParent(
+		public NodeFactory.NodeBuilder withParent(
 				STNodeEntry parent) {
 			return withParentKey(parent.getUniqueKey());
 		}
@@ -1114,7 +1102,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 			STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey,
 					parentKey, partition, repositoryPath);
 			STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey, false);
-			if (getFlushMode().equals(STFlushMode.AUTO)) {
+			if (getFlushMode().equals(FlushMode.AUTO)) {
 
 				AbstractSTStorageSession.this.handleNewItem(result);
 			} else {
@@ -1127,7 +1115,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 
 		@Override
-		public STNodeEntryBuilder withParentAsString(String parentAsString) {
+		public NodeBuilder withParentAsString(String parentAsString) {
 			this.parentKey = parentAsString;
 			return this;
 		}
@@ -1135,8 +1123,8 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	public void flushTransient() {
-		Set<STPartition> partitions = newHashSet();
-		Map<STPropertyContainer, R> referenceMap = newHashMap();
+		Set<Partition> partitions = newHashSet();
+		Map<PropertyContainer, R> referenceMap = newHashMap();
 		for (Pair<STNodeEntry, R> newNode : newNodes) {
 			try {
 				partitions.add(newNode.getK1().getUniqueKey().getPartition());
@@ -1147,7 +1135,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 				handleException(e);
 			}
 		}
-		for (STPropertyContainer propertyContainer : dirtyProperties.keySet()) {
+		for (PropertyContainer propertyContainer : dirtyProperties.keySet()) {
 			partitions.add(propertyContainer.getPartition());
 
 			R reference = referenceMap.get(propertyContainer);
@@ -1164,7 +1152,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 					throw new IllegalStateException();
 				}
 			}
-			for (STProperty data : dirtyProperties.get(propertyContainer)) {
+			for (Property data : dirtyProperties.get(propertyContainer)) {
 				try {
 					flushDirtyProperty(reference, data);
 				} catch (Exception e) {
@@ -1200,7 +1188,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		try {
 
 			internalSavePartitions(partitions
-					.toArray(new STPartition[partitions.size()]));
+					.toArray(new Partition[partitions.size()]));
 		} catch (Exception e) {
 			handleException(e);
 		}
@@ -1208,7 +1196,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 
 	}
 
-	private void flushDirtyProperty(R reference, STProperty dirtyProperty) {
+	private void flushDirtyProperty(R reference, Property dirtyProperty) {
 		try {
 
 			internalFlushSimpleProperty(reference, dirtyProperty.getParent()
@@ -1219,21 +1207,21 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 	}
 
-	public static class STUniqueKeyBuilderImpl implements STUniqueKeyBuilder {
+	public static class STUniqueKeyBuilderImpl implements UniqueKeyBuilder {
 
-		private Set<STKeyEntry> localEntries = newHashSet();
+		private Set<Key> localEntries = newHashSet();
 		private final String name;
 
-		private final STPartition partition;
+		private final Partition partition;
 
 		private final STUniqueKeyBuilderImpl child;
 
-		private final STRepositoryPath repositoryPath;
+		private final RepositoryPath repositoryPath;
 
 		private String parentKey;
 
-		public STUniqueKeyBuilderImpl(String name, STPartition partition,
-				STRepositoryPath repositoryPath) {
+		public STUniqueKeyBuilderImpl(String name, Partition partition,
+				RepositoryPath repositoryPath) {
 			this.name = name;
 			this.partition = partition;
 			this.child = null;
@@ -1241,38 +1229,38 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 
 		private STUniqueKeyBuilderImpl(String name,
-				STUniqueKeyBuilderImpl child, STPartition partition,
-				STRepositoryPath repositoryPath) {
+				STUniqueKeyBuilderImpl child, Partition partition,
+				RepositoryPath repositoryPath) {
 			this.name = name;
 			this.child = child;
 			this.partition = partition;
 			this.repositoryPath = repositoryPath;
 		}
 
-		public STUniqueKeyBuilder withEntry(String propertyName, String value) {
+		public UniqueKeyBuilder withEntry(String propertyName, String value) {
 			this.localEntries.add(new STKeyEntryImpl(propertyName, value));
 			return this;
 		}
 
-		public STUniqueKeyBuilder withParent(STPartition newPartition,
+		public UniqueKeyBuilder withParent(Partition newPartition,
 				String nodeEntryName) {
 			return new STUniqueKeyBuilderImpl(nodeEntryName, this,
 					newPartition, repositoryPath);
 		}
 
 		@Override
-		public STUniqueKeyBuilder withParent(String parentId) {
+		public UniqueKeyBuilder withParent(String parentId) {
 			this.parentKey = parentId;
 			return this;
 		}
 
-		public STUniqueKey andCreate() {
+		public UniqueKey andCreate() {
 
-			STUniqueKey currentKey = null;
+			UniqueKey currentKey = null;
 			STUniqueKeyBuilderImpl currentBuilder = this;
 			if (parentKey == null) {
 				do {
-					STLocalKey localKey = new STLocalKeyImpl(
+					LocalKey localKey = new STLocalKeyImpl(
 							currentBuilder.localEntries, currentBuilder.name);
 					currentKey = new STUniqueKeyImpl(localKey,
 							currentKey != null ? currentKey.getKeyAsString()
@@ -1281,7 +1269,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 					currentBuilder = currentBuilder.child;
 				} while (currentBuilder != null);
 			} else {
-				STLocalKey localKey = new STLocalKeyImpl(
+				LocalKey localKey = new STLocalKeyImpl(
 						currentBuilder.localEntries, currentBuilder.name);
 				currentKey = new STUniqueKeyImpl(localKey, parentKey,
 						partition, repositoryPath);
@@ -1294,43 +1282,43 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 	}
 
 	protected abstract Iterable<STNodeEntry> internalFindByCriteria(
-			STPartition partition, STCriteria criteria) throws Exception;
+			Partition partition, Criteria criteria) throws Exception;
 
-	protected abstract void flushNewItem(R reference, STPartition partition,
+	protected abstract void flushNewItem(R reference, Partition partition,
 			STNodeEntry entry) throws Exception;
 
-	protected abstract void flushRemovedItem(STPartition partition,
+	protected abstract void flushRemovedItem(Partition partition,
 			STNodeEntry entry) throws Exception;
 
 	protected abstract Iterable<STNodeEntry> internalNodeEntryGetNamedChildren(
-			STPartition partition, STNodeEntry stNodeEntry, String name)
+			Partition partition, STNodeEntry stNodeEntry, String name)
 			throws Exception;
 
 	protected abstract void internalFlushSimpleProperty(R reference,
-			STPartition partition, STProperty dirtyProperty) throws Exception;
+			Partition partition, Property dirtyProperty) throws Exception;
 
 	protected abstract Iterable<STNodeEntry> internalNodeEntryGetChildren(
-			STPartition partition, STNodeEntry stNodeEntry) throws Exception;
+			Partition partition, STNodeEntry stNodeEntry) throws Exception;
 
 	protected abstract STNodeEntry internalNodeEntryGetParent(
-			STPartition partition, STNodeEntry stNodeEntry) throws Exception;
+			Partition partition, STNodeEntry stNodeEntry) throws Exception;
 
-	protected abstract Set<STProperty> internalPropertyContainerLoadProperties(
-			R reference, STPartition partition, STPropertyContainer stNodeEntry)
+	protected abstract Set<Property> internalPropertyContainerLoadProperties(
+			R reference, Partition partition, PropertyContainer stNodeEntry)
 			throws Exception;
 
 	protected abstract Iterable<STNodeEntry> internalFindNamed(
-			STPartition partition, String nodeEntryName) throws Exception;
+			Partition partition, String nodeEntryName) throws Exception;
 
 	protected abstract Iterable<STLinkEntry> internalFindLinks(
-			STPartition partition, STNodeEntry origin, STNodeEntry destiny,
+			Partition partition, STNodeEntry origin, STNodeEntry destiny,
 			String name) throws Exception;
 
 	@Override
 	public STLinkEntry addLink(STNodeEntry origin, STNodeEntry target,
 			String name) {
 		STLinkEntry link = new STLinkEntryImpl(name, origin, target, true);
-		if (getFlushMode().equals(STFlushMode.AUTO)) {
+		if (getFlushMode().equals(FlushMode.AUTO)) {
 			try {
 				this.handleNewLink(link.getOrigin().getPartition(), link
 						.getOrigin(), link);
@@ -1345,7 +1333,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		return link;
 	}
 
-	protected abstract void handleNewLink(STPartition partition,
+	protected abstract void handleNewLink(Partition partition,
 			STNodeEntry origin, STLinkEntry link) throws Exception;
 
 	@Override
@@ -1408,7 +1396,7 @@ public abstract class AbstractSTStorageSession<R> implements STStorageSession {
 		}
 	}
 
-	protected abstract void flushRemovedLink(STPartition partition,
+	protected abstract void flushRemovedLink(Partition partition,
 			STLinkEntry link) throws Exception;
 
 	@Override

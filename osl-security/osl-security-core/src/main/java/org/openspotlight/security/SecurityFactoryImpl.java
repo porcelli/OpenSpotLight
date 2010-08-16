@@ -54,7 +54,7 @@ import org.openspotlight.security.idm.SystemUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityManager;
 import org.openspotlight.security.idm.auth.IdentityManagerSimpleImpl;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.StorageSession;
 
 /**
  * The Class SecurityFactoryImpl.
@@ -67,7 +67,7 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public IdentityManager createIdentityManager( STStorageSession session ) {
+    public IdentityManager createIdentityManager( StorageSession session ) {
         return new IdentityManagerSimpleImpl();
     }
 
@@ -75,7 +75,7 @@ public class SecurityFactoryImpl extends SecurityFactory {
      * {@inheritDoc}
      */
     @Override
-    public PolicyEnforcement createGraphPolicyEnforcement( STStorageSession session ) {
+    public PolicyEnforcement createGraphPolicyEnforcement( StorageSession session ) {
         return new PolicyEnforcementGraphImpl();
     }
 

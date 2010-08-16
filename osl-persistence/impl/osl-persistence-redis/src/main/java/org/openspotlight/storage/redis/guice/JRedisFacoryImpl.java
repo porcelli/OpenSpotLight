@@ -61,7 +61,7 @@ import java.util.Set;
 import org.jredis.JRedis;
 import org.jredis.ri.alphazero.JRedisClient;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.storage.STPartition;
+import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.redis.RedisServerExecutor;
 
 import com.google.common.collect.ImmutableSet;
@@ -75,14 +75,14 @@ import com.google.inject.Singleton;
 @Singleton
 public class JRedisFacoryImpl implements JRedisFactory {
 
-	private final Map<STPartition, JRedisServerDetail> mappedServerConfig;
+	private final Map<Partition, JRedisServerDetail> mappedServerConfig;
 
 	private JRedisServerDetail defaultImpl = null;
 
-	private ThreadLocal<Map<STPartition, JRedis>> threadLocalCache = new ThreadLocal<Map<STPartition, JRedis>>();
+	private ThreadLocal<Map<Partition, JRedis>> threadLocalCache = new ThreadLocal<Map<Partition, JRedis>>();
 
 	@Inject
-	JRedisFacoryImpl(Map<STPartition, JRedisServerDetail> mappedServerConfig,
+	JRedisFacoryImpl(Map<Partition, JRedisServerDetail> mappedServerConfig,
 			@StartRedisLocally boolean needsToStart) {
 		this.mappedServerConfig = mappedServerConfig;
 		for (JRedisServerDetail d : this.mappedServerConfig.values()) {
@@ -92,14 +92,14 @@ public class JRedisFacoryImpl implements JRedisFactory {
 			}
 		}
 		if (needsToStart) {
-			STPartition samplePartition = mappedServerConfig.keySet()
+			Partition samplePartition = mappedServerConfig.keySet()
 					.iterator().next();
 			RedisServerExecutor.INSTANCE.startServerIfNecessary(
 					samplePartition, this);
 		}
 	}
 
-	public JRedis getFrom(STPartition partition) {
+	public JRedis getFrom(Partition partition) {
 		JRedisServerDetail tmpServerDetail = mappedServerConfig.get(partition);
 		if (tmpServerDetail == null)
 			tmpServerDetail = defaultImpl;
@@ -109,7 +109,7 @@ public class JRedisFacoryImpl implements JRedisFactory {
 							+ partition.getPartitionName()
 							+ " and no defaultServer created also");
 		final JRedisServerDetail serverDetail = tmpServerDetail;
-		Map<STPartition, JRedis> cache = threadLocalCache.get();
+		Map<Partition, JRedis> cache = threadLocalCache.get();
 		if (cache == null) {
 			cache = new HashMap();
 			threadLocalCache.set(cache);
@@ -147,7 +147,7 @@ public class JRedisFacoryImpl implements JRedisFactory {
 
 	public Set<JRedis> getAllActive() {
 		Set<JRedis> result;
-		Map<STPartition, JRedis> cache = threadLocalCache.get();
+		Map<Partition, JRedis> cache = threadLocalCache.get();
 		if (cache != null) {
 			result = ImmutableSet.copyOf(cache.values());
 		} else {

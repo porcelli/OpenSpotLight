@@ -53,7 +53,7 @@ import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.SystemUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityManager;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.StorageSession;
 
 /**
  * A factory for creating Security related components.
@@ -69,7 +69,7 @@ public abstract class SecurityFactory extends AbstractFactory {
      * @param session
      * @return the identity manager
      */
-    public abstract IdentityManager createIdentityManager( STStorageSession session );
+    public abstract IdentityManager createIdentityManager( StorageSession session );
 
     /**
      * Creates a new specialized PolicyEnforcement for Graphs.
@@ -77,7 +77,7 @@ public abstract class SecurityFactory extends AbstractFactory {
      * @param session
      * @return the policy enforcement
      */
-    public abstract PolicyEnforcement createGraphPolicyEnforcement( STStorageSession session );
+    public abstract PolicyEnforcement createGraphPolicyEnforcement( StorageSession session );
 
     /**
      * Creates a System User.

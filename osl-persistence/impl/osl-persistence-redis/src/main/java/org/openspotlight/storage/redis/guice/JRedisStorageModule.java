@@ -52,10 +52,10 @@ package org.openspotlight.storage.redis.guice;
 import java.util.Map;
 
 import org.openspotlight.storage.DefaultSTPartitionFactory;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
@@ -65,24 +65,24 @@ import com.google.inject.TypeLiteral;
  */
 public class JRedisStorageModule extends AbstractModule {
 
-    private final STStorageSession.STFlushMode         flushMode;
+    private final StorageSession.FlushMode         flushMode;
 
-    private final Map<STPartition, JRedisServerDetail> mappedServerConfig;
+    private final Map<Partition, JRedisServerDetail> mappedServerConfig;
 
-    private final STRepositoryPath                     repositoryPath;
+    private final RepositoryPath                     repositoryPath;
 
-    private final STPartitionFactory                   partitionFactory;
+    private final PartitionFactory                   partitionFactory;
 
-    public JRedisStorageModule( STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig,
-                                STRepositoryPath repositoryPath ) {
+    public JRedisStorageModule( StorageSession.FlushMode flushMode, Map<Partition, JRedisServerDetail> mappedServerConfig,
+                                RepositoryPath repositoryPath ) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
         this.repositoryPath = repositoryPath;
         this.partitionFactory = new DefaultSTPartitionFactory();
     }
 
-    public JRedisStorageModule( STStorageSession.STFlushMode flushMode, Map<STPartition, JRedisServerDetail> mappedServerConfig,
-                                STRepositoryPath repositoryPath, STPartitionFactory partitionFactory ) {
+    public JRedisStorageModule( StorageSession.FlushMode flushMode, Map<Partition, JRedisServerDetail> mappedServerConfig,
+                                RepositoryPath repositoryPath, PartitionFactory partitionFactory ) {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
         this.repositoryPath = repositoryPath;
@@ -91,13 +91,13 @@ public class JRedisStorageModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(STPartitionFactory.class).toInstance(partitionFactory);
-        bind(STStorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
-        bind(STStorageSession.STFlushMode.class).toInstance(flushMode);
-        bind(new TypeLiteral<Map<STPartition, JRedisServerDetail>>() {
+        bind(PartitionFactory.class).toInstance(partitionFactory);
+        bind(StorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
+        bind(StorageSession.FlushMode.class).toInstance(flushMode);
+        bind(new TypeLiteral<Map<Partition, JRedisServerDetail>>() {
         })
                 .toInstance(mappedServerConfig);
-        bind(STRepositoryPath.class).toInstance(repositoryPath);
+        bind(RepositoryPath.class).toInstance(repositoryPath);
         bind(JRedisFactory.class).to(JRedisFacoryImpl.class);
         bind(boolean.class).annotatedWith(StartRedisLocally.class).toInstance(true);
     }

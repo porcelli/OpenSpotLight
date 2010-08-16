@@ -49,9 +49,9 @@
 package org.openspotlight.graph.test;
 
 import org.openspotlight.graph.GraphModule;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.mongodb.test.MongoModule;
 
 import com.google.inject.Guice;
@@ -63,7 +63,7 @@ import com.mongodb.Mongo;
 public class MongoGraphTest extends AbstractGraphTest {
 
     private final Mongo            mongo;
-    private final STRepositoryPath repositoryPath = new STRepositoryPath(
+    private final RepositoryPath repositoryPath = new RepositoryPath(
                                                                          "repository");
 
     public MongoGraphTest() {
@@ -88,8 +88,8 @@ public class MongoGraphTest extends AbstractGraphTest {
     @Override
     protected Injector createInjector() throws Exception {
         return Guice.createInjector(new MongoModule(
-                                                    STStorageSession.STFlushMode.EXPLICIT, mongo, repositoryPath,
-                                                    SLPartition.FACTORY), new GraphModule());
+                                                    StorageSession.FlushMode.EXPLICIT, mongo, repositoryPath,
+                                                    RegularPartitions.FACTORY), new GraphModule());
     }
 
 

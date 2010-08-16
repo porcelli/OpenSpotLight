@@ -48,8 +48,8 @@
  */
 package org.openspotlight.storage.redis.util;
 
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 
 import com.google.common.collect.ImmutableMap;
@@ -61,11 +61,11 @@ public enum ExampleRedisConfig implements JRedisServerDetail {
 
 	EXAMPLE("localhost", 6379, 0, null, false);
 
-	private final ImmutableMap<STPartition, JRedisServerDetail> mappedServerConfig;
+	private final ImmutableMap<Partition, JRedisServerDetail> mappedServerConfig;
 
 	private final boolean defaultConfig;
 
-	public ImmutableMap<STPartition, JRedisServerDetail> getMappedServerConfig() {
+	public ImmutableMap<Partition, JRedisServerDetail> getMappedServerConfig() {
 		return mappedServerConfig;
 	}
 
@@ -76,9 +76,9 @@ public enum ExampleRedisConfig implements JRedisServerDetail {
 		this.db = db;
 		this.password = password;
 		this.defaultConfig = defaultConfig;
-		ImmutableMap.Builder<STPartition, JRedisServerDetail> builder = ImmutableMap
-				.<STPartition, JRedisServerDetail> builder();
-		for (SLPartition p : SLPartition.values()) {
+		ImmutableMap.Builder<Partition, JRedisServerDetail> builder = ImmutableMap
+				.<Partition, JRedisServerDetail> builder();
+		for (RegularPartitions p : RegularPartitions.values()) {
 			builder.put(p, this);
 		}
 		this.mappedServerConfig = builder.build();

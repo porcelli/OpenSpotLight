@@ -94,15 +94,15 @@ import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.IsMetaType;
 import org.openspotlight.graph.annotation.TransientProperty;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.AbstractSTStorageSession.STUniqueKeyBuilderImpl;
-import org.openspotlight.storage.domain.key.STUniqueKey;
-import org.openspotlight.storage.domain.node.STLinkEntry;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.domain.STLinkEntry;
+import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.key.UniqueKey;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -158,12 +158,12 @@ public class NodeAndLinkSupport {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends Node> T createNode(STPartitionFactory factory,
-			STStorageSession session, String contextId, String parentId,
+	private static <T extends Node> T createNode(PartitionFactory factory,
+			StorageSession session, String contextId, String parentId,
 			Class<T> clazz, String name, boolean needsToVerifyType,
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion,
-			STRepositoryPath repositoryPath) {
+			RepositoryPath repositoryPath) {
 		Map<String, Class<? extends Serializable>> propertyTypes = newHashMap();
 		Map<String, Serializable> propertyValues = newHashMap();
 		PropertyDescriptor[] descriptors = PropertyUtils
@@ -172,8 +172,8 @@ public class NodeAndLinkSupport {
 		if (contextId == null) {
 			throw new IllegalStateException();
 		}
-		STPartition partition = factory.getPartitionByName(contextId);
-		STUniqueKey internalNodeKey;
+		Partition partition = factory.getPartitionByName(contextId);
+		UniqueKey internalNodeKey;
 		Class<? extends Node> targetNodeType = findTargetClass(clazz);
 
 		if (session != null) {
@@ -242,7 +242,7 @@ public class NodeAndLinkSupport {
 		return (T) e.create(new Class[0], new Object[0]);
 	}
 
-	private static void fixTypeData(STStorageSession session,
+	private static void fixTypeData(StorageSession session,
 			Class<? extends Node> clazz, STNodeEntry node) {
 		String numericTypeAsString = node.getPropertyAsString(session,
 				NUMERIC_TYPE);
@@ -261,7 +261,7 @@ public class NodeAndLinkSupport {
 		}
 	}
 
-	private static void setWeigthAndTypeOnNode(STStorageSession session,
+	private static void setWeigthAndTypeOnNode(StorageSession session,
 			STNodeEntry node, Class<? extends Node> type,
 			BigInteger weightFromTargetNodeType) {
 		node.setIndexedProperty(session, NUMERIC_TYPE, weightFromTargetNodeType
@@ -288,14 +288,14 @@ public class NodeAndLinkSupport {
 						+ DefineHierarchy.class.getSimpleName()));
 	}
 
-	public static STNodeEntry retrievePreviousNode(STPartitionFactory factory,
-			STStorageSession session, Context context, Node node,
+	public static STNodeEntry retrievePreviousNode(PartitionFactory factory,
+			StorageSession session, Context context, Node node,
 			boolean needsToVerifyType) {
 		try {
 			NodeMetadata metadata = (NodeMetadata) node;
 			STNodeEntry internalNode = metadata.getCached();
 			if (internalNode == null) {
-				STPartition partition = factory.getPartitionByName(context
+				Partition partition = factory.getPartitionByName(context
 						.getId());
 				internalNode = session.withPartition(partition).createWithName(
 						findTargetClass(node.getClass()).getName())
@@ -330,8 +330,8 @@ public class NodeAndLinkSupport {
 
 
 
-	public static <T extends Link> T createLink(STPartitionFactory factory,
-			STStorageSession session, Class<T> clazz, Node rawOrigin,
+	public static <T extends Link> T createLink(PartitionFactory factory,
+			StorageSession session, Class<T> clazz, Node rawOrigin,
 			Node rawTarget, LinkType type, boolean createIfDontExists) {
 		Map<String, Class<? extends Serializable>> propertyTypes = newHashMap();
 		Map<String, Serializable> propertyValues = newHashMap();
@@ -405,8 +405,8 @@ public class NodeAndLinkSupport {
 		return (T) e.create(new Class[0], new Object[0]);
 	}
 
-	public static <T extends Node> T createNode(STPartitionFactory factory,
-			STStorageSession session, String contextId, String parentId,
+	public static <T extends Node> T createNode(PartitionFactory factory,
+			StorageSession session, String contextId, String parentId,
 			Class<T> clazz, String name, boolean needsToVerifyType,
 			Collection<Class<? extends Link>> linkTypesForLinkDeletion,
 			Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {

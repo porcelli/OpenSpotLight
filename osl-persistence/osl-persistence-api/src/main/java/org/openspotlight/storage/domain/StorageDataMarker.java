@@ -46,14 +46,14 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.storage;
+
+package org.openspotlight.storage.domain;
+
+import java.io.Serializable;
 
 /**
- * Created by User: feu - Date: Jun 14, 2010 - Time: 3:25:37 PM
+ * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:52:51 PM To change this template use File | Settings | File
+ * Templates.
  */
-public interface STPartitionFactory {
-
-    STPartition getPartitionByName( String name );
-
-    STPartition[] getValues();
+public interface StorageDataMarker extends Serializable {
 }

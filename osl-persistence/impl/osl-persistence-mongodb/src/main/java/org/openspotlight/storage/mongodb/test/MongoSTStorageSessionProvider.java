@@ -49,9 +49,9 @@
 package org.openspotlight.storage.mongodb.test;
 
 import org.openspotlight.guice.ThreadLocalProvider;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.RepositoryPath;
+import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.mongodb.MongoMaxCacheSize;
 import org.openspotlight.storage.mongodb.MongoSTStorageSessionImpl;
 
@@ -63,12 +63,12 @@ import com.mongodb.Mongo;
  * Created by User: feu - Date: Jun 11, 2010 - Time: 10:22:50 AM
  */
 @Singleton
-public class MongoSTStorageSessionProvider extends ThreadLocalProvider<STStorageSession> {
+public class MongoSTStorageSessionProvider extends ThreadLocalProvider<StorageSession> {
     private final int maxCacheSize;
 
     @Inject
-    public MongoSTStorageSessionProvider( STStorageSession.STFlushMode flushMode, STRepositoryPath repositoryPath, Mongo mongo,
-                                          STPartitionFactory partitionFactory, @MongoMaxCacheSize int maxCacheSize ) {
+    public MongoSTStorageSessionProvider( StorageSession.FlushMode flushMode, RepositoryPath repositoryPath, Mongo mongo,
+                                          PartitionFactory partitionFactory, @MongoMaxCacheSize int maxCacheSize ) {
         this.flushMode = flushMode;
         this.repositoryPath = repositoryPath;
         this.mongo = mongo;
@@ -77,13 +77,13 @@ public class MongoSTStorageSessionProvider extends ThreadLocalProvider<STStorage
     }
 
     private final Mongo                        mongo;
-    private final STRepositoryPath             repositoryPath;
-    private final STStorageSession.STFlushMode flushMode;
+    private final RepositoryPath             repositoryPath;
+    private final StorageSession.FlushMode flushMode;
 
-    private final STPartitionFactory           partitionFactory;
+    private final PartitionFactory           partitionFactory;
 
     @Override
-    protected STStorageSession createInstance() {
+    protected StorageSession createInstance() {
         return new MongoSTStorageSessionImpl(mongo, flushMode, repositoryPath, partitionFactory, maxCacheSize);
     }
 }

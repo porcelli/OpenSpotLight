@@ -58,40 +58,42 @@ import java.lang.ref.SoftReference;
 
 import org.apache.commons.io.IOUtils;
 import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.Property;
+import org.openspotlight.storage.domain.PropertyContainer;
 
 /**
  * Created by IntelliJ IDEA. User: feuteston Date: 29/03/2010 Time: 08:49:51 To
  * change this template use File | Settings | File Templates.
  */
-public class STPropertyImpl implements STProperty {
+public class STPropertyImpl implements Property {
 
 	private final STPropertyInternalMethods propertyInternalMethods = new STPropertyInternalMethodsImpl();
 
 	public static STPropertyImpl createSimple(String name,
-			STPropertyContainer parent) {
+			PropertyContainer parent) {
 		STPropertyImpl property = new STPropertyImpl(name, parent
 				.getPartition(), parent, false, false);
 		return property;
 	}
 
 	public static STPropertyImpl createIndexed(String name,
-			STPropertyContainer parent) {
+			PropertyContainer parent) {
 		STPropertyImpl property = new STPropertyImpl(name, parent
 				.getPartition(), parent, true, false);
 		return property;
 	}
 
 	public static STPropertyImpl createKey(String name,
-			STPropertyContainer parent) {
+			PropertyContainer parent) {
 		STPropertyImpl property = new STPropertyImpl(name, parent
 				.getPartition(), parent, true, true);
 		return property;
 	}
 
-	private STPropertyImpl(String name, STPartition partition,
-			STPropertyContainer parent, boolean indexed, boolean key) {
+	private STPropertyImpl(String name, Partition partition,
+			PropertyContainer parent, boolean indexed, boolean key) {
 		this.name = name;
 		this.partition = partition;
 		this.parent = parent;
@@ -101,15 +103,15 @@ public class STPropertyImpl implements STProperty {
 
 	private final String name;
 
-	public STPropertyContainer getParent() {
+	public PropertyContainer getParent() {
 		return parent;
 	}
 
 	private final PropertyValue propertyValue = new PropertyValue();
 
-	private final STPartition partition;
+	private final Partition partition;
 
-	private final STPropertyContainer parent;
+	private final PropertyContainer parent;
 
 	public boolean isKey() {
 		return key;
@@ -124,7 +126,7 @@ public class STPropertyImpl implements STProperty {
 	private final boolean key;
 
 	@Override
-	public void setStringValue(STStorageSession session, String value) {
+	public void setStringValue(StorageSession session, String value) {
 		propertyValue.setDirty(true);
 		propertyValue.setValue(value);
 		session.withPartition(partition).getInternalMethods()
@@ -132,7 +134,7 @@ public class STPropertyImpl implements STProperty {
 	}
 
 	@Override
-	public void setBytesValue(STStorageSession session, byte[] value) {
+	public void setBytesValue(StorageSession session, byte[] value) {
 		propertyValue.setDirty(true);
 		propertyValue.setValue(value);
 		session.withPartition(partition).getInternalMethods()
@@ -140,14 +142,14 @@ public class STPropertyImpl implements STProperty {
 	}
 
 	@Override
-	public void setStreamValue(STStorageSession session, InputStream value) {
+	public void setStreamValue(StorageSession session, InputStream value) {
 		propertyValue.setDirty(true);
 		propertyValue.setValue(value);
 		session.withPartition(partition).getInternalMethods()
 				.propertySetProperty(this, propertyValue.getValueAsBytes());
 	}
 
-	private void refreshPropertyIfNecessary(STStorageSession session) {
+	private void refreshPropertyIfNecessary(StorageSession session) {
 		if (!propertyValue.isDirty() && !propertyValue.isLoaded()) {
 			propertyValue.setValue(session.withPartition(partition)
 					.getInternalMethods().propertyGetValue(this));
@@ -158,19 +160,19 @@ public class STPropertyImpl implements STProperty {
 	}
 
 	@Override
-	public String getValueAsString(STStorageSession session) {
+	public String getValueAsString(StorageSession session) {
 		refreshPropertyIfNecessary(session);
 		return propertyValue.getValueAsString();
 	}
 
 	@Override
-	public byte[] getValueAsBytes(STStorageSession session) {
+	public byte[] getValueAsBytes(StorageSession session) {
 		refreshPropertyIfNecessary(session);
 		return propertyValue.getValueAsBytes();
 	}
 
 	@Override
-	public InputStream getValueAsStream(STStorageSession session) {
+	public InputStream getValueAsStream(StorageSession session) {
 		refreshPropertyIfNecessary(session);
 		return propertyValue.getValueAsStream();
 	}
@@ -188,7 +190,7 @@ public class STPropertyImpl implements STProperty {
 			STPropertyInternalMethods {
 
 		@Override
-		public void setStringValueOnLoad(STStorageSession session, String value) {
+		public void setStringValueOnLoad(StorageSession session, String value) {
 			propertyValue.setValue(value);
 			propertyValue.setDirty(false);
 			propertyValue.setLoaded(true);
@@ -196,14 +198,14 @@ public class STPropertyImpl implements STProperty {
 		}
 
 		@Override
-		public void setBytesValueOnLoad(STStorageSession session, byte[] value) {
+		public void setBytesValueOnLoad(StorageSession session, byte[] value) {
 			propertyValue.setValue(value);
 			propertyValue.setDirty(false);
 			propertyValue.setLoaded(true);
 		}
 
 		@Override
-		public void setStreamValueOnLoad(STStorageSession session,
+		public void setStreamValueOnLoad(StorageSession session,
 				InputStream value) {
 			propertyValue.setValue(value);
 			propertyValue.setDirty(false);
@@ -223,17 +225,17 @@ public class STPropertyImpl implements STProperty {
 		}
 
 		@Override
-		public String getTransientValueAsString(STStorageSession session) {
+		public String getTransientValueAsString(StorageSession session) {
 			return propertyValue.getValueAsString();
 		}
 
 		@Override
-		public byte[] getTransientValueAsBytes(STStorageSession session) {
+		public byte[] getTransientValueAsBytes(StorageSession session) {
 			return propertyValue.getValueAsBytes();
 		}
 
 		@Override
-		public InputStream getTransientValueAsStream(STStorageSession session) {
+		public InputStream getTransientValueAsStream(StorageSession session) {
 			return propertyValue.getValueAsStream();
 		}
 	}

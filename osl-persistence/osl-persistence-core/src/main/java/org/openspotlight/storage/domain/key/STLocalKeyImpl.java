@@ -64,20 +64,23 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:46:52 AM
  */
-public class STLocalKeyImpl implements STLocalKey {
+public class STLocalKeyImpl implements LocalKey {
+
+    private static final long serialVersionUID = -2241511690224419686L;
+
     private final int hashCode;
 
-    public STLocalKeyImpl( Set<STKeyEntry> entries, String nodeEntryName ) {
+    public STLocalKeyImpl( Set<Key> entries, String nodeEntryName ) {
         if (nodeEntryName == null) throw new IllegalArgumentException();
         Set<String> names = newHashSet();
-        for (STKeyEntry entry : entries) {
+        for (Key entry : entries) {
             if (names.contains(entry.getPropertyName())) {
                 throw new IllegalStateException("duplicated entry name");
             }
             names.add(entry.getPropertyName());
         }
         this.entryNames = ImmutableSet.copyOf(names);
-        List<STKeyEntry> tempEntries = new ArrayList(entries);
+        List<Key> tempEntries = new ArrayList<Key>(entries);
         sort(tempEntries);
         this.entries = ImmutableSet.copyOf(tempEntries);
         this.nodeEntryName = nodeEntryName;
@@ -88,7 +91,7 @@ public class STLocalKeyImpl implements STLocalKey {
 
     }
 
-    private final Set<STKeyEntry> entries;
+    private final Set<Key> entries;
 
     private final Set<String>     entryNames;
 
@@ -98,7 +101,7 @@ public class STLocalKeyImpl implements STLocalKey {
 
     private final String nodeEntryName;
 
-    public Set<STKeyEntry> getEntries() {
+    public Set<Key> getEntries() {
         return entries;
     }
 
@@ -138,18 +141,18 @@ public class STLocalKeyImpl implements STLocalKey {
         return hashCode;
     }
 
-    public int compareTo( STLocalKey o ) {
+    public int compareTo( LocalKey o ) {
         int result = this.getNodeEntryName().compareTo(o.getNodeEntryName());
         if (result != 0) return result;
-        Iterator<STKeyEntry> thisIt = getEntries().iterator();
-        Iterator<STKeyEntry> thatIt = o.getEntries().iterator();
+        Iterator<Key> thisIt = getEntries().iterator();
+        Iterator<Key> thatIt = o.getEntries().iterator();
         while (true) {
             boolean thisHasNext = thisIt.hasNext();
             boolean thatHasNext = thatIt.hasNext();
 
             if (thisHasNext && thatHasNext) {
-                STKeyEntry thisNext = thisIt.next();
-                STKeyEntry thatNext = thatIt.next();
+                Key thisNext = thisIt.next();
+                Key thatNext = thatIt.next();
                 result = thisNext.compareTo(thatNext);
                 if (result != 0) return result;
             } else {

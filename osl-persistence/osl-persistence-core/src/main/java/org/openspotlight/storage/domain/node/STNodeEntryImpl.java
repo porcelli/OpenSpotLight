@@ -56,184 +56,191 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.key.STLocalKey;
-import org.openspotlight.storage.domain.key.STUniqueKey;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.Property;
+import org.openspotlight.storage.domain.key.LocalKey;
+import org.openspotlight.storage.domain.key.UniqueKey;
 
 public class STNodeEntryImpl extends STPropertyContainerImpl implements
-		STNodeEntry {
+        STNodeEntry {
 
-	@Override
-	protected void verifyBeforeSet(String propertyName) {
-		if (localKey.getEntryNames().contains(propertyName))
-			throw new IllegalStateException();
-	}
+    private static final long serialVersionUID = -4545520206784316277L;
 
-	public STNodeEntryImpl(STUniqueKey uniqueKey, Set<STProperty> properties,
-			boolean resetTimeout) {
-		super(resetTimeout);
-		this.nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
-		if (nodeEntryName == null)
-			throw new IllegalStateException();
-		this.localKey = uniqueKey.getLocalKey();
-		this.uniqueKey = uniqueKey;
-		propertiesByName = newHashMap();
-		if (properties != null) {
-			for (STProperty property : properties) {
-				this.propertiesByName.put(property.getPropertyName(), property);
-			}
-		}
-		partition = uniqueKey.getPartition();
-		namedChildrenWeakReference = new WeakHashMap<Iterable<STNodeEntry>, String>();
-	}
+    @Override
+    protected void verifyBeforeSet( String propertyName ) {
+        if (localKey.getEntryNames().contains(propertyName))
+            throw new IllegalStateException();
+    }
 
-	public STNodeEntryImpl(STUniqueKey uniqueKey, boolean resetTimeout) {
-		this(uniqueKey, null, resetTimeout);
-	}
+    public STNodeEntryImpl( UniqueKey uniqueKey, Set<Property> properties,
+                            boolean resetTimeout ) throws IllegalArgumentException {
+        super(resetTimeout);
+        this.nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
+        if (nodeEntryName == null)
+            throw new IllegalArgumentException();
+        this.localKey = uniqueKey.getLocalKey();
+        this.uniqueKey = uniqueKey;
+        propertiesByName = newHashMap();
+        if (properties != null) {
+            for (Property property : properties) {
+                this.propertiesByName.put(property.getPropertyName(), property);
+            }
+        }
+        partition = uniqueKey.getPartition();
+        namedChildrenWeakReference = new WeakHashMap<Iterable<STNodeEntry>, String>();
+    }
 
-	private final STPartition partition;
+    public STNodeEntryImpl( UniqueKey uniqueKey, boolean resetTimeout ) throws IllegalArgumentException {
+        this(uniqueKey, null, resetTimeout);
+    }
 
-	private WeakReference<STNodeEntry> parentWeakReference = null;
+    private final Partition                            partition;
 
-	private WeakReference<Iterable<STNodeEntry>> childrenWeakReference = null;
+    private WeakReference<STNodeEntry>                 parentWeakReference   = null;
 
-	private WeakHashMap<Iterable<STNodeEntry>, String> namedChildrenWeakReference;
+    private WeakReference<Iterable<STNodeEntry>>       childrenWeakReference = null;
 
-	private final Map<String, STProperty> propertiesByName;
+    private WeakHashMap<Iterable<STNodeEntry>, String> namedChildrenWeakReference;
 
-	private final String nodeEntryName;
+    private final Map<String, Property>                propertiesByName;
 
-	private final STLocalKey localKey;
+    private final String                               nodeEntryName;
 
-	private final STUniqueKey uniqueKey;
+    private final LocalKey                             localKey;
 
+    private final UniqueKey                            uniqueKey;
 
-	public String getNodeEntryName() {
-		return nodeEntryName;
-	}
+    public String getNodeEntryName() {
+        return nodeEntryName;
+    }
 
-	public STLocalKey getLocalKey() {
-		return localKey;
-	}
+    public LocalKey getLocalKey() {
+        return localKey;
+    }
 
-	public STUniqueKey getUniqueKey() {
-		return uniqueKey;
-	}
+    public UniqueKey getUniqueKey() {
+        return uniqueKey;
+    }
 
-	public Iterable<STNodeEntry> getChildren(STPartition partition,
-			STStorageSession session) {
-		Iterable<STNodeEntry> children = childrenWeakReference != null ? childrenWeakReference
-				.get()
-				: null;
-		if (children == null) {
-			children = getChildrenForcingReload(partition, session);
-		}
-		return children;
-	}
+    public Iterable<STNodeEntry> getChildren( Partition partition,
+                                              StorageSession session ) {
+        Iterable<STNodeEntry> children = childrenWeakReference != null ? childrenWeakReference
+                                                                                              .get()
+                : null;
+        if (children == null) {
+            children = getChildrenForcingReload(partition, session);
+        }
+        return children;
+    }
 
-	public Iterable<STNodeEntry> getChildrenNamed(STPartition partition,
-			STStorageSession session, String name) {
+    public Iterable<STNodeEntry> getChildrenNamed( Partition partition,
+                                                   StorageSession session,
+                                                   String name ) {
 
-		Iterable<STNodeEntry> thisChildren = null;
-		if (namedChildrenWeakReference.containsValue(name)) {
-			for (Map.Entry<Iterable<STNodeEntry>, String> entry : namedChildrenWeakReference
-					.entrySet()) {
-				if (name.equals(entry.getValue())) {
-					thisChildren = entry.getKey();
-					break;
-				}
-			}
-		}
+        Iterable<STNodeEntry> thisChildren = null;
+        if (namedChildrenWeakReference.containsValue(name)) {
+            for (Map.Entry<Iterable<STNodeEntry>, String> entry : namedChildrenWeakReference
+                                                                                            .entrySet()) {
+                if (name.equals(entry.getValue())) {
+                    thisChildren = entry.getKey();
+                    break;
+                }
+            }
+        }
 
-		if (thisChildren == null) {
-			thisChildren = getChildrenNamedForcingReload(partition, session,
-					name);
-		}
-		return thisChildren;
-	}
+        if (thisChildren == null) {
+            thisChildren = getChildrenNamedForcingReload(partition, session,
+                                                         name);
+        }
+        return thisChildren;
+    }
 
-	public Iterable<STNodeEntry> getChildrenForcingReload(
-			STPartition partition, STStorageSession session) {
-		Iterable<STNodeEntry> children = session.withPartition(partition)
-				.getInternalMethods().nodeEntryGetChildren(partition, this);
-		childrenWeakReference = new WeakReference<Iterable<STNodeEntry>>(
-				children);
-		return children;
-	}
+    public Iterable<STNodeEntry> getChildrenForcingReload(
+                                                           Partition partition,
+                                                           StorageSession session ) {
+        Iterable<STNodeEntry> children = session.withPartition(partition)
+                                                .getInternalMethods().nodeEntryGetChildren(partition, this);
+        childrenWeakReference = new WeakReference<Iterable<STNodeEntry>>(
+                                                                         children);
+        return children;
+    }
 
-	public Iterable<STNodeEntry> getChildrenNamedForcingReload(
-			STPartition partition, STStorageSession session, String name) {
-		Iterable<STNodeEntry> children = session.withPartition(partition)
-				.getInternalMethods().nodeEntryGetNamedChildren(partition,
-						this, name);
-		namedChildrenWeakReference.put(children, name);
-		return children;
-	}
+    public Iterable<STNodeEntry> getChildrenNamedForcingReload(
+                                                                Partition partition,
+                                                                StorageSession session,
+                                                                String name ) {
+        Iterable<STNodeEntry> children = session.withPartition(partition)
+                                                .getInternalMethods().nodeEntryGetNamedChildren(partition,
+                                                                                                this, name);
+        namedChildrenWeakReference.put(children, name);
+        return children;
+    }
 
-	public STNodeEntry getParent(STStorageSession session) {
-		STNodeEntry parent = parentWeakReference != null ? parentWeakReference
-				.get() : null;
-		if (parent == null) {
-			parent = session.withPartition(partition).getInternalMethods()
-					.nodeEntryGetParent(this);
-			parentWeakReference = new WeakReference<STNodeEntry>(parent);
-		}
-		return parent;
-	}
+    public STNodeEntry getParent( StorageSession session ) {
+        STNodeEntry parent = parentWeakReference != null ? parentWeakReference
+                                                                              .get() : null;
+        if (parent == null) {
+            parent = session.withPartition(partition).getInternalMethods()
+                            .nodeEntryGetParent(this);
+            parentWeakReference = new WeakReference<STNodeEntry>(parent);
+        }
+        return parent;
+    }
 
-	public void removeNode(STStorageSession session) {
-		session.removeNode(this);
-	}
+    public void removeNode( StorageSession session ) {
+        session.removeNode(this);
+    }
 
-	public STNodeEntryBuilder createWithName(final STStorageSession session,
-			final String name) {
-		return session.withPartition(partition).getInternalMethods()
-				.nodeEntryCreateWithName(this, name);
+    public NodeBuilder createWithName( final StorageSession session,
+                                              final String name ) {
+        return session.withPartition(partition).getInternalMethods()
+                      .nodeEntryCreateWithName(this, name);
 
-	}
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
-		STNodeEntryImpl that = (STNodeEntryImpl) o;
+        STNodeEntryImpl that = (STNodeEntryImpl)o;
 
-		if (localKey != null ? !localKey.equals(that.localKey)
-				: that.localKey != null)
-			return false;
-		if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName)
-				: that.nodeEntryName != null)
-			return false;
-		return !(uniqueKey != null ? !uniqueKey.equals(that.uniqueKey)
-				: that.uniqueKey != null);
-	}
+        if (localKey != null ? !localKey.equals(that.localKey)
+                : that.localKey != null)
+            return false;
+        if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName)
+                : that.nodeEntryName != null)
+            return false;
+        return !(uniqueKey != null ? !uniqueKey.equals(that.uniqueKey)
+                : that.uniqueKey != null);
+    }
 
-	@Override
-	public int hashCode() {
-		int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
-		result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
-		result = 31 * result + (uniqueKey != null ? uniqueKey.hashCode() : 0);
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
+        result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
+        result = 31 * result + (uniqueKey != null ? uniqueKey.hashCode() : 0);
+        return result;
+    }
 
-	@Override
-	public String toString() {
-		return "STNodeEntryImpl{" + "partition=" + partition
-				+ ", nodeEntryName='" + nodeEntryName + '\'' + ", uniqueKey="
-				+ uniqueKey + '}';
-	}
+    @Override
+    public String toString() {
+        return "STNodeEntryImpl{" + "partition=" + partition
+                + ", nodeEntryName='" + nodeEntryName + '\'' + ", uniqueKey="
+                + uniqueKey + '}';
+    }
 
-	@Override
-	public String getKeyAsString() {
-		return getUniqueKey().getKeyAsString();
-	}
+    @Override
+    public String getKeyAsString() {
+        return getUniqueKey().getKeyAsString();
+    }
 
-	@Override
-	public STPartition getPartition() {
-		return getUniqueKey().getPartition();
-	}
+    @Override
+    public Partition getPartition() {
+        return getUniqueKey().getPartition();
+    }
 }

@@ -51,7 +51,7 @@ package org.openspotlight.persist.test;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -70,9 +70,9 @@ import org.junit.Test;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistImpl;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -85,11 +85,11 @@ import com.google.inject.Injector;
  */
 public class SimplePersistSupportTest {
 
-    SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
-    private STStorageSession                            session;
+    SimplePersistCapable<STNodeEntry, StorageSession> simplePersist;
+    private StorageSession                            session;
 
     public SimplePersistSupportTest() {
-        autoFlushInjector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        autoFlushInjector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
                                                                          ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                                                                          repositoryPath("repositoryPath")));
     }
@@ -101,10 +101,10 @@ public class SimplePersistSupportTest {
      */
     @Before
     public void setupSession() throws Exception {
-        JRedis jRedis = autoFlushInjector.getInstance(JRedisFactory.class).getFrom(SLPartition.FEDERATION);
+        JRedis jRedis = autoFlushInjector.getInstance(JRedisFactory.class).getFrom(RegularPartitions.FEDERATION);
         jRedis.flushall();
-        session = autoFlushInjector.getInstance(STStorageSession.class);
-        simplePersist = new SimplePersistImpl(session, SLPartition.FEDERATION);
+        session = autoFlushInjector.getInstance(StorageSession.class);
+        simplePersist = new SimplePersistImpl(session, RegularPartitions.FEDERATION);
     }
 
     @Test
@@ -761,7 +761,7 @@ public class SimplePersistSupportTest {
         propertyObj.setName("name");
         propertyObj.setValue(2);
         obj2.setPropertyObj(propertyObj);
-        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final STNodeEntry node = simplePersist.convertBeanToNode(parentNode, obj3);
 
@@ -788,7 +788,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindCollectionItemsWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final RootObj root = new RootObj();
         final LevelOneObj levelOne = new LevelOneObj();
@@ -818,7 +818,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindJcrNodeByItsKeyWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
@@ -891,7 +891,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindJcrNodeByItsPropertiesWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
         final RootObj root = new RootObj();
         final LevelOneObj obj1 = new LevelOneObj();
         final LevelTwoObj obj2 = new LevelTwoObj();
@@ -967,7 +967,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindNodesWithSameKeyPropertyWhenUsingComposedKeyWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final ComposedKeyObject object1 = new ComposedKeyObject();
         object1.setKey1("same key");
@@ -993,7 +993,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindObjectsByNullParameterWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final LevelOneObj obj1 = new LevelOneObj();
         obj1.setProperty("prop");
@@ -1011,7 +1011,7 @@ public class SimplePersistSupportTest {
 
     @Test
     public void shouldFindPropertyItemsWithParent() throws Exception {
-        STNodeEntry parentNode = session.withPartition(SLPartition.FEDERATION).createNewSimpleNode("a", "b", "c");
+        STNodeEntry parentNode = session.withPartition(RegularPartitions.FEDERATION).createNewSimpleNode("a", "b", "c");
 
         final LevelTwoObj levelTwo = new LevelTwoObj();
         final PropertyObj propertyObj = new PropertyObj();

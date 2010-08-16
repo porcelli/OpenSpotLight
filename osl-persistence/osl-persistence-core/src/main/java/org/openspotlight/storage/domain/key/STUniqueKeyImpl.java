@@ -49,14 +49,17 @@
 
 package org.openspotlight.storage.domain.key;
 
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STRepositoryPath;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StringIDSupport;
 
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 10:48:26 AM
  */
-public class STUniqueKeyImpl implements STUniqueKey {
+public class STUniqueKeyImpl implements UniqueKey {
+
+    private static final long serialVersionUID = 7018608184362764936L;
+
     private final int hashCode;
 
     @Override
@@ -66,7 +69,7 @@ public class STUniqueKeyImpl implements STUniqueKey {
                 '}';
     }
 
-    public STUniqueKeyImpl( STLocalKey localKey, String parentKeyAsString, STPartition partition, STRepositoryPath repositoryPath ) {
+    public STUniqueKeyImpl( LocalKey localKey, String parentKeyAsString, Partition partition, RepositoryPath repositoryPath ) {
         if (localKey == null) throw new IllegalArgumentException();
         if (repositoryPath == null) throw new IllegalArgumentException();
         this.localKey = localKey;
@@ -82,11 +85,11 @@ public class STUniqueKeyImpl implements STUniqueKey {
 
     }
 
-    private final STRepositoryPath repositoryPath;
+    private final RepositoryPath repositoryPath;
 
-    private final STPartition      partition;
+    private final Partition      partition;
 
-    private final STLocalKey       localKey;
+    private final LocalKey       localKey;
 
     private final String           parentKeyAsString;
 
@@ -102,11 +105,11 @@ public class STUniqueKeyImpl implements STUniqueKey {
         return value;
     }
 
-    public STPartition getPartition() {
+    public Partition getPartition() {
         return partition;
     }
 
-    public STLocalKey getLocalKey() {
+    public LocalKey getLocalKey() {
         return localKey;
     }
 
@@ -114,7 +117,7 @@ public class STUniqueKeyImpl implements STUniqueKey {
         return parentKeyAsString;
     }
 
-    public STRepositoryPath getRepositoryPath() {
+    public RepositoryPath getRepositoryPath() {
         return repositoryPath;
     }
 
@@ -140,7 +143,7 @@ public class STUniqueKeyImpl implements STUniqueKey {
         return hashCode;
     }
 
-    public int compareTo( STUniqueKey that ) {
+    public int compareTo( UniqueKey that ) {
         if (this == null && that == null) return 0;
         if (this != null && that == null) return 1;
         if (this == null && that != null) return -1;

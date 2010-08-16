@@ -46,33 +46,49 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-
-package org.openspotlight.storage.domain.node;
-
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.key.STUniqueKey;
+package org.openspotlight.storage;
 
 /**
- * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 3:10:03 PM To change this template use File | Settings | File
- * Templates.
+ * Created by User: feu - Date: Apr 19, 2010 - Time: 9:34:57 AM
  */
-public interface STNodeEntryFactory {
+public class RepositoryPath {
 
-    STNodeEntryBuilder createWithName( STStorageSession session,
-                                       String name );
-
-    interface STNodeEntryBuilder {
-
-        STNodeEntryBuilder withKeyEntry( String name,
-                                         String value );
-
-        STNodeEntryBuilder withParent( STNodeEntry parent );
-
-        STNodeEntryBuilder withParentAsString( String parentAsString );
-
-        STNodeEntryBuilder withParentKey( STUniqueKey parentKey );
-
-        STNodeEntry andCreate();
+    public static RepositoryPath repositoryPath( String repositoryPath ) {
+        return new RepositoryPath(repositoryPath);
     }
 
+    private final String repositoryPath;
+
+    public RepositoryPath( String repositoryPath ) {
+        this.repositoryPath = repositoryPath;
+    }
+
+    public String getRepositoryPathAsString() {
+        return repositoryPath;
+    }
+
+    @Override
+    public boolean equals( Object o ) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RepositoryPath that = (RepositoryPath)o;
+
+        if (repositoryPath != null ? !repositoryPath.equals(that.repositoryPath) : that.repositoryPath != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return repositoryPath != null ? repositoryPath.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "STRepositoryPath{" +
+                "repositoryPath='" + repositoryPath + '\'' +
+                '}';
+    }
 }

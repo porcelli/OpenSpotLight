@@ -49,16 +49,16 @@
 package org.openspotlight.storage;
 
 import static org.openspotlight.common.util.Sha1.getSha1SignatureEncodedAsBase64;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.openspotlight.storage.domain.key.STKeyEntry;
-import org.openspotlight.storage.domain.key.STLocalKey;
-import org.openspotlight.storage.domain.key.STUniqueKey;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.domain.STNodeEntry;
+import org.openspotlight.storage.domain.key.Key;
+import org.openspotlight.storage.domain.key.LocalKey;
+import org.openspotlight.storage.domain.key.UniqueKey;
 
 /**
  * Created by User: feu - Date: Jun 9, 2010 - Time: 4:51:47 PM
@@ -73,13 +73,13 @@ public class StringIDSupport {
 
 	}
 
-	public static STRepositoryPath getRepositoryPath(String uniqueKeyAsString) {
+	public static RepositoryPath getRepositoryPath(String uniqueKeyAsString) {
 		return repositoryPath(uniqueKeyAsString.split(SEP)[0]);
 
 	}
 
-	public static STPartition getPartition(String uniqueKeyAsString,
-			STPartitionFactory factory) {
+	public static Partition getPartition(String uniqueKeyAsString,
+			PartitionFactory factory) {
 		return factory.getPartitionByName(getPartitionName(uniqueKeyAsString));
 	}
 
@@ -87,7 +87,7 @@ public class StringIDSupport {
 		return uniqueKeyAsString.split(SEP)[1];
 	}
 
-	public static String getUniqueKeyAsStringHash(STUniqueKey uniqueKey) {
+	public static String getUniqueKeyAsStringHash(UniqueKey uniqueKey) {
 		return new StringBuilder()
 				.append(
 						uniqueKey.getRepositoryPath()
@@ -102,24 +102,24 @@ public class StringIDSupport {
 				.toString();
 	}
 
-	public static String getLocalKeyAsStringHash(STLocalKey uniqueKey) {
+	public static String getLocalKeyAsStringHash(LocalKey uniqueKey) {
 		return getSha1SignatureEncodedAsBase64(getLocalKeyAsSimpleString(uniqueKey));
 	}
 
-	private static String getLocalKeyAsSimpleString(STLocalKey localKey) {
+	private static String getLocalKeyAsSimpleString(LocalKey localKey) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(localKey.getNodeEntryName());
-		List<STKeyEntry> ordered = new ArrayList<STKeyEntry>(localKey
+		List<Key> ordered = new ArrayList<Key>(localKey
 				.getEntries());
 		Collections.sort(ordered);
-		for (STKeyEntry entry : ordered) {
+		for (Key entry : ordered) {
 			sb.append(NODE_KEY_SEP).append(entry.getPropertyName()).append(
 					NODE_KEY_SEP).append(NODE_KEY_SEP).append(entry.getValue());
 		}
 		return sb.toString();
 	}
 
-	private static String getUniqueKeyAsSimpleString(STUniqueKey uniqueKey) {
+	private static String getUniqueKeyAsSimpleString(UniqueKey uniqueKey) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(uniqueKey.getRepositoryPath().getRepositoryPathAsString())
 				.append(":");
@@ -128,10 +128,10 @@ public class StringIDSupport {
 		return sb.toString();
 	}
 
-	public static String getLinkKeyAsString(STPartition originPartition,
+	public static String getLinkKeyAsString(Partition originPartition,
 			String linkName, STNodeEntry origin, STNodeEntry target) {
 		StringBuilder sb = new StringBuilder();
-		STUniqueKey originKey = origin.getUniqueKey();
+		UniqueKey originKey = origin.getUniqueKey();
 		sb.append(originKey.getKeyAsString());
 		sb.append(LINK_KEY_SEP);
 		sb.append(target.getKeyAsString());

@@ -53,14 +53,14 @@ import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.User;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.StorageSession;
 
 public class DefaultUserAuthenticator implements UserAuthenticator {
 
-    private final STStorageSession session;
+    private final StorageSession session;
     private final SecurityFactory  securityFactory;
 
-    public DefaultUserAuthenticator( STStorageSession session ) {
+    public DefaultUserAuthenticator( StorageSession session ) {
         try {
             this.session = session;
             securityFactory = AbstractFactory.getDefaultInstance(SecurityFactory.class);

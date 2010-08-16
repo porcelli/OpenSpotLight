@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.Property;
+import org.openspotlight.storage.domain.PropertyContainer;
 
 import com.google.inject.internal.ImmutableSet;
 
-public abstract class STPropertyContainerImpl implements STPropertyContainer {
+public abstract class STPropertyContainerImpl implements PropertyContainer {
 
 	public void forceReload() {
 		this.propertiesByName.clear();
@@ -24,14 +26,14 @@ public abstract class STPropertyContainerImpl implements STPropertyContainer {
 
 	protected long lastLoad;
 
-	private final Map<String, STProperty> propertiesByName = new HashMap<String, STProperty>();
+	private final Map<String, Property> propertiesByName = new HashMap<String, Property>();
 
-	public Set<String> getPropertyNames(STStorageSession session) {
+	public Set<String> getPropertyNames(StorageSession session) {
 		reloadProperties(session);
 		return ImmutableSet.copyOf(propertiesByName.keySet());
 	}
 
-	public Set<STProperty> getProperties(STStorageSession session) {
+	public Set<Property> getProperties(StorageSession session) {
 		reloadProperties(session);
 		return ImmutableSet.copyOf(propertiesByName.values());
 	}
@@ -41,10 +43,10 @@ public abstract class STPropertyContainerImpl implements STPropertyContainer {
 	}
 
 	@Override
-	public STProperty setSimpleProperty(STStorageSession session, String name,
+	public Property setSimpleProperty(StorageSession session, String name,
 			String value) {
 		verifyBeforeSet(name);
-		STProperty currentProperty = getProperty(session, name);
+		Property currentProperty = getProperty(session, name);
 		if (currentProperty == null) {
 			currentProperty = STPropertyImpl.createSimple(name, this);
 			propertiesByName.put(name, currentProperty);
@@ -55,10 +57,10 @@ public abstract class STPropertyContainerImpl implements STPropertyContainer {
 	}
 
 	@Override
-	public STProperty setSimpleProperty(STStorageSession session, String name,
+	public Property setSimpleProperty(StorageSession session, String name,
 			InputStream value) {
 		verifyBeforeSet(name);
-		STProperty currentProperty = getProperty(session, name);
+		Property currentProperty = getProperty(session, name);
 		if (currentProperty == null) {
 			currentProperty = STPropertyImpl.createSimple(name, this);
 			propertiesByName.put(name, currentProperty);
@@ -69,10 +71,10 @@ public abstract class STPropertyContainerImpl implements STPropertyContainer {
 	}
 
 	@Override
-	public STProperty setSimpleProperty(STStorageSession session, String name,
+	public Property setSimpleProperty(StorageSession session, String name,
 			byte[] value) {
 		verifyBeforeSet(name);
-		STProperty currentProperty = getProperty(session, name);
+		Property currentProperty = getProperty(session, name);
 		if (currentProperty == null) {
 			currentProperty = STPropertyImpl.createSimple(name, this);
 			propertiesByName.put(name, currentProperty);
@@ -84,10 +86,10 @@ public abstract class STPropertyContainerImpl implements STPropertyContainer {
 	}
 
 	@Override
-	public STProperty setIndexedProperty(STStorageSession session, String name,
+	public Property setIndexedProperty(StorageSession session, String name,
 			String value) {
 		verifyBeforeSet(name);
-		STProperty currentProperty = getProperty(session, name);
+		Property currentProperty = getProperty(session, name);
 		if (currentProperty == null) {
 			currentProperty = STPropertyImpl.createIndexed(name, this);
 			propertiesByName.put(name, currentProperty);
@@ -97,54 +99,54 @@ public abstract class STPropertyContainerImpl implements STPropertyContainer {
 		return currentProperty;
 	}
 
-	private void reloadProperties(STStorageSession session) {
+	private void reloadProperties(StorageSession session) {
 		boolean tooOld = this.lastLoad < (System.currentTimeMillis() + TIMEOUT);
 		boolean empty = propertiesByName.isEmpty();
 		if (tooOld && empty) {
-			Set<STProperty> result = session.withPartition(getPartition())
+			Set<Property> result = session.withPartition(getPartition())
 					.getInternalMethods().propertyContainerLoadProperties(this);
-			for (STProperty property : result) {
+			for (Property property : result) {
 				propertiesByName.put(property.getPropertyName(), property);
 			}
 			this.lastLoad = System.currentTimeMillis();
 		}
 	}
 
-	private void loadPropertiesOnce(STStorageSession session) {
+	private void loadPropertiesOnce(StorageSession session) {
 		if (propertiesByName.isEmpty()) {
 			reloadProperties(session);
 		}
 	}
 
-	public String getPropertyAsString(STStorageSession session, String name) {
-		STProperty prop = getProperty(session, name);
+	public String getPropertyAsString(StorageSession session, String name) {
+		Property prop = getProperty(session, name);
 		if (prop != null) {
 			return prop.getValueAsString(session);
 		}
 		return null;
 	}
 
-	public InputStream getPropertyAsStream(STStorageSession session, String name) {
+	public InputStream getPropertyAsStream(StorageSession session, String name) {
 
-		STProperty prop = getProperty(session, name);
+		Property prop = getProperty(session, name);
 		if (prop != null) {
 			return prop.getValueAsStream(session);
 		}
 		return null;
 	}
 
-	public byte[] getPropertyAsBytes(STStorageSession session, String name) {
+	public byte[] getPropertyAsBytes(StorageSession session, String name) {
 
-		STProperty prop = getProperty(session, name);
+		Property prop = getProperty(session, name);
 		if (prop != null) {
 			return prop.getValueAsBytes(session);
 		}
 		return null;
 	}
 
-	public STProperty getProperty(STStorageSession session, String name) {
+	public Property getProperty(StorageSession session, String name) {
 		loadPropertiesOnce(session);
-		STProperty result = propertiesByName.get(name);
+		Property result = propertiesByName.get(name);
 		if (result == null) {
 			reloadProperties(session);
 			result = propertiesByName.get(name);

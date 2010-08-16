@@ -48,8 +48,8 @@
  */
 package org.openspotlight.graph;
 
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.StorageSession;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -58,15 +58,15 @@ public class GraphSessionFactoryImpl implements GraphSessionFactory {
 
     @Inject
     public GraphSessionFactoryImpl(
-                                      final Provider<STStorageSession> sessionProvider,
-                                      STPartitionFactory factory ) {
+                                      final Provider<StorageSession> sessionProvider,
+                                      PartitionFactory factory ) {
         this.sessionProvider = sessionProvider;
         this.factory = factory;
     }
 
-    private final STPartitionFactory         factory;
+    private final PartitionFactory         factory;
 
-    private final Provider<STStorageSession> sessionProvider;
+    private final Provider<StorageSession> sessionProvider;
 
     @Override
     public FullGraphSession openFull() {

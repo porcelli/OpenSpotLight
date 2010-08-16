@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.test;
 
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import static org.openspotlight.storage.RepositoryPath.repositoryPath;
 
 import java.util.Map;
 
 import org.openspotlight.graph.GraphModule;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
@@ -111,33 +111,33 @@ public class RedisGraphTest extends AbstractGraphTest {
 		}
 	}
 
-	final Map<STPartition, JRedisServerDetail> mappedServerConfig = ImmutableMap
-			.<STPartition, JRedisServerDetail> builder().put(
+	final Map<Partition, JRedisServerDetail> mappedServerConfig = ImmutableMap
+			.<Partition, JRedisServerDetail> builder().put(
 
-			SLPartition.FACTORY.getPartitionByName("graph"),
+			RegularPartitions.FACTORY.getPartitionByName("graph"),
 					JRedisServerConfigExample.GRAPH).put(
-					SLPartition.FEDERATION,
+					RegularPartitions.FEDERATION,
 					JRedisServerConfigExample.FEDERATION).put(
-					SLPartition.LINE_REFERENCE,
+					RegularPartitions.LINE_REFERENCE,
 					JRedisServerConfigExample.LINE_REFERENCE).put(
-					SLPartition.LOG, JRedisServerConfigExample.LOG).put(
-					SLPartition.SECURITY, JRedisServerConfigExample.SECURITY)
-			.put(SLPartition.SYNTAX_HIGHLIGHT,
+					RegularPartitions.LOG, JRedisServerConfigExample.LOG).put(
+					RegularPartitions.SECURITY, JRedisServerConfigExample.SECURITY)
+			.put(RegularPartitions.SYNTAX_HIGHLIGHT,
 					JRedisServerConfigExample.SYNTAX_HIGHLIGHT).build();
 
 	@Override
 	protected void clearData() throws Exception {
 		JRedisFactory autoFlushFactory = injector
 				.getInstance(JRedisFactory.class);
-		autoFlushFactory.getFrom(SLPartition.FEDERATION).flushall();
-		autoFlushFactory.getFrom(SLPartition.FEDERATION).save();
+		autoFlushFactory.getFrom(RegularPartitions.FEDERATION).flushall();
+		autoFlushFactory.getFrom(RegularPartitions.FEDERATION).save();
 	}
 
 	@Override
 	protected Injector createInjector() throws Exception {
 		return Guice.createInjector(new JRedisStorageModule(
-				STStorageSession.STFlushMode.AUTO, mappedServerConfig,
-				repositoryPath("repositoryPath"), SLPartition.FACTORY),
+				StorageSession.FlushMode.AUTO, mappedServerConfig,
+				repositoryPath("repositoryPath"), RegularPartitions.FACTORY),
 				new GraphModule());
 	}
 

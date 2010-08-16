@@ -1,7 +1,5 @@
 package org.openspotlight.graph;
 
-import java.math.BigInteger;
-
 /**
  * The BaseIdentifer is a common API that defines common data relative to unique identifiers as well its weight data inside
  * OpenSpotLight Graph.

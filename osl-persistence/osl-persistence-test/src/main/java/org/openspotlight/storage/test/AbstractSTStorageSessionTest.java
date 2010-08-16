@@ -70,11 +70,11 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STPartitionFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STLinkEntry;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.PartitionFactory;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.STLinkEntry;
+import org.openspotlight.storage.domain.STNodeEntry;
 
 import com.google.inject.Injector;
 
@@ -97,18 +97,18 @@ public abstract class AbstractSTStorageSessionTest {
 
 	}
 
-	protected enum ExamplePartition implements STPartition {
+	protected enum ExamplePartition implements Partition {
 
 		DEFAULT("DEFAULT"), FIRST("FIRST"), SECOND("SECOND");
 
-		public static final STPartitionFactory FACTORY = new STPartitionFactory() {
+		public static final PartitionFactory FACTORY = new PartitionFactory() {
 
 			@Override
-			public STPartition getPartitionByName(String name) {
+			public Partition getPartitionByName(String name) {
 				return ExamplePartition.valueOf(name.toUpperCase());
 			}
 
-			public STPartition[] getValues() {
+			public Partition[] getValues() {
 				return ExamplePartition.values();
 			}
 		};
@@ -145,8 +145,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldFindNodeNamesOnDifferentPartitionsOnAutoFlush()
 			throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
 				"a1", "b1", "c1");
 		session.withPartition(ExamplePartition.FIRST).createNewSimpleNode("a2",
@@ -172,8 +172,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldExcludeParentAndChildrenOnExplicitFlush()
 			throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry c1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("a1", "b1", "c1");
 		session.flushTransient();
@@ -195,8 +195,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldExcludeParentAndChildrenOnAutoFlush() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry c1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("a1", "b1", "c1");
 		STNodeEntry b1 = c1.getParent(session);
@@ -217,8 +217,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldFindNodeNamesOnDifferentPartitionsOnExplicitFlush()
 			throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
 				"a1", "b1", "c1");
 		session.withPartition(ExamplePartition.FIRST).createNewSimpleNode("a2",
@@ -244,8 +244,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldSaveSimpleNodesOnAutoFlush() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		session.withPartition(ExamplePartition.DEFAULT).createNewSimpleNode(
 				"a", "b", "c");
 		Iterable<STNodeEntry> result = session.withPartition(
@@ -256,8 +256,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindSimpleNodeWithStringIdOnAutoFlush() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("a", "b", "c");
 		String nodeIdAsString = newNode.getUniqueKey().getKeyAsString();
@@ -271,8 +271,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldFindSimpleNodeWithStringIdOnExplicitFlush()
 			throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("a", "b", "c");
 		session.flushTransient();
@@ -286,13 +286,13 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldInstantiateOneSessionPerThread() throws Exception {
-		STStorageSession session1 = autoFlushInjector
-				.getInstance(STStorageSession.class);
-		STStorageSession session2 = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session1 = autoFlushInjector
+				.getInstance(StorageSession.class);
+		StorageSession session2 = autoFlushInjector
+				.getInstance(StorageSession.class);
 		assertThat(session1, is(session2));
 
-		final List<STStorageSession> sessions = new CopyOnWriteArrayList<STStorageSession>();
+		final List<StorageSession> sessions = new CopyOnWriteArrayList<StorageSession>();
 		final CountDownLatch latch = new CountDownLatch(1);
 
 		new Thread() {
@@ -300,7 +300,7 @@ public abstract class AbstractSTStorageSessionTest {
 			public void run() {
 				try {
 					sessions.add(autoFlushInjector
-							.getInstance(STStorageSession.class));
+							.getInstance(StorageSession.class));
 				} finally {
 					latch.countDown();
 				}
@@ -313,8 +313,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldCreateTheSameKey() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -329,8 +329,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindByUniqueKey() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry aNode = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -351,8 +351,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindByLocalKey() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("root1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -379,8 +379,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindByProperties() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("root1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -421,8 +421,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldFindByPropertiesContainingString() throws Exception {
 		if (supportsAdvancedQueries()) {
-			STStorageSession session = autoFlushInjector
-					.getInstance(STStorageSession.class);
+			StorageSession session = autoFlushInjector
+					.getInstance(StorageSession.class);
 			STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 					.createWithName("node").withKeyEntry("sequence", "1")
 					.withKeyEntry("name", "name1").andCreate();
@@ -455,8 +455,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindByPropertiesWithNullValue() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("node").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "a").andCreate();
@@ -487,8 +487,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldFindByPropertiesStartingWithString() throws Exception {
 		if (supportsAdvancedQueries()) {
-			STStorageSession session = autoFlushInjector
-					.getInstance(STStorageSession.class);
+			StorageSession session = autoFlushInjector
+					.getInstance(StorageSession.class);
 			STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 					.createWithName("node").withKeyEntry("sequence", "1")
 					.withKeyEntry("name", "name1").andCreate();
@@ -522,8 +522,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldFindByPropertiesEndingWithString() throws Exception {
 		if (supportsAdvancedQueries()) {
-			STStorageSession session = autoFlushInjector
-					.getInstance(STStorageSession.class);
+			StorageSession session = autoFlushInjector
+					.getInstance(StorageSession.class);
 			STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 					.createWithName("node").withKeyEntry("sequence", "1")
 					.withKeyEntry("name", "name1").andCreate();
@@ -556,8 +556,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindByLocalKeyAndProperties() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("root1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -596,8 +596,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindNamedNodes() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("root1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -631,8 +631,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowExceptionWhenFindingWithUniqueAndOtherAttributes()
 			throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		session.withPartition(ExamplePartition.DEFAULT).createCriteria()
 				.withNodeEntry("newNode1").withProperty("sequence").equalsTo(
 						"1").withProperty("name").equalsTo("name")
@@ -644,8 +644,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldInsertNewNodeEntryAndFindUniqueWithAutoFlush() {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry foundNewNode1 = session.withPartition(
 				ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
 				"newNode1").withProperty("sequence").equalsTo("1")
@@ -667,8 +667,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldInsertNewNodeEntryAndFindUniqueWithExplicitFlush() {
 
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry foundNewNode1 = session.withPartition(
 				ExamplePartition.DEFAULT).createCriteria().withNodeEntry(
 				"newNode1").withProperty("sequence").equalsTo("1")
@@ -697,8 +697,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldCreateHierarchyAndLoadParentNode() {
 
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 
 		STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("sameName").withKeyEntry("sequence", "1")
@@ -744,8 +744,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldCreateHierarchyAndLoadChildrenNodes() {
 
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 
 		STNodeEntry root = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("root").withKeyEntry("sequence", "1")
@@ -817,8 +817,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldWorkWithPartitions() {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 
 		session.withPartition(ExamplePartition.DEFAULT).createWithName("root")
 				.withKeyEntry("sequence", "1").withKeyEntry("name", "name")
@@ -876,8 +876,8 @@ public abstract class AbstractSTStorageSessionTest {
 	public void shouldWorkWithSimplePropertiesOnExplicitFlush()
 			throws Exception {
 
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -937,8 +937,8 @@ public abstract class AbstractSTStorageSessionTest {
 	public void shouldWorkWithSimplePropertiesOnAutoFlush() throws Exception {
 
 		Date newDate = new Date();
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1028,8 +1028,8 @@ public abstract class AbstractSTStorageSessionTest {
 	public void shouldWorkWithInputStreamPropertiesOnExplicitFlush()
 			throws Exception {
 
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1075,8 +1075,8 @@ public abstract class AbstractSTStorageSessionTest {
 	public void shouldWorkWithInputStreamPropertiesOnAutoFlush()
 			throws Exception {
 
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1114,8 +1114,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindMultipleResults() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1144,8 +1144,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldRemoveNodesOnAutoFlush() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1176,8 +1176,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldRemoveNodesOnExplicitFlush() throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1218,8 +1218,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldDiscardTransientNodesOnExplicitFlush() throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1263,8 +1263,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldUpdatePropertyAndFindWithUpdatedValue() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1295,8 +1295,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void shouldNotSetKeyProperty() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry newNode1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("newNode1").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1306,8 +1306,8 @@ public abstract class AbstractSTStorageSessionTest {
 
 	@Test
 	public void shouldFindByPropertiesWithoutNodeName() throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 				.createWithName("abc").withKeyEntry("sequence", "1")
 				.withKeyEntry("name", "name").andCreate();
@@ -1347,8 +1347,8 @@ public abstract class AbstractSTStorageSessionTest {
 	public void shouldFindByPropertiesContainingStringWithoutNodeName()
 			throws Exception {
 		if (supportsAdvancedQueries()) {
-			STStorageSession session = autoFlushInjector
-					.getInstance(STStorageSession.class);
+			StorageSession session = autoFlushInjector
+					.getInstance(StorageSession.class);
 			STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 					.createWithName("abc").withKeyEntry("sequence", "1")
 					.withKeyEntry("name", "name1").andCreate();
@@ -1383,8 +1383,8 @@ public abstract class AbstractSTStorageSessionTest {
 	public void shouldFindByPropertiesStartingWithStringWithoutNodeName()
 			throws Exception {
 		if (supportsAdvancedQueries()) {
-			STStorageSession session = autoFlushInjector
-					.getInstance(STStorageSession.class);
+			StorageSession session = autoFlushInjector
+					.getInstance(StorageSession.class);
 			STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 					.createWithName("abc").withKeyEntry("sequence", "1")
 					.withKeyEntry("name", "name1").andCreate();
@@ -1419,8 +1419,8 @@ public abstract class AbstractSTStorageSessionTest {
 	public void shouldFindByPropertiesEndingWithStringWithoutNodeName()
 			throws Exception {
 		if (supportsAdvancedQueries()) {
-			STStorageSession session = autoFlushInjector
-					.getInstance(STStorageSession.class);
+			StorageSession session = autoFlushInjector
+					.getInstance(StorageSession.class);
 			STNodeEntry root1 = session.withPartition(ExamplePartition.DEFAULT)
 					.createWithName("abc").withKeyEntry("sequence", "1")
 					.withKeyEntry("name", "name1").andCreate();
@@ -1454,8 +1454,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldAddAndRetriveLinksOnSamePartitionWithAutoFlushInjector()
 			throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("a", "b", "c");
 		STNodeEntry b = c.getParent(session);
@@ -1500,8 +1500,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldAddAndRetriveLinksOnDifferentPartitionsWithAutoFlushInjector()
 			throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("c");
 		STNodeEntry b = session.withPartition(ExamplePartition.FIRST)
@@ -1548,8 +1548,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldAddAndRetriveLinksOnSamePartitionWithExplicitFlushInjector()
 			throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("a", "b", "c");
 		session.flushTransient();
@@ -1595,8 +1595,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldAddAndRetriveLinksOnDifferentPartitionsWithExplicitFlushInjector()
 			throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 		STNodeEntry c = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("c");
 		STNodeEntry b = session.withPartition(ExamplePartition.FIRST)
@@ -1643,8 +1643,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldCreateAndRemoveLinksWithPropertiesOnSamePartitionWithAutoFlushInjector()
 			throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 
 		STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("b");
@@ -1678,8 +1678,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldCreateAndRemoveLinksWithPropertiesOnSamePartitionWithExplicitFlushInjector()
 			throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 
 		STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("b");
@@ -1713,8 +1713,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldCreateAndRemoveLinksWithPropertiesOnDifferentPartitionsWithAutoFlushInjector()
 			throws Exception {
-		STStorageSession session = autoFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = autoFlushInjector
+				.getInstance(StorageSession.class);
 
 		STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("b");
@@ -1748,8 +1748,8 @@ public abstract class AbstractSTStorageSessionTest {
 	@Test
 	public void shouldCreateAndRemoveLinksWithPropertiesOnDifferentPartitionsWithExplicitFlushInjector()
 			throws Exception {
-		STStorageSession session = explicitFlushInjector
-				.getInstance(STStorageSession.class);
+		StorageSession session = explicitFlushInjector
+				.getInstance(StorageSession.class);
 
 		STNodeEntry b = session.withPartition(ExamplePartition.DEFAULT)
 				.createNewSimpleNode("b");

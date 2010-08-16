@@ -54,21 +54,21 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.STNodeEntry;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
 public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
-    private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    private final SimplePersistCapable<STNodeEntry, StorageSession> simplePersist;
 
     public STNodeEntry getRootNode() {
         return rootNode;
     }
 
-    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist() {
+    public SimplePersistCapable<STNodeEntry, StorageSession> getSimplePersist() {
         return simplePersist;
     }
 
@@ -78,7 +78,7 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 
     @Inject
     public SLIdentityStoreSessionImpl(
-                                       SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+                                       SimplePersistCapable<STNodeEntry, StorageSession> simplePersist ) {
         this.simplePersist = simplePersist;
         this.rootNode = simplePersist.getCurrentSession().withPartition(simplePersist.getCurrentPartition()).createNewSimpleNode(
                                                                                                                                  "security");
