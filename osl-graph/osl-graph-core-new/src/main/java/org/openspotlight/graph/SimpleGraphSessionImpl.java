@@ -58,7 +58,6 @@ import org.openspotlight.security.authz.PolicyEnforcement;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.STNodeEntry;
 
 import com.google.inject.Provider;
 
@@ -78,7 +77,7 @@ public class SimpleGraphSessionImpl implements SimpleGraphSession {
 	@Override
 	public void flushChangedProperties(Node node) {
 		StorageSession session = sessionProvider.get();
-		STNodeEntry stNode = NodeAndLinkSupport.retrievePreviousNode(factory, session,
+		org.openspotlight.storage.domain.STNodeEntry stNode = NodeAndLinkSupport.retrievePreviousNode(factory, session,
 				from(GraphLocation.SERVER).getContext(node), node, false);
 		session.flushTransient();
 	}

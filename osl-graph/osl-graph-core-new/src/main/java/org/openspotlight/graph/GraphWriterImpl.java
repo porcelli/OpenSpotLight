@@ -58,9 +58,6 @@ import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphWriter;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.STNodeEntry;
-
-import antlr.CppCodeGenerator;
 
 import com.google.inject.Provider;
 
@@ -107,7 +104,7 @@ public class GraphWriterImpl implements GraphWriter {
 	@Override
 	public void removeNode(Node node) {
 		StorageSession session = sessionProvider.get();
-		STNodeEntry stNodeEntry = NodeAndLinkSupport.retrievePreviousNode(factory,
+		org.openspotlight.storage.domain.STNodeEntry stNodeEntry = NodeAndLinkSupport.retrievePreviousNode(factory,
 				session, graphReader.getContext(node.getContextId()), node,
 				true);
 		session.removeNode(stNodeEntry);

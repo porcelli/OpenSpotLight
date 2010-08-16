@@ -51,7 +51,7 @@ package org.openspotlight.storage.redis.guice;
 
 import java.util.Map;
 
-import org.openspotlight.storage.DefaultSTPartitionFactory;
+import org.openspotlight.storage.DefaultPartitionFactory;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
@@ -78,7 +78,7 @@ public class JRedisStorageModule extends AbstractModule {
         this.flushMode = flushMode;
         this.mappedServerConfig = mappedServerConfig;
         this.repositoryPath = repositoryPath;
-        this.partitionFactory = new DefaultSTPartitionFactory();
+        this.partitionFactory = new DefaultPartitionFactory();
     }
 
     public JRedisStorageModule( StorageSession.FlushMode flushMode, Map<Partition, JRedisServerDetail> mappedServerConfig,
@@ -92,7 +92,7 @@ public class JRedisStorageModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(PartitionFactory.class).toInstance(partitionFactory);
-        bind(StorageSession.class).toProvider(JRedisSTStorageSessionProvider.class);
+        bind(StorageSession.class).toProvider(JRedisStorageSessionProvider.class);
         bind(StorageSession.FlushMode.class).toInstance(flushMode);
         bind(new TypeLiteral<Map<Partition, JRedisServerDetail>>() {
         })

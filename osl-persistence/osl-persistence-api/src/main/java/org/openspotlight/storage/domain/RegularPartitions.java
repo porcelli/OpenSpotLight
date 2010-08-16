@@ -63,11 +63,11 @@ public enum RegularPartitions implements Partition {
     SECURITY("security"),
     LOG("log");
 
-    private static class STCustomPartition implements Partition {
+    private static class CustomPartition implements Partition {
 
         private final String partitionName;
 
-        public STCustomPartition( String partitionName ) {
+        public CustomPartition( String partitionName ) {
             this.partitionName = partitionName;
         }
 
@@ -98,7 +98,7 @@ public enum RegularPartitions implements Partition {
                                                          try {
                                                              return valueOf(name.toUpperCase());
                                                          } catch (IllegalArgumentException e) {
-                                                             return new STCustomPartition(name);
+                                                             return new CustomPartition(name);
                                                          }
                                                      }
 

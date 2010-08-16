@@ -73,12 +73,12 @@ import org.openspotlight.storage.domain.STLinkEntry;
 import org.openspotlight.storage.domain.STNodeEntry;
 import org.openspotlight.storage.domain.key.Key;
 import org.openspotlight.storage.domain.key.LocalKey;
-import org.openspotlight.storage.domain.key.STKeyEntryImpl;
-import org.openspotlight.storage.domain.key.STLocalKeyImpl;
-import org.openspotlight.storage.domain.key.STUniqueKeyImpl;
+import org.openspotlight.storage.domain.key.KeyImpl;
+import org.openspotlight.storage.domain.key.LocalImpl;
+import org.openspotlight.storage.domain.key.UniqueKeyImpl;
 import org.openspotlight.storage.domain.key.UniqueKey;
-import org.openspotlight.storage.domain.node.STLinkEntryImpl;
-import org.openspotlight.storage.domain.node.STNodeEntryImpl;
+import org.openspotlight.storage.domain.node.LinkImpl;
+import org.openspotlight.storage.domain.node.NodeImpl;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -116,12 +116,12 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     private final Map<Partition, PartitionMethods> partitionMethods = newHashMap();
 
-    public class STPartitionMethodsImpl implements PartitionMethods {
+    public class PartitionMethodsImpl implements PartitionMethods {
 
         public NodeFactory.NodeBuilder createWithName(
                                                        StorageSession session,
                                                        String name ) {
-            return new STNodeEntryBuilderImpl(name, partition);
+            return new NodeEntryBuilderImpl(name, partition);
         }
 
         public NodeFactory.NodeBuilder createWithName( String name ) {
@@ -184,13 +184,13 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         public CriteriaBuilder createCriteria() {
-            return new STCriteriaBuilderImpl(partition);
+            return new CriteriaBuilderImpl(partition);
         }
 
         public UniqueKey createNewSimpleKey( String... nodePaths ) {
             UniqueKey parentKey = null;
             for (String path : nodePaths) {
-                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections
+                parentKey = new UniqueKeyImpl(new LocalImpl(Collections
                                                                               .<Key>emptySet(), path), parentKey
                                                                                                                 .getKeyAsString(), partition, repositoryPath);
             }
@@ -201,11 +201,11 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             STNodeEntry parent = null;
             UniqueKey parentKey = null;
             for (String nodePath : nodePaths) {
-                parentKey = new STUniqueKeyImpl(new STLocalKeyImpl(Collections
+                parentKey = new UniqueKeyImpl(new LocalImpl(Collections
                                                                               .<Key>emptySet(), nodePath),
                                                 parentKey != null ? parentKey.getKeyAsString() : null,
                                                 partition, repositoryPath);
-                parent = new STNodeEntryImpl(parentKey, false);
+                parent = new NodeImpl(parentKey, false);
                 handleNewItem(parent);
             }
 
@@ -219,7 +219,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         private final Partition partition;
 
-        private STPartitionMethodsImpl( Partition currentPartition ) {
+        private PartitionMethodsImpl( Partition currentPartition ) {
             this.partition = currentPartition;
         }
 
@@ -237,10 +237,10 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     protected abstract Iterable<String> internalGetAllNodeNames(
                                                                  Partition partition ) throws Exception;
 
-    private static class STUniqueKeyAsStringCriteriaItemImpl implements
+    private static class UniqueKeyAsStringCriteriaItemImpl implements
             UniqueKeyAsStringCriteriaItem {
 
-        public STUniqueKeyAsStringCriteriaItemImpl( String keyAsString ) {
+        public UniqueKeyAsStringCriteriaItemImpl( String keyAsString ) {
             this.keyAsString = keyAsString;
             this.nodeEntryName = StringIDSupport.getNodeEntryName(keyAsString);
         }
@@ -259,9 +259,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     }
 
-    private static class STUniqueKeyCriteriaItemImpl implements
+    private static class UniqueKeyCriteriaItemImpl implements
             UniqueKeyCriteriaItem {
-        private STUniqueKeyCriteriaItemImpl( UniqueKey value,
+        private UniqueKeyCriteriaItemImpl( UniqueKey value,
                                              String nodeEntryName ) {
             this.value = value;
             this.nodeEntryName = nodeEntryName;
@@ -286,7 +286,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             if (o == null || getClass() != o.getClass())
                 return false;
 
-            STUniqueKeyCriteriaItemImpl that = (STUniqueKeyCriteriaItemImpl)o;
+            UniqueKeyCriteriaItemImpl that = (UniqueKeyCriteriaItemImpl)o;
 
             if (nodeEntryName != null ? !nodeEntryName
                                                       .equals(that.nodeEntryName) : that.nodeEntryName != null)
@@ -307,9 +307,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     }
 
-    private static class STLocalKeyCriteriaItemImpl implements
+    private static class LocalKeyCriteriaItemImpl implements
             LocalKeyCriteriaItem {
-        private STLocalKeyCriteriaItemImpl( LocalKey value,
+        private LocalKeyCriteriaItemImpl( LocalKey value,
                                             String nodeEntryName ) {
             this.value = value;
             this.nodeEntryName = nodeEntryName;
@@ -334,7 +334,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             if (o == null || getClass() != o.getClass())
                 return false;
 
-            STLocalKeyCriteriaItemImpl that = (STLocalKeyCriteriaItemImpl)o;
+            LocalKeyCriteriaItemImpl that = (LocalKeyCriteriaItemImpl)o;
 
             if (nodeEntryName != null ? !nodeEntryName
                                                       .equals(that.nodeEntryName) : that.nodeEntryName != null)
@@ -355,9 +355,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     }
 
-    private static class STPropertyCriteriaItemImpl implements
+    private static class PropertyCriteriaItemImpl implements
             PropertyCriteriaItem {
-        private STPropertyCriteriaItemImpl( String propertyName, String value,
+        private PropertyCriteriaItemImpl( String propertyName, String value,
                                             String nodeEntryName ) {
             this.value = value;
             this.propertyName = propertyName;
@@ -389,7 +389,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             if (o == null || getClass() != o.getClass())
                 return false;
 
-            STPropertyCriteriaItemImpl that = (STPropertyCriteriaItemImpl)o;
+            PropertyCriteriaItemImpl that = (PropertyCriteriaItemImpl)o;
 
             if (nodeEntryName != null ? !nodeEntryName
                                                       .equals(that.nodeEntryName) : that.nodeEntryName != null)
@@ -415,10 +415,10 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     }
 
-    private static class STPropertyEndsWithStringImpl implements
+    private static class PropertyEndsWithStringImpl implements
             PropertyEndsWithString {
 
-        private STPropertyEndsWithStringImpl( String nodeEntryName,
+        private PropertyEndsWithStringImpl( String nodeEntryName,
                                               String propertyName, String value ) {
             this.nodeEntryName = nodeEntryName;
             this.propertyName = propertyName;
@@ -450,7 +450,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             if (o == null || getClass() != o.getClass())
                 return false;
 
-            STPropertyEndsWithStringImpl that = (STPropertyEndsWithStringImpl)o;
+            PropertyEndsWithStringImpl that = (PropertyEndsWithStringImpl)o;
 
             if (nodeEntryName != null ? !nodeEntryName
                                                       .equals(that.nodeEntryName) : that.nodeEntryName != null)
@@ -474,10 +474,10 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
     }
 
-    private static class STPropertyStartsWithStringImpl implements
+    private static class PropertyStartsWithStringImpl implements
             PropertyStartsWithString {
 
-        private STPropertyStartsWithStringImpl( String nodeEntryName,
+        private PropertyStartsWithStringImpl( String nodeEntryName,
                                                 String propertyName, String value ) {
             this.nodeEntryName = nodeEntryName;
             this.propertyName = propertyName;
@@ -510,7 +510,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             if (o == null || getClass() != o.getClass())
                 return false;
 
-            STPropertyStartsWithStringImpl that = (STPropertyStartsWithStringImpl)o;
+            PropertyStartsWithStringImpl that = (PropertyStartsWithStringImpl)o;
 
             if (nodeEntryName != null ? !nodeEntryName
                                                       .equals(that.nodeEntryName) : that.nodeEntryName != null)
@@ -534,10 +534,10 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
     }
 
-    private static class STPropertyContainsStringImpl implements
+    private static class PropertyContainsStringImpl implements
             PropertyContainsString {
 
-        private STPropertyContainsStringImpl( String nodeEntryName,
+        private PropertyContainsStringImpl( String nodeEntryName,
                                               String propertyName, String value ) {
             this.nodeEntryName = nodeEntryName;
             this.propertyName = propertyName;
@@ -569,7 +569,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             if (o == null || getClass() != o.getClass())
                 return false;
 
-            STPropertyContainsStringImpl that = (STPropertyContainsStringImpl)o;
+            PropertyContainsStringImpl that = (PropertyContainsStringImpl)o;
 
             if (nodeEntryName != null ? !nodeEntryName
                                                       .equals(that.nodeEntryName) : that.nodeEntryName != null)
@@ -593,8 +593,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
     }
 
-    private static class STCriteriaImpl implements Criteria {
-        private STCriteriaImpl( String nodeName,
+    private static class CriteriaImpl implements Criteria {
+        private CriteriaImpl( String nodeName,
                                 Set<CriteriaItem> criteriaItems, Partition partition ) {
             this.nodeName = nodeName;
             this.partition = partition;
@@ -608,7 +608,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             if (o == null || getClass() != o.getClass())
                 return false;
 
-            STCriteriaImpl that = (STCriteriaImpl)o;
+            CriteriaImpl that = (CriteriaImpl)o;
 
             if (criteriaItems != null ? !criteriaItems
                                                       .equals(that.criteriaItems) : that.criteriaItems != null)
@@ -660,7 +660,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
     }
 
-    private static class STCriteriaBuilderImpl implements CriteriaBuilder {
+    private static class CriteriaBuilderImpl implements CriteriaBuilder {
 
         private final Partition partition;
 
@@ -682,7 +682,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         Set<CriteriaItem>       items;
 
-        public STCriteriaBuilderImpl( Partition partition ) {
+        public CriteriaBuilderImpl( Partition partition ) {
             this.partition = partition;
             items = newLinkedHashSet();
         }
@@ -763,36 +763,36 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             if (transientUniqueKey != null) {
                 breakIfNull(transientNodeEntryName);
 
-                item = new STUniqueKeyCriteriaItemImpl(transientUniqueKey,
+                item = new UniqueKeyCriteriaItemImpl(transientUniqueKey,
                                                        transientNodeEntryName);
 
             } else if (transientLocalKey != null) {
                 breakIfNull(transientNodeEntryName);
 
-                item = new STLocalKeyCriteriaItemImpl(transientLocalKey,
+                item = new LocalKeyCriteriaItemImpl(transientLocalKey,
                                                       transientNodeEntryName);
 
             } else if (transientIdAsString != null) {
 
-                item = new STUniqueKeyAsStringCriteriaItemImpl(
+                item = new UniqueKeyAsStringCriteriaItemImpl(
                                                                transientIdAsString);
 
             } else if (transientPropertyName != null) {
 
                 if (startsWith != null) {
-                    item = new STPropertyStartsWithStringImpl(
+                    item = new PropertyStartsWithStringImpl(
                                                               transientNodeEntryName, transientPropertyName,
                                                               startsWith);
                 } else if (endsWith != null) {
-                    item = new STPropertyEndsWithStringImpl(
+                    item = new PropertyEndsWithStringImpl(
                                                             transientNodeEntryName, transientPropertyName,
                                                             endsWith);
                 } else if (contains != null) {
-                    item = new STPropertyContainsStringImpl(
+                    item = new PropertyContainsStringImpl(
                                                             transientNodeEntryName, transientPropertyName,
                                                             contains);
                 } else {
-                    item = new STPropertyCriteriaItemImpl(
+                    item = new PropertyCriteriaItemImpl(
                                                           transientPropertyName, transientPropertyValue,
                                                           transientNodeEntryName);
                 }
@@ -809,7 +809,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         public Criteria buildCriteria() {
             and();
-            STCriteriaImpl result = new STCriteriaImpl(transientNodeEntryName,
+            CriteriaImpl result = new CriteriaImpl(transientNodeEntryName,
                                                        this.items, partition);
 
             return result;
@@ -882,7 +882,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     public PartitionMethods withPartition( Partition partition ) {
         PartitionMethods result = partitionMethods.get(partition);
         if (result == null) {
-            result = new STPartitionMethodsImpl(partition);
+            result = new PartitionMethodsImpl(partition);
             partitionMethods.put(partition, result);
         }
         return result;
@@ -956,10 +956,10 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         return flushMode;
     }
 
-    private final class STNodeEntryBuilderImpl implements
+    private final class NodeEntryBuilderImpl implements
             NodeFactory.NodeBuilder {
 
-        private STNodeEntryBuilderImpl( String name, Partition partition ) {
+        private NodeEntryBuilderImpl( String name, Partition partition ) {
             this.name = name;
             this.partition = partition;
         }
@@ -977,7 +977,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
                                                      String value ) {
             if (keyNames.contains(name))
                 throw new IllegalStateException("key name already inserted");
-            this.keys.add(new STKeyEntryImpl(name, value));
+            this.keys.add(new KeyImpl(name, value));
             this.keyNames.add(name);
             return this;
         }
@@ -997,11 +997,11 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         public STNodeEntry andCreate() {
-            STLocalKeyImpl localKey = new STLocalKeyImpl(keys, name);
+            LocalImpl localKey = new LocalImpl(keys, name);
 
-            STUniqueKeyImpl uniqueKey = new STUniqueKeyImpl(localKey,
+            UniqueKeyImpl uniqueKey = new UniqueKeyImpl(localKey,
                                                             parentKey, partition, repositoryPath);
-            STNodeEntryImpl result = new STNodeEntryImpl(uniqueKey, false);
+            NodeImpl result = new NodeImpl(uniqueKey, false);
             if (getFlushMode().equals(FlushMode.AUTO)) {
 
                 AbstractStorageSession.this.handleNewItem(result);
@@ -1140,7 +1140,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         public UniqueKeyBuilder withEntry( String propertyName,
                                            String value ) {
-            this.localEntries.add(new STKeyEntryImpl(propertyName, value));
+            this.localEntries.add(new KeyImpl(propertyName, value));
             return this;
         }
 
@@ -1162,18 +1162,18 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             STUniqueKeyBuilderImpl currentBuilder = this;
             if (parentKey == null) {
                 do {
-                    LocalKey localKey = new STLocalKeyImpl(
+                    LocalKey localKey = new LocalImpl(
                                                            currentBuilder.localEntries, currentBuilder.name);
-                    currentKey = new STUniqueKeyImpl(localKey,
+                    currentKey = new UniqueKeyImpl(localKey,
                                                      currentKey != null ? currentKey.getKeyAsString()
                                                          : null, currentBuilder.partition,
                                                      repositoryPath);
                     currentBuilder = currentBuilder.child;
                 } while (currentBuilder != null);
             } else {
-                LocalKey localKey = new STLocalKeyImpl(
+                LocalKey localKey = new LocalImpl(
                                                        currentBuilder.localEntries, currentBuilder.name);
-                currentKey = new STUniqueKeyImpl(localKey, parentKey,
+                currentKey = new UniqueKeyImpl(localKey, parentKey,
                                                  partition, repositoryPath);
 
             }
@@ -1232,7 +1232,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     public STLinkEntry addLink( STNodeEntry origin,
                                 STNodeEntry target,
                                 String name ) {
-        STLinkEntry link = new STLinkEntryImpl(name, origin, target, true);
+        STLinkEntry link = new LinkImpl(name, origin, target, true);
         if (getFlushMode().equals(FlushMode.AUTO)) {
             try {
                 this.handleNewLink(link.getOrigin().getPartition(), link
@@ -1321,7 +1321,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     public void removeLink( STNodeEntry origin,
                             STNodeEntry target,
                             String name ) {
-        removeLink(new STLinkEntryImpl(name, origin, target, false));
+        removeLink(new LinkImpl(name, origin, target, false));
     }
 
     public void propertySetProperty( Property stProperty,

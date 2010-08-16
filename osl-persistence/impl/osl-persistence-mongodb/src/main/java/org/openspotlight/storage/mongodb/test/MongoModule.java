@@ -48,7 +48,7 @@
  */
 package org.openspotlight.storage.mongodb.test;
 
-import org.openspotlight.storage.DefaultSTPartitionFactory;
+import org.openspotlight.storage.DefaultPartitionFactory;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
@@ -74,7 +74,7 @@ public class MongoModule extends AbstractModule {
         this.flushMode = flushMode;
         this.mongo = mongo;
         this.repositoryPath = repositoryPath;
-        this.factory = new DefaultSTPartitionFactory();
+        this.factory = new DefaultPartitionFactory();
     }
 
     public MongoModule( StorageSession.FlushMode flushMode, Mongo mongo, RepositoryPath repositoryPath,
@@ -91,7 +91,7 @@ public class MongoModule extends AbstractModule {
         bind(Mongo.class).toInstance(mongo);
         bind(RepositoryPath.class).toInstance(repositoryPath);
         bind(StorageSession.FlushMode.class).toInstance(flushMode);
-        bind(StorageSession.class).toProvider(MongoSTStorageSessionProvider.class);
+        bind(StorageSession.class).toProvider(MongoStorageSessionProvider.class);
         bind(int.class)
                        .annotatedWith(MongoMaxCacheSize.class).toInstance(256);
 
