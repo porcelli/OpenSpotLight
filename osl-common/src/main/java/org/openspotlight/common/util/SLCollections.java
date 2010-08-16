@@ -142,8 +142,9 @@ public class SLCollections {
 	public static <T> Iterable<T> iterableOf(T t, T... ts) {
 		ImmutableSet.Builder<T> builder = ImmutableSet.builder();
 		builder.add(t);
-		for (T tn : ts)
-			builder.add(tn);
+		if (ts != null)
+			for (T tn : ts)
+				builder.add(tn);
 		return builder.build();
 	}
 

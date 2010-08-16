@@ -326,6 +326,9 @@ public class NodeAndLinkSupport {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
 		}
 	}
+	
+
+
 
 	public static <T extends Link> T createLink(STPartitionFactory factory,
 			STStorageSession session, Class<T> clazz, Node rawOrigin,

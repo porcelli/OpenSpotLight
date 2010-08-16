@@ -78,6 +78,7 @@ import org.openspotlight.storage.STPartitionFactory;
 import org.openspotlight.storage.STStorageSession;
 import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.STStorageSession.STCriteriaBuilder;
+import org.openspotlight.storage.domain.node.STLinkEntry;
 import org.openspotlight.storage.domain.node.STNodeEntry;
 
 import com.google.common.collect.ImmutableSet;
@@ -117,8 +118,8 @@ public class GraphReaderImpl implements GraphReader {
 
 	}
 
-	private Iterable<Node> internalGetChildrenNodes(final Node node, Class<?> clazz,
-			final String name) {
+	private Iterable<Node> internalGetChildrenNodes(final Node node,
+			Class<?> clazz, final String name) {
 		final STStorageSession session = sessionProvider.get();
 		STPartition partition = this.factory.getPartitionByName(node
 				.getContextId());
@@ -182,12 +183,13 @@ public class GraphReaderImpl implements GraphReader {
 			int weigth;
 			if (contextNode == null) {
 
-				weigth = NodeAndLinkSupport.findInitialWeight(ContextImpl.class);
+				weigth = NodeAndLinkSupport
+						.findInitialWeight(ContextImpl.class);
 				contextNode = session.withPartition(partition)
 						.createNewSimpleNode(id);
-				contextNode
-						.setIndexedProperty(session, NodeAndLinkSupport.WEIGTH_VALUE,
-								convert(weigth, String.class));
+				contextNode.setIndexedProperty(session,
+						NodeAndLinkSupport.WEIGTH_VALUE, convert(weigth,
+								String.class));
 				session.flushTransient();
 			} else {
 				caption = contextNode.getPropertyAsString(session,
@@ -222,10 +224,11 @@ public class GraphReaderImpl implements GraphReader {
 			String clazzName = rawStNode.getPropertyAsString(session,
 					NodeAndLinkSupport.CORRECT_CLASS);
 			Class<?> clazz = forName(clazzName);
-			Node node = NodeAndLinkSupport.createNode(factory, session, contextId,
-					parentId, (Class<? extends Node>) clazz, rawStNode
-							.getPropertyAsString(session, NodeAndLinkSupport.NAME),
-					needsToVerifyType, null, null);
+			Node node = NodeAndLinkSupport.createNode(factory, session,
+					contextId, parentId, (Class<? extends Node>) clazz,
+					rawStNode.getPropertyAsString(session,
+							NodeAndLinkSupport.NAME), needsToVerifyType, null,
+					null);
 			return node;
 		} catch (Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -458,18 +461,21 @@ public class GraphReaderImpl implements GraphReader {
 		STCriteriaBuilder criteriaBuilder = session.withPartition(partition)
 				.createCriteria().withNodeEntry(clzz.getName());
 		if (nodeName != null) {
-			criteriaBuilder.withProperty(NodeAndLinkSupport.NAME).equalsTo(nodeName);
+			criteriaBuilder.withProperty(NodeAndLinkSupport.NAME).equalsTo(
+					nodeName);
 		}
 		if (caption != null) {
-			criteriaBuilder.withProperty(NodeAndLinkSupport.CAPTION).equalsTo(caption);
+			criteriaBuilder.withProperty(NodeAndLinkSupport.CAPTION).equalsTo(
+					caption);
 		}
 		if (propertyName != null) {
 			criteriaBuilder.withProperty(propertyName).equalsTo(
 					Conversion.convert(propertyValue, String.class));
 		}
 		if (!returnSubTypes) {
-			criteriaBuilder.and().withProperty(NodeAndLinkSupport.CORRECT_CLASS)
-					.equals(clzz.getName());
+			criteriaBuilder.and()
+					.withProperty(NodeAndLinkSupport.CORRECT_CLASS).equals(
+							clzz.getName());
 		}
 		resultBuilder.add(criteriaBuilder.buildCriteria().andFind(session));
 	}
@@ -477,7 +483,8 @@ public class GraphReaderImpl implements GraphReader {
 	private <T> Iterable<Class<?>> findTypesIfNecessary(final Class<T> clazz,
 			STStorageSession session, STPartition partition) {
 		Iterable<Class<?>> typesToFind = clazz != null ? ImmutableSet
-				.<Class<?>> of(NodeAndLinkSupport.findTargetClass(clazz)) : null;
+				.<Class<?>> of(NodeAndLinkSupport.findTargetClass(clazz))
+				: null;
 		if (typesToFind == null) {
 			Iterable<String> stNodeNames = session.withPartition(partition)
 					.getAllNodeNames();
@@ -546,59 +553,175 @@ public class GraphReaderImpl implements GraphReader {
 	public <L extends Link> L getLink(Class<L> linkTypeClass, Node source,
 			Node target, LinkType linkDirection)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		return NodeAndLinkSupport.createLink(factory, this.sessionProvider
+				.get(), linkTypeClass, source, target, linkDirection, false);
 
 	}
 
 	@Override
-	public Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass,
+	public Iterable<Node> getLinkedNodes(final Class<? extends Link> linkClass,
 			Node node, LinkType linkDirection) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		return (Iterable<Node>) IteratorBuilder
+				.<Node, Link> createIteratorBuilder().withItems(
+						internalGetLinks(null, node, null, linkDirection))
+				.withConverter(new Converter<Node, Link>() {
+					@Override
+					public Node convert(Link o) throws Exception {
+						return o.getTarget();
+					}
+				}).withReferee(new NextItemReferee<Link>() {
 
+					@Override
+					public boolean canAcceptAsNewItem(Link o) throws Exception {
+						return o.getClass().equals(linkClass);
+					}
+				}).andBuild();
 	}
 
 	@Override
 	public <N extends Node> Iterable<N> getLinkedNodes(Node node,
-			Class<N> nodeClass, boolean returnSubTypes, LinkType linkDirection)
-			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+			final Class<N> nodeClass, final boolean returnSubTypes,
+			LinkType linkDirection) throws IllegalArgumentException {
+		return (Iterable<N>) IteratorBuilder
+				.<Node, Link> createIteratorBuilder().withItems(
+						internalGetLinks(null, node, null, linkDirection))
+				.withConverter(new Converter<Node, Link>() {
+					@Override
+					public Node convert(Link o) throws Exception {
+						return o.getTarget();
+					}
+				}).withReferee(new NextItemReferee<Link>() {
+
+					@Override
+					public boolean canAcceptAsNewItem(Link o) throws Exception {
+						if (!returnSubTypes)
+							o.getTarget().getClass().equals(nodeClass);
+						return o.getTarget().getClass().isAssignableFrom(
+								nodeClass);
+					}
+				}).andBuild();
 
 	}
 
 	@Override
 	public Iterable<Node> getLinkedNodes(Node node, LinkType linkDirection)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-
+		return (Iterable<Node>) IteratorBuilder
+				.<Node, Link> createIteratorBuilder().withItems(
+						internalGetLinks(null, node, null, linkDirection))
+				.withConverter(new Converter<Node, Link>() {
+					@Override
+					public Node convert(Link o) throws Exception {
+						return o.getTarget();
+					}
+				}).andBuild();
 	}
 
 	@Override
-	public Iterable<Link> getLinks(Node source, Node target,
+	public Iterable<Link> getLinks(Node rawSource, Node rawTarget,
 			LinkType linkDirection) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		return internalGetLinks(null, rawSource, rawTarget, linkDirection);
+	}
+
+	private Node findNode(STNodeEntry o) {
+		return convertToSLNode(o.getUniqueKey().getParentKeyAsString(), o
+				.getUniqueKey().getPartition().getPartitionName(), o, false);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Iterable<Link> internalGetLinks(Class<? extends Link> linkType,
+			Node rawOrigin, Node rawTarget, LinkType linkDirection) {
+		if (LinkType.ANY.equals(linkDirection)) {
+			return SLCollections.iterableOfAll(internalGetLinks(linkType,
+					rawOrigin, rawTarget, LinkType.BIDIRECTIONAL),
+					internalGetLinks(linkType, rawOrigin, rawTarget,
+							LinkType.UNIDIRECTIONAL));
+		}
+
+		if (rawTarget != null && LinkType.BIDIRECTIONAL.equals(linkDirection)
+				&& rawOrigin.compareTo(rawTarget) < 0) {
+			return internalGetLinks(linkType, rawTarget, rawOrigin,
+					linkDirection);
+		}
+		final STStorageSession session = sessionProvider.get();
+		Iterable<STLinkEntry> links;
+		if (rawTarget != null && linkType != null) {
+			links = SLCollections.iterableOf(
+					session.getLink(session.findNodeByStringId(rawOrigin
+							.getId()), session.findNodeByStringId(rawTarget
+							.getId()), linkType.getName()), null);
+		} else if (rawTarget != null) {
+			links = session.findLinks(session.findNodeByStringId(rawOrigin
+					.getId()), session.findNodeByStringId(rawTarget.getId()));
+		} else if (linkType != null) {
+			links = session.findLinks(session.findNodeByStringId(rawOrigin
+					.getId()), linkType.getName());
+
+		} else {
+			links = session.findLinks(session.findNodeByStringId(rawOrigin
+					.getId()));
+
+		}
+
+		return IteratorBuilder.<Link, STLinkEntry> createIteratorBuilder()
+				.withConverter(
+						new IteratorBuilder.Converter<Link, STLinkEntry>() {
+
+							@Override
+							public Link convert(STLinkEntry o) throws Exception {
+								Class<? extends Link> linkType = (Class<? extends Link>) Class
+										.forName(o.getLinkName());
+								Node origin = findNode(o.getOrigin());
+								Node target = findNode(o.getTarget());
+								Link result = NodeAndLinkSupport.createLink(
+										factory, session, linkType, origin,
+										target, LinkType.UNIDIRECTIONAL, false);
+								return result;
+							}
+						}).withReferee(new NextItemReferee<STLinkEntry>() {
+
+					@Override
+					public boolean canAcceptAsNewItem(STLinkEntry o)
+							throws Exception {
+						try {
+							Class<?> clazz = Class.forName(o.getLinkName());
+							if (!Link.class.isAssignableFrom(clazz))
+								return false;
+						} catch (ClassNotFoundException e) {
+							return false;
+						}
+						return true;
+
+					}
+				}).withItems(links).andBuild();
 
 	}
 
 	@Override
 	public Node getNode(Context context, String id)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		STStorageSession session = sessionProvider.get();
+		String contextId = context.getId();
+		STPartition partition = this.factory.getPartitionByName(contextId);
+		STNodeEntry parentStNode = session.withPartition(partition)
+				.createCriteria().withUniqueKeyAsString(id).buildCriteria()
+				.andFindUnique(session);
+		if (parentStNode == null)
+			return null;
+		return (Node) SLCollections.iterableOf(convertToSLNode(parentStNode
+				.getUniqueKey().getParentKeyAsString(), contextId,
+				parentStNode, false), null);
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Node> Iterable<T> listNodes(Class<T> clazz,
 			boolean returnSubTypes, Context context,
 			Context... aditionalContexts) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-
+		return (Iterable<T>) internalFindNodes(clazz, returnSubTypes, null,
+				null, null, null, SLCollections.iterableOf(context,
+						aditionalContexts));
 	}
 
 	@Override
