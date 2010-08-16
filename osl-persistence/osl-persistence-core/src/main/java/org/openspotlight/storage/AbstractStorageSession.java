@@ -183,14 +183,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             }
         }
 
-        private final StorageSessionInternalMethods internalMethods;
-
         public CriteriaBuilder createCriteria() {
             return new STCriteriaBuilderImpl(partition);
-        }
-
-        public StorageSessionInternalMethods getInternalMethods() {
-            return internalMethods;
         }
 
         public UniqueKey createNewSimpleKey( String... nodePaths ) {
@@ -227,7 +221,6 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         private STPartitionMethodsImpl( Partition currentPartition ) {
             this.partition = currentPartition;
-            internalMethods = new StorageSessionInternalMethods(partition);
         }
 
         @Override
@@ -956,81 +949,6 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
     }
 
-    public final class StorageSessionInternalMethods {
-
-        private final Partition partition;
-
-        public StorageSessionInternalMethods( Partition partition ) {
-            this.partition = partition;
-        }
-
-        public NodeFactory.NodeBuilder nodeEntryCreateWithName(
-                                                                STNodeEntry stNodeEntry,
-                                                                String name ) {
-            return withPartition(partition).createWithName(
-                                                           AbstractStorageSession.this, name)
-                                           .withParent(stNodeEntry);
-        }
-
-        public Set<Property> propertyContainerLoadProperties(
-                                                              PropertyContainer stNodeEntry ) {
-            if (!partition.equals(stNodeEntry.getPartition()))
-                throw new IllegalArgumentException(
-                                                   "wrong partition for this node entry");
-
-            try {
-                return internalPropertyContainerLoadProperties(null, partition,
-                                                               stNodeEntry);
-            } catch (Exception e) {
-                handleException(e);
-            }
-            return null;
-        }
-
-        public STNodeEntry nodeEntryGetParent( STNodeEntry stNodeEntry ) {
-            if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
-                throw new IllegalArgumentException(
-                                                   "wrong partition for this node entry");
-
-            try {
-                return internalNodeEntryGetParent(partition, stNodeEntry);
-            } catch (Exception e) {
-                handleException(e);
-            }
-            return null;
-        }
-
-        public Iterable<STNodeEntry> nodeEntryGetChildren(
-                                                           Partition partition,
-                                                           STNodeEntry stNodeEntry ) {
-            try {
-                return internalNodeEntryGetChildren(partition, stNodeEntry);
-            } catch (Exception e) {
-                handleException(e);
-            }
-            return null;
-        }
-
-        public Iterable<STNodeEntry> nodeEntryGetNamedChildren(
-                                                                Partition partition,
-                                                                STNodeEntry stNodeEntry,
-                                                                String name ) {
-            if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
-                throw new IllegalArgumentException(
-                                                   "wrong partition for this node entry");
-
-            try {
-                return internalNodeEntryGetNamedChildren(partition,
-                                                         stNodeEntry, name);
-
-            } catch (Exception e) {
-                handleException(e);
-            }
-            return null;
-        }
-
-    }
-
     protected abstract byte[] internalPropertyGetValue( Partition partition,
                                                         Property stProperty ) throws Exception;
 
@@ -1425,5 +1343,62 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
         return null;
     }
+
+    public Set<Property> propertyContainerLoadProperties(
+                                                          PropertyContainer stNodeEntry ) {
+        try {
+            return internalPropertyContainerLoadProperties(null, stNodeEntry.getPartition(),
+                                                           stNodeEntry);
+        } catch (Exception e) {
+            handleException(e);
+        }
+        return null;
+    }
+
+    public Iterable<STNodeEntry> nodeEntryGetNamedChildren(
+                                                            Partition partition,
+                                                            STNodeEntry stNodeEntry,
+                                                            String name ) {
+        if (!partition.equals(stNodeEntry.getUniqueKey().getPartition()))
+            throw new IllegalArgumentException(
+                                               "wrong partition for this node entry");
+
+        try {
+            return internalNodeEntryGetNamedChildren(partition,
+                                                     stNodeEntry, name);
+
+        } catch (Exception e) {
+            handleException(e);
+        }
+        return null;
+    }
+
+    public NodeFactory.NodeBuilder nodeEntryCreateWithName(
+                                                            STNodeEntry stNodeEntry,
+                                                            String name ) {
+        return withPartition(stNodeEntry.getPartition()).createWithName(
+                                                                        AbstractStorageSession.this, name)
+                                                        .withParent(stNodeEntry);
+    }
+
+    public STNodeEntry nodeEntryGetParent( STNodeEntry stNodeEntry ) {
+        try {
+            return internalNodeEntryGetParent(stNodeEntry.getPartition(), stNodeEntry);
+        } catch (Exception e) {
+            handleException(e);
+        }
+        return null;
+    }
+
+    public Iterable<STNodeEntry> nodeEntryGetChildren(
+                                                      Partition partition,
+                                                      STNodeEntry stNodeEntry ) {
+       try {
+           return internalNodeEntryGetChildren(partition, stNodeEntry);
+       } catch (Exception e) {
+           handleException(e);
+       }
+       return null;
+   }
 
 }

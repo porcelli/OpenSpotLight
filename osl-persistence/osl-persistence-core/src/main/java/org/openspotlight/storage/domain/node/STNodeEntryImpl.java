@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.openspotlight.storage.AbstractStorageSession;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.STNodeEntry;
@@ -160,8 +161,7 @@ public class STNodeEntryImpl extends PropertyContainerImpl implements
     public Iterable<STNodeEntry> getChildrenForcingReload(
                                                            Partition partition,
                                                            StorageSession session ) {
-        Iterable<STNodeEntry> children = session.withPartition(partition)
-                                                .getInternalMethods().nodeEntryGetChildren(partition, this);
+        Iterable<STNodeEntry> children = ((AbstractStorageSession<?>)session.withPartition(partition)).nodeEntryGetChildren(partition, this);
         childrenWeakReference = new WeakReference<Iterable<STNodeEntry>>(
                                                                          children);
         return children;
@@ -171,9 +171,8 @@ public class STNodeEntryImpl extends PropertyContainerImpl implements
                                                                 Partition partition,
                                                                 StorageSession session,
                                                                 String name ) {
-        Iterable<STNodeEntry> children = session.withPartition(partition)
-                                                .getInternalMethods().nodeEntryGetNamedChildren(partition,
-                                                                                                this, name);
+        Iterable<STNodeEntry> children = ((AbstractStorageSession<?>)session.withPartition(partition))
+                                                                                                   .nodeEntryGetNamedChildren(partition, this, name);
         namedChildrenWeakReference.put(children, name);
         return children;
     }
@@ -182,8 +181,7 @@ public class STNodeEntryImpl extends PropertyContainerImpl implements
         STNodeEntry parent = parentWeakReference != null ? parentWeakReference
                                                                               .get() : null;
         if (parent == null) {
-            parent = session.withPartition(partition).getInternalMethods()
-                            .nodeEntryGetParent(this);
+            parent = ((AbstractStorageSession<?>)session.withPartition(partition)).nodeEntryGetParent(this);
             parentWeakReference = new WeakReference<STNodeEntry>(parent);
         }
         return parent;
@@ -195,8 +193,7 @@ public class STNodeEntryImpl extends PropertyContainerImpl implements
 
     public NodeBuilder createWithName( final StorageSession session,
                                               final String name ) {
-        return session.withPartition(partition).getInternalMethods()
-                      .nodeEntryCreateWithName(this, name);
+        return ((AbstractStorageSession<?>)session.withPartition(partition)).nodeEntryCreateWithName(this, name);
 
     }
 
