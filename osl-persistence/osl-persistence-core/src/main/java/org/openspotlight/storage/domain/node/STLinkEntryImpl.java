@@ -5,7 +5,7 @@ import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.domain.STLinkEntry;
 import org.openspotlight.storage.domain.STNodeEntry;
 
-public class STLinkEntryImpl extends STPropertyContainerImpl implements
+public class STLinkEntryImpl extends PropertyContainerImpl implements
 		STLinkEntry {
 
     private static final long serialVersionUID = -3462836679437486046L;

@@ -11,14 +11,14 @@ import org.openspotlight.storage.domain.PropertyContainer;
 
 import com.google.inject.internal.ImmutableSet;
 
-public abstract class STPropertyContainerImpl implements PropertyContainer {
+public abstract class PropertyContainerImpl implements PropertyContainer {
 
 	public void forceReload() {
 		this.propertiesByName.clear();
 		this.lastLoad = -1;
 	}
 
-	protected STPropertyContainerImpl(boolean resetTimeout) {
+	protected PropertyContainerImpl(boolean resetTimeout) {
 		this.lastLoad = resetTimeout ? -1 : System.currentTimeMillis();
 	}
 
@@ -48,7 +48,7 @@ public abstract class STPropertyContainerImpl implements PropertyContainer {
 		verifyBeforeSet(name);
 		Property currentProperty = getProperty(session, name);
 		if (currentProperty == null) {
-			currentProperty = STPropertyImpl.createSimple(name, this);
+			currentProperty = PropertyImpl.createSimple(name, this);
 			propertiesByName.put(name, currentProperty);
 		}
 		currentProperty.setStringValue(session, value);
@@ -62,7 +62,7 @@ public abstract class STPropertyContainerImpl implements PropertyContainer {
 		verifyBeforeSet(name);
 		Property currentProperty = getProperty(session, name);
 		if (currentProperty == null) {
-			currentProperty = STPropertyImpl.createSimple(name, this);
+			currentProperty = PropertyImpl.createSimple(name, this);
 			propertiesByName.put(name, currentProperty);
 		}
 		currentProperty.setStreamValue(session, value);
@@ -76,7 +76,7 @@ public abstract class STPropertyContainerImpl implements PropertyContainer {
 		verifyBeforeSet(name);
 		Property currentProperty = getProperty(session, name);
 		if (currentProperty == null) {
-			currentProperty = STPropertyImpl.createSimple(name, this);
+			currentProperty = PropertyImpl.createSimple(name, this);
 			propertiesByName.put(name, currentProperty);
 		}
 		currentProperty.setBytesValue(session, value);
@@ -91,7 +91,7 @@ public abstract class STPropertyContainerImpl implements PropertyContainer {
 		verifyBeforeSet(name);
 		Property currentProperty = getProperty(session, name);
 		if (currentProperty == null) {
-			currentProperty = STPropertyImpl.createIndexed(name, this);
+			currentProperty = PropertyImpl.createIndexed(name, this);
 			propertiesByName.put(name, currentProperty);
 		}
 		currentProperty.setStringValue(session, value);

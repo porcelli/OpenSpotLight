@@ -63,7 +63,7 @@ import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.key.LocalKey;
 import org.openspotlight.storage.domain.key.UniqueKey;
 
-public class STNodeEntryImpl extends STPropertyContainerImpl implements
+public class STNodeEntryImpl extends PropertyContainerImpl implements
         STNodeEntry {
 
     private static final long serialVersionUID = -4545520206784316277L;

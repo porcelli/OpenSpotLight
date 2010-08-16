@@ -51,7 +51,7 @@ package org.openspotlight.storage.mongodb.test;
 
 import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.test.AbstractSTStorageSessionTest;
+import org.openspotlight.storage.test.AbstractStorageSessionTest;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -62,7 +62,7 @@ import com.mongodb.Mongo;
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 5:08:39 PM
  */
-public class MongoStorageSessionTest extends AbstractSTStorageSessionTest {
+public class MongoStorageSessionTest extends AbstractStorageSessionTest {
 
 	private final Mongo mongo;
 	private final RepositoryPath repositoryPath;

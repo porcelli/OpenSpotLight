@@ -58,7 +58,7 @@ import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisServerDetail;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
-import org.openspotlight.storage.test.AbstractSTStorageSessionTest;
+import org.openspotlight.storage.test.AbstractStorageSessionTest;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Guice;
@@ -67,7 +67,7 @@ import com.google.inject.Injector;
 /**
  * Created by User: feu - Date: Mar 23, 2010 - Time: 5:08:39 PM
  */
-public class JRedisStorageSessionTest extends AbstractSTStorageSessionTest {
+public class JRedisStorageSessionTest extends AbstractStorageSessionTest {
 
 	private enum JRedisServerConfigExample implements JRedisServerDetail {
 		DEFAULT("localhost", 6379, 0, false), FIRST("localhost", 6379, 1, false), SECOND(

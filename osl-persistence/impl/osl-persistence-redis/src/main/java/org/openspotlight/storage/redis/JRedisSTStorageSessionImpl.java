@@ -65,7 +65,7 @@ import org.jredis.JRedis;
 import org.openspotlight.common.CustomizedFormat;
 import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.common.collection.IteratorBuilder.Converter;
-import org.openspotlight.storage.AbstractSTStorageSession;
+import org.openspotlight.storage.AbstractStorageSession;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
@@ -78,7 +78,7 @@ import org.openspotlight.storage.domain.key.Key;
 import org.openspotlight.storage.domain.key.UniqueKey;
 import org.openspotlight.storage.domain.node.STLinkEntryImpl;
 import org.openspotlight.storage.domain.node.STNodeEntryImpl;
-import org.openspotlight.storage.domain.node.STPropertyImpl;
+import org.openspotlight.storage.domain.node.PropertyImpl;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 
 import com.google.common.collect.ImmutableList;
@@ -94,7 +94,7 @@ enum Nothing {
 }
 
 public class JRedisSTStorageSessionImpl extends
-        AbstractSTStorageSession<Nothing> {
+        AbstractStorageSession<Nothing> {
 
     private final PartitionFactory partitionFactory;
 
@@ -128,13 +128,13 @@ public class JRedisSTStorageSessionImpl extends
             return f.format(uniqueId);
         }
 
-        public STPropertyImpl createProperty( String name,
+        public PropertyImpl createProperty( String name,
                                               PropertyContainer parent ) {
             if (isKey())
-                return STPropertyImpl.createKey(name, parent);
+                return PropertyImpl.createKey(name, parent);
             if (isIndexed())
-                return STPropertyImpl.createIndexed(name, parent);
-            return STPropertyImpl.createSimple(name, parent);
+                return PropertyImpl.createIndexed(name, parent);
+            return PropertyImpl.createSimple(name, parent);
 
         }
 
@@ -652,7 +652,7 @@ public class JRedisSTStorageSessionImpl extends
         if (type.isKey()) {
             String value = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE.format(
                                                                            parentKey, propertyName)));
-            property.getInternalMethods().setStringValueOnLoad(this, value);
+            ((PropertyImpl)property).setStringValueOnLoad(this, value);
         }
         return property;
     }
@@ -670,8 +670,7 @@ public class JRedisSTStorageSessionImpl extends
                         : PropertyType.SIMPLE);
 
         internalFlushSimplePropertyAndCreateIndex(jredisExecution, partition,
-                                                  dirtyProperty.getPropertyName(), dirtyProperty
-                                                                                                .getInternalMethods().getTransientValueAsBytes(this),
+                                                  dirtyProperty.getPropertyName(), ((PropertyImpl)dirtyProperty).getTransientValueAsBytes(this),
                                                   uniqueKey, type);
 
     }

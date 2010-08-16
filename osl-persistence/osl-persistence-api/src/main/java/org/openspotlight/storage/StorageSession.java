@@ -225,5 +225,12 @@ public interface StorageSession {
 
     Iterable<STLinkEntry> findLinks( STNodeEntry origin,
                                      STNodeEntry destiny );
+/*
+    void propertySetProperty(
+                              org.openspotlight.storage.domain.Property property,
+                              byte[] value );
+    
+    byte[] propertyGetValue( Property stProperty );
+*/
 
 }

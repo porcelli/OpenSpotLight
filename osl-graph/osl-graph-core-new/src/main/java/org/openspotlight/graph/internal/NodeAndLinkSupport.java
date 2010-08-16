@@ -99,7 +99,7 @@ import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
-import org.openspotlight.storage.AbstractSTStorageSession.STUniqueKeyBuilderImpl;
+import org.openspotlight.storage.AbstractStorageSession.STUniqueKeyBuilderImpl;
 import org.openspotlight.storage.domain.STLinkEntry;
 import org.openspotlight.storage.domain.STNodeEntry;
 import org.openspotlight.storage.domain.key.UniqueKey;
