@@ -69,7 +69,7 @@ import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -135,7 +135,7 @@ public class NodeAndLinkSupport {
         org.openspotlight.storage.domain.Node node = null;
         if (contextId == null) { throw new IllegalStateException(); }
         final Partition partition = factory.getPartitionByName(contextId);
-        UniqueKey internalNodeKey;
+        NodeKey internalNodeKey;
         final Class<? extends Node> targetNodeType = findTargetClass(clazz);
 
         if (session != null) {

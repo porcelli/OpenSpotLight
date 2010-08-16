@@ -10,14 +10,13 @@
  * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA ***********************************************************************
  * OpenSpotLight - Plataforma de Governança de TI de Código Aberto * Direitos Autorais Reservados (c) 2009, CARAVELATECH
  * CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de
- * terceiros estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é
- * software livre; você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme
- * publicada pela Free Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença
- * Pública Geral Menor do GNU para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU
- * junto com este programa; se não, escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA
- * 02110-1301 USA
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.storage;
@@ -50,15 +49,15 @@ import org.openspotlight.storage.CriteriaImpl.CriteriaBuilderImpl;
 import org.openspotlight.storage.domain.Link;
 import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.NodeFactory;
+import org.openspotlight.storage.domain.NodeFactory.NodeBuilder;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
-import org.openspotlight.storage.domain.NodeFactory.NodeBuilder;
-import org.openspotlight.storage.domain.key.Key;
-import org.openspotlight.storage.domain.key.KeyImpl;
-import org.openspotlight.storage.domain.key.LocalImpl;
-import org.openspotlight.storage.domain.key.LocalKey;
-import org.openspotlight.storage.domain.key.UniqueKey;
-import org.openspotlight.storage.domain.key.UniqueKeyImpl;
+import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
+import org.openspotlight.storage.domain.key.NodeKeyImpl;
+import org.openspotlight.storage.domain.key.NodeKeyImpl.CompositeKeyImpl;
+import org.openspotlight.storage.domain.key.NodeKeyImpl.CompositeKeyImpl.KeyImpl;
 import org.openspotlight.storage.domain.node.LinkImpl;
 import org.openspotlight.storage.domain.node.NodeImpl;
 
@@ -76,7 +75,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         final Partition partition = partitionFactory
             .getPartitionByName(StringIDSupport
-            .getPartitionName(idAsString));
+                .getPartitionName(idAsString));
         return withPartition(partition).createCriteria().withUniqueKeyAsString(
             idAsString).buildCriteria().andFindUnique(this);
     }
@@ -179,17 +178,17 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         @Override
-        public UniqueKey createNewSimpleKey(
+        public NodeKey createNewSimpleKey(
                                             final String... nodePaths) {
-            UniqueKey parentKey = null;
+            NodeKey parentKey = null;
             for (final String path: nodePaths) {
                 parentKey =
-                    new UniqueKeyImpl(
-                    new LocalImpl(Collections
-                    .<Key>emptySet(), path),
-                    parentKey
-                    .getKeyAsString(),
-                    partition, repositoryPath);
+                    new NodeKeyImpl(
+                        new CompositeKeyImpl(Collections
+                            .<SimpleKey>emptySet(), path),
+                        parentKey
+                            .getKeyAsString(),
+                        partition, repositoryPath);
             }
             return parentKey;
         }
@@ -198,10 +197,10 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         public Node createNewSimpleNode(
                                         final String... nodePaths) {
             Node parent = null;
-            UniqueKey parentKey = null;
+            NodeKey parentKey = null;
             for (final String nodePath: nodePaths) {
-                parentKey = new UniqueKeyImpl(new LocalImpl(Collections
-                    .<Key>emptySet(), nodePath),
+                parentKey = new NodeKeyImpl(new CompositeKeyImpl(Collections
+                    .<SimpleKey>emptySet(), nodePath),
                     parentKey != null ? parentKey.getKeyAsString() : null,
                     partition, repositoryPath);
                 parent = new NodeImpl(parentKey, false);
@@ -256,8 +255,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         removedItems.add(stNodeEntry);
         final Iterable<Partition> partitions =
             SLCollections.iterableOf(stNodeEntry
-            .getUniqueKey().getPartition(),
-            partitionFactory.getValues());
+                .getUniqueKey().getPartition(),
+                partitionFactory.getValues());
         for (final Partition p: partitions) {
             final Iterable<Node> children = stNodeEntry.getChildren(p, this);
             for (final Node e: children) {
@@ -372,14 +371,14 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             this.partition = partition;
         }
 
-        private final Partition   partition;
+        private final Partition      partition;
 
-        private final String      name;
+        private final String         name;
 
-        private String            parentKey = null;
+        private String               parentKey = null;
 
-        private final Set<Key>    keys      = newHashSet();
-        private final Set<String> keyNames  = newHashSet();
+        private final Set<SimpleKey> keys      = newHashSet();
+        private final Set<String>    keyNames  = newHashSet();
 
         @Override
         public NodeFactory.NodeBuilder withKeyEntry(
@@ -393,7 +392,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         @Override
         public NodeFactory.NodeBuilder withParentKey(
-                                                     final UniqueKey parentKey) {
+                                                     final NodeKey parentKey) {
             if (this.parentKey != null) { throw new IllegalStateException(); }
             this.parentKey = parentKey.getKeyAsString();
             return this;
@@ -407,9 +406,9 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         @Override
         public Node andCreate() {
-            final LocalImpl localKey = new LocalImpl(keys, name);
+            final CompositeKeyImpl localKey = new CompositeKeyImpl(keys, name);
 
-            final UniqueKeyImpl uniqueKey = new UniqueKeyImpl(localKey,
+            final NodeKeyImpl uniqueKey = new NodeKeyImpl(localKey,
                 parentKey, partition, repositoryPath);
             final NodeImpl result = new NodeImpl(uniqueKey, false);
             if (getFlushMode().equals(FlushMode.AUTO)) {
@@ -523,7 +522,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
     public static class UniqueKeyBuilderImpl implements UniqueKeyBuilder {
 
-        private final Set<Key>             localEntries = newHashSet();
+        private final Set<SimpleKey>       localEntries = newHashSet();
         private final String               name;
 
         private final Partition            partition;
@@ -575,24 +574,24 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
 
         @Override
-        public UniqueKey andCreate() {
+        public NodeKey andCreate() {
 
-            UniqueKey currentKey = null;
+            NodeKey currentKey = null;
             UniqueKeyBuilderImpl currentBuilder = this;
             if (parentKey == null) {
                 do {
-                    final LocalKey localKey = new LocalImpl(
+                    final CompositeKey localKey = new CompositeKeyImpl(
                         currentBuilder.localEntries, currentBuilder.name);
-                    currentKey = new UniqueKeyImpl(localKey,
+                    currentKey = new NodeKeyImpl(localKey,
                         currentKey != null ? currentKey.getKeyAsString()
-                        : null, currentBuilder.partition,
+                            : null, currentBuilder.partition,
                         repositoryPath);
                     currentBuilder = currentBuilder.child;
                 } while (currentBuilder != null);
             } else {
-                final LocalKey localKey = new LocalImpl(
+                final CompositeKey localKey = new CompositeKeyImpl(
                     currentBuilder.localEntries, currentBuilder.name);
-                currentKey = new UniqueKeyImpl(localKey, parentKey,
+                currentKey = new NodeKeyImpl(localKey, parentKey,
                     partition, repositoryPath);
 
             }

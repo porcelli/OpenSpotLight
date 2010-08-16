@@ -21,6 +21,8 @@
 
 package org.openspotlight.storage.domain.key;
 
+import java.util.Set;
+
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.domain.StorageDataMarker;
@@ -29,16 +31,34 @@ import org.openspotlight.storage.domain.StorageDataMarker;
  * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 1:57:04 PM To change this template use File | Settings | File
  * Templates.
  */
-public interface UniqueKey extends StorageDataMarker, Comparable<UniqueKey> {
+public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
 
     public String getKeyAsString();
 
     Partition getPartition();
 
-    LocalKey getLocalKey();
+    CompositeKey getLocalKey();
 
     String getParentKeyAsString();
 
     RepositoryPath getRepositoryPath();
+
+    public interface CompositeKey extends StorageDataMarker, Comparable<CompositeKey> {
+
+        Set<SimpleKey> getEntries();
+
+        Set<String> getEntryNames();
+
+        String getNodeEntryName();
+
+        String getKeyAsString();
+
+        public interface SimpleKey extends StorageDataMarker, Comparable<SimpleKey> {
+
+            String getPropertyName();
+
+            String getValue();
+        }
+    }
 
 }

@@ -55,8 +55,8 @@ import org.openspotlight.storage.domain.Link;
 import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
-import org.openspotlight.storage.domain.key.Key;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
 import org.openspotlight.storage.domain.node.LinkImpl;
 import org.openspotlight.storage.domain.node.NodeImpl;
 import org.openspotlight.storage.domain.node.PropertyImpl;
@@ -463,13 +463,13 @@ public class JRedisStorageSessionImpl extends
         if (parentKey != null) {
             keyBuilder = keyBuilder.withParent(parentKey);
         }
-        final UniqueKey uniqueKey = keyBuilder.andCreate();
+        final NodeKey uniqueKey = keyBuilder.andCreate();
         final Node nodeEntry = createFoundEntryWithKey(uniqueKey);
 
         return nodeEntry;
     }
 
-    protected final Node createFoundEntryWithKey(final UniqueKey uniqueKey) {
+    protected final Node createFoundEntryWithKey(final NodeKey uniqueKey) {
         return new NodeImpl(uniqueKey, true);
     }
 
@@ -507,9 +507,9 @@ public class JRedisStorageSessionImpl extends
             jredisExec.sadd(SET_WITH_NODE_CHILDREN_NAMED_KEYS.format(
                                                                      parentKeyAsString, entry.getNodeEntryName()), uniqueKey);
         }
-        final String localKey = entry.getLocalKey().getKeyAsString();
+        final String localKey = entry.getUniqueKey().getLocalKey().getKeyAsString();
         jredisExec.sadd(SET_WITH_ALL_LOCAL_KEYS.format(localKey), uniqueKey);
-        for (final Key k: entry.getLocalKey().getEntries()) {
+        for (final SimpleKey k: entry.getUniqueKey().getLocalKey().getEntries()) {
             internalFlushSimplePropertyAndCreateIndex(
                 jredisExec,
                 partition,

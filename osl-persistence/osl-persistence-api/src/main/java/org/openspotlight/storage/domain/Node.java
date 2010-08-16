@@ -23,8 +23,7 @@ package org.openspotlight.storage.domain;
 
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.key.LocalKey;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
 
 public interface Node extends StorageDataMarker, NodeFactory,
         PropertyContainer {
@@ -33,9 +32,7 @@ public interface Node extends StorageDataMarker, NodeFactory,
 
     String getNodeEntryName();
 
-    LocalKey getLocalKey();
-
-    UniqueKey getUniqueKey();
+    NodeKey getUniqueKey();
 
     Iterable<Node> getChildren(Partition partition,
                                StorageSession session);

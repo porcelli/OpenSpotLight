@@ -36,7 +36,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.Node;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
 
 /**
  * This class should wrap any {@link SimpleNodeType} lazy property. This class has a control on few stuff, such as caching value
@@ -216,7 +216,7 @@ public final class LazyProperty<T> implements Serializable {
             return parent;
         }
 
-        public UniqueKey getParentKey() {
+        public NodeKey getParentKey() {
             return parentKey;
         }
 
@@ -288,7 +288,7 @@ public final class LazyProperty<T> implements Serializable {
             }
         }
 
-        public void setParentKey(final UniqueKey parentKey) {
+        public void setParentKey(final NodeKey parentKey) {
             LazyProperty.this.parentKey = parentKey;
         }
 
@@ -298,7 +298,7 @@ public final class LazyProperty<T> implements Serializable {
 
     }
 
-    private UniqueKey                  parentKey;
+    private NodeKey                  parentKey;
 
     private String                     propertyName;
 

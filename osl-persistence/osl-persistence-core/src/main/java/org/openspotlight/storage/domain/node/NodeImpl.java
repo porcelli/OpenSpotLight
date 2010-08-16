@@ -8,16 +8,15 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
  * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
  * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH
- * CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de
- * terceiros estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é
- * software livre; você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme
- * publicada pela Free Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença
- * Pública Geral Menor do GNU para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU
- * junto com este programa; se não, escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA
- * 02110-1301 USA
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.storage.domain.node;
@@ -34,8 +33,7 @@ import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.Property;
-import org.openspotlight.storage.domain.key.LocalKey;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
 
 public class NodeImpl extends PropertyContainerImpl implements
     Node {
@@ -45,16 +43,15 @@ public class NodeImpl extends PropertyContainerImpl implements
     @Override
     protected void verifyBeforeSet(
                                    final String propertyName) {
-        if (localKey.getEntryNames().contains(propertyName)) { throw new IllegalStateException(); }
+        if (uniqueKey.getLocalKey().getEntryNames().contains(propertyName)) { throw new IllegalStateException(); }
     }
 
-    public NodeImpl(final UniqueKey uniqueKey, final Set<Property> properties,
+    public NodeImpl(final NodeKey uniqueKey, final Set<Property> properties,
                     final boolean resetTimeout)
         throws IllegalArgumentException {
         super(resetTimeout);
         nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
         if (nodeEntryName == null) { throw new IllegalArgumentException(); }
-        localKey = uniqueKey.getLocalKey();
         this.uniqueKey = uniqueKey;
         propertiesByName = newHashMap();
         if (properties != null) {
@@ -66,7 +63,7 @@ public class NodeImpl extends PropertyContainerImpl implements
         namedChildrenWeakReference = new WeakHashMap<Iterable<Node>, String>();
     }
 
-    public NodeImpl(final UniqueKey uniqueKey, final boolean resetTimeout)
+    public NodeImpl(final NodeKey uniqueKey, final boolean resetTimeout)
         throws IllegalArgumentException {
         this(uniqueKey, null, resetTimeout);
     }
@@ -83,9 +80,7 @@ public class NodeImpl extends PropertyContainerImpl implements
 
     private final String                              nodeEntryName;
 
-    private final LocalKey                            localKey;
-
-    private final UniqueKey                           uniqueKey;
+    private final NodeKey                           uniqueKey;
 
     @Override
     public String getNodeEntryName() {
@@ -93,12 +88,7 @@ public class NodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public LocalKey getLocalKey() {
-        return localKey;
-    }
-
-    @Override
-    public UniqueKey getUniqueKey() {
+    public NodeKey getUniqueKey() {
         return uniqueKey;
     }
 
@@ -157,8 +147,8 @@ public class NodeImpl extends PropertyContainerImpl implements
                                                         final String name) {
         final Iterable<Node> children =
             ((AbstractStorageSession<?>) session)
-            .nodeEntryGetNamedChildren(
-            partition, this, name);
+                .nodeEntryGetNamedChildren(
+                    partition, this, name);
         namedChildrenWeakReference.put(children, name);
         return children;
     }
@@ -197,8 +187,6 @@ public class NodeImpl extends PropertyContainerImpl implements
 
         final NodeImpl that = (NodeImpl) o;
 
-        if (localKey != null ? !localKey.equals(that.localKey)
-            : that.localKey != null) { return false; }
         if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName)
             : that.nodeEntryName != null) { return false; }
         return !(uniqueKey != null ? !uniqueKey.equals(that.uniqueKey)
@@ -208,7 +196,6 @@ public class NodeImpl extends PropertyContainerImpl implements
     @Override
     public int hashCode() {
         int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
-        result = 31 * result + (localKey != null ? localKey.hashCode() : 0);
         result = 31 * result + (uniqueKey != null ? uniqueKey.hashCode() : 0);
         return result;
     }

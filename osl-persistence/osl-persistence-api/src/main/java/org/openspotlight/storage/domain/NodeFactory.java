@@ -22,7 +22,7 @@
 package org.openspotlight.storage.domain;
 
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.key.UniqueKey;
+import org.openspotlight.storage.domain.key.NodeKey;
 
 /**
  * Created by IntelliJ IDEA. User: feu Date: Mar 19, 2010 Time: 3:10:03 PM To change this template use File | Settings | File
@@ -42,7 +42,7 @@ public interface NodeFactory {
 
         NodeBuilder withParentAsString(String parentAsString);
 
-        NodeBuilder withParentKey(UniqueKey parentKey);
+        NodeBuilder withParentKey(NodeKey parentKey);
 
         Node andCreate();
     }
