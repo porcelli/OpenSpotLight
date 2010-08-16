@@ -37,6 +37,15 @@ import org.openspotlight.common.Pair;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.storage.Criteria.CriteriaBuilder;
+import org.openspotlight.storage.Criteria.CriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.LocalKeyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.PropertyContainsString;
+import org.openspotlight.storage.Criteria.CriteriaItem.PropertyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.PropertyEndsWithString;
+import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
+import org.openspotlight.storage.Criteria.CriteriaItem.UniqueKeyCriteriaItem;
+import org.openspotlight.storage.CriteriaImpl.CriteriaBuilderImpl;
 import org.openspotlight.storage.domain.Link;
 import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.NodeFactory;
@@ -53,7 +62,6 @@ import org.openspotlight.storage.domain.node.LinkImpl;
 import org.openspotlight.storage.domain.node.NodeImpl;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 
 /**
@@ -96,7 +104,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         public NodeFactory.NodeBuilder createWithName(
                                                        final StorageSession session,
                                                        final String name) {
-            return new NodeEntryBuilderImpl(name, partition);
+            return new NodeBuilderImpl(name, partition);
         }
 
         @Override
@@ -196,7 +204,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
 
         @Override
         public UniqueKeyBuilder createKey(final String nodeEntryName) {
-            return new STUniqueKeyBuilderImpl(nodeEntryName, partition,
+            return new UniqueKeyBuilderImpl(nodeEntryName, partition,
                                               repositoryPath);
         }
 
@@ -220,617 +228,6 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
     protected abstract Iterable<String> internalGetAllNodeNames(
                                                                  Partition partition)
         throws Exception;
-
-    private static class UniqueKeyAsStringCriteriaItemImpl implements
-            UniqueKeyAsStringCriteriaItem {
-
-        public UniqueKeyAsStringCriteriaItemImpl(final String keyAsString) {
-            this.keyAsString = keyAsString;
-            this.nodeEntryName = StringIDSupport.getNodeEntryName(keyAsString);
-        }
-
-        private final String keyAsString;
-
-        private final String nodeEntryName;
-
-        @Override
-        public String getKeyAsString() {
-            return keyAsString;
-        }
-
-        @Override
-        public String getNodeEntryName() {
-            return nodeEntryName;
-        }
-
-    }
-
-    private static class UniqueKeyCriteriaItemImpl implements
-            UniqueKeyCriteriaItem {
-        private UniqueKeyCriteriaItemImpl(final UniqueKey value,
-                                             final String nodeEntryName) {
-            this.value = value;
-            this.nodeEntryName = nodeEntryName;
-        }
-
-        private final UniqueKey value;
-
-        private final String    nodeEntryName;
-
-        @Override
-        public UniqueKey getValue() {
-            return value;
-        }
-
-        @Override
-        public String getNodeEntryName() {
-            return nodeEntryName;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final UniqueKeyCriteriaItemImpl that = (UniqueKeyCriteriaItemImpl) o;
-
-            if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = value != null ? value.hashCode() : 0;
-            result = 31 * result
-                     + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
-            return result;
-        }
-
-    }
-
-    private static class LocalKeyCriteriaItemImpl implements
-            LocalKeyCriteriaItem {
-        private LocalKeyCriteriaItemImpl(final LocalKey value,
-                                            final String nodeEntryName) {
-            this.value = value;
-            this.nodeEntryName = nodeEntryName;
-        }
-
-        private final LocalKey value;
-
-        private final String   nodeEntryName;
-
-        @Override
-        public LocalKey getValue() {
-            return value;
-        }
-
-        @Override
-        public String getNodeEntryName() {
-            return nodeEntryName;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final LocalKeyCriteriaItemImpl that = (LocalKeyCriteriaItemImpl) o;
-
-            if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = value != null ? value.hashCode() : 0;
-            result = 31 * result
-                     + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
-            return result;
-        }
-
-    }
-
-    private static class PropertyCriteriaItemImpl implements
-            PropertyCriteriaItem {
-        private PropertyCriteriaItemImpl(final String propertyName, final String value,
-                                            final String nodeEntryName) {
-            this.value = value;
-            this.propertyName = propertyName;
-            this.nodeEntryName = nodeEntryName;
-        }
-
-        private final String value;
-
-        private final String propertyName;
-
-        private final String nodeEntryName;
-
-        @Override
-        public String getValue() {
-            return value;
-        }
-
-        @Override
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        @Override
-        public String getNodeEntryName() {
-            return nodeEntryName;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final PropertyCriteriaItemImpl that = (PropertyCriteriaItemImpl) o;
-
-            if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
-            if (propertyName != null ? !propertyName.equals(that.propertyName)
-                    : that.propertyName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = value != null ? value.hashCode() : 0;
-            result = 31 * result
-                     + (propertyName != null ? propertyName.hashCode() : 0);
-            result = 31 * result
-                     + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
-            return result;
-        }
-
-    }
-
-    private static class PropertyEndsWithStringImpl implements
-            PropertyEndsWithString {
-
-        private PropertyEndsWithStringImpl(final String nodeEntryName,
-                                              final String propertyName, final String value) {
-            this.nodeEntryName = nodeEntryName;
-            this.propertyName = propertyName;
-            this.value = value;
-        }
-
-        private final String nodeEntryName;
-
-        private final String propertyName;
-
-        private final String value;
-
-        @Override
-        public String getNodeEntryName() {
-            return nodeEntryName;
-        }
-
-        @Override
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        @Override
-        public String getValue() {
-            return value;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final PropertyEndsWithStringImpl that = (PropertyEndsWithStringImpl) o;
-
-            if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
-            if (propertyName != null ? !propertyName.equals(that.propertyName)
-                    : that.propertyName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
-            result = 31 * result
-                     + (propertyName != null ? propertyName.hashCode() : 0);
-            result = 31 * result + (value != null ? value.hashCode() : 0);
-            return result;
-        }
-    }
-
-    private static class PropertyStartsWithStringImpl implements
-            PropertyStartsWithString {
-
-        private PropertyStartsWithStringImpl(final String nodeEntryName,
-                                                final String propertyName, final String value) {
-            this.nodeEntryName = nodeEntryName;
-            this.propertyName = propertyName;
-            this.value = value;
-        }
-
-        private final String nodeEntryName;
-
-        private final String propertyName;
-
-        private final String value;
-
-        @Override
-        public String getNodeEntryName() {
-            return nodeEntryName;
-        }
-
-        @Override
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        @Override
-        public String getValue() {
-            return value;
-
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final PropertyStartsWithStringImpl that = (PropertyStartsWithStringImpl) o;
-
-            if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
-            if (propertyName != null ? !propertyName.equals(that.propertyName)
-                    : that.propertyName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
-            result = 31 * result
-                     + (propertyName != null ? propertyName.hashCode() : 0);
-            result = 31 * result + (value != null ? value.hashCode() : 0);
-            return result;
-        }
-    }
-
-    private static class PropertyContainsStringImpl implements
-            PropertyContainsString {
-
-        private PropertyContainsStringImpl(final String nodeEntryName,
-                                              final String propertyName, final String value) {
-            this.nodeEntryName = nodeEntryName;
-            this.propertyName = propertyName;
-            this.value = value;
-        }
-
-        private final String nodeEntryName;
-
-        private final String propertyName;
-
-        private final String value;
-
-        @Override
-        public String getNodeEntryName() {
-            return nodeEntryName;
-        }
-
-        @Override
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        @Override
-        public String getValue() {
-            return value;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final PropertyContainsStringImpl that = (PropertyContainsStringImpl) o;
-
-            if (nodeEntryName != null ? !nodeEntryName
-                                                      .equals(that.nodeEntryName) : that.nodeEntryName != null) { return false; }
-            if (propertyName != null ? !propertyName.equals(that.propertyName)
-                    : that.propertyName != null) { return false; }
-            if (value != null ? !value.equals(that.value) : that.value != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
-            result = 31 * result
-                     + (propertyName != null ? propertyName.hashCode() : 0);
-            result = 31 * result + (value != null ? value.hashCode() : 0);
-            return result;
-        }
-    }
-
-    private static class CriteriaImpl implements Criteria {
-        private CriteriaImpl(final String nodeName,
-                                final Set<CriteriaItem> criteriaItems, final Partition partition) {
-            this.nodeName = nodeName;
-            this.partition = partition;
-            this.criteriaItems = ImmutableSet.copyOf(criteriaItems);
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-
-            final CriteriaImpl that = (CriteriaImpl) o;
-
-            if (criteriaItems != null ? !criteriaItems
-                                                      .equals(that.criteriaItems) : that.criteriaItems != null) { return false; }
-            if (nodeName != null ? !nodeName.equals(that.nodeName)
-                    : that.nodeName != null) { return false; }
-            if (partition != null ? !partition.equals(that.partition)
-                    : that.partition != null) { return false; }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = nodeName != null ? nodeName.hashCode() : 0;
-            result = 31 * result
-                     + (partition != null ? partition.hashCode() : 0);
-            result = 31 * result
-                     + (criteriaItems != null ? criteriaItems.hashCode() : 0);
-            return result;
-        }
-
-        private final String            nodeName;
-
-        private final Partition         partition;
-
-        private final Set<CriteriaItem> criteriaItems;
-
-        @Override
-        public String getNodeName() {
-            return nodeName;
-        }
-
-        @Override
-        public Partition getPartition() {
-            return partition;
-        }
-
-        @Override
-        public Set<CriteriaItem> getCriteriaItems() {
-            return criteriaItems;
-        }
-
-        @Override
-        public Iterable<Node> andFind(final StorageSession session) {
-            return session.withPartition(partition).findByCriteria(this);
-        }
-
-        @Override
-        public Node andFindUnique(final StorageSession session) {
-            return session.withPartition(partition).findUniqueByCriteria(this);
-        }
-    }
-
-    private static class CriteriaBuilderImpl implements CriteriaBuilder {
-
-        private final Partition partition;
-
-        private String          transientNodeEntryName;
-
-        private String          transientPropertyName;
-
-        private UniqueKey       transientUniqueKey;
-
-        private LocalKey        transientLocalKey;
-
-        private String          transientPropertyValue;
-
-        private String          transientIdAsString;
-
-        private String          startsWith;
-        private String          endsWith;
-        private String          contains;
-
-        Set<CriteriaItem>       items;
-
-        public CriteriaBuilderImpl(final Partition partition) {
-            this.partition = partition;
-            items = newLinkedHashSet();
-        }
-
-        private void breakIfNotNull(final Object o) {
-            if (o != null) { throw new IllegalStateException(); }
-        }
-
-        private void breakIfNull(final Object o) {
-            if (o == null) { throw new IllegalStateException(); }
-        }
-
-        @Override
-        public CriteriaBuilder withProperty(final String propertyName) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientPropertyValue);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNotNull(transientPropertyName);
-
-            this.transientPropertyName = propertyName;
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder withNodeEntry(final String nodeName) {
-            breakIfNotNull(transientNodeEntryName);
-            this.transientNodeEntryName = nodeName;
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder equalsTo(final String value) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            breakIfNotNull(transientPropertyValue);
-            transientPropertyValue = value;
-            and();
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder containsString(final String value) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            contains = value;
-            and();
-            return this;
-
-        }
-
-        @Override
-        public CriteriaBuilder startsWithString(final String value) {
-
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            startsWith = value;
-            and();
-            return this;
-
-        }
-
-        @Override
-        public CriteriaBuilder endsWithString(final String value) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientLocalKey);
-
-            breakIfNull(transientPropertyName);
-            endsWith = value;
-            and();
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder and() {
-            CriteriaItem item = null;
-            if (transientUniqueKey != null) {
-                breakIfNull(transientNodeEntryName);
-
-                item = new UniqueKeyCriteriaItemImpl(transientUniqueKey,
-                                                       transientNodeEntryName);
-
-            } else if (transientLocalKey != null) {
-                breakIfNull(transientNodeEntryName);
-
-                item = new LocalKeyCriteriaItemImpl(transientLocalKey,
-                                                      transientNodeEntryName);
-
-            } else if (transientIdAsString != null) {
-
-                item = new UniqueKeyAsStringCriteriaItemImpl(
-                                                               transientIdAsString);
-
-            } else if (transientPropertyName != null) {
-
-                if (startsWith != null) {
-                    item = new PropertyStartsWithStringImpl(
-                                                              transientNodeEntryName, transientPropertyName,
-                                                              startsWith);
-                } else if (endsWith != null) {
-                    item = new PropertyEndsWithStringImpl(
-                                                            transientNodeEntryName, transientPropertyName,
-                                                            endsWith);
-                } else if (contains != null) {
-                    item = new PropertyContainsStringImpl(
-                                                            transientNodeEntryName, transientPropertyName,
-                                                            contains);
-                } else {
-                    item = new PropertyCriteriaItemImpl(
-                                                          transientPropertyName, transientPropertyValue,
-                                                          transientNodeEntryName);
-                }
-            }
-            transientPropertyName = null;
-            transientUniqueKey = null;
-            transientLocalKey = null;
-            transientPropertyValue = null;
-            transientIdAsString = null;
-            this.items.add(item);
-
-            return this;
-        }
-
-        @Override
-        public Criteria buildCriteria() {
-            and();
-            final CriteriaImpl result = new CriteriaImpl(transientNodeEntryName,
-                                                       this.items, partition);
-
-            return result;
-        }
-
-        @Override
-        public CriteriaBuilder withLocalKey(final LocalKey localKey) {
-            breakIfNotNull(transientUniqueKey);
-            breakIfNotNull(transientPropertyName);
-            breakIfNotNull(transientPropertyValue);
-
-            breakIfNotNull(transientLocalKey);
-
-            transientLocalKey = localKey;
-            transientNodeEntryName = localKey.getNodeEntryName();
-            and();
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder withUniqueKey(final UniqueKey uniqueKey) {
-
-            breakIfNotNull(transientLocalKey);
-            breakIfNotNull(transientPropertyName);
-            breakIfNotNull(transientPropertyValue);
-
-            breakIfNotNull(transientUniqueKey);
-
-            transientUniqueKey = uniqueKey;
-            transientNodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
-            and();
-            return this;
-        }
-
-        @Override
-        public CriteriaBuilder withUniqueKeyAsString(final String uniqueKeyAsString) {
-            this.transientIdAsString = uniqueKeyAsString;
-            and();
-            return this;
-        }
-    }
 
     @Override
     public void removeNode(final Node stNodeEntry) {
@@ -943,10 +340,10 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         return flushMode;
     }
 
-    private final class NodeEntryBuilderImpl implements
+    private final class NodeBuilderImpl implements
             NodeFactory.NodeBuilder {
 
-        private NodeEntryBuilderImpl(final String name, final Partition partition) {
+        private NodeBuilderImpl(final String name, final Partition partition) {
             this.name = name;
             this.partition = partition;
         }
@@ -1097,20 +494,20 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         }
     }
 
-    public static class STUniqueKeyBuilderImpl implements UniqueKeyBuilder {
+    public static class UniqueKeyBuilderImpl implements UniqueKeyBuilder {
 
-        private final Set<Key>               localEntries = newHashSet();
-        private final String                 name;
+        private final Set<Key>             localEntries = newHashSet();
+        private final String               name;
 
-        private final Partition              partition;
+        private final Partition            partition;
 
-        private final STUniqueKeyBuilderImpl child;
+        private final UniqueKeyBuilderImpl child;
 
-        private final RepositoryPath         repositoryPath;
+        private final RepositoryPath       repositoryPath;
 
-        private String                       parentKey;
+        private String                     parentKey;
 
-        public STUniqueKeyBuilderImpl(final String name, final Partition partition,
+        public UniqueKeyBuilderImpl(final String name, final Partition partition,
                                        final RepositoryPath repositoryPath) {
             this.name = name;
             this.partition = partition;
@@ -1118,8 +515,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
             this.repositoryPath = repositoryPath;
         }
 
-        private STUniqueKeyBuilderImpl(final String name,
-                                        final STUniqueKeyBuilderImpl child, final Partition partition,
+        private UniqueKeyBuilderImpl(final String name,
+                                        final UniqueKeyBuilderImpl child, final Partition partition,
                                         final RepositoryPath repositoryPath) {
             this.name = name;
             this.child = child;
@@ -1137,7 +534,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         @Override
         public UniqueKeyBuilder withParent(final Partition newPartition,
                                             final String nodeEntryName) {
-            return new STUniqueKeyBuilderImpl(nodeEntryName, this,
+            return new UniqueKeyBuilderImpl(nodeEntryName, this,
                                               newPartition, repositoryPath);
         }
 
@@ -1151,7 +548,7 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         public UniqueKey andCreate() {
 
             UniqueKey currentKey = null;
-            STUniqueKeyBuilderImpl currentBuilder = this;
+            UniqueKeyBuilderImpl currentBuilder = this;
             if (parentKey == null) {
                 do {
                     final LocalKey localKey = new LocalImpl(

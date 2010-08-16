@@ -71,6 +71,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.internal.LazyProperty;
 import org.openspotlight.persist.internal.StreamPropertyWithParent;
+import org.openspotlight.storage.Criteria.CriteriaBuilder;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.domain.Node;
@@ -796,7 +797,7 @@ public class SimplePersistImpl implements SimplePersistCapable<Node, StorageSess
             checkNotNull("propertyValues", propertyValues);
             checkCondition("namesAndValues:sameSize", propertyNames.length == propertyValues.length);
 
-            final StorageSession.CriteriaBuilder builder =
+            final CriteriaBuilder builder =
                 currentSession.withPartition(currentPartition).createCriteria().withNodeEntry(internalGetNodeName(beanType));
             final Map<String, PropertyDescriptor> allDescriptors = createMapWith(PropertyUtils.getPropertyDescriptors(beanType));
 

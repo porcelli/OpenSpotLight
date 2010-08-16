@@ -21,12 +21,10 @@
 
 package org.openspotlight.storage;
 
-import java.util.Set;
-
+import org.openspotlight.storage.Criteria.CriteriaBuilder;
 import org.openspotlight.storage.domain.Link;
 import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.NodeFactory;
-import org.openspotlight.storage.domain.key.LocalKey;
 import org.openspotlight.storage.domain.key.UniqueKey;
 
 /**
@@ -65,91 +63,6 @@ public interface StorageSession {
 
     void removeNode(
                      org.openspotlight.storage.domain.Node stNodeEntry);
-
-    interface CriteriaBuilder {
-
-        CriteriaBuilder withProperty(String propertyName);
-
-        CriteriaBuilder withNodeEntry(String nodeName);
-
-        CriteriaBuilder equalsTo(String value);
-
-        CriteriaBuilder containsString(String value);
-
-        CriteriaBuilder startsWithString(String value);
-
-        CriteriaBuilder endsWithString(String value);
-
-        CriteriaBuilder and();
-
-        Criteria buildCriteria();
-
-        CriteriaBuilder withLocalKey(LocalKey localKey);
-
-        CriteriaBuilder withUniqueKey(UniqueKey uniqueKey);
-
-        CriteriaBuilder withUniqueKeyAsString(String uniqueKeyAsString);
-    }
-
-    interface PropertyCriteriaItem extends CriteriaItem {
-
-        String getValue();
-
-        String getPropertyName();
-
-    }
-
-    interface PropertyContainsString extends CriteriaItem {
-        String getValue();
-
-        String getPropertyName();
-    }
-
-    interface PropertyStartsWithString extends CriteriaItem {
-        String getValue();
-
-        String getPropertyName();
-    }
-
-    interface PropertyEndsWithString extends CriteriaItem {
-        String getValue();
-
-        String getPropertyName();
-    }
-
-    interface UniqueKeyCriteriaItem extends CriteriaItem {
-        UniqueKey getValue();
-
-    }
-
-    interface UniqueKeyAsStringCriteriaItem extends CriteriaItem {
-        String getKeyAsString();
-
-    }
-
-    interface LocalKeyCriteriaItem extends CriteriaItem {
-        LocalKey getValue();
-    }
-
-    interface CriteriaItem {
-
-        String getNodeEntryName();
-
-    }
-
-    interface Criteria {
-
-        Partition getPartition();
-
-        String getNodeName();
-
-        Set<CriteriaItem> getCriteriaItems();
-
-        Iterable<Node> andFind(StorageSession session);
-
-        Node andFindUnique(StorageSession session);
-
-    }
 
     static enum FlushMode {
         AUTO,

@@ -63,7 +63,7 @@ import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.IsMetaType;
 import org.openspotlight.graph.annotation.TransientProperty;
-import org.openspotlight.storage.AbstractStorageSession.STUniqueKeyBuilderImpl;
+import org.openspotlight.storage.AbstractStorageSession.UniqueKeyBuilderImpl;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
@@ -145,7 +145,7 @@ public class NodeAndLinkSupport {
                     .withUniqueKey(internalNodeKey).buildCriteria()
                     .andFindUnique(session);
         } else {
-            internalNodeKey = new STUniqueKeyBuilderImpl(targetNodeType
+            internalNodeKey = new UniqueKeyBuilderImpl(targetNodeType
                     .getName(), partition, repositoryPath)
                     .withEntry(NAME, name).andCreate();
         }

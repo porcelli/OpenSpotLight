@@ -45,10 +45,10 @@ import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.InvalidQuerySyntaxException;
 import org.openspotlight.graph.query.QueryApi;
 import org.openspotlight.graph.query.QueryText;
+import org.openspotlight.storage.Criteria.CriteriaBuilder;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.StorageSession.CriteriaBuilder;
 import org.openspotlight.storage.StringIDSupport;
 
 import com.google.common.collect.ImmutableSet;
