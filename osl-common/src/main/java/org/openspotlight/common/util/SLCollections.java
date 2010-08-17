@@ -1,50 +1,24 @@
 /**
- * OpenSpotLight - Open Source IT Governance Platform
- *
- * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
- * or third-party contributors as indicated by the @author tags or express
- * copyright attribution statements applied by the authors.  All third-party
- * contributions are distributed under license by CARAVELATECH CONSULTORIA E
- * TECNOLOGIA EM INFORMATICA LTDA.
- *
- * This copyrighted material is made available to anyone wishing to use, modify,
- * copy, or redistribute it subject to the terms and conditions of the GNU
- * Lesser General Public License, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * See the GNU Lesser General Public License  for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this distribution; if not, write to:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
- *
- ***********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto
- *
- * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA
- * EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor.
- * Todas as contribuições de terceiros estão distribuídas sob licença da
- * CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA.
- *
- * Este programa é software livre; você pode redistribuí-lo e/ou modificá-lo sob os
- * termos da Licença Pública Geral Menor do GNU conforme publicada pela Free Software
- * Foundation.
- *
- * Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA
- * FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes.
- *
- * Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este
- * programa; se não, escreva para:
- * Free Software Foundation, Inc.
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301  USA
+ * OpenSpotLight - Open Source IT Governance Platform Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA or third-party contributors as indicated by the @author tags or express copyright attribution statements applied by the
+ * authors. All third-party contributions are distributed under license by CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA
+ * LTDA. This copyrighted material is made available to anyone wishing to use, modify, copy, or redistribute it subject to the
+ * terms and conditions of the GNU Lesser General Public License, as published by the Free Software Foundation. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
+ * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
+ * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA OpenSpotLight - Plataforma de Governança de TI de Código Aberto
+ * Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores
+ * terceiros indicados pela etiqueta
+ * 
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de
+ *         terceiros estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa
+ *         é software livre; você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU
+ *         conforme publicada pela Free Software Foundation. Este programa é distribuído na expectativa de que seja útil,
+ *         porém, SEM NENHUMA GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE
+ *         ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU para mais detalhes. Você deve ter recebido uma cópia da
+ *         Licença Pública Geral Menor do GNU junto com este programa; se não, escreva para: Free Software Foundation, Inc. 51
+ *         Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 
 package org.openspotlight.common.util;
@@ -97,14 +71,14 @@ public class SLCollections {
                     @Override
                     public boolean hasNext() {
                         if (iterated) {
-                            return false;
+                        return false;
                         }
                         if (!loaded) {
                             ref = command.getEntry();
                             loaded = true;
                         }
                         if (loaded && ref == null) {
-                            return false;
+                        return false;
                         }
                         return true;
                     }
@@ -112,14 +86,14 @@ public class SLCollections {
                     @Override
                     public T next() {
                         if (iterated) {
-                            throw new NoSuchElementException();
+                        throw new NoSuchElementException();
                         }
                         if (!loaded) {
                             ref = command.getEntry();
                             loaded = true;
                         }
                         if (loaded && ref == null) {
-                            throw new NoSuchElementException();
+                        throw new NoSuchElementException();
                         }
                         if (ref != null) {
                             iterated = true;
@@ -137,7 +111,8 @@ public class SLCollections {
         return result;
     }
 
-    public static <T> Iterable<T> iterableOf(final T... ts) {
+    public static <T> Iterable<T> iterableOf(
+                                             final T... ts) {
         final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
         for (final T tn: ts) {
             builder.add(tn);
@@ -145,7 +120,15 @@ public class SLCollections {
         return builder.build();
     }
 
-    public static <T> Iterable<T> iterableOf(final T t, final T... ts) {
+    public static <T> Iterable<T> iterableOfOne(
+                                                final T t) {
+        final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
+        builder.add(t);
+        return builder.build();
+    }
+
+    public static <T> Iterable<T> iterableOf(
+                                             final T t, final T... ts) {
         final ImmutableSet.Builder<T> builder = ImmutableSet.builder();
         builder.add(t);
         if (ts != null) {
@@ -156,7 +139,8 @@ public class SLCollections {
         return builder.build();
     }
 
-    public static <T> T firstOf(final Iterable<T> ts) {
+    public static <T> T firstOf(
+                                final Iterable<T> ts) {
         T result = null;
         if (ts != null) {
             final Iterator<T> it = ts.iterator();
@@ -167,7 +151,8 @@ public class SLCollections {
         return result;
     }
 
-    public static <T> Iterable<T> iterableOfAll(final Iterable<T> iterable,
+    public static <T> Iterable<T> iterableOfAll(
+                                                final Iterable<T> iterable,
                                                 final Iterable<T>... iterables) {
         final ImmutableSet.Builder<Iterable<T>> builder = ImmutableSet.builder();
         builder.add(iterable);
@@ -190,7 +175,7 @@ public class SLCollections {
 
                     private boolean hasNextIterator() {
                         if (currentIterator == null
-                                || !currentIterator.hasNext()) {
+                            || !currentIterator.hasNext()) {
                             while (it.hasNext()) {
                                 currentIterator = it.next().iterator();
                                 if (currentIterator.hasNext()) { return true; }
@@ -233,7 +218,8 @@ public class SLCollections {
      * @param base
      * @return an immutable map
      */
-    public static <K, V> Map<K, V> createImmutableMap(final Map<K, V> base) {
+    public static <K, V> Map<K, V> createImmutableMap(
+                                                      final Map<K, V> base) {
         Map<K, V> temp = base;
         if (temp == null) {
             temp = emptyMap();
@@ -243,7 +229,8 @@ public class SLCollections {
         return temp;
     }
 
-    public static <T> java.util.List<T> iterableToList(final Iterable<T> iterable) {
+    public static <T> java.util.List<T> iterableToList(
+                                                       final Iterable<T> iterable) {
         if (iterable == null) { return Collections.emptyList(); }
         final Iterator<T> it = iterable.iterator();
         final ImmutableList.Builder<T> builder = ImmutableList.builder();
@@ -260,7 +247,8 @@ public class SLCollections {
      * @param base
      * @return an immutable set
      */
-    public static <E> Set<E> createImmutableSet(final Set<E> base) {
+    public static <E> Set<E> createImmutableSet(
+                                                final Set<E> base) {
         Set<E> temp = base;
         if (temp == null) {
             temp = emptySet();
@@ -300,7 +288,8 @@ public class SLCollections {
      * @param elements
      * @return a new set with the elements
      */
-    public static <T> Set<T> setOf(final T... elements) {
+    public static <T> Set<T> setOf(
+                                   final T... elements) {
         final HashSet<T> set = new HashSet<T>();
         if (elements != null) {
             for (final T e: elements) {
@@ -315,10 +304,11 @@ public class SLCollections {
      */
     private SLCollections() {
         logAndThrow(new IllegalStateException(Messages
-                .getString("invalidConstructor"))); //$NON-NLS-1$
+            .getString("invalidConstructor"))); //$NON-NLS-1$
     }
 
-    public static <T> boolean contains(final Iterable<T> iterable, final T item) {
+    public static <T> boolean contains(
+                                       final Iterable<T> iterable, final T item) {
         for (final T t: iterable) {
             if (item.equals(t)) { return true; }
         }

@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openspotlight.graph.internal.NodeAndLinkSupport;
+import org.openspotlight.graph.internal.NodeAndLinkSupport.PropertyContainerMetadata;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphWriter;
 import org.openspotlight.storage.PartitionFactory;
@@ -115,7 +116,7 @@ public class GraphWriterImpl implements GraphWriter {
                                                    final Node source, final Node target)
         throws IllegalArgumentException {
         L newLink =
-            NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target, LinkType.BIDIRECTIONAL,
+            NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target, LinkDirection.BIDIRECTIONAL,
             true);
         dirtyLinks.add(newLink);
         return newLink;
@@ -151,13 +152,15 @@ public class GraphWriterImpl implements GraphWriter {
         throws IllegalArgumentException {
 
         L newLink =
-            NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target, LinkType.UNIDIRECTIONAL,
+            NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target,
+            LinkDirection.UNIDIRECTIONAL,
             true);
         dirtyLinks.add(newLink);
         return newLink;
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void flush() {
         final StorageSession session = sessionProvider.get();
@@ -168,8 +171,12 @@ public class GraphWriterImpl implements GraphWriter {
         session.flushTransient();
         for (final Link l: dirtyLinks) {
             NodeAndLinkSupport.createLink(factory, sessionProvider.get(), l.getLinkType(), l.getSource(), l.getTarget(),
-                LinkType.UNIDIRECTIONAL,
+                l.getLinkDirection(),
                 true);
+            PropertyContainerMetadata<org.openspotlight.storage.domain.Link> md =
+                (PropertyContainerMetadata<org.openspotlight.storage.domain.Link>) l;
+            org.openspotlight.storage.domain.Link cached = md.getCached();
+            cached.setIndexedProperty(session, NodeAndLinkSupport.LINK_DIRECTION, l.getLinkDirection().name());
         }
         session.flushTransient();
 

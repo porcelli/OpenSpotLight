@@ -408,6 +408,17 @@ public class NodeAndLinkSupport {
 
     private static class LinkImpl extends Link {
 
+        private LinkDirection linkDirection = LinkDirection.UNIDIRECTIONAL;
+        
+        public LinkDirection getLinkDirection() {
+            return linkDirection;
+        }
+
+        public void setLinkDirection(
+                                     LinkDirection linkDirection) {
+            this.linkDirection = linkDirection;
+        }
+
         private WeakReference<org.openspotlight.storage.domain.Link> cachedEntry;
 
         private final Class<? extends Link>                          linkType;

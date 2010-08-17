@@ -93,6 +93,7 @@ public class GraphReaderImpl implements GraphReader {
 
     }
 
+    @SuppressWarnings("unchecked")
     private Iterable<Node> internalGetChildrenNodes(
                                                     final Node node,
                                                     final Class<?> clazz, final String name) {
@@ -201,6 +202,7 @@ public class GraphReaderImpl implements GraphReader {
 
     }
 
+    @SuppressWarnings("unchecked")
     private Node convertToSLNode(
                                  final String parentId, final String contextId,
                                  final org.openspotlight.storage.domain.Node rawStNode, final boolean needsToVerifyType) {
@@ -255,9 +257,9 @@ public class GraphReaderImpl implements GraphReader {
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
         if (parentStNode == null) { return null; }
-        return SLCollections.iterableOf(convertToSLNode(parentStNode
+        return SLCollections.iterableOfOne(convertToSLNode(parentStNode
             .getKey().getParentKeyAsString(), contextId,
-            parentStNode, false), null);
+            parentStNode, false));
 
     }
 
@@ -418,6 +420,7 @@ public class GraphReaderImpl implements GraphReader {
 
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Node> Iterable<Node> internalFindNodes(
                                                               final Class<T> clazz, final boolean returnSubTypes,
                                                               final String propertyName, final Serializable propertyValue,
@@ -560,6 +563,7 @@ public class GraphReaderImpl implements GraphReader {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Node> Iterable<T> getChildrenNodes(
                                                          final Node node)
@@ -577,6 +581,7 @@ public class GraphReaderImpl implements GraphReader {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Iterable<Node> getLinkedNodes(
                                          final Class<? extends Link> linkClass,
@@ -603,6 +608,7 @@ public class GraphReaderImpl implements GraphReader {
         }).andBuild();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <N extends Node> Iterable<N> getLinkedNodes(
                                                        final Node node,
@@ -635,6 +641,7 @@ public class GraphReaderImpl implements GraphReader {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Iterable<Node> getLinkedNodes(
                                          final Node node, final LinkDirection linkDirection)
@@ -681,10 +688,10 @@ public class GraphReaderImpl implements GraphReader {
         final StorageSession session = sessionProvider.get();
         Iterable<org.openspotlight.storage.domain.Link> links;
         if (rawTarget != null && linkType != null) {
-            links = SLCollections.iterableOf(
+            links = SLCollections.iterableOfOne(
                 session.getLink(session.findNodeByStringId(rawOrigin
                 .getId()), session.findNodeByStringId(rawTarget
-                .getId()), linkType.getName()), null);
+                .getId()), linkType.getName()));
         } else if (rawTarget != null) {
             links = session.findLinks(session.findNodeByStringId(rawOrigin
                 .getId()), session.findNodeByStringId(rawTarget.getId()));
@@ -727,7 +734,8 @@ public class GraphReaderImpl implements GraphReader {
                     return false;
                     }
                     if (LinkDirection.ANY.equals(linkType)) return true;
-                    LinkDirection linkDirection = LinkDirection.valueOf(o.getPropertyAsString(session, NodeAndLinkSupport.LINK_DIRECTION));
+                    LinkDirection linkDirection =
+                        LinkDirection.valueOf(o.getPropertyAsString(session, NodeAndLinkSupport.LINK_DIRECTION));
                     return linkType.equals(linkDirection);
                 } catch (final ClassNotFoundException e) {
                     return false;
@@ -751,9 +759,9 @@ public class GraphReaderImpl implements GraphReader {
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
         if (parentStNode == null) { return null; }
-        return (Node) SLCollections.iterableOf(convertToSLNode(parentStNode
+        return (Node) SLCollections.iterableOfOne(convertToSLNode(parentStNode
             .getKey().getParentKeyAsString(), contextId,
-            parentStNode, false), null);
+            parentStNode, false));
 
     }
 
