@@ -72,7 +72,7 @@ public class StringIDSupport {
             .append(SEP)
             .append(uniqueKey.getPartition().getPartitionName())
             .append(SEP)
-            .append(uniqueKey.getCompositeKey().getNodeName())
+            .append(uniqueKey.getCompositeKey().getNodeType())
             .append(SEP)
             .append(
                 getSha1SignatureEncodedAsBase64(getNodeKeyAsSimpleString(uniqueKey)))
@@ -87,7 +87,7 @@ public class StringIDSupport {
     private static String getSimpleKeyAsSimpleString(
                                                      final CompositeKey localKey) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(localKey.getNodeName());
+        sb.append(localKey.getNodeType());
         final List<SimpleKey> ordered = new ArrayList<SimpleKey>(localKey
             .getKeys());
         Collections.sort(ordered);

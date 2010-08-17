@@ -146,8 +146,8 @@ public class NodeKeyImpl implements NodeKey {
 
         private final int         hashCode;
 
-        public CompositeKeyImpl(final Set<SimpleKey> entries, final String nodeEntryName) {
-            if (nodeEntryName == null) { throw new IllegalArgumentException(); }
+        public CompositeKeyImpl(final Set<SimpleKey> entries, final String nodeType) {
+            if (nodeType == null) { throw new IllegalArgumentException(); }
             final Set<String> names = newHashSet();
             for (final SimpleKey entry: entries) {
                 if (names.contains(entry.getKeyName())) { throw new IllegalStateException("duplicated entry name"); }
@@ -157,10 +157,10 @@ public class NodeKeyImpl implements NodeKey {
             final List<SimpleKey> tempEntries = new ArrayList<SimpleKey>(entries);
             sort(tempEntries);
             this.entries = ImmutableSet.copyOf(tempEntries);
-            this.nodeEntryName = nodeEntryName;
+            this.nodeType = nodeType;
 
             int result = entries != null ? entries.hashCode() : 0;
-            result = 31 * result + (nodeEntryName != null ? nodeEntryName.hashCode() : 0);
+            result = 31 * result + (nodeType != null ? nodeType.hashCode() : 0);
             hashCode = result;
 
         }
@@ -174,7 +174,7 @@ public class NodeKeyImpl implements NodeKey {
             return entryNames;
         }
 
-        private final String nodeEntryName;
+        private final String nodeType;
 
         @Override
         public Set<SimpleKey> getKeys() {
@@ -182,8 +182,8 @@ public class NodeKeyImpl implements NodeKey {
         }
 
         @Override
-        public String getNodeName() {
-            return nodeEntryName;
+        public String getNodeType() {
+            return nodeType;
         }
 
         private transient String keyAsString = null;
@@ -207,7 +207,7 @@ public class NodeKeyImpl implements NodeKey {
             if (hashCode != localKey.hashCode) { return false; }
 
             if (entries != null ? !entries.equals(localKey.entries) : localKey.entries != null) { return false; }
-            if (nodeEntryName != null ? !nodeEntryName.equals(localKey.nodeEntryName) : localKey.nodeEntryName != null) { return false; }
+            if (nodeType != null ? !nodeType.equals(localKey.nodeType) : localKey.nodeType != null) { return false; }
 
             return true;
         }
@@ -219,7 +219,7 @@ public class NodeKeyImpl implements NodeKey {
 
         @Override
         public int compareTo(final CompositeKey o) {
-            int result = getNodeName().compareTo(o.getNodeName());
+            int result = getNodeType().compareTo(o.getNodeType());
             if (result != 0) { return result; }
             final Iterator<SimpleKey> thisIt = getKeys().iterator();
             final Iterator<SimpleKey> thatIt = o.getKeys().iterator();

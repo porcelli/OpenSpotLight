@@ -50,7 +50,7 @@ public class NodeImpl extends PropertyContainerImpl implements
                     final boolean resetTimeout)
         throws IllegalArgumentException {
         super(resetTimeout);
-        nodeType = uniqueKey.getCompositeKey().getNodeName();
+        nodeType = uniqueKey.getCompositeKey().getNodeType();
         if (nodeType == null) { throw new IllegalArgumentException(); }
         this.uniqueKey = uniqueKey;
         propertiesByName = newHashMap();

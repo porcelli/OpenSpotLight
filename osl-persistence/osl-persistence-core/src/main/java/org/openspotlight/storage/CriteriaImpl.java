@@ -620,7 +620,7 @@ public class CriteriaImpl implements Criteria {
             breakIfNotNull(transientLocalKey);
 
             transientLocalKey = localKey;
-            transientNodeEntryName = localKey.getNodeName();
+            transientNodeEntryName = localKey.getNodeType();
             and();
             return this;
         }
@@ -636,7 +636,7 @@ public class CriteriaImpl implements Criteria {
             breakIfNotNull(transientUniqueKey);
 
             transientUniqueKey = uniqueKey;
-            transientNodeEntryName = uniqueKey.getCompositeKey().getNodeName();
+            transientNodeEntryName = uniqueKey.getCompositeKey().getNodeType();
             and();
             return this;
         }

@@ -123,7 +123,7 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldFindNodeNamesOnDifferentPartitionsOnAutoFlush()
+    public void shouldFindNodeTypesOnDifferentPartitionsOnAutoFlush()
             throws Exception {
         final StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
@@ -131,22 +131,22 @@ public abstract class AbstractStorageSessionTest {
                                                                             "a1", "b1", "c1");
         session.withPartition(ExamplePartition.FIRST).createNewSimpleNode("a2",
                                                                           "b2", "c2");
-        final List<String> nodeNames1 = iterableToList(session.withPartition(
+        final List<String> nodeTypes1 = iterableToList(session.withPartition(
                                                                        ExamplePartition.DEFAULT).getAllNodeTypes());
-        final List<String> nodeNames2 = iterableToList(session.withPartition(
+        final List<String> nodeTypes2 = iterableToList(session.withPartition(
                                                                        ExamplePartition.FIRST).getAllNodeTypes());
-        assertThat(nodeNames1.contains("a1"), is(true));
-        assertThat(nodeNames1.contains("b1"), is(true));
-        assertThat(nodeNames1.contains("c1"), is(true));
-        assertThat(nodeNames2.contains("a2"), is(true));
-        assertThat(nodeNames2.contains("b2"), is(true));
-        assertThat(nodeNames2.contains("c2"), is(true));
-        assertThat(nodeNames2.contains("a1"), is(false));
-        assertThat(nodeNames2.contains("b1"), is(false));
-        assertThat(nodeNames2.contains("c1"), is(false));
-        assertThat(nodeNames1.contains("a2"), is(false));
-        assertThat(nodeNames1.contains("b2"), is(false));
-        assertThat(nodeNames1.contains("c2"), is(false));
+        assertThat(nodeTypes1.contains("a1"), is(true));
+        assertThat(nodeTypes1.contains("b1"), is(true));
+        assertThat(nodeTypes1.contains("c1"), is(true));
+        assertThat(nodeTypes2.contains("a2"), is(true));
+        assertThat(nodeTypes2.contains("b2"), is(true));
+        assertThat(nodeTypes2.contains("c2"), is(true));
+        assertThat(nodeTypes2.contains("a1"), is(false));
+        assertThat(nodeTypes2.contains("b1"), is(false));
+        assertThat(nodeTypes2.contains("c1"), is(false));
+        assertThat(nodeTypes1.contains("a2"), is(false));
+        assertThat(nodeTypes1.contains("b2"), is(false));
+        assertThat(nodeTypes1.contains("c2"), is(false));
     }
 
     @Test
@@ -196,7 +196,7 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldFindNodeNamesOnDifferentPartitionsOnExplicitFlush()
+    public void shouldFindNodeTypesOnDifferentPartitionsOnExplicitFlush()
             throws Exception {
         final StorageSession session = explicitFlushInjector
                                                       .getInstance(StorageSession.class);
@@ -205,22 +205,22 @@ public abstract class AbstractStorageSessionTest {
         session.withPartition(ExamplePartition.FIRST).createNewSimpleNode("a2",
                                                                           "b2", "c2");
         session.flushTransient();
-        final List<String> nodeNames1 = iterableToList(session.withPartition(
+        final List<String> nodeTypes1 = iterableToList(session.withPartition(
                                                                        ExamplePartition.DEFAULT).getAllNodeTypes());
-        final List<String> nodeNames2 = iterableToList(session.withPartition(
+        final List<String> nodeTypes2 = iterableToList(session.withPartition(
                                                                        ExamplePartition.FIRST).getAllNodeTypes());
-        assertThat(nodeNames1.contains("a1"), is(true));
-        assertThat(nodeNames1.contains("b1"), is(true));
-        assertThat(nodeNames1.contains("c1"), is(true));
-        assertThat(nodeNames2.contains("a2"), is(true));
-        assertThat(nodeNames2.contains("b2"), is(true));
-        assertThat(nodeNames2.contains("c2"), is(true));
-        assertThat(nodeNames2.contains("a1"), is(false));
-        assertThat(nodeNames2.contains("b1"), is(false));
-        assertThat(nodeNames2.contains("c1"), is(false));
-        assertThat(nodeNames1.contains("a2"), is(false));
-        assertThat(nodeNames1.contains("b2"), is(false));
-        assertThat(nodeNames1.contains("c2"), is(false));
+        assertThat(nodeTypes1.contains("a1"), is(true));
+        assertThat(nodeTypes1.contains("b1"), is(true));
+        assertThat(nodeTypes1.contains("c1"), is(true));
+        assertThat(nodeTypes2.contains("a2"), is(true));
+        assertThat(nodeTypes2.contains("b2"), is(true));
+        assertThat(nodeTypes2.contains("c2"), is(true));
+        assertThat(nodeTypes2.contains("a1"), is(false));
+        assertThat(nodeTypes2.contains("b1"), is(false));
+        assertThat(nodeTypes2.contains("c1"), is(false));
+        assertThat(nodeTypes1.contains("a2"), is(false));
+        assertThat(nodeTypes1.contains("b2"), is(false));
+        assertThat(nodeTypes1.contains("c2"), is(false));
     }
 
     @Test
@@ -654,7 +654,7 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldFindNamedNodes()
+    public void shouldFindNodesByType()
         throws Exception {
         final StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
@@ -1449,7 +1449,7 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldFindByPropertiesWithoutNodeName()
+    public void shouldFindByPropertiesWithoutNodeType()
         throws Exception {
         final StorageSession session = autoFlushInjector
                                                   .getInstance(StorageSession.class);
@@ -1501,7 +1501,7 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldFindByPropertiesContainingStringWithoutNodeName()
+    public void shouldFindByPropertiesContainingStringWithoutNodeType()
             throws Exception {
         if (supportsAdvancedQueries()) {
             final StorageSession session = autoFlushInjector
@@ -1547,7 +1547,7 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldFindByPropertiesStartingWithStringWithoutNodeName()
+    public void shouldFindByPropertiesStartingWithStringWithoutNodeType()
             throws Exception {
         if (supportsAdvancedQueries()) {
             final StorageSession session = autoFlushInjector
@@ -1593,7 +1593,7 @@ public abstract class AbstractStorageSessionTest {
     }
 
     @Test
-    public void shouldFindByPropertiesEndingWithStringWithoutNodeName()
+    public void shouldFindByPropertiesEndingWithStringWithoutNodeType()
             throws Exception {
         if (supportsAdvancedQueries()) {
             final StorageSession session = autoFlushInjector

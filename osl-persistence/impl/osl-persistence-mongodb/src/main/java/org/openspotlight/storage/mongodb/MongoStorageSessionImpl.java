@@ -50,12 +50,12 @@ import org.openspotlight.storage.AbstractStorageSession;
 import org.openspotlight.storage.Criteria;
 import org.openspotlight.storage.Criteria.CriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.CompisiteKeyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyContainsString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyEndsWithString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
-import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
@@ -103,7 +103,7 @@ public class MongoStorageSessionImpl extends
     private static final String                             ID               = "_id", LOCAL_ID = "node_local_id",
             PARENT_ID = "node_parent_id", KEY_NAMES = "node_key_names",
             PROPERTIES = "node_properties", INDEXED = "node_indexed",
-            LINKS = "links", ENTRY_NAME = "node_entry_name";
+            LINKS = "links", NODE_TYPE = "node_type";
 
     private final Mongo                                     mongo;
     private final RepositoryPath                            repositoryPath;
@@ -388,7 +388,7 @@ public class MongoStorageSessionImpl extends
         reference.put(ID, uniqueId.getKeyAsString());
         reference.put(KEY_NAMES, keyNames);
         reference.put(INDEXED, key);
-        reference.put(ENTRY_NAME, uniqueId.getCompositeKey().getNodeName());
+        reference.put(NODE_TYPE, uniqueId.getCompositeKey().getNodeType());
         if (FlushMode.AUTO.equals(getFlushMode())) {
             final DBCollection col = getCachedCollection(partition, entry
                                                                    .getType());
@@ -648,7 +648,7 @@ public class MongoStorageSessionImpl extends
         final List<String> keyNames = (List<String>) dbObject.get(KEY_NAMES);
 
         final NodeKeyBuilder keyBuilder = withPartition(partition)
-                                          .createKey((String) dbObject.get(ENTRY_NAME));
+                                          .createKey((String) dbObject.get(NODE_TYPE));
         for (final String s: keyAsDbObj.keySet()) {
             if (keyNames.contains(s)) {
                 String valueAsString = convert(keyAsDbObj.get(s), String.class);

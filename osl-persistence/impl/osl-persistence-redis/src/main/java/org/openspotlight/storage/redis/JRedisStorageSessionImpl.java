@@ -41,12 +41,12 @@ import org.openspotlight.storage.AbstractStorageSession;
 import org.openspotlight.storage.Criteria;
 import org.openspotlight.storage.Criteria.CriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.CompisiteKeyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyContainsString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyEndsWithString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
-import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
@@ -204,8 +204,8 @@ public class JRedisStorageSessionImpl extends
         }
     }
 
-    private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_NAME          = new CustomizedFormat(
-                                                                                                      "lname: :uids");
+    private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_TYPE          = new CustomizedFormat(
+                                                                                                      "ltype: :uids");
     private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_ORIGIN        = new CustomizedFormat(
                                                                                                       "lorigin: :uids");
     private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_TARGET        = new CustomizedFormat(
@@ -217,8 +217,8 @@ public class JRedisStorageSessionImpl extends
                                                                                                       "nuid: :dependent-keys");
     private static final String           SET_WITH_ALL_KEYS                    = "uids";
     private static final String           SET_WITH_ALL_KEY_NAMES               = "names";
-    private static final CustomizedFormat SET_WITH_ALL_NODE_KEYS_FOR_NAME      = new CustomizedFormat(
-                                                                                                      "name: :uids");
+    private static final CustomizedFormat SET_WITH_ALL_NODE_KEYS_FOR_TYPE      = new CustomizedFormat(
+                                                                                                      "type: :uids");
     private static final CustomizedFormat SET_WITH_ALL_LOCAL_KEYS              = new CustomizedFormat(
                                                                                                       "lkeys: :uids");
     private static final CustomizedFormat SET_WITH_NODE_PROPERTY_KEY_NAMES     = new CustomizedFormat(
@@ -363,7 +363,7 @@ public class JRedisStorageSessionImpl extends
         if (criteria.getCriteriaItems().size() == 0) {
             final List<String> keys =
                 listBytesToListString(jredis
-                                                            .smembers(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(criteria
+                                                            .smembers(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(criteria
                                                                                                                      .getNodeType())));
             uniqueIds.addAll(keys);
         }
@@ -494,7 +494,7 @@ public class JRedisStorageSessionImpl extends
         final JRedisLoggedExecution jredisExec = new JRedisLoggedExecution(uniqueKey,
                                                                      jredis);
         jredisExec.sadd(SET_WITH_ALL_KEYS, uniqueKey);
-        jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entry
+        jredisExec.sadd(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(entry
                                                                     .getType()), uniqueKey);
         jredis.sadd(SET_WITH_ALL_KEY_NAMES, entry.getType());
         final String parentKeyAsString = entry.getKey().getParentKeyAsString();
@@ -532,7 +532,7 @@ public class JRedisStorageSessionImpl extends
         final String uniqueKey = entry.getKeyAsString();
         jredis.srem(SET_WITH_ALL_KEYS, uniqueKey);
         if (entryName != null) {
-            jredis.srem(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(entryName),
+            jredis.srem(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(entryName),
                         uniqueKey);
         }
         final String simpleProperties = SET_WITH_NODE_PROPERTY_SIMPLE_NAMES
@@ -644,7 +644,7 @@ public class JRedisStorageSessionImpl extends
 
         final JRedis jRedis = factory.getFrom(partition);
         final List<String> ids = listBytesToListString(jRedis
-                                                       .smembers(SET_WITH_ALL_NODE_KEYS_FOR_NAME.format(type)));
+                                                       .smembers(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(type)));
         final ImmutableSet.Builder<Node> builder = ImmutableSet
                                                                 .<Node>builder();
         for (final String id: ids) {
@@ -753,7 +753,7 @@ public class JRedisStorageSessionImpl extends
                                      final Link link)
             throws Exception {
         final JRedis jredis = factory.getFrom(partition);
-        jredis.srem(SET_WITH_ALL_LINKS_FOR_NAME.format(link.getLinkType()),
+        jredis.srem(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getLinkType()),
                     link.getKeyAsString());
         jredis.srem(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getOrigin()
                                                              .getKeyAsString()), link.getKeyAsString());
@@ -768,7 +768,7 @@ public class JRedisStorageSessionImpl extends
                                   final Link link)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
-        jredis.sadd(SET_WITH_ALL_LINKS_FOR_NAME.format(link.getLinkType()),
+        jredis.sadd(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getLinkType()),
                     link.getKeyAsString());
         jredis.sadd(SET_WITH_ALL_LINKS_FOR_ORIGIN.format(link.getOrigin()
                                                              .getKeyAsString()), link.getKeyAsString());
@@ -799,7 +799,7 @@ public class JRedisStorageSessionImpl extends
         }
         if (name != null) {
             final List<String> newIds = listBytesToListString(jredis
-                                                              .smembers(SET_WITH_ALL_LINKS_FOR_NAME.format(name)));
+                                                              .smembers(SET_WITH_ALL_LINKS_FOR_TYPE.format(name)));
             linkIds.retainAll(newIds);
         }
         if (linkIds.size() == 0) { return Collections.emptyList(); }
