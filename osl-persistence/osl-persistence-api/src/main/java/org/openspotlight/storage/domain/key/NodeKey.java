@@ -49,7 +49,7 @@ public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
 
         Set<String> getKeyNames();
 
-        String getNodeName();
+        String getNodeType();
 
         String getKeyAsString();
 
