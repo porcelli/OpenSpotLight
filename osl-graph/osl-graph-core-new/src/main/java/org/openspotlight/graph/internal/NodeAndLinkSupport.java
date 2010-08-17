@@ -422,6 +422,10 @@ public class NodeAndLinkSupport {
         @Override
         public boolean equals(
                               final Object obj) {
+            if(!obj instanceof Link){
+                
+            }
+            
             return propertyContainerImpl.equals(obj);
         }
 
