@@ -58,7 +58,7 @@ public class RepositoryPath {
 
     @Override
     public String toString() {
-        return "STRepositoryPath{" +
+        return "RepositoryPath{" +
                 "repositoryPath='" + repositoryPath + '\'' +
                 '}';
     }

@@ -30,21 +30,21 @@ public interface Node extends StorageDataMarker, NodeFactory,
 
     public void forceReload();
 
-    String getNodeEntryName();
+    String getType();
 
-    NodeKey getUniqueKey();
+    NodeKey getKey();
 
     Iterable<Node> getChildren(Partition partition,
                                StorageSession session);
 
-    Iterable<Node> getChildrenNamed(Partition partition,
-                                    StorageSession session, String name);
+    Iterable<Node> getChildrenByType(Partition partition,
+                                     StorageSession session, String type);
 
     Iterable<Node> getChildrenForcingReload(Partition partition,
                                             StorageSession session);
 
-    Iterable<Node> getChildrenNamedForcingReload(Partition partition,
-                                                 StorageSession session, String name);
+    Iterable<Node> getChildrenByTypeForcingReload(Partition partition,
+                                                  StorageSession session, String type);
 
     Node getParent(StorageSession session);
 

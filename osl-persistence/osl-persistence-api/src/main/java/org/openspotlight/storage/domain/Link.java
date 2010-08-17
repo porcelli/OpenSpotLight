@@ -6,7 +6,7 @@ public interface Link extends StorageDataMarker, PropertyContainer {
 
     Node getTarget();
 
-    String getLinkName();
+    String getLinkType();
 
     String getLinkId();
 }

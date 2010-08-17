@@ -33,11 +33,11 @@ import org.openspotlight.storage.domain.StorageDataMarker;
  */
 public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
 
-    public String getKeyAsString();
-
     Partition getPartition();
 
-    CompositeKey getLocalKey();
+    public String getKeyAsString();
+
+    CompositeKey getCompositeKey();
 
     String getParentKeyAsString();
 
@@ -45,17 +45,17 @@ public interface NodeKey extends StorageDataMarker, Comparable<NodeKey> {
 
     public interface CompositeKey extends StorageDataMarker, Comparable<CompositeKey> {
 
-        Set<SimpleKey> getEntries();
+        Set<SimpleKey> getKeys();
 
-        Set<String> getEntryNames();
+        Set<String> getKeyNames();
 
-        String getNodeEntryName();
+        String getNodeName();
 
         String getKeyAsString();
 
         public interface SimpleKey extends StorageDataMarker, Comparable<SimpleKey> {
 
-            String getPropertyName();
+            String getKeyName();
 
             String getValue();
         }

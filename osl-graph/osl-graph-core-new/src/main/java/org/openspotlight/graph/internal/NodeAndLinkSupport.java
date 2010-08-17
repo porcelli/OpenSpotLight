@@ -64,7 +64,7 @@ import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.IsMetaType;
 import org.openspotlight.graph.annotation.TransientProperty;
-import org.openspotlight.storage.AbstractStorageSession.UniqueKeyBuilderImpl;
+import org.openspotlight.storage.AbstractStorageSession.NodeKeyBuilderImpl;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
@@ -146,14 +146,14 @@ public class NodeAndLinkSupport {
 
         if (session != null) {
             internalNodeKey = session.withPartition(partition).createKey(
-                targetNodeType.getName()).withEntry(NAME, name).andCreate();
+                targetNodeType.getName()).withSimpleKey(NAME, name).andCreate();
             node = session.withPartition(partition).createCriteria()
                 .withUniqueKey(internalNodeKey).buildCriteria()
                 .andFindUnique(session);
         } else {
-            internalNodeKey = new UniqueKeyBuilderImpl(targetNodeType
+            internalNodeKey = new NodeKeyBuilderImpl(targetNodeType
                 .getName(), partition, repositoryPath)
-                .withEntry(NAME, name).andCreate();
+                .withSimpleKey(NAME, name).andCreate();
         }
 
         for (final PropertyDescriptor d: descriptors) {
@@ -268,9 +268,9 @@ public class NodeAndLinkSupport {
             if (internalNode == null) {
                 final Partition partition = factory.getPartitionByName(context
                     .getId());
-                internalNode = session.withPartition(partition).createWithName(
+                internalNode = session.withPartition(partition).createWithType(
                     findTargetClass(node.getClass()).getName())
-                    .withKeyEntry(NAME, node.getName()).withParentAsString(
+                    .withSimpleKey(NAME, node.getName()).withParentAsString(
                     node.getParentId()).andCreate();
                 if (needsToVerifyType) {
                     fixTypeData(session, (Class<? extends Node>) node

@@ -30,12 +30,12 @@ import org.openspotlight.storage.domain.key.NodeKey;
  */
 public interface NodeFactory {
 
-    NodeBuilder createWithName(StorageSession session,
-                                       String name);
+    NodeBuilder createWithType(StorageSession session,
+                                       String type);
 
     interface NodeBuilder {
 
-        NodeBuilder withKeyEntry(String name,
+        NodeBuilder withSimpleKey(String name,
                                          String value);
 
         NodeBuilder withParent(Node parent);

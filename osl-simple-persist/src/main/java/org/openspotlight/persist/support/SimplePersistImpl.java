@@ -300,7 +300,7 @@ public class SimplePersistImpl implements SimplePersistCapable<Node, StorageSess
             for (final SimpleNodeType beanBeenSaved: data.childrenToSave) {
                 internalConvertBeanToNode(context, data.propertyName, beanBeenSaved, newNodeEntry);
             }
-            context.allNodes.addAll(iterableToList(newNodeEntry.getChildrenNamed(currentPartition, currentSession,
+            context.allNodes.addAll(iterableToList(newNodeEntry.getChildrenByType(currentPartition, currentSession,
                 internalGetNodeName(data.nodeType))));
         }
 
@@ -378,17 +378,17 @@ public class SimplePersistImpl implements SimplePersistCapable<Node, StorageSess
                                            final String propertyName)
         throws Exception {
         final String name = internalGetNodeName(descriptors.bean);
-        final NodeFactory.NodeBuilder builder = currentSession.withPartition(currentPartition).createWithName(name);
+        final NodeFactory.NodeBuilder builder = currentSession.withPartition(currentPartition).createWithType(name);
 
         if (parentNode != null) {
             builder.withParent(parentNode);
         }
         for (final PropertyDescriptor descriptor: descriptors.keyPropertiesDescriptor) {
-            builder.withKeyEntry(descriptor.getName(),
+            builder.withSimpleKey(descriptor.getName(),
                                  Conversion.convert(descriptor.getReadMethod().invoke(descriptors.bean), String.class));
         }
         if (propertyName != null) {
-            builder.withKeyEntry(NODE_PROPERTY_NAME, propertyName);
+            builder.withSimpleKey(NODE_PROPERTY_NAME, propertyName);
         }
         final Node newNode = builder.andCreate();
         newNode.setIndexedProperty(currentSession, NODE_ENTRY_TYPE,
@@ -423,7 +423,7 @@ public class SimplePersistImpl implements SimplePersistCapable<Node, StorageSess
     }
 
     private String internalGetNodeType(final Node node) {
-        return node.getNodeEntryName();
+        return node.getType();
     }
 
     private <T> String internalGetNodeName(final T bean) {
@@ -507,7 +507,7 @@ public class SimplePersistImpl implements SimplePersistCapable<Node, StorageSess
 
             final String propertyName = property.getName();
             final LazyProperty<?> lazyProperty = (LazyProperty<?>) property.getReadMethod().invoke(bean);
-            lazyProperty.getMetadata().setParentKey(cached.getUniqueKey());
+            lazyProperty.getMetadata().setParentKey(cached.getKey());
             lazyProperty.getMetadata().setSavedNode(cached);
             lazyProperty.getMetadata().setPropertyName(propertyName);
             final String sha1 = cached.getPropertyAsString(currentSession, format(SHA1_PROPERTY_NAME, propertyName));
@@ -545,7 +545,7 @@ public class SimplePersistImpl implements SimplePersistCapable<Node, StorageSess
 
             if (!SimpleNodeType.class.isAssignableFrom(nodeType)) { throw new IllegalStateException("wrong child type"); }
             final String childrenName = internalGetNodeName(nodeType);
-            Iterable<Node> children = iterableToList(node.getChildrenNamed(currentPartition, currentSession, childrenName));
+            Iterable<Node> children = iterableToList(node.getChildrenByType(currentPartition, currentSession, childrenName));
             children = filterChildrenWithProperty(children, descriptor.getName());
             final List<Object> childrenAsBeans = newLinkedList();
             for (final Node child: children) {
@@ -826,7 +826,7 @@ public class SimplePersistImpl implements SimplePersistCapable<Node, StorageSess
                         if (parent != null) {
                             Node parentNode = nodeEntry;
                             while (parentNode != null) {
-                                if (parentNode.getUniqueKey().equals(parent.getUniqueKey())) {
+                                if (parentNode.getKey().equals(parent.getKey())) {
                                     return true;
                                 }
                                 parentNode = parentNode.getParent(currentSession);

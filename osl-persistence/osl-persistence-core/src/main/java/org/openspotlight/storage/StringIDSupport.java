@@ -8,16 +8,15 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details. You should have received a
  * copy of the GNU Lesser General Public License along with this distribution; if not, write to: Free Software Foundation, Inc. 51
  * Franklin Street, Fifth Floor Boston, MA 02110-1301 USA**********************************************************************
- * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH
- * CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
- * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de
- * terceiros estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é
- * software livre; você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme
- * publicada pela Free Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA
- * GARANTIA; nem mesmo a garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença
- * Pública Geral Menor do GNU para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU
- * junto com este programa; se não, escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA
- * 02110-1301 USA
+ * OpenSpotLight - Plataforma de Governança de TI de Código Aberto Direitos Autorais Reservados (c) 2009, CARAVELATECH CONSULTORIA
+ * E TECNOLOGIA EM INFORMATICA LTDA ou como contribuidores terceiros indicados pela etiqueta
+ * @author ou por expressa atribuição de direito autoral declarada e atribuída pelo autor. Todas as contribuições de terceiros
+ * estão distribuídas sob licença da CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA. Este programa é software livre;
+ * você pode redistribuí-lo e/ou modificá-lo sob os termos da Licença Pública Geral Menor do GNU conforme publicada pela Free
+ * Software Foundation. Este programa é distribuído na expectativa de que seja útil, porém, SEM NENHUMA GARANTIA; nem mesmo a
+ * garantia implícita de COMERCIABILIDADE OU ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA. Consulte a Licença Pública Geral Menor do GNU
+ * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
+ * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
 package org.openspotlight.storage;
 
@@ -64,48 +63,48 @@ public class StringIDSupport {
         return uniqueKeyAsString.split(SEP)[1];
     }
 
-    public static String getUniqueKeyAsStringHash(
+    public static String getNodeKeyAsStringHash(
                                                   final NodeKey uniqueKey) {
         return new StringBuilder()
             .append(
-            uniqueKey.getRepositoryPath()
-            .getRepositoryPathAsString())
+                uniqueKey.getRepositoryPath()
+                    .getRepositoryPathAsString())
             .append(SEP)
             .append(uniqueKey.getPartition().getPartitionName())
             .append(SEP)
-            .append(uniqueKey.getLocalKey().getNodeEntryName())
+            .append(uniqueKey.getCompositeKey().getNodeName())
             .append(SEP)
             .append(
-            getSha1SignatureEncodedAsBase64(getUniqueKeyAsSimpleString(uniqueKey)))
+                getSha1SignatureEncodedAsBase64(getNodeKeyAsSimpleString(uniqueKey)))
             .toString();
     }
 
-    public static String getLocalKeyAsStringHash(
-                                                 final CompositeKey uniqueKey) {
-        return getSha1SignatureEncodedAsBase64(getLocalKeyAsSimpleString(uniqueKey));
+    public static String getCompositeKeyAsStringHash(
+                                                     final CompositeKey uniqueKey) {
+        return getSha1SignatureEncodedAsBase64(getSimpleKeyAsSimpleString(uniqueKey));
     }
 
-    private static String getLocalKeyAsSimpleString(
-                                                    final CompositeKey localKey) {
+    private static String getSimpleKeyAsSimpleString(
+                                                     final CompositeKey localKey) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(localKey.getNodeEntryName());
+        sb.append(localKey.getNodeName());
         final List<SimpleKey> ordered = new ArrayList<SimpleKey>(localKey
-            .getEntries());
+            .getKeys());
         Collections.sort(ordered);
         for (final SimpleKey entry: ordered) {
-            sb.append(NODE_KEY_SEP).append(entry.getPropertyName()).append(
+            sb.append(NODE_KEY_SEP).append(entry.getKeyName()).append(
                 NODE_KEY_SEP).append(NODE_KEY_SEP).append(entry.getValue());
         }
         return sb.toString();
     }
 
-    private static String getUniqueKeyAsSimpleString(
+    private static String getNodeKeyAsSimpleString(
                                                      final NodeKey uniqueKey) {
         final StringBuilder sb = new StringBuilder();
         sb.append(uniqueKey.getRepositoryPath().getRepositoryPathAsString())
             .append(":");
         sb.append(uniqueKey.getParentKeyAsString()).append(":");
-        sb.append(getLocalKeyAsSimpleString(uniqueKey.getLocalKey()));
+        sb.append(getSimpleKeyAsSimpleString(uniqueKey.getCompositeKey()));
         return sb.toString();
     }
 

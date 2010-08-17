@@ -30,8 +30,7 @@ public enum RegularPartitions implements Partition {
 
     FEDERATION("federation"),
     SYNTAX_HIGHLIGHT("syntax_highlight", FEDERATION),
-    LINE_REFERENCE(
-                   "line_reference"),
+    LINE_REFERENCE("line_reference"),
     SECURITY("security"),
     LOG("log");
 
@@ -64,7 +63,6 @@ public enum RegularPartitions implements Partition {
     }
 
     public static final PartitionFactory FACTORY = new PartitionFactory() {
-
                                                      @Override
                                                      public Partition getPartitionByName(final String name) {
                                                          try {
