@@ -37,7 +37,7 @@ import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.graph.internal.NodeAndLinkSupport;
-import org.openspotlight.graph.internal.NodeAndLinkSupport.NodeMetadata;
+import org.openspotlight.graph.internal.NodeAndLinkSupport.PropertyContainerMetadata;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
@@ -45,11 +45,11 @@ import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.InvalidQuerySyntaxException;
 import org.openspotlight.graph.query.QueryApi;
 import org.openspotlight.graph.query.QueryText;
-import org.openspotlight.storage.Criteria.CriteriaBuilder;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
+import org.openspotlight.storage.Criteria.CriteriaBuilder;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -93,7 +93,7 @@ public class GraphReaderImpl implements GraphReader {
         final StorageSession session = sessionProvider.get();
         final Partition partition = factory.getPartitionByName(node
                 .getContextId());
-        final NodeMetadata md = (NodeMetadata) node;
+        final PropertyContainerMetadata<org.openspotlight.storage.domain.Node> md = (PropertyContainerMetadata<org.openspotlight.storage.domain.Node>) node;
 
         org.openspotlight.storage.domain.Node parentStNode = md.getCached();
         if (parentStNode == null) {

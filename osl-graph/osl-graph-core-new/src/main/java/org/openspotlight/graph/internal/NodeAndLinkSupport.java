@@ -263,7 +263,7 @@ public class NodeAndLinkSupport {
                                                                              final Node node,
                                                                              final boolean needsToVerifyType) {
         try {
-            final PropertyContainerMetadata metadata = (PropertyContainerMetadata) node;
+            final PropertyContainerMetadata<org.openspotlight.storage.domain.Node> metadata = (PropertyContainerMetadata<org.openspotlight.storage.domain.Node>) node;
             org.openspotlight.storage.domain.Node internalNode = metadata.getCached();
             if (internalNode == null) {
                 final Partition partition = factory.getPartitionByName(context
