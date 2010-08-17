@@ -21,13 +21,15 @@
  */
 package org.openspotlight.graph;
 
+import org.openspotlight.graph.annotation.LinkAutoBidirectional;
+
 /**
  * The Link is the way you correlate informations ({@link Node} instances) in graph. Any relationship between nodes are
  * materialized by a creation of a link. <br>
  * A Link is uniquely identified by three data: Type, Source Node and Target Node, and based on these data an algorithm is used to
  * generate an unique id.
  * <p>
- * We have two types of links (see {@link LinkType}): <br>
+ * We have two types of links (see {@link LinkDirection}): <br>
  * &nbsp;- <i>Unidirectional</i> links creates a link between a source and a target node that can be represented as: source ->
  * target<br>
  * &nbsp;- <i>Bidirectional</i> links creates a link between two nodes that can be represented as: node1 <-> node2
@@ -62,6 +64,14 @@ package org.openspotlight.graph;
  * @author feuteston
  */
 public abstract class Link implements Element, Comparable<Link> {
+
+    /**
+     * This method returns the {@link LinkDirection}. But the {@link LinkDirection} itself could be promoted to
+     * {@link LinkDirection#BIDIRECTIONAL} if the {@link Link} implementation is annotated with {@link LinkAutoBidirectional}
+     * 
+     * @return the LinkType
+     */
+    public abstract LinkDirection getLinkDirection();
 
     /**
      * A convenience operation that, given a node that is attached to this link, returns the other node. For example if node is a

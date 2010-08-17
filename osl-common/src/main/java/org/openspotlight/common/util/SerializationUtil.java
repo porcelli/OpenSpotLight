@@ -181,7 +181,7 @@ public class SerializationUtil {
      * @return the object
      * @throws SerializationUtilException the serialization util exception
      */
-    public static <T extends Serializable> T deserialize(final InputStream inputStream)
+    public static <T> T deserialize(final InputStream inputStream)
         throws SerializationUtilException {
         if (inputStream == null) { return null; }
         ObjectInputStream ois = null;

@@ -54,7 +54,7 @@ package org.openspotlight.common.exception;
  * 
  * @author Vitor Hugo Chagas
  */
-public class SerializationUtilException extends SLException {
+public class SerializationUtilException extends SLRuntimeException {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;

@@ -27,7 +27,7 @@ package org.openspotlight.graph;
  * @author porcelli
  * @author feuteston
  */
-public enum LinkType {
+public enum LinkDirection {
     /**
      * An unidirectional defines a link between a source and a target node and can be represented as: source -> target
      */

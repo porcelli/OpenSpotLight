@@ -25,7 +25,7 @@ import java.io.Serializable;
 
 import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Link;
-import org.openspotlight.graph.LinkType;
+import org.openspotlight.graph.LinkDirection;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
@@ -197,7 +197,7 @@ public interface GraphReader {
     <L extends Link> L getLink(Class<L> linkTypeClass,
                                 Node source,
                                 Node target,
-                                LinkType linkDirection)
+                                LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -211,7 +211,7 @@ public interface GraphReader {
      */
     Iterable<Link> getLinks(Node source,
                              Node target,
-                             LinkType linkDirection)
+                             LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -294,7 +294,7 @@ public interface GraphReader {
      */
     Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass,
                                    Node node,
-                                   LinkType linkDirection)
+                                   LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -314,7 +314,7 @@ public interface GraphReader {
                                                  Node node,
                                                  Class<N> nodeClass,
                                                  boolean returnSubTypes,
-                                                 LinkType linkDirection)
+                                                 LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -331,7 +331,7 @@ public interface GraphReader {
     <N extends Node> Iterable<N> getLinkedNodes(Node node,
                                                  Class<N> nodeClass,
                                                  boolean returnSubTypes,
-                                                 LinkType linkDirection)
+                                                 LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -343,7 +343,7 @@ public interface GraphReader {
      * @throws IllegalArgumentException if any input param is null
      */
     Iterable<Node> getLinkedNodes(Node node,
-                                   LinkType linkDirection)
+                                   LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**

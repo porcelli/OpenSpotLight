@@ -66,7 +66,7 @@ import org.openspotlight.graph.FullGraphSession;
 import org.openspotlight.graph.GraphLocation;
 import org.openspotlight.graph.GraphSessionFactory;
 import org.openspotlight.graph.Link;
-import org.openspotlight.graph.LinkType;
+import org.openspotlight.graph.LinkDirection;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.SimpleGraphSession;
 import org.openspotlight.graph.manipulation.GraphReader;
@@ -592,23 +592,23 @@ public abstract class AbstractGraphTest {
         writer.flush();
 
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.UNIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.BIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkType.UNIDIRECTIONAL));
+                null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkType.UNIDIRECTIONAL));
+                null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -646,23 +646,23 @@ public abstract class AbstractGraphTest {
         assertThat(link2, is(link4));
 
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.BIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.UNIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkType.BIDIRECTIONAL));
+                null, rootClass2Node, LinkDirection.BIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkType.BIDIRECTIONAL));
+                null, rootClass3Node, LinkDirection.BIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -715,40 +715,40 @@ public abstract class AbstractGraphTest {
         assertThat(link2Bid, is(link4Bid));
 
         final List<Link> twoBidLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1BidNode, null, LinkType.BIDIRECTIONAL));
+                rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoBidLinks.size(), is(2));
         assertThat(twoBidLinks.contains(link1Bid), is(true));
         assertThat(twoBidLinks.contains(link2Bid), is(true));
 
         final List<Link> bidLinkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2BidNode, LinkType.BIDIRECTIONAL));
+                null, rootClass2BidNode, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode2.size(), is(1));
         assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
         assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
 
         final List<Link> bidLinkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3BidNode, LinkType.BIDIRECTIONAL));
+                null, rootClass3BidNode, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode3.size(), is(1));
         assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
         assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.UNIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.BIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkType.UNIDIRECTIONAL));
+                null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkType.UNIDIRECTIONAL));
+                null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -779,23 +779,23 @@ public abstract class AbstractGraphTest {
         writer.flush();
 
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.UNIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.BIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkType.UNIDIRECTIONAL));
+                null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkType.UNIDIRECTIONAL));
+                null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -834,23 +834,23 @@ public abstract class AbstractGraphTest {
         assertThat(link2, is(link4));
 
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.BIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.UNIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkType.BIDIRECTIONAL));
+                null, rootClass2Node, LinkDirection.BIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkType.BIDIRECTIONAL));
+                null, rootClass3Node, LinkDirection.BIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -904,40 +904,40 @@ public abstract class AbstractGraphTest {
         assertThat(link2Bid, is(link4Bid));
 
         final List<Link> twoBidLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1BidNode, null, LinkType.BIDIRECTIONAL));
+                rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoBidLinks.size(), is(2));
         assertThat(twoBidLinks.contains(link1Bid), is(true));
         assertThat(twoBidLinks.contains(link2Bid), is(true));
 
         final List<Link> bidLinkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2BidNode, LinkType.BIDIRECTIONAL));
+                null, rootClass2BidNode, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode2.size(), is(1));
         assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
         assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
 
         final List<Link> bidLinkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3BidNode, LinkType.BIDIRECTIONAL));
+                null, rootClass3BidNode, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode3.size(), is(1));
         assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
         assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.UNIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkType.BIDIRECTIONAL));
+                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkType.UNIDIRECTIONAL));
+                null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkType.UNIDIRECTIONAL));
+                null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
