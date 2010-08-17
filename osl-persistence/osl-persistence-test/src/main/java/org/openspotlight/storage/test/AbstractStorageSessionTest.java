@@ -1315,7 +1315,8 @@ public abstract class AbstractStorageSessionTest {
         newNode1.removeNode(session);
         final List<Node> resultNotChanged =
             iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT).findByType("newNode1"));
+                                                                   .withPartition(ExamplePartition.DEFAULT)
+                .findByType("newNode1"));
 
         assertThat(resultNotChanged.size(), is(2));
         assertThat(resultNotChanged.contains(newNode1), is(true));
@@ -1359,7 +1360,8 @@ public abstract class AbstractStorageSessionTest {
         newNode1.removeNode(session);
         final List<Node> resultNotChanged =
             iterableToList(session
-                                                                   .withPartition(ExamplePartition.DEFAULT).findByType("newNode1"));
+                                                                   .withPartition(ExamplePartition.DEFAULT)
+                .findByType("newNode1"));
 
         assertThat(resultNotChanged.size(), is(2));
         assertThat(resultNotChanged.contains(newNode1), is(true));

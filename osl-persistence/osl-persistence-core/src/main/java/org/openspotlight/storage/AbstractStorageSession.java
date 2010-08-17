@@ -646,8 +646,8 @@ public abstract class AbstractStorageSession<R> implements StorageSession {
         throws Exception;
 
     protected abstract Iterable<Node> internalFindByType(
-                                                        Partition partition,
-                                                        String nodeType)
+                                                         Partition partition,
+                                                         String nodeType)
         throws Exception;
 
     protected abstract Iterable<Link> internalFindLinks(

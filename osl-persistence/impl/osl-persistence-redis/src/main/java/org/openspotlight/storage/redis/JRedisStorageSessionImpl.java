@@ -27,7 +27,6 @@ import static org.jredis.ri.alphazero.support.DefaultCodec.toStr;
 import static org.openspotlight.storage.StringIDSupport.getNodeEntryName;
 import static org.openspotlight.storage.StringIDSupport.getPartition;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -132,45 +131,9 @@ public class JRedisStorageSessionImpl extends
         }
 
         public void sadd(final String s,
-                          final byte[] o)
-            throws Exception {
-            jredis.sadd(s, o);
-            if (!s.contains(uuid)) {
-                jredis.sadd(usedKeys, s);
-            }
-        }
-
-        public void sadd(final String s,
-                          final Number o)
-            throws Exception {
-            jredis.sadd(s, o);
-            if (!s.contains(uuid)) {
-                jredis.sadd(usedKeys, s);
-            }
-        }
-
-        public void sadd(final String s,
                           final String o)
             throws Exception {
             jredis.sadd(s, o);
-            if (!s.contains(uuid)) {
-                jredis.sadd(usedKeys, s);
-            }
-        }
-
-        public void sadd(final String s,
-                          final Serializable o)
-            throws Exception {
-            jredis.sadd(s, o);
-            if (!s.contains(uuid)) {
-                jredis.sadd(usedKeys, s);
-            }
-        }
-
-        public void set(final String s,
-                         final Number o)
-            throws Exception {
-            jredis.set(s, o);
             if (!s.contains(uuid)) {
                 jredis.sadd(usedKeys, s);
             }
@@ -186,7 +149,7 @@ public class JRedisStorageSessionImpl extends
         }
 
         public void set(final String s,
-                         final Serializable o)
+                        final byte[] o)
             throws Exception {
             jredis.set(s, o);
             if (!s.contains(uuid)) {
@@ -194,14 +157,50 @@ public class JRedisStorageSessionImpl extends
             }
         }
 
-        public void set(final String s,
-                         final byte[] o)
-            throws Exception {
-            jredis.set(s, o);
-            if (!s.contains(uuid)) {
-                jredis.sadd(usedKeys, s);
-            }
-        }
+        //        public void sadd(final String s,
+        //                         final byte[] o)
+        //            throws Exception {
+        //            jredis.sadd(s, o);
+        //            if (!s.contains(uuid)) {
+        //                jredis.sadd(usedKeys, s);
+        //            }
+        //        }
+        //
+        //        public void sadd(final String s,
+        //                         final Number o)
+        //            throws Exception {
+        //            jredis.sadd(s, o);
+        //            if (!s.contains(uuid)) {
+        //                jredis.sadd(usedKeys, s);
+        //            }
+        //        }
+        //
+        //        public void sadd(final String s,
+        //                          final Serializable o)
+        //            throws Exception {
+        //            jredis.sadd(s, o);
+        //            if (!s.contains(uuid)) {
+        //                jredis.sadd(usedKeys, s);
+        //            }
+        //        }
+        //
+        //        public void set(final String s,
+        //                         final Number o)
+        //            throws Exception {
+        //            jredis.set(s, o);
+        //            if (!s.contains(uuid)) {
+        //                jredis.sadd(usedKeys, s);
+        //            }
+        //        }
+        //
+        //        public void set(final String s,
+        //                         final Serializable o)
+        //            throws Exception {
+        //            jredis.set(s, o);
+        //            if (!s.contains(uuid)) {
+        //                jredis.sadd(usedKeys, s);
+        //            }
+        //        }
     }
 
     private static final CustomizedFormat SET_WITH_ALL_LINKS_FOR_TYPE          = new CustomizedFormat(

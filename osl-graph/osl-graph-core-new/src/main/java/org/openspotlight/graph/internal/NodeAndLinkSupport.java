@@ -108,7 +108,7 @@ public class NodeAndLinkSupport {
         while (currentType != null) {
             if (!Node.class.isAssignableFrom(currentType)) { throw logAndReturn(new IllegalStateException(
                 "No SLNode inherited type found with annotation "
-                + DefineHierarchy.class.getSimpleName())); }
+                    + DefineHierarchy.class.getSimpleName())); }
             if (currentType.isAnnotationPresent(DefineHierarchy.class)) { return numericTypeFromClass(
                 (Class<? extends Node>) currentType)
                 .add(BigInteger.valueOf(depth)); }
@@ -117,8 +117,8 @@ public class NodeAndLinkSupport {
         }
         throw logAndReturn(new IllegalStateException(
             "No SLNode inherited type found with annotation "
-            + DefineHierarchy.class.getSimpleName() + " for type"
-            + type));
+                + DefineHierarchy.class.getSimpleName() + " for type"
+                + type));
     }
 
     private static BigInteger numericTypeFromClass(
@@ -162,7 +162,7 @@ public class NodeAndLinkSupport {
             }
             propertyTypes.put(d.getName(),
                 (Class<? extends Serializable>) Reflection
-                .findClassWithoutPrimitives(d.getPropertyType()));
+                    .findClassWithoutPrimitives(d.getPropertyType()));
             final Object rawValue = node != null ? node.getPropertyAsString(session,
                 d.getName()) : null;
             final Serializable value = (Serializable) (rawValue != null ? Conversion
@@ -248,13 +248,13 @@ public class NodeAndLinkSupport {
         while (currentType != null) {
             if (!Node.class.isAssignableFrom(currentType)) { throw logAndReturn(new IllegalStateException(
                 "No SLNode inherited type found with annotation "
-                + DefineHierarchy.class.getSimpleName())); }
+                    + DefineHierarchy.class.getSimpleName())); }
             if (currentType.isAnnotationPresent(DefineHierarchy.class)) { return (Class<? extends Node>) currentType; }
             currentType = currentType.getSuperclass();
         }
         throw logAndReturn(new IllegalStateException(
             "No SLNode inherited type found with annotation "
-            + DefineHierarchy.class.getSimpleName()));
+                + DefineHierarchy.class.getSimpleName()));
     }
 
     public static org.openspotlight.storage.domain.Node retrievePreviousNode(
@@ -271,7 +271,7 @@ public class NodeAndLinkSupport {
                 internalNode = session.withPartition(partition).createWithType(
                     findTargetClass(node.getClass()).getName())
                     .withSimpleKey(NAME, node.getName()).withParentAsString(
-                    node.getParentId()).andCreate();
+                        node.getParentId()).andCreate();
                 if (needsToVerifyType) {
                     fixTypeData(session, (Class<? extends Node>) node
                         .getClass().getSuperclass(), internalNode);
@@ -285,7 +285,7 @@ public class NodeAndLinkSupport {
                 final Serializable value = node.getPropertyValue(propName);
                 if (!PropertyUtils.getPropertyDescriptor(node, propName)
                     .getReadMethod().isAnnotationPresent(
-                    TransientProperty.class)) {
+                        TransientProperty.class)) {
                     internalNode.setIndexedProperty(session, propName,
                         Conversion.convert(value, String.class));
 
@@ -344,7 +344,7 @@ public class NodeAndLinkSupport {
             }
             propertyTypes.put(d.getName(),
                 (Class<? extends Serializable>) Reflection
-                .findClassWithoutPrimitives(d.getPropertyType()));
+                    .findClassWithoutPrimitives(d.getPropertyType()));
             final Object rawValue = linkEntry != null ? linkEntry
                 .getPropertyAsString(session, d.getName()) : null;
             final Serializable value = (Serializable) (rawValue != null ? Conversion
@@ -363,7 +363,7 @@ public class NodeAndLinkSupport {
         final LinkImpl internalLink = new LinkImpl(linkId, clazz.getName(), clazz,
             propertyTypes, propertyValues, findInitialWeight(clazz),
             weigthValue, origin, target, LinkType.BIDIRECTIONAL
-            .equals(type));
+                .equals(type));
         if (linkEntry != null) {
             internalLink.cachedEntry = new WeakReference<org.openspotlight.storage.domain.Link>(linkEntry);
 
@@ -734,16 +734,16 @@ public class NodeAndLinkSupport {
             key = Strings.firstLetterToLowerCase(key);
             if (!hasProperty(key)) { throw logAndReturn(new IllegalArgumentException(
                 "invalid property key " + key + " for type "
-                + getTypeName())); }
+                    + getTypeName())); }
             final Class<? extends Serializable> propType = propertyTypes.get(key);
             if (value != null) {
                 final Class<?> valueType = Reflection
                     .findClassWithoutPrimitives(value.getClass());
                 if (!valueType.isAssignableFrom(propType)) { throw logAndReturn(new IllegalArgumentException(
                     "invalid property type "
-                    + value.getClass().getName() + " for type "
-                    + getTypeName() + " (should be "
-                    + propertyTypes.get(key).getName() + ")"));
+                        + value.getClass().getName() + " for type "
+                        + getTypeName() + " (should be "
+                        + propertyTypes.get(key).getName() + ")"));
 
                 }
 
@@ -875,7 +875,7 @@ public class NodeAndLinkSupport {
             final boolean result = getId().equals(slnode.getId())
                 && Equals.eachEquality(getParentId(), slnode.getParentId())
                 && Equals.eachEquality(getContextId(), slnode
-                .getContextId());
+                    .getContextId());
             return result;
         }
 
@@ -1041,17 +1041,17 @@ public class NodeAndLinkSupport {
             if (methodName.startsWith("set")
                 && method.getParameterTypes().length == 1
                 && internalPropertyContainerImpl.hasProperty(methodName
-                .substring(3))) {
+                    .substring(3))) {
                 return MethodType.SETTER;
             } else if (methodName.startsWith("get")
                 && method.getParameterTypes().length == 0
                 && internalPropertyContainerImpl.hasProperty(methodName
-                .substring(3))) {
+                    .substring(3))) {
                 return MethodType.GETTER;
             } else if (methodName.startsWith("is")
                 && method.getParameterTypes().length == 0
                 && internalPropertyContainerImpl.hasProperty(methodName
-                .substring(2))) { return MethodType.GETTER; }
+                    .substring(2))) { return MethodType.GETTER; }
             return MethodType.OTHER;
         }
 
