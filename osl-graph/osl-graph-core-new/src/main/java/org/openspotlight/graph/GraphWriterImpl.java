@@ -41,6 +41,7 @@ public class GraphWriterImpl implements GraphWriter {
     private final PartitionFactory         factory;
     private final String                   artifactId;
     private final List<Node>               dirtyNodes = newLinkedList();
+    private final List<Link>               dirtyLinks = newLinkedList();
 
     public GraphWriterImpl(final PartitionFactory factory,
                            final Provider<StorageSession> sessionProvider, final String artifactId,
@@ -111,10 +112,13 @@ public class GraphWriterImpl implements GraphWriter {
     @Override
     public <L extends Link> L addBidirectionalLink(
                                                    final Class<L> linkClass,
-                                                   final Node nodea, final Node nodeb)
+                                                   final Node source, final Node target)
         throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        return null;
+        L newLink =
+            NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target, LinkType.BIDIRECTIONAL,
+            true);
+        dirtyLinks.add(newLink);
+        return newLink;
     }
 
     @Override
@@ -145,8 +149,12 @@ public class GraphWriterImpl implements GraphWriter {
                                       final Class<L> linkClass, final Node source,
                                       final Node target)
         throws IllegalArgumentException {
-        return NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target, LinkType.UNIDIRECTIONAL,
+
+        L newLink =
+            NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target, LinkType.UNIDIRECTIONAL,
             true);
+        dirtyLinks.add(newLink);
+        return newLink;
 
     }
 
@@ -156,6 +164,12 @@ public class GraphWriterImpl implements GraphWriter {
         for (final Node n: dirtyNodes) {
             NodeAndLinkSupport.retrievePreviousNode(factory, session, graphReader
                 .getContext(n.getContextId()), n, true);
+        }
+        session.flushTransient();
+        for (final Link l: dirtyLinks) {
+            NodeAndLinkSupport.createLink(factory, sessionProvider.get(), l.getLinkType(), l.getSource(), l.getTarget(),
+                LinkType.UNIDIRECTIONAL,
+                true);
         }
         session.flushTransient();
 
