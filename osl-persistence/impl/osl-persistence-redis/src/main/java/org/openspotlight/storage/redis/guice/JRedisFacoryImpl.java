@@ -84,7 +84,7 @@ public class JRedisFacoryImpl implements JRedisFactory {
         final JRedisServerDetail serverDetail = tmpServerDetail;
         Map<Partition, JRedis> cache = threadLocalCache.get();
         if (cache == null) {
-            cache = new HashMap();
+            cache = new HashMap<Partition, JRedis>();
             threadLocalCache.set(cache);
         }
         JRedis jRedis = cache.get(partition);
