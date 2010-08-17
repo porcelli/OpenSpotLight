@@ -76,11 +76,11 @@ import com.google.common.collect.ImmutableSet;
 
 public class NodeAndLinkSupport {
 
-    public static interface NodeMetadata {
-        public org.openspotlight.storage.domain.Node getCached();
+    public static interface PropertyContainerMetadata<T> {
+        public T getCached();
 
         public void setCached(
-                              org.openspotlight.storage.domain.Node entry);
+                              T entry);
 
     }
 
@@ -206,7 +206,7 @@ public class NodeAndLinkSupport {
         }
         final Enhancer e = new Enhancer();
         e.setSuperclass(classToUse);
-        e.setInterfaces(new Class<?>[] {NodeMetadata.class});
+        e.setInterfaces(new Class<?>[] {PropertyContainerMetadata.class});
         e.setCallback(new PropertyContainerInterceptor(internalNode));
         return (T) e.create(new Class[0], new Object[0]);
     }
@@ -263,7 +263,7 @@ public class NodeAndLinkSupport {
                                                                              final Node node,
                                                                              final boolean needsToVerifyType) {
         try {
-            final NodeMetadata metadata = (NodeMetadata) node;
+            final PropertyContainerMetadata metadata = (PropertyContainerMetadata) node;
             org.openspotlight.storage.domain.Node internalNode = metadata.getCached();
             if (internalNode == null) {
                 final Partition partition = factory.getPartitionByName(context
@@ -370,7 +370,7 @@ public class NodeAndLinkSupport {
         }
         final Enhancer e = new Enhancer();
         e.setSuperclass(clazz);
-        e.setInterfaces(new Class<?>[] {NodeMetadata.class});
+        e.setInterfaces(new Class<?>[] {PropertyContainerMetadata.class});
         e.setCallback(new PropertyContainerInterceptor(internalLink));
         return (T) e.create(new Class[0], new Object[0]);
     }
@@ -391,6 +391,8 @@ public class NodeAndLinkSupport {
 
         private WeakReference<org.openspotlight.storage.domain.Link> cachedEntry;
 
+        private final Class<? extends Link>                          linkType;
+
         public LinkImpl(final String id, final String linkName,
                         final Class<? extends Link> linkType,
                         final Map<String, Class<? extends Serializable>> propertyTypes,
@@ -402,6 +404,7 @@ public class NodeAndLinkSupport {
                 initialWeigthValue, weightValue);
             sides[SOURCE] = source;
             sides[TARGET] = target;
+            this.linkType = linkType;
 
         }
 
@@ -577,6 +580,11 @@ public class NodeAndLinkSupport {
             return getId().compareTo(o.getId());
         }
 
+        @Override
+        public Class<? extends Link> getLinkType() {
+            return linkType;
+        }
+
     }
 
     private static class PropertyContainerImpl implements Element {
@@ -750,7 +758,7 @@ public class NodeAndLinkSupport {
 
     }
 
-    private static class NodeImpl extends Node implements NodeMetadata {
+    private static class NodeImpl extends Node implements PropertyContainerMetadata<org.openspotlight.storage.domain.Node>  {
 
         private final PropertyContainerImpl propertyContainerImpl;
 
