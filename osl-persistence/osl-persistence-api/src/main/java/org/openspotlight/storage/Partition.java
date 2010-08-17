@@ -54,5 +54,4 @@ package org.openspotlight.storage;
  */
 public interface Partition {
     String getPartitionName();
-
 }

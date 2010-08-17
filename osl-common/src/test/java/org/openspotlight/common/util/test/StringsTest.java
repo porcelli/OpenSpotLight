@@ -47,7 +47,6 @@
  * Boston, MA  02110-1301  USA
  */
 
-
 package org.openspotlight.common.util.test;
 
 import static org.hamcrest.core.Is.is;

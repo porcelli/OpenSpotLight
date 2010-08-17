@@ -327,7 +327,7 @@ public final class LazyProperty<T> implements Serializable {
 
     }
 
-    private NodeKey                  parentKey;
+    private NodeKey                    parentKey;
 
     private String                     propertyName;
 

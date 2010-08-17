@@ -169,7 +169,7 @@ public class CriteriaImpl implements Criteria {
 
         private final NodeKey value;
 
-        private final String    nodeEntryName;
+        private final String  nodeEntryName;
 
         @Override
         public NodeKey getValue() {
@@ -216,7 +216,7 @@ public class CriteriaImpl implements Criteria {
 
         private final CompositeKey value;
 
-        private final String   nodeEntryName;
+        private final String       nodeEntryName;
 
         @Override
         public CompositeKey getValue() {
@@ -495,9 +495,9 @@ public class CriteriaImpl implements Criteria {
 
         private String          transientPropertyName;
 
-        private NodeKey       transientUniqueKey;
+        private NodeKey         transientUniqueKey;
 
-        private CompositeKey        transientLocalKey;
+        private CompositeKey    transientLocalKey;
 
         private String          transientPropertyValue;
 

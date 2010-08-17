@@ -47,7 +47,6 @@
  * Boston, MA  02110-1301  USA
  */
 
-
 package org.openspotlight.common.util;
 
 import static org.apache.commons.codec.binary.Base64.decodeBase64;

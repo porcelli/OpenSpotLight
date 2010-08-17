@@ -47,7 +47,6 @@
  * Boston, MA  02110-1301  USA
  */
 
-
 package org.openspotlight.storage.domain;
 
 import org.openspotlight.storage.StorageSession;

@@ -47,7 +47,6 @@
  * Boston, MA  02110-1301  USA
  */
 
-
 package org.openspotlight.storage.domain.node;
 
 import static com.google.common.collect.Maps.newHashMap;
