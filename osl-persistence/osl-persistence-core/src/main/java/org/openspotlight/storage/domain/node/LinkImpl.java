@@ -10,20 +10,20 @@ public class LinkImpl extends PropertyContainerImpl implements
 
     private static final long serialVersionUID = -3462836679437486046L;
 
-    public LinkImpl(final String linkName, final Node origin,
+    public LinkImpl(final String linkType, final Node origin,
                     final Node target, final boolean resetTimeout) {
         super(resetTimeout);
-        this.linkName = linkName;
+        this.linkType = linkType;
         this.origin = origin;
         this.target = target;
         originPartition = origin.getPartition();
         linkId = StringIDSupport.getLinkKeyAsString(originPartition,
-                linkName, origin, target);
+                linkType, origin, target);
     }
 
     private final String    linkId;
 
-    private final String    linkName;
+    private final String    linkType;
 
     private final Node      origin;
 
@@ -37,8 +37,8 @@ public class LinkImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public String getLinkName() {
-        return linkName;
+    public String getLinkType() {
+        return linkType;
     }
 
     @Override

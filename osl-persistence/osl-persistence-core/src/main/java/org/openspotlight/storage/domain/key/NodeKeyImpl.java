@@ -47,7 +47,7 @@ public class NodeKeyImpl implements NodeKey {
 
     @Override
     public String toString() {
-        return "STUniqueKeyImpl{" +
+        return "NodeKeyImpl{" +
                 "keyAsString='" + getKeyAsString() + '\'' +
                 '}';
     }
@@ -83,7 +83,7 @@ public class NodeKeyImpl implements NodeKey {
     public String getKeyAsString() {
         String value = keyAsString;
         if (value == null) {
-            value = StringIDSupport.getUniqueKeyAsStringHash(this);
+            value = StringIDSupport.getNodeKeyAsStringHash(this);
             keyAsString = value;
         }
         return value;
@@ -95,7 +95,7 @@ public class NodeKeyImpl implements NodeKey {
     }
 
     @Override
-    public CompositeKey getLocalKey() {
+    public CompositeKey getCompositeKey() {
         return localKey;
     }
 
@@ -135,7 +135,7 @@ public class NodeKeyImpl implements NodeKey {
         if (this == null && that == null) { return 0; }
         if (this != null && that == null) { return 1; }
         if (this == null && that != null) { return -1; }
-        final int result = getLocalKey().compareTo(that.getLocalKey());
+        final int result = getCompositeKey().compareTo(that.getCompositeKey());
         return result;
 
     }
@@ -150,8 +150,8 @@ public class NodeKeyImpl implements NodeKey {
             if (nodeEntryName == null) { throw new IllegalArgumentException(); }
             final Set<String> names = newHashSet();
             for (final SimpleKey entry: entries) {
-                if (names.contains(entry.getPropertyName())) { throw new IllegalStateException("duplicated entry name"); }
-                names.add(entry.getPropertyName());
+                if (names.contains(entry.getKeyName())) { throw new IllegalStateException("duplicated entry name"); }
+                names.add(entry.getKeyName());
             }
             entryNames = ImmutableSet.copyOf(names);
             final List<SimpleKey> tempEntries = new ArrayList<SimpleKey>(entries);
@@ -170,19 +170,19 @@ public class NodeKeyImpl implements NodeKey {
         private final Set<String>    entryNames;
 
         @Override
-        public Set<String> getEntryNames() {
+        public Set<String> getKeyNames() {
             return entryNames;
         }
 
         private final String nodeEntryName;
 
         @Override
-        public Set<SimpleKey> getEntries() {
+        public Set<SimpleKey> getKeys() {
             return entries;
         }
 
         @Override
-        public String getNodeEntryName() {
+        public String getNodeName() {
             return nodeEntryName;
         }
 
@@ -192,7 +192,7 @@ public class NodeKeyImpl implements NodeKey {
         public String getKeyAsString() {
             String value = keyAsString;
             if (value == null) {
-                value = StringIDSupport.getLocalKeyAsStringHash(this);
+                value = StringIDSupport.getCompositeKeyAsStringHash(this);
                 keyAsString = value;
             }
             return value;
@@ -219,10 +219,10 @@ public class NodeKeyImpl implements NodeKey {
 
         @Override
         public int compareTo(final CompositeKey o) {
-            int result = getNodeEntryName().compareTo(o.getNodeEntryName());
+            int result = getNodeName().compareTo(o.getNodeName());
             if (result != 0) { return result; }
-            final Iterator<SimpleKey> thisIt = getEntries().iterator();
-            final Iterator<SimpleKey> thatIt = o.getEntries().iterator();
+            final Iterator<SimpleKey> thisIt = getKeys().iterator();
+            final Iterator<SimpleKey> thatIt = o.getKeys().iterator();
             while (true) {
                 final boolean thisHasNext = thisIt.hasNext();
                 final boolean thatHasNext = thatIt.hasNext();
@@ -240,13 +240,13 @@ public class NodeKeyImpl implements NodeKey {
             }
         }
 
-        public static class KeyImpl implements SimpleKey {
+        public static class SimpleKeyImpl implements SimpleKey {
 
             private static final long serialVersionUID = -1370685091918627295L;
 
             private final int         hashCode;
 
-            public KeyImpl(final String propertyName, final String value) {
+            public SimpleKeyImpl(final String propertyName, final String value) {
                 checkNotEmpty("propertyName", propertyName);
                 this.value = value;
                 this.propertyName = propertyName;
@@ -266,7 +266,7 @@ public class NodeKeyImpl implements NodeKey {
             }
 
             @Override
-            public String getPropertyName() {
+            public String getKeyName() {
                 return propertyName;
 
             }
@@ -276,7 +276,7 @@ public class NodeKeyImpl implements NodeKey {
                 if (this == o) { return true; }
                 if (o == null || getClass() != o.getClass()) { return false; }
 
-                final KeyImpl that = (KeyImpl) o;
+                final SimpleKeyImpl that = (SimpleKeyImpl) o;
                 if (hashCode != that.hashCode) { return false; }
 
                 if (propertyName != null ? !propertyName.equals(that.propertyName) : that.propertyName != null) { return false; }
@@ -292,13 +292,13 @@ public class NodeKeyImpl implements NodeKey {
 
             @Override
             public int compareTo(final SimpleKey o) {
-                final int result = propertyName.compareTo(o.getPropertyName());
+                final int result = propertyName.compareTo(o.getKeyName());
                 return result;
             }
 
             @Override
             public String toString() {
-                return "STKeyEntryImpl{" +
+                return "SimpleKeyImpl{" +
                         ", value=" + value +
                         ", propertyName='" + propertyName + '\'' +
                         '}';

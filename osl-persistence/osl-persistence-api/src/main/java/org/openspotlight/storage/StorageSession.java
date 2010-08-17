@@ -39,19 +39,19 @@ public interface StorageSession {
 
     interface PartitionMethods extends NodeFactory {
 
-        Iterable<String> getAllNodeNames();
+        Iterable<String> getAllNodeTypes();
 
-        UniqueKeyBuilder createKey(String nodeEntryName);
+        NodeKeyBuilder createKey(String nodeType);
 
         Iterable<Node> findByCriteria(Criteria criteria);
 
-        Iterable<Node> findNamed(String nodeEntryName);
+        Iterable<Node> findByType(String nodeType);
 
         Node findUniqueByCriteria(Criteria criteria);
 
         public CriteriaBuilder createCriteria();
 
-        NodeBuilder createWithName(String name);
+        NodeBuilder createWithType(String nodeType);
 
         NodeKey createNewSimpleKey(String... nodePaths);
 
@@ -61,8 +61,7 @@ public interface StorageSession {
 
     Node findNodeByStringId(String idAsString);
 
-    void removeNode(
-                     org.openspotlight.storage.domain.Node stNodeEntry);
+    void removeNode(Node stNodeEntry);
 
     static enum FlushMode {
         AUTO,
@@ -71,15 +70,15 @@ public interface StorageSession {
 
     FlushMode getFlushMode();
 
-    interface UniqueKeyBuilder {
+    interface NodeKeyBuilder {
 
-        UniqueKeyBuilder withEntry(String propertyName,
+        NodeKeyBuilder withSimpleKey(String keyName,
                                       String value);
 
-        UniqueKeyBuilder withParent(Partition partition,
-                                       String nodeEntryName);
+        NodeKeyBuilder withParent(Partition partition,
+                                       String nodeType);
 
-        UniqueKeyBuilder withParent(String parentId);
+        NodeKeyBuilder withParent(String parentId);
 
         NodeKey andCreate();
 
@@ -102,7 +101,7 @@ public interface StorageSession {
     Iterable<Link> findLinks(Node origin);
 
     Iterable<Link> findLinks(Node origin,
-                                     String name);
+                                     String type);
 
     Link getLink(Node origin,
                          Node destiny,

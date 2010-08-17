@@ -43,15 +43,15 @@ public class NodeImpl extends PropertyContainerImpl implements
     @Override
     protected void verifyBeforeSet(
                                    final String propertyName) {
-        if (uniqueKey.getLocalKey().getEntryNames().contains(propertyName)) { throw new IllegalStateException(); }
+        if (uniqueKey.getCompositeKey().getKeyNames().contains(propertyName)) { throw new IllegalStateException(); }
     }
 
     public NodeImpl(final NodeKey uniqueKey, final Set<Property> properties,
                     final boolean resetTimeout)
         throws IllegalArgumentException {
         super(resetTimeout);
-        nodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
-        if (nodeEntryName == null) { throw new IllegalArgumentException(); }
+        nodeType = uniqueKey.getCompositeKey().getNodeName();
+        if (nodeType == null) { throw new IllegalArgumentException(); }
         this.uniqueKey = uniqueKey;
         propertiesByName = newHashMap();
         if (properties != null) {
@@ -78,17 +78,17 @@ public class NodeImpl extends PropertyContainerImpl implements
 
     private final Map<String, Property>               propertiesByName;
 
-    private final String                              nodeEntryName;
+    private final String                              nodeType;
 
-    private final NodeKey                           uniqueKey;
+    private final NodeKey                             uniqueKey;
 
     @Override
-    public String getNodeEntryName() {
-        return nodeEntryName;
+    public String getType() {
+        return nodeType;
     }
 
     @Override
-    public NodeKey getUniqueKey() {
+    public NodeKey getKey() {
         return uniqueKey;
     }
 
@@ -106,16 +106,16 @@ public class NodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public Iterable<Node> getChildrenNamed(
-                                           final Partition partition,
-                                           final StorageSession session,
-                                           final String name) {
+    public Iterable<Node> getChildrenByType(
+                                            final Partition partition,
+                                            final StorageSession session,
+                                            final String type) {
 
         Iterable<Node> thisChildren = null;
-        if (namedChildrenWeakReference.containsValue(name)) {
+        if (namedChildrenWeakReference.containsValue(type)) {
             for (final Map.Entry<Iterable<Node>, String> entry: namedChildrenWeakReference
                 .entrySet()) {
-                if (name.equals(entry.getValue())) {
+                if (type.equals(entry.getValue())) {
                     thisChildren = entry.getKey();
                     break;
                 }
@@ -123,8 +123,8 @@ public class NodeImpl extends PropertyContainerImpl implements
         }
 
         if (thisChildren == null) {
-            thisChildren = getChildrenNamedForcingReload(partition, session,
-                name);
+            thisChildren = getChildrenByTypeForcingReload(partition, session,
+                type);
         }
         return thisChildren;
     }
@@ -141,15 +141,15 @@ public class NodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public Iterable<Node> getChildrenNamedForcingReload(
-                                                        final Partition partition,
-                                                        final StorageSession session,
-                                                        final String name) {
+    public Iterable<Node> getChildrenByTypeForcingReload(
+                                                         final Partition partition,
+                                                         final StorageSession session,
+                                                         final String type) {
         final Iterable<Node> children =
             ((AbstractStorageSession<?>) session)
-                .nodeEntryGetNamedChildren(
-                    partition, this, name);
-        namedChildrenWeakReference.put(children, name);
+                .nodeEntryGetChildrenByType(
+                    partition, this, type);
+        namedChildrenWeakReference.put(children, type);
         return children;
     }
 
@@ -172,10 +172,10 @@ public class NodeImpl extends PropertyContainerImpl implements
     }
 
     @Override
-    public NodeBuilder createWithName(
+    public NodeBuilder createWithType(
                                       final StorageSession session,
-                                      final String name) {
-        return ((AbstractStorageSession<?>) session.withPartition(partition)).nodeEntryCreateWithName(this, name);
+                                      final String type) {
+        return ((AbstractStorageSession<?>) session.withPartition(partition)).nodeEntryCreateWithType(this, type);
 
     }
 
@@ -187,15 +187,15 @@ public class NodeImpl extends PropertyContainerImpl implements
 
         final NodeImpl that = (NodeImpl) o;
 
-        if (nodeEntryName != null ? !nodeEntryName.equals(that.nodeEntryName)
-            : that.nodeEntryName != null) { return false; }
+        if (nodeType != null ? !nodeType.equals(that.nodeType)
+            : that.nodeType != null) { return false; }
         return !(uniqueKey != null ? !uniqueKey.equals(that.uniqueKey)
             : that.uniqueKey != null);
     }
 
     @Override
     public int hashCode() {
-        int result = nodeEntryName != null ? nodeEntryName.hashCode() : 0;
+        int result = nodeType != null ? nodeType.hashCode() : 0;
         result = 31 * result + (uniqueKey != null ? uniqueKey.hashCode() : 0);
         return result;
     }
@@ -203,17 +203,17 @@ public class NodeImpl extends PropertyContainerImpl implements
     @Override
     public String toString() {
         return "STNodeEntryImpl{" + "partition=" + partition
-            + ", nodeEntryName='" + nodeEntryName + '\'' + ", uniqueKey="
+            + ", nodeEntryName='" + nodeType + '\'' + ", uniqueKey="
             + uniqueKey + '}';
     }
 
     @Override
     public String getKeyAsString() {
-        return getUniqueKey().getKeyAsString();
+        return getKey().getKeyAsString();
     }
 
     @Override
     public Partition getPartition() {
-        return getUniqueKey().getPartition();
+        return getKey().getPartition();
     }
 }

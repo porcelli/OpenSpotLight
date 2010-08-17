@@ -706,8 +706,8 @@ public class SimplePersistSupportTest {
         final Node newNode1 = simplePersist.convertBeanToNode(object1);
         final Node newNode2 = simplePersist.convertBeanToNode(object2);
         final Node newNode3 = simplePersist.convertBeanToNode(object3);
-        assertThat(newNode1.getUniqueKey(), Is.is(IsNot.not(newNode2.getUniqueKey())));
-        assertThat(newNode1.getUniqueKey(), Is.is(newNode3.getUniqueKey()));
+        assertThat(newNode1.getKey(), Is.is(IsNot.not(newNode2.getKey())));
+        assertThat(newNode1.getKey(), Is.is(newNode3.getKey()));
     }
 
     @Test
@@ -1017,7 +1017,7 @@ public class SimplePersistSupportTest {
         propertyObj.setValue(5);
         levelTwo.setPropertyObj(propertyObj);
         final Node newnode = simplePersist.convertBeanToNode(parentNode, levelTwo);
-        System.err.println(">>> " + newnode.getUniqueKey().getKeyAsString());
+        System.err.println(">>> " + newnode.getKey().getKeyAsString());
         System.err.println(">>> " + newnode.getParent(session));
         System.err.println(">>> " + newnode.getParent(session).getParent(session));
 

@@ -10,7 +10,7 @@ public interface Criteria {
 
     Partition getPartition();
 
-    String getNodeName();
+    String getNodeType();
 
     Set<CriteriaItem> getCriteriaItems();
 
@@ -20,7 +20,7 @@ public interface Criteria {
 
     public interface CriteriaItem {
 
-        String getNodeEntryName();
+        String getNodeType();
 
         public interface PropertyCriteriaItem extends CriteriaItem {
 
@@ -30,7 +30,7 @@ public interface Criteria {
 
         }
 
-        public interface LocalKeyCriteriaItem extends CriteriaItem {
+        public interface CompisiteKeyCriteriaItem extends CriteriaItem {
             CompositeKey getValue();
         }
 
@@ -46,12 +46,12 @@ public interface Criteria {
             String getPropertyName();
         }
 
-        public interface UniqueKeyAsStringCriteriaItem extends CriteriaItem {
+        public interface NodeKeyAsStringCriteriaItem extends CriteriaItem {
             String getKeyAsString();
 
         }
 
-        public interface UniqueKeyCriteriaItem extends CriteriaItem {
+        public interface NodeKeyCriteriaItem extends CriteriaItem {
             NodeKey getValue();
 
         }

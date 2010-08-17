@@ -49,13 +49,13 @@ import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.storage.AbstractStorageSession;
 import org.openspotlight.storage.Criteria;
 import org.openspotlight.storage.Criteria.CriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.LocalKeyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.CompisiteKeyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyContainsString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyEndsWithString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
-import org.openspotlight.storage.Criteria.CriteriaItem.UniqueKeyAsStringCriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.UniqueKeyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
@@ -91,7 +91,7 @@ import com.mongodb.gridfs.GridFSInputFile;
  */
 public class MongoStorageSessionImpl extends
         AbstractStorageSession<DBObject> {
-    private final LinkedList<Pair<NodeKey, DBObject>>     objectCache      = newLinkedList();
+    private final LinkedList<Pair<NodeKey, DBObject>>       objectCache      = newLinkedList();
     private final int                                       maxCacheSize;
     private static final String                             NULL_VALUE       = "!!!NULL!!!";
     private final Multimap<Partition, Pair<Node, DBObject>> transientObjects = HashMultimap
@@ -162,7 +162,7 @@ public class MongoStorageSessionImpl extends
                                                                  .get(partition)) {
                 final Node n = p.getK1();
                 final DBCollection coll = getCachedCollection(partition, n
-                                                                    .getNodeEntryName());
+                                                                    .getType());
                 coll.save(p.getK2());
             }
         }
@@ -196,8 +196,8 @@ public class MongoStorageSessionImpl extends
         }
         NodeKey key;
         String collectionName;
-        key = node.getUniqueKey();
-        collectionName = node.getNodeEntryName();
+        key = node.getKey();
+        collectionName = node.getType();
 
         final Pair<NodeKey, DBObject> p1 = newPair(key, null,
                                                Pair.PairEqualsMode.K1);
@@ -230,9 +230,9 @@ public class MongoStorageSessionImpl extends
         byte[] value = null;
         if (stProperty.isKey()) {
             final Node parent = (Node) stProperty.getParent();
-            for (final SimpleKey e: parent.getUniqueKey().getLocalKey()
-                               .getEntries()) {
-                if (e.getPropertyName().equals(stProperty.getPropertyName())) {
+            for (final SimpleKey e: parent.getKey().getCompositeKey()
+                               .getKeys()) {
+                if (e.getKeyName().equals(stProperty.getPropertyName())) {
                     value = e.getValue() != null ? e.getValue().getBytes()
                             : null;
                     if (NULL_VALUE.equals(new String(value))) {
@@ -314,25 +314,25 @@ public class MongoStorageSessionImpl extends
                 criteriaAsObj.put(INDEXED + "." + p.getPropertyName(), Pattern
                                                                               .compile("(.*)" + beforeRegex(p.getValue()) + "$"));
             }
-            if (c instanceof UniqueKeyCriteriaItem) {
-                final UniqueKeyCriteriaItem uniqueCriteria = (UniqueKeyCriteriaItem) c;
+            if (c instanceof NodeKeyCriteriaItem) {
+                final NodeKeyCriteriaItem uniqueCriteria = (NodeKeyCriteriaItem) c;
                 criteriaAsObj.put(ID, uniqueCriteria.getValue()
                                                     .getKeyAsString());
             }
-            if (c instanceof UniqueKeyAsStringCriteriaItem) {
-                final UniqueKeyAsStringCriteriaItem uniqueCriteria = (UniqueKeyAsStringCriteriaItem) c;
+            if (c instanceof NodeKeyAsStringCriteriaItem) {
+                final NodeKeyAsStringCriteriaItem uniqueCriteria = (NodeKeyAsStringCriteriaItem) c;
                 criteriaAsObj.put(ID, uniqueCriteria.getKeyAsString());
             }
-            if (c instanceof LocalKeyCriteriaItem) {
-                final LocalKeyCriteriaItem uniqueCriteria = (LocalKeyCriteriaItem) c;
+            if (c instanceof CompisiteKeyCriteriaItem) {
+                final CompisiteKeyCriteriaItem uniqueCriteria = (CompisiteKeyCriteriaItem) c;
                 final String localHash = uniqueCriteria.getValue().getKeyAsString();
                 criteriaAsObj.put(LOCAL_ID, localHash);
             }
         }
 
         final ImmutableSet.Builder<String> nodeNamesBuilder = ImmutableSet.builder();
-        if (criteria.getNodeName() != null) {
-            nodeNamesBuilder.add(criteria.getNodeName());
+        if (criteria.getNodeType() != null) {
+            nodeNamesBuilder.add(criteria.getNodeType());
         } else {
             nodeNamesBuilder.addAll(getCachedDbForPartition(partition)
                                                                       .getCollectionNames());
@@ -365,33 +365,33 @@ public class MongoStorageSessionImpl extends
                                  final Partition partition,
                                  final Node entry)
         throws Exception {
-        reference.put(LOCAL_ID, entry.getUniqueKey().getLocalKey()
+        reference.put(LOCAL_ID, entry.getKey().getCompositeKey()
                                      .getKeyAsString());
-        ensureIndexed(partition, entry.getNodeEntryName(), null, LOCAL_ID, null);
+        ensureIndexed(partition, entry.getType(), null, LOCAL_ID, null);
 
-        final NodeKey uniqueId = entry.getUniqueKey();
+        final NodeKey uniqueId = entry.getKey();
         final String parentId = uniqueId.getParentKeyAsString();
         if (parentId != null) {
             reference.put(PARENT_ID, parentId);
         }
         final BasicDBObject key = new BasicDBObject();
         final List<String> keyNames = newArrayList();
-        for (final SimpleKey keyEntry: uniqueId.getLocalKey().getEntries()) {
-            keyNames.add(keyEntry.getPropertyName());
-            key.put(keyEntry.getPropertyName(),
+        for (final SimpleKey keyEntry: uniqueId.getCompositeKey().getKeys()) {
+            keyNames.add(keyEntry.getKeyName());
+            key.put(keyEntry.getKeyName(),
                     keyEntry.getValue() != null ? keyEntry.getValue()
                             : NULL_VALUE);
-            ensureIndexed(partition, entry.getNodeEntryName(), INDEXED,
-                          keyEntry.getPropertyName(), null);
+            ensureIndexed(partition, entry.getType(), INDEXED,
+                          keyEntry.getKeyName(), null);
 
         }
         reference.put(ID, uniqueId.getKeyAsString());
         reference.put(KEY_NAMES, keyNames);
         reference.put(INDEXED, key);
-        reference.put(ENTRY_NAME, uniqueId.getLocalKey().getNodeEntryName());
+        reference.put(ENTRY_NAME, uniqueId.getCompositeKey().getNodeName());
         if (FlushMode.AUTO.equals(getFlushMode())) {
             final DBCollection col = getCachedCollection(partition, entry
-                                                                   .getNodeEntryName());
+                                                                   .getType());
             col.save(reference);
         } else {
             final Pair<Node, DBObject> p = Pair
@@ -408,19 +408,19 @@ public class MongoStorageSessionImpl extends
                                      final Node entry)
             throws Exception {
         final DBCollection collection = getCachedCollection(partition, entry
-                                                                      .getNodeEntryName());
-        collection.remove(new BasicDBObject(ID, entry.getUniqueKey()
+                                                                      .getType());
+        collection.remove(new BasicDBObject(ID, entry.getKey()
                                                      .getKeyAsString()));
     }
 
     @Override
-    protected Iterable<Node> internalNodeEntryGetNamedChildren(
+    protected Iterable<Node> internalNodeEntryGetChildrenByType(
                                                                        final Partition initialPartition,
                                                                        final Node stNodeEntry,
-                                                                       final String name)
+                                                                       final String type)
             throws Exception {
         if (stNodeEntry == null) { return emptySet(); }
-        return internalGetChildren(initialPartition, stNodeEntry, name);
+        return internalGetChildren(initialPartition, stNodeEntry, type);
     }
 
     private Iterable<Node> internalGetChildren(
@@ -429,7 +429,7 @@ public class MongoStorageSessionImpl extends
                                                        final String name)
             throws Exception {
         final BasicDBObject baseDbObj = new BasicDBObject();
-        baseDbObj.put(PARENT_ID, stNodeEntry.getUniqueKey().getKeyAsString());
+        baseDbObj.put(PARENT_ID, stNodeEntry.getKey().getKeyAsString());
         final ImmutableSet.Builder<String> names = ImmutableSet.builder();
         if (name != null) {
             names.add(name);
@@ -474,12 +474,12 @@ public class MongoStorageSessionImpl extends
             reference = createNodeReferenceIfNecessary(partition,
                                                        (Node) dirtyProperty.getParent());
             collectionName = ((Node) dirtyProperty.getParent())
-                                                                     .getNodeEntryName();
+                                                                     .getType();
         } else if (dirtyProperty.getParent() instanceof Link) {
             reference = createLinkReferenceIfNecessary(partition,
                                                        (Link) dirtyProperty.getParent());
             collectionName = ((Link) dirtyProperty.getParent())
-                                                                     .getOrigin().getNodeEntryName();
+                                                                     .getOrigin().getType();
 
         } else {
             throw new IllegalStateException();
@@ -522,7 +522,7 @@ public class MongoStorageSessionImpl extends
             }
 
             if (FlushMode.AUTO.equals(getFlushMode())) {
-                getCachedCollection(partition, nodeEntry.getNodeEntryName())
+                getCachedCollection(partition, nodeEntry.getType())
                                                                             .save(reference);
             } else {
                 final Pair<Node, DBObject> p = newPair(nodeEntry, reference,
@@ -566,7 +566,7 @@ public class MongoStorageSessionImpl extends
         }
 
         final String key = partition.getPartitionName() + _
-                     + nodeEntry.getUniqueKey().getKeyAsString() + _
+                     + nodeEntry.getKey().getKeyAsString() + _
                      + dirtyProperty.getPropertyName();
         return key;
     }
@@ -617,7 +617,7 @@ public class MongoStorageSessionImpl extends
     protected Node internalNodeEntryGetParent(final Partition partition,
                                                       final Node stNodeEntry)
         throws Exception {
-        final String parentKey = stNodeEntry.getUniqueKey().getParentKeyAsString();
+        final String parentKey = stNodeEntry.getKey().getParentKeyAsString();
         if (parentKey == null) { return null; }
         final Partition parentPartition = getPartition(parentKey, partitionFactory);
         final String parentName = getNodeEntryName(parentKey);
@@ -630,10 +630,10 @@ public class MongoStorageSessionImpl extends
     }
 
     @Override
-    protected Iterable<Node> internalFindNamed(final Partition partition,
-                                                       final String nodeEntryName)
+    protected Iterable<Node> internalFindByType(final Partition partition,
+                                                       final String nodeType)
         throws Exception {
-        final DBCursor cursor = getCachedCollection(partition, nodeEntryName).find();
+        final DBCursor cursor = getCachedCollection(partition, nodeType).find();
         final ImmutableSet.Builder<Node> builder = ImmutableSet.builder();
         while (cursor.hasNext()) {
             builder.add(convertToNode(partition, cursor.next()));
@@ -647,7 +647,7 @@ public class MongoStorageSessionImpl extends
         final DBObject keyAsDbObj = (DBObject) dbObject.get(INDEXED);
         final List<String> keyNames = (List<String>) dbObject.get(KEY_NAMES);
 
-        final UniqueKeyBuilder keyBuilder = withPartition(partition)
+        final NodeKeyBuilder keyBuilder = withPartition(partition)
                                           .createKey((String) dbObject.get(ENTRY_NAME));
         for (final String s: keyAsDbObj.keySet()) {
             if (keyNames.contains(s)) {
@@ -655,7 +655,7 @@ public class MongoStorageSessionImpl extends
                 if (NULL_VALUE.equals(valueAsString)) {
                     valueAsString = null;
                 }
-                keyBuilder.withEntry(s, valueAsString);
+                keyBuilder.withSimpleKey(s, valueAsString);
             }
         }
         final String parentId = (String) dbObject.get(PARENT_ID);
@@ -683,7 +683,7 @@ public class MongoStorageSessionImpl extends
     }
 
     @Override
-    protected Iterable<String> internalGetAllNodeNames(final Partition partition) {
+    protected Iterable<String> internalGetAllNodeTypes(final Partition partition) {
         final HashSet<String> set = new HashSet<String>();
         set.addAll(getCachedDbForPartition(partition).getCollectionNames());
         set.remove("system.indexes");
@@ -844,10 +844,10 @@ public class MongoStorageSessionImpl extends
         if (propertyContainer instanceof Node) {
             final Node nodeEntry = (Node) propertyContainer;
             final ImmutableSet.Builder<Property> builder = ImmutableSet.builder();
-            for (final SimpleKey entry: nodeEntry.getUniqueKey().getLocalKey()
-                                      .getEntries()) {
+            for (final SimpleKey entry: nodeEntry.getKey().getCompositeKey()
+                                      .getKeys()) {
                 final PropertyImpl p = PropertyImpl.createKey(entry
-                                                             .getPropertyName(), propertyContainer);
+                                                             .getKeyName(), propertyContainer);
                 (p).setStringValueOnLoad(this,
                                                        entry.getValue());
                 builder.add(p);
@@ -938,7 +938,7 @@ public class MongoStorageSessionImpl extends
         if (getFlushMode().equals(FlushMode.AUTO)) {
             final DBObject nodeRef = createNodeReferenceIfNecessary(partition, origin);
             final DBCollection col = getCachedCollection(partition, origin
-                                                                    .getNodeEntryName());
+                                                                    .getType());
             col.save(nodeRef);
 
         }

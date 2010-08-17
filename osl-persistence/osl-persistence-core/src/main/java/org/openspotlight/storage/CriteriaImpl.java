@@ -4,13 +4,13 @@ import static com.google.common.collect.Sets.newLinkedHashSet;
 
 import java.util.Set;
 
-import org.openspotlight.storage.Criteria.CriteriaItem.LocalKeyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.CompisiteKeyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyContainsString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyEndsWithString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
-import org.openspotlight.storage.Criteria.CriteriaItem.UniqueKeyAsStringCriteriaItem;
-import org.openspotlight.storage.Criteria.CriteriaItem.UniqueKeyCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
+import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
 import org.openspotlight.storage.domain.Node;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
@@ -61,7 +61,7 @@ public class CriteriaImpl implements Criteria {
     private final Set<CriteriaItem> criteriaItems;
 
     @Override
-    public String getNodeName() {
+    public String getNodeType() {
         return nodeName;
     }
 
@@ -88,7 +88,7 @@ public class CriteriaImpl implements Criteria {
     }
 
     private static class UniqueKeyAsStringCriteriaItemImpl implements
-        UniqueKeyAsStringCriteriaItem {
+        NodeKeyAsStringCriteriaItem {
 
         public UniqueKeyAsStringCriteriaItemImpl(final String keyAsString) {
             this.keyAsString = keyAsString;
@@ -105,14 +105,14 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public String getNodeEntryName() {
+        public String getNodeType() {
             return nodeEntryName;
         }
 
     }
 
     private static class UniqueKeyCriteriaItemImpl implements
-        UniqueKeyCriteriaItem {
+        NodeKeyCriteriaItem {
         private UniqueKeyCriteriaItemImpl(final NodeKey value,
                                           final String nodeEntryName) {
             this.value = value;
@@ -129,7 +129,7 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public String getNodeEntryName() {
+        public String getNodeType() {
             return nodeEntryName;
         }
 
@@ -159,7 +159,7 @@ public class CriteriaImpl implements Criteria {
     }
 
     private static class LocalKeyCriteriaItemImpl implements
-        LocalKeyCriteriaItem {
+        CompisiteKeyCriteriaItem {
         private LocalKeyCriteriaItemImpl(final CompositeKey value,
                                          final String nodeEntryName) {
             this.value = value;
@@ -176,7 +176,7 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public String getNodeEntryName() {
+        public String getNodeType() {
             return nodeEntryName;
         }
 
@@ -231,7 +231,7 @@ public class CriteriaImpl implements Criteria {
         }
 
         @Override
-        public String getNodeEntryName() {
+        public String getNodeType() {
             return nodeEntryName;
         }
 
@@ -281,7 +281,7 @@ public class CriteriaImpl implements Criteria {
         private final String value;
 
         @Override
-        public String getNodeEntryName() {
+        public String getNodeType() {
             return nodeEntryName;
         }
 
@@ -339,7 +339,7 @@ public class CriteriaImpl implements Criteria {
         private final String value;
 
         @Override
-        public String getNodeEntryName() {
+        public String getNodeType() {
             return nodeEntryName;
         }
 
@@ -398,7 +398,7 @@ public class CriteriaImpl implements Criteria {
         private final String value;
 
         @Override
-        public String getNodeEntryName() {
+        public String getNodeType() {
             return nodeEntryName;
         }
 
@@ -620,7 +620,7 @@ public class CriteriaImpl implements Criteria {
             breakIfNotNull(transientLocalKey);
 
             transientLocalKey = localKey;
-            transientNodeEntryName = localKey.getNodeEntryName();
+            transientNodeEntryName = localKey.getNodeName();
             and();
             return this;
         }
@@ -636,7 +636,7 @@ public class CriteriaImpl implements Criteria {
             breakIfNotNull(transientUniqueKey);
 
             transientUniqueKey = uniqueKey;
-            transientNodeEntryName = uniqueKey.getLocalKey().getNodeEntryName();
+            transientNodeEntryName = uniqueKey.getCompositeKey().getNodeName();
             and();
             return this;
         }

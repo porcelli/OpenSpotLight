@@ -103,7 +103,7 @@ public class GraphReaderImpl implements GraphReader {
         }
         Iterable<org.openspotlight.storage.domain.Node> children;
         if (clazz != null) {
-            children = parentStNode.getChildrenNamed(partition, session, clazz
+            children = parentStNode.getChildrenByType(partition, session, clazz
                     .getName());
         } else {
             children = parentStNode.getChildren(partition, session);
@@ -114,7 +114,7 @@ public class GraphReaderImpl implements GraphReader {
                     @Override
                     public Node convert(final org.openspotlight.storage.domain.Node o)
                         throws Exception {
-                        return convertToSLNode(node.getId(), o.getUniqueKey()
+                        return convertToSLNode(node.getId(), o.getKey()
                                 .getPartition().getPartitionName(), o, false);
                     }
                 }).withItems(children).withReferee(
@@ -240,7 +240,7 @@ public class GraphReaderImpl implements GraphReader {
                 .andFindUnique(session);
         if (parentStNode == null) { return null; }
         return SLCollections.iterableOf(convertToSLNode(parentStNode
-                .getUniqueKey().getParentKeyAsString(), contextId,
+                .getKey().getParentKeyAsString(), contextId,
                 parentStNode, false), null);
 
     }
@@ -255,7 +255,7 @@ public class GraphReaderImpl implements GraphReader {
                 .buildCriteria().andFindUnique(session);
 
         if (parentStNode == null) { return null; }
-        return convertToSLNode(parentStNode.getUniqueKey()
+        return convertToSLNode(parentStNode.getKey()
                 .getParentKeyAsString(), node.getContextId(), parentStNode,
                 false);
 
@@ -421,9 +421,9 @@ public class GraphReaderImpl implements GraphReader {
                                 @Override
                                 public Node convert(final org.openspotlight.storage.domain.Node o)
                                         throws Exception {
-                                    return convertToSLNode(o.getUniqueKey()
+                                    return convertToSLNode(o.getKey()
                                             .getParentKeyAsString(), o
-                                            .getUniqueKey().getPartition()
+                                            .getKey().getPartition()
                                             .getPartitionName(), o, false);
                                 }
                             }).withItems(results).andBuild());
@@ -473,7 +473,7 @@ public class GraphReaderImpl implements GraphReader {
                 : null;
         if (typesToFind == null) {
             final Iterable<String> stNodeNames = session.withPartition(partition)
-                    .getAllNodeNames();
+                    .getAllNodeTypes();
             final Builder<Class<?>> builder = ImmutableSet.builder();
             for (final String s: stNodeNames) {
                 try {
@@ -620,8 +620,8 @@ public class GraphReaderImpl implements GraphReader {
     }
 
     private Node findNode(final org.openspotlight.storage.domain.Node o) {
-        return convertToSLNode(o.getUniqueKey().getParentKeyAsString(), o
-                .getUniqueKey().getPartition().getPartitionName(), o, false);
+        return convertToSLNode(o.getKey().getParentKeyAsString(), o
+                .getKey().getPartition().getPartitionName(), o, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -663,7 +663,7 @@ public class GraphReaderImpl implements GraphReader {
                             public Link convert(final org.openspotlight.storage.domain.Link o)
                                 throws Exception {
                                 final Class<? extends Link> linkType = (Class<? extends Link>) Class
-                                        .forName(o.getLinkName());
+                                        .forName(o.getLinkType());
                                 final Node origin = findNode(o.getOrigin());
                                 final Node target = findNode(o.getTarget());
                                 final Link result = NodeAndLinkSupport.createLink(
@@ -677,7 +677,7 @@ public class GraphReaderImpl implements GraphReader {
                     public boolean canAcceptAsNewItem(final org.openspotlight.storage.domain.Link o)
                             throws Exception {
                         try {
-                            final Class<?> clazz = Class.forName(o.getLinkName());
+                            final Class<?> clazz = Class.forName(o.getLinkType());
                             if (!Link.class.isAssignableFrom(clazz)) {
                                 return false;
                             }
@@ -702,7 +702,7 @@ public class GraphReaderImpl implements GraphReader {
                 .andFindUnique(session);
         if (parentStNode == null) { return null; }
         return (Node) SLCollections.iterableOf(convertToSLNode(parentStNode
-                .getUniqueKey().getParentKeyAsString(), contextId,
+                .getKey().getParentKeyAsString(), contextId,
                 parentStNode, false), null);
 
     }
