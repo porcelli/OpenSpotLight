@@ -422,13 +422,18 @@ public class NodeAndLinkSupport {
         @Override
         public boolean equals(
                               final Object obj) {
-            if(!obj instanceof Link){
-                
+            if(!(obj instanceof Link)){
+                return false;
             }
-            
-            return propertyContainerImpl.equals(obj);
+            Link that = (Link)obj;
+            return getId().equals(that.getId());
         }
 
+        @Override
+        public int hashCode(){
+            return getId().hashCode();
+        }
+        
         @Override
         public String getId() {
             return propertyContainerImpl.getId();
@@ -489,10 +494,6 @@ public class NodeAndLinkSupport {
             return propertyContainerImpl.getWeightValue();
         }
 
-        @Override
-        public int hashCode() {
-            return propertyContainerImpl.hashCode();
-        }
 
         @Override
         public boolean hasProperty(
