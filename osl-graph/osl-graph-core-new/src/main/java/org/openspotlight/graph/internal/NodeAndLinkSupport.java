@@ -384,8 +384,7 @@ public class NodeAndLinkSupport {
             weigthValue, origin, target, LinkDirection.BIDIRECTIONAL
             .equals(type));
         if (linkEntry != null) {
-            internalLink.cachedEntry = new WeakReference<org.openspotlight.storage.domain.Link>(linkEntry);
-
+            internalLink.setCached(linkEntry);
         }
         final Enhancer e = new Enhancer();
         e.setSuperclass(clazz);
@@ -406,10 +405,10 @@ public class NodeAndLinkSupport {
 
     }
 
-    private static class LinkImpl extends Link {
+    private static class LinkImpl extends Link implements PropertyContainerMetadata<org.openspotlight.storage.domain.Link> {
 
         private LinkDirection linkDirection = LinkDirection.UNIDIRECTIONAL;
-        
+
         public LinkDirection getLinkDirection() {
             return linkDirection;
         }
@@ -615,6 +614,18 @@ public class NodeAndLinkSupport {
         @Override
         public Class<? extends Link> getLinkType() {
             return linkType;
+        }
+
+        @Override
+        public org.openspotlight.storage.domain.Link getCached() {
+            return this.cachedEntry != null ? cachedEntry.get() : null;
+        }
+
+        @Override
+        public void setCached(
+                              org.openspotlight.storage.domain.Link entry) {
+            cachedEntry = new WeakReference<org.openspotlight.storage.domain.Link>(entry);
+
         }
 
     }

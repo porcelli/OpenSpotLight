@@ -114,7 +114,7 @@ public abstract class AbstractGraphTest {
         if (firstRun) {
             injector = createInjector();
             final GraphSessionFactory sessionFactory = injector
-                    .getInstance(GraphSessionFactory.class);
+                .getInstance(GraphSessionFactory.class);
             simpleGraphSession = sessionFactory.openSimple();
             fullGraphSession = sessionFactory.openFull();
             firstRun = false;
@@ -142,11 +142,11 @@ public abstract class AbstractGraphTest {
         fullGraphSession.toServer().flush();
 
         final Iterable<JavaType> oneNode1 = simpleFromLocation.findNodesByName(
-                JavaType.class, nodeName, true, context1);
+            JavaType.class, nodeName, true, context1);
         final Iterable<JavaType> oneNode3 = simpleFromLocation.findNodesByName(
-                JavaType.class, nodeName, true, context1);
+            JavaType.class, nodeName, true, context1);
         final Iterable<JavaType> oneNode4 = simpleFromLocation.findNodesByName(
-                JavaType.class, nodeName, true, context1);
+            JavaType.class, nodeName, true, context1);
 
         final Iterator<JavaType> itOneNode1 = oneNode1.iterator();
         final Iterator<JavaType> itOneNode3 = oneNode3.iterator();
@@ -194,11 +194,11 @@ public abstract class AbstractGraphTest {
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
         final Iterable<Node> empty1 = simpleFromLocation.findNodesByName(
-                invalidNodeName, context1);
+            invalidNodeName, context1);
         final Iterable<JavaType> empty3 = simpleFromLocation.findNodesByName(
-                JavaType.class, invalidNodeName, true, context1);
+            JavaType.class, invalidNodeName, true, context1);
         final Iterable<JavaType> empty4 = simpleFromLocation.findNodesByName(
-                JavaType.class, invalidNodeName, true, context1);
+            JavaType.class, invalidNodeName, true, context1);
         final Iterator<Node> emptyIt1 = empty1.iterator();
         final Iterator<JavaType> emptyIt3 = empty3.iterator();
         final Iterator<JavaType> emptyIt4 = empty4.iterator();
@@ -210,7 +210,7 @@ public abstract class AbstractGraphTest {
 
     @Test
     public void shouldInsertAndFindOneNodeAndNotFindInvalidOne()
-            throws Exception {
+        throws Exception {
         final String nodeName = "nodeName";
         final String invalidNodeName = "invalidNodeName";
 
@@ -231,7 +231,7 @@ public abstract class AbstractGraphTest {
         fullGraphSession.toServer().flush();
 
         final Iterable<Node> oneNode1 = simpleFromLocation.findNodesByName(nodeName,
-                context1);
+            context1);
 
         final Iterator<Node> itOneNode1 = oneNode1.iterator();
 
@@ -249,7 +249,7 @@ public abstract class AbstractGraphTest {
         assertThat(simpleFromLocation.getContext(sameNode1), is(context1));
 
         final Iterable<Node> empty1 = simpleFromLocation.findNodesByName(
-                invalidNodeName, context1);
+            invalidNodeName, context1);
         final Iterator<Node> emptyIt1 = empty1.iterator();
         assertThat(emptyIt1.hasNext(), is(false));
 
@@ -264,37 +264,37 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaTypeClass rootClass1Node = writer.addNode(context1,
-                JavaTypeClass.class, rootClass1);
+            JavaTypeClass.class, rootClass1);
         final String child1 = "child1";
         final String child2 = "child2";
         final String child3 = "child3";
         final JavaMemberField child1Node = writer.addChildNode(rootClass1Node,
-                JavaMemberField.class, child1);
+            JavaMemberField.class, child1);
         assertThat(child1Node.getParentId(), is(rootClass1Node.getId()));
         final JavaMemberField child2Node = writer.addChildNode(rootClass1Node,
-                JavaMemberField.class, child2);
+            JavaMemberField.class, child2);
         assertThat(child2Node.getParentId(), is(rootClass1Node.getId()));
         final JavaTypeInterface child3Node = writer.addChildNode(rootClass1Node,
-                JavaTypeInterface.class, child3);
+            JavaTypeInterface.class, child3);
         assertThat(child3Node.getParentId(), is(rootClass1Node.getId()));
 
         final String rootClass2 = "rootClass2";
         final JavaTypeClass rootClass2Node = writer.addNode(context1,
-                JavaTypeClass.class, rootClass2);
+            JavaTypeClass.class, rootClass2);
         final String child4 = "child4";
         final String child5 = "child5";
         final String child6 = "child6";
         final JavaMemberField child4Node = writer.addChildNode(rootClass2Node,
-                JavaMemberField.class, child4);
+            JavaMemberField.class, child4);
         final JavaMemberField child5Node = writer.addChildNode(rootClass2Node,
-                JavaMemberField.class, child5);
+            JavaMemberField.class, child5);
         final JavaTypeInterface child6Node = writer.addChildNode(rootClass2Node,
-                JavaTypeInterface.class, child6);
+            JavaTypeInterface.class, child6);
 
         writer.flush();
 
         final Iterable<JavaTypeClass> rootNodes = simpleFromLocation.findNodesByName(
-                JavaTypeClass.class, "rootClass1", true, context1);
+            JavaTypeClass.class, "rootClass1", true, context1);
 
         final Iterator<JavaTypeClass> rootNodesIt = rootNodes.iterator();
 
@@ -302,22 +302,22 @@ public abstract class AbstractGraphTest {
         final JavaTypeClass retrievedRootClass1 = rootNodesIt.next();
         assertThat(retrievedRootClass1, is(rootClass1Node));
         final List<JavaMember> children1AsSet = SLCollections.iterableToList(simpleFromLocation
-                .getChildrenNodes(retrievedRootClass1, JavaMember.class));
+            .getChildrenNodes(retrievedRootClass1, JavaMember.class));
         assertThat(children1AsSet.contains(child1Node), is(true));
         assertThat(children1AsSet.contains(child2Node), is(true));
         assertThat(children1AsSet.contains(child3Node), is(false));
         assertThat(children1AsSet.size(), is(2));
 
         final List<JavaType> children2AsSet = SLCollections.iterableToList(simpleFromLocation
-                .getChildrenNodes(retrievedRootClass1, JavaType.class));
+            .getChildrenNodes(retrievedRootClass1, JavaType.class));
         assertThat(children2AsSet.contains(child1Node), is(false));
         assertThat(children2AsSet.contains(child2Node), is(false));
         assertThat(children2AsSet.contains(child3Node), is(true));
         assertThat(children2AsSet.size(), is(1));
 
         final Iterable<JavaTypeClass> rootNodes2 = simpleFromLocation
-                .findNodesByName(JavaTypeClass.class, "rootClass2", true,
-                        context1);
+            .findNodesByName(JavaTypeClass.class, "rootClass2", true,
+            context1);
 
         final Iterator<JavaTypeClass> rootNodes2It = rootNodes2.iterator();
 
@@ -325,14 +325,14 @@ public abstract class AbstractGraphTest {
         final JavaTypeClass retrievedRootClass2 = rootNodes2It.next();
         assertThat(retrievedRootClass2, is(rootClass2Node));
         final List<JavaMember> children3AsSet = SLCollections.iterableToList(simpleFromLocation
-                .getChildrenNodes(retrievedRootClass2, JavaMember.class));
+            .getChildrenNodes(retrievedRootClass2, JavaMember.class));
         assertThat(children3AsSet.contains(child4Node), is(true));
         assertThat(children3AsSet.contains(child5Node), is(true));
         assertThat(children3AsSet.contains(child6Node), is(false));
         assertThat(children3AsSet.size(), is(2));
 
         final List<JavaType> children4AsSet = SLCollections.iterableToList(simpleFromLocation
-                .getChildrenNodes(retrievedRootClass2, JavaType.class));
+            .getChildrenNodes(retrievedRootClass2, JavaType.class));
         assertThat(children4AsSet.contains(child4Node), is(false));
         assertThat(children4AsSet.contains(child5Node), is(false));
         assertThat(children4AsSet.contains(child6Node), is(true));
@@ -349,20 +349,20 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         writer.flush();
 
         final JavaType rootClass2Node = writer.addNode(context1, JavaTypeClass.class,
-                rootClass1);
+            rootClass1);
         writer.flush();
         assertThat(rootClass1Node, is(rootClass2Node));
 
         final JavaType foundNode1 = SLCollections.firstOf(simpleFromLocation
-                .findNodesByName(JavaType.class, rootClass1, true, context1));
+            .findNodesByName(JavaType.class, rootClass1, true, context1));
         assertThat(foundNode1, is(rootClass2Node));
         assertThat(foundNode1 instanceof JavaTypeClass, is(true));
         final JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         assertThat(rootClass3Node instanceof JavaTypeClass, is(true));
 
         writer.flush();
@@ -371,10 +371,9 @@ public abstract class AbstractGraphTest {
 
     @Ignore
     // TODO will be possible to add nodes with same names and different types? :-)
-        @Test(expected = ClassCastException.class)
-        public
-        void shouldNotChangeNodeTypeWhenUsingInvalidNodeType()
-            throws Exception {
+    @Test(expected = ClassCastException.class)
+    public void shouldNotChangeNodeTypeWhenUsingInvalidNodeType()
+        throws Exception {
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
         final GraphWriter writer = fullGraphSession.toServer();
@@ -395,13 +394,13 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaType rootClassNode1 = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         writer.flush();
         writer.removeNode(rootClassNode1);
 
         writer.flush();
         final Iterable<JavaType> empty = simpleFromLocation.findNodesByName(
-                JavaType.class, null, true, context1);
+            JavaType.class, null, true, context1);
 
         assertThat(empty.iterator().hasNext(), is(false));
     }
@@ -416,12 +415,12 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaType rootClassNode1 = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClassNode2 = writer.addChildNode(rootClassNode1,
-                JavaType.class, rootClass1);
+            JavaType.class, rootClass1);
         writer.flush();
         final List<JavaType> nodes = SLCollections.iterableToList(simpleFromLocation.findNodesByName(
-                JavaType.class, null, true, context1));
+            JavaType.class, null, true, context1));
 
         assertThat(nodes.size(), is(2));
         assertThat(nodes.contains(rootClassNode1), is(true));
@@ -429,7 +428,7 @@ public abstract class AbstractGraphTest {
         writer.removeNode(rootClassNode2);
         writer.flush();
         final List<JavaType> nodes2 = SLCollections.iterableToList(simpleFromLocation
-                .findNodesByName(JavaType.class, null, true, context1));
+            .findNodesByName(JavaType.class, null, true, context1));
 
         assertThat(nodes2.size(), is(1));
         assertThat(nodes2.contains(rootClassNode1), is(true));
@@ -447,12 +446,12 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaType rootClassNode1 = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClassNode2 = writer.addChildNode(rootClassNode1,
-                JavaType.class, rootClass1);
+            JavaType.class, rootClass1);
         writer.flush();
         final List<JavaType> nodes = SLCollections.iterableToList(simpleFromLocation.findNodesByName(
-                JavaType.class, null, true, context1));
+            JavaType.class, null, true, context1));
 
         assertThat(nodes.size(), is(2));
         assertThat(nodes.contains(rootClassNode1), is(true));
@@ -460,7 +459,7 @@ public abstract class AbstractGraphTest {
         writer.removeNode(rootClassNode1);
         writer.flush();
         final List<JavaType> nodes2 = SLCollections.iterableToList(simpleFromLocation
-                .findNodesByName(JavaType.class, null, true, context1));
+            .findNodesByName(JavaType.class, null, true, context1));
 
         assertThat(nodes2.contains(rootClassNode1), is(false));
         assertThat(nodes2.contains(rootClassNode2), is(false));
@@ -483,13 +482,13 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaType rootClassNode1 = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         rootClassNode1.setCaption(firstCaption);
         rootClassNode1.setPublicClass(firstPublicClass);
         rootClassNode1.setTypeName(firstTypeName);
         writer.flush();
         final JavaType firstFound = SLCollections.firstOf(simpleFromLocation
-                .findNodesByName(JavaType.class, null, true, context1));
+            .findNodesByName(JavaType.class, null, true, context1));
         assertThat(firstFound.getCaption(), is(firstCaption));
         assertThat(firstFound.getTypeName(), is(firstTypeName));
         assertThat(firstFound.isPublicClass(), is(firstPublicClass));
@@ -499,7 +498,7 @@ public abstract class AbstractGraphTest {
         simpleGraphSession.flushChangedProperties(firstFound);
 
         final JavaType secondFound = SLCollections.firstOf(simpleFromLocation
-                .findNodesByName(JavaType.class, null, true, context1));
+            .findNodesByName(JavaType.class, null, true, context1));
         assertThat(secondFound.getTypeName(), is(secondTypeName));
         assertThat(secondFound.isPublicClass(), is(secondPublicClass));
         assertThat(secondFound.getCaption(), is(secondCaption));
@@ -516,13 +515,13 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClass2Node = writer.addNode(context2, JavaType.class,
-                rootClass1);
+            rootClass1);
         writer.flush();
 
         final List<JavaType> result = SLCollections.iterableToList(simpleFromLocation
-                .findNodesByName(JavaType.class, null, true, context1, context2));
+            .findNodesByName(JavaType.class, null, true, context1, context2));
         assertThat(result.size(), is(2));
         assertThat(result.contains(rootClass1Node), is(true));
         assertThat(result.contains(rootClass2Node), is(true));
@@ -532,7 +531,7 @@ public abstract class AbstractGraphTest {
 
     @Test
     public void shouldHaveDifferentWeightsForDifferentNodeTypes()
-            throws Exception {
+        throws Exception {
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
         final Context context2 = simpleFromLocation.getContext(context2());
@@ -540,12 +539,12 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaMember rootClass2Node = writer.addNode(context2, JavaMember.class,
-                rootClass1);
+            rootClass1);
         writer.flush();
         assertThat(rootClass1Node.getNumericType().equals(
-                rootClass2Node.getNumericType()), is(false));
+            rootClass2Node.getNumericType()), is(false));
 
     }
 
@@ -559,19 +558,19 @@ public abstract class AbstractGraphTest {
 
         final String rootClass1 = "rootClass1";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaTypeClass rootClass2Node = writer.addNode(context2,
-                JavaTypeClass.class, rootClass1);
+            JavaTypeClass.class, rootClass1);
         writer.flush();
         assertThat(rootClass1Node.getNumericType().equals(
-                rootClass2Node.getNumericType()), is(false));
+            rootClass2Node.getNumericType()), is(false));
         assertThat(rootClass1Node.getNumericType().compareTo(
-                rootClass2Node.getNumericType()) < 0, is(true));
+            rootClass2Node.getNumericType()) < 0, is(true));
     }
 
     @Test
     public void shouldaddAndRetrieveUnidirectionalLinksOnSameContext()
-            throws Exception {
+        throws Exception {
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
         final GraphWriter writer = fullGraphSession.toServer();
@@ -579,45 +578,42 @@ public abstract class AbstractGraphTest {
         final String rootClass2 = "rootClass2";
         final String rootClass3 = "rootClass3";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClass2Node = writer.addNode(context1, JavaType.class,
-                rootClass2);
+            rootClass2);
         final JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
-                rootClass3);
+            rootClass3);
         final TypeExtends link1 = writer.addLink(TypeExtends.class, rootClass1Node,
-                rootClass2Node);
+            rootClass2Node);
         final TypeExtends link2 = writer.addLink(TypeExtends.class, rootClass1Node,
-                rootClass3Node);
+            rootClass3Node);
+
+        final TypeExtends link3 = writer.addLink(TypeExtends.class, rootClass3Node, rootClass2Node);
 
         writer.flush();
 
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
-        final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
-        assertThat(linkFromNode2.size(), is(1));
-        assertThat(linkFromNode2.contains(link1), is(true));
-        assertThat(linkFromNode2.contains(link2), is(false));
-
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
+            rootClass3Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
-        assertThat(linkFromNode3.contains(link2), is(true));
+        assertThat(linkFromNode3.contains(link3), is(true));
+        assertThat(linkFromNode3.contains(link2), is(false));
         assertThat(linkFromNode3.contains(link1), is(false));
 
     }
 
     @Test
     public void shouldaddAndRetrieveBidirectionalLinksOnSameContext()
-            throws Exception {
+        throws Exception {
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
         final GraphWriter writer = fullGraphSession.toServer();
@@ -625,20 +621,20 @@ public abstract class AbstractGraphTest {
         final String rootClass2 = "rootClass2";
         final String rootClass3 = "rootClass3";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClass2Node = writer.addNode(context1, JavaType.class,
-                rootClass2);
+            rootClass2);
         final JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
-                rootClass3);
+            rootClass3);
         final TypeExtends link1 = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass1Node, rootClass2Node);
+            rootClass1Node, rootClass2Node);
         final TypeExtends link2 = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass1Node, rootClass3Node);
+            rootClass1Node, rootClass3Node);
 
         final TypeExtends link3 = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass2Node, rootClass1Node);
+            rootClass2Node, rootClass1Node);
         final TypeExtends link4 = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass3Node, rootClass1Node);
+            rootClass3Node, rootClass1Node);
 
         writer.flush();
 
@@ -646,23 +642,23 @@ public abstract class AbstractGraphTest {
         assertThat(link2, is(link4));
 
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkDirection.BIDIRECTIONAL));
+            null, rootClass2Node, LinkDirection.BIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkDirection.BIDIRECTIONAL));
+            null, rootClass3Node, LinkDirection.BIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -670,7 +666,7 @@ public abstract class AbstractGraphTest {
 
     @Test
     public void shouldaddAndRetrieveUniAndBidirectionalLinksOnSameContext()
-            throws Exception {
+        throws Exception {
 
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
@@ -680,34 +676,34 @@ public abstract class AbstractGraphTest {
         final String rootClass2 = "rootClass2";
         final String rootClass3 = "rootClass3";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClass2Node = writer.addNode(context1, JavaType.class,
-                rootClass2);
+            rootClass2);
         final JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
-                rootClass3);
+            rootClass3);
         final TypeExtends link1 = writer.addLink(TypeExtends.class, rootClass1Node,
-                rootClass2Node);
+            rootClass2Node);
         final TypeExtends link2 = writer.addLink(TypeExtends.class, rootClass1Node,
-                rootClass3Node);
+            rootClass3Node);
 
         final String rootClass1bid = "rootClass1bid";
         final String rootClass2bid = "rootClass2bid";
         final String rootClass3bid = "rootClass3bid";
         final JavaType rootClass1BidNode = writer.addNode(context1, JavaType.class,
-                rootClass1bid);
+            rootClass1bid);
         final JavaType rootClass2BidNode = writer.addNode(context1, JavaType.class,
-                rootClass2bid);
+            rootClass2bid);
         final JavaType rootClass3BidNode = writer.addNode(context1, JavaType.class,
-                rootClass3bid);
+            rootClass3bid);
         final TypeExtends link1Bid = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass1BidNode, rootClass2BidNode);
+            rootClass1BidNode, rootClass2BidNode);
         final TypeExtends link2Bid = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass1BidNode, rootClass3BidNode);
+            rootClass1BidNode, rootClass3BidNode);
 
         final TypeExtends link3Bid = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass2BidNode, rootClass1BidNode);
+            rootClass2BidNode, rootClass1BidNode);
         final TypeExtends link4Bid = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass3BidNode, rootClass1BidNode);
+            rootClass3BidNode, rootClass1BidNode);
 
         writer.flush();
 
@@ -715,40 +711,40 @@ public abstract class AbstractGraphTest {
         assertThat(link2Bid, is(link4Bid));
 
         final List<Link> twoBidLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoBidLinks.size(), is(2));
         assertThat(twoBidLinks.contains(link1Bid), is(true));
         assertThat(twoBidLinks.contains(link2Bid), is(true));
 
         final List<Link> bidLinkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2BidNode, LinkDirection.BIDIRECTIONAL));
+            null, rootClass2BidNode, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode2.size(), is(1));
         assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
         assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
 
         final List<Link> bidLinkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3BidNode, LinkDirection.BIDIRECTIONAL));
+            null, rootClass3BidNode, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode3.size(), is(1));
         assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
         assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
+            null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
+            null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -757,7 +753,7 @@ public abstract class AbstractGraphTest {
 
     @Test
     public void shouldaddAndRetrieveUnidirectionalLinksOnDiferentContext()
-            throws Exception {
+        throws Exception {
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
         final Context context2 = simpleFromLocation.getContext(context2());
@@ -766,36 +762,36 @@ public abstract class AbstractGraphTest {
         final String rootClass2 = "rootClass2";
         final String rootClass3 = "rootClass3";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClass2Node = writer.addNode(context2, JavaType.class,
-                rootClass2);
+            rootClass2);
         final JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
-                rootClass3);
+            rootClass3);
         final TypeExtends link1 = writer.addLink(TypeExtends.class, rootClass1Node,
-                rootClass2Node);
+            rootClass2Node);
         final TypeExtends link2 = writer.addLink(TypeExtends.class, rootClass1Node,
-                rootClass3Node);
+            rootClass3Node);
 
         writer.flush();
 
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
+            null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
+            null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -804,7 +800,7 @@ public abstract class AbstractGraphTest {
 
     @Test
     public void shouldaddAndRetrieveBidirectionalLinksOnDiferentContext()
-            throws Exception {
+        throws Exception {
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
         final Context context2 = simpleFromLocation.getContext(context2());
@@ -813,20 +809,20 @@ public abstract class AbstractGraphTest {
         final String rootClass2 = "rootClass2";
         final String rootClass3 = "rootClass3";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClass2Node = writer.addNode(context2, JavaType.class,
-                rootClass2);
+            rootClass2);
         final JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
-                rootClass3);
+            rootClass3);
         final TypeExtends link1 = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass1Node, rootClass2Node);
+            rootClass1Node, rootClass2Node);
         final TypeExtends link2 = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass1Node, rootClass3Node);
+            rootClass1Node, rootClass3Node);
 
         final TypeExtends link3 = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass2Node, rootClass1Node);
+            rootClass2Node, rootClass1Node);
         final TypeExtends link4 = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass3Node, rootClass1Node);
+            rootClass3Node, rootClass1Node);
 
         writer.flush();
 
@@ -834,23 +830,23 @@ public abstract class AbstractGraphTest {
         assertThat(link2, is(link4));
 
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkDirection.BIDIRECTIONAL));
+            null, rootClass2Node, LinkDirection.BIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkDirection.BIDIRECTIONAL));
+            null, rootClass3Node, LinkDirection.BIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
@@ -858,7 +854,7 @@ public abstract class AbstractGraphTest {
 
     @Test
     public void shouldaddAndRetrieveUniAndBidirectionalLinksOnDiferentContext()
-            throws Exception {
+        throws Exception {
 
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
         final Context context1 = simpleFromLocation.getContext(context1());
@@ -869,34 +865,34 @@ public abstract class AbstractGraphTest {
         final String rootClass2 = "rootClass2";
         final String rootClass3 = "rootClass3";
         final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
-                rootClass1);
+            rootClass1);
         final JavaType rootClass2Node = writer.addNode(context2, JavaType.class,
-                rootClass2);
+            rootClass2);
         final JavaType rootClass3Node = writer.addNode(context1, JavaType.class,
-                rootClass3);
+            rootClass3);
         final TypeExtends link1 = writer.addLink(TypeExtends.class, rootClass1Node,
-                rootClass2Node);
+            rootClass2Node);
         final TypeExtends link2 = writer.addLink(TypeExtends.class, rootClass1Node,
-                rootClass3Node);
+            rootClass3Node);
 
         final String rootClass1bid = "rootClass1bid";
         final String rootClass2bid = "rootClass2bid";
         final String rootClass3bid = "rootClass3bid";
         final JavaType rootClass1BidNode = writer.addNode(context1, JavaType.class,
-                rootClass1bid);
+            rootClass1bid);
         final JavaType rootClass2BidNode = writer.addNode(context1, JavaType.class,
-                rootClass2bid);
+            rootClass2bid);
         final JavaType rootClass3BidNode = writer.addNode(context1, JavaType.class,
-                rootClass3bid);
+            rootClass3bid);
         final TypeExtends link1Bid = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass1BidNode, rootClass2BidNode);
+            rootClass1BidNode, rootClass2BidNode);
         final TypeExtends link2Bid = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass1BidNode, rootClass3BidNode);
+            rootClass1BidNode, rootClass3BidNode);
 
         final TypeExtends link3Bid = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass2BidNode, rootClass1BidNode);
+            rootClass2BidNode, rootClass1BidNode);
         final TypeExtends link4Bid = writer.addBidirectionalLink(TypeExtends.class,
-                rootClass3BidNode, rootClass1BidNode);
+            rootClass3BidNode, rootClass1BidNode);
 
         writer.flush();
 
@@ -904,40 +900,40 @@ public abstract class AbstractGraphTest {
         assertThat(link2Bid, is(link4Bid));
 
         final List<Link> twoBidLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoBidLinks.size(), is(2));
         assertThat(twoBidLinks.contains(link1Bid), is(true));
         assertThat(twoBidLinks.contains(link2Bid), is(true));
 
         final List<Link> bidLinkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2BidNode, LinkDirection.BIDIRECTIONAL));
+            null, rootClass2BidNode, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode2.size(), is(1));
         assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
         assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
 
         final List<Link> bidLinkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3BidNode, LinkDirection.BIDIRECTIONAL));
+            null, rootClass3BidNode, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode3.size(), is(1));
         assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
         assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
         final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
         assertThat(twoLinks.size(), is(2));
         assertThat(twoLinks.contains(link1), is(true));
         assertThat(twoLinks.contains(link2), is(true));
 
         final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
         final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
+            null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode2.size(), is(1));
         assertThat(linkFromNode2.contains(link1), is(true));
         assertThat(linkFromNode2.contains(link2), is(false));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-                null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
+            null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
         assertThat(linkFromNode3.size(), is(1));
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));

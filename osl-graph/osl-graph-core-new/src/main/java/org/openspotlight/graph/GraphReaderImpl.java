@@ -677,6 +677,8 @@ public class GraphReaderImpl implements GraphReader {
     private Iterable<Link> internalGetLinks(
                                             final Class<? extends Link> linkType,
                                             final Node rawOrigin, final Node rawTarget, final LinkDirection linkDirection) {
+        
+        if(rawOrigin==null) throw new NullPointerException();
         if (LinkDirection.ANY.equals(linkDirection)) { return SLCollections.iterableOfAll(internalGetLinks(linkType,
             rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL),
             internalGetLinks(linkType, rawOrigin, rawTarget,
@@ -733,10 +735,10 @@ public class GraphReaderImpl implements GraphReader {
                     if (!Link.class.isAssignableFrom(clazz)) {
                     return false;
                     }
-                    if (LinkDirection.ANY.equals(linkType)) return true;
-                    LinkDirection linkDirection =
+                    if (LinkDirection.ANY.equals(linkDirection)) return true;
+                    LinkDirection retrievedLinkDirection =
                         LinkDirection.valueOf(o.getPropertyAsString(session, NodeAndLinkSupport.LINK_DIRECTION));
-                    return linkType.equals(linkDirection);
+                    return retrievedLinkDirection.equals(linkDirection);
                 } catch (final ClassNotFoundException e) {
                     return false;
                 }
