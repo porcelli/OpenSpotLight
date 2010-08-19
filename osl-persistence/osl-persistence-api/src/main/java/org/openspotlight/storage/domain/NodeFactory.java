@@ -66,13 +66,13 @@ public interface NodeFactory {
         NodeBuilder withSimpleKey(String name,
                                          String value);
 
-        NodeBuilder withParent(Node parent);
+        NodeBuilder withParent(StorageNode parent);
 
         NodeBuilder withParentAsString(String parentAsString);
 
         NodeBuilder withParentKey(NodeKey parentKey);
 
-        Node andCreate();
+        StorageNode andCreate();
     }
 
 }

@@ -46,15 +46,35 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
+
 package org.openspotlight.storage.domain;
 
-public interface Link extends StorageDataMarker, PropertyContainer {
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.key.NodeKey;
 
-    Node getOrigin();
+public interface StorageNode extends StorageDataMarker, NodeFactory,
+        PropertyContainer {
 
-    Node getTarget();
+    public void forceReload();
 
-    String getLinkType();
+    String getType();
 
-    String getLinkId();
+    NodeKey getKey();
+
+    Iterable<StorageNode> getChildren(Partition partition,
+                               StorageSession session);
+
+    Iterable<StorageNode> getChildrenByType(Partition partition,
+                                     StorageSession session, String type);
+
+    Iterable<StorageNode> getChildrenForcingReload(Partition partition,
+                                            StorageSession session);
+
+    Iterable<StorageNode> getChildrenByTypeForcingReload(Partition partition,
+                                                  StorageSession session, String type);
+
+    StorageNode getParent(StorageSession session);
+
+    void removeNode(StorageSession session);
 }

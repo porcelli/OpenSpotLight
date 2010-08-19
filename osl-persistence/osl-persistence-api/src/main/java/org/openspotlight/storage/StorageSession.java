@@ -50,8 +50,8 @@
 package org.openspotlight.storage;
 
 import org.openspotlight.storage.Criteria.CriteriaBuilder;
-import org.openspotlight.storage.domain.Link;
-import org.openspotlight.storage.domain.Node;
+import org.openspotlight.storage.domain.StorageLink;
+import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.NodeFactory;
 import org.openspotlight.storage.domain.key.NodeKey;
 
@@ -71,11 +71,11 @@ public interface StorageSession {
 
         NodeKeyBuilder createKey(String nodeType);
 
-        Iterable<Node> findByCriteria(Criteria criteria);
+        Iterable<StorageNode> findByCriteria(Criteria criteria);
 
-        Iterable<Node> findByType(String nodeType);
+        Iterable<StorageNode> findByType(String nodeType);
 
-        Node findUniqueByCriteria(Criteria criteria);
+        StorageNode findUniqueByCriteria(Criteria criteria);
 
         public CriteriaBuilder createCriteria();
 
@@ -83,13 +83,13 @@ public interface StorageSession {
 
         NodeKey createNewSimpleKey(String... nodePaths);
 
-        Node createNewSimpleNode(String... nodePaths);
+        StorageNode createNewSimpleNode(String... nodePaths);
 
     }
 
-    Node findNodeByStringId(String idAsString);
+    StorageNode findNodeByStringId(String idAsString);
 
-    void removeNode(Node stNodeEntry);
+    void removeNode(StorageNode stNodeEntry);
 
     static enum FlushMode {
         AUTO,
@@ -116,26 +116,26 @@ public interface StorageSession {
 
     void flushTransient();
 
-    Link addLink(Node origin,
-                         Node destiny,
+    StorageLink addLink(StorageNode origin,
+                         StorageNode destiny,
                          String name);
 
-    void removeLink(Node origin,
-                     Node destiny,
+    void removeLink(StorageNode origin,
+                     StorageNode destiny,
                      String name);
 
-    void removeLink(Link link);
+    void removeLink(StorageLink link);
 
-    Iterable<Link> findLinks(Node origin);
+    Iterable<StorageLink> findLinks(StorageNode origin);
 
-    Iterable<Link> findLinks(Node origin,
+    Iterable<StorageLink> findLinks(StorageNode origin,
                                      String type);
 
-    Link getLink(Node origin,
-                         Node destiny,
+    StorageLink getLink(StorageNode origin,
+                         StorageNode destiny,
                          String name);
 
-    Iterable<Link> findLinks(Node origin,
-                                     Node destiny);
+    Iterable<StorageLink> findLinks(StorageNode origin,
+                                     StorageNode destiny);
 
 }

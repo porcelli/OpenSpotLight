@@ -46,35 +46,79 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-
-package org.openspotlight.storage.domain;
+package org.openspotlight.storage.domain.node;
 
 import org.openspotlight.storage.Partition;
-import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.key.NodeKey;
+import org.openspotlight.storage.StringIDSupport;
+import org.openspotlight.storage.domain.StorageLink;
+import org.openspotlight.storage.domain.StorageNode;
 
-public interface Node extends StorageDataMarker, NodeFactory,
-        PropertyContainer {
+public class StorageLinkImpl extends PropertyContainerImpl implements
+        StorageLink {
 
-    public void forceReload();
+    private static final long serialVersionUID = -3462836679437486046L;
 
-    String getType();
+    public StorageLinkImpl(final String linkType, final StorageNode origin,
+                    final StorageNode target, final boolean resetTimeout) {
+        super(resetTimeout);
+        this.linkType = linkType;
+        this.origin = origin;
+        this.target = target;
+        originPartition = origin.getPartition();
+        linkId = StringIDSupport.getLinkKeyAsString(originPartition,
+                linkType, origin, target);
+    }
 
-    NodeKey getKey();
+    private final String    linkId;
 
-    Iterable<Node> getChildren(Partition partition,
-                               StorageSession session);
+    private final String    linkType;
 
-    Iterable<Node> getChildrenByType(Partition partition,
-                                     StorageSession session, String type);
+    private final StorageNode      origin;
 
-    Iterable<Node> getChildrenForcingReload(Partition partition,
-                                            StorageSession session);
+    private final StorageNode      target;
 
-    Iterable<Node> getChildrenByTypeForcingReload(Partition partition,
-                                                  StorageSession session, String type);
+    private final Partition originPartition;
 
-    Node getParent(StorageSession session);
+    @Override
+    public String getLinkId() {
+        return linkId;
+    }
 
-    void removeNode(StorageSession session);
+    @Override
+    public String getLinkType() {
+        return linkType;
+    }
+
+    @Override
+    public StorageNode getOrigin() {
+        return origin;
+    }
+
+    @Override
+    public StorageNode getTarget() {
+        return target;
+    }
+
+    @Override
+    public String getKeyAsString() {
+        return linkId;
+    }
+
+    @Override
+    public Partition getPartition() {
+        return originPartition;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) { return true; }
+        if (!(o instanceof StorageLink)) { return false; }
+        return getKeyAsString().equals(((StorageLink) o).getKeyAsString());
+    }
+
+    @Override
+    public int hashCode() {
+        return getKeyAsString().hashCode();
+    }
+
 }

@@ -50,14 +50,14 @@ import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StringIDSupport;
-import org.openspotlight.storage.domain.Link;
-import org.openspotlight.storage.domain.Node;
+import org.openspotlight.storage.domain.StorageLink;
+import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.Property;
 import org.openspotlight.storage.domain.PropertyContainer;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey.SimpleKey;
-import org.openspotlight.storage.domain.node.LinkImpl;
-import org.openspotlight.storage.domain.node.NodeImpl;
+import org.openspotlight.storage.domain.node.StorageLinkImpl;
+import org.openspotlight.storage.domain.node.StorageNodeImpl;
 import org.openspotlight.storage.domain.node.PropertyImpl;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 
@@ -255,7 +255,7 @@ public class JRedisStorageSessionImpl extends
 
     @Override
     protected Nothing createNodeReferenceIfNecessary(final Partition partition,
-                                                      final Node entry) {
+                                                      final StorageNode entry) {
         return Nothing.NOTHING;
     }
 
@@ -280,7 +280,7 @@ public class JRedisStorageSessionImpl extends
     }
 
     @Override
-    protected Set<Node> internalFindByCriteria(final Partition partition,
+    protected Set<StorageNode> internalFindByCriteria(final Partition partition,
                                                        final Criteria criteria)
         throws Exception {
         final List<String> propertiesIntersection = newLinkedList();
@@ -384,9 +384,9 @@ public class JRedisStorageSessionImpl extends
             ids = uniqueIds;
         }
 
-        final Set<Node> nodeEntries = newHashSet();
+        final Set<StorageNode> nodeEntries = newHashSet();
         for (final String id: ids) {
-            final Node nodeEntry = loadNodeOrReturnNull(id, criteria
+            final StorageNode nodeEntry = loadNodeOrReturnNull(id, criteria
                                                                      .getPartition());
             if (nodeEntry != null) {
                 nodeEntries.add(nodeEntry);
@@ -439,7 +439,7 @@ public class JRedisStorageSessionImpl extends
         return builder.build();
     }
 
-    private Node loadNodeOrReturnNull(final String firstParentKey,
+    private StorageNode loadNodeOrReturnNull(final String firstParentKey,
                                               final Partition firstPartition)
         throws Exception {
 
@@ -463,13 +463,13 @@ public class JRedisStorageSessionImpl extends
             keyBuilder = keyBuilder.withParent(parentKey);
         }
         final NodeKey uniqueKey = keyBuilder.andCreate();
-        final Node nodeEntry = createFoundEntryWithKey(uniqueKey);
+        final StorageNode nodeEntry = createFoundEntryWithKey(uniqueKey);
 
         return nodeEntry;
     }
 
-    protected final Node createFoundEntryWithKey(final NodeKey uniqueKey) {
-        return new NodeImpl(uniqueKey, true);
+    protected final StorageNode createFoundEntryWithKey(final NodeKey uniqueKey) {
+        return new StorageNodeImpl(uniqueKey, true);
     }
 
     private static List<String> listBytesToListString(final List<byte[]> ids) {
@@ -486,7 +486,7 @@ public class JRedisStorageSessionImpl extends
     @Override
     protected void flushNewItem(final Nothing reference,
                                  final Partition partition,
-                                 final Node entry)
+                                 final StorageNode entry)
         throws Exception {
         final String uniqueKey = entry.getKey().getKeyAsString();
         final JRedis jredis = factory.getFrom(partition);
@@ -579,15 +579,15 @@ public class JRedisStorageSessionImpl extends
 
     @Override
     protected void flushRemovedItem(final Partition partition,
-                                     final Node entry)
+                                     final StorageNode entry)
             throws Exception {
         flushRemoved(partition, entry, entry.getType());
     }
 
     @Override
-    protected Set<Node> internalNodeEntryGetChildrenByType(
+    protected Set<StorageNode> internalNodeEntryGetChildrenByType(
                                                                   final Partition partition,
-                                                                  final Node stNodeEntry,
+                                                                  final StorageNode stNodeEntry,
                                                                   final String type)
             throws Exception {
         final JRedis jredis = factory.getFrom(partition);
@@ -603,11 +603,11 @@ public class JRedisStorageSessionImpl extends
                         type);
         final List<String> childrenKeys = listBytesToListString(jredis
                                                                 .smembers(keyName));
-        final ImmutableSet.Builder<Node> builder = ImmutableSet.builder();
+        final ImmutableSet.Builder<StorageNode> builder = ImmutableSet.builder();
         for (final String id: childrenKeys) {
             final Partition childPartition = getPartition(id, partitionFactory);
             if (partition.equals(childPartition)) {
-                final Node loadedNode = loadNodeOrReturnNull(id,
+                final StorageNode loadedNode = loadNodeOrReturnNull(id,
                                                               childPartition);
                 if (loadedNode != null) {
                     builder.add(loadedNode);
@@ -618,16 +618,16 @@ public class JRedisStorageSessionImpl extends
     }
 
     @Override
-    protected Set<Node> internalNodeEntryGetChildren(
+    protected Set<StorageNode> internalNodeEntryGetChildren(
                                                              final Partition partition,
-                                                             final Node stNodeEntry)
+                                                             final StorageNode stNodeEntry)
         throws Exception {
         return internalNodeEntryGetChildrenByType(partition, stNodeEntry, null);
     }
 
     @Override
-    protected Node internalNodeEntryGetParent(final Partition partition,
-                                                      final Node stNodeEntry)
+    protected StorageNode internalNodeEntryGetParent(final Partition partition,
+                                                      final StorageNode stNodeEntry)
         throws Exception {
 
         final String parentKeyAsString = stNodeEntry.getKey()
@@ -637,17 +637,17 @@ public class JRedisStorageSessionImpl extends
     }
 
     @Override
-    protected Set<Node> internalFindByType(final Partition partition,
+    protected Set<StorageNode> internalFindByType(final Partition partition,
                                                   final String type)
         throws Exception {
 
         final JRedis jRedis = factory.getFrom(partition);
         final List<String> ids = listBytesToListString(jRedis
                                                        .smembers(SET_WITH_ALL_NODE_KEYS_FOR_TYPE.format(type)));
-        final ImmutableSet.Builder<Node> builder = ImmutableSet
-                                                                .<Node>builder();
+        final ImmutableSet.Builder<StorageNode> builder = ImmutableSet
+                                                                .<StorageNode>builder();
         for (final String id: ids) {
-            final Node loadedNode = loadNodeOrReturnNull(id, partition);
+            final StorageNode loadedNode = loadNodeOrReturnNull(id, partition);
             if (loadedNode != null) {
                 builder.add(loadedNode);
             }
@@ -743,13 +743,13 @@ public class JRedisStorageSessionImpl extends
 
     @Override
     protected Nothing createLinkReferenceIfNecessary(final Partition partition,
-                                                      final Link entry) {
+                                                      final StorageLink entry) {
         return Nothing.NOTHING;
     }
 
     @Override
     protected void flushRemovedLink(final Partition partition,
-                                     final Link link)
+                                     final StorageLink link)
             throws Exception {
         final JRedis jredis = factory.getFrom(partition);
         jredis.srem(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getLinkType()),
@@ -763,8 +763,8 @@ public class JRedisStorageSessionImpl extends
 
     @Override
     protected void handleNewLink(final Partition partition,
-                                  final Node origin,
-                                  final Link link)
+                                  final StorageNode origin,
+                                  final StorageLink link)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
         jredis.sadd(SET_WITH_ALL_LINKS_FOR_TYPE.format(link.getLinkType()),
@@ -778,10 +778,10 @@ public class JRedisStorageSessionImpl extends
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Iterable<Link> internalFindLinks(
+    protected Iterable<StorageLink> internalFindLinks(
                                                        final Partition partition,
-                                                       final Node origin,
-                                                       final Node destiny,
+                                                       final StorageNode origin,
+                                                       final StorageNode destiny,
                                                        final String name)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
@@ -802,14 +802,14 @@ public class JRedisStorageSessionImpl extends
             linkIds.retainAll(newIds);
         }
         if (linkIds.size() == 0) { return Collections.emptyList(); }
-        return IteratorBuilder.<Link, String>createIteratorBuilder()
+        return IteratorBuilder.<StorageLink, String>createIteratorBuilder()
                               .withItems(linkIds).withConverter(
-                                                                new Converter<Link, String>() {
+                                                                new Converter<StorageLink, String>() {
 
                                                                     @Override
-                                                                    public Link convert(final String o)
+                                                                    public StorageLink convert(final String o)
                                                                         throws Exception {
-                                                                        final Node originNode =
+                                                                        final StorageNode originNode =
                                                                             JRedisStorageSessionImpl.this
                                                                                                                                 .loadNodeOrReturnNull(
                                                                                                                                                       StringIDSupport
@@ -823,13 +823,13 @@ public class JRedisStorageSessionImpl extends
                                                                                                                      .getPartition(
                                                                                                                                    targetId,
                                                                                                                                    partitionFactory);
-                                                                        final Node targetNode =
+                                                                        final StorageNode targetNode =
                                                                             JRedisStorageSessionImpl.this
                                                                                                                                 .loadNodeOrReturnNull(
                                                                                                                                     targetId,
                                                                                                                                                       targetPartition);
 
-                                                                        return new LinkImpl(
+                                                                        return new StorageLinkImpl(
                                                                             StringIDSupport
                                                                                                                   .getLinkNameFromLinkKey(o),
                                                                             originNode,

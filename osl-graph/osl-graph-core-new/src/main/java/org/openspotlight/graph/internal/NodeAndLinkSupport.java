@@ -144,7 +144,7 @@ public class NodeAndLinkSupport {
         final Map<String, Serializable> propertyValues = newHashMap();
         final PropertyDescriptor[] descriptors = PropertyUtils
             .getPropertyDescriptors(clazz);
-        org.openspotlight.storage.domain.Node node = null;
+        org.openspotlight.storage.domain.StorageNode node = null;
         if (contextId == null) { throw new IllegalStateException(); }
         final Partition partition = factory.getPartitionByName(contextId);
         NodeKey internalNodeKey;
@@ -200,7 +200,7 @@ public class NodeAndLinkSupport {
             internalNodeKey.getKeyAsString(), propertyTypes,
             propertyValues, parentId, contextId, weigthValue);
         if (node != null) {
-            internalNode.cachedEntry = new WeakReference<org.openspotlight.storage.domain.Node>(node);
+            internalNode.cachedEntry = new WeakReference<org.openspotlight.storage.domain.StorageNode>(node);
             if (needsToVerifyType) {
                 fixTypeData(session, classToUse, node);
             }
@@ -219,7 +219,7 @@ public class NodeAndLinkSupport {
 
     private static void fixTypeData(
                                     final StorageSession session,
-                                    final Class<? extends Node> clazz, final org.openspotlight.storage.domain.Node node) {
+                                    final Class<? extends Node> clazz, final org.openspotlight.storage.domain.StorageNode node) {
         final String numericTypeAsString = node.getPropertyAsString(session,
             NUMERIC_TYPE);
         final BigInteger numericTypeFromTargetNodeType = findNumericType(clazz);
@@ -239,7 +239,7 @@ public class NodeAndLinkSupport {
 
     private static void setWeigthAndTypeOnNode(
                                                final StorageSession session,
-                                               final org.openspotlight.storage.domain.Node node,
+                                               final org.openspotlight.storage.domain.StorageNode node,
                                                final Class<? extends Node> type,
                                                final BigInteger weightFromTargetNodeType) {
         node.setIndexedProperty(session, NUMERIC_TYPE, weightFromTargetNodeType
@@ -263,15 +263,15 @@ public class NodeAndLinkSupport {
             + DefineHierarchy.class.getSimpleName()));
     }
 
-    public static org.openspotlight.storage.domain.Node retrievePreviousNode(
+    public static org.openspotlight.storage.domain.StorageNode retrievePreviousNode(
                                                                              final PartitionFactory factory,
                                                                              final StorageSession session, final Context context,
                                                                              final Node node,
                                                                              final boolean needsToVerifyType) {
         try {
-            final PropertyContainerMetadata<org.openspotlight.storage.domain.Node> metadata =
-                (PropertyContainerMetadata<org.openspotlight.storage.domain.Node>) node;
-            org.openspotlight.storage.domain.Node internalNode = metadata.getCached();
+            final PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode> metadata =
+                (PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode>) node;
+            org.openspotlight.storage.domain.StorageNode internalNode = metadata.getCached();
             if (internalNode == null) {
                 final Partition partition = factory.getPartitionByName(context
                     .getId());
@@ -308,16 +308,16 @@ public class NodeAndLinkSupport {
     public static <T extends Link> T createLink(
                                                 final PartitionFactory factory,
                                                 final StorageSession session, final Class<T> clazz, final Node rawOrigin,
-                                                final Node rawTarget, final LinkDirection type, final boolean createIfDontExists) {
+                                                final Node rawTarget, final LinkDirection direction, final boolean createIfDontExists) {
         final Map<String, Class<? extends Serializable>> propertyTypes = newHashMap();
         final Map<String, Serializable> propertyValues = newHashMap();
         final PropertyDescriptor[] descriptors = PropertyUtils
             .getPropertyDescriptors(clazz);
 
-        org.openspotlight.storage.domain.Link linkEntry = null;
+        org.openspotlight.storage.domain.StorageLink linkEntry = null;
         Node origin, target;
 
-        if (LinkDirection.BIDIRECTIONAL.equals(type)
+        if (LinkDirection.BIDIRECTIONAL.equals(direction)
             && rawOrigin.compareTo(rawTarget) < 0) {
             origin = rawTarget;
             target = rawOrigin;
@@ -327,9 +327,9 @@ public class NodeAndLinkSupport {
         }
         String linkId = null;
         if (session != null) {
-            final org.openspotlight.storage.domain.Node originAsSTNode = session.findNodeByStringId(origin
+            final org.openspotlight.storage.domain.StorageNode originAsSTNode = session.findNodeByStringId(origin
                 .getId());
-            final org.openspotlight.storage.domain.Node targetAsSTNode = session.findNodeByStringId(target
+            final org.openspotlight.storage.domain.StorageNode targetAsSTNode = session.findNodeByStringId(target
                 .getId());
             if (originAsSTNode != null) {
                 linkEntry = session.getLink(originAsSTNode, targetAsSTNode, clazz
@@ -338,8 +338,8 @@ public class NodeAndLinkSupport {
 
                     linkEntry = session.addLink(originAsSTNode, targetAsSTNode,
                         clazz.getName());
-                    linkEntry.setIndexedProperty(session, LINK_DIRECTION, type.name());
-                    if (LinkDirection.BIDIRECTIONAL.equals(type)) {
+                    linkEntry.setIndexedProperty(session, LINK_DIRECTION, direction.name());
+                    if (LinkDirection.BIDIRECTIONAL.equals(direction)) {
                         InputStream objectAsStream = targetAsSTNode.getPropertyAsStream(session, BIDIRECTIONAL_LINK_IDS);
                         List<String> linkIds;
                         if (objectAsStream != null) {
@@ -382,7 +382,7 @@ public class NodeAndLinkSupport {
         final LinkImpl internalLink = new LinkImpl(linkId, clazz.getName(), clazz,
             propertyTypes, propertyValues, findInitialWeight(clazz),
             weigthValue, origin, target, LinkDirection.BIDIRECTIONAL
-            .equals(type));
+            .equals(direction));
         if (linkEntry != null) {
             internalLink.setCached(linkEntry);
         }
@@ -405,7 +405,11 @@ public class NodeAndLinkSupport {
 
     }
 
-    private static class LinkImpl extends Link implements PropertyContainerMetadata<org.openspotlight.storage.domain.Link> {
+    private static class LinkImpl extends Link implements PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink> {
+
+        public String toString() {
+            return "Link[" + getId() + "]";
+        }
 
         private LinkDirection linkDirection = LinkDirection.UNIDIRECTIONAL;
 
@@ -418,7 +422,7 @@ public class NodeAndLinkSupport {
             this.linkDirection = linkDirection;
         }
 
-        private WeakReference<org.openspotlight.storage.domain.Link> cachedEntry;
+        private WeakReference<org.openspotlight.storage.domain.StorageLink> cachedEntry;
 
         private final Class<? extends Link>                          linkType;
 
@@ -550,11 +554,6 @@ public class NodeAndLinkSupport {
             propertyContainerImpl.setProperty(key, value);
         }
 
-        @Override
-        public String toString() {
-            return propertyContainerImpl.toString();
-        }
-
         private static final int SOURCE = 0;
         private static final int TARGET = 1;
 
@@ -617,14 +616,14 @@ public class NodeAndLinkSupport {
         }
 
         @Override
-        public org.openspotlight.storage.domain.Link getCached() {
+        public org.openspotlight.storage.domain.StorageLink getCached() {
             return this.cachedEntry != null ? cachedEntry.get() : null;
         }
 
         @Override
         public void setCached(
-                              org.openspotlight.storage.domain.Link entry) {
-            cachedEntry = new WeakReference<org.openspotlight.storage.domain.Link>(entry);
+                              org.openspotlight.storage.domain.StorageLink entry) {
+            cachedEntry = new WeakReference<org.openspotlight.storage.domain.StorageLink>(entry);
 
         }
 
@@ -801,7 +800,7 @@ public class NodeAndLinkSupport {
 
     }
 
-    private static class NodeImpl extends Node implements PropertyContainerMetadata<org.openspotlight.storage.domain.Node> {
+    private static class NodeImpl extends Node implements PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode> {
 
         private final PropertyContainerImpl propertyContainerImpl;
 
@@ -942,7 +941,7 @@ public class NodeAndLinkSupport {
             return contextId;
         }
 
-        private WeakReference<org.openspotlight.storage.domain.Node> cachedEntry;
+        private WeakReference<org.openspotlight.storage.domain.StorageNode> cachedEntry;
 
         private final Class<? extends Node>                          targetNode;
 
@@ -998,18 +997,18 @@ public class NodeAndLinkSupport {
         @Override
         public int compareTo(
                              final Node o) {
-            return numericType.compareTo(o.getNumericType());
+            return getId().compareTo(o.getId());
         }
 
         @Override
-        public org.openspotlight.storage.domain.Node getCached() {
+        public org.openspotlight.storage.domain.StorageNode getCached() {
             return cachedEntry != null ? cachedEntry.get() : null;
         }
 
         @Override
         public void setCached(
-                              final org.openspotlight.storage.domain.Node entry) {
-            cachedEntry = new WeakReference<org.openspotlight.storage.domain.Node>(entry);
+                              final org.openspotlight.storage.domain.StorageNode entry) {
+            cachedEntry = new WeakReference<org.openspotlight.storage.domain.StorageNode>(entry);
 
         }
 

@@ -29,6 +29,8 @@ import static org.openspotlight.common.util.Conversion.convert;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +41,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.common.util.SerializationUtil;
 import org.openspotlight.graph.internal.NodeAndLinkSupport;
 import org.openspotlight.graph.internal.NodeAndLinkSupport.PropertyContainerMetadata;
 import org.openspotlight.graph.manipulation.GraphReader;
@@ -53,6 +56,7 @@ import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.Criteria.CriteriaBuilder;
+import org.openspotlight.graph.Link;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -100,37 +104,37 @@ public class GraphReaderImpl implements GraphReader {
         final StorageSession session = sessionProvider.get();
         final Partition partition = factory.getPartitionByName(node
             .getContextId());
-        final PropertyContainerMetadata<org.openspotlight.storage.domain.Node> md =
-            (PropertyContainerMetadata<org.openspotlight.storage.domain.Node>) node;
+        final PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode> md =
+            (PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode>) node;
 
-        org.openspotlight.storage.domain.Node parentStNode = md.getCached();
+        org.openspotlight.storage.domain.StorageNode parentStNode = md.getCached();
         if (parentStNode == null) {
             parentStNode = session.withPartition(partition).createCriteria()
                 .withUniqueKeyAsString(node.getId()).buildCriteria()
                 .andFindUnique(session);
         }
-        Iterable<org.openspotlight.storage.domain.Node> children;
+        Iterable<org.openspotlight.storage.domain.StorageNode> children;
         if (clazz != null) {
             children = parentStNode.getChildrenByType(partition, session, clazz
                 .getName());
         } else {
             children = parentStNode.getChildren(partition, session);
         }
-        return IteratorBuilder.<Node, org.openspotlight.storage.domain.Node>createIteratorBuilder()
-            .withConverter(new Converter<Node, org.openspotlight.storage.domain.Node>() {
+        return IteratorBuilder.<Node, org.openspotlight.storage.domain.StorageNode>createIteratorBuilder()
+            .withConverter(new Converter<Node, org.openspotlight.storage.domain.StorageNode>() {
 
             @Override
             public Node convert(
-                                final org.openspotlight.storage.domain.Node o)
+                                final org.openspotlight.storage.domain.StorageNode o)
                 throws Exception {
                 return convertToSLNode(node.getId(), o.getKey()
                     .getPartition().getPartitionName(), o, false);
             }
         }).withItems(children).withReferee(
-            new NextItemReferee<org.openspotlight.storage.domain.Node>() {
+            new NextItemReferee<org.openspotlight.storage.domain.StorageNode>() {
             @Override
             public boolean canAcceptAsNewItem(
-                                              final org.openspotlight.storage.domain.Node o)
+                                              final org.openspotlight.storage.domain.StorageNode o)
                 throws Exception {
                 if (name == null) {
                 return true;
@@ -160,7 +164,7 @@ public class GraphReaderImpl implements GraphReader {
         if (ctx == null) {
             final StorageSession session = sessionProvider.get();
             final Partition partition = factory.getPartitionByName(id);
-            org.openspotlight.storage.domain.Node contextNode = session.withPartition(partition)
+            org.openspotlight.storage.domain.StorageNode contextNode = session.withPartition(partition)
                 .createCriteria().withNodeEntry(id).buildCriteria()
                 .andFindUnique(session);
             String caption = null;
@@ -205,7 +209,7 @@ public class GraphReaderImpl implements GraphReader {
     @SuppressWarnings("unchecked")
     private Node convertToSLNode(
                                  final String parentId, final String contextId,
-                                 final org.openspotlight.storage.domain.Node rawStNode, final boolean needsToVerifyType) {
+                                 final org.openspotlight.storage.domain.StorageNode rawStNode, final boolean needsToVerifyType) {
         try {
             final StorageSession session = sessionProvider.get();
             final String clazzName = rawStNode.getPropertyAsString(session,
@@ -253,7 +257,7 @@ public class GraphReaderImpl implements GraphReader {
         final StorageSession session = sessionProvider.get();
         final String contextId = StringIDSupport.getPartitionName(id);
         final Partition partition = factory.getPartitionByName(contextId);
-        final org.openspotlight.storage.domain.Node parentStNode = session.withPartition(partition)
+        final org.openspotlight.storage.domain.StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
         if (parentStNode == null) { return null; }
@@ -269,7 +273,7 @@ public class GraphReaderImpl implements GraphReader {
         final StorageSession session = sessionProvider.get();
         final Partition partition = factory.getPartitionByName(node
             .getContextId());
-        final org.openspotlight.storage.domain.Node parentStNode = session.withPartition(partition)
+        final org.openspotlight.storage.domain.StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(node.getId())
             .buildCriteria().andFindUnique(session);
 
@@ -427,7 +431,7 @@ public class GraphReaderImpl implements GraphReader {
                                                               final String nodeName, final String caption,
                                                               final Iterable<Context> initialContexts) {
         final StorageSession session = sessionProvider.get();
-        final ImmutableSet.Builder<Iterable<org.openspotlight.storage.domain.Node>> resultBuilder = ImmutableSet
+        final ImmutableSet.Builder<Iterable<org.openspotlight.storage.domain.StorageNode>> resultBuilder = ImmutableSet
             .builder();
         final Iterable<Context> contexts = findContextsIfNecessary(initialContexts);
         for (final Context c: contexts) {
@@ -442,14 +446,14 @@ public class GraphReaderImpl implements GraphReader {
         }
 
         final ImmutableSet.Builder<Iterable<Node>> result = ImmutableSet.builder();
-        for (final Iterable<org.openspotlight.storage.domain.Node> results: resultBuilder.build()) {
+        for (final Iterable<org.openspotlight.storage.domain.StorageNode> results: resultBuilder.build()) {
             result.add(IteratorBuilder
-                .<Node, org.openspotlight.storage.domain.Node>createIteratorBuilder().withConverter(
-                new Converter<Node, org.openspotlight.storage.domain.Node>() {
+                .<Node, org.openspotlight.storage.domain.StorageNode>createIteratorBuilder().withConverter(
+                new Converter<Node, org.openspotlight.storage.domain.StorageNode>() {
 
                 @Override
                 public Node convert(
-                                    final org.openspotlight.storage.domain.Node o)
+                                    final org.openspotlight.storage.domain.StorageNode o)
                     throws Exception {
                     return convertToSLNode(o.getKey()
                         .getParentKeyAsString(), o
@@ -470,7 +474,7 @@ public class GraphReaderImpl implements GraphReader {
                                                    final String nodeName,
                                                    final String caption,
                                                    final StorageSession session,
-                                                   final ImmutableSet.Builder<Iterable<org.openspotlight.storage.domain.Node>> resultBuilder,
+                                                   final ImmutableSet.Builder<Iterable<org.openspotlight.storage.domain.StorageNode>> resultBuilder,
                                                    final Partition partition, final Class<?> clzz) {
         final CriteriaBuilder criteriaBuilder = session.withPartition(partition)
             .createCriteria().withNodeEntry(clzz.getName());
@@ -668,7 +672,7 @@ public class GraphReaderImpl implements GraphReader {
     }
 
     private Node findNode(
-                          final org.openspotlight.storage.domain.Node o) {
+                          final org.openspotlight.storage.domain.StorageNode o) {
         return convertToSLNode(o.getKey().getParentKeyAsString(), o
             .getKey().getPartition().getPartitionName(), o, false);
     }
@@ -677,8 +681,8 @@ public class GraphReaderImpl implements GraphReader {
     private Iterable<Link> internalGetLinks(
                                             final Class<? extends Link> linkType,
                                             final Node rawOrigin, final Node rawTarget, final LinkDirection linkDirection) {
-        
-        if(rawOrigin==null) throw new NullPointerException();
+
+        if (rawOrigin == null) throw new NullPointerException();
         if (LinkDirection.ANY.equals(linkDirection)) { return SLCollections.iterableOfAll(internalGetLinks(linkType,
             rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL),
             internalGetLinks(linkType, rawOrigin, rawTarget,
@@ -688,7 +692,25 @@ public class GraphReaderImpl implements GraphReader {
             && rawOrigin.compareTo(rawTarget) < 0) { return internalGetLinks(linkType, rawTarget, rawOrigin,
             linkDirection); }
         final StorageSession session = sessionProvider.get();
-        Iterable<org.openspotlight.storage.domain.Link> links;
+        Iterable<org.openspotlight.storage.domain.StorageLink> links;
+
+        org.openspotlight.storage.domain.StorageNode stNode =
+            NodeAndLinkSupport.retrievePreviousNode(factory, session, getContext(rawOrigin.getContextId()), rawOrigin, false);
+
+        List<org.openspotlight.storage.domain.StorageLink> foundBidLinks = new LinkedList<org.openspotlight.storage.domain.StorageLink>();
+        if (LinkDirection.BIDIRECTIONAL.equals(linkDirection)) {
+            List<String> linkIds =
+                SerializationUtil.deserialize(stNode.getPropertyAsStream(session, NodeAndLinkSupport.BIDIRECTIONAL_LINK_IDS));
+            if (linkIds != null) {
+                for (String linkId: linkIds) {
+                    String rawAnotherOriginId = StringIDSupport.getOriginKeyAsStringFromLinkKey(linkId);
+                    org.openspotlight.storage.domain.StorageLink found =
+                        session.getLink(session.findNodeByStringId(rawAnotherOriginId), stNode, linkType.getName());
+                    if (found != null) foundBidLinks.add(found);
+                }
+            }
+        }
+
         if (rawTarget != null && linkType != null) {
             links = SLCollections.iterableOfOne(
                 session.getLink(session.findNodeByStringId(rawOrigin
@@ -707,13 +729,13 @@ public class GraphReaderImpl implements GraphReader {
 
         }
 
-        Iterable<Link> result = IteratorBuilder.<Link, org.openspotlight.storage.domain.Link>createIteratorBuilder()
+        Iterable<Link> result = IteratorBuilder.<Link, org.openspotlight.storage.domain.StorageLink>createIteratorBuilder()
             .withConverter(
-            new IteratorBuilder.Converter<Link, org.openspotlight.storage.domain.Link>() {
+            new IteratorBuilder.Converter<Link, org.openspotlight.storage.domain.StorageLink>() {
 
             @Override
             public Link convert(
-                                final org.openspotlight.storage.domain.Link o)
+                                final org.openspotlight.storage.domain.StorageLink o)
                 throws Exception {
                 final Class<? extends Link> linkType = (Class<? extends Link>) Class
                     .forName(o.getLinkType());
@@ -724,11 +746,11 @@ public class GraphReaderImpl implements GraphReader {
                     target, LinkDirection.UNIDIRECTIONAL, false);
                 return result;
             }
-        }).withReferee(new NextItemReferee<org.openspotlight.storage.domain.Link>() {
+        }).withReferee(new NextItemReferee<org.openspotlight.storage.domain.StorageLink>() {
 
             @Override
             public boolean canAcceptAsNewItem(
-                                              final org.openspotlight.storage.domain.Link o)
+                                              final org.openspotlight.storage.domain.StorageLink o)
                 throws Exception {
                 try {
                     final Class<?> clazz = Class.forName(o.getLinkType());
@@ -744,7 +766,7 @@ public class GraphReaderImpl implements GraphReader {
                 }
 
             }
-        }).withItems(links).andBuild();
+        }).withItems(SLCollections.iterableOfAll(links, foundBidLinks)).andBuild();
 
         return result;
 
@@ -757,7 +779,7 @@ public class GraphReaderImpl implements GraphReader {
         final StorageSession session = sessionProvider.get();
         final String contextId = context.getId();
         final Partition partition = factory.getPartitionByName(contextId);
-        final org.openspotlight.storage.domain.Node parentStNode = session.withPartition(partition)
+        final org.openspotlight.storage.domain.StorageNode parentStNode = session.withPartition(partition)
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
         if (parentStNode == null) { return null; }

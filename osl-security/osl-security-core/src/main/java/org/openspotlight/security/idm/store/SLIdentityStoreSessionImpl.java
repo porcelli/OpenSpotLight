@@ -56,30 +56,30 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.storage.StorageSession;
-import org.openspotlight.storage.domain.Node;
+import org.openspotlight.storage.domain.StorageNode;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
 public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
-    private final SimplePersistCapable<Node, StorageSession> simplePersist;
+    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
-    public Node getRootNode() {
+    public StorageNode getRootNode() {
         return rootNode;
     }
 
-    public SimplePersistCapable<Node, StorageSession> getSimplePersist() {
+    public SimplePersistCapable<StorageNode, StorageSession> getSimplePersist() {
         return simplePersist;
     }
 
     private final SLIdentityStoreSessionContext context = new SLIdentityStoreSessionContext(this);
 
-    private final Node                          rootNode;
+    private final StorageNode                          rootNode;
 
     @Inject
     public SLIdentityStoreSessionImpl(
-                                       final SimplePersistCapable<Node, StorageSession> simplePersist) {
+                                       final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
         this.simplePersist = simplePersist;
         rootNode =
             simplePersist
@@ -132,7 +132,7 @@ public class SLIdentityStoreSessionImpl implements IdentityStoreSession {
 
     public void remove(final SimpleNodeType bean)
         throws Exception {
-        final Node asNode = simplePersist.convertBeanToNode(rootNode, bean);
+        final StorageNode asNode = simplePersist.convertBeanToNode(rootNode, bean);
         simplePersist.getCurrentSession().removeNode(asNode);
         simplePersist.getCurrentSession().flushTransient();
 

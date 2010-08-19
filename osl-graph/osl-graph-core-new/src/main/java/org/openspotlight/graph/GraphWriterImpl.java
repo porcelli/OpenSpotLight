@@ -83,7 +83,7 @@ public class GraphWriterImpl implements GraphWriter {
     public void removeNode(
                            final Node node) {
         final StorageSession session = sessionProvider.get();
-        final org.openspotlight.storage.domain.Node stNodeEntry = NodeAndLinkSupport.retrievePreviousNode(factory,
+        final org.openspotlight.storage.domain.StorageNode stNodeEntry = NodeAndLinkSupport.retrievePreviousNode(factory,
             session, graphReader.getContext(node.getContextId()), node,
             true);
         session.removeNode(stNodeEntry);
@@ -174,9 +174,9 @@ public class GraphWriterImpl implements GraphWriter {
                 NodeAndLinkSupport.createLink(factory, sessionProvider.get(), l.getLinkType(), l.getSource(), l.getTarget(),
                     l.getLinkDirection(),
                     true);
-            PropertyContainerMetadata<org.openspotlight.storage.domain.Link> md =
-                (PropertyContainerMetadata<org.openspotlight.storage.domain.Link>) retrievedLink;
-            org.openspotlight.storage.domain.Link cached = md.getCached();
+            PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink> md =
+                (PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink>) retrievedLink;
+            org.openspotlight.storage.domain.StorageLink cached = md.getCached();
             cached.setIndexedProperty(session, NodeAndLinkSupport.LINK_DIRECTION, l.getLinkDirection().name());
         }
         session.flushTransient();

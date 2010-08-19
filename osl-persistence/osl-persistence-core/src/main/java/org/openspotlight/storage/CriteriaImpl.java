@@ -59,7 +59,7 @@ import org.openspotlight.storage.Criteria.CriteriaItem.PropertyEndsWithString;
 import org.openspotlight.storage.Criteria.CriteriaItem.PropertyStartsWithString;
 import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyAsStringCriteriaItem;
 import org.openspotlight.storage.Criteria.CriteriaItem.NodeKeyCriteriaItem;
-import org.openspotlight.storage.domain.Node;
+import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
@@ -124,13 +124,13 @@ public class CriteriaImpl implements Criteria {
     }
 
     @Override
-    public Iterable<Node> andFind(
+    public Iterable<StorageNode> andFind(
                                   final StorageSession session) {
         return session.withPartition(partition).findByCriteria(this);
     }
 
     @Override
-    public Node andFindUnique(
+    public StorageNode andFindUnique(
                               final StorageSession session) {
         return session.withPartition(partition).findUniqueByCriteria(this);
     }

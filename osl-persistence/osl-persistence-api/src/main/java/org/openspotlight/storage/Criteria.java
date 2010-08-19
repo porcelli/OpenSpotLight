@@ -50,7 +50,7 @@ package org.openspotlight.storage;
 
 import java.util.Set;
 
-import org.openspotlight.storage.domain.Node;
+import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 import org.openspotlight.storage.domain.key.NodeKey.CompositeKey;
 
@@ -62,9 +62,9 @@ public interface Criteria {
 
     Set<CriteriaItem> getCriteriaItems();
 
-    Iterable<Node> andFind(StorageSession session);
+    Iterable<StorageNode> andFind(StorageSession session);
 
-    Node andFindUnique(StorageSession session);
+    StorageNode andFindUnique(StorageSession session);
 
     public interface CriteriaItem {
 
