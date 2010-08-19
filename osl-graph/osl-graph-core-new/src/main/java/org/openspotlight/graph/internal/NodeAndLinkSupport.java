@@ -349,6 +349,7 @@ public class NodeAndLinkSupport {
                         }
                         linkIds.add(linkEntry.getKeyAsString());
                         targetAsSTNode.setSimpleProperty(session, BIDIRECTIONAL_LINK_IDS, SerializationUtil.serialize(linkIds));
+                        targetAsSTNode.setSimpleProperty(session, LINK_DIRECTION, LinkDirection.BIDIRECTIONAL.name());
                     }
                 }
             }
@@ -381,8 +382,7 @@ public class NodeAndLinkSupport {
         }
         final LinkImpl internalLink = new LinkImpl(linkId, clazz.getName(), clazz,
             propertyTypes, propertyValues, findInitialWeight(clazz),
-            weigthValue, origin, target, LinkDirection.BIDIRECTIONAL
-            .equals(direction));
+            weigthValue, origin, target, direction);
         if (linkEntry != null) {
             internalLink.setCached(linkEntry);
         }
@@ -431,13 +431,14 @@ public class NodeAndLinkSupport {
                         final Map<String, Class<? extends Serializable>> propertyTypes,
                         final Map<String, Serializable> propertyValues,
                         final int initialWeigthValue, final int weightValue, final Node source,
-                        final Node target, final boolean bidirectional) {
+                        final Node target, final LinkDirection linkDirection) {
             propertyContainerImpl = new PropertyContainerImpl(id, linkType
                 .getName(), propertyTypes, propertyValues,
                 initialWeigthValue, weightValue);
             sides[SOURCE] = source;
             sides[TARGET] = target;
             this.linkType = linkType;
+            this.linkDirection =  linkDirection;
 
         }
 
@@ -558,7 +559,6 @@ public class NodeAndLinkSupport {
         private static final int TARGET = 1;
 
         private int              count;
-        private boolean          bidirectional;
 
         private final Node[]     sides  = new Node[2];
 
@@ -593,7 +593,7 @@ public class NodeAndLinkSupport {
 
         @Override
         public boolean isBidirectional() {
-            return bidirectional;
+            return this.linkDirection.equals(LinkDirection.BIDIRECTIONAL);
         }
 
         @Override

@@ -665,9 +665,9 @@ public abstract class AbstractGraphTest {
 
         final List<Link> twoLinks2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
             rootClass2Node, null, LinkDirection.BIDIRECTIONAL));
-        assertThat(twoLinks2.size(), is(2));
+        assertThat(twoLinks2.size(), is(1));
         assertThat(twoLinks2.contains(link1), is(true));
-        assertThat(twoLinks2.contains(link2), is(true));
+        assertThat(twoLinks2.contains(link2), is(false));
 
     }
 

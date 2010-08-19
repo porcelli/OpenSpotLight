@@ -56,6 +56,7 @@ import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.Criteria.CriteriaBuilder;
+import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.graph.Link;
 
 import com.google.common.collect.ImmutableSet;
@@ -697,16 +698,23 @@ public class GraphReaderImpl implements GraphReader {
         org.openspotlight.storage.domain.StorageNode stNode =
             NodeAndLinkSupport.retrievePreviousNode(factory, session, getContext(rawOrigin.getContextId()), rawOrigin, false);
 
-        List<org.openspotlight.storage.domain.StorageLink> foundBidLinks = new LinkedList<org.openspotlight.storage.domain.StorageLink>();
+        List<org.openspotlight.storage.domain.StorageLink> foundBidLinks =
+            new LinkedList<org.openspotlight.storage.domain.StorageLink>();
         if (LinkDirection.BIDIRECTIONAL.equals(linkDirection)) {
             List<String> linkIds =
                 SerializationUtil.deserialize(stNode.getPropertyAsStream(session, NodeAndLinkSupport.BIDIRECTIONAL_LINK_IDS));
             if (linkIds != null) {
                 for (String linkId: linkIds) {
                     String rawAnotherOriginId = StringIDSupport.getOriginKeyAsStringFromLinkKey(linkId);
-                    org.openspotlight.storage.domain.StorageLink found =
-                        session.getLink(session.findNodeByStringId(rawAnotherOriginId), stNode, linkType.getName());
-                    if (found != null) foundBidLinks.add(found);
+                    if (linkType != null) {
+                        org.openspotlight.storage.domain.StorageLink found =
+                            session.getLink(session.findNodeByStringId(rawAnotherOriginId), stNode, linkType.getName());
+                        if (found != null) foundBidLinks.add(found);
+                    } else {
+                        Iterable<StorageLink> found =
+                            session.findLinks(session.findNodeByStringId(rawAnotherOriginId));
+                        if (found != null) foundBidLinks.addAll(SLCollections.iterableToList(found));
+                    }
                 }
             }
         }
