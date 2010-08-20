@@ -162,9 +162,17 @@ public class SLCollections {
         return iterableOfAll(builder.build());
     }
 
+    private static enum IteratorNextState {
+        RESET,
+        HAS_NEXT,
+        HAS_NOT_NEXT
+    }
+
     public static <T> Iterable<T> iterableOfAll(
                                                 final Iterable<Iterable<T>> iterables) {
         return new Iterable<T>() {
+
+            IteratorNextState nextState = IteratorNextState.RESET;
 
             @Override
             public Iterator<T> iterator() {
@@ -174,16 +182,24 @@ public class SLCollections {
                     final Iterator<Iterable<T>> it              = iterables.iterator();
 
                     private boolean hasNextIterator() {
-                        if (currentIterator == null
-                            || !currentIterator.hasNext()) {
-                            while (it.hasNext()) {
-                                currentIterator = it.next().iterator();
-                                if (currentIterator.hasNext()) { return true; }
+                        if (IteratorNextState.RESET.equals(nextState)) {
+                            if (currentIterator == null
+                                || !currentIterator.hasNext()) {
+                                while (it.hasNext()) {
+                                    currentIterator = it.next().iterator();
+                                    if (currentIterator.hasNext()) {
+                                        nextState = IteratorNextState.HAS_NEXT;
+                                        return true;
+                                    }
 
+                                }
+                                nextState = IteratorNextState.HAS_NOT_NEXT;
+                                return false;
                             }
-                            return false;
+                            nextState = IteratorNextState.HAS_NEXT;
+                            return true;
                         }
-                        return true;
+                        return IteratorNextState.HAS_NEXT.equals(nextState);
                     }
 
                     @Override
@@ -193,12 +209,16 @@ public class SLCollections {
 
                     @Override
                     public T next() {
-                        if (hasNextIterator()) {
-                            final T result = currentIterator.next();
-                            if (result == null) { throw new NullPointerException(); }
-                            return result;
+                        try {
+                            if (hasNextIterator()) {
+                                final T result = currentIterator.next();
+                                if (result == null) { throw new NullPointerException(); }
+                                return result;
+                            }
+                            throw new NoSuchElementException();
+                        } finally {
+                            nextState = IteratorNextState.RESET;
                         }
-                        throw new NoSuchElementException();
                     }
 
                     @Override

@@ -612,6 +612,96 @@ public abstract class AbstractGraphTest {
     }
 
     @Test
+    public void shouldAddAndRetrieveLinksOnTwoPossibleOrdersOnSameContext()
+        throws Exception {
+        final GraphReader simpleFromLocation = simpleGraphSession.from(location());
+        final Context context1 = simpleFromLocation.getContext(context1());
+        final GraphWriter writer = fullGraphSession.toServer();
+        final String rootClass1 = "rootClass1";
+        final String rootClass2 = "rootClass2";
+        final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
+            rootClass1);
+        final JavaType rootClass2Node = writer.addNode(context1, JavaType.class,
+            rootClass2);
+        final TypeExtends link1 = writer.addBidirectionalLink(TypeExtends.class,
+            rootClass1Node, rootClass2Node);
+        writer.flush();
+        final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+        assertThat(emptyLinks.size(), is(0));
+        final List<Link> emptyLinks2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass2Node, null, LinkDirection.UNIDIRECTIONAL));
+        assertThat(emptyLinks2.size(), is(0));
+
+        final List<Link> linkFromNode1 = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+
+        final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass2Node, null, LinkDirection.BIDIRECTIONAL));
+
+        assertThat(linkFromNode1.size(), is(1));
+        assertThat(linkFromNode1.contains(link1), is(true));
+        assertThat(linkFromNode2.size(), is(1));
+        assertThat(linkFromNode2.contains(link1), is(true));
+
+        final List<Link> linkFromNode1any = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.ANY));
+        assertThat(linkFromNode1any.size(), is(1));
+        assertThat(linkFromNode1any.contains(link1), is(true));
+
+        final List<Link> linkFromNode2Any = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.ANY));
+        assertThat(linkFromNode2Any.size(), is(1));
+        assertThat(linkFromNode2Any.contains(link1), is(true));
+
+    }
+
+    @Test
+    public void shouldAddAndRetrieveLinksOnTwoPossibleOrdersOnDifferentContexts()
+        throws Exception {
+        final GraphReader simpleFromLocation = simpleGraphSession.from(location());
+        final Context context1 = simpleFromLocation.getContext(context1());
+        final Context context2 = simpleFromLocation.getContext(context2());
+        final GraphWriter writer = fullGraphSession.toServer();
+        final String rootClass1 = "rootClass1";
+        final String rootClass2 = "rootClass2";
+        final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
+            rootClass1);
+        final JavaType rootClass2Node = writer.addNode(context2, JavaType.class,
+            rootClass2);
+        final TypeExtends link1 = writer.addBidirectionalLink(TypeExtends.class,
+            rootClass1Node, rootClass2Node);
+        writer.flush();
+        final List<Link> emptyLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
+        assertThat(emptyLinks.size(), is(0));
+        final List<Link> emptyLinks2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass2Node, null, LinkDirection.UNIDIRECTIONAL));
+        assertThat(emptyLinks2.size(), is(0));
+
+        final List<Link> linkFromNode1 = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+        assertThat(linkFromNode1.size(), is(1));
+        assertThat(linkFromNode1.contains(link1), is(true));
+
+        final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass2Node, null, LinkDirection.BIDIRECTIONAL));
+        assertThat(linkFromNode2.size(), is(1));
+        assertThat(linkFromNode2.contains(link1), is(true));
+
+        final List<Link> linkFromNode1any = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.ANY));
+        assertThat(linkFromNode1any.size(), is(1));
+        assertThat(linkFromNode1any.contains(link1), is(true));
+
+        final List<Link> linkFromNode2Any = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.ANY));
+        assertThat(linkFromNode2Any.size(), is(1));
+        assertThat(linkFromNode2Any.contains(link1), is(true));
+
+    }
+
+    @Test
     public void shouldaddAndRetrieveBidirectionalLinksOnSameContext()
         throws Exception {
         final GraphReader simpleFromLocation = simpleGraphSession.from(location());
@@ -657,17 +747,17 @@ public abstract class AbstractGraphTest {
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
 
-        final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
-        assertThat(twoLinks.size(), is(2));
-        assertThat(twoLinks.contains(link1), is(true));
-        assertThat(twoLinks.contains(link2), is(true));
-
         final List<Link> twoLinks2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
             rootClass2Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(twoLinks2.size(), is(1));
         assertThat(twoLinks2.contains(link1), is(true));
         assertThat(twoLinks2.contains(link2), is(false));
+
+        final List<Link> twoLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+        assertThat(twoLinks.size(), is(2));
+        assertThat(twoLinks.contains(link1), is(true));
+        assertThat(twoLinks.contains(link2), is(true));
 
     }
 
@@ -717,20 +807,14 @@ public abstract class AbstractGraphTest {
         assertThat(link1Bid, is(link3Bid));
         assertThat(link2Bid, is(link4Bid));
 
-        final List<Link> twoBidLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
-        assertThat(twoBidLinks.size(), is(2));
-        assertThat(twoBidLinks.contains(link1Bid), is(true));
-        assertThat(twoBidLinks.contains(link2Bid), is(true));
-
         final List<Link> bidLinkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            null, rootClass2BidNode, LinkDirection.BIDIRECTIONAL));
+            rootClass2BidNode, null, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode2.size(), is(1));
         assertThat(bidLinkFromNode2.contains(link1Bid), is(true));
         assertThat(bidLinkFromNode2.contains(link2Bid), is(false));
 
         final List<Link> bidLinkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            null, rootClass3BidNode, LinkDirection.BIDIRECTIONAL));
+            rootClass3BidNode, null, LinkDirection.BIDIRECTIONAL));
         assertThat(bidLinkFromNode3.size(), is(1));
         assertThat(bidLinkFromNode3.contains(link2Bid), is(true));
         assertThat(bidLinkFromNode3.contains(link1Bid), is(false));
@@ -744,18 +828,23 @@ public abstract class AbstractGraphTest {
             rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
-        final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            null, rootClass2Node, LinkDirection.UNIDIRECTIONAL));
-        assertThat(linkFromNode2.size(), is(1));
-        assertThat(linkFromNode2.contains(link1), is(true));
-        assertThat(linkFromNode2.contains(link2), is(false));
+        final List<Link> twoBidLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
+        assertThat(twoBidLinks.size(), is(2));//TODO
+        assertThat(twoBidLinks.contains(link1Bid), is(true));
+        assertThat(twoBidLinks.contains(link2Bid), is(true));
 
         final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            null, rootClass3Node, LinkDirection.UNIDIRECTIONAL));
-        assertThat(linkFromNode3.size(), is(1));
+            rootClass3Node, null, LinkDirection.UNIDIRECTIONAL));
+        assertThat(linkFromNode3.size(), is(1));//TODO
         assertThat(linkFromNode3.contains(link2), is(true));
         assertThat(linkFromNode3.contains(link1), is(false));
 
+        final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass2Node, null, LinkDirection.UNIDIRECTIONAL));
+        assertThat(linkFromNode2.size(), is(1));//TODO
+        assertThat(linkFromNode2.contains(link1), is(true));
+        assertThat(linkFromNode2.contains(link2), is(false));
     }
 
     @Test
@@ -860,28 +949,29 @@ public abstract class AbstractGraphTest {
     }
 
     @Test
-    public void shouldTransformAutoBidirectionalLinkOnSameContext() throws Exception{
+    public void shouldTransformAutoBidirectionalLinkOnSameContext()
+        throws Exception {
         throw new UnsupportedOperationException();
     }
-    
 
     @Test
-    public void shouldTransformAutoBidirectionalLinkOnDifferentContexts() throws Exception{
+    public void shouldTransformAutoBidirectionalLinkOnDifferentContexts()
+        throws Exception {
         throw new UnsupportedOperationException();
     }
-    
 
     @Test
-    public void shouldNotTransformNonAutoBidirectionalLinkOnSameContext() throws Exception{
+    public void shouldNotTransformNonAutoBidirectionalLinkOnSameContext()
+        throws Exception {
         throw new UnsupportedOperationException();
     }
-    
 
     @Test
-    public void shouldNonTransformNonAutoBidirectionalLinkOnDifferentContexts() throws Exception{
+    public void shouldNonTransformNonAutoBidirectionalLinkOnDifferentContexts()
+        throws Exception {
         throw new UnsupportedOperationException();
     }
-    
+
     @Test
     public void shouldaddAndRetrieveUniAndBidirectionalLinksOnDiferentContext()
         throws Exception {

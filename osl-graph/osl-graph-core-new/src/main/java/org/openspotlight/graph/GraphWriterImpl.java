@@ -117,7 +117,7 @@ public class GraphWriterImpl implements GraphWriter {
         throws IllegalArgumentException {
         L newLink =
             NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target, LinkDirection.BIDIRECTIONAL,
-            true);
+            false);
         dirtyLinks.add(newLink);
         return newLink;
     }
@@ -154,7 +154,7 @@ public class GraphWriterImpl implements GraphWriter {
         L newLink =
             NodeAndLinkSupport.createLink(factory, sessionProvider.get(), linkClass, source, target,
             LinkDirection.UNIDIRECTIONAL,
-            true);
+            false);
         dirtyLinks.add(newLink);
         return newLink;
 

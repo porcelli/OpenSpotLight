@@ -68,12 +68,12 @@ import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.IsMetaType;
 import org.openspotlight.graph.annotation.TransientProperty;
-import org.openspotlight.storage.AbstractStorageSession.NodeKeyBuilderImpl;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
 import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
+import org.openspotlight.storage.AbstractStorageSession.NodeKeyBuilderImpl;
 import org.openspotlight.storage.domain.key.NodeKey;
 
 import com.google.common.collect.ImmutableSet;
@@ -264,10 +264,11 @@ public class NodeAndLinkSupport {
     }
 
     public static org.openspotlight.storage.domain.StorageNode retrievePreviousNode(
-                                                                             final PartitionFactory factory,
-                                                                             final StorageSession session, final Context context,
-                                                                             final Node node,
-                                                                             final boolean needsToVerifyType) {
+                                                                                    final PartitionFactory factory,
+                                                                                    final StorageSession session,
+                                                                                    final Context context,
+                                                                                    final Node node,
+                                                                                    final boolean needsToVerifyType) {
         try {
             final PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode> metadata =
                 (PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode>) node;
@@ -308,7 +309,8 @@ public class NodeAndLinkSupport {
     public static <T extends Link> T createLink(
                                                 final PartitionFactory factory,
                                                 final StorageSession session, final Class<T> clazz, final Node rawOrigin,
-                                                final Node rawTarget, final LinkDirection direction, final boolean createIfDontExists) {
+                                                final Node rawTarget, final LinkDirection direction,
+                                                final boolean createIfDontExists) {
         final Map<String, Class<? extends Serializable>> propertyTypes = newHashMap();
         final Map<String, Serializable> propertyValues = newHashMap();
         final PropertyDescriptor[] descriptors = PropertyUtils
@@ -316,6 +318,8 @@ public class NodeAndLinkSupport {
 
         org.openspotlight.storage.domain.StorageLink linkEntry = null;
         Node origin, target;
+
+        if (rawOrigin.compareTo(rawTarget) == 0) throw new IllegalStateException();
 
         if (LinkDirection.BIDIRECTIONAL.equals(direction)
             && rawOrigin.compareTo(rawTarget) < 0) {
@@ -331,6 +335,7 @@ public class NodeAndLinkSupport {
                 .getId());
             final org.openspotlight.storage.domain.StorageNode targetAsSTNode = session.findNodeByStringId(target
                 .getId());
+            if (originAsSTNode == null && createIfDontExists) throw new IllegalStateException();
             if (originAsSTNode != null) {
                 linkEntry = session.getLink(originAsSTNode, targetAsSTNode, clazz
                     .getName());
@@ -424,7 +429,7 @@ public class NodeAndLinkSupport {
 
         private WeakReference<org.openspotlight.storage.domain.StorageLink> cachedEntry;
 
-        private final Class<? extends Link>                          linkType;
+        private final Class<? extends Link>                                 linkType;
 
         public LinkImpl(final String id, final String linkName,
                         final Class<? extends Link> linkType,
@@ -438,7 +443,7 @@ public class NodeAndLinkSupport {
             sides[SOURCE] = source;
             sides[TARGET] = target;
             this.linkType = linkType;
-            this.linkDirection =  linkDirection;
+            this.linkDirection = linkDirection;
 
         }
 
@@ -943,15 +948,15 @@ public class NodeAndLinkSupport {
 
         private WeakReference<org.openspotlight.storage.domain.StorageNode> cachedEntry;
 
-        private final Class<? extends Node>                          targetNode;
+        private final Class<? extends Node>                                 targetNode;
 
-        private String                                               caption;
+        private String                                                      caption;
 
-        private final String                                         name;
+        private final String                                                name;
 
-        private final Class<? extends Node>                          type;
+        private final Class<? extends Node>                                 type;
 
-        private final String                                         parentId;
+        private final String                                                parentId;
 
         @Override
         public String getParentId() {

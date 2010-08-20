@@ -689,6 +689,8 @@ public class GraphReaderImpl implements GraphReader {
             internalGetLinks(linkType, rawOrigin, rawTarget,
             LinkDirection.UNIDIRECTIONAL)); }
 
+        if (rawTarget != null && rawOrigin.compareTo(rawTarget) == 0) throw new IllegalStateException();
+
         if (rawTarget != null && LinkDirection.BIDIRECTIONAL.equals(linkDirection)
             && rawOrigin.compareTo(rawTarget) < 0) { return internalGetLinks(linkType, rawTarget, rawOrigin,
             linkDirection); }
@@ -697,6 +699,7 @@ public class GraphReaderImpl implements GraphReader {
 
         org.openspotlight.storage.domain.StorageNode stNode =
             NodeAndLinkSupport.retrievePreviousNode(factory, session, getContext(rawOrigin.getContextId()), rawOrigin, false);
+        stNode.forceReload();
 
         List<org.openspotlight.storage.domain.StorageLink> foundBidLinks =
             new LinkedList<org.openspotlight.storage.domain.StorageLink>();
