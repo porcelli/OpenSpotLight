@@ -1121,17 +1121,6 @@ public abstract class AbstractGraphTest {
             rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
         assertThat(emptyLinks.size(), is(0));
 
-        final List<Link> linkFromNode2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            rootClass2Node, null, LinkDirection.UNIDIRECTIONAL));
-        assertThat(linkFromNode2.size(), is(1));
-        assertThat(linkFromNode2.contains(link1), is(true));
-        assertThat(linkFromNode2.contains(link2), is(false));
-
-        final List<Link> linkFromNode3 = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            rootClass3Node, null, LinkDirection.UNIDIRECTIONAL));
-        assertThat(linkFromNode3.size(), is(1));
-        assertThat(linkFromNode3.contains(link2), is(true));
-        assertThat(linkFromNode3.contains(link1), is(false));
 
     }
 
