@@ -54,15 +54,16 @@ import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.graph.Context;
+import org.openspotlight.graph.Element;
 import org.openspotlight.graph.FullGraphSession;
 import org.openspotlight.graph.GraphLocation;
 import org.openspotlight.graph.GraphSessionFactory;
@@ -70,6 +71,10 @@ import org.openspotlight.graph.Link;
 import org.openspotlight.graph.LinkDirection;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.SimpleGraphSession;
+import org.openspotlight.graph.TreeLineReference;
+import org.openspotlight.graph.TreeLineReference.ArtifactLineReference;
+import org.openspotlight.graph.TreeLineReference.SimpleLineReference;
+import org.openspotlight.graph.TreeLineReference.StatementLineReference;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphWriter;
 import org.openspotlight.graph.test.link.AutoBidLink;
@@ -370,22 +375,6 @@ public abstract class AbstractGraphTest {
 
         writer.flush();
 
-    }
-
-    @Ignore
-    // TODO will be possible to add nodes with same names and different types? :-)
-    @Test(expected = ClassCastException.class)
-    public void shouldNotChangeNodeTypeWhenUsingInvalidNodeType()
-        throws Exception {
-        final GraphReader simpleFromLocation = simpleGraphSession.from(location());
-        final Context context1 = simpleFromLocation.getContext(context1());
-        final GraphWriter writer = fullGraphSession.toServer();
-
-        final String rootClass1 = "rootClass1";
-        writer.addNode(context1, JavaType.class, rootClass1);
-        writer.flush();
-
-        writer.addNode(context1, JavaMemberField.class, rootClass1);
     }
 
     @Test
@@ -833,7 +822,7 @@ public abstract class AbstractGraphTest {
 
         final List<Link> twoBidLinks = SLCollections.iterableToList(simpleFromLocation.getLinks(
             rootClass1BidNode, null, LinkDirection.BIDIRECTIONAL));
-        assertThat(twoBidLinks.size(), is(2));//TODO
+        assertThat(twoBidLinks.size(), is(2));
         assertThat(twoBidLinks.contains(link1Bid), is(true));
         assertThat(twoBidLinks.contains(link2Bid), is(true));
 
@@ -928,16 +917,146 @@ public abstract class AbstractGraphTest {
         assertThat(linkFromNode3.contains(link1), is(false));
     }
 
+    private static final String sampleLineRef1 = "sampleLineRef1", sampleLineRef2 = "sampleLineRef2",
+                                               sampleLineRef3 = "sampleLineRef3", sampleArtifact1 =
+                                               "sampleArtifact1", sampleArtifact2 = "sampleArtifact2";
+
+    private static final int    sampleRef11beginLine = 1, sampleRef11endLine = 2, sampleRef11beginColumn = 3,
+                                                     sampleRef11endColumn = 4,
+
+                                                     sampleRef12beginLine = 1, sampleRef12endLine = 2,
+    sampleRef12beginColumn = 3, sampleRef12endColumn = 4,
+
+    sampleRef13beginLine = 5, sampleRef13endLine = 6, sampleRef13beginColumn = 7, sampleRef13endColumn = 8,
+
+    sampleRef21beginLine = 1, sampleRef21endLine = 2, sampleRef21beginColumn = 3, sampleRef21endColumn = 4;
+
     @Test
-    public void shouldCreateLineReferencesOnLinksOnAnotherContext()
+    public void shouldCreateLineReferencesOnLinks()
         throws Exception {
-        throw new Exception();
+        final GraphReader simpleFromLocation = simpleGraphSession.from(location());
+        final Context context1 = simpleFromLocation.getContext(context1());
+        final GraphWriter writer = fullGraphSession.toServer();
+        final String rootClass1 = "rootClass1";
+        final String rootClass2 = "rootClass2";
+        final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
+            rootClass1);
+        final JavaType rootClass2Node = writer.addNode(context1, JavaType.class,
+            rootClass2);
+        final Element link1 = writer.addBidirectionalLink(TypeExtends.class,
+            rootClass1Node, rootClass2Node);
+
+        createSampleLineRefs(link1);
+        createSampleLineRefs(link1);// call it one more time to test if has any duplicate item
+
+        writer.flush();
+
+        final List<Link> oneLink = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+        assertThat(oneLink.size(), is(1));
+        assertThat(oneLink.contains(link1), is(true));
+        Element link = oneLink.iterator().next();
+        testLineRefs(link);
+
+    }
+
+    private void testLineRefs(
+                              Element link) {
+        TreeLineReference lineRefs = link.getTreeLineReferences();
+        boolean hasArtifact1 = false, hasArtifact2 = false, hasLineRef1 = false, hasLineRef2 = false, hasLineRef3 = false, hasLineRef4 =
+            false;
+
+        for (ArtifactLineReference ref: lineRefs.getArtifacts()) {
+            if (sampleArtifact1.equals(ref.getArtifactId())) {
+                if (hasArtifact1) fail();
+                hasArtifact1 = true;
+                if (ref.getStatements().iterator().hasNext() == false) fail();
+                for (StatementLineReference stm: ref.getStatements()) {
+                    if (sampleLineRef1.equals(stm.getStatement())) {
+                        if (stm.getLineReferences().iterator().hasNext() == false) fail();
+                        for (SimpleLineReference lineRef: stm.getLineReferences()) {
+                            if (lineRef.getBeginLine() == sampleRef11beginLine
+                                && lineRef.getEndLine() == sampleRef11endLine
+                                && lineRef.getBeginColumn() == sampleRef11beginColumn
+                                && lineRef.getEndColumn() == sampleRef11endColumn) {
+                                if (hasLineRef1) fail();
+                                hasLineRef1 = true;
+                            } else if (lineRef.getBeginLine() == sampleRef12beginLine
+                                && lineRef.getEndLine() == sampleRef12endLine
+                                && lineRef.getBeginColumn() == sampleRef12beginColumn
+                                && lineRef.getEndColumn() == sampleRef12endColumn) {
+                                if (hasLineRef2) fail();
+                                hasLineRef2 = true;
+                            } else if (lineRef.getBeginLine() == sampleRef13beginLine
+                                && lineRef.getEndLine() == sampleRef13endLine
+                                && lineRef.getBeginColumn() == sampleRef13beginColumn
+                                && lineRef.getEndColumn() == sampleRef13endColumn) {
+                                if (hasLineRef2) fail();
+                                hasLineRef2 = true;
+                            } else {
+                                fail();
+                            }
+                        }
+                    }
+                }
+            } else if (sampleArtifact2.equals(ref.getArtifactId())) {
+                if (hasArtifact2) fail();
+                hasArtifact2 = true;
+                if (ref.getStatements().iterator().hasNext() == false) fail();
+                for (StatementLineReference stm: ref.getStatements()) {
+                    if (sampleLineRef2.equals(stm.getStatement())) {
+                        if (stm.getLineReferences().iterator().hasNext() == false) fail();
+                        for (SimpleLineReference lineRef: stm.getLineReferences()) {
+                            if (lineRef.getBeginLine() == sampleRef21beginLine
+                                && lineRef.getEndLine() == sampleRef21endLine
+                                && lineRef.getBeginColumn() == sampleRef21beginColumn
+                                && lineRef.getEndColumn() == sampleRef21endColumn) {
+                                if (hasLineRef4) fail();
+                                hasLineRef4 = true;
+                            } else {
+                                fail();
+                            }
+                        }
+                    }
+                }
+            } else {
+                fail();
+            }
+        }
+    }
+
+    private void createSampleLineRefs(
+                                      final Element link1) {
+        link1.createLineReference(sampleRef11beginLine, sampleRef11endLine, sampleRef11beginColumn, sampleRef11endColumn,
+            sampleLineRef1, sampleArtifact1);
+        link1.createLineReference(sampleRef12beginLine, sampleRef12endLine, sampleRef12beginColumn, sampleRef12endColumn,
+            sampleLineRef2, sampleArtifact1);
+        link1.createLineReference(sampleRef13beginLine, sampleRef13endLine, sampleRef13beginColumn, sampleRef13endColumn,
+            sampleLineRef2, sampleArtifact1);
+        link1.createLineReference(sampleRef21beginLine, sampleRef21endLine, sampleRef21beginColumn, sampleRef21endColumn,
+            sampleLineRef3, sampleArtifact2);
     }
 
     @Test
-    public void shouldCreateLineReferencesOnNodesOnAnotherContext()
+    public void shouldCreateLineReferencesOnNodes()
         throws Exception {
-        throw new Exception();
+        final GraphReader simpleFromLocation = simpleGraphSession.from(location());
+        final Context context1 = simpleFromLocation.getContext(context1());
+        final GraphWriter writer = fullGraphSession.toServer();
+        final String rootClass1 = "rootClass1";
+        final JavaType rootClass1Node = writer.addNode(context1, JavaType.class,
+            rootClass1);
+        createSampleLineRefs(rootClass1Node);
+        createSampleLineRefs(rootClass1Node);// call it one more time to test if has any duplicate item
+
+        writer.flush();
+
+        final List<JavaType> oneLink =
+            SLCollections.iterableToList(simpleFromLocation.findNodesByName(JavaType.class, rootClass1, true));
+        assertThat(oneLink.size(), is(1));
+        assertThat(oneLink.contains(rootClass1Node), is(true));
+        Element link = oneLink.iterator().next();
+        testLineRefs(link);
     }
 
     @Test
