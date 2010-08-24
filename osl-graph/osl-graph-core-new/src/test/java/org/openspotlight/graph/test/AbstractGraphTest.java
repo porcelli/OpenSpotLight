@@ -73,6 +73,7 @@ import org.openspotlight.graph.SimpleGraphSession;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.manipulation.GraphWriter;
 import org.openspotlight.graph.test.link.AutoBidLink;
+import org.openspotlight.graph.test.link.NonAutoBidLink;
 import org.openspotlight.graph.test.link.TypeExtends;
 import org.openspotlight.graph.test.node.JavaMember;
 import org.openspotlight.graph.test.node.JavaMemberField;
@@ -954,8 +955,10 @@ public abstract class AbstractGraphTest {
 
         assertThat(rootClass1Node, is(not(rootClass2Node)));
 
-        List<JavaType> foundNodes = SLCollections.iterableToList(simpleFromLocation.findNodesByName(JavaType.class, rootClass1, true, context1));
-        List<JavaMember> foundNodes2 = SLCollections.iterableToList(simpleFromLocation.findNodesByName(JavaMember.class, rootClass1, true, context1));
+        List<JavaType> foundNodes =
+            SLCollections.iterableToList(simpleFromLocation.findNodesByName(JavaType.class, rootClass1, true, context1));
+        List<JavaMember> foundNodes2 =
+            SLCollections.iterableToList(simpleFromLocation.findNodesByName(JavaMember.class, rootClass1, true, context1));
         assertThat(foundNodes.size(), is(1));
         assertThat(foundNodes2.size(), is(1));
     }
@@ -1044,11 +1047,11 @@ public abstract class AbstractGraphTest {
             rootClass1);
         final JavaType rootClass2Node = writer.addNode(context1, JavaType.class,
             rootClass2);
-        final AutoBidLink link1 = writer.addLink(AutoBidLink.class,
+        final NonAutoBidLink link1 = writer.addLink(NonAutoBidLink.class,
             rootClass1Node, rootClass2Node);
         writer.flush();
 
-        final AutoBidLink link2 = writer.addLink(AutoBidLink.class,
+        final NonAutoBidLink link2 = writer.addLink(NonAutoBidLink.class,
             rootClass2Node, rootClass1Node);
 
         writer.flush();
@@ -1079,9 +1082,9 @@ public abstract class AbstractGraphTest {
             rootClass1);
         final JavaType rootClass2Node = writer.addNode(context2, JavaType.class,
             rootClass2);
-        final AutoBidLink link1 = writer.addLink(AutoBidLink.class,
+        final NonAutoBidLink link1 = writer.addLink(NonAutoBidLink.class,
             rootClass1Node, rootClass2Node);
-        final AutoBidLink link2 = writer.addLink(AutoBidLink.class,
+        final NonAutoBidLink link2 = writer.addLink(NonAutoBidLink.class,
             rootClass2Node, rootClass1Node);
 
         writer.flush();
@@ -1090,11 +1093,11 @@ public abstract class AbstractGraphTest {
 
         final List<Link> oneLink = SLCollections.iterableToList(simpleFromLocation.getLinks(
             rootClass1Node, null, LinkDirection.UNIDIRECTIONAL));
-        assertThat(oneLink.size(), is(1));
-        assertThat(oneLink.contains(link1), is(true));
 
         final List<Link> oneLink2 = SLCollections.iterableToList(simpleFromLocation.getLinks(
             rootClass2Node, null, LinkDirection.UNIDIRECTIONAL));
+        assertThat(oneLink.size(), is(1));
+        assertThat(oneLink.contains(link1), is(true));
         assertThat(oneLink2.size(), is(1));
         assertThat(oneLink2.contains(link2), is(true));
     }

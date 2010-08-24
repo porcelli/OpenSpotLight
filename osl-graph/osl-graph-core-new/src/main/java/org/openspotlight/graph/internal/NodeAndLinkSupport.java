@@ -67,6 +67,7 @@ import org.openspotlight.graph.TreeLineReference;
 import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.IsMetaType;
+import org.openspotlight.graph.annotation.LinkAutoBidirectional;
 import org.openspotlight.graph.annotation.TransientProperty;
 import org.openspotlight.storage.Partition;
 import org.openspotlight.storage.PartitionFactory;
@@ -74,6 +75,7 @@ import org.openspotlight.storage.RepositoryPath;
 import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.AbstractStorageSession.NodeKeyBuilderImpl;
+import org.openspotlight.storage.domain.StorageLink;
 import org.openspotlight.storage.domain.key.NodeKey;
 
 import com.google.common.collect.ImmutableSet;
@@ -340,22 +342,54 @@ public class NodeAndLinkSupport {
                 linkEntry = session.getLink(originAsSTNode, targetAsSTNode, clazz
                     .getName());
                 if (linkEntry == null) {
-                    if (createIfDontExists) {
-                        linkEntry = session.addLink(originAsSTNode, targetAsSTNode,
-                            clazz.getName());
-                        linkEntry.setIndexedProperty(session, LINK_DIRECTION, direction.name());
-                    }
-                    if (LinkDirection.BIDIRECTIONAL.equals(direction)) {
-                        InputStream objectAsStream = targetAsSTNode.getPropertyAsStream(session, BIDIRECTIONAL_LINK_IDS);
-                        List<String> linkIds;
-                        if (objectAsStream != null) {
-                            linkIds = SerializationUtil.deserialize(objectAsStream);
-                        } else {
-                            linkIds = new ArrayList<String>();
+                    if (clazz.isAnnotationPresent(LinkAutoBidirectional.class) && LinkDirection.UNIDIRECTIONAL.equals(direction)) {
+
+                        StorageLink possibleLink = session.getLink(targetAsSTNode, originAsSTNode, clazz.getName());
+                        StorageLink anotherPossibleLink = session.getLink(originAsSTNode, targetAsSTNode, clazz.getName());
+                        if (possibleLink != null && anotherPossibleLink != null) { throw new IllegalStateException(); }
+                        if (possibleLink != null
+                            && possibleLink.getPropertyAsString(session, LINK_DIRECTION).equals(
+                            LinkDirection.BIDIRECTIONAL.name())) {
+                            return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
+                                createIfDontExists);
+                        } else if (anotherPossibleLink != null
+                            && anotherPossibleLink.getPropertyAsString(session, LINK_DIRECTION).equals(
+                            LinkDirection.BIDIRECTIONAL.name())) {
+                            return createLink(factory, session, clazz, rawTarget,
+                                rawOrigin, LinkDirection.BIDIRECTIONAL,
+                                createIfDontExists);
+                        } else if (possibleLink != null) {
+                            if (createIfDontExists) {
+                                session.removeLink(possibleLink);
+                            }
+                            return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
+                                createIfDontExists);
+
+                        } else if (anotherPossibleLink != null) {
+                            if (createIfDontExists) {
+                                session.removeLink(anotherPossibleLink);
+                            }
+                            return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
+                                createIfDontExists);
                         }
-                        linkIds.add(linkEntry.getKeyAsString());
-                        targetAsSTNode.setSimpleProperty(session, BIDIRECTIONAL_LINK_IDS, SerializationUtil.serialize(linkIds));
-                        targetAsSTNode.setSimpleProperty(session, LINK_DIRECTION, LinkDirection.BIDIRECTIONAL.name());
+                    }
+                    if (createIfDontExists)
+                        linkEntry = session.addLink(originAsSTNode, targetAsSTNode,
+                        clazz.getName());
+                    if (linkEntry != null) {
+                        if (LinkDirection.BIDIRECTIONAL.equals(direction)) {
+                            InputStream objectAsStream = targetAsSTNode.getPropertyAsStream(session, BIDIRECTIONAL_LINK_IDS);
+                            List<String> linkIds;
+                            if (objectAsStream != null) {
+                                linkIds = SerializationUtil.deserialize(objectAsStream);
+                            } else {
+                                linkIds = new ArrayList<String>();
+                            }
+                            linkIds.add(linkEntry.getKeyAsString());
+                            targetAsSTNode.setSimpleProperty(session, BIDIRECTIONAL_LINK_IDS, SerializationUtil
+                                .serialize(linkIds));
+                            targetAsSTNode.setSimpleProperty(session, LINK_DIRECTION, LinkDirection.BIDIRECTIONAL.name());
+                        }
                     }
                 }
             }
