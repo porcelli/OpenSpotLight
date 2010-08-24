@@ -1018,20 +1018,32 @@ public abstract class AbstractGraphTest {
             rootClass1);
         final JavaType rootClass2Node = writer.addNode(context2, JavaType.class,
             rootClass2);
-        final AutoBidLink link1 = writer.addLink(AutoBidLink.class,
+        writer.addLink(AutoBidLink.class,
             rootClass1Node, rootClass2Node);
-        writer.flush();
-
-        final AutoBidLink link2 = writer.addLink(AutoBidLink.class,
+        writer.addLink(AutoBidLink.class,
             rootClass2Node, rootClass1Node);
 
         writer.flush();
 
-        assertThat(link1, is(link2));
-
         final List<Link> oneLink = SLCollections.iterableToList(simpleFromLocation.getLinks(
-            rootClass1Node, null, LinkDirection.BIDIRECTIONAL));
+            rootClass1Node, null, LinkDirection.ANY));
+        final List<Link> anotherLink = SLCollections.iterableToList(simpleFromLocation.getLinks(
+            rootClass2Node, null, LinkDirection.ANY));
+
         assertThat(oneLink.size(), is(1));
+        assertThat(anotherLink.size(), is(1));
+        assertThat(oneLink.iterator().next(), is(anotherLink.iterator().next()));
+        assertThat(anotherLink.iterator().next().getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(oneLink.iterator().next().getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
+
+        final AutoBidLink link1 = writer.addLink(AutoBidLink.class,
+            rootClass1Node, rootClass2Node);
+        final AutoBidLink link2 = writer.addLink(AutoBidLink.class,
+            rootClass2Node, rootClass1Node);
+        assertThat(link1.getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
+        assertThat(link2.getLinkDirection(), is(LinkDirection.BIDIRECTIONAL));
+
+        assertThat(link1, is(link2));
         assertThat(oneLink.contains(link1), is(true));
     }
 
