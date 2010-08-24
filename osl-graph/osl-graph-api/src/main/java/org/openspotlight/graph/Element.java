@@ -58,20 +58,5 @@ public interface Element extends BaseIdentifer {
                               String statement,
                               String artifactId);
 
-    /**
-     * Returns a {@link org.openspotlight.graph.TreeLineReference} with all line references of the element.
-     * 
-     * @return the tree line references
-     */
-    TreeLineReference getTreeLineReferences();
-
-    /**
-     * Returns a {@link org.openspotlight.graph.TreeLineReference} with all line references of the element for a specific
-     * artifact.
-     * 
-     * @param artifactId the artifact id
-     * @return the tree line references
-     */
-    TreeLineReference getTreeLineReferences(String artifactId);
-
+    
 }

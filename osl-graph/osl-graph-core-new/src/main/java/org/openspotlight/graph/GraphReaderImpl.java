@@ -37,6 +37,7 @@ import java.util.Set;
 import org.openspotlight.common.collection.IteratorBuilder;
 import org.openspotlight.common.collection.IteratorBuilder.Converter;
 import org.openspotlight.common.collection.IteratorBuilder.NextItemReferee;
+import org.openspotlight.common.collection.IteratorBuilder.SimpleIteratorBuilder;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Conversion;
 import org.openspotlight.common.util.Exceptions;
@@ -81,20 +82,22 @@ public class GraphReaderImpl implements GraphReader {
     @Override
     public <L extends Link> Iterable<L> getBidirectionalLinks(
                                                               final Class<L> linkClass, final Node side) {
-        throw new UnsupportedOperationException();
+        return (Iterable<L>) internalGetLinks(linkClass, side, null, LinkDirection.BIDIRECTIONAL);
+
     }
 
     @Override
     public Iterable<Link> getBidirectionalLinks(
                                                 final Node side) {
-        throw new UnsupportedOperationException();
+        return internalGetLinks(null, side, null, LinkDirection.BIDIRECTIONAL);
+
     }
 
     @Override
     public <T extends Node> T getChildNode(
                                            final Node node, final Class<T> clazz,
                                            final String name) {
-        throw new UnsupportedOperationException();
+        return (T) internalGetChildrenNodes(node, clazz, name).iterator().next();
 
     }
 
@@ -236,18 +239,20 @@ public class GraphReaderImpl implements GraphReader {
     @Override
     public MetaLinkType getMetaType(
                                     final Link link) {
+        //TODO
         throw new UnsupportedOperationException();
     }
 
     @Override
     public MetaNodeType getMetaType(
                                     final Node node) {
+        //TODO
         throw new UnsupportedOperationException();
-
     }
 
     @Override
     public Metadata getMetadata() {
+        //TODO
         throw new UnsupportedOperationException();
 
     }
@@ -288,28 +293,14 @@ public class GraphReaderImpl implements GraphReader {
     @Override
     public <L extends Link> Iterable<L> getUnidirectionalLinksBySource(
                                                                        final Class<L> linkClass, final Node source) {
-        throw new UnsupportedOperationException();
+        return (Iterable<L>) internalGetLinks(linkClass, source, null, LinkDirection.UNIDIRECTIONAL);
 
     }
 
     @Override
     public Iterable<Link> getUnidirectionalLinksBySource(
                                                          final Node source) {
-        throw new UnsupportedOperationException();
-
-    }
-
-    @Override
-    public <L extends Link> Iterable<L> getUnidirectionalLinksByTarget(
-                                                                       final Class<L> linkClass, final Node target) {
-        throw new UnsupportedOperationException();
-
-    }
-
-    @Override
-    public Iterable<Link> getUnidirectionalLinksByTarget(
-                                                         final Node target) {
-        throw new UnsupportedOperationException();
+        return internalGetLinks(null, source, null, LinkDirection.UNIDIRECTIONAL);
 
     }
 
@@ -564,8 +555,7 @@ public class GraphReaderImpl implements GraphReader {
     public Iterable<Node> findNodesByName(
                                           final String name)
         throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return internalFindNodes(null, true, null, null, name, null, null);
     }
 
     @SuppressWarnings("unchecked")
@@ -812,14 +802,17 @@ public class GraphReaderImpl implements GraphReader {
             aditionalContexts));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Node> Iterable<T> listNodes(
                                                   final Class<T> clazz,
                                                   final boolean returnSubTypes)
         throws IllegalArgumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
-
+        Iterable<Partition> partitions = filterGraphPartitions(this.factory.getValues());
+        LinkedList<Context> contexts = new LinkedList<Context>();
+        for (Partition p: partitions)
+            contexts.add(getContext(p.getPartitionName()));
+        return (Iterable<T>) internalFindNodes(clazz, returnSubTypes, null, null, null, null, contexts);
     }
 
     @Override
@@ -838,15 +831,46 @@ public class GraphReaderImpl implements GraphReader {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <N extends Node> Iterable<N> getLinkedNodes(
                                                        final Class<? extends Link> linkClass, final Node node,
                                                        final Class<N> nodeClass,
                                                        final boolean returnSubTypes, final LinkDirection linkDirection)
         throws IllegalArgumentException {
+        return IteratorBuilder.<N, Link>createIteratorBuilder().withItems(internalGetLinks(linkClass, node, null, linkDirection))
+            .withConverter(
+            new Converter<N, Link>() {
+
+            @Override
+            public N convert(
+                             Link o)
+                throws Exception {
+                return (N) o.getTarget();
+            }
+        }).withReferee(new NextItemReferee<Link>() {
+
+            @Override
+            public boolean canAcceptAsNewItem(
+                                              Link o)
+                throws Exception {
+                return nodeClass.isInstance(o.getTarget());
+            }
+        }).andBuild();
+    }
+
+    @Override
+    public TreeLineReference getTreeLineReferences(
+                                                   Element e) {
+        //TODO 
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TreeLineReference getTreeLineReferences(
+                                                   Element e, String artifactId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
-
     }
 
 }

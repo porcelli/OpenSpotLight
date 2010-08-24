@@ -24,9 +24,11 @@ package org.openspotlight.graph.manipulation;
 import java.io.Serializable;
 
 import org.openspotlight.graph.Context;
+import org.openspotlight.graph.Element;
 import org.openspotlight.graph.Link;
 import org.openspotlight.graph.LinkDirection;
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.TreeLineReference;
 import org.openspotlight.graph.metadata.MetaLinkType;
 import org.openspotlight.graph.metadata.MetaNodeType;
 import org.openspotlight.graph.metadata.Metadata;
@@ -61,8 +63,9 @@ public interface GraphReader {
      * @throws IllegalArgumentException if the input param is null
      * @throws InvalidQuerySyntaxException if the input query content has invalid syntax
      */
-    QueryText createQueryText(String query)
-            throws IllegalArgumentException, InvalidQuerySyntaxException;
+    QueryText createQueryText(
+                              String query)
+        throws IllegalArgumentException, InvalidQuerySyntaxException;
 
     /**
      * Returns the metadata query interface, that contains most common used methods to query the metadata information. If its
@@ -79,7 +82,8 @@ public interface GraphReader {
      * @return meta link type or null if not found
      * @throws IllegalArgumentException if the input param is null
      */
-    MetaLinkType getMetaType(Link link)
+    MetaLinkType getMetaType(
+                             Link link)
         throws IllegalArgumentException;
 
     /**
@@ -89,7 +93,8 @@ public interface GraphReader {
      * @return meta link type or null if not found
      * @throws IllegalArgumentException if the input param is null
      */
-    MetaNodeType getMetaType(Node node)
+    MetaNodeType getMetaType(
+                             Node node)
         throws IllegalArgumentException;
 
     /**
@@ -99,7 +104,8 @@ public interface GraphReader {
      * @return the context
      * @throws IllegalArgumentException if the input param is null
      */
-    Context getContext(String id)
+    Context getContext(
+                       String id)
         throws IllegalArgumentException;
 
     /**
@@ -109,7 +115,8 @@ public interface GraphReader {
      * @return the context
      * @throws IllegalArgumentException if the input param is null
      */
-    Context getContext(Node node)
+    Context getContext(
+                       Node node)
         throws IllegalArgumentException;
 
     /**
@@ -119,7 +126,8 @@ public interface GraphReader {
      * @return the parent node or null if there is no parent node
      * @throws IllegalArgumentException if the input param is null
      */
-    Node getParentNode(Node node)
+    Node getParentNode(
+                       Node node)
         throws IllegalArgumentException;
 
     /**
@@ -130,8 +138,9 @@ public interface GraphReader {
      * @return the node or null if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    Node getNode(Context context,
-                  String id)
+    Node getNode(
+                 Context context,
+                 String id)
         throws IllegalArgumentException;
 
     /**
@@ -141,7 +150,8 @@ public interface GraphReader {
      * @return the node list, empty if not found
      * @throws IllegalArgumentException if the input param is null
      */
-    Iterable<Node> getNode(String id)
+    Iterable<Node> getNode(
+                           String id)
         throws IllegalArgumentException;
 
     /**
@@ -154,9 +164,10 @@ public interface GraphReader {
      * @return the child node or null if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> T getChildNode(Node node,
-                                     Class<T> clazz,
-                                     String name)
+    <T extends Node> T getChildNode(
+                                    Node node,
+                                    Class<T> clazz,
+                                    String name)
         throws IllegalArgumentException;
 
     /**
@@ -168,8 +179,9 @@ public interface GraphReader {
      * @return the children node list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> Iterable<T> getChildrenNodes(Node node,
-                                                   Class<T> clazz)
+    <T extends Node> Iterable<T> getChildrenNodes(
+                                                  Node node,
+                                                  Class<T> clazz)
         throws IllegalArgumentException;
 
     /**
@@ -180,7 +192,8 @@ public interface GraphReader {
      * @return the children node list, empty if not found
      * @throws IllegalArgumentException if the input param is null
      */
-    <T extends Node> Iterable<T> getChildrenNodes(Node node)
+    <T extends Node> Iterable<T> getChildrenNodes(
+                                                  Node node)
         throws IllegalArgumentException;
 
     /**
@@ -194,10 +207,11 @@ public interface GraphReader {
      * @return the link or null if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <L extends Link> L getLink(Class<L> linkTypeClass,
-                                Node source,
-                                Node target,
-                                LinkDirection linkDirection)
+    <L extends Link> L getLink(
+                               Class<L> linkTypeClass,
+                               Node source,
+                               Node target,
+                               LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -209,9 +223,10 @@ public interface GraphReader {
      * @return the link list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    Iterable<Link> getLinks(Node source,
-                             Node target,
-                             LinkDirection linkDirection)
+    Iterable<Link> getLinks(
+                            Node source,
+                            Node target,
+                            LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -223,8 +238,9 @@ public interface GraphReader {
      * @return the link list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <L extends Link> Iterable<L> getBidirectionalLinks(Class<L> linkClass,
-                                                        Node side)
+    <L extends Link> Iterable<L> getBidirectionalLinks(
+                                                       Class<L> linkClass,
+                                                       Node side)
         throws IllegalArgumentException;
 
     /**
@@ -236,21 +252,9 @@ public interface GraphReader {
      * @return the link list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <L extends Link> Iterable<L> getUnidirectionalLinksBySource(Class<L> linkClass,
-                                                                 Node source)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns a list of unidirectional link instances that matches the link type of a given target node.
-     * 
-     * @param <L> link type
-     * @param linkClass the desired link type
-     * @param target the target node
-     * @return the link list, empty if not found
-     * @throws IllegalArgumentException if any input param is null
-     */
-    <L extends Link> Iterable<L> getUnidirectionalLinksByTarget(Class<L> linkClass,
-                                                                 Node target)
+    <L extends Link> Iterable<L> getUnidirectionalLinksBySource(
+                                                                Class<L> linkClass,
+                                                                Node source)
         throws IllegalArgumentException;
 
     /**
@@ -260,7 +264,8 @@ public interface GraphReader {
      * @return the link list, empty if not found
      * @throws IllegalArgumentException if the input param is null
      */
-    Iterable<Link> getBidirectionalLinks(Node side)
+    Iterable<Link> getBidirectionalLinks(
+                                         Node side)
         throws IllegalArgumentException;
 
     /**
@@ -270,17 +275,8 @@ public interface GraphReader {
      * @return the link list, empty if not found
      * @throws IllegalArgumentException if the input param is null
      */
-    Iterable<Link> getUnidirectionalLinksBySource(Node source)
-        throws IllegalArgumentException;
-
-    /**
-     * Returns a list of any unidirectional link instances of a given target node.
-     * 
-     * @param target the source node
-     * @return the link list, empty if not found
-     * @throws IllegalArgumentException if the input param is null
-     */
-    Iterable<Link> getUnidirectionalLinksByTarget(Node target)
+    Iterable<Link> getUnidirectionalLinksBySource(
+                                                  Node source)
         throws IllegalArgumentException;
 
     /**
@@ -292,9 +288,10 @@ public interface GraphReader {
      * @return the linked nodes, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    Iterable<Node> getLinkedNodes(Class<? extends Link> linkClass,
-                                   Node node,
-                                   LinkDirection linkDirection)
+    Iterable<Node> getLinkedNodes(
+                                  Class<? extends Link> linkClass,
+                                  Node node,
+                                  LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -310,11 +307,12 @@ public interface GraphReader {
      * @return the linked nodes, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <N extends Node> Iterable<N> getLinkedNodes(Class<? extends Link> linkClass,
-                                                 Node node,
-                                                 Class<N> nodeClass,
-                                                 boolean returnSubTypes,
-                                                 LinkDirection linkDirection)
+    <N extends Node> Iterable<N> getLinkedNodes(
+                                                Class<? extends Link> linkClass,
+                                                Node node,
+                                                Class<N> nodeClass,
+                                                boolean returnSubTypes,
+                                                LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -328,10 +326,11 @@ public interface GraphReader {
      * @return the linked nodes, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <N extends Node> Iterable<N> getLinkedNodes(Node node,
-                                                 Class<N> nodeClass,
-                                                 boolean returnSubTypes,
-                                                 LinkDirection linkDirection)
+    <N extends Node> Iterable<N> getLinkedNodes(
+                                                Node node,
+                                                Class<N> nodeClass,
+                                                boolean returnSubTypes,
+                                                LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -342,8 +341,9 @@ public interface GraphReader {
      * @return the linked nodes, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    Iterable<Node> getLinkedNodes(Node node,
-                                   LinkDirection linkDirection)
+    Iterable<Node> getLinkedNodes(
+                                  Node node,
+                                  LinkDirection linkDirection)
         throws IllegalArgumentException;
 
     /**
@@ -357,10 +357,11 @@ public interface GraphReader {
      * @return the node list, empty if not found
      * @throws IllegalArgumentException if any input param, except the last varargs, is null
      */
-    <T extends Node> Iterable<T> listNodes(Class<T> clazz,
-                                            boolean returnSubTypes,
-                                            Context context,
-                                            Context... aditionalContexts)
+    <T extends Node> Iterable<T> listNodes(
+                                           Class<T> clazz,
+                                           boolean returnSubTypes,
+                                           Context context,
+                                           Context... aditionalContexts)
         throws IllegalArgumentException;
 
     /**
@@ -373,8 +374,9 @@ public interface GraphReader {
      * @return the node list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> Iterable<T> listNodes(Class<T> clazz,
-                                            boolean returnSubTypes)
+    <T extends Node> Iterable<T> listNodes(
+                                           Class<T> clazz,
+                                           boolean returnSubTypes)
         throws IllegalArgumentException;
 
     /**
@@ -389,11 +391,12 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param, except the last varargs, is null
      */
-    <T extends Node> Iterable<T> findNodesByName(Class<T> clazz,
-                                                  String name,
-                                                  boolean returnSubTypes,
-                                                  Context context,
-                                                  Context... aditionalContexts)
+    <T extends Node> Iterable<T> findNodesByName(
+                                                 Class<T> clazz,
+                                                 String name,
+                                                 boolean returnSubTypes,
+                                                 Context context,
+                                                 Context... aditionalContexts)
         throws IllegalArgumentException;
 
     /**
@@ -407,9 +410,10 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> Iterable<T> findNodesByName(Class<T> clazz,
-                                                  String name,
-                                                  boolean returnSubTypes)
+    <T extends Node> Iterable<T> findNodesByName(
+                                                 Class<T> clazz,
+                                                 String name,
+                                                 boolean returnSubTypes)
         throws IllegalArgumentException;
 
     /**
@@ -421,9 +425,10 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param, except the last varargs, is null
      */
-    Iterable<Node> findNodesByName(String name,
-                                    Context context,
-                                    Context... aditionalContexts)
+    Iterable<Node> findNodesByName(
+                                   String name,
+                                   Context context,
+                                   Context... aditionalContexts)
         throws IllegalArgumentException;
 
     /**
@@ -434,7 +439,8 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if the input param is null
      */
-    Iterable<Node> findNodesByName(String name)
+    Iterable<Node> findNodesByName(
+                                   String name)
         throws IllegalArgumentException;
 
     /**
@@ -449,11 +455,12 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param, except the last varargs, is null
      */
-    <T extends Node> Iterable<T> findNodesByCaption(Class<T> clazz,
-                                                     String caption,
-                                                     boolean returnSubTypes,
-                                                     Context context,
-                                                     Context... aditionalContexts)
+    <T extends Node> Iterable<T> findNodesByCaption(
+                                                    Class<T> clazz,
+                                                    String caption,
+                                                    boolean returnSubTypes,
+                                                    Context context,
+                                                    Context... aditionalContexts)
         throws IllegalArgumentException;
 
     /**
@@ -467,9 +474,10 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> Iterable<T> findNodesByCaption(Class<T> clazz,
-                                                     String caption,
-                                                     boolean returnSubTypes)
+    <T extends Node> Iterable<T> findNodesByCaption(
+                                                    Class<T> clazz,
+                                                    String caption,
+                                                    boolean returnSubTypes)
         throws IllegalArgumentException;
 
     /**
@@ -481,9 +489,10 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param, except the last varargs, is null
      */
-    Iterable<Node> findNodesByCaption(String caption,
-                                       Context context,
-                                       Context... aditionalContexts)
+    Iterable<Node> findNodesByCaption(
+                                      String caption,
+                                      Context context,
+                                      Context... aditionalContexts)
         throws IllegalArgumentException;
 
     /**
@@ -494,7 +503,8 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if the input param is null
      */
-    Iterable<Node> findNodesByCaption(String caption)
+    Iterable<Node> findNodesByCaption(
+                                      String caption)
         throws IllegalArgumentException;
 
     /**
@@ -510,12 +520,13 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param, except the last varargs, is null
      */
-    <T extends Node> Iterable<T> findNodesByCustomProperty(Class<T> clazz,
-                                                            String propertyName,
-                                                            Serializable value,
-                                                            boolean returnSubTypes,
-                                                            Context context,
-                                                            Context... aditionalContexts)
+    <T extends Node> Iterable<T> findNodesByCustomProperty(
+                                                           Class<T> clazz,
+                                                           String propertyName,
+                                                           Serializable value,
+                                                           boolean returnSubTypes,
+                                                           Context context,
+                                                           Context... aditionalContexts)
         throws IllegalArgumentException;
 
     /**
@@ -530,10 +541,11 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    <T extends Node> Iterable<T> findNodesByCustomProperty(Class<T> clazz,
-                                                            String propertyName,
-                                                            Serializable value,
-                                                            boolean returnSubTypes)
+    <T extends Node> Iterable<T> findNodesByCustomProperty(
+                                                           Class<T> clazz,
+                                                           String propertyName,
+                                                           Serializable value,
+                                                           boolean returnSubTypes)
         throws IllegalArgumentException;
 
     /**
@@ -546,10 +558,11 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param, except the last varargs, is null
      */
-    Iterable<Node> findNodesByCustomProperty(String propertyName,
-                                              Serializable value,
-                                              Context context,
-                                              Context... aditionalContexts)
+    Iterable<Node> findNodesByCustomProperty(
+                                             String propertyName,
+                                             Serializable value,
+                                             Context context,
+                                             Context... aditionalContexts)
         throws IllegalArgumentException;
 
     /**
@@ -561,8 +574,29 @@ public interface GraphReader {
      * @return the found node list, empty if not found
      * @throws IllegalArgumentException if any input param is null
      */
-    Iterable<Node> findNodesByCustomProperty(String propertyName,
-                                              Serializable value)
+    Iterable<Node> findNodesByCustomProperty(
+                                             String propertyName,
+                                             Serializable value)
         throws IllegalArgumentException;
+
+    /**
+     * Returns a {@link org.openspotlight.graph.TreeLineReference} with all line references of the element.
+     * 
+     * @param element the element
+     * @return the tree line references
+     */
+    TreeLineReference getTreeLineReferences(
+                                            Element e);
+
+    /**
+     * Returns a {@link org.openspotlight.graph.TreeLineReference} with all line references of the element for a specific
+     * artifact.
+     * 
+     * @param element the element
+     * @param artifactId the artifact id
+     * @return the tree line references
+     */
+    TreeLineReference getTreeLineReferences(
+                                            Element e, String artifactId);
 
 }

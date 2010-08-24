@@ -544,18 +544,7 @@ public class NodeAndLinkSupport {
             return propertyContainerImpl.getPropertyValueAsString(key);
         }
 
-        @Override
-        public TreeLineReference getTreeLineReferences() {
-            return propertyContainerImpl.getTreeLineReferences();
-        }
-
-        @Override
-        public TreeLineReference getTreeLineReferences(
-                                                       final String artifactId) {
-            return propertyContainerImpl.getTreeLineReferences(artifactId);
-        }
-
-        @Override
+                @Override
         public String getTypeName() {
             return propertyContainerImpl.getTypeName();
         }
@@ -768,19 +757,6 @@ public class NodeAndLinkSupport {
         }
 
         @Override
-        public TreeLineReference getTreeLineReferences() {
-            throw new UnsupportedOperationException(
-                "Should be lazy property? :D");
-        }
-
-        @Override
-        public TreeLineReference getTreeLineReferences(
-                                                       final String artifactId) {
-            throw new UnsupportedOperationException(
-                "Should be lazy property? :D");
-        }
-
-        @Override
         public String getTypeName() {
             return typeName;
         }
@@ -889,17 +865,6 @@ public class NodeAndLinkSupport {
         public String getPropertyValueAsString(
                                                final String key) {
             return propertyContainerImpl.getPropertyValueAsString(key);
-        }
-
-        @Override
-        public TreeLineReference getTreeLineReferences() {
-            return propertyContainerImpl.getTreeLineReferences();
-        }
-
-        @Override
-        public TreeLineReference getTreeLineReferences(
-                                                       final String artifactId) {
-            return propertyContainerImpl.getTreeLineReferences(artifactId);
         }
 
         @Override
@@ -1295,6 +1260,8 @@ public class NodeAndLinkSupport {
                     '}';
         }
     }
+    
+    
     
     private static final class SimpleLineReferenceImpl implements SimpleLineReference {
 

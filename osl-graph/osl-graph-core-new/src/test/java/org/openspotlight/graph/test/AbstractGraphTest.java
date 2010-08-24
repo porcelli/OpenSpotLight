@@ -925,9 +925,10 @@ public abstract class AbstractGraphTest {
                                                      sampleRef11endColumn = 4,
 
                                                      sampleRef12beginLine = 1, sampleRef12endLine = 2,
-    sampleRef12beginColumn = 3, sampleRef12endColumn = 4,
+                                                     sampleRef12beginColumn = 3, sampleRef12endColumn = 4,
 
-    sampleRef13beginLine = 5, sampleRef13endLine = 6, sampleRef13beginColumn = 7, sampleRef13endColumn = 8,
+                                                     sampleRef13beginLine = 5, sampleRef13endLine = 6,
+    sampleRef13beginColumn = 7, sampleRef13endColumn = 8,
 
     sampleRef21beginLine = 1, sampleRef21endLine = 2, sampleRef21beginColumn = 3, sampleRef21endColumn = 4;
 
@@ -956,13 +957,14 @@ public abstract class AbstractGraphTest {
         assertThat(oneLink.size(), is(1));
         assertThat(oneLink.contains(link1), is(true));
         Element link = oneLink.iterator().next();
-        testLineRefs(link);
+        testLineRefs(simpleFromLocation, link);
 
     }
 
     private void testLineRefs(
+                              GraphReader reader,
                               Element link) {
-        TreeLineReference lineRefs = link.getTreeLineReferences();
+        TreeLineReference lineRefs = reader.getTreeLineReferences(link);
         boolean hasArtifact1 = false, hasArtifact2 = false, hasLineRef1 = false, hasLineRef2 = false, hasLineRef3 = false, hasLineRef4 =
             false;
 
@@ -1056,7 +1058,7 @@ public abstract class AbstractGraphTest {
         assertThat(oneLink.size(), is(1));
         assertThat(oneLink.contains(rootClass1Node), is(true));
         Element link = oneLink.iterator().next();
-        testLineRefs(link);
+        testLineRefs(simpleFromLocation, link);
     }
 
     @Test
