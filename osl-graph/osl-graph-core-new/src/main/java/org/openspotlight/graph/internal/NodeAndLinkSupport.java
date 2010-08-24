@@ -339,11 +339,12 @@ public class NodeAndLinkSupport {
             if (originAsSTNode != null) {
                 linkEntry = session.getLink(originAsSTNode, targetAsSTNode, clazz
                     .getName());
-                if (linkEntry == null && createIfDontExists) {
-
-                    linkEntry = session.addLink(originAsSTNode, targetAsSTNode,
-                        clazz.getName());
-                    linkEntry.setIndexedProperty(session, LINK_DIRECTION, direction.name());
+                if (linkEntry == null) {
+                    if (createIfDontExists) {
+                        linkEntry = session.addLink(originAsSTNode, targetAsSTNode,
+                            clazz.getName());
+                        linkEntry.setIndexedProperty(session, LINK_DIRECTION, direction.name());
+                    }
                     if (LinkDirection.BIDIRECTIONAL.equals(direction)) {
                         InputStream objectAsStream = targetAsSTNode.getPropertyAsStream(session, BIDIRECTIONAL_LINK_IDS);
                         List<String> linkIds;
