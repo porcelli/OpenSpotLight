@@ -177,7 +177,7 @@ public class GraphWriterImpl implements GraphWriter {
             PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink> md =
                 (PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink>) retrievedLink;
             org.openspotlight.storage.domain.StorageLink cached = md.getCached();
-            cached.setIndexedProperty(session, NodeAndLinkSupport.LINK_DIRECTION, l.getLinkDirection().name());
+            cached.setIndexedProperty(session, NodeAndLinkSupport.LINK_DIRECTION, retrievedLink.getLinkDirection().name());
         }
         session.flushTransient();
 

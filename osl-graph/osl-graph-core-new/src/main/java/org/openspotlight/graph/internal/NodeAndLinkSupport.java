@@ -339,40 +339,40 @@ public class NodeAndLinkSupport {
                 .getId());
             if (originAsSTNode == null && createIfDontExists) throw new IllegalStateException();
             if (originAsSTNode != null) {
+                if (clazz.isAnnotationPresent(LinkAutoBidirectional.class) && LinkDirection.UNIDIRECTIONAL.equals(direction)) {
+
+                    StorageLink possibleLink = session.getLink(targetAsSTNode, originAsSTNode, clazz.getName());
+                    StorageLink anotherPossibleLink = session.getLink(originAsSTNode, targetAsSTNode, clazz.getName());
+                    if (possibleLink != null && anotherPossibleLink != null) { throw new IllegalStateException(); }
+                    if (possibleLink != null
+                        && possibleLink.getPropertyAsString(session, LINK_DIRECTION).equals(
+                        LinkDirection.BIDIRECTIONAL.name())) {
+                        return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
+                            createIfDontExists);
+                    } else if (anotherPossibleLink != null
+                        && anotherPossibleLink.getPropertyAsString(session, LINK_DIRECTION).equals(
+                        LinkDirection.BIDIRECTIONAL.name())) {
+                        return createLink(factory, session, clazz, rawTarget,
+                            rawOrigin, LinkDirection.BIDIRECTIONAL,
+                            createIfDontExists);
+                    } else if (possibleLink != null) {
+                        if (createIfDontExists) {
+                            session.removeLink(possibleLink);
+                        }
+                        return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
+                            createIfDontExists);
+
+                    } else if (anotherPossibleLink != null) {
+                        if (createIfDontExists) {
+                            session.removeLink(anotherPossibleLink);
+                        }
+                        return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
+                            createIfDontExists);
+                    }
+                }
                 linkEntry = session.getLink(originAsSTNode, targetAsSTNode, clazz
                     .getName());
                 if (linkEntry == null) {
-                    if (clazz.isAnnotationPresent(LinkAutoBidirectional.class) && LinkDirection.UNIDIRECTIONAL.equals(direction)) {
-
-                        StorageLink possibleLink = session.getLink(targetAsSTNode, originAsSTNode, clazz.getName());
-                        StorageLink anotherPossibleLink = session.getLink(originAsSTNode, targetAsSTNode, clazz.getName());
-                        if (possibleLink != null && anotherPossibleLink != null) { throw new IllegalStateException(); }
-                        if (possibleLink != null
-                            && possibleLink.getPropertyAsString(session, LINK_DIRECTION).equals(
-                            LinkDirection.BIDIRECTIONAL.name())) {
-                            return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
-                                createIfDontExists);
-                        } else if (anotherPossibleLink != null
-                            && anotherPossibleLink.getPropertyAsString(session, LINK_DIRECTION).equals(
-                            LinkDirection.BIDIRECTIONAL.name())) {
-                            return createLink(factory, session, clazz, rawTarget,
-                                rawOrigin, LinkDirection.BIDIRECTIONAL,
-                                createIfDontExists);
-                        } else if (possibleLink != null) {
-                            if (createIfDontExists) {
-                                session.removeLink(possibleLink);
-                            }
-                            return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
-                                createIfDontExists);
-
-                        } else if (anotherPossibleLink != null) {
-                            if (createIfDontExists) {
-                                session.removeLink(anotherPossibleLink);
-                            }
-                            return createLink(factory, session, clazz, rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL,
-                                createIfDontExists);
-                        }
-                    }
                     if (createIfDontExists)
                         linkEntry = session.addLink(originAsSTNode, targetAsSTNode,
                         clazz.getName());
@@ -425,6 +425,7 @@ public class NodeAndLinkSupport {
             weigthValue, origin, target, direction);
         if (linkEntry != null) {
             internalLink.setCached(linkEntry);
+            internalLink.linkDirection = direction;
         }
         final Enhancer e = new Enhancer();
         e.setSuperclass(clazz);
@@ -448,18 +449,13 @@ public class NodeAndLinkSupport {
     private static class LinkImpl extends Link implements PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink> {
 
         public String toString() {
-            return "Link[" + getId() + "]";
+            return "<" + this.linkDirection.name().substring(0, 3) + "> Link[" + getId() + "]";
         }
 
         private LinkDirection linkDirection = LinkDirection.UNIDIRECTIONAL;
 
         public LinkDirection getLinkDirection() {
             return linkDirection;
-        }
-
-        public void setLinkDirection(
-                                     LinkDirection linkDirection) {
-            this.linkDirection = linkDirection;
         }
 
         private WeakReference<org.openspotlight.storage.domain.StorageLink> cachedEntry;
