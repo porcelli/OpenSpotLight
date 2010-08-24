@@ -20,12 +20,14 @@
  */
 package org.openspotlight.graph;
 
+import java.io.Serializable;
+
 /**
  * This interfaces groups all data related to {@link Element} line references.
  * 
  * @author porcelli
  */
-public interface TreeLineReference {
+public interface TreeLineReference extends Serializable {
 
     /**
      * Returns the {@link Element#getId()}
@@ -46,7 +48,7 @@ public interface TreeLineReference {
      * 
      * @author porcelli
      */
-    public interface ArtifactLineReference {
+    public interface ArtifactLineReference extends Serializable {
 
         /**
          * Returns the Artifactd Id.
@@ -75,7 +77,7 @@ public interface TreeLineReference {
      * 
      * @author porcelli
      */
-    public interface StatementLineReference {
+    public interface StatementLineReference extends Serializable {
 
         /**
          * Return the statement
@@ -98,7 +100,7 @@ public interface TreeLineReference {
      * 
      * @author porcelli
      */
-    public interface SimpleLineReference {
+    public interface SimpleLineReference extends Serializable {
 
         /**
          * Returns the initial line
