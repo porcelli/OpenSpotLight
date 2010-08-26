@@ -111,15 +111,6 @@ public abstract class Node implements Element, Comparable<Node>, LogableObject {
         throws IllegalArgumentException;
 
     /**
-     * Returns the contextId where the node is stored.
-     * <p>
-     * <b>Note</b> the context is not directly exposed due performance issues.
-     * 
-     * @return the contextId
-     */
-    public abstract String getContextId();
-
-    /**
      * Returns the parent's node id. <br>
      * The parentId is one of the three properties ({@link Node#getName}, {@link Node#getParentId} and {@link Node#getTypeName})
      * that defines uniquely the node.

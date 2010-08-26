@@ -862,15 +862,13 @@ public class GraphReaderImpl implements GraphReader {
     @Override
     public TreeLineReference getTreeLineReferences(
                                                    Element e) {
-        //TODO 
-        throw new UnsupportedOperationException();
+        return NodeAndLinkSupport.getTreeLineReferences(sessionProvider.get(), this.factory, e, null);
     }
 
     @Override
     public TreeLineReference getTreeLineReferences(
                                                    Element e, String artifactId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return NodeAndLinkSupport.getTreeLineReferences(sessionProvider.get(), this.factory, e, artifactId);
     }
 
 }

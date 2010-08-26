@@ -31,12 +31,15 @@ import static org.openspotlight.common.util.Sha1.getNumericSha1Signature;
 import java.beans.PropertyDescriptor;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,9 +82,11 @@ import org.openspotlight.storage.StorageSession;
 import org.openspotlight.storage.StringIDSupport;
 import org.openspotlight.storage.AbstractStorageSession.NodeKeyBuilderImpl;
 import org.openspotlight.storage.domain.StorageLink;
+import org.openspotlight.storage.domain.StorageNode;
 import org.openspotlight.storage.domain.key.NodeKey;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
 
 public class NodeAndLinkSupport {
 
@@ -112,6 +117,7 @@ public class NodeAndLinkSupport {
         return clazz.isAnnotationPresent(IsMetaType.class);
     }
 
+    @SuppressWarnings("unchecked")
     public static BigInteger findNumericType(
                                              final Class<? extends Node> type) {
         Class<?> currentType = type;
@@ -201,7 +207,7 @@ public class NodeAndLinkSupport {
             && savedClassNumericType.compareTo(proposedClassNumericType) > 0 ? savedClass
             : clazz;
 
-        final NodeImpl internalNode = new NodeImpl(name, classToUse, targetNodeType,
+        final NodeImpl internalNode = new NodeImpl(name, classToUse,
             internalNodeKey.getKeyAsString(), propertyTypes,
             propertyValues, parentId, contextId, weigthValue);
         if (node != null) {
@@ -253,6 +259,7 @@ public class NodeAndLinkSupport {
 
     }
 
+    @SuppressWarnings("unchecked")
     public static Class<? extends Node> findTargetClass(
                                                         final Class<?> type) {
         Class<?> currentType = type;
@@ -268,6 +275,7 @@ public class NodeAndLinkSupport {
             + DefineHierarchy.class.getSimpleName()));
     }
 
+    @SuppressWarnings("unchecked")
     public static org.openspotlight.storage.domain.StorageNode retrievePreviousNode(
                                                                                     final PartitionFactory factory,
                                                                                     final StorageSession session,
@@ -311,6 +319,7 @@ public class NodeAndLinkSupport {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Link> T createLink(
                                                 final PartitionFactory factory,
                                                 final StorageSession session, final Class<T> clazz, final Node rawOrigin,
@@ -449,7 +458,27 @@ public class NodeAndLinkSupport {
 
     }
 
-    private static class LinkImpl extends Link implements PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink> {
+    private static class LinkImpl extends Link implements
+        PropertyContainerMetadata<org.openspotlight.storage.domain.StorageLink>, PropertyContainerLineReferenceData {
+
+        public String getContextId() {
+            return propertyContainerImpl.getContextId();
+        }
+
+        public Iterable<ArtifactLineReference> getCachedLineReference(
+                                                                      String artifactId) {
+            return propertyContainerImpl.getCachedLineReference(artifactId);
+        }
+
+        public void setCachedLineReference(
+                                           String artifactId,
+                                           Iterable<ArtifactLineReference> newLineReference) {
+            propertyContainerImpl.setCachedLineReference(artifactId, newLineReference);
+        }
+
+        public Map<String, Map<String, Set<NewLineReferenceData>>> getNewLineReferenceData() {
+            return propertyContainerImpl.getNewLineReferenceData();
+        }
 
         public String toString() {
             return "<" + this.linkDirection.name().substring(0, 3) + "> Link[" + getId() + "]";
@@ -473,7 +502,7 @@ public class NodeAndLinkSupport {
                         final Node target, final LinkDirection linkDirection) {
             propertyContainerImpl = new PropertyContainerImpl(id, linkType
                 .getName(), propertyTypes, propertyValues,
-                initialWeigthValue, weightValue);
+                initialWeigthValue, weightValue, source.getContextId());
             sides[SOURCE] = source;
             sides[TARGET] = target;
             this.linkType = linkType;
@@ -544,7 +573,7 @@ public class NodeAndLinkSupport {
             return propertyContainerImpl.getPropertyValueAsString(key);
         }
 
-                @Override
+        @Override
         public String getTypeName() {
             return propertyContainerImpl.getTypeName();
         }
@@ -657,7 +686,19 @@ public class NodeAndLinkSupport {
 
     }
 
-    private static class PropertyContainerImpl implements Element {
+    private static interface PropertyContainerLineReferenceData {
+        Map<String, Map<String, Set<NewLineReferenceData>>> getNewLineReferenceData();
+
+        Iterable<ArtifactLineReference> getCachedLineReference(
+                                                               String artifactId);
+
+        void setCachedLineReference(
+                                    String artifactId,
+                                    Iterable<ArtifactLineReference> newLineReference);
+
+    }
+
+    private static class PropertyContainerImpl implements Element, PropertyContainerLineReferenceData {
 
         @Override
         public final int getInitialWeightValue() {
@@ -672,7 +713,7 @@ public class NodeAndLinkSupport {
         private final String                                     id;
 
         private final String                                     typeName;
-
+        private final String                                     contextId;
         private final Map<String, Class<? extends Serializable>> propertyTypes;
         private final Map<String, Serializable>                  propertyValues;
         private final AtomicBoolean                              dirty;
@@ -686,7 +727,7 @@ public class NodeAndLinkSupport {
         public PropertyContainerImpl(final String id, final String typeName,
                                      final Map<String, Class<? extends Serializable>> propertyTypes,
                                      final Map<String, Serializable> propertyValues,
-                                     final int initialWeigthValue, final int weightValue) {
+                                     final int initialWeigthValue, final int weightValue, String contextId) {
             dirty = new AtomicBoolean();
             this.typeName = typeName;
             initialWeightValue = initialWeigthValue;
@@ -695,6 +736,7 @@ public class NodeAndLinkSupport {
             this.propertyTypes = propertyTypes;
             this.propertyValues = propertyValues;
             removedProperties = newHashSet();
+            this.contextId = contextId;
         }
 
         public void resetDirtyFlag() {
@@ -702,14 +744,27 @@ public class NodeAndLinkSupport {
             removedProperties.clear();
         }
 
+        //ArtifactId,Statement,lineData
+        private final Map<String, Map<String, Set<NewLineReferenceData>>> lineReferenceNewData =
+                                                                                                   new HashMap<String, Map<String, Set<NewLineReferenceData>>>();
+
         @Override
         public void createLineReference(
                                         final int beginLine, final int endLine,
                                         final int beginColumn, final int endColumn, final String statement,
                                         final String artifactId) {
-            throw new UnsupportedOperationException(
-                "Should be lazy property? :D");
-            // TODO implement
+            Map<String, Set<NewLineReferenceData>> artifactEntry = lineReferenceNewData.get(artifactId);
+            if (artifactEntry == null) {
+                artifactEntry = new HashMap<String, Set<NewLineReferenceData>>();
+                lineReferenceNewData.put(artifactId, artifactEntry);
+            }
+            Set<NewLineReferenceData> statementEntry = artifactEntry.get(statement);
+            if (statementEntry == null) {
+                statementEntry = new HashSet<NewLineReferenceData>();
+                artifactEntry.put(statement, statementEntry);
+            }
+            statementEntry.add(new NewLineReferenceData(beginLine, endLine, beginColumn, endColumn));
+            dirty.set(true);
         }
 
         @Override
@@ -809,15 +864,69 @@ public class NodeAndLinkSupport {
             return dirty.get();
         }
 
-        private final int initialWeightValue;
+        private final int                                                   initialWeightValue;
 
-        private final int weightValue;
+        private final int                                                   weightValue;
+
+        private SoftReference<Map<String, Iterable<ArtifactLineReference>>> treeLineReference;
+
+        @Override
+        public Map<String, Map<String, Set<NewLineReferenceData>>> getNewLineReferenceData() {
+            return this.lineReferenceNewData;
+        }
+
+        @Override
+        public Iterable<ArtifactLineReference> getCachedLineReference(
+                                                                      String artifactId) {
+            Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null : treeLineReference.get();
+            if (cache == null) return null;
+            if (artifactId != null) return cache.get(artifactId);
+            if (cache.isEmpty()) return null;
+            Builder<ArtifactLineReference> builder = ImmutableSet.builder();
+            for (Iterable<ArtifactLineReference> val: cache.values()) {
+                for (ArtifactLineReference r: val)
+                    builder.add(r);
+            }
+            return builder.build();
+        }
+
+        @Override
+        public void setCachedLineReference(
+                                           String artifactId, Iterable<ArtifactLineReference> newLineReference) {
+            Map<String, Iterable<ArtifactLineReference>> cache = treeLineReference == null ? null : treeLineReference.get();
+            if (cache == null) {
+                cache = new HashMap<String, Iterable<ArtifactLineReference>>();
+                treeLineReference = new SoftReference<Map<String, Iterable<ArtifactLineReference>>>(cache);
+            }
+            cache.put(artifactId, newLineReference);
+        }
+
+        @Override
+        public String getContextId() {
+            return contextId;
+        }
 
     }
 
-    private static class NodeImpl extends Node implements PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode> {
+    private static class NodeImpl extends Node implements
+        PropertyContainerMetadata<org.openspotlight.storage.domain.StorageNode>, PropertyContainerLineReferenceData {
+
+        public Iterable<ArtifactLineReference> getCachedLineReference(
+                                                                      String artifactId) {
+            return propertyContainerImpl.getCachedLineReference(artifactId);
+        }
+
+        public void setCachedLineReference(
+                                           String artifactId,
+                                           Iterable<ArtifactLineReference> newLineReference) {
+            propertyContainerImpl.setCachedLineReference(artifactId, newLineReference);
+        }
 
         private final PropertyContainerImpl propertyContainerImpl;
+
+        public Map<String, Map<String, Set<NewLineReferenceData>>> getNewLineReferenceData() {
+            return propertyContainerImpl.getNewLineReferenceData();
+        }
 
         @Override
         public void createLineReference(
@@ -947,13 +1056,9 @@ public class NodeAndLinkSupport {
 
         private WeakReference<org.openspotlight.storage.domain.StorageNode> cachedEntry;
 
-        private final Class<? extends Node>                                 targetNode;
-
         private String                                                      caption;
 
         private final String                                                name;
-
-        private final Class<? extends Node>                                 type;
 
         private final String                                                parentId;
 
@@ -963,17 +1068,15 @@ public class NodeAndLinkSupport {
         }
 
         private NodeImpl(final String name, final Class<? extends Node> type,
-                         final Class<? extends Node> targetNode, final String id,
+                         final String id,
                          final Map<String, Class<? extends Serializable>> propertyTypes,
                          final Map<String, Serializable> propertyValues, final String parentId,
                          final String contextId, final int weightValue) {
             propertyContainerImpl = new PropertyContainerImpl(id, type
                 .getName(), propertyTypes, propertyValues,
-                findInitialWeight(type), weightValue);
-            this.type = type;
+                findInitialWeight(type), weightValue, contextId);
             this.name = name;
             numericType = findNumericType(type);
-            this.targetNode = targetNode;
             this.parentId = parentId;
             this.contextId = contextId;
         }
@@ -1102,227 +1205,54 @@ public class NodeAndLinkSupport {
             OTHER
         }
     }
-    
-    
-    private static final class TreeLineReferenceImpl implements TreeLineReference {
-        
-        private final Iterable<ArtifactLineReference> artifacts;
 
-        private final String id;
+    private static final String LINEREF_SUFIX = "_lineRef";
 
-        private TreeLineReferenceImpl(Iterable<ArtifactLineReference> artifacts, String id) {
-            this.artifacts = artifacts;
-            this.id = id;
+    public static TreeLineReference getTreeLineReferences(
+                                                          StorageSession session, PartitionFactory factory, Element e,
+                                                          String artifactId) {
+        PropertyContainerImpl asPropertyContainer = (PropertyContainerImpl) e;
+        Iterable<ArtifactLineReference> cached = asPropertyContainer.getCachedLineReference(artifactId);
+        if (cached == null) {
+            Partition lineRefPartition = factory.getPartitionByName(e.getContextId() + LINEREF_SUFIX);
+            StorageNode lineRefNode = session.withPartition(lineRefPartition).createNewSimpleNode(e.getId());
+            Set<String> artifactIds = artifactId != null ? ImmutableSet.of(artifactId) : lineRefNode.getPropertyNames(session);
+
+            Map<String, Iterable<ArtifactLineReference>> newCacheData = new HashMap<String, Iterable<ArtifactLineReference>>();
+            for (String currentArtifactId: artifactIds) {
+                InputStream stream = lineRefNode.getPropertyAsStream(session, currentArtifactId);
+                if (stream != null) {
+                    Iterable<ArtifactLineReference> artifactLineReference = SerializationUtil.deserialize(stream);
+                    newCacheData.put(currentArtifactId, artifactLineReference);
+                    asPropertyContainer.setCachedLineReference(currentArtifactId, artifactLineReference);
+                }
+            }
         }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            TreeLineReferenceImpl that = (TreeLineReferenceImpl) o;
-
-            if (artifacts != null ? !artifacts.equals(that.artifacts) : that.artifacts != null) return false;
-            if (id != null ? !id.equals(that.id) : that.id != null) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = artifacts != null ? artifacts.hashCode() : 0;
-            result = 31 * result + (id != null ? id.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "TreeLineReferenceImpl{" +
-                    "artifacts=" + artifacts +
-                    ", id='" + id + '\'' +
-                    '}';
-        }
-
-        public Iterable<ArtifactLineReference> getArtifacts() {
-            return artifacts;
-        }
-
-        public String getId() {
-            return id;
-        }
-    }
-    
-    private static final class ArtifactLineReferenceImpl implements ArtifactLineReference{
-
-        private final String artifactId;
-
-        private final String artifactVersion;
-
-        private final Iterable<StatementLineReference> statements;
-
-        public String getArtifactId() {
-            return artifactId;
-        }
-
-        public String getArtifactVersion() {
-            return artifactVersion;
-        }
-
-        public Iterable<StatementLineReference> getStatements() {
-            return statements;
-        }
-
-        private ArtifactLineReferenceImpl(String artifactId, String artifactVersion, Iterable<StatementLineReference> statements) {
-            this.artifactId = artifactId;
-            this.artifactVersion = artifactVersion;
-            this.statements = statements;
-
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ArtifactLineReferenceImpl that = (ArtifactLineReferenceImpl) o;
-
-            if (artifactId != null ? !artifactId.equals(that.artifactId) : that.artifactId != null) return false;
-            if (artifactVersion != null ? !artifactVersion.equals(that.artifactVersion) : that.artifactVersion != null)
-                return false;
-            if (statements != null ? !statements.equals(that.statements) : that.statements != null) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = artifactId != null ? artifactId.hashCode() : 0;
-            result = 31 * result + (artifactVersion != null ? artifactVersion.hashCode() : 0);
-            result = 31 * result + (statements != null ? statements.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "ArtifactLineReferenceImpl{" +
-                    "artifactId='" + artifactId + '\'' +
-                    ", artifactVersion='" + artifactVersion + '\'' +
-                    ", statements=" + statements +
-                    '}';
-        }
-    }
-    
-    private static final class StatementLineReferenceImpl implements StatementLineReference{
-
-        private final Iterable<SimpleLineReference> lineReferences;
-
-        private final String statement;
-
-        private StatementLineReferenceImpl(Iterable<SimpleLineReference> lineReferences, String statement) {
-            this.lineReferences = lineReferences;
-            this.statement = statement;
-        }
-
-        public Iterable<SimpleLineReference> getLineReferences() {
-            return lineReferences;
-        }
-
-        public String getStatement() {
-            return statement;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            StatementLineReferenceImpl that = (StatementLineReferenceImpl) o;
-
-            if (lineReferences != null ? !lineReferences.equals(that.lineReferences) : that.lineReferences != null)
-                return false;
-            if (statement != null ? !statement.equals(that.statement) : that.statement != null) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = lineReferences != null ? lineReferences.hashCode() : 0;
-            result = 31 * result + (statement != null ? statement.hashCode() : 0);
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "StatementLineReferenceImpl{" +
-                    "lineReferences=" + lineReferences +
-                    ", statement='" + statement + '\'' +
-                    '}';
-        }
-    }
-    
-    
-    
-    private static final class SimpleLineReferenceImpl implements SimpleLineReference {
-
-        private final int beginColumn, endColumn, beginLine, endLine;
-        
-        SimpleLineReferenceImpl(int beginLine, int endLine,int beginColumn, int endColumn){
-            this.beginLine = beginColumn;
-            this.endLine = endLine;
-            this.beginColumn = beginColumn;
-            this.endColumn = endColumn;
-        }
-
-        public int getBeginColumn() {
-            return beginColumn;
-        }
-
-        public int getEndColumn() {
-            return endColumn;
-        }
-
-        public int getBeginLine() {
-            return beginLine;
-        }
-
-        public int getEndLine() {
-            return endLine;
-        }
-
-        @Override
-        public String toString() {
-            return "SimpleLineReferenceImpl{" +
-                    "beginColumn=" + beginColumn +
-                    ", endColumn=" + endColumn +
-                    ", beginLine=" + beginLine +
-                    ", endLine=" + endLine +
-                    '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            SimpleLineReferenceImpl that = (SimpleLineReferenceImpl) o;
-
-            if (beginColumn != that.beginColumn) return false;
-            if (beginLine != that.beginLine) return false;
-            if (endColumn != that.endColumn) return false;
-            if (endLine != that.endLine) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = beginColumn;
-            result = 31 * result + endColumn;
-            result = 31 * result + beginLine;
-            result = 31 * result + endLine;
-            return result;
-        }
+        return merge(artifactId, cached, asPropertyContainer.lineReferenceNewData);
     }
 
+    private static TreeLineReference merge(
+                                           String artifactId,
+                                           Iterable<ArtifactLineReference> cached,
+                                           Map<String, Map<String, Set<NewLineReferenceData>>> lineReferenceNewData) {
+        Builder<ArtifactLineReference> builder = ImmutableSet.builder();
+        builder.addAll(cached);
+
+        Map<String, Map<String, Set<NewLineReferenceData>>> addedStuff =
+            new HashMap<String, Map<String, Set<NewLineReferenceData>>>();
+
+        for (ArtifactLineReference a: cached) {
+            Map<String, Set<NewLineReferenceData>> newDataForThisArtifact = lineReferenceNewData.get(a.getArtifactId());
+            if (newDataForThisArtifact != null) {
+                for (StatementLineReference stm: a.getStatements()) {
+                    Set<NewLineReferenceData> newDataForThisStatement = newDataForThisArtifact.get(stm.getStatement());
+                    if(newDataForThisStatement!=null){
+                        stm.getLineReferences().
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
 }

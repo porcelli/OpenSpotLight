@@ -334,4 +334,13 @@ public class SLCollections {
         }
         return false;
     }
+    
+    public static <K,V> V getOrPut(Map<K,V> map, K key, V defaultValue){
+        V v = map.get(key);
+        if(v==null){
+            map.put(key, defaultValue);
+            v = defaultValue;
+        }
+        return v;
+    }
 }
