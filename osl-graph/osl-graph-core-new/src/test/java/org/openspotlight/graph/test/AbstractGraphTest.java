@@ -928,9 +928,10 @@ public abstract class AbstractGraphTest {
                                                      sampleRef12beginColumn = 3, sampleRef12endColumn = 4,
 
                                                      sampleRef13beginLine = 5, sampleRef13endLine = 6,
-    sampleRef13beginColumn = 7, sampleRef13endColumn = 8,
+                                                     sampleRef13beginColumn = 7, sampleRef13endColumn = 8,
 
-    sampleRef21beginLine = 1, sampleRef21endLine = 2, sampleRef21beginColumn = 3, sampleRef21endColumn = 4;
+                                                     sampleRef21beginLine = 1, sampleRef21endLine = 2,
+                                                     sampleRef21beginColumn = 3, sampleRef21endColumn = 4;
 
     @Test
     public void shouldCreateLineReferencesOnLinks()
@@ -1054,7 +1055,8 @@ public abstract class AbstractGraphTest {
         writer.flush();
 
         final List<JavaType> oneLink =
-            SLCollections.iterableToList(simpleFromLocation.findNodesByName(JavaType.class, rootClass1, true));
+            SLCollections.iterableToList(simpleFromLocation.findNodesByName(
+            JavaType.class, rootClass1, true, context1));
         assertThat(oneLink.size(), is(1));
         assertThat(oneLink.contains(rootClass1Node), is(true));
         Element link = oneLink.iterator().next();

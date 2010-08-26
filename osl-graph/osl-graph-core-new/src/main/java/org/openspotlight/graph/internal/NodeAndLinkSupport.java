@@ -45,6 +45,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.naming.LinkRef;
+
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -69,7 +71,6 @@ import org.openspotlight.graph.PropertyContainer;
 import org.openspotlight.graph.TreeLineReference;
 import org.openspotlight.graph.TreeLineReference.ArtifactLineReference;
 import org.openspotlight.graph.TreeLineReference.SimpleLineReference;
-import org.openspotlight.graph.TreeLineReference.StatementLineReference;
 import org.openspotlight.graph.annotation.DefineHierarchy;
 import org.openspotlight.graph.annotation.InitialWeight;
 import org.openspotlight.graph.annotation.IsMetaType;
@@ -95,6 +96,8 @@ public class NodeAndLinkSupport {
 
         public void setCached(
                               T entry);
+
+        public PropertyContainerImpl getPropertyContainerImpl();
 
     }
 
@@ -476,7 +479,7 @@ public class NodeAndLinkSupport {
             propertyContainerImpl.setCachedLineReference(artifactId, newLineReference);
         }
 
-        public Map<String, Map<String, Set<NewLineReferenceData>>> getNewLineReferenceData() {
+        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
             return propertyContainerImpl.getNewLineReferenceData();
         }
 
@@ -684,10 +687,15 @@ public class NodeAndLinkSupport {
 
         }
 
+        @Override
+        public PropertyContainerImpl getPropertyContainerImpl() {
+            return this.propertyContainerImpl;
+        }
+
     }
 
     private static interface PropertyContainerLineReferenceData {
-        Map<String, Map<String, Set<NewLineReferenceData>>> getNewLineReferenceData();
+        Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData();
 
         Iterable<ArtifactLineReference> getCachedLineReference(
                                                                String artifactId);
@@ -698,7 +706,7 @@ public class NodeAndLinkSupport {
 
     }
 
-    private static class PropertyContainerImpl implements Element, PropertyContainerLineReferenceData {
+    public static class PropertyContainerImpl implements Element, PropertyContainerLineReferenceData {
 
         @Override
         public final int getInitialWeightValue() {
@@ -745,25 +753,25 @@ public class NodeAndLinkSupport {
         }
 
         //ArtifactId,Statement,lineData
-        private final Map<String, Map<String, Set<NewLineReferenceData>>> lineReferenceNewData =
-                                                                                                   new HashMap<String, Map<String, Set<NewLineReferenceData>>>();
+        private final Map<String, Map<String, Set<SimpleLineReference>>> lineReferenceNewData =
+                                                                                                  new HashMap<String, Map<String, Set<SimpleLineReference>>>();
 
         @Override
         public void createLineReference(
                                         final int beginLine, final int endLine,
                                         final int beginColumn, final int endColumn, final String statement,
                                         final String artifactId) {
-            Map<String, Set<NewLineReferenceData>> artifactEntry = lineReferenceNewData.get(artifactId);
+            Map<String, Set<SimpleLineReference>> artifactEntry = lineReferenceNewData.get(artifactId);
             if (artifactEntry == null) {
-                artifactEntry = new HashMap<String, Set<NewLineReferenceData>>();
+                artifactEntry = new HashMap<String, Set<SimpleLineReference>>();
                 lineReferenceNewData.put(artifactId, artifactEntry);
             }
-            Set<NewLineReferenceData> statementEntry = artifactEntry.get(statement);
+            Set<SimpleLineReference> statementEntry = artifactEntry.get(statement);
             if (statementEntry == null) {
-                statementEntry = new HashSet<NewLineReferenceData>();
+                statementEntry = new HashSet<SimpleLineReference>();
                 artifactEntry.put(statement, statementEntry);
             }
-            statementEntry.add(new NewLineReferenceData(beginLine, endLine, beginColumn, endColumn));
+            statementEntry.add(TreeLineReferenceSupport.createSimpleLineReference(beginLine, endLine, beginColumn, endColumn));
             dirty.set(true);
         }
 
@@ -871,7 +879,7 @@ public class NodeAndLinkSupport {
         private SoftReference<Map<String, Iterable<ArtifactLineReference>>> treeLineReference;
 
         @Override
-        public Map<String, Map<String, Set<NewLineReferenceData>>> getNewLineReferenceData() {
+        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
             return this.lineReferenceNewData;
         }
 
@@ -924,7 +932,7 @@ public class NodeAndLinkSupport {
 
         private final PropertyContainerImpl propertyContainerImpl;
 
-        public Map<String, Map<String, Set<NewLineReferenceData>>> getNewLineReferenceData() {
+        public Map<String, Map<String, Set<SimpleLineReference>>> getNewLineReferenceData() {
             return propertyContainerImpl.getNewLineReferenceData();
         }
 
@@ -1121,6 +1129,11 @@ public class NodeAndLinkSupport {
 
         private final BigInteger numericType;
 
+        @Override
+        public PropertyContainerImpl getPropertyContainerImpl() {
+            return this.propertyContainerImpl;
+        }
+
     }
 
     private static class PropertyContainerInterceptor implements
@@ -1208,10 +1221,21 @@ public class NodeAndLinkSupport {
 
     private static final String LINEREF_SUFIX = "_lineRef";
 
+    public static void writeTreeLineReference(
+                                              StorageSession session, PartitionFactory factory, Element e) {
+        TreeLineReference treeLineReferences = getTreeLineReferences(session, factory, e, null);
+        Partition lineRefPartition = factory.getPartitionByName(e.getContextId() + LINEREF_SUFIX);
+        StorageNode lineRefNode = session.withPartition(lineRefPartition).createNewSimpleNode(e.getId());
+        for (ArtifactLineReference artifactLineReference: treeLineReferences.getArtifacts()) {
+            lineRefNode.setSimpleProperty(session, artifactLineReference.getArtifactId(), SerializationUtil
+                .serialize(artifactLineReference));
+        }
+    }
+
     public static TreeLineReference getTreeLineReferences(
                                                           StorageSession session, PartitionFactory factory, Element e,
                                                           String artifactId) {
-        PropertyContainerImpl asPropertyContainer = (PropertyContainerImpl) e;
+        PropertyContainerImpl asPropertyContainer = ((PropertyContainerMetadata<?>) e).getPropertyContainerImpl();
         Iterable<ArtifactLineReference> cached = asPropertyContainer.getCachedLineReference(artifactId);
         if (cached == null) {
             Partition lineRefPartition = factory.getPartitionByName(e.getContextId() + LINEREF_SUFIX);
@@ -1222,37 +1246,18 @@ public class NodeAndLinkSupport {
             for (String currentArtifactId: artifactIds) {
                 InputStream stream = lineRefNode.getPropertyAsStream(session, currentArtifactId);
                 if (stream != null) {
-                    Iterable<ArtifactLineReference> artifactLineReference = SerializationUtil.deserialize(stream);
-                    newCacheData.put(currentArtifactId, artifactLineReference);
-                    asPropertyContainer.setCachedLineReference(currentArtifactId, artifactLineReference);
+                    ArtifactLineReference artifactLineReference = SerializationUtil.deserialize(stream);
+                    ImmutableSet<ArtifactLineReference> set = ImmutableSet.of(artifactLineReference);
+                    newCacheData.put(currentArtifactId, set);
+                    asPropertyContainer.setCachedLineReference(currentArtifactId, set);
                 }
             }
+            cached =
+                TreeLineReferenceSupport.copyOf(lineRefNode.getKeyAsString(), cached, asPropertyContainer.lineReferenceNewData,
+                artifactId).getArtifacts();
+            asPropertyContainer.setCachedLineReference(artifactId, cached);
         }
-        return merge(artifactId, cached, asPropertyContainer.lineReferenceNewData);
+        return TreeLineReferenceSupport.createTreeLineReference(e.getId(), cached);
     }
 
-    private static TreeLineReference merge(
-                                           String artifactId,
-                                           Iterable<ArtifactLineReference> cached,
-                                           Map<String, Map<String, Set<NewLineReferenceData>>> lineReferenceNewData) {
-        Builder<ArtifactLineReference> builder = ImmutableSet.builder();
-        builder.addAll(cached);
-
-        Map<String, Map<String, Set<NewLineReferenceData>>> addedStuff =
-            new HashMap<String, Map<String, Set<NewLineReferenceData>>>();
-
-        for (ArtifactLineReference a: cached) {
-            Map<String, Set<NewLineReferenceData>> newDataForThisArtifact = lineReferenceNewData.get(a.getArtifactId());
-            if (newDataForThisArtifact != null) {
-                for (StatementLineReference stm: a.getStatements()) {
-                    Set<NewLineReferenceData> newDataForThisStatement = newDataForThisArtifact.get(stm.getStatement());
-                    if(newDataForThisStatement!=null){
-                        stm.getLineReferences().
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
 }

@@ -240,36 +240,47 @@ public class TreeLineReferenceSupport {
                                            String treeLineReferenceId,
                                            TreeLineReference treeLineRef,
                                            Map<String, Map<String, Set<SimpleLineReference>>> newData) {
+        return copyOf(treeLineReferenceId, treeLineRef.getArtifacts(), newData, null);
+    }
+
+    public static TreeLineReference copyOf(
+                                           String treeLineReferenceId,
+                                           Iterable<ArtifactLineReference> treeLineRef,
+                                           Map<String, Map<String, Set<SimpleLineReference>>> newData, String artifactIdToUse) {
         Map<String, Map<String, Set<SimpleLineReference>>> baseToCreateResult =
             new HashMap<String, Map<String, Set<SimpleLineReference>>>();
         if (treeLineRef != null) {
-            for (ArtifactLineReference artifactLineRef: treeLineRef.getArtifacts()) {
-                Map<String, Set<SimpleLineReference>> artifactEntry =
-                    SLCollections.getOrPut(baseToCreateResult, artifactLineRef.getArtifactId(),
-                    new HashMap<String, Set<SimpleLineReference>>());
-                for (StatementLineReference stmtLineRef: artifactLineRef.getStatements()) {
-                    Set<SimpleLineReference> stmtLineRefs =
-                        SLCollections.getOrPut(artifactEntry, stmtLineRef.getStatement(), new HashSet<SimpleLineReference>());
-                    for (SimpleLineReference lineRef: stmtLineRef.getLineReferences()) {
-                        stmtLineRefs.add(lineRef);
+            for (ArtifactLineReference artifactLineRef: treeLineRef) {
+                if (artifactIdToUse == null || artifactIdToUse.equals(artifactLineRef.getArtifactId())) {
+                    Map<String, Set<SimpleLineReference>> artifactEntry =
+                        SLCollections.getOrPut(baseToCreateResult, artifactLineRef.getArtifactId(),
+                        new HashMap<String, Set<SimpleLineReference>>());
+                    for (StatementLineReference stmtLineRef: artifactLineRef.getStatements()) {
+                        Set<SimpleLineReference> stmtLineRefs =
+                            SLCollections.getOrPut(artifactEntry, stmtLineRef.getStatement(), new HashSet<SimpleLineReference>());
+                        for (SimpleLineReference lineRef: stmtLineRef.getLineReferences()) {
+                            stmtLineRefs.add(lineRef);
+                        }
                     }
                 }
             }
         }
         if (newData != null) {
             for (String artifactId: newData.keySet()) {
-                Map<String, Set<SimpleLineReference>> artifactEntry =
-                    SLCollections.getOrPut(baseToCreateResult, artifactId,
-                    new HashMap<String, Set<SimpleLineReference>>());
-                Map<String, Set<SimpleLineReference>> artifactData = newData.get(artifactId);
-                if (artifactData != null) {
-                    for (String stmt: artifactData.keySet()) {
-                        Set<SimpleLineReference> newStmtData = artifactData.get(stmt);
-                        if (newStmtData != null) {
-                            Set<SimpleLineReference> stmtLineRefs =
-                                SLCollections.getOrPut(artifactEntry, stmt, new HashSet<SimpleLineReference>());
-                            for (SimpleLineReference lineRef: newStmtData) {
-                                stmtLineRefs.add(lineRef);
+                if (artifactIdToUse == null || artifactIdToUse.equals(artifactId)) {
+                    Map<String, Set<SimpleLineReference>> artifactEntry =
+                        SLCollections.getOrPut(baseToCreateResult, artifactId,
+                        new HashMap<String, Set<SimpleLineReference>>());
+                    Map<String, Set<SimpleLineReference>> artifactData = newData.get(artifactId);
+                    if (artifactData != null) {
+                        for (String stmt: artifactData.keySet()) {
+                            Set<SimpleLineReference> newStmtData = artifactData.get(stmt);
+                            if (newStmtData != null) {
+                                Set<SimpleLineReference> stmtLineRefs =
+                                    SLCollections.getOrPut(artifactEntry, stmt, new HashSet<SimpleLineReference>());
+                                for (SimpleLineReference lineRef: newStmtData) {
+                                    stmtLineRefs.add(lineRef);
+                                }
                             }
                         }
                     }
@@ -291,6 +302,16 @@ public class TreeLineReferenceSupport {
             artifacts.add(artifactLineReferenceImpl);
         }
         return treeLineReferenceImpl;
+    }
+
+    public static SimpleLineReference createSimpleLineReference(
+                                                                int beginLine, int endLine, int beginColumn, int endColumn) {
+        return new SimpleLineReferenceImpl(beginLine, endLine, beginColumn, endColumn);
+    }
+
+    public static TreeLineReference createTreeLineReference(
+                                                            String id, Iterable<ArtifactLineReference> artifacts) {
+        return new TreeLineReferenceImpl(artifacts, id);
     }
 
 }
