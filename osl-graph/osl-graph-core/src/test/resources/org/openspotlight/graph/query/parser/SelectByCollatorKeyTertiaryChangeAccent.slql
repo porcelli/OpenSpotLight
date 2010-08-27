@@ -1,5 +1,0 @@
-select **
-	where
-		org.openspotlight.graph.test.domain.node.JavaInterface
-			property caption == "java.util.Çollection"
-	use collator level tertiary;

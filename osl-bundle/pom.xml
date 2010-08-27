@@ -9,15 +9,14 @@
 		<version>0.7-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>osl-graph</artifactId>
+	<artifactId>osl-bundle</artifactId>
 	<packaging>pom</packaging>
-	<name>OpenSpotLight Graph</name>
+	<name>OpenSpotLight Bundle</name>
 
 	<modules>
-		<module>osl-graph-api</module>
-		<module>osl-graph-core</module>
-		<module>osl-graph-client</module>
-		<module>osl-graph-server</module>
-		<module>osl-graph-test-data</module>
+		<module>osl-bundle-api</module>
+		<module>osl-bundle-core</module>
+<!--		<module>processor/osl-bundle-db</module> -->
+<!--		<module>processor/osl-bundle-java</module> -->
 	</modules>
 </project>

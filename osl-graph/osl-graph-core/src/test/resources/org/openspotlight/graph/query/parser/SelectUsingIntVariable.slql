@@ -1,4 +1,0 @@
-select **
-	where
-		org.openspotlight.graph.test.domain.node.JavaInterface
-			property intValue == #intValue;

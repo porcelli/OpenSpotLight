@@ -11,7 +11,7 @@
 
     <artifactId>osl-graph-core</artifactId>
     <packaging>jar</packaging>
-    <name>OpenSpotLight Graph Core Library</name>
+    <name>OpenSpotLight Graph Core</name>
 
     <dependencies>
         <!-- Internal dependencies -->

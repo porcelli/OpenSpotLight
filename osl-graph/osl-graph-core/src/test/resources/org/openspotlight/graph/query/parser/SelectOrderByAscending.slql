@@ -1,7 +1,0 @@
-select **
-	where
-		org.openspotlight.graph.test.domain.node.JavaInterface
-			property caption <*> "Set"
-	order by
-		org.openspotlight.graph.test.domain.node.JavaInterface
-			property caption asc;

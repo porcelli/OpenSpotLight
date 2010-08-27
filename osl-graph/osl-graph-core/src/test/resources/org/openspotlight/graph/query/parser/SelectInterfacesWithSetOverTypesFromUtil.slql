@@ -1,9 +1,0 @@
-select org.openspotlight.graph.test.domain.node.JavaType.*
-	where 
-		org.openspotlight.graph.test.domain.node.JavaType.*
-			property caption *... "java.util"
-
-select org.openspotlight.graph.test.domain.node.JavaInterface
-	where 
-		org.openspotlight.graph.test.domain.node.JavaInterface
-			property caption <*> "Set";

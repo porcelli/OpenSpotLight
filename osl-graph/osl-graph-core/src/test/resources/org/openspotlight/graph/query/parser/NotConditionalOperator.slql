@@ -1,6 +1,0 @@
-select **
-	where
-		org.openspotlight.graph.test.domain.node.JavaType.*
-			property caption <*> "Set" &&
-			!(	property caption <*> "Hash" ||
-				property caption <*> "Bit" );

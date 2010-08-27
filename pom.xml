@@ -85,10 +85,7 @@
         <module>osl-slql-console</module>
         <module>osl-federation</module>
         <module>osl-web</module>
-  <!--  <module>bundle-processor/osl-bundle-common</module> -->
-  <!--  <module>bundle-processor/osl-common-metamodel</module> -->
-  <!--  <module>bundle-processor/osl-bundle-java</module> -->
-  <!--  <module>bundle-processor/osl-bundle-db</module> -->
+        <module>osl-bundle</module>
     </modules>
     <build>
         <plugins>
@@ -287,12 +284,12 @@
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
-                <artifactId>osl-bundle-common</artifactId>
+                <artifactId>osl-bundle-core</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
-                <artifactId>osl-common-metamodel</artifactId>
+                <artifactId>osl-bundle-api</artifactId>
                 <version>${pom.version}</version>
             </dependency>
             <dependency>
