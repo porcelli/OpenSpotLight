@@ -8,12 +8,5 @@ mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-spi -
 mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-ldap -Dversion=1.0.0-Beta4-SNAPSHOT -Dpackaging=jar -Dfile=idm-ldap-1.0.0-Beta4-SNAPSHOT.jar
 mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-hibernate -Dversion=1.0.0-Beta4-SNAPSHOT -Dpackaging=jar -Dfile=idm-hibernate-1.0.0-Beta4-SNAPSHOT.jar
 mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-core -Dversion=1.0.0-Beta4-SNAPSHOT -Dpackaging=jar -Dfile=idm-core-1.0.0-Beta4-SNAPSHOT.jar
-mvn install:install-file -DgroupId=org.jboss.dna -DartifactId=dna-common -Dversion=0.6 -Dpackaging=jar -Dfile=dna-common-0.6.jar
-mvn install:install-file -DgroupId=org.jboss.dna -DartifactId=dna-graph -Dversion=0.6 -Dpackaging=jar -Dfile=dna-graph-0.6.jar
-mvn install:install-file -DgroupId=org.jboss.dna -DartifactId=dna-connector-filesystem -Dversion=0.6 -Dpackaging=jar -Dfile=dna-connector-filesystem-0.6.jar
-mvn install:install-file -DgroupId=org.jboss.dna -DartifactId=dna-connector-svn -Dversion=0.6 -Dpackaging=jar -Dfile=dna-connector-svn-0.6.jar
 mvn install:install-file -DgroupId=org.jboss.identity.idm -DartifactId=idm-core -Dversion=1.0.0-Beta4-SNAPSHOT -Dclassifier=tests -Dpackaging=jar -Dfile=idm-core-1.0.0-Beta4-SNAPSHOT-tests.jar
-mvn install:install-file -DgroupId=aopalliance -DartifactId=aopalliance -Dversion=guice-2.0-dep -Dpackaging=jar -Dfile=aopalliance.jar
 mvn install:install-file -DgroupId=jredis -DartifactId=jredis -Dversion=1.0-rc1-java5 -Dpackaging=jar -Dfile=jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar
-mvn install:install-file -DgroupId=google -DartifactId=guice -Dversion=2.0 -Dpackaging=jar -Dfile=guice-2.0.jar
-mvn install:install-file -DgroupId=google -DartifactId=collect -Dversion=1.0 -Dpackaging=jar -Dfile=google-collect-1.0.jar 

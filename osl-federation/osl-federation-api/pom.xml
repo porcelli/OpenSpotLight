@@ -16,11 +16,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
-			<artifactId>osl-graph-api</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-logger-api</artifactId>
 		</dependency>
 
@@ -28,18 +23,10 @@
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-common</artifactId>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-simple-persist</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<!-- External dependencies -->
-		<dependency>
-			<groupId>net.jcip</groupId>
-			<artifactId>jcip-annotations</artifactId>
-			<scope>compile</scope>
 		</dependency>
 		<!-- Test dependencies -->
 		<dependency>

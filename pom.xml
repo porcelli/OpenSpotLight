@@ -318,17 +318,6 @@
                 <version>${pom.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.openspotlight</groupId>
-                <artifactId>osl-federation-dna-core-loader</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openspotlight</groupId>
-                <artifactId>osl-federation-dna-filesystem-loader</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.jboss.identity.idm</groupId>
                 <artifactId>idm-core</artifactId>
                 <classifier>tests</classifier>
@@ -361,21 +350,15 @@
                 <version>1.0.0-Beta4-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.google.collections</groupId>
-                <artifactId>google-collections</artifactId>
-                <version>1.0</version>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>r03</version>
             </dependency>
             <dependency>
-                <groupId>google</groupId>
+                <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>2.0</version>
             </dependency>
-            <dependency>
-                <groupId>aopalliance</groupId>
-                <artifactId>aopalliance</artifactId>
-                <version>guice-2.0-dep</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongo-java-driver</artifactId>
@@ -398,49 +381,10 @@
                 <artifactId>antlr</artifactId>
                 <version>3.2</version>
             </dependency>
-            <!-- dna federation dependencies -->
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-connector-filesystem</artifactId>
-                <version>1.1.0.Final</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-search-lucene</artifactId>
-                <version>1.1.0.Final</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-connector-svn</artifactId>
-                <version>1.1.0.Final</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-repository</artifactId>
-                <version>1.1.0.Final</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-jcr</artifactId>
-                <version>1.1.0.Final</version>
-                <scope>compile</scope>
-            </dependency>
-            <!-- XML manipulation made easy  -->
             <dependency>
                 <groupId>com.thoughtworks.xstream</groupId>
                 <artifactId>xstream</artifactId>
                 <version>1.3.1</version>
-            </dependency>
-            <!-- Java Concurrency in Practice annotations -->
-            <dependency>
-                <groupId>net.jcip</groupId>
-                <artifactId>jcip-annotations</artifactId>
-                <version>1.0</version>
-                <scope>compile</scope>
             </dependency>
             <!-- H2 for sql92 tests -->
             <dependency>
@@ -482,24 +426,6 @@
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>1.8.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-common</artifactId>
-                <version>1.1.0.Final</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-graph</artifactId>
-                <version>1.1.0.Final</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.modeshape</groupId>
-                <artifactId>modeshape-common</artifactId>
-                <version>1.1.0.Final</version>
-                <scope>compile</scope>
             </dependency>
             <!--
                    XML dependencies just to write and read the configuration in a
@@ -603,16 +529,6 @@
                 <groupId>sun-jaxb</groupId>
                 <artifactId>jaxb-impl</artifactId>
                 <version>2.1.9</version>
-            </dependency>
-            <dependency>
-                <groupId>colt</groupId>
-                <artifactId>colt</artifactId>
-                <version>1.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.collections</groupId>
-                <artifactId>collections-generic</artifactId>
-                <version>4.01</version>
             </dependency>
             <dependency>
                 <groupId>opensymphony</groupId>
@@ -770,39 +686,6 @@
                 <artifactId>freemarker</artifactId>
                 <version>2.3.9</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
-    <profiles>
-        <profile>
-            <id>setup</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.groovy.maven</groupId>
-                        <artifactId>gmaven-plugin</artifactId>
-                        <version>1.0</version>
-                        <inherited>false</inherited>
-                        <!-- Works only if inheritance is deactivated -->
-                        <executions>
-                            <execution>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>execute</goal>
-                                </goals>
-                                <configuration>
-                                    <source>${pom.basedir}/profiles.groovy</source>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <activation> <!-- Only create profiles.xml if there's no profiles.xml yet -->
-                <file>
-                    <missing>profiles.xml</missing>
-                </file>
-            </activation>
-        </profile>
-    </profiles>
 </project>

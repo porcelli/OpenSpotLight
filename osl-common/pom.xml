@@ -30,13 +30,6 @@
             <artifactId>commons-io</artifactId>
         </dependency>
 
-        <!-- Java Concurrency in Practice annotations -->
-        <dependency>
-            <groupId>net.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-        </dependency>
         <!-- Cryptography utilities -->
         <dependency>
             <groupId>org.jasypt</groupId>
@@ -60,14 +53,13 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+            </dependency>
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
-            <version>2.2</version>
         </dependency>
     </dependencies>
 </project>

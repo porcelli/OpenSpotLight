@@ -17,5 +17,17 @@
 			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-bundle-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-federation-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-graph-core</artifactId>
+		</dependency>
+		<dependency>
+            <groupId>opensymphony</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
 	</dependencies>
 </project>
