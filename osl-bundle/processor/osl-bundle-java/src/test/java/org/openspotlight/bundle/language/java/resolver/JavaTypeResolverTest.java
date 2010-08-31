@@ -826,9 +826,9 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldFindConcreteInnerClass() throws Exception {
-        final SLNode entryClass = javaTypeFinder.getType("java.util.Map.Entry");
+        final NodentryClass = javaTypeFinder.getType("java.util.Map.Entry");
         assertThat(entryClass, is(notNullValue()));
-        final SLNode newEntryClass = javaTypeFinder.getType("java.util.Map.Entry");
+        final NoNodeEntryClass = javaTypeFinder.getType("java.util.Map.Entry");
         assertThat(newEntryClass, is(notNullValue()));
         assertThat(entryClass.getName(), is("Map.Entry"));
         assertThat(entryClass.getPropertyValueAsString("qualifiedName"), is("java.util.Map.Entry"));
@@ -1115,7 +1115,7 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldFindInterfaceType() throws Exception {
-        final SLNode mapClass = javaTypeFinder.getType("java.util.Map");
+        final NodeNodeass = javaTypeFinder.getType("java.util.Map");
         assertThat(mapClass, is(notNullValue()));
         assertThat(mapClass.getName(), is("Map"));
         assertThat(mapClass.getPropertyValueAsString("qualifiedName"), is("java.util.Map"));
@@ -1153,7 +1153,7 @@ public class JavaTypeResolverTest {
      */
     @Test
     public void shouldFindPrimitiveType() throws Exception {
-        final SLNode intClass = javaTypeFinder.getType("int");
+        final Node iNodes = javaTypeFinder.getType("int");
         assertThat(intClass, is(notNullValue()));
         assertThat(intClass.getName(), is("int"));
         assertThat(intClass.getPropertyValueAsString("qualifiedName"), is("int"));

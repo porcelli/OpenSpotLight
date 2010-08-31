@@ -48,16 +48,14 @@
  */
 package org.openspotlight.bundle.language.java.resolver;
 
-import org.openspotlight.graph.SLNode;
-
+import org.openspotlight.graph.Node
 import java.util.List;
 
 /**
  * The Interface TypeResolver describes a set of methods needed inside a helper class to find types during a parsing phase for
  * example.
  */
-public interface TypeResolver<N extends SLNode> {
-
+public interface TypeResolver<N extends NoNode
     /**
      * The Enum IncludedResult is used to describe if the actual type passed as an argument should be included on result.
      */

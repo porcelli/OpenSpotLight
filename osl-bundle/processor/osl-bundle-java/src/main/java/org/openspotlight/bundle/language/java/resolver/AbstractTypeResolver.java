@@ -54,7 +54,7 @@ package org.openspotlight.bundle.language.java.resolver;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +65,7 @@ import java.util.Set;
 /**
  * The Class TypeFinder.
  */
-public abstract class AbstractTypeResolver<N extends SLNode> implements TypeResolver<N> {
+public abstract class AbstractTypeResolver<N extends Node> implements TypeResolver<N> {
 
     protected static enum Recursive {
         ONLY_DIRECT_PARENTS,

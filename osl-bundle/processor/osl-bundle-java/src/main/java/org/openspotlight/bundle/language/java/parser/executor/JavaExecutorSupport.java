@@ -57,8 +57,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.slf4j.Logger;
+import org.openspotlight.graph.Nodeimport org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
@@ -68,9 +67,9 @@ public class JavaExecutorSupport {
 
     private final boolean         quiet                 = true;
 
-    final SLNode                  currentContext;
+    final NoNode              currentContext;
 
-    final SLNode                  abstractContext;
+    final NodeNode            abstractContext;
 
     final GraphReadGraphReaderl ByPropertyFinder        currentContextFinder;
     final ByPropertyFinder        abstractContextFinder;
@@ -82,15 +81,13 @@ public class JavaExecutorSupport {
 
     final List<String>            includedStaticMethods = new LinkedList<String>();
 
-    final Map<SLNode, SLNode>     concreteAbstractCache = new HashMap<SLNode, SLNode>();
+    final Map<Node, Node  NodereteAbstractCache = new HashMap<Node, NodeNode  Nodel Map<Node, Node>   NoderaNodereteCache = new HashMap<Node, Node>();
+   Node HNode<String, Node> importedNodeCachNode= new HashMap<String, Node>();
 
-    final Map<SLNode, SLNode>     abstractConcreteCache = new HashMap<SLNode, SLNode>();
-    final HashMap<String, SLNode> importedNodeCache     = new HashMap<String, SLNode>();
-
-    final String                  completeArtifactName;
+    final StriNode              completeArtifactName;
 
     public JavaExecutorSupport(
-                                final SLNode currentContext, final GraphReader sessioGraphReaderleteArtifactName )
+                                final Node currentContext, finalNodeReader sessioGraphReaderleteArtifactName )
         throws Exception {
         this.currentContext = currentContext;
         abstractContext = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
@@ -106,7 +103,7 @@ public class JavaExecutorSupport {
     }
 
     @SuppressWarnings( "unchecked" )
-    <T extends SLNode, W extends SLNode> W findEquivalend( final T source,
+    <T extends Node, W extends Node> W findNodelend( final Nodece,
                                                            final WhatContext whatContext ) throws Exception {
         if (!(source instanceof JavaPackage || source instanceof JavaType)) {
             if (logger.isDebugEnabled()) {
@@ -259,9 +256,9 @@ public class JavaExecutorSupport {
         return type;
     }
 
-    void putOnBothCaches( final SLNode concrete,
-                          final SLNode abstractN ) {
-        concreteAbstractCache.put(concrete, abstractN);
+    void putOnBothCaches( final Node concrete,
+                 Node   final Node abstractN ) {
+        concretNodeactCache.put(concrete, abstractN);
         abstractConcreteCache.put(abstractN, concrete);
     }
 

@@ -58,8 +58,7 @@ import java.util.Set;
 
 import org.openspotlight.graph.SLMetaNodeType;
 import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
+import org.openspotlight.graph.Nodemport org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentNodeNotFoundException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
@@ -122,13 +121,13 @@ public class SLQuerySupport {
      * @param nodes the nodes
      * @return the node i ds
      */
-    static String[] getNodeIDs( final Collection<SLNode> nodes ) {
+    static String[] getNodeIDs( final Collection<NoNoNode) {
         if (nodes == null) {
             return null;
         }
         int count = 0;
         final String[] ids = new String[nodes.size()];
-        for (final SLNode node : nodes) {
+        for (final NodeNodeNodes) {
             ids[count++] = node.getID();
         }
         return ids;

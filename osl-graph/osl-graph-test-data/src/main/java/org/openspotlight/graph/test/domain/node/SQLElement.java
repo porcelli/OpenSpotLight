@@ -48,8 +48,7 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLCollator;
+import org.openspotlight.graph.Nodeport org.openspotlight.graph.annotation.SLCollator;
 import org.openspotlight.graph.annotation.SLProperty;
 
 import java.text.Collator;
@@ -60,9 +59,7 @@ import java.text.Collator;
  * @author Vitor Hugo Chagas
  */
 @SLCollator( strength = Collator.PRIMARY )
-public interface SQLElement extends SLNode {
-
-    /**
+public interface SQLElement extends NoNoNode/**
      * Gets the selecao.
      * 
      * @return the selecao

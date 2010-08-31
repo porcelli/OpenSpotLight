@@ -50,15 +50,14 @@ package org.openspotlight.bundle.language.java.parser;
 
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.SLNode;
-
+import org.openspotlight.graph.Node
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class ExpressionDto {
     public final JavaType             resultType;
-    public final SLNode               leaf;
+    public final NoNode           leaf;
     public final List<ExpressionDto>  participants;
 
     public static final ExpressionDto NULL_EXPRESSION = new ExpressionDto();
@@ -87,7 +86,7 @@ public class ExpressionDto {
     }
 
     public ExpressionDto(
-                          final JavaType resultType, final SLNode leaf, final ExpressionDto... dtos ) {
+                          final JavaType resultType, final NodeNode final ExpressionDto... dtos ) {
         Assertions.checkNotNull("resultType", resultType);
         Assertions.checkNotNull("leaf", leaf);
         this.resultType = resultType;

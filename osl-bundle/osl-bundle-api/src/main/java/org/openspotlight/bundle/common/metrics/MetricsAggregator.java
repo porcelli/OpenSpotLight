@@ -222,7 +222,7 @@ Nodeivate final Map<String, Integer>     parameters;
     }
 
     public void addControlStatement( final Node node,
-                                     final int size ) throws SLNodexception {
+                                     final int size ) throws Nodetion {
         refreshNodeInformation(node);
         generalAcumulate(controlStatement, node, size);
     }

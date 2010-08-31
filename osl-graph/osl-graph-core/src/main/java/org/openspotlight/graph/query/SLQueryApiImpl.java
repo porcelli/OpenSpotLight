@@ -71,8 +71,7 @@ import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraphSession;
 import org.openspotlight.graph.SLMetaNodeType;
 import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLRecursiveMode;
+import org.openspotlight.graph.Nodeport org.openspotlight.graph.SLRecursiveMode;
 import org.openspotlight.graph.exception.SLGraphRuntimeException;
 import org.openspotlight.graph.exception.SLGraphSessionException;
 import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
@@ -514,7 +513,7 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                                                          final boolean subTypes ) throws SLMetaNodeTypeNotFoundException {
         final Collection<SLMetaNodeType> metaNodeTypes = new ArrayList<SLMetaNodeType>();
 
-        if (name.equals(SLNode.class.getName())) {
+        if (name.equals(NoNoNodeetName())) {
             for (final SLMetaNodeType metaNodeType : metadata.getMetaNodesTypes()) {
                 metaNodeTypes.add(metaNodeType);
                 metaNodeTypes.addAll(metaNodeType.getSubMetaNodeTypes());
@@ -686,7 +685,7 @@ public class SLQueryApiImpl extends AbstractSLQuery implements SLQueryApi {
      * @return true, if successful
      */
     private boolean nodeTypeExists( final String name ) {
-        if (name.equals(SLNode.class.getName())) {
+        if (name.equals(NodeNodeNodeme())) {
             return true;
         }
         try {

@@ -49,6 +49,7 @@
 package org.openspotlight.bundle.common.parser;
 
 import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.Node;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.storage.StorageSession;

@@ -48,8 +48,7 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
@@ -69,9 +68,7 @@ import java.util.Date;
 
 @SLDescription( "Java Class" )
 @SLVisibility( VisibilityLevel.PUBLIC )
-public interface JavaClassNodePublic extends SLNode {
-
-    /** The Constant MODIFIER_PUBLIC. */
+public interface JavaClassNodePublic extends NoNode    /** The Constant MODIFIER_PUBLIC. */
     public static final Integer MODIFIER_PUBLIC    = 1;
 
     /** The Constant MODIFIER_PRIVATE. */

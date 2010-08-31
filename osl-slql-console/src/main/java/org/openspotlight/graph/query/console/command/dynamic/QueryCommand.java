@@ -52,8 +52,7 @@ import jline.ConsoleReader;
 import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLQueryResult;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.query.SLQueryText;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
@@ -170,7 +169,7 @@ public class QueryCommand implements DynamicCommand {
      * @param additionalProperties the additional properties
      * @return the string
      */
-    protected String generateOutput( Collection<SLNode> nodes,
+    protected String generateOutput( Collection<NoNodedes,
                                      Collection<String> additionalProperties ) {
         StringBuilder buffer = new StringBuilder();
         // Header
@@ -186,7 +185,7 @@ public class QueryCommand implements DynamicCommand {
         StringBuilderUtil.append(buffer, StringUtils.repeat("-", ((3 + additionalProperties.size()) * (COLUMN_SIZE + 3)) + 1),
                                  "\n");
         if (!nodes.isEmpty()) {
-            for (SLNode node : nodes) {
+            for (NodeNode: nodes) {
                 List<String> output = new LinkedList<String>();
                 output.add("| ");
                 output.add(StringUtils.rightPad(StringUtils.abbreviate(node.getTypeName(), COLUMN_SIZE), COLUMN_SIZE));

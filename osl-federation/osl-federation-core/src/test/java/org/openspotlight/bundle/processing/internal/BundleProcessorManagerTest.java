@@ -77,8 +77,7 @@ import org.openspotlight.bundle.processing.DefaultBundleProcessorManager;
 import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.graph.Nodeport org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
@@ -100,14 +99,13 @@ public class BundleProcessorManagerTest {
 
         public static AtomicInteger count = new AtomicInteger();
 
-        public ListenerAction groupAdded(final SLNode groupNode,
+        public ListenerAction groupAdded(final NoNoNodede,
                                          final ExecutionContext context) {
             count.incrementAndGet();
             return ListenerAction.CONTINUE;
         }
 
-        public ListenerAction groupRemoved(final SLNode groupNode,
-                                           final ExecutionContext context) {
+        public ListenerAction groupRemoved(final NodeNodeNode                                           final ExecutionContext context) {
             return null;
         }
 
@@ -201,11 +199,11 @@ public class BundleProcessorManagerTest {
         final ExecutionContext context1 = contextFactory.createExecutionContext("username", "password",
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR, repository);
         final String nodeName = "/sources/java/myProject/osl-federation-api/src/main/java/org/openspotlight/federation/loader/ConfigurationManagerProvider.java1";
-        final SLNode node = context1.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
+        final Node nNodecoNode.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT).getRootNode().getNode(
                 group.getUniqueName()).getNode(
                 nodeName);
         Assert.assertThat(node, Is.is(IsNull.notNullValue()));
-        final SLNode node2 = node.getNode(nodeName);
+        final Node nodNodeode.Nodee(nodeName);
         Assert.assertThat(node2, Is.is(IsNull.notNullValue()));
         final Collection<SLLink> links = context1.getGraphSession().getLinks(node, node2);
         Assert.assertThat(links.size(), Is.is(IsNot.not(0)));

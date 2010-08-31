@@ -52,7 +52,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.exception.SLNodeNotFoundException;
+import org.openspotlight.graph.exception.NodeoundException;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 
@@ -69,11 +69,11 @@ public interface SLQueryCache {
      * @param queryId the query id
      * @param nodes the nodes
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-     * @throws SLNodeNotFoundException the SL node not found exception
+     * @throws NoNoNodeException the SL node not found exception
      */
     public abstract void add2Cache( final String queryId,
                                     final Collection<PNodeWrapper> nodes )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException;
+        throws SLPersistentTreeSessionException, NodeNodeNodeption;
 
     /**
      * Builds a unique query id.
@@ -100,12 +100,10 @@ public interface SLQueryCache {
      * @param queryId the query id
      * @return the cache
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-     * @throws SLNodeNotFoundException the SL node not found exception
+     * @throws NodeNoNodeExNoden the SL node not found exception
      */
     public abstract SLQueryResult getCache( final String queryId )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException;
-
-    /**
+        throws SLPersistentTreeSessionException, NodeNotFNodeceptNode    /**
      * Flush cache.
      * 
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception

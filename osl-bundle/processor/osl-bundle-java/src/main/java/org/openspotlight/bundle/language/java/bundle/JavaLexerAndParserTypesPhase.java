@@ -64,8 +64,7 @@ import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.bundle.processing.BundleProcessorArtifactPhase;
 import org.openspotlight.bundle.processing.CurrentProcessorContext;
-import org.openspotlight.graph.SLNode;
-import org.slf4j.Logger;
+import org.openspotlight.graph.Nodeimport org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JavaLexerAndParserTypesPhase implements BundleProcessorArtifactPhase<StringArtifact> {
@@ -97,7 +96,7 @@ public class JavaLexerAndParserTypesPhase implements BundleProcessorArtifactPhas
         }
         try {
 
-            final SLNode contextNode = currentContext.getNodeForUniqueBundleConfig();
+            final NoNodetextNode = currentContext.getNodeForUniqueBundleConfig();
 
             final SLArtifactStream stream = new SLArtifactStreamBasicImpl(
                                                                           artifact.getArtifactCompleteName(),

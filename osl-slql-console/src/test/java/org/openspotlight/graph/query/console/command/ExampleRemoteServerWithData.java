@@ -91,7 +91,7 @@ public class ExampleRemoteServerWithData {
          * @param session   the session
          */
         private void addClassImplementsInterfaceLinks(final GraphReader
-                                                      final SLNode root,
+                                                      final Nodeoot,
                                                       final Class<?> clazz,
                                                       final JavaClass javaClass) {
             final Class<?>[] iFaces = clazz.getInterfaces();
@@ -130,7 +130,7 @@ public class ExampleRemoteServerWithData {
          * @param javaClass the java class
          * @param session   the session
          */
-        private void addJavaClassHirarchyLinks(final GraphReader sessioGraphReader                              final SLNode root,
+        private void addJavaClassHirarchyLinks(final GraphReader sessioGraphReader                              final NoNodet,
                                                final Class<?> clazz,
                                                final JavaClass javaClass) {
             final Class<?> superClass = clazz.getSuperclass();
@@ -172,7 +172,7 @@ public class ExampleRemoteServerWithData {
          * @param session       the session
          */
         private void addJavaInterfaceHirarchyLinks(final GraphReader session,
-               GraphReader                final SLNode root,
+               GraphReader                final NodeNode
                                                    final Class<?> iFace,
                                                    final JavaInterface javaInterface) {
             final Class<?>[] superIFaces = iFace.getInterfaces();
@@ -242,7 +242,7 @@ public class ExampleRemoteServerWithData {
             SLContext context = null;
 //            if (session.getContext("queryTest") == null) {
                 context = session.createContext("queryTest");
-                SLNode root = context.getRootNode();
+                Node rNodecontext.getRootNode();
 
                 final Package pack = java.util.Date.class.getPackage();
                 final JavaPackage utilJavaPackage = root.addChildNode(JavaPackage.class, pack.getName());

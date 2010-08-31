@@ -65,8 +65,7 @@ import org.openspotlight.bundle.processing.DefaultBundleProcessorManager;
 import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
@@ -186,8 +185,8 @@ public class JavaStressExampleDataCreationTest {
                 settings, group);
         Assert.assertThat(result, Is.is(GlobalExecutionStatus.SUCCESS));
         ctx = includedFilesContextFactory.createExecutionContext(username, password, descriptor, group.getRootRepository());
-        final SLNode ctxRoot = ctx.getGraphSession().getContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
-        final SLNode objectNode = ctxRoot.getNode("java.lang").getNode("Object");
+        final NoNodeRoot = ctx.getGraphSession().getContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
+        final NodeNodetNode = ctxRoot.getNode("java.lang").getNode("Object");
         Assert.assertThat(objectNode, Is.is(IsNull.notNullValue()));
 
         final SessionWithLock session = ctx.getDefaultConnectionProvider().openSession();

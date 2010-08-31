@@ -58,8 +58,7 @@ import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 import org.openspotlight.bundle.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-
+import org.openspotlight.graph.Node
 import java.util.Arrays;
 
 import static org.openspotlight.graph.util.GraphManipulationSupport.links;
@@ -81,12 +80,12 @@ public class DbProcessorHelper implements DBConstants {
 
     public static class ParentVo {
         public final Database                database;
-        public final SLNode                  parent;
-        public final SLNode                  databaseContextNode;
+        public final NoNode              parent;
+        public final NodeNode            databaseContextNode;
         public final Class<? extends SLLink> tableParentLink;
 
         public ParentVo(
-                         final SLNode tableParent, final SLNode databaseContextNode,
+                         final Node tNoderent, final Node datNodeontextNode,
                          final Class<? extends SLLink> tableParentLink, final Database database ) {
             super();
             this.database = database;
@@ -97,13 +96,13 @@ public class DbProcessorHelper implements DBConstants {
     }
 
     public static class TableVo {
-        public final SLNode    databaseContextNode;
+        public final Node    daNodeContextNode;
         public final Database  database;
         public final TableView table;
         public final TableView abstractTable;
 
         public TableVo(
-                        final SLNode databaseContextNode, final Database database, final TableView table,
+                        final Node databasNodextNode, final Database database, final TableView table,
                         final TableView abstractTable ) {
             this.databaseContextNode = databaseContextNode;
             this.database = database;
@@ -115,7 +114,7 @@ public class DbProcessorHelper implements DBConstants {
     @SuppressWarnings( "unchecked" )
     public static Column createColumn( final DbWrappedType wrappedType,
                                        final ExecutionContext context,
-                                       final SLNode databaseContextNode,
+                                       final Node databaseCNodeNode,
                                        final TableView table,
                                        final TableView abstractTable,
                                        final org.openspotlight.federation.domain.artifact.db.Column c ) {
@@ -135,7 +134,7 @@ public class DbProcessorHelper implements DBConstants {
     public static void createColumns( final DbWrappedType wrappedType,
                                       final TableArtifact artifact,
                                       final ExecutionContext context,
-                                      final SLNode databaseContextNode,
+                                      final Node databaseConNodede,
                                       final Database database,
                                       final TableView table,
                                       final TableView abstractTable ) {
@@ -157,7 +156,7 @@ public class DbProcessorHelper implements DBConstants {
 
         final SLContext databaseContext = context.getGraphSession().createContext(DB_ABSTRACT_CONTEXT);
 
-        final SLNode databaseContextNode = databaseContext.getRootNode();
+        final Node databaseConteNode = databaseContext.getRootNode();
 
         final Server server = databaseContextNode.addChildNode(wrappedType.getServerType(), serverName);
         final Database database = server.addChildNode(wrappedType.getDatabaseType(), databaseName);
@@ -172,7 +171,7 @@ public class DbProcessorHelper implements DBConstants {
             context.getGraphSession().addLink(SchemaCatalog.class, schema, catalog, false);
         }
         final Class<? extends SLLink> tableParentLink = catalog != null ? CatalogTableView.class : SchemaTableView.class;
-        final SLNode tableParent = catalog != null ? catalog : schema;
+        final Node tableParent = cNode != null ? catalog : schema;
         final ParentVo parent = new ParentVo(tableParent, databaseContextNode, tableParentLink, database);
         final TableView table = parent.parent.addChildNode(TableView.class, tableName);
         final Column column = table.addChildNode(Column.class, columnName, links(AbstractTypeBind.class, ColumnDataType.class), null);
@@ -249,7 +248,7 @@ public class DbProcessorHelper implements DBConstants {
                                                    final String catalogName ) {
         final SLContext databaseContext = context.getGraphSession().createContext(DB_ABSTRACT_CONTEXT);
 
-        final SLNode databaseContextNode = databaseContext.getRootNode();
+        final Node databaseContextNoNodeatabaseContext.getRootNode();
 
         final Server server = databaseContextNode.addChildNode(wrappedType.getServerType(), serverName);
         final Database database = server.addChildNode(wrappedType.getDatabaseType(), databaseName);
@@ -264,7 +263,7 @@ public class DbProcessorHelper implements DBConstants {
             context.getGraphSession().addLink(SchemaCatalog.class, schema, catalog, false);
         }
         final Class<? extends SLLink> tableParentLink = catalog != null ? CatalogTableView.class : SchemaTableView.class;
-        final SLNode tableParent = catalog != null ? catalog : schema;
+        final Node tableParent = catalNodenull ? catalog : schema;
         final ParentVo parent = new ParentVo(tableParent, databaseContextNode, tableParentLink, database);
         return parent;
     }

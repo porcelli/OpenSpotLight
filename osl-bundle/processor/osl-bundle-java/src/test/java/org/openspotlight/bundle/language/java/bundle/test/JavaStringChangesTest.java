@@ -69,8 +69,7 @@ import org.openspotlight.bundle.processing.DefaultBundleProcessorManager;
 import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
@@ -170,9 +169,9 @@ public class JavaStringChangesTest {
         final ExecutionContext context = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
                 group.getRootRepository());
         final SLContext ctx = context.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode = ctx.getRootNode().getNode(group.getUniqueName());
-        final SLNode packageNode = groupNode.getNode("org.openspotlight.test");
-        final SLNode classNode = packageNode.getNode("ExamplePublicClass");
+        final NoNodeupNode = ctx.getRootNode().getNode(group.getUniqueName());
+        final NodeNodegeNode = groupNode.getNode("org.openspotlight.test");
+        final Node cNodede = packageNode.getNode("ExamplePublicClass");
         Assert.assertThat(classNode, Is.is(IsNull.notNullValue()));
 
     }

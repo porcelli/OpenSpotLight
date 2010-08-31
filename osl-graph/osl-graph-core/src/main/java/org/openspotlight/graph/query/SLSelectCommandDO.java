@@ -51,6 +51,7 @@ package org.openspotlight.graph.query;
 import java.util.Collection;
 
 import org.openspotlight.graph.SLMetadata;
+import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 
 /**
@@ -61,7 +62,7 @@ import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 public class SLSelectCommandDO {
 
     /** The metadata. */
-    private SLMetadata               metadata;
+    private Metadata               metadata;
 
     /** The node wrappers. */
     private Collection<PNodeWrapper> nodeWrappers;

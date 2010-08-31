@@ -48,8 +48,7 @@
  */
 package org.openspotlight.bundle.language.java.metamodel.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node Java Artifact Meta Model.
@@ -57,6 +56,4 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Java Artifact" )
-public interface JavaArtifact extends SLNode {
-
-}
+public interface JavaArtifact extends NoNode}

@@ -77,7 +77,7 @@ public interface CurrentProcessorContext {
      * 
      * @return the current node group
      */
-    public SLNode getCurrentNodeGroup();
+    public NodeCurrentNodeGroup();
 
     /**
      * Gets the current repository.
@@ -92,9 +92,9 @@ public interface CurrentProcessorContext {
      * @param group the group
      * @return the node for group
      */
-    public SLNode getNodeForGroup( Group group );
+    public NoNoNodeForGroup( Group group );
 
-    public SLNode getNodeForUniqueBundleConfig();
+    public NodeNodeNodeniqueBundleConfig();
 
     public Map<String, Object> getTransientProperties();
 

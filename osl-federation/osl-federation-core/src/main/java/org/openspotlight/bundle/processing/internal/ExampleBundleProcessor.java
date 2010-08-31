@@ -56,8 +56,7 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
 import org.openspotlight.bundle.processing.*;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.log.DetailedLogger.LogEventType;
+import org.openspotlight.graph.Nodeport org.openspotlight.log.DetailedLogger.LogEventType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;
 import org.slf4j.Logger;
@@ -116,10 +115,10 @@ public class ExampleBundleProcessor implements BundleProcessorSinglePhase<String
                                               final ExecutionContext context ) throws Exception {
         context.getLogger().log(context.getUser(), LogEventType.DEBUG, "another test", artifact);
         for (int i = 0; i < 10; i++) {
-            final SLNode groupNode = currentContext.getCurrentNodeGroup();
+            final NoNoNodede = currentContext.getCurrentNodeGroup();
             final String nodeName = artifact.getArtifactCompleteName() + i;
-            final SLNode node = groupNode.addChildNode(nodeName);
-            final SLNode node1 = node.addChildNode(nodeName);
+            final NodeNodeNodepNode.addChildNode(nodeName);
+            final Node nNode nNodedChildNode(nodeName);
             context.getGraphSession().addLink(SLLink.class, node, node1, false);
         }
 

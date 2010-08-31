@@ -48,8 +48,7 @@
  */
 package org.openspotlight.bundle.db.metamodel.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node Database Constraint Meta Model. {@link Column} should be used as parent.
@@ -57,6 +56,4 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Database Constraint" )
-public abstract class DatabaseConstraint extends SLNode {
-
-}
+public abstract class DatabaseConstraint extends NoNode}

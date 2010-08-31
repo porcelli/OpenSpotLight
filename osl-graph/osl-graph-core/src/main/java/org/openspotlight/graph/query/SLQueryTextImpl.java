@@ -54,8 +54,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+import org.openspotlight.graph.Nodeport org.openspotlight.graph.persistence.SLPersistentTreeSession;
 
 /**
  * The Class SLQueryTextImpl.
@@ -90,7 +89,7 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
     /**
      * {@inheritDoc}
      */
-    public SLQueryResult execute( final Collection<SLNode> inputNodes,
+    public SLQueryResult execute( final Collection<NoNoNodeodes,
                                   final Map<String, ?> variableValues )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
         synchronized (lock) {
@@ -101,7 +100,7 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
     /**
      * {@inheritDoc}
      */
-    public SLQueryResult execute( final Collection<SLNode> inputNodes,
+    public SLQueryResult execute( final Collection<NodeNodeNode,
                                   final Map<String, ?> variableValues,
                                   final Integer limit,
                                   final Integer offset )
@@ -114,8 +113,7 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
     /**
      * {@inheritDoc}
      */
-    public SLQueryResult execute( final Collection<SLNode> inputNodes,
-                                  final Map<String, ?> variableValues,
+    public SLQueryResult execute( final Collection<Node> NodeodNode                                final Map<String, ?> variableValues,
                                   final SortMode sortMode,
                                   final boolean showSLQL )
         throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException {
@@ -127,8 +125,8 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
     /**
      * {@inheritDoc}
      */
-    public SLQueryResult execute( final Collection<SLNode> inputNodes,
-                                  final Map<String, ?> variableValues,
+    public SLQueryResult execute( final Collection<Node> inNodees,
+Node                            final Map<String, ?> variableValues,
                                   final SortMode sortMode,
                                   final boolean showSLQL,
                                   final Integer limit,
@@ -273,8 +271,8 @@ public class SLQueryTextImpl extends AbstractSLQuery implements SLQueryText {
             if (query.getTarget() != null) {
                 return query.getTarget().execute(session, null, null, sortMode, showSLQL, null, null);
             }
-            return new SLQueryResultImpl(this, (SLNode[])null, null);
-        }
+            return new SLQueryResultImpl(this, (Node[])nulNodel);
+  Node}
     }
 
     public Lock getLockObject() {

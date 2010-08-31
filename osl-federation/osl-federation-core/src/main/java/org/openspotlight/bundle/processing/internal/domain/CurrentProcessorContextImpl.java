@@ -57,9 +57,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.bundle.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.GraphReaderpotlight.graph.SLNode;
-
-import java.util.Map;
+import org.openspotlight.graph.GraphReaderpotlight.graph.Nodemport java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CurrentProcessorContextImpl implements CurrentProcessorContext {
@@ -70,7 +68,7 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
 
     private ArtifactSource            artifactSource;
 
-    private SLNode                    currentNodeGroup;
+    private NoNoNode            currentNodeGroup;
 
     private Repository                currentRepository;
 
@@ -79,7 +77,7 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
     private final Map<String, Object> transientProperties       = new AddOnlyConcurrentMap<String, Object>(
                                                                                                            new ConcurrentHashMap<String, Object>());
 
-    private SLNode                    nodeForUniqueBundleConfig = null;
+    private NodeNodeNode        nodeForUniqueBundleConfig = null;
 
     public CurrentProcessorContextImpl() {
     }
@@ -100,7 +98,7 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
         return currentGroup;
     }
 
-    public SLNode getCurrentNodeGroup() {
+    public Node gNodeenNoderoup() {
         if (currentNodeGroup == null) {
             if (currentGroup != null && groupContext != null) {
                 currentNodeGroup = getNodeForGroup(currentGroup);
@@ -120,11 +118,11 @@ public class CurrentProcessorContextImpl implements CurrentProcessorContext {
         return groupContext;
     }
 
-    public SLNode getNodeForGroup( final Group group ) {
+    public Node getNoderGroNodenal Group group ) {
         return groupContext.getRootNode().addChildNode(group.getUniqueName());
     }
 
-    public SLNode getNodeForUniqueBundleConfig() {
+    public Node getNoNodeniqueBNodeonfig() {
 
         if (nodeForUniqueBundleConfig == null) {
             synchronized (groupContext.getLockObject()) {

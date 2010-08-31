@@ -48,8 +48,7 @@
  */
 package org.openspotlight.bundle.db.metamodel.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node DataType Meta Model. {@link Column} should be used as parent.
@@ -57,6 +56,4 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "DataType" )
-public interface DataType extends SLNode {
-
-}
+public interface DataType extends NoNode}

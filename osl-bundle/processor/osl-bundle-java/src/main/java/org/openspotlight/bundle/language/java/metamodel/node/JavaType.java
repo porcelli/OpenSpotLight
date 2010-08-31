@@ -48,8 +48,7 @@
  */
 package org.openspotlight.bundle.language.java.metamodel.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
 // TODO: Auto-generated Javadoc
@@ -59,9 +58,7 @@ import org.openspotlight.graph.annotation.SLProperty;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Java Type" )
-public interface JavaType extends SLNode {
-
-    /**
+public interface JavaType extends NoNode    /**
      * Gets the final.
      * 
      * @return the final

@@ -77,7 +77,7 @@ import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
@@ -255,41 +255,41 @@ public class JavaBodyElementsPhaseTest {
         final ExecutionContext context = includedFilesContextFactory.createExecutionContext(username, password, descriptor,
                 group.getRootRepository());
         final SLContext ctx = context.getGraphSession().getContext(SLConsts.DEFAULT_GROUP_CONTEXT);
-        final SLNode groupNode = ctx.getRootNode().getNode(group.getUniqueName());
+        final Node groupNode = ctx.getRootNode().getNode(group.getUniqueName());
 
-        final SLNode defaultPackageNode = groupNode.getNode(JavaConstants.DEFAULT_PACKAGE);
-        final SLNode classNode = defaultPackageNode.getNode("ExampleClass");
+        final Node defaultPackageNode = groupNode.getNode(JavaConstants.DEFAULT_PACKAGE);
+        final Node classNode = defaultPackageNode.getNode("ExampleClass");
         Assert.assertThat(classNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(classNode, Is.is(JavaTypeClass.class));
-        final SLNode enumNode = defaultPackageNode.getNode("ExampleEnum");
+        final Node enumNode = defaultPackageNode.getNode("ExampleEnum");
         Assert.assertThat(enumNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(enumNode, Is.is(JavaTypeEnum.class));
 
-        final SLNode examplePackageNode = groupNode.getNode("example.pack");
-        final SLNode anotherClassNode = examplePackageNode.getNode("AnotherExampleClass");
+        final Node examplePackageNode = groupNode.getNode("example.pack");
+        final Node anotherClassNode = examplePackageNode.getNode("AnotherExampleClass");
         Assert.assertThat(anotherClassNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(anotherClassNode, Is.is(JavaTypeClass.class));
-        final SLNode anotherInnerClassNode = anotherClassNode.getNode("InnerClass");
+        final Node anotherInnerClassNode = anotherClassNode.getNode("InnerClass");
         Assert.assertThat(anotherInnerClassNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(anotherInnerClassNode, Is.is(JavaTypeClass.class));
-        final SLNode anotherEnumNode = examplePackageNode.getNode("AnotherExampleEnum");
+        final Node anotherEnumNode = examplePackageNode.getNode("AnotherExampleEnum");
         Assert.assertThat(anotherEnumNode, Is.is(IsNull.notNullValue()));
         Assert.assertThat(anotherEnumNode, Is.is(JavaTypeEnum.class));
-        final SLNode exampleSubPackageNode = groupNode.getNode("example.pack.subpack");
-        final SLNode classOnConcrete = exampleSubPackageNode.getNode("ClassWithLotsOfStuff");
+        final Node exampleSubPackageNode = groupNode.getNode("example.pack.subpack");
+        final Node classOnConcrete = exampleSubPackageNode.getNode("ClassWithLotsOfStuff");
         Assert.assertThat(classOnConcrete, Is.is(IsNull.notNullValue()));
         Assert.assertThat(classOnConcrete, Is.is(JavaTypeClass.class));
 
         final AbstractTypeBind link = context.getGraphSession().getLink(AbstractTypeBind.class, classOnConcrete, null).iterator().next();
-        final SLNode classOnAbstract = link.getTarget();
+        final Node classOnAbstract = link.getTarget();
         System.err.println(" abstract " + classOnAbstract.getID());
         System.err.println(" concrete " + classOnConcrete.getID());
         System.err.println(" abstract " + classOnAbstract.getContext().getID());
         System.err.println(" concrete " + classOnConcrete.getContext().getID());
-        final SLNode doSomethingMethodNode = classOnConcrete.getNode("doSomething()");
+        final Node doSomethingMethodNode = classOnConcrete.getNode("doSomething()");
 
-        final Set<SLNode> nodes = classOnAbstract.getNodes();
-        for (final SLNode n : nodes) {
+        final Set<Node> nodes = classOnAbstract.getNodes();
+        for (final Node n : nodes) {
             System.err.println(n.getName());
         }
 

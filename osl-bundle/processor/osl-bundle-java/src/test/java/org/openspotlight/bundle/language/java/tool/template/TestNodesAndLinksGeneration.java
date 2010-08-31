@@ -67,7 +67,7 @@ public class TestNodesAndLinksGeneration {
         task.setProject(new Project());
         task.setTemplatePath("src/test/resources/template/sourcecode/");
         task.setTemplatePath("src/test/resources/template/sourcecode/");
-        task.addTemplateFiles("OslNode.ftl", "OslLink.ftl");
+        task.addTemplateFiles("ONodetl", "OslLink.ftl");
         final FileSet xmls = new FileSet();
         xmls.setDir(new File("src/test/resources/data/sourcecode/"));
         xmls.setIncludes("*.xml");

@@ -48,8 +48,7 @@
  */
 package org.openspotlight.bundle.language.java.metamodel.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node Java Data Meta Model. {@link JavaType} should be used as parent. {@link JavaBlock} should be used as
@@ -58,6 +57,4 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Java Data" )
-public interface JavaData extends SLNode {
-
-}
+public interface JavaData extends NoNode}

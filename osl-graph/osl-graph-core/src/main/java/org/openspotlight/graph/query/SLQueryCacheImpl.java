@@ -55,8 +55,7 @@ import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.Sha1;
 import org.openspotlight.graph.SLCommonSupport;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.exception.SLNodeNotFoundException;
+import org.openspotlight.graph.Nodeport org.openspotlight.graph.exception.NoNoNodeException;
 import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
@@ -95,7 +94,7 @@ public class SLQueryCacheImpl implements SLQueryCache {
      */
     public void add2Cache( final String queryId,
                            final Collection<PNodeWrapper> nodes )
-        throws SLPersistentTreeSessionException, SLNodeNotFoundException {
+        throws SLPersistentTreeSessionException, NodeNodeNodeption {
         final SLPersistentNode pcacheRootNode = SLCommonSupport.getQueryCacheNode(treeSession);
         final SLPersistentNode queryCache = pcacheRootNode.addNode(queryId);
         int i = 0;
@@ -148,17 +147,16 @@ public class SLQueryCacheImpl implements SLQueryCache {
     /**
      * {@inheritDoc}
      */
-    public SLQueryResultImpl getCache( final String queryId ) throws SLPersistentTreeSessionException, SLNodeNotFoundException {
+    public SLQueryResultImpl getCache( final String queryId ) throws SLPersistentTreeSessionException, NodeNoNodeExNoden {
         final SLPersistentNode pcacheRootNode = SLCommonSupport.getQueryCacheNode(treeSession);
         SLPersistentNode queryCache;
         try {
             queryCache = pcacheRootNode.getNode(queryId);
             if (queryCache != null) {
-                final SLNode[] nodes = new SLNode[queryCache.getNodes().size()];
+                final Node[] nNode newNodequeryNodegetNodNodeize()];
                 for (final SLPersistentNode activeId : queryCache.getNodes()) {
-                    final SLNode node = session.getNodeByID(activeId.getName());
-                    final SLNode nodeProxy = ProxyUtil.createNodeProxy(SLNode.class, node);
-                    nodes[activeId.getProperty(Integer.class, "order").getValue()] = nodeProxy;
+                    final Node node = Noden.getNodNodeactiveId.getName());
+                    final Node nodeProxyNodexyUtil.creNodeeProxy(Node.class, nodeNode            Nodeodes[activeId.getProperty(Integer.class, "order").getValue()] = nodeProxy;
                 }
                 return new SLQueryResultImpl(treeSession, nodes, queryId);
             }
