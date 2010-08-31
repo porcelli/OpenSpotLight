@@ -51,10 +51,10 @@ package org.openspotlight.graph.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo.SLSelectTypeInfo;
+import org.openspotlight.graph.query.info.SelectByLinkCountInfo;
+import org.openspotlight.graph.query.info.SelectInfo;
+import org.openspotlight.graph.query.info.WhereByLinkCountInfo;
+import org.openspotlight.graph.query.info.SelectByLinkCountInfo.SLSelectTypeInfo;
 
 /**
  * The Class SLSelectByLinkCountImpl.
@@ -64,7 +64,7 @@ import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo.SLSelectTypeIn
 public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInfoGetter {
 
     /** The select info. */
-    private SLSelectByLinkCountInfo selectInfo;
+    private SelectByLinkCountInfo selectInfo;
 
     /** The types. */
     private List<Type>              types;
@@ -79,7 +79,7 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
      */
     public SLSelectByLinkCountImpl(
                                     SLSelectFacade selectFacade ) {
-        this.selectInfo = new SLSelectByLinkCountInfo();
+        this.selectInfo = new SelectByLinkCountInfo();
         this.types = new ArrayList<Type>();
         this.selectEnd = new EndImpl(selectFacade, selectInfo);
     }
@@ -105,7 +105,7 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
     /**
      * {@inheritDoc}
      */
-    public SLSelectInfo getSelectInfo() {
+    public SelectInfo getSelectInfo() {
         return selectInfo;
     }
 
@@ -185,7 +185,7 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
         private SLSelectFacade          selectFacade;
 
         /** The select info. */
-        private SLSelectByLinkCountInfo selectInfo;
+        private SelectByLinkCountInfo selectInfo;
 
         /** The where. */
         private SLWhereByLinkCount      where;
@@ -200,7 +200,7 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
          * @param selectInfo the select info
          */
         EndImpl(
-                 SLSelectFacade selectFacade, SLSelectByLinkCountInfo selectInfo ) {
+                 SLSelectFacade selectFacade, SelectByLinkCountInfo selectInfo ) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
             // this.orderBy = new SLOrderByStatementImpl();
@@ -211,9 +211,9 @@ public class SLSelectByLinkCountImpl implements SLSelectByLinkCount, SLSelectInf
          */
         public SLWhereByLinkCount where() {
             if (this.where == null) {
-                SLWhereByLinkCountInfo whereStatementInfo = new SLWhereByLinkCountInfo(selectInfo);
+                WhereByLinkCountInfo whereStatementInfo = new WhereByLinkCountInfo(selectInfo);
                 selectInfo.setWhereStatementInfo(whereStatementInfo);
-                this.where = new SLWhereByLinkCountImpl(selectFacade, orderBy, whereStatementInfo);
+                this.where = new WhereByLinkCountImpl(selectFacade, orderBy, whereStatementInfo);
             }
             return where;
         }

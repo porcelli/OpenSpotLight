@@ -48,90 +48,19 @@
  */
 package org.openspotlight.graph.query;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLQuery.SortMode;
+import org.openspotlight.graph.query.info.SelectStatementInfo;
 
 /**
- * The Interface SLQueryTextInternal. This class is an internal class.
+ * The Interface SLSelectStatementInfoGetter.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface SLQueryTextInternal extends Serializable {
+public interface SelectStatementInfoGetter {
 
     /**
-     * Execute.
+     * Gets the select statement info.
      * 
-     * @param session the session
-     * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes i ds
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws QueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @return the select statement info
      */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
-
-    /**
-     * Gets the unique id.
-     * 
-     * @return the id
-     */
-    public String getId();
-
-    /**
-     * Gets the output model name.
-     * 
-     * @return the output model name
-     */
-    public String getOutputModelName();
-
-    /**
-     * Gets the target.
-     * 
-     * @return the target
-     */
-    public SLQueryTextInternal getTarget();
-
-    /**
-     * Gets the variables.
-     * 
-     * @return the variables
-     */
-    public Collection<SLQLVariable> getVariables();
-
-    /**
-     * Checks for output model.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasOutputModel();
-
-    /**
-     * Checks for target.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasTarget();
-
-    /**
-     * Checks for variables.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasVariables();
+    public SelectStatementInfo getSelectStatementInfo();
 }

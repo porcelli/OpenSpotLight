@@ -50,11 +50,11 @@ public interface SLQuery {
      * 
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute()
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -62,11 +62,11 @@ public interface SLQuery {
      * @param inputNodes the input nodes
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(Collection<Node> inputNodes)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -76,13 +76,13 @@ public interface SLQuery {
      * @param offset the offset
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(Collection<Node> inputNodes,
                                   Integer limit,
                                   Integer offset)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -92,13 +92,13 @@ public interface SLQuery {
      * @param showSLQL the show slql
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(Collection<Node> inputNodes,
                                   SortMode sortMode,
                                   boolean showSLQL)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -110,15 +110,15 @@ public interface SLQuery {
      * @param offset the offset
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(Collection<Node> inputNodes,
                                   SortMode sortMode,
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -127,12 +127,12 @@ public interface SLQuery {
      * @param offset the offset
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(Integer limit,
                                   Integer offset)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -141,12 +141,12 @@ public interface SLQuery {
      * @param showSLQL the show slql
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(SortMode sortMode,
                                   boolean showSLQL)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -157,14 +157,14 @@ public interface SLQuery {
      * @param offset the offset
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(SortMode sortMode,
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -172,11 +172,11 @@ public interface SLQuery {
      * @param inputNodesIDs the input nodes i ds
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(String[] inputNodesIDs)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -186,13 +186,13 @@ public interface SLQuery {
      * @param offset the offset
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(String[] inputNodesIDs,
                                   Integer limit,
                                   Integer offset)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -202,13 +202,13 @@ public interface SLQuery {
      * @param showSLQL the show slql
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(String[] inputNodesIDs,
                                   SortMode sortMode,
                                   boolean showSLQL)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
     /**
      * Execute.
@@ -220,14 +220,14 @@ public interface SLQuery {
      * @param offset the offset
      * @return the sL query result
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
-     * @throws SLQueryException the SL query exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
      */
     public SLQueryResult execute(String[] inputNodesIDs,
                                   SortMode sortMode,
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset)
-        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException;
+        throws InvalidQuerySyntaxException, InvalidQueryElementException, QueryException;
 
 }

@@ -48,90 +48,65 @@
  */
 package org.openspotlight.graph.query;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLQuery.SortMode;
+import org.openspotlight.common.util.StringBuilderUtil;
 
 /**
- * The Interface SLQueryTextInternal. This class is an internal class.
+ * The Enum SLRelationalOperatorType.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface SLQueryTextInternal extends Serializable {
+public enum ConditionalOperatorType implements OperatorType {
+
+    /** The AND. */
+    AND("AND"),
+
+    /** The OR. */
+    OR("OR");
+
+    /** The symbol. */
+    private String symbol;
 
     /**
-     * Execute.
+     * Instantiates a new sL conditional operator type.
      * 
-     * @param session the session
-     * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes i ds
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws QueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @param symbol the symbol
      */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+    ConditionalOperatorType(
+                               String symbol ) {
+        this.symbol = symbol;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.openspotlight.graph.query.SLOperatorType#symbol()
+     */
+    public String symbol() {
+        return symbol;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+        return symbol;
+    }
 
     /**
-     * Gets the unique id.
+     * X path expression.
      * 
-     * @return the id
+     * @param leftOperand the left operand
+     * @param rightOperand the right operand
+     * @return the string
      */
-    public String getId();
+    public String xPathExpression( Object leftOperand,
+                                   Object rightOperand ) {
+        StringBuilder buffer = new StringBuilder();
+        StringBuilderUtil.append(buffer, leftOperand, ' ', symbol.toLowerCase(), ' ', rightOperand);
+        return buffer.toString();
+    }
 
-    /**
-     * Gets the output model name.
-     * 
-     * @return the output model name
-     */
-    public String getOutputModelName();
-
-    /**
-     * Gets the target.
-     * 
-     * @return the target
-     */
-    public SLQueryTextInternal getTarget();
-
-    /**
-     * Gets the variables.
-     * 
-     * @return the variables
-     */
-    public Collection<SLQLVariable> getVariables();
-
-    /**
-     * Checks for output model.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasOutputModel();
-
-    /**
-     * Checks for target.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasTarget();
-
-    /**
-     * Checks for variables.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasVariables();
 }

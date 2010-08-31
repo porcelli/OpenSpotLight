@@ -20,30 +20,47 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.List;
-
-import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.GraphRuntimeException;
 
 /**
- * The Interface SLQueryResult.
+ * The Class SLInvalidQueryElementException.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface SLQueryResult {
+public class InvalidQueryElementException extends GraphRuntimeException {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Gets the nodes.
+     * Instantiates a new sL invalid query element exception.
      * 
-     * @return the nodes
-     * @throws QueryException the SL query exception
+     * @param message the message
+     * @param cause the cause
      */
-    public List<Node> getNodes()
-        throws QueryException;
+    public InvalidQueryElementException(
+                                           final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
     /**
-     * Gets the query id. This id is related to cache.
+     * Instantiates a new sL invalid query element exception.
      * 
-     * @return the query id
+     * @param message the message
      */
-    public String getQueryId();
+    public InvalidQueryElementException(
+                                           final String message) {
+        super(message);
+    }
+
+    /**
+     * Instantiates a new sL invalid query element exception.
+     * 
+     * @param cause the cause
+     */
+    public InvalidQueryElementException(
+                                           final Throwable cause) {
+        super(cause);
+    }
+
 }

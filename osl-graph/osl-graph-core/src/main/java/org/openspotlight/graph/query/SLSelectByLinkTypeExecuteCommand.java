@@ -49,8 +49,8 @@
 package org.openspotlight.graph.query;
 
 import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.ConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.ConditionalOperatorType.OR;
 import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 import java.util.ArrayList;
@@ -66,15 +66,15 @@ import org.openspotlight.graph.persistence.SLPersistentNode;
 import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
-import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectByLinkInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLConditionInfo;
+import org.openspotlight.graph.query.XPathStatementBuilder.Statement;
+import org.openspotlight.graph.query.XPathStatementBuilder.Statement.Condition;
+import org.openspotlight.graph.query.info.SelectByLinkTypeInfo;
+import org.openspotlight.graph.query.info.WhereByLinkTypeInfo;
+import org.openspotlight.graph.query.info.SelectByLinkTypeInfo.SLSelectByLinkInfo;
+import org.openspotlight.graph.query.info.SelectByLinkTypeInfo.SLSelectTypeInfo;
+import org.openspotlight.graph.query.info.WhereByLinkTypeInfo.SLWhereLinkTypeInfo;
+import org.openspotlight.graph.query.info.WhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
+import org.openspotlight.graph.query.info.WhereByLinkTypeInfo.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLConditionInfo;
 
 /**
  * The Class SLSelectByLinkTypeExecuteCommand.
@@ -84,7 +84,7 @@ import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo.SLWhereLinkTypeI
 public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
 
     /** The select info. */
-    private SLSelectByLinkTypeInfo selectInfo;
+    private SelectByLinkTypeInfo selectInfo;
 
     /** The command do. */
     private SLSelectCommandDO      commandDO;
@@ -96,7 +96,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
      * @param commandDO the command do
      */
     SLSelectByLinkTypeExecuteCommand(
-                                      SLSelectByLinkTypeInfo selectInfo, SLSelectCommandDO commandDO ) {
+                                      SelectByLinkTypeInfo selectInfo, SLSelectCommandDO commandDO ) {
         this.selectInfo = selectInfo;
         this.commandDO = commandDO;
     }
@@ -126,7 +126,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
                     typeNames.addAll(hierarchyTypeNames);
                 }
 
-                SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(
+                XPathStatementBuilder statementBuilder = new XPathStatementBuilder(
                                                                                        commandDO.getTreeSession().getXPathRootPath()
                                                                                        + "/links/*//*");
                 Statement rootStatement = statementBuilder.getRootStatement();
@@ -172,7 +172,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
                         }
                         typeStatement.closeBracket();
                     } else {
-                        SLConditionalOperatorType operator = side.equals(SLSideType.ANY_SIDE) ? OR : AND;
+                        ConditionalOperatorType operator = side.equals(SLSideType.ANY_SIDE) ? OR : AND;
                         for (int j = 0; j < typeNames.size(); j++) {
                             Condition condition = j == 0 ? typeStatement.condition() : typeStatement.operator(OR).condition();
                             String typeName = typeNames.get(j);
@@ -248,7 +248,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
                 }
             }
         } catch (SLException e) {
-            throw new SLQueryException("Error on attempt to execute " + this.getClass().getName() + " command.");
+            throw new QueryException("Error on attempt to execute " + this.getClass().getName() + " command.");
         }
     }
 
@@ -279,7 +279,7 @@ public class SLSelectByLinkTypeExecuteCommand extends SLSelectAbstractCommand {
      */
     private SLLinkTypeStatementInfo getLinkTypeStatementInfo( String linkTypeName ) {
         SLLinkTypeStatementInfo linkTypeStatementInfo = null;
-        SLWhereByLinkTypeInfo whereInfo = selectInfo.getWhereByLinkTypeInfo();
+        WhereByLinkTypeInfo whereInfo = selectInfo.getWhereByLinkTypeInfo();
         if (whereInfo != null) {
             for (SLWhereLinkTypeInfo linkTypeInfo : whereInfo.getWhereLinkTypeInfoList()) {
                 if (linkTypeInfo.getName().equals(linkTypeName)) {

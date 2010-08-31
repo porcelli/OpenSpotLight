@@ -46,92 +46,84 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.query.info;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLQuery.SortMode;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The Interface SLQueryTextInternal. This class is an internal class.
+ * The Class SLOrderByStatementInfo.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface SLQueryTextInternal extends Serializable {
+public class OrderByStatementInfo implements Serializable {
+
+    /** The Constant serialVersionUID. */
+    private static final long       serialVersionUID    = 1L;
+
+    /** The select statement info. */
+    private SelectStatementInfo   selectStatementInfo;
+
+    /** The order by type info list. */
+    private List<OrderByTypeInfo> orderByTypeInfoList = new ArrayList<OrderByTypeInfo>();
 
     /**
-     * Execute.
+     * Instantiates a new sL order by statement info.
      * 
-     * @param session the session
-     * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes i ds
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws QueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @param selectStatementInfo the select statement info
      */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+    public OrderByStatementInfo(
+                                   SelectStatementInfo selectStatementInfo ) {
+        this.selectStatementInfo = selectStatementInfo;
+    }
 
     /**
-     * Gets the unique id.
+     * Gets the select statement info.
      * 
-     * @return the id
+     * @return the select statement info
      */
-    public String getId();
+    public SelectStatementInfo getSelectStatementInfo() {
+        return selectStatementInfo;
+    }
 
     /**
-     * Gets the output model name.
+     * Sets the select statement info.
      * 
-     * @return the output model name
+     * @param selectStatementInfo the new select statement info
      */
-    public String getOutputModelName();
+    public void setSelectStatementInfo( SelectStatementInfo selectStatementInfo ) {
+        this.selectStatementInfo = selectStatementInfo;
+    }
 
     /**
-     * Gets the target.
+     * Gets the order by type info list.
      * 
-     * @return the target
+     * @return the order by type info list
      */
-    public SLQueryTextInternal getTarget();
+    public List<OrderByTypeInfo> getOrderByTypeInfoList() {
+        return orderByTypeInfoList;
+    }
 
     /**
-     * Gets the variables.
+     * Sets the order by type info list.
      * 
-     * @return the variables
+     * @param orderByTypeInfoList the new order by type info list
      */
-    public Collection<SLQLVariable> getVariables();
+    public void setOrderByTypeInfoList( List<OrderByTypeInfo> orderByTypeInfoList ) {
+        this.orderByTypeInfoList = orderByTypeInfoList;
+    }
 
     /**
-     * Checks for output model.
-     * 
-     * @return true, if successful
+     * {@inheritDoc}
      */
-    public boolean hasOutputModel();
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("\nORDER BY\n");
+        for (OrderByTypeInfo orderByType : orderByTypeInfoList) {
+            buffer.append(orderByType.toString());
+        }
 
-    /**
-     * Checks for target.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasTarget();
-
-    /**
-     * Checks for variables.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasVariables();
+        return buffer.toString();
+    }
 }

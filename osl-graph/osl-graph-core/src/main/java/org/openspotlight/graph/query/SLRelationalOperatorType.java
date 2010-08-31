@@ -57,7 +57,7 @@ import org.openspotlight.common.util.Strings;
  * 
  * @author Vitor Hugo Chagas
  */
-public enum SLRelationalOperatorType implements SLOperatorType {
+public enum SLRelationalOperatorType implements OperatorType {
 
     /** The EQUAL. */
     EQUAL("="),

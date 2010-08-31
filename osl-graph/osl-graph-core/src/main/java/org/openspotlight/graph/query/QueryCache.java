@@ -48,90 +48,65 @@
  */
 package org.openspotlight.graph.query;
 
-import java.io.Serializable;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.exception.NodeoundException;
+import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 
 /**
- * The Interface SLQueryTextInternal. This class is an internal class.
+ * The Interface SLQueryCache.
  * 
  * @author porcelli
  */
-public interface SLQueryTextInternal extends Serializable {
+public interface QueryCache {
 
     /**
-     * Execute.
+     * Adds content to the cache.
      * 
-     * @param session the session
-     * @param variableValues the variable values
+     * @param queryId the query id
+     * @param nodes the nodes
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     * @throws NoNoNodeException the SL node not found exception
+     */
+    public abstract void add2Cache( final String queryId,
+                                    final Collection<PNodeWrapper> nodes )
+        throws SLPersistentTreeSessionException, NodeNodeNodeption;
+
+    /**
+     * Builds a unique query id.
+     * 
+     * @param selects the selects
+     * @param collatorStrength the collator strength
      * @param inputNodesIDs the input nodes i ds
      * @param sortMode the sort mode
-     * @param showSLQL the show slql
      * @param limit the limit
      * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws QueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @return the string
+     * @throws SLException the SL exception
      */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+    public abstract String buildQueryId( final List<SLSelect> selects,
+                                         final Integer collatorStrength,
+                                         final String[] inputNodesIDs,
+                                         final SortMode sortMode,
+                                         final Integer limit,
+                                         final Integer offset ) throws SLException;
 
     /**
-     * Gets the unique id.
+     * Gets the cache content. Returns null if not found.
      * 
-     * @return the id
+     * @param queryId the query id
+     * @return the cache
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
+     * @throws NodeNoNodeExNoden the SL node not found exception
      */
-    public String getId();
-
-    /**
-     * Gets the output model name.
+    public abstract SLQueryResult getCache( final String queryId )
+        throws SLPersistentTreeSessionException, NodeNotFNodeceptNode    /**
+     * Flush cache.
      * 
-     * @return the output model name
+     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    public String getOutputModelName();
-
-    /**
-     * Gets the target.
-     * 
-     * @return the target
-     */
-    public SLQueryTextInternal getTarget();
-
-    /**
-     * Gets the variables.
-     * 
-     * @return the variables
-     */
-    public Collection<SLQLVariable> getVariables();
-
-    /**
-     * Checks for output model.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasOutputModel();
-
-    /**
-     * Checks for target.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasTarget();
-
-    /**
-     * Checks for variables.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasVariables();
+    public void flush() throws SLPersistentTreeSessionException;
 }

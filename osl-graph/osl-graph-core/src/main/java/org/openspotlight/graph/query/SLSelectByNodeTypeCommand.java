@@ -48,8 +48,8 @@
  */
 package org.openspotlight.graph.query;
 
-import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.ConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.ConditionalOperatorType.OR;
 import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 import java.text.Collator;
@@ -67,14 +67,14 @@ import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
-import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
-import org.openspotlight.graph.query.info.SLSelectTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
+import org.openspotlight.graph.query.XPathStatementBuilder.Statement;
+import org.openspotlight.graph.query.XPathStatementBuilder.Statement.Condition;
+import org.openspotlight.graph.query.info.SelectStatementInfo;
+import org.openspotlight.graph.query.info.SelectTypeInfo;
+import org.openspotlight.graph.query.info.WhereStatementInfo;
+import org.openspotlight.graph.query.info.WhereTypeInfo;
+import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo;
+import org.openspotlight.graph.query.info.WhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
 
 /**
  * The Class SLSelectByNodeTypeCommand.
@@ -84,7 +84,7 @@ import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo.SL
 public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
 
     /** The select info. */
-    private SLSelectStatementInfo           selectInfo;
+    private SelectStatementInfo           selectInfo;
 
     /** The command do. */
     private SLSelectCommandDO               commandDO;
@@ -99,7 +99,7 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
      * @param commandDO the command do
      */
     SLSelectByNodeTypeCommand(
-                               SLSelectStatementInfo selectInfo, SLSelectCommandDO commandDO ) {
+                               SelectStatementInfo selectInfo, SLSelectCommandDO commandDO ) {
         this.selectInfo = selectInfo;
         this.commandDO = commandDO;
     }
@@ -116,26 +116,26 @@ public class SLSelectByNodeTypeCommand extends SLSelectAbstractCommand {
                 nodeWrapperListMap = SLQuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
             }
 
-            List<SLSelectTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
+            List<SelectTypeInfo> typeInfoList = selectInfo.getTypeInfoList();
             String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
-            SLWhereStatementInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
+            WhereStatementInfo whereStatementInfo = selectInfo.getWhereStatementInfo();
 
             Set<String> typesNotFiltered = new HashSet<String>();
-            for (SLSelectTypeInfo typeInfo : typeInfoList) {
+            for (SelectTypeInfo typeInfo : typeInfoList) {
                 typesNotFiltered.add(typeInfo.getName());
             }
 
-            SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
+            XPathStatementBuilder statementBuilder = new XPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
                                                                                    + "/contexts//*");
             Statement rootStatement = statementBuilder.getRootStatement();
 
             if (whereStatementInfo != null) {
-                List<org.openspotlight.graph.query.info.SLWhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
+                List<org.openspotlight.graph.query.info.WhereTypeInfo> whereTypeInfoList = whereStatementInfo.getWhereTypeInfoList();
                 if (whereTypeInfoList != null && !whereTypeInfoList.isEmpty()) {
-                    List<SLWhereTypeInfo> list = whereStatementInfo.getWhereTypeInfoList();
+                    List<WhereTypeInfo> list = whereStatementInfo.getWhereTypeInfoList();
                     int addedConditions = 0;
                     for (int i = 0; i < list.size(); i++) {
-                        SLWhereTypeInfo typeInfo = list.get(i);
+                        WhereTypeInfo typeInfo = list.get(i);
                         typesNotFiltered.remove(typeInfo.getName());
                         if (nodeWrapperListMap == null
                             || (nodeWrapperListMap != null && nodeWrapperListMap.containsKey(typeInfo.getName()))) {

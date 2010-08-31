@@ -56,23 +56,23 @@ import static org.openspotlight.graph.query.SLSideType.B_SIDE;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotlight.graph.query.info.SLAllTypesInfo;
-import org.openspotlight.graph.query.info.SLOrderByStatementInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
-import org.openspotlight.graph.query.info.SLSelectTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereStatementInfo;
+import org.openspotlight.graph.query.info.AllTypesInfo;
+import org.openspotlight.graph.query.info.OrderByStatementInfo;
+import org.openspotlight.graph.query.info.SelectByLinkInfo;
+import org.openspotlight.graph.query.info.SelectInfo;
+import org.openspotlight.graph.query.info.SelectStatementInfo;
+import org.openspotlight.graph.query.info.SelectTypeInfo;
+import org.openspotlight.graph.query.info.WhereStatementInfo;
 
 /**
  * The Class SLSelectStatementImpl.
  * 
  * @author Vitor Hugo Chagas
  */
-public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGetter, SLSelectStatementInfoGetter {
+public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGetter, SelectStatementInfoGetter {
 
     /** The select info. */
-    private SLSelectStatementInfo selectInfo;
+    private SelectStatementInfo selectInfo;
 
     /** The types. */
     private List<Type>            types;
@@ -90,7 +90,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
      */
     public SLSelectStatementImpl(
                                   SLSelectFacade selectFacade ) {
-        this.selectInfo = new SLSelectStatementInfo();
+        this.selectInfo = new SelectStatementInfo();
         this.types = new ArrayList<Type>();
         this.byLinks = new ArrayList<ByLink>();
         this.selectEnd = new EndImpl(selectFacade, selectInfo);
@@ -100,7 +100,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
      * {@inheritDoc}
      */
     public AllTypes allTypes() {
-        SLAllTypesInfo allTypesInfo = selectInfo.addAllTypes();
+        AllTypesInfo allTypesInfo = selectInfo.addAllTypes();
         return new AllTypesImpl(this, allTypesInfo, byLinks);
     }
 
@@ -108,7 +108,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
      * {@inheritDoc}
      */
     public Type type( String typeName ) {
-        SLSelectTypeInfo typeInfo = selectInfo.addType(typeName);
+        SelectTypeInfo typeInfo = selectInfo.addType(typeName);
         Type type = new TypeImpl(this, typeInfo, byLinks);
         types.add(type);
         return type;
@@ -118,7 +118,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
      * {@inheritDoc}
      */
     public ByLink byLink( String typeName ) {
-        SLSelectByLinkInfo byLinkInfo = selectInfo.addByLink(typeName);
+        SelectByLinkInfo byLinkInfo = selectInfo.addByLink(typeName);
         ByLink byLink = new ByLinkImpl(this, byLinkInfo);
         byLinks.add(byLink);
         return byLink;
@@ -135,14 +135,14 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
     /**
      * {@inheritDoc}
      */
-    public SLSelectInfo getSelectInfo() {
+    public SelectInfo getSelectInfo() {
         return selectInfo;
     }
 
     /**
      * {@inheritDoc}
      */
-    public SLSelectStatementInfo getSelectStatementInfo() {
+    public SelectStatementInfo getSelectStatementInfo() {
         return selectInfo;
     }
 
@@ -156,7 +156,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
      */
     private void verifyIfLastItemTerminatedWithComma() {
         int commaCount = 0;
-        for (SLSelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
+        for (SelectTypeInfo typeInfo : selectInfo.getTypeInfoList()) {
             commaCount += typeInfo.isComma() ? 1 : 0;
         }
     }
@@ -172,7 +172,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
         private SLSelectStatement selectStatement;
 
         /** The all types info. */
-        private SLAllTypesInfo    allTypesInfo;
+        private AllTypesInfo    allTypesInfo;
 
         /** The by links. */
         private List<ByLink>      byLinks;
@@ -185,7 +185,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
          * @param byLinks the by links
          */
         public AllTypesImpl(
-                             SLSelectStatement selectStatement, SLAllTypesInfo allTypesInfo, List<ByLink> byLinks ) {
+                             SLSelectStatement selectStatement, AllTypesInfo allTypesInfo, List<ByLink> byLinks ) {
             this.selectStatement = selectStatement;
             this.allTypesInfo = allTypesInfo;
             this.byLinks = byLinks;
@@ -203,7 +203,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
          * {@inheritDoc}
          */
         public ByLink byLink( String typeName ) {
-            SLSelectByLinkInfo byLinkInfo = allTypesInfo.getSelectStatementInfo().addByLink(typeName);
+            SelectByLinkInfo byLinkInfo = allTypesInfo.getSelectStatementInfo().addByLink(typeName);
             ByLink byLink = new ByLinkImpl(selectStatement, byLinkInfo);
             byLinks.add(byLink);
             return byLink;
@@ -228,7 +228,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
         private SLSelectStatement selectStatement;
 
         /** The type info. */
-        private SLSelectTypeInfo  typeInfo;
+        private SelectTypeInfo  typeInfo;
 
         /** The by links. */
         private List<ByLink>      byLinks;
@@ -240,7 +240,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
          * @param typeInfo the type info
          */
         TypeImpl(
-                  SLSelectStatement selectStatement, SLSelectTypeInfo typeInfo, List<ByLink> byLinks ) {
+                  SLSelectStatement selectStatement, SelectTypeInfo typeInfo, List<ByLink> byLinks ) {
             this.selectStatement = selectStatement;
             this.typeInfo = typeInfo;
             this.byLinks = byLinks;
@@ -273,7 +273,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
          * {@inheritDoc}
          */
         public ByLink byLink( String typeName ) {
-            SLSelectByLinkInfo byLinkInfo = typeInfo.getSelectStatementInfo().addByLink(typeName);
+            SelectByLinkInfo byLinkInfo = typeInfo.getSelectStatementInfo().addByLink(typeName);
             ByLink byLink = new ByLinkImpl(selectStatement, byLinkInfo);
             byLinks.add(byLink);
             return byLink;
@@ -291,7 +291,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
         private SLSelectFacade        selectFacade;
 
         /** The select info. */
-        private SLSelectStatementInfo selectInfo;
+        private SelectStatementInfo selectInfo;
 
         /** The where. */
         private SLWhereStatement      where;
@@ -306,7 +306,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
          * @param selectInfo the select info
          */
         EndImpl(
-                 SLSelectFacade selectFacade, SLSelectStatementInfo selectInfo ) {
+                 SLSelectFacade selectFacade, SelectStatementInfo selectInfo ) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
 
@@ -318,9 +318,9 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
          */
         public SLWhereStatement where() {
             if (this.where == null) {
-                SLWhereStatementInfo whereStatementInfo = new SLWhereStatementInfo(selectInfo);
+                WhereStatementInfo whereStatementInfo = new WhereStatementInfo(selectInfo);
                 selectInfo.setWhereStatementInfo(whereStatementInfo);
-                this.where = new SLWhereStatementImpl(selectFacade, orderBy, whereStatementInfo);
+                this.where = new WhereStatementImpl(selectFacade, orderBy, whereStatementInfo);
             }
             return where;
         }
@@ -330,9 +330,9 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
          */
         public SLOrderByStatement orderBy() {
             if (this.orderBy == null) {
-                SLOrderByStatementInfo orderByStatementInfo = new SLOrderByStatementInfo(selectInfo);
+                OrderByStatementInfo orderByStatementInfo = new OrderByStatementInfo(selectInfo);
                 selectInfo.setOrderByStatementInfo(orderByStatementInfo);
-                this.orderBy = new SLOrderByStatementImpl(selectFacade, orderByStatementInfo);
+                this.orderBy = new OrderByStatementImpl(selectFacade, orderByStatementInfo);
             }
             return orderBy;
         }
@@ -419,7 +419,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
         private SLSelectStatement  select;
 
         /** The by link info. */
-        private SLSelectByLinkInfo byLinkInfo;
+        private SelectByLinkInfo byLinkInfo;
 
         /**
          * Instantiates a new by link impl.
@@ -428,7 +428,7 @@ public class SLSelectStatementImpl implements SLSelectStatement, SLSelectInfoGet
          * @param byLinkInfo the by link info
          */
         public ByLinkImpl(
-                           SLSelectStatement select, SLSelectByLinkInfo byLinkInfo ) {
+                           SLSelectStatement select, SelectByLinkInfo byLinkInfo ) {
             this.select = select;
             this.byLinkInfo = byLinkInfo;
         }

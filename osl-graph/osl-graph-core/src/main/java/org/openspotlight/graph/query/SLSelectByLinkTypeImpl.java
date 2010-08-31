@@ -56,10 +56,10 @@ import static org.openspotlight.graph.query.SLSideType.B_SIDE;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectByLinkInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectTypeInfo;
+import org.openspotlight.graph.query.info.SelectByLinkTypeInfo;
+import org.openspotlight.graph.query.info.WhereByLinkTypeInfo;
+import org.openspotlight.graph.query.info.SelectByLinkTypeInfo.SLSelectByLinkInfo;
+import org.openspotlight.graph.query.info.SelectByLinkTypeInfo.SLSelectTypeInfo;
 
 /**
  * The Class SLSelectByLinkTypeImpl.
@@ -69,7 +69,7 @@ import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo.SLSelectTypeInf
 public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoGetter {
 
     /** The select info. */
-    private SLSelectByLinkTypeInfo selectInfo;
+    private SelectByLinkTypeInfo selectInfo;
 
     /** The types. */
     private List<Type>             types;
@@ -87,7 +87,7 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
      */
     public SLSelectByLinkTypeImpl(
                                    SLSelectFacade selectFacade ) {
-        this.selectInfo = new SLSelectByLinkTypeInfo();
+        this.selectInfo = new SelectByLinkTypeInfo();
         this.types = new ArrayList<Type>();
         this.byLinks = new ArrayList<ByLink>();
         this.selectEnd = new EndImpl(selectFacade, selectInfo);
@@ -96,7 +96,7 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
     /**
      * {@inheritDoc}
      */
-    public SLSelectByLinkTypeInfo getSelectInfo() {
+    public SelectByLinkTypeInfo getSelectInfo() {
         return selectInfo;
     }
 
@@ -133,7 +133,7 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
      * 
      * @return the select by node type info
      */
-    public SLSelectByLinkTypeInfo getSelectByNodeTypeInfo() {
+    public SelectByLinkTypeInfo getSelectByNodeTypeInfo() {
         return selectInfo;
     }
 
@@ -216,7 +216,7 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
     public static class EndImpl implements End {
 
         /** The select info. */
-        private SLSelectByLinkTypeInfo selectInfo;
+        private SelectByLinkTypeInfo selectInfo;
 
         /** The where. */
         private SLWhereByLinkType      where;
@@ -234,7 +234,7 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
          * @param selectInfo the select info
          */
         EndImpl(
-                 SLSelectFacade selectFacade, SLSelectByLinkTypeInfo selectInfo ) {
+                 SLSelectFacade selectFacade, SelectByLinkTypeInfo selectInfo ) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
             // this.orderBy = new SLOrderByStatementImpl();
@@ -245,9 +245,9 @@ public class SLSelectByLinkTypeImpl implements SLSelectByLinkType, SLSelectInfoG
          */
         public SLWhereByLinkType where() {
             if (this.where == null) {
-                SLWhereByLinkTypeInfo whereByLinkType = new SLWhereByLinkTypeInfo(selectInfo);
+                WhereByLinkTypeInfo whereByLinkType = new WhereByLinkTypeInfo(selectInfo);
                 selectInfo.setWhereByLinkTypeInfo(whereByLinkType);
-                this.where = new SLWhereByLinkTypeImpl(orderBy, whereByLinkType);
+                this.where = new WhereByLinkTypeImpl(orderBy, whereByLinkType);
             }
             return where;
         }

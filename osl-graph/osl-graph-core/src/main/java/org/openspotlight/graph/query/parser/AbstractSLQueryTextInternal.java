@@ -59,10 +59,10 @@ import java.util.Map.Entry;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLInvalidQueryElementException;
+import org.openspotlight.graph.query.InvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQLVariable;
-import org.openspotlight.graph.query.SLQueryException;
+import org.openspotlight.graph.query.QueryException;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.query.SLQueryTextInternal;
 import org.openspotlight.graph.query.SLQuery.SortMode;
@@ -70,7 +70,7 @@ import org.openspotlight.graph.query.SLQuery.SortMode;
 /**
  * The Class AbstractSLQueryTextInternal. This class is the base for dynamic bytecode generation.
  * 
- * @see SLQueryTextInternalBuilder
+ * @see QueryTextInternalBuilder
  * @author porcelli
  */
 public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal {
@@ -136,7 +136,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
                                            boolean showSLQL,
                                            Integer limit,
                                            Integer offset )
-        throws SLInvalidQueryElementException, SLQueryException, SLInvalidQuerySyntaxException;
+        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
 
     /**
      * Returns the variables content. If variable not found, returns false.
@@ -261,11 +261,11 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
      * @param session the session
      * @param variableValues the variable values
      * @param inputNodesIDs the input nodes i ds
-     * @throws SLInvalidQueryElementException the SL invalid query element exception
+     * @throws InvalidQueryElementException the SL invalid query element exception
      */
     protected void validateAndInit( final SLGraphSession session,
                                     final Map<String, ? extends Serializable> variableValues,
-                                    final String[] inputNodesIDs ) throws SLInvalidQueryElementException {
+                                    final String[] inputNodesIDs ) throws InvalidQueryElementException {
         Assertions.checkNotNull("session", session);
 
         if (this.hasVariables()) {
@@ -285,11 +285,11 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
                 if (this.variables.containsKey(activeVariableValue.getKey())) {
                     final SLQLVariable activeVar = this.variables.get(activeVariableValue.getKey());
                     if (activeVar.hasDomainValues() && !activeVar.isValidDomainValue(activeVariableValue.getValue())) {
-                        Exceptions.logAndThrow(new SLInvalidQueryElementException("Variable value not Allowed"));
+                        Exceptions.logAndThrow(new InvalidQueryElementException("Variable value not Allowed"));
                     }
                     activeVar.setValue(activeVariableValue.getValue());
                 } else {
-                    Exceptions.logAndThrow(new SLInvalidQueryElementException("Variable Not Found"));
+                    Exceptions.logAndThrow(new InvalidQueryElementException("Variable Not Found"));
                 }
             }
         }

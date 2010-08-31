@@ -46,92 +46,61 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLQuery.SortMode;
+package org.openspotlight.graph.query.info;
 
 /**
- * The Interface SLQueryTextInternal. This class is an internal class.
+ * The Class SLAllTypesInfo.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface SLQueryTextInternal extends Serializable {
+public class AllTypesInfo {
+
+    /** The select info. */
+    private SelectStatementInfo selectInfo;
+
+    /** The on where. */
+    private boolean               onWhere;
 
     /**
-     * Execute.
-     * 
-     * @param session the session
-     * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes i ds
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws QueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * Instantiates a new sL all types info.
      */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+    public AllTypesInfo() {
+    }
 
     /**
-     * Gets the unique id.
+     * Instantiates a new sL all types info.
      * 
-     * @return the id
+     * @param selectInfo the select info
      */
-    public String getId();
+    public AllTypesInfo(
+                           SelectStatementInfo selectInfo ) {
+        this.selectInfo = selectInfo;
+    }
 
     /**
-     * Gets the output model name.
+     * Gets the select statement info.
      * 
-     * @return the output model name
+     * @return the select statement info
      */
-    public String getOutputModelName();
+    public SelectStatementInfo getSelectStatementInfo() {
+        return selectInfo;
+    }
 
     /**
-     * Gets the target.
+     * Checks if is on where.
      * 
-     * @return the target
+     * @return true, if is on where
      */
-    public SLQueryTextInternal getTarget();
+    public boolean isOnWhere() {
+        return onWhere;
+    }
 
     /**
-     * Gets the variables.
+     * Sets the on where.
      * 
-     * @return the variables
+     * @param onWhere the new on where
      */
-    public Collection<SLQLVariable> getVariables();
-
-    /**
-     * Checks for output model.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasOutputModel();
-
-    /**
-     * Checks for target.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasTarget();
-
-    /**
-     * Checks for variables.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasVariables();
+    public void setOnWhere( boolean onWhere ) {
+        this.onWhere = onWhere;
+    }
 }

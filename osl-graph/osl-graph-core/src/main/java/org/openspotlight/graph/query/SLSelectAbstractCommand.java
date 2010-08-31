@@ -48,11 +48,11 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
+import org.openspotlight.graph.query.info.SelectByLinkCountInfo;
+import org.openspotlight.graph.query.info.SelectByLinkTypeInfo;
+import org.openspotlight.graph.query.info.SelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SelectInfo;
+import org.openspotlight.graph.query.info.SelectStatementInfo;
 
 /**
  * The Class SLSelectAbstractCommand.
@@ -75,20 +75,20 @@ public abstract class SLSelectAbstractCommand {
      * @return the execute command
      */
     public static SLSelectAbstractCommand getCommand( SLSelect select,
-                                                      SLSelectInfo selectInfo,
+                                                      SelectInfo selectInfo,
                                                       SLSelectCommandDO commandDO ) {
         SLSelectAbstractCommand command = null;
         if (select instanceof SLSelectByNodeType) {
-            SLSelectByNodeTypeInfo selectByNodeTypeInfo = SLSelectByNodeTypeInfo.class.cast(selectInfo);
+            SelectByNodeTypeInfo selectByNodeTypeInfo = SelectByNodeTypeInfo.class.cast(selectInfo);
             command = new SLSelectByNodeTypeExecuteCommand(selectByNodeTypeInfo, commandDO);
         } else if (select instanceof SLSelectByLinkType) {
-            SLSelectByLinkTypeInfo selectByLinkTypeInfo = SLSelectByLinkTypeInfo.class.cast(selectInfo);
+            SelectByLinkTypeInfo selectByLinkTypeInfo = SelectByLinkTypeInfo.class.cast(selectInfo);
             command = new SLSelectByLinkTypeExecuteCommand(selectByLinkTypeInfo, commandDO);
         } else if (select instanceof SLSelectByLinkCount) {
-            SLSelectByLinkCountInfo selectByLinkCountInfo = SLSelectByLinkCountInfo.class.cast(selectInfo);
+            SelectByLinkCountInfo selectByLinkCountInfo = SelectByLinkCountInfo.class.cast(selectInfo);
             command = new SLSelectByLinkCountExecuteCommand(selectByLinkCountInfo, commandDO);
         } else if (select instanceof SLSelectStatement) {
-            SLSelectStatementInfo selectStatementInfo = SLSelectStatementInfo.class.cast(selectInfo);
+            SelectStatementInfo selectStatementInfo = SelectStatementInfo.class.cast(selectInfo);
             if (selectStatementInfo.getByLinkInfoList().isEmpty()) {
                 command = new SLSelectByNodeTypeCommand(selectStatementInfo, commandDO);
             } else {

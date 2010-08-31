@@ -46,92 +46,127 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.query.info;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLQuery.SortMode;
+import org.openspotlight.common.util.StringBuilderUtil;
 
 /**
- * The Interface SLQueryTextInternal. This class is an internal class.
+ * The Class SLSelectInfo.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface SLQueryTextInternal extends Serializable {
+public abstract class SelectInfo {
+
+    /** The Constant INDIFINITE. */
+    public static final int INDEFINITE = 0;
+
+    /** The keep result. */
+    private boolean         keepResult;
+
+    /** The x times. */
+    private Integer         xTimes     = null;
+
+    /** The limit. */
+    private Integer         limit      = null;
+
+    /** The offset. */
+    private Integer         offset     = null;
 
     /**
-     * Execute.
+     * Checks if is keep result.
      * 
-     * @param session the session
-     * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes i ds
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws QueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @return true, if is keep result
      */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+    public boolean isKeepResult() {
+        return keepResult;
+    }
 
     /**
-     * Gets the unique id.
+     * Sets the keep result.
      * 
-     * @return the id
+     * @param keepResult the new keep result
      */
-    public String getId();
+    public void setKeepResult( boolean keepResult ) {
+        this.keepResult = keepResult;
+    }
 
     /**
-     * Gets the output model name.
+     * Gets the x times.
      * 
-     * @return the output model name
+     * @return the x times
      */
-    public String getOutputModelName();
+    public Integer getXTimes() {
+        return xTimes;
+    }
 
     /**
-     * Gets the target.
+     * Sets the x times.
      * 
-     * @return the target
+     * @param times the new x times
      */
-    public SLQueryTextInternal getTarget();
+    public void setXTimes( Integer times ) {
+        xTimes = times;
+    }
 
     /**
-     * Gets the variables.
+     * Gets the limit.
      * 
-     * @return the variables
+     * @return the limit
      */
-    public Collection<SLQLVariable> getVariables();
+    public Integer getLimit() {
+        return limit;
+    }
 
     /**
-     * Checks for output model.
+     * Sets the limit.
      * 
-     * @return true, if successful
+     * @param limit the new limit
      */
-    public boolean hasOutputModel();
+    public void setLimit( Integer limit ) {
+        this.limit = limit;
+    }
 
     /**
-     * Checks for target.
+     * Gets the offset.
      * 
-     * @return true, if successful
+     * @return the offset
      */
-    public boolean hasTarget();
+    public Integer getOffset() {
+        return offset;
+    }
 
     /**
-     * Checks for variables.
+     * Sets the offset.
      * 
-     * @return true, if successful
+     * @param offset the new offset
      */
-    public boolean hasVariables();
+    public void setOffset( Integer offset ) {
+        this.offset = offset;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        if (isKeepResult()) {
+            StringBuilderUtil.append(buffer, "\nKEEP RESULT");
+        }
+        Integer xTimes = getXTimes();
+        if (xTimes != null) {
+            StringBuilderUtil.append(buffer, "\nEXECUTING ", (xTimes == INDEFINITE ? "INDEFINITE" : "" + xTimes), " TIMES");
+        }
+
+        Integer limit = getLimit();
+        if (limit != null) {
+            StringBuilderUtil.append(buffer, "\nLIMIT ", limit);
+            Integer offset = getOffset();
+            if (offset != null) {
+                StringBuilderUtil.append(buffer, " OFFSET ", offset);
+            }
+        }
+
+        return buffer.toString();
+    }
 }

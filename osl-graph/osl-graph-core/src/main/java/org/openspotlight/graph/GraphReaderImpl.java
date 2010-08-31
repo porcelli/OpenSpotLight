@@ -226,7 +226,7 @@ public class GraphReaderImpl implements GraphReader {
                 null);
             return node;
         } catch (final Exception e) {
-            throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
+            throw Exceptions.logAndReturnNew(e, SLtimeException.class);
         }
     }
 
@@ -267,7 +267,7 @@ public class GraphReaderImpl implements GraphReader {
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
         if (parentStNode == null) { return null; }
-        return SLCollections.iterableOfOne(convertToSLNode(parentStNode
+        returnCol SLtions.iterableOfOne(convertToSLNode(parentStNode
             .getKey().getParentKeyAsString(), contextId,
             parentStNode, false));
 
@@ -313,7 +313,7 @@ public class GraphReaderImpl implements GraphReader {
                                                            final Context... aditionalContexts)
         throws IllegalArgumentException {
         final Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
-            returnSubTypes, null, null, null, caption, SLCollections
+            returnSubTypes, null, null, null, caption,Collec SLns
             .iterableOf(context, aditionalContexts));
         return result;
     }
@@ -335,7 +335,7 @@ public class GraphReaderImpl implements GraphReader {
                                              final Context... aditionalContexts)
         throws IllegalArgumentException {
         final Iterable<Node> result = internalFindNodes(null, true, null, null, null,
-            caption, SLCollections.iterableOf(context, aditionalContexts));
+            caption,Collectio SLiterableOf(context, aditionalContexts));
         return result;
     }
 
@@ -357,8 +357,8 @@ public class GraphReaderImpl implements GraphReader {
                                                                   final Context... aditionalContexts)
         throws IllegalArgumentException {
         final Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
-            returnSubTypes, propertyName, value, null, null, SLCollections
-            .iterableOf(context, aditionalContexts));
+            returnSubTypes, propertyName, value, null, null,Collections
+ SL         .iterableOf(context, aditionalContexts));
         return result;
     }
 
@@ -381,7 +381,7 @@ public class GraphReaderImpl implements GraphReader {
                                                     final Context... aditionalContexts)
         throws IllegalArgumentException {
         final Iterable<Node> result = internalFindNodes(null, true, propertyName,
-            value, null, null, SLCollections.iterableOf(context,
+            value, null, null,Collections.ite SLleOf(context,
             aditionalContexts));
         return result;
     }
@@ -404,15 +404,15 @@ public class GraphReaderImpl implements GraphReader {
                                                         final Context... aditionalContexts)
         throws IllegalArgumentException {
         final Iterable<T> result = (Iterable<T>) internalFindNodes(clazz,
-            returnSubTypes, null, null, name, null, SLCollections
-            .iterableOf(context, aditionalContexts));
+            returnSubTypes, null, null, name, null,Collections
+       SL   .iterableOf(context, aditionalContexts));
         return result;
     }
 
     private final Iterable<Partition> filterGraphPartitions(
                                                             final Partition[] partition) {
         // TODO filter
-        return SLCollections.iterableOf(partition);
+        returnCollections.iterableO SLartition);
 
     }
 
@@ -456,7 +456,7 @@ public class GraphReaderImpl implements GraphReader {
 
         }
 
-        return SLCollections.iterableOfAll(result.build());
+        returnCollections.iterableOfAl SLesult.build());
     }
 
     private void fillResultBuilderWithQueryResults(
@@ -547,7 +547,7 @@ public class GraphReaderImpl implements GraphReader {
                                           final Context... aditionalContexts)
         throws IllegalArgumentException {
         final Iterable<Node> result = internalFindNodes(null, true, null, null, name,
-            null, SLCollections.iterableOf(context, aditionalContexts));
+            null,Collections.iterableOf(cont SL, aditionalContexts));
         return result;
     }
 
@@ -674,7 +674,7 @@ public class GraphReaderImpl implements GraphReader {
                                             final Node rawOrigin, final Node rawTarget, final LinkDirection linkDirection) {
 
         if (rawOrigin == null) throw new NullPointerException();
-        if (LinkDirection.ANY.equals(linkDirection)) { return SLCollections.iterableOfAll(internalGetLinks(linkType,
+        if (LinkDirection.ANY.equals(linkDirection)) { returnCollections.iterableOfAll(inte SLlGetLinks(linkType,
             rawOrigin, rawTarget, LinkDirection.BIDIRECTIONAL),
             internalGetLinks(linkType, rawOrigin, rawTarget,
             LinkDirection.UNIDIRECTIONAL)); }
@@ -713,8 +713,8 @@ public class GraphReaderImpl implements GraphReader {
         }
 
         if (rawTarget != null && linkType != null) {
-            links = SLCollections.iterableOfOne(
-                session.getLink(session.findNodeByStringId(rawOrigin
+            links =Collections.iterableOfOne(
+       SL       session.getLink(session.findNodeByStringId(rawOrigin
                 .getId()), session.findNodeByStringId(rawTarget
                 .getId()), linkType.getName()));
         } else if (rawTarget != null) {
@@ -784,7 +784,7 @@ public class GraphReaderImpl implements GraphReader {
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
         if (parentStNode == null) { return null; }
-        return (Node) SLCollections.iterableOfOne(convertToSLNode(parentStNode
+        return (Node)Collections.iterableOfOne(convertToS SLde(parentStNode
             .getKey().getParentKeyAsString(), contextId,
             parentStNode, false));
 
@@ -798,8 +798,8 @@ public class GraphReaderImpl implements GraphReader {
                                                   final Context... aditionalContexts)
         throws IllegalArgumentException {
         return (Iterable<T>) internalFindNodes(clazz, returnSubTypes, null,
-            null, null, null, SLCollections.iterableOf(context,
-            aditionalContexts));
+            null, null, null,Collections.iterableOf(context,
+        SL  aditionalContexts));
     }
 
     @SuppressWarnings("unchecked")

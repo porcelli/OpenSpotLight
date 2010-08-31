@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SelectByNodeTypeInfo;
 
 /**
  * The Interface SLSelectByNodeTypeInfoGetter.
@@ -62,6 +62,6 @@ public interface SLSelectByNodeTypeInfoGetter {
      * 
      * @return the select info
      */
-    public SLSelectByNodeTypeInfo getSelectByNodeTypeInfo();
+    public SelectByNodeTypeInfo getSelectByNodeTypeInfo();
 
 }

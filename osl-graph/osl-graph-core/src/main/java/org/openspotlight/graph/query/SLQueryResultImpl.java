@@ -98,7 +98,7 @@ public class SLQueryResultImpl implements SLQueryResult {
 	 * 
 	 * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
 	 */
-	public List<Node> getNodes() throws SLQueryException {
+	public List<Node> getNodes() throws QueryException {
 		return nodes;
 	}
 

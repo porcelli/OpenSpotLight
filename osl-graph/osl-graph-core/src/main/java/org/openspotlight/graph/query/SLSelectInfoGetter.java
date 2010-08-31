@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.query;
 
-import org.openspotlight.graph.query.info.SLSelectInfo;
+import org.openspotlight.graph.query.info.SelectInfo;
 
 /**
  * The Interface SLSelectInfoGetter.
@@ -62,6 +62,6 @@ public interface SLSelectInfoGetter {
      * 
      * @return the select info
      */
-    public SLSelectInfo getSelectInfo();
+    public SelectInfo getSelectInfo();
 
 }

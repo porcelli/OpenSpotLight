@@ -46,92 +46,125 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.query.info;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLQuery.SortMode;
+import org.openspotlight.common.util.Equals;
+import org.openspotlight.common.util.HashCodes;
+import org.openspotlight.graph.query.SLSideType;
 
 /**
- * The Interface SLQueryTextInternal. This class is an internal class.
+ * The Class SLSelectByLinkInfo.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface SLQueryTextInternal extends Serializable {
+public class SelectByLinkInfo {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+
+    /** The name. */
+    private String            name;
+
+    /** The side. */
+    private SLSideType        side;
+
+    /** The comma. */
+    private boolean           comma;
 
     /**
-     * Execute.
+     * Instantiates a new sL select by link info.
      * 
-     * @param session the session
-     * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes i ds
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws QueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     * @param name the name
      */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+    public SelectByLinkInfo(
+                               String name ) {
+        setName(name);
+    }
 
     /**
-     * Gets the unique id.
+     * Gets the name.
      * 
-     * @return the id
+     * @return the name
      */
-    public String getId();
+    public String getName() {
+        return name;
+    }
 
     /**
-     * Gets the output model name.
+     * Sets the name.
      * 
-     * @return the output model name
+     * @param name the new name
      */
-    public String getOutputModelName();
+    public void setName( String name ) {
+        this.name = name;
+    }
 
     /**
-     * Gets the target.
+     * Checks if is comma.
      * 
-     * @return the target
+     * @return true, if is comma
      */
-    public SLQueryTextInternal getTarget();
+    public boolean isComma() {
+        return comma;
+    }
 
     /**
-     * Gets the variables.
+     * Sets the comma.
      * 
-     * @return the variables
+     * @param comma the new comma
      */
-    public Collection<SLQLVariable> getVariables();
+    public void setComma( boolean comma ) {
+        this.comma = comma;
+    }
 
     /**
-     * Checks for output model.
+     * Gets the side.
      * 
-     * @return true, if successful
+     * @return the side
      */
-    public boolean hasOutputModel();
+    public SLSideType getSide() {
+        return side;
+    }
 
     /**
-     * Checks for target.
+     * Sets the side.
      * 
-     * @return true, if successful
+     * @param side the new side
      */
-    public boolean hasTarget();
+    public void setSide( SLSideType side ) {
+        this.side = side;
+    }
 
-    /**
-     * Checks for variables.
+    /*
+     * (non-Javadoc)
      * 
-     * @return true, if successful
+     * @see java.lang.Object#equalsTo(java.lang.Object)
      */
-    public boolean hasVariables();
+    @Override
+    public boolean equals( Object obj ) {
+        return Equals.eachEquality(SelectByLinkInfo.class, this, obj, "name");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return HashCodes.hashOf(name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append('"').append(name).append('"').append(' ');
+        buffer.append('(').append(side).append(')');
+        return buffer.toString();
+    }
 }

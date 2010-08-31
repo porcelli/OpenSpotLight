@@ -49,8 +49,8 @@
 package org.openspotlight.graph.query;
 
 import static org.openspotlight.graph.SLCommonSupport.toInternalPropertyName;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.AND;
-import static org.openspotlight.graph.query.SLConditionalOperatorType.OR;
+import static org.openspotlight.graph.query.ConditionalOperatorType.AND;
+import static org.openspotlight.graph.query.ConditionalOperatorType.OR;
 import static org.openspotlight.graph.query.SLRelationalOperatorType.EQUAL;
 
 import java.util.ArrayList;
@@ -71,12 +71,12 @@ import org.openspotlight.graph.persistence.SLPersistentQuery;
 import org.openspotlight.graph.persistence.SLPersistentQueryResult;
 import org.openspotlight.graph.persistence.SLPersistentTreeSession;
 import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement;
-import org.openspotlight.graph.query.SLXPathStatementBuilder.Statement.Condition;
-import org.openspotlight.graph.query.info.SLSelectByLinkCountInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo.SLTypeStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
+import org.openspotlight.graph.query.XPathStatementBuilder.Statement;
+import org.openspotlight.graph.query.XPathStatementBuilder.Statement.Condition;
+import org.openspotlight.graph.query.info.SelectByLinkCountInfo;
+import org.openspotlight.graph.query.info.WhereByLinkCountInfo.SLWhereTypeInfo;
+import org.openspotlight.graph.query.info.WhereByLinkCountInfo.SLWhereTypeInfo.SLTypeStatementInfo;
+import org.openspotlight.graph.query.info.WhereByLinkCountInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
 
 /**
  * The Class SLSelectByLinkCountExecuteCommand.
@@ -86,7 +86,7 @@ import org.openspotlight.graph.query.info.SLWhereByLinkCountInfo.SLWhereTypeInfo
 public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
 
     /** The select info. */
-    private SLSelectByLinkCountInfo         selectInfo;
+    private SelectByLinkCountInfo         selectInfo;
 
     /** The command do. */
     private SLSelectCommandDO               commandDO;
@@ -104,7 +104,7 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
      * @param commandDO the command do
      */
     public SLSelectByLinkCountExecuteCommand(
-                                              SLSelectByLinkCountInfo selectByLinkCountInfo, SLSelectCommandDO commandDO ) {
+                                              SelectByLinkCountInfo selectByLinkCountInfo, SLSelectCommandDO commandDO ) {
         this.selectInfo = selectByLinkCountInfo;
         this.commandDO = commandDO;
         this.metadata = commandDO.getMetadata();
@@ -145,7 +145,7 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
                 }
             }
         } catch (SLException e) {
-            throw new SLQueryException("Error on attempt to execute " + this.getClass().getName() + " command.");
+            throw new QueryException("Error on attempt to execute " + this.getClass().getName() + " command.");
         }
     }
 
@@ -177,7 +177,7 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
      */
     private List<PNodeWrapper> getPNodeWrappersOfType( String name ) throws SLPersistentTreeSessionException {
         List<PNodeWrapper> pNodeWrappers = new ArrayList<PNodeWrapper>();
-        SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
+        XPathStatementBuilder statementBuilder = new XPathStatementBuilder(commandDO.getTreeSession().getXPathRootPath()
                                                                                + "/contexts//*");
         Statement rootStatement = statementBuilder.getRootStatement();
         String typePropName = SLCommonSupport.toInternalPropertyName(SLConsts.PROPERTY_NAME_TYPE);
@@ -259,7 +259,7 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
                     Map<String, Integer> numberOcurrencesMap = createNodeOccurencesMap(inputNodeWrappers);
                     map.put(conditionInfo, numberOcurrencesMap);
 
-                    SLXPathStatementBuilder statementBuilder = new SLXPathStatementBuilder(
+                    XPathStatementBuilder statementBuilder = new XPathStatementBuilder(
                                                                                            commandDO.getTreeSession().getXPathRootPath()
                                                                                            + "/links/*//*");
                     Statement rootStatement = statementBuilder.getRootStatement();
@@ -398,7 +398,7 @@ public class SLSelectByLinkCountExecuteCommand extends SLSelectAbstractCommand {
             List<SLConditionInfo> conditionInfoList = statementInfo.getConditionInfoList();
             for (SLConditionInfo conditionInfo : conditionInfoList) {
 
-                SLConditionalOperatorType conditionalOperator = conditionInfo.getConditionalOperator();
+                ConditionalOperatorType conditionalOperator = conditionInfo.getConditionalOperator();
                 if (conditionalOperator != null) {
                     if (status && conditionalOperator.equals(OR)) {
                         return true;

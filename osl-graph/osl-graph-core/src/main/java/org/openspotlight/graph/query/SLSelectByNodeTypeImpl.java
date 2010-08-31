@@ -51,11 +51,11 @@ package org.openspotlight.graph.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotlight.graph.query.info.SLAllTypesInfo;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLWhereByNodeTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInfo;
+import org.openspotlight.graph.query.info.AllTypesInfo;
+import org.openspotlight.graph.query.info.SelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SelectInfo;
+import org.openspotlight.graph.query.info.WhereByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SelectByNodeTypeInfo.SLSelectTypeInfo;
 
 /**
  * The Class SLSelectStatementImpl.
@@ -65,7 +65,7 @@ import org.openspotlight.graph.query.info.SLSelectByNodeTypeInfo.SLSelectTypeInf
 public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoGetter {
 
     /** The select info. */
-    private SLSelectByNodeTypeInfo selectInfo;
+    private SelectByNodeTypeInfo selectInfo;
 
     /** The types. */
     private List<Type>             types;
@@ -80,7 +80,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
      */
     public SLSelectByNodeTypeImpl(
                                    SLSelectFacade selectFacade ) {
-        this.selectInfo = new SLSelectByNodeTypeInfo();
+        this.selectInfo = new SelectByNodeTypeInfo();
         this.types = new ArrayList<Type>();
         this.selectEnd = new EndImpl(selectFacade, selectInfo);
     }
@@ -89,7 +89,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
      * {@inheritDoc}
      */
     public AllTypes allTypes() {
-        SLAllTypesInfo allTypesInfo = selectInfo.addAllTypes();
+        AllTypesInfo allTypesInfo = selectInfo.addAllTypes();
         return new AllTypesImpl(this, allTypesInfo);
     }
 
@@ -114,7 +114,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
     /**
      * {@inheritDoc}
      */
-    public SLSelectInfo getSelectInfo() {
+    public SelectInfo getSelectInfo() {
         return selectInfo;
     }
 
@@ -144,7 +144,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
         private SLSelectByNodeType selectByNodeType;
 
         /** The all types info. */
-        private SLAllTypesInfo     allTypesInfo;
+        private AllTypesInfo     allTypesInfo;
 
         /**
          * Instantiates a new all types impl.
@@ -153,7 +153,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
          * @param allTypesInfo the all types info
          */
         public AllTypesImpl(
-                             SLSelectByNodeType selectByNodeType, SLAllTypesInfo allTypesInfo ) {
+                             SLSelectByNodeType selectByNodeType, AllTypesInfo allTypesInfo ) {
             this.selectByNodeType = selectByNodeType;
             this.allTypesInfo = allTypesInfo;
         }
@@ -235,7 +235,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
         private SLSelectFacade         selectFacade;
 
         /** The select info. */
-        private SLSelectByNodeTypeInfo selectInfo;
+        private SelectByNodeTypeInfo selectInfo;
 
         /** The where. */
         private SLWhereByNodeType      where;
@@ -250,7 +250,7 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
          * @param selectInfo the select info
          */
         EndImpl(
-                 SLSelectFacade selectFacade, SLSelectByNodeTypeInfo selectInfo ) {
+                 SLSelectFacade selectFacade, SelectByNodeTypeInfo selectInfo ) {
             this.selectFacade = selectFacade;
             this.selectInfo = selectInfo;
             // this.orderBy = new SLOrderByStatementImpl();
@@ -261,9 +261,9 @@ public class SLSelectByNodeTypeImpl implements SLSelectByNodeType, SLSelectInfoG
          */
         public SLWhereByNodeType where() {
             if (this.where == null) {
-                SLWhereByNodeTypeInfo whereStatementInfo = new SLWhereByNodeTypeInfo(selectInfo);
+                WhereByNodeTypeInfo whereStatementInfo = new WhereByNodeTypeInfo(selectInfo);
                 selectInfo.setWhereStatementInfo(whereStatementInfo);
-                this.where = new SLWhereByNodeTypeImpl(selectFacade, orderBy, whereStatementInfo);
+                this.where = new WhereByNodeTypeImpl(selectFacade, orderBy, whereStatementInfo);
             }
             return where;
         }

@@ -46,92 +46,48 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Map;
-
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.query.SLQuery.SortMode;
+package org.openspotlight.graph.query.parser;
 
 /**
- * The Interface SLQueryTextInternal. This class is an internal class.
+ * This class stores all soft keywords used by sl-ql parser.
  * 
  * @author porcelli
  */
-public interface SLQueryTextInternal extends Serializable {
+public interface SoftKeywords {
 
-    /**
-     * Execute.
-     * 
-     * @param session the session
-     * @param variableValues the variable values
-     * @param inputNodesIDs the input nodes i ds
-     * @param sortMode the sort mode
-     * @param showSLQL the show slql
-     * @param limit the limit
-     * @param offset the offset
-     * @return the sL query result
-     * @throws InvalidQueryElementException the SL invalid query element exception
-     * @throws QueryException the SL query exception
-     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
-     */
-    public SLQueryResult execute( final SLGraphSession session,
-                                  final Map<String, ?> variableValues,
-                                  final String[] inputNodesIDs,
-                                  SortMode sortMode,
-                                  boolean showSLQL,
-                                  Integer limit,
-                                  Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+    public static final String SELECT    = "select";
+    public static final String DEFINE    = "define";
+    public static final String LINK      = "link";
+    public static final String OUTPUT    = "output";
+    public static final String KEEP      = "keep";
+    public static final String USE       = "use";
+    public static final String PRIMARY   = "primary";
+    public static final String N         = "n";
+    public static final String PROPERTY  = "property";
+    public static final String TERTIARY  = "tertiary";
+    public static final String SECONDARY = "secondary";
+    public static final String IDENTICAL = "identical";
+    public static final String TRUE      = "true";
+    public static final String NULL      = "null";
+    public static final String FALSE     = "false";
+    public static final String WHERE     = "where";
+    public static final String TARGET    = "target";
+    public static final String MESSAGE   = "message";
+    public static final String DOMAIN    = "domain";
+    public static final String VALUES    = "values";
+    public static final String A         = "a";
+    public static final String B         = "b";
+    public static final String BOTH      = "both";
+    public static final String EXECUTING = "executing";
+    public static final String TIMES     = "times";
+    public static final String COLLATOR  = "collator";
+    public static final String LEVEL     = "level";
+    public static final String RESULT    = "result";
+    public static final String ORDER     = "order";
+    public static final String BY        = "by";
+    public static final String LIMIT     = "limit";
+    public static final String OFFSET    = "offset";
+    public static final String ASC       = "asc";
+    public static final String DESC      = "desc";
 
-    /**
-     * Gets the unique id.
-     * 
-     * @return the id
-     */
-    public String getId();
-
-    /**
-     * Gets the output model name.
-     * 
-     * @return the output model name
-     */
-    public String getOutputModelName();
-
-    /**
-     * Gets the target.
-     * 
-     * @return the target
-     */
-    public SLQueryTextInternal getTarget();
-
-    /**
-     * Gets the variables.
-     * 
-     * @return the variables
-     */
-    public Collection<SLQLVariable> getVariables();
-
-    /**
-     * Checks for output model.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasOutputModel();
-
-    /**
-     * Checks for target.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasTarget();
-
-    /**
-     * Checks for variables.
-     * 
-     * @return true, if successful
-     */
-    public boolean hasVariables();
 }
