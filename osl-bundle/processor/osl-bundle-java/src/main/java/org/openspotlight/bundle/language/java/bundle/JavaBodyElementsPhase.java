@@ -54,11 +54,11 @@ import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.parser.JavaBodyElements;
 import org.openspotlight.bundle.language.java.parser.executor.JavaBodyElementsExecutor;
 import org.openspotlight.bundle.language.java.parser.executor.JavaExecutorSupport;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
-import org.openspotlight.federation.processing.CurrentProcessorContext;
+import org.openspotlight.bundle.processing.BundleProcessorArtifactPhase;
+import org.openspotlight.bundle.processing.CurrentProcessorContext;
 
 import java.util.Set;
 

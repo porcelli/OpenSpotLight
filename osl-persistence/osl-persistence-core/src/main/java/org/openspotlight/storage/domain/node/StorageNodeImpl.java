@@ -230,7 +230,7 @@ public class StorageNodeImpl extends PropertyContainerImpl implements
 
     @Override
     public String toString() {
-        return "STNodeEntryImpl{" + "partition=" + partition
+        return "StorageNodeImpl{" + "partition=" + partition
             + ", nodeEntryName='" + nodeType + '\'' + ", uniqueKey="
             + uniqueKey + '}';
     }

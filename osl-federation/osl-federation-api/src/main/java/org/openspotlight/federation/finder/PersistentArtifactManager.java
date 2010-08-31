@@ -52,8 +52,7 @@ import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;
 
 /**
  * This class persists the artifacts loaded from {@link OriginArtifactLoader} classes. So, this class unifies the {@link Artifact
@@ -174,8 +173,8 @@ public interface PersistentArtifactManager extends Disposable {
      */
     public void saveTransientData();
 
-    public STStorageSession getSession();
+    public StStStorageSessionion();
 
-    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist();
+    public SimplePersistCapable<StorageNode, StorStorStorageSessionersist();
 
 }

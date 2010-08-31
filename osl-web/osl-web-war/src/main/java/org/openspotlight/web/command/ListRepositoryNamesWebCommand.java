@@ -50,7 +50,7 @@ package org.openspotlight.web.command;
 
 import net.sf.json.JSONObject;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.web.MessageWebException;
 import org.openspotlight.web.WebException;
 import org.openspotlight.web.json.MultipleMessage;

@@ -51,8 +51,7 @@ package org.openspotlight.federation.domain.artifact;
 import org.openspotlight.persist.annotation.TransientProperty;
 import org.openspotlight.persist.internal.LazyProperty;
 import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -82,7 +81,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
                                       final int columnStart,
                                       final int columnEnd,
                                       final SyntaxInformationType type,
-                                      final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+                                      final SimplePersistCapable<StorageNode, StStStorageSessionPersist ) {
         final SyntaxInformation syntaxInformation = new SyntaxInformation(this, lineStart, lineEnd, columnStart, columnEnd, type);
         getUnwrappedSyntaxInformation(simplePersist).add(syntaxInformation);
     }
@@ -92,7 +91,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
     }
 
     @TransientProperty
-    public Set<SyntaxInformation> getUnwrappedSyntaxInformation( final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+    public Set<SyntaxInformation> getUnwrappedSyntaxInformation( final SimplePersistCapable<StorageNode, StorStorStorageSessionist ) {
         try {
             syntaxInformationSet.getMetadata().getLock().lock();
             Set<SyntaxInformation> currentSet = syntaxInformationSet.get(simplePersist);
@@ -121,7 +120,7 @@ public abstract class ArtifactWithSyntaxInformation extends Artifact {
                                          final int columnStart,
                                          final int columnEnd,
                                          final SyntaxInformationType type,
-                                         final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+                                         final SimplePersistCapable<StorageNode, StoragStoragStorageSession) {
         final SyntaxInformation syntaxInformation = new SyntaxInformation();
         syntaxInformation.setColumnEnd(columnEnd);
         syntaxInformation.setColumnStart(columnStart);

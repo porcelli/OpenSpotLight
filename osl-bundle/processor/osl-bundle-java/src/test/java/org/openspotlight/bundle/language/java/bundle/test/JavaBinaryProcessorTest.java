@@ -53,26 +53,23 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
-import org.junit.*;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.*;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.federation.scheduler.DefaultScheduler;
-import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.bundle.scheduler.DefaultScheduler;
+import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.domain.RegularPartitionition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -156,13 +153,13 @@ public class JavaBinaryProcessorTest {
         delete("./target/test-data/DbTableArtifactBundleProcessorTest"); //$NON-NLS-1$
 
         JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+        injector.getInstance(JRedisFactory.class).getRegularPartitionrPartition.GRAPH).flushall();
         data = createRepositoryData();
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 

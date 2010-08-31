@@ -55,12 +55,12 @@ import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.scheduler.DefaultScheduler;
-import org.openspotlight.federation.scheduler.SLScheduler;
+import org.openspotlight.bundle.scheduler.DefaultScheduler;
+import org.openspotlight.bundle.scheduler.SLScheduler;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
@@ -70,8 +70,7 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.DefaultUserAuthenticator;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 import org.openspotlight.web.command.InitialImportWebCommand;
 
@@ -107,7 +106,7 @@ public class OslContextListener implements ServletContextListener, OslDataConsta
     public void contextInitialized( final ServletContextEvent sce ) {
         try {
             JcrConnectionDescriptor descriptor = DefaultJcrDescriptor.DEFAULT_DESCRIPTOR;
-            Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+            Injector injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
                     ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                     repositoryPath("repository")),
                     new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));

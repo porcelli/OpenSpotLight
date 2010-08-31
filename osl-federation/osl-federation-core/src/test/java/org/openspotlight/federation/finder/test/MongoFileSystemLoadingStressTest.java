@@ -5,8 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.Mongo;
 import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.mongodb.test.MongoModule;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.mongodb.test.MongoModule;
 
 /**
  * Created by User: feu - Date: Jun 18, 2010 - Time: 12:26:16 PM
@@ -28,7 +27,7 @@ public class MongoFileSystemLoadingStressTest extends AbstractFileSystemLoadingS
     @Override
     protected Module createStorageModule(STRepositoryPath repositoryPath) throws Exception{
         mongo = new Mongo();
-        return new MongoModule(STStorageSession.STFlushMode.EXPLICIT,mongo,repositoryPath);
+        return new MongoModule(StStStorageSessionMode.EXPLICIT,mongo,repositoryPath);
 
     }
 }

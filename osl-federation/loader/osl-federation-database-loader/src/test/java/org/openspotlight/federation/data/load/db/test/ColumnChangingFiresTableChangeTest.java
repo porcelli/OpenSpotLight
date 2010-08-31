@@ -52,7 +52,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
@@ -69,8 +69,7 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -102,12 +101,12 @@ public class ColumnChangingFiresTableChangeTest {
 
         final Repository repository = createH2DbConfiguration("ColumnChangingFiresTableChangeTest"); //$NON-NLS-1$
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath(repository.getName())),
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+        injector.getInstance(JRedisFactory.classRegularPartitionrPartitionrPartition.GRAPH).flushall();
         final DbArtifactSource dbBundle = (DbArtifactSource) repository.getArtifactSources().iterator().next(); //$NON-NLS-1$
         Connection conn = DatabaseSupport.createConnection(dbBundle);
 

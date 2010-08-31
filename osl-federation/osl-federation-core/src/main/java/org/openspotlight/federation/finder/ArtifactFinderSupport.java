@@ -50,7 +50,7 @@ package org.openspotlight.federation.finder;
 
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.domain.node.StorageNode;
 
 import javax.jcr.Session;
 import java.util.HashSet;
@@ -147,8 +147,8 @@ public class ArtifactFinderSupport {
         }
         existents.removeAll(toBeRemoved);
         if (manager != null) {
-            Iterable<STNodeEntry> nodesToExclude = manager.getSimplePersist().convertBeansToNodes(toBeRemoved);
-            for (STNodeEntry nodeToExclude : nodesToExclude) {
+            Iterable<StorageNode> nodesToExclude = manager.getSimplePersist().convertBeansToNodes(toBeRemoved);
+            for (StorageNode nodeToExclude : nodesToExclude) {
                 manager.getSimplePersist().getCurrentSession().removeNode(nodeToExclude);
             }
             manager.getSimplePersist().getCurrentSession().flushTransient();

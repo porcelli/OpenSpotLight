@@ -50,14 +50,12 @@ package org.openspotlight.bundle.db.processor;
 
 import org.openspotlight.bundle.common.metamodel.link.AbstractTypeBind;
 import org.openspotlight.bundle.db.DBConstants;
-import org.openspotlight.bundle.db.metamodel.link.*;
-import org.openspotlight.bundle.db.metamodel.node.*;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
 import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
-import org.openspotlight.federation.processing.CurrentProcessorContext;
+import org.openspotlight.bundle.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;

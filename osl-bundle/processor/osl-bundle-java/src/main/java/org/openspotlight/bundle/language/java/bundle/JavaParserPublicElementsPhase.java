@@ -53,11 +53,11 @@ import org.openspotlight.bundle.common.parser.ParsingSupport;
 import org.openspotlight.bundle.language.java.parser.JavaPublicElementsTree;
 import org.openspotlight.bundle.language.java.parser.executor.JavaExecutorSupport;
 import org.openspotlight.bundle.language.java.parser.executor.JavaPublicElementsTreeExecutor;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
-import org.openspotlight.federation.processing.CurrentProcessorContext;
+import org.openspotlight.bundle.processing.BundleProcessorArtifactPhase;
+import org.openspotlight.bundle.processing.CurrentProcessorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

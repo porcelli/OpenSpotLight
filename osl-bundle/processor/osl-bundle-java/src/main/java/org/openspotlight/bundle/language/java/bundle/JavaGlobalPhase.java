@@ -51,14 +51,12 @@ package org.openspotlight.bundle.language.java.bundle;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.processing.*;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.slf4j.Logger;
+import org.openspotlight.graph.GraphReaderorg.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashSet;
@@ -116,7 +114,7 @@ public class JavaGlobalPhase implements BundleProcessorGlobalPhase<Artifact> {
                 contexts.add(entry);
             }
         }
-        final SLSimpleGraphSession session = context.getGraphSession();
+        final GraphReadGraphReader.getGraphSession();
         for (final String entry : contexts) {
             final SLContext slContext = session.getContext(entry);
             Assertions.checkNotNull("slContext:" + entry, slContext);

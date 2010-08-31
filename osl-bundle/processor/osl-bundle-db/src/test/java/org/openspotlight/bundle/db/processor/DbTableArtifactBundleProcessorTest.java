@@ -53,32 +53,28 @@ import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNot;
 import org.hamcrest.core.IsNull;
-import org.junit.*;
 import org.openspotlight.bundle.db.DBConstants;
 import org.openspotlight.bundle.db.metamodel.link.ColumnDataType;
 import org.openspotlight.bundle.db.metamodel.node.Column;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintForeignKey;
 import org.openspotlight.bundle.db.metamodel.node.DatabaseConstraintPrimaryKey;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.*;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 import org.openspotlight.federation.finder.DatabaseCustomArtifactFinder;
 import org.openspotlight.federation.finder.db.DatabaseSupport;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.federation.scheduler.DefaultScheduler;
-import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.bundle.scheduler.DefaultScheduler;
+import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLContext;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.guice.SLGraphModule;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.domain.RegularPartitionition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -180,13 +176,13 @@ public class DbTableArtifactBundleProcessorTest {
 
         data = createRepositoryData();
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+        injector.getInstance(JRedisFactory.class).getRegularPartitionrPartition.GRAPH).flushall();
 
         contextFactory = injector.getInstance(ExecutionContextFactory.class);
 
@@ -231,11 +227,11 @@ public class DbTableArtifactBundleProcessorTest {
                 data.repository);
         
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode exampleServerNode1 = groupContext1.getRootNode().getNode("server name");
-        final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
-        final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-        final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE2");
+        final NoNodempleServerNode1 = groupContext1.getRootNode().getNode("server name");
+        final NodeNodeleDatabaseNode1 = exampleServerNode1.getNode("db");
+        final Node eNodeSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
+        final Node exaNodetalogNode1 = exampleSchemaNode1.getNode("DB");
+        final Node exampNodeeNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE2");
         final Column exampleColumn1 = exampleTableNode1.getChildNode(Column.class, "I");
         Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
         final Column invalidColumn1 = exampleTableNode1.getChildNode(Column.class, "INVALID");
@@ -250,11 +246,11 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode exampleServerNode2 = groupContext2.getRootNode().getNode("server name");
-        final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
-        final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-        final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE2");
+        final Node exampleNodeNode2 = groupContext2.getRootNode().getNode("server name");
+        final Node exampleDaNodeNode2 = exampleServerNode2.getNode("db");
+        final Node exampleScheNode2 = exampleDatabaseNode2.getNode("PUBLIC");
+        final Node exampleCataloNode = exampleSchemaNode2.getNode("DB");
+        final Node exampleTableNodNodexampleCatalogNode2.getNode("EXAMPLETABLE2");
         final Column exampleColumn2 = exampleTableNode2.getChildNode(Column.class, "I");
         Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
         final Column invalidColumn2 = exampleTableNode2.getChildNode(Column.class, "INVALID");
@@ -277,12 +273,12 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode();
-        final SLNode exampleServerNode1 = groupNode1.getNode("server name");
-        final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
-        final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-        final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE3");
+        final Node groupNode1 = grouNodext1.getRootNode();
+        final Node exampleServerNode1 NodepNode1.getNode("server name");
+        final Node exampleDatabaseNode1 NodepleServerNode1.getNode("db");
+        final Node exampleSchemaNode1 = exNodeatabaseNode1.getNode("PUBLIC");
+        final Node exampleCatalogNode1 = exaNodehemaNode1.getNode("DB");
+        final Node exampleTableNode1 = exampleNodegNode1.getNode("EXAMPLETABLE3");
         final Column exampleColumn1 = exampleTableNode1.getChildNode(Column.class, "I");
         Assert.assertThat(exampleColumn1, Is.is(IsNull.notNullValue()));
         final Column invalidColumn1 = exampleTableNode1.getChildNode(Column.class, "LAST_I_PLUS_2");
@@ -297,12 +293,12 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode();
-        final SLNode exampleServerNode2 = groupNode2.getNode("server name");
-        final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
-        final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-        final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE3");
+        final Node groupNode2 = groupContext2.geNodeode();
+        final Node exampleServerNode2 = groupNode2Nodede("server name");
+        final Node exampleDatabaseNode2 = exampleSerNodee2.getNode("db");
+        final Node exampleSchemaNode2 = exampleDatabasNode.getNode("PUBLIC");
+        final Node exampleCatalogNode2 = exampleSchemaNoNodetNode("DB");
+        final Node exampleTableNode2 = exampleCatalogNode2Nodede("EXAMPLETABLE3");
         final Column exampleColumn2 = exampleTableNode2.getChildNode(Column.class, "I");
         Assert.assertThat(exampleColumn2, Is.is(IsNull.notNullValue()));
         final Column invalidColumn2 = exampleTableNode2.getChildNode(Column.class, "LAST_I_PLUS_2");
@@ -324,12 +320,11 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode();
-        final SLNode exampleServerNode1 = groupNode1.getNode("server name");
-        final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
-        final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-        final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE4");
+        final Node groupNode1 = groupContext1.getRootNode();Node   final Node exampleServerNode1 = groupNode1.getNode("seNodeame");
+        final Node exampleDatabaseNode1 = exampleServerNode1.getNodedb");
+        final Node exampleSchemaNode1 = exampleDatabaseNode1.getNoNodeBLIC");
+        final Node exampleCatalogNode1 = exampleSchemaNode1.getNode(Node
+        final Node exampleTableNode1 = exampleCatalogNode1.getNode("EXNodeABLE4");
         Assert.assertThat(exampleTableNode1, Is.is(IsNull.notNullValue()));
         final Connection connection2 = DatabaseSupport.createConnection(data.artifactSource);
 
@@ -341,13 +336,10 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode();
-        final SLNode exampleServerNode2 = groupNode2.getNode("server name");
-        final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
-        final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-        final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE4");
-        Assert.assertThat(exampleTableNode2, Is.is(IsNull.nullValue()));
+        final Node groupNode2 = groupContext2.getRootNode();
+        finNodee exampleServerNode2 = groupNode2.getNode("server name");Node   final Node exampleDatabaseNode2 = exampleServerNode2.getNode("db");
+Node  final Node exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC")Node    final Node exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
+     Nodeal Node exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE4"Node     Assert.assertThat(exampleTableNode2, Is.is(IsNull.nullValue()));
     }
 
     @Test
@@ -364,14 +356,14 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode();
-        final SLNode exampleServerNode1 = groupNode1.getNode("server name");
-        final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
-        final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
-        final SLNode exampleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE7");
+        final Node groupNode1 = groupContext1.getRootNode();
+        final Node examNodeverNode1 = groupNode1.getNode("server name");
+        finNodee exampleDatabaseNode1 = exampleServerNode1.getNode("db");
+        finaNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
+        fiNodede exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
+        final NodNodepleTableNode1 = exampleCatalogNode1.getNode("EXAMPLETABLE7");
 
-        final Column exampleColumn1 = exampleTableNode1.getChildNode(Column.class, "I");
+        NodeColumn exampleColumn1 = exampleTableNode1.getChildNode(Column.class, "I");
 
         final Collection<SLLink> links1 = executionContext1.getGraphSession().getUnidirectionalLinksBySource(exampleColumn1);
         String dataType1 = null;
@@ -398,14 +390,14 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode();
-        final SLNode exampleServerNode2 = groupNode2.getNode("server name");
-        final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
-        final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
-        final SLNode exampleTableNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE7");
+        final Node groupNode2 = groupContext2.getRootNode();
+        final Node exampleServerNodNoderoupNode2.getNode("server name");
+        final Node examNodeabaseNode2 = exampleServerNode2.getNode("db");
+        final Node exampNodemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
+        final Node exaNodetalogNode2 = exampleSchemaNode2.getNode("DB");
+        final Node exampleTabNode2 = exampleCatalogNode2.getNode("EXAMPLETABLE7");
 
-        final Column exampleColumn2 = exampleTableNode2.getChildNode(Column.class, "I");
+        final ColumnNodeleColumn2 = exampleTableNode2.getChildNode(Column.class, "I");
 
         final Collection<SLLink> links2 = executionContext1.getGraphSession().getUnidirectionalLinksBySource(exampleColumn2);
         String dataType2 = null;
@@ -445,16 +437,16 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode();
-        final SLNode exampleServerNode1 = groupNode1.getNode("server name");
-        final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        boolean foundFkConstraint1 = false;
+        final Node groupNode1 = groupContext1.getRootNode();
+        final Node exampleServerNode1 = groupNoNodetNode("server name");
+        final Node exampleDatabaseNNode exampleServerNode1.getNode("db");
+        boolean foundFkConstraint1 =Node;
         synchronized (exampleDatabaseNode1.getLockObject()) {
 
-            final Set<SLNode> nodes = exampleDatabaseNode1.getNodes();
-            for (final SLNode node : nodes) {
-                if (node instanceof DatabaseConstraintForeignKey) {
-                    foundFkConstraint1 = true;
+            final Set<Node> nodes = exampleDatabaseNode1.getNodes();
+            for (final Node node : nodes) {
+         Node if (node instanceof DatabaseConstraintForeignKey) {
+             Node foundFkConstraint1 = true;
                 }
             }
         }
@@ -470,16 +462,16 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode();
-        final SLNode exampleServerNode2 = groupNode2.getNode("server name");
-        final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
+        final Node groupNode2 = groupContext2.getRootNode();
+        final Node exampleServerNode2 = groupNode2.getNodNodever name");
+        final Node exampleDatabaseNode2 = exaNoderverNode2.getNode("db");
         boolean foundFkConstraint2 = false;
-        synchronized (exampleDatabaseNode2.getLockObject()) {
+  Nodesynchronized (exampleDatabaseNode2.getLockObject()) {
 
-            final Set<SLNode> nodes = exampleDatabaseNode2.getNodes();
-            for (final SLNode node : nodes) {
-                if (node instanceof DatabaseConstraintForeignKey) {
-                    foundFkConstraint2 = true;
+            final Set<Node> nodes = exampleDatabaseNode2.getNodes();
+            for (final Node node : nodes) {
+                if Nodeinstanceof DatabaseConstraintForeignKey) {
+                    fouNodenstraint2 = true;
                 }
             }
         }
@@ -504,20 +496,20 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext1 = executionContext1.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode1 = groupContext1.getRootNode();
-        final SLNode exampleServerNode1 = groupNode1.getNode("server name");
-        final SLNode exampleDatabaseNode1 = exampleServerNode1.getNode("db");
-        final SLNode exampleSchemaNode1 = exampleDatabaseNode1.getNode("PUBLIC");
-        final SLNode exampleCatalogNode1 = exampleSchemaNode1.getNode("DB");
+        final Node groupNode1 = groupContext1.getRootNode();
+        final Node exampleServerNode1 = groupNode1.getNode("server Node;
+        final Node exampleDatabaseNode1 = exampleServerNodegetNode("db");
+        final Node exampleSchemaNode1 = exampleDatabaseNNodeetNode("PUBLIC");
+        final Node exampleCatalogNode1 = exampleSchemaNodegetNode("DB");
 
         boolean foundPk = false;
-        synchronized (exampleCatalogNode1.getLockObject()) {
+        synchronized (exampNodelogNode1.getLockObject()) {
 
-            final Set<SLNode> nodes = exampleCatalogNode1.getNodes();
-            for (final SLNode node : nodes) {
-                if (node instanceof DatabaseConstraintPrimaryKey) {
+            final Set<Node> nodes = exampleCatalogNode1.getNodes();
+            for (final Node node : nodes) {
+                if (node instanceoNodebaseConstraintPrimaryKey) {
                     foundPk = true;
-                    break;
+ Node             break;
                 }
             }
         }
@@ -536,20 +528,20 @@ public class DbTableArtifactBundleProcessorTest {
                 DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                 data.repository);
         final SLContext groupContext2 = executionContext2.getGraphSession().getContext(DBConstants.DB_ABSTRACT_CONTEXT);
-        final SLNode groupNode2 = groupContext2.getRootNode();
-        final SLNode exampleServerNode2 = groupNode2.getNode("server name");
-        final SLNode exampleDatabaseNode2 = exampleServerNode2.getNode("db");
-        final SLNode exampleSchemaNode2 = exampleDatabaseNode2.getNode("PUBLIC");
-        final SLNode exampleCatalogNode2 = exampleSchemaNode2.getNode("DB");
+        final Node groupNode2 = groupContext2.getRootNode();
+        final Node exampleServerNode2 = groupNode2.getNode("server name");
+      Nodel Node exampleDatabaseNode2 = exampleServerNode2.getNode(Node
+        final Node exampleSchemaNode2 = exampleDatabaseNode2.getNode("Node");
+        final Node exampleCatalogNode2 = exampleSchemaNode2.getNode(Node
 
         boolean foundPk2 = false;
-        synchronized (exampleCatalogNode2.getLockObject()) {
+        synchronized (exampleCatalogNodeNodeockObject()) {
 
-            final Set<SLNode> nodes = exampleCatalogNode2.getNodes();
-            for (final SLNode node : nodes) {
-                if (node instanceof DatabaseConstraintPrimaryKey) {
+            final Set<Node> nodes = exampleCatalogNode2.getNodes();
+            for (final Node node : nodes) {
+                if (node instanceof DatabaseConsNodePrimaryKey) {
                     foundPk2 = true;
-                    break;
+              Nodebreak;
                 }
             }
         }

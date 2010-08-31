@@ -56,16 +56,14 @@ import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.common.util.AbstractFactory;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.Node;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
@@ -80,7 +78,7 @@ public class ExampleGraphImport {
                 simpleUser,
                 "password");
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
@@ -89,9 +87,9 @@ public class ExampleGraphImport {
         SLGraph graph = injector.getInstance(SLGraph.class);
 
 
-        final SLSimpleGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
-        final SLNode currentContextRootNode = session.createContext("Dynamo-1.0.1").getRootNode();
-        final SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
+        final GraphReadGraphReaderpenSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+        final Node currentContextRootNode = session.createContext("Dynamo-1.0.1").getRootNode();
+        final Node abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
         final JavaGraphNodeSupport helper = new JavaGraphNodeSupport(session, currentContextRootNode, abstractContextRootNode);
         JavaType newType;
         JavaMethod method;

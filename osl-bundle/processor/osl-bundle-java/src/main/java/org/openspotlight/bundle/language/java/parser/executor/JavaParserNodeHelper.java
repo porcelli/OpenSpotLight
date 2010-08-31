@@ -58,23 +58,19 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JavaParserNodeHelper {
-    private final SLNode         currentContext;
+    private final Node         currentContext;
 
-    private final SLNode         abstractContext;
-    private final SLSimpleGraphSession session;
-
-    private final Logger         logger = LoggerFactory.getLogger(getClass());
+    private final Node         abstractContext;
+    private final GraphReadGraphReadervate final Logger         logger = LoggerFactory.getLogger(getClass());
 
     public JavaParserNodeHelper(
-                                 final SLNode currentContext, final SLSimpleGraphSession session ) {
-        Assertions.checkNotNull("currentContext", currentContext);
+                                 final Node currentContext, final GraphReader sessioGraphReaderions.checkNotNull("currentContext", currentContext);
         Assertions.checkNotNull("session", session);
         try {
             this.currentContext = currentContext;
@@ -92,13 +88,13 @@ public class JavaParserNodeHelper {
         }
     }
 
-    public Pair<SLNode, SLNode> createDefaultPackage() {
+    public Pair<Node, Node> createDefaultPackage() {
         return createPackage(JavaParserExecutor.DEFAULT_PACKAGE);
     }
 
-    // <SLNodeOnAbstractContext,SLNodeOnCurrentContext>
-    private <T extends JavaType> Pair<SLNode, SLNode> createJavaType( final Class<T> type,
-                                                                      final Pair<SLNode, SLNode> parent,
+    // <NodeOnAbstractContext,NodeOnCurrentContext>
+    private <T extends JavaType> Pair<Node, Node> createJavaType( final Class<T> type,
+                                                                      final Pair<Node, Node> parent,
                                                                       final String typeName ) {
         Assertions.checkNotEmpty("typeName", typeName);
         Assertions.checkNotNull("type", type);
@@ -140,34 +136,34 @@ public class JavaParserNodeHelper {
                              + " with complete name " + qualifiedName);
             }
 
-            return new Pair<SLNode, SLNode>(abstractNode, concreteNode);
+            return new Pair<Node, Node>(abstractNode, concreteNode);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
-    public Pair<SLNode, SLNode> createJavaTypeAnnotation( final Pair<SLNode, SLNode> parent,
+    public Pair<Node, Node> createJavaTypeAnnotation( final Pair<Node, Node> parent,
                                                           final String annotationName ) {
         return createJavaType(JavaTypeAnnotation.class, parent, annotationName);
     }
 
-    public Pair<SLNode, SLNode> createJavaTypeClass( final Pair<SLNode, SLNode> parent,
+    public Pair<Node, Node> createJavaTypeClass( final Pair<Node, Node> parent,
                                                      final String className ) {
         return createJavaType(JavaTypeClass.class, parent, className);
     }
 
-    public Pair<SLNode, SLNode> createJavaTypeEnum( final Pair<SLNode, SLNode> parent,
+    public Pair<Node, Node> createJavaTypeEnum( final Pair<Node, Node> parent,
                                                     final String enumName ) {
         return createJavaType(JavaTypeEnum.class, parent, enumName);
     }
 
-    public Pair<SLNode, SLNode> createJavaTypeInterface( final Pair<SLNode, SLNode> parent,
+    public Pair<Node, Node> createJavaTypeInterface( final Pair<Node, Node> parent,
                                                          final String interfaceName ) {
         return createJavaType(JavaTypeInterface.class, parent, interfaceName);
     }
 
-    // <SLNodeOnAbstractContext,SLNodeOnCurrentContext>
-    private Pair<SLNode, SLNode> createPackage( final String packageName ) {
+    // <NodeOnAbstractContext,NodeOnCurrentContext>
+    private Pair<Node, Node> createPackage( final String packageName ) {
         try {
             Assertions.checkNotEmpty("packageName", packageName);
             final JavaPackage abstractNode = abstractContext.addChildNode(JavaPackage.class, packageName);
@@ -176,13 +172,13 @@ public class JavaParserNodeHelper {
             if (logger.isDebugEnabled()) {
                 logger.debug("adding node " + concreteNode.getName());
             }
-            return new Pair<SLNode, SLNode>(abstractNode, concreteNode);
+            return new Pair<Node, Node>(abstractNode, concreteNode);
         } catch (final Exception e) {
             throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
         }
     }
 
-    public Pair<SLNode, SLNode> createPackageNode( final String packageName ) {
+    public Pair<Node, Node> createPackageNode( final String packageName ) {
         return createPackage(packageName);
     }
 

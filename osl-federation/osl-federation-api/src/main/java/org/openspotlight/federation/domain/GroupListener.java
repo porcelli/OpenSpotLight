@@ -48,8 +48,8 @@
  */
 package org.openspotlight.federation.domain;
 
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.graph.Node;
 
 public interface GroupListener {
 
@@ -58,10 +58,10 @@ public interface GroupListener {
         IGNORE
     }
 
-    public ListenerAction groupAdded( SLNode groupNode,
+    public ListenerAction groupAdded( Node groupNode,
                                       ExecutionContext context );
 
-    public ListenerAction groupRemoved( SLNode groupNode,
+    public ListenerAction groupRemoved( Node groupNode,
                                         ExecutionContext context );
 
 }

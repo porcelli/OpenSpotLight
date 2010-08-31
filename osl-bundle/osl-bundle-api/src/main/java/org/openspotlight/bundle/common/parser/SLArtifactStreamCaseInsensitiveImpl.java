@@ -48,10 +48,10 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import org.antlr.runtime.CharStream;
-
 import java.io.IOException;
 import java.util.List;
+
+import org.antlr.runtime.CharStream;
 
 public class SLArtifactStreamCaseInsensitiveImpl extends SLArtifactStreamBasicImpl {
 

@@ -57,9 +57,8 @@ import org.openspotlight.common.util.Files;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.meta.SLMetadata;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.GraphReaderpotlight.graph.meta.SLMetadata;
+import org.openspotlight.graph.Node;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.test.domain.link.*;
@@ -83,9 +82,7 @@ public abstract class AbstractGeneralQueryTest {
 
     protected abstract Callable<Void> createShutdownHandler();
 
-    protected abstract SLSimpleGraphSession createSession() throws Exception;
-
-    private static Callable<Void> shutdownHandler;
+    protected abstract GraphReadGraphReadGraphReader    private static Callable<Void> shutdownHandler;
 
     private boolean didItRun = false;
 
@@ -118,7 +115,7 @@ public abstract class AbstractGeneralQueryTest {
         /**
          * The node.
          */
-        private SLNode node;
+        private Node node;
 
         /**
          * The type name.
@@ -141,7 +138,7 @@ public abstract class AbstractGeneralQueryTest {
          * @param node the node
          */
         public NodeWrapper(
-                final SLNode node) {
+                final Node node) {
             this.node = node;
         }
 
@@ -253,13 +250,7 @@ public abstract class AbstractGeneralQueryTest {
     /**
      * The session.
      */
-    protected SLSimpleGraphSession session;
-
-
-    /**
-     * The sort mode.
-     */
-    protected static SortMode sortMode = SortMode.NOT_SORTED;
+    protected GraphReader sessioGraphReaderThe sorGraphReaderprotected static SortMode sortMode = SortMode.NOT_SORTED;
 
     /**
      * Adds the class implements interface links.
@@ -268,7 +259,7 @@ public abstract class AbstractGeneralQueryTest {
      * @param clazz     the clazz
      * @param javaClass the java class
      */
-    private void addClassImplementsInterfaceLinks(final SLNode root,
+    private void addClassImplementsInterfaceLinks(final Node root,
                                                   final Class<?> clazz,
                                                   final JavaClass javaClass) {
         final Class<?>[] iFaces = clazz.getInterfaces();
@@ -307,7 +298,7 @@ public abstract class AbstractGeneralQueryTest {
      * @param clazz     the clazz
      * @param javaClass the java class
      */
-    private void addJavaClassHirarchyLinks(final SLNode root,
+    private void addJavaClassHirarchyLinks(final Node root,
                                            final Class<?> clazz,
                                            final JavaClass javaClass) {
         final Class<?> superClass = clazz.getSuperclass();
@@ -346,7 +337,7 @@ public abstract class AbstractGeneralQueryTest {
      * @param iFace         the i face
      * @param javaInterface the java interface
      */
-    private void addJavaInterfaceHirarchyLinks(final SLNode root,
+    private void addJavaInterfaceHirarchyLinks(final Node root,
                                                final Class<?> iFace,
                                                final JavaInterface javaInterface) {
         final Class<?>[] superIFaces = iFace.getInterfaces();
@@ -419,7 +410,7 @@ public abstract class AbstractGeneralQueryTest {
             final Collection<Class<?>> classes = loadClasses("java-util-classes.txt");
 
             final SLContext context = session.createContext("queryTest");
-            SLNode root = context.getRootNode();
+            Node root = context.getRootNode();
 
             final Package pack = java.util.Date.class.getPackage();
             final JavaPackage utilJavaPackage = root.addChildNode(JavaPackage.class, pack.getName());
@@ -552,11 +543,11 @@ public abstract class AbstractGeneralQueryTest {
      *
      * @param nodes the nodes
      */
-    protected void printResult(final Collection<SLNode> nodes) {
+    protected void printResult(final Collection<Node> nodes) {
         if (printInfo && !nodes.isEmpty()) {
             final StringBuilder buffer = new StringBuilder();
             StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
-            for (final SLNode node : nodes) {
+            for (final Node node : nodes) {
                 StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60),
                         StringUtils.rightPad(node.getName(), 60), session.getParentNode(node).getName(), '\n');
             }
@@ -570,7 +561,7 @@ public abstract class AbstractGeneralQueryTest {
      * @param nodes the nodes
      * @return the node wrapper[]
      */
-    protected NodeWrapper[] wrapNodes(final List<SLNode> nodes) {
+    protected NodeWrapper[] wrapNodes(final List<Node> nodes) {
         final NodeWrapper[] wrappers = new NodeWrapper[nodes.size()];
 
         for (int i = 0; i < wrappers.length; i++) {

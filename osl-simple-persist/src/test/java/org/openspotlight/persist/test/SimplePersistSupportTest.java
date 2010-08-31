@@ -244,7 +244,7 @@ public class SimplePersistSupportTest {
     // levelThree.setLevelTwoObj(levelTwo);
     // levelThree.setNumberMap(new HashMap<Double, Integer>());
     // levelThree.getNumberMap().put(1.0, 1);
-    // STNodeEntry asJcr = simplePersist.convertBeanToNode(
+    // StorageNode asJcr = simplePersist.convertBeanToNode(
     // levelThree);
     // LevelThreeObj anotherLevelThree = simplePersist
     // .convertNodeToBean( asJcr);
@@ -289,7 +289,7 @@ public class SimplePersistSupportTest {
     // obj2.setPropertyObj(propertyObj);
     // obj3.setLevelTwoObj(obj2);
     // obj2.setProperty("propVal");
-    // final STNodeEntry STNodeEntry = simplePersist.convertBeanToNode(
+    // final StorageNode StorageNode = simplePersist.convertBeanToNode(
     // SharedConstants.DEFAULT_JCR_ROOT_NAME, obj3);
     // final String path = node.getPath();
     // assertThat(
@@ -305,7 +305,7 @@ public class SimplePersistSupportTest {
     // assertThat(node.getProperty("node_key_key_type").getString(), Is
     // .is("java.lang.String"));
     //
-    // final STNodeEntry parentSTNodeEntry = node.getParent();
+    // final StorageNode parentStorageNode = node.getParent();
     // assertThat(parentNode.getProperty("node_property_property_type")
     // .getString(), Is.is("java.lang.String"));
     // assertThat(parentNode.getProperty("node_typeName").getString(),
@@ -317,7 +317,7 @@ public class SimplePersistSupportTest {
     // .is("propVal"));
     // assertThat(parentNode.getProperty("node_key_key_type")
     // .getString(), Is.is("java.lang.String"));
-    // final STNodeEntry nodeProperty = parentNode
+    // final StorageNode nodeProperty = parentNode
     // .getNode("NODE_PROPERTY_propertyObj");
     // assertThat(nodeProperty.getProperty("node_key_value_type")
     // .getString(), Is.is("int"));
@@ -339,7 +339,7 @@ public class SimplePersistSupportTest {
     //
 
     /**
-     * Should convert jcr STNodeEntry to bean.
+     * Should convert jcr StorageNode to bean.
      * 
      * @throws Exception the exception
      */
@@ -691,8 +691,8 @@ public class SimplePersistSupportTest {
         final String contentAsString = "content";
         final InputStream content = new ByteArrayInputStream(contentAsString.getBytes());
         pojo.setStream(content);
-        final StorageNode jcrSTNodeEntry = simplePersist.convertBeanToNode(pojo);
-        final ObjectWithInputStream convertedPojo = simplePersist.convertNodeToBean(jcrSTNodeEntry);
+        final StorageNode jcrStorageNode = simplePersist.convertBeanToNode(pojo);
+        final ObjectWithInputStream convertedPojo = simplePersist.convertNodeToBean(jcrStorageNode);
         final byte[] contentAsBytes = new byte[convertedPojo.getStream().available()];
         convertedPojo.getStream().read(contentAsBytes);
         final String newContentAsString = new String(contentAsBytes);
@@ -709,8 +709,8 @@ public class SimplePersistSupportTest {
         objectThatDoesntImplementSimpleNodeType.setNumber(3);
         objectThatDoesntImplementSimpleNodeType.setParent(obj);
         obj.setObjectThatDoesntImplementSimpleNodeType(objectThatDoesntImplementSimpleNodeType);
-        final StorageNode jcrSTNodeEntry = simplePersist.convertBeanToNode(obj);
-        final RootObj fromJcr = simplePersist.convertNodeToBean(jcrSTNodeEntry);
+        final StorageNode jcrStorageNode = simplePersist.convertBeanToNode(obj);
+        final RootObj fromJcr = simplePersist.convertNodeToBean(jcrStorageNode);
         assertThat(fromJcr.getObjectThatDoesntImplementSimpleNodeType().getName(),
                    Is.is(obj.getObjectThatDoesntImplementSimpleNodeType().getName()));
         assertThat(fromJcr.getObjectThatDoesntImplementSimpleNodeType().getNumber(),

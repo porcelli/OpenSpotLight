@@ -52,7 +52,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.Test;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.Artifact;
@@ -68,9 +68,8 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
+import org.openspotlight.storage.domain.node.StorageNode;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -182,15 +181,14 @@ public abstract class DatabaseStreamTest {
             conn.close();
         }
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+        injector.getInstance(JRedisFactory.classRegularPartitionrPartitionrPartition.GRAPH).flushall();
 
-        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(
-                SLPartition.FEDERATION);
+        SimplePersistCapable<StorageNode, StorStorStorageSessionist = injector.getInstance(SimplePersistFactory.class).createSimplePersiRegularPartitionegularPartitionegularPartition.FEDERATION);
 
         PersistentArtifactManagerProvider provider = new PersistentArtifactManagerProviderImpl(
                 injector.getInstance(SimplePersistFactory.class),

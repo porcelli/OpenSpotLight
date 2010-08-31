@@ -67,9 +67,7 @@ import static org.openspotlight.graph.SLRecursiveMode.RECURSIVE;
 
 public abstract class BaseGraphTest {
 
-    protected static SLSimpleGraphSession session;
-    /**
-     * The java class node.
+    protected static GraphReader     * The java class node.
      */
     private JavaClassNode javaClassNode;
     /**
@@ -101,7 +99,7 @@ public abstract class BaseGraphTest {
         clearSession();
     }
 
-    public abstract SLSimpleGraphSession openSession() throws SLGraphException;
+    public abstract GraphReadGraphReadGraphReaderon;
 
     /**
      * Adds the add multiple link empty case.
@@ -272,12 +270,12 @@ public abstract class BaseGraphTest {
      * @param nodes         the nodes
      * @param expectedNodes the expected nodes
      */
-    private void assertNodes(final Collection<? extends SLNode> nodes,
-                             final SLNode... expectedNodes) {
+    private void assertNodes(final Collection<? extends Node> nodes,
+                             final Node... expectedNodes) {
         Assert.assertNotNull(nodes);
         Assert.assertEquals(nodes.size(), expectedNodes.length);
-        final Set<SLNode> nodeSet = new TreeSet<SLNode>(nodes);
-        final Set<SLNode> expectedNodeSet = new TreeSet<SLNode>(Arrays.asList(expectedNodes));
+        final Set<Node> nodeSet = new TreeSet<Node>(nodes);
+        final Set<Node> expectedNodeSet = new TreeSet<Node>(Arrays.asList(expectedNodes));
         Assert.assertEquals(nodeSet, expectedNodeSet);
     }
 
@@ -292,8 +290,8 @@ public abstract class BaseGraphTest {
      */
     private void assertSimpleLink(final SLLink link,
                                   final Class<? extends SLLink> linkClass,
-                                  final SLNode source,
-                                  final SLNode target,
+                                  final Node source,
+                                  final Node target,
                                   final boolean bidirecional) {
         Assert.assertNotNull(link);
         Assert.assertTrue(linkClass.isInstance(link));
@@ -339,7 +337,7 @@ public abstract class BaseGraphTest {
      */
     private void setUpEmptyLinkScenario() {
         session.clear();
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         javaClassNode = root.addChildNode(JavaClassNode.class, "javaClassNode");
         javaMethodNode = root.addChildNode(JavaMethodNode.class, "javaMethodNode");
     }
@@ -351,7 +349,7 @@ public abstract class BaseGraphTest {
      */
     private void setUpExistentABLinkScenario(final Class<? extends SLLink> linkClass) {
         session.clear();
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         javaClassNode = root.addChildNode(JavaClassNode.class, "javaClassNode");
         javaMethodNode = root.addChildNode(JavaMethodNode.class, "javaMethodNode");
 
@@ -366,7 +364,7 @@ public abstract class BaseGraphTest {
      */
     private void setUpExistentBALinkScenario(final Class<? extends SLLink> linkClass) {
         session.clear();
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         javaClassNode = root.addChildNode(JavaClassNode.class, "javaClassNode");
         javaMethodNode = root.addChildNode(JavaMethodNode.class, "javaMethodNode");
 
@@ -381,7 +379,7 @@ public abstract class BaseGraphTest {
      */
     private void setUpExistentBothLinkScenario(final Class<? extends SLLink> linkClass) {
         session.clear();
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         javaClassNode = root.addChildNode(JavaClassNode.class, "javaClassNode");
         javaMethodNode = root.addChildNode(JavaMethodNode.class, "javaMethodNode");
 
@@ -394,7 +392,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testAddAndGetNodeWithStrangeCharsOnName() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
         Assert.assertNotNull(javaClassNode1);
         final JavaClassNode javaClassNode2 = root1.getChildNode(JavaClassNode.class, "/home/feuteston/accept-strange-chars.sh");
@@ -407,7 +405,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testAddNodeTypeHierarchyCase() {
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
 
         // add sub type, then add super type; sub type is supposed to be
         // kept ...
@@ -660,20 +658,20 @@ public abstract class BaseGraphTest {
         final Date now = new Date();
 
         // set new property ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<Date> prop1 = root.setProperty(Date.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", now);
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<Date> prop1 = root.setProperty(Date.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", now);
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
         Assert.assertEquals(prop1.getValue(), now);
 
         // get existent property ...
-        final SLNodeProperty<Date> prop2 = root.getProperty(Date.class, "prop");
+        final NodeProperty<Date> prop2 = root.getProperty(Date.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertNotNull(prop2.getValue());
         Assert.assertEquals(prop2.getValue(), now);
 
         // get property as Serializable ...
-        final SLNodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
+        final NodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
         Assert.assertNotNull(prop5);
         Assert.assertNotNull(prop5.getValue());
         Assert.assertEquals(prop5.getValue(), now);
@@ -697,8 +695,8 @@ public abstract class BaseGraphTest {
         bean.testBuffer = new byte[1024 * 1024];
 
         // set new property ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<SerializableBean> prop1 = root.setProperty(SerializableBean.class,
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<SerializableBean> prop1 = root.setProperty(SerializableBean.class,
                 SLVisibility.VisibilityLevel.PUBLIC, "prop", bean);
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
@@ -706,13 +704,13 @@ public abstract class BaseGraphTest {
         Assert.assertEquals(val1, bean);
 
         // get existent property ...
-        final SLNodeProperty<SerializableBean> prop2 = root.getProperty(SerializableBean.class, "prop");
+        final NodeProperty<SerializableBean> prop2 = root.getProperty(SerializableBean.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertNotNull(prop2.getValue());
         Assert.assertEquals(prop2.getValue(), bean);
 
         // get property as Serializable ...
-        final SLNodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
+        final NodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
         Assert.assertNotNull(prop5);
         Assert.assertNotNull(prop5.getValue());
         Assert.assertEquals(prop5.getValue(), bean);
@@ -732,20 +730,20 @@ public abstract class BaseGraphTest {
     @Test
     public void testBooleanProperty() throws SLPropertyNotFoundException {
         // set new property ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<Boolean> prop1 = root.setProperty(Boolean.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", true);
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<Boolean> prop1 = root.setProperty(Boolean.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", true);
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
         Assert.assertEquals(prop1.getValue(), new Boolean(true));
 
         // get existent property ...
-        final SLNodeProperty<Boolean> prop2 = root.getProperty(Boolean.class, "prop");
+        final NodeProperty<Boolean> prop2 = root.getProperty(Boolean.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertNotNull(prop2.getValue());
         Assert.assertEquals(prop2.getValue(), new Boolean(true));
 
         // get property as Serializable ...
-        final SLNodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
+        final NodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
         Assert.assertNotNull(prop5);
         Assert.assertNotNull(prop5.getValue());
         Assert.assertEquals(prop5.getValue(), new Boolean(true));
@@ -764,14 +762,14 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testChiLdNodesRetrieval() {
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNode node1 = root.addChildNode("node1");
-        final SLNode node2 = root.addChildNode("node2");
-        final Set<SLNode> ch1LdNodes = root.getNodes();
+        final Node root = session.createContext("1L").getRootNode();
+        final Node node1 = root.addChildNode("node1");
+        final Node node2 = root.addChildNode("node2");
+        final Set<Node> ch1LdNodes = root.getNodes();
         Assert.assertNotNull(ch1LdNodes);
-        final Iterator<SLNode> iter = ch1LdNodes.iterator();
+        final Iterator<Node> iter = ch1LdNodes.iterator();
         while (iter.hasNext()) {
-            final SLNode current = iter.next();
+            final Node current = iter.next();
             Assert.assertTrue(current.getName().equals("node1") || current.getName().equals("node2"));
             Assert.assertTrue(current.equals(node1) || current.equals(node2));
         }
@@ -796,7 +794,7 @@ public abstract class BaseGraphTest {
 
     @Test
     public void testDoCast() {
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root.addChildNode(JavaClassNode.class, "javaClassNode");
         final JavaMethodNode method = javaClassNode1.addChildNode(JavaMethodNode.class, "method");
         JavaClassNode nodeResult = method.getParent().doCast(JavaClassNode.class);
@@ -806,7 +804,7 @@ public abstract class BaseGraphTest {
 
     @Test(expected = ClassCastException.class)
     public void testDoCastException() {
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root.addChildNode(JavaClassNode.class, "javaClassNode");
         final JavaMethodNode method = javaClassNode1.addChildNode(JavaMethodNode.class, "method");
         final JavaMethodNode javacastedNode = method.getParent().doCast(JavaMethodNode.class);
@@ -819,32 +817,32 @@ public abstract class BaseGraphTest {
     @Test
     public void testDoubleProperty() throws SLPropertyNotFoundException {
         // set new property ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<Double> prop1 = root.setProperty(Double.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8.0);
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<Double> prop1 = root.setProperty(Double.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8.0);
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
         Assert.assertEquals(prop1.getValue(), new Double(8L));
 
         // get existent property ...
-        final SLNodeProperty<Double> prop2 = root.getProperty(Double.class, "prop");
+        final NodeProperty<Double> prop2 = root.getProperty(Double.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertNotNull(prop2.getValue());
         Assert.assertEquals(prop2.getValue(), new Double(8.0));
 
         // get property as Float ...
-        final SLNodeProperty<Float> prop3 = root.getProperty(Float.class, "prop");
+        final NodeProperty<Float> prop3 = root.getProperty(Float.class, "prop");
         Assert.assertNotNull(prop3);
         Assert.assertNotNull(prop3.getValue());
         Assert.assertEquals(prop3.getValue(), new Float(8));
 
         // get property as Number ...
-        final SLNodeProperty<Number> prop4 = root.getProperty(Number.class, "prop");
+        final NodeProperty<Number> prop4 = root.getProperty(Number.class, "prop");
         Assert.assertNotNull(prop4);
         Assert.assertNotNull(prop4.getValue());
         Assert.assertEquals(prop4.getValue(), new Double(8.0));
 
         // get property as Serializable ...
-        final SLNodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
+        final NodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
         Assert.assertNotNull(prop5);
         Assert.assertNotNull(prop5.getValue());
         Assert.assertEquals(prop5.getValue(), new Double(8));
@@ -864,32 +862,32 @@ public abstract class BaseGraphTest {
     @Test
     public void testFloatProperty() throws SLPropertyNotFoundException {
         // set new property ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<Float> prop1 = root.setProperty(Float.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8.0F);
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<Float> prop1 = root.setProperty(Float.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8.0F);
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
         Assert.assertEquals(prop1.getValue(), new Float(8.0F));
 
         // get existent property ...
-        final SLNodeProperty<Float> prop2 = root.getProperty(Float.class, "prop");
+        final NodeProperty<Float> prop2 = root.getProperty(Float.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertNotNull(prop2.getValue());
         Assert.assertEquals(prop2.getValue(), new Float(8.0F));
 
         // get property as Double ...
-        final SLNodeProperty<Double> prop3 = root.getProperty(Double.class, "prop");
+        final NodeProperty<Double> prop3 = root.getProperty(Double.class, "prop");
         Assert.assertNotNull(prop3);
         Assert.assertNotNull(prop3.getValue());
         Assert.assertEquals(prop3.getValue(), new Double(8));
 
         // get property as Number ...
-        final SLNodeProperty<Number> prop4 = root.getProperty(Number.class, "prop");
+        final NodeProperty<Number> prop4 = root.getProperty(Number.class, "prop");
         Assert.assertNotNull(prop4);
         Assert.assertNotNull(prop4.getValue());
         Assert.assertEquals(prop4.getValue(), new Double(8.0));
 
         // get property as Serializable ...
-        final SLNodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
+        final NodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
         Assert.assertNotNull(prop5);
         Assert.assertNotNull(prop5.getValue());
         Assert.assertEquals(prop5.getValue(), new Double(8));
@@ -908,7 +906,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetBidirectionalLinks() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -936,7 +934,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetBidirectionalLinksBySide() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -970,7 +968,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetLinks() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1125,7 +1123,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaLinkProperties() throws SLMetaLinkTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1153,7 +1151,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaLinkProperty() throws SLMetaLinkTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1185,7 +1183,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaNode() throws SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
         root1.addChildNode(JavaPackageNode.class, "javaPackageNode2");
         root1.addChildNode(JavaClassNode.class, "javaClassNode1");
@@ -1207,7 +1205,7 @@ public abstract class BaseGraphTest {
 
     @Test
     public void testGetMetaNodeByVisibility() {
-        final SLNode root1 = session.createContext("AAAA1L").getRootNode();
+        final Node root1 = session.createContext("AAAA1L").getRootNode();
         root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
         root1.addChildNode(JavaPackageNode.class, "javaPackageNode2");
         root1.addChildNode(JavaClassNode.class, "javaClassNode1");
@@ -1240,7 +1238,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaNodeProperties() throws SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         javaClassNode1.setClassName("HelloWorld");
         javaClassNode1.setModifier(JavaClassNode.MODIFIER_PUBLIC);
@@ -1269,7 +1267,7 @@ public abstract class BaseGraphTest {
             }
         }
 
-        for (SLNodeProperty<Serializable> activeProperty : javaClassNode1.getProperties()) {
+        for (NodeProperty<Serializable> activeProperty : javaClassNode1.getProperties()) {
             SLMetaNodeProperty metaProperty = session.getMetadata().getMetaNodeType(JavaClassNode.class).getMetaProperty(
                     activeProperty.getName());
             // System.out.println(activeProperty.getName() + ":" +
@@ -1283,7 +1281,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaNodeProperty() throws SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode = root1.addChildNode(JavaClassNode.class, "javaClassNode");
         javaClassNode.setClassName("HelloWorld");
         javaClassNode.setModifier(JavaClassNode.MODIFIER_PUBLIC);
@@ -1313,8 +1311,8 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaNodes() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
-        final SLNode nonTypedNode = root1.addChildNode("XX");
+        final Node root1 = session.createContext("1L").getRootNode();
+        final Node nonTypedNode = root1.addChildNode("XX");
 
         Assert.assertNull(nonTypedNode.getMetaType());
 
@@ -1338,7 +1336,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaNodeVisibilityPrivate() throws SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         root1.addChildNode(JavaPackageNodePrivate.class, "javaPackageNode1");
         root1.addChildNode(JavaPackageNodePrivate.class, "javaPackageNode2");
         root1.addChildNode(JavaClassNodeInternal.class, "javaClassNode1");
@@ -1362,7 +1360,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaRenderHint() throws SLRenderHintNotFoundException, SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         session.save();
 
@@ -1385,7 +1383,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetMetaRenderHints() throws SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         session.save();
 
@@ -1409,7 +1407,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetNodesByLinkWithLinkType() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaPackageNode javaPackageNode1 = root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaClassNode javaClassNode2 = root1.addChildNode(JavaClassNode.class, "javaClassNode2");
@@ -1426,7 +1424,7 @@ public abstract class BaseGraphTest {
         session.addLink(JavaPackageJavaClass.class, javaInnerClassNode1, javaPackageNode1, false);
         session.addLink(JavaPackageJavaClass.class, javaInnerClassNode2, javaPackageNode1, false);
 
-        Collection<? extends SLNode> nodes = null;
+        Collection<? extends Node> nodes = null;
         session.save();
 
         nodes = session.getLinkedNodes(JavaPackageJavaClass.class, javaPackageNode1);
@@ -1453,7 +1451,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetNodesByLinkWithoutLinkType() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaPackageNode javaPackageNode1 = root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaClassNode javaClassNode2 = root1.addChildNode(JavaClassNode.class, "javaClassNode2");
@@ -1467,7 +1465,7 @@ public abstract class BaseGraphTest {
         session.addLink(JavaPackagePublicElement.class, javaPackageNode1, javaInnerClassNode2, true);
         session.save();
 
-        Collection<? extends SLNode> nodes = null;
+        Collection<? extends Node> nodes = null;
 
         nodes = session.getLinkedNodes(javaPackageNode1);
         assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1, javaInnerClassNode2);
@@ -1490,7 +1488,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetNodesByPredicate() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaPackageNode javaPackageNode1 = root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
         final JavaClassNode javaClassNode1 = javaPackageNode1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaClassNode javaClassNode2 = javaPackageNode1.addChildNode(JavaClassNode.class, "javaClassNode2");
@@ -1502,7 +1500,7 @@ public abstract class BaseGraphTest {
         final JavaMethodNode javaMethodNode2B = javaClassNode2.addChildNode(JavaMethodNode.class, "javaMethodNode2B");
         session.save();
 
-        Collection<SLNode> nodes = null;
+        Collection<Node> nodes = null;
         nodes = session.getNodesByPredicate(new NamePredicate("javaPackage"));
         assertNodes(nodes, javaPackageNode1);
 
@@ -1518,9 +1516,9 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetPropertyAsString() throws SLPropertyNotFoundException {
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNode node = root.addChildNode("node");
-        final SLNodeProperty<Integer> property = node.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "number",
+        final Node root = session.createContext("1L").getRootNode();
+        final Node node = root.addChildNode("node");
+        final NodeProperty<Integer> property = node.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "number",
                 new Integer(8));
         String value = node.getPropertyValueAsString("number");
         Assert.assertNotNull(value);
@@ -1535,7 +1533,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetSubMetaNodeType() throws SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         javaClassNode1.addChildNode(JavaInnerClassNode.class, "javaInnerClassNode1");
         javaClassNode1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
@@ -1557,7 +1555,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetSubMetaNodeTypes() throws SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         javaClassNode1.addChildNode(JavaInnerClassNode.class, "javaInnerClassNode1");
         javaClassNode1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
@@ -1579,7 +1577,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetUnidirectionalLinks() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1617,7 +1615,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetUnidirectionalLinksBySource() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1654,7 +1652,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testGetUnidirectionalLinksByTarget() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1691,32 +1689,32 @@ public abstract class BaseGraphTest {
     @Test
     public void testIntegerProperty() throws SLPropertyNotFoundException {
         // set new property ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8);
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<Integer> prop1 = root.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8);
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
         Assert.assertEquals(prop1.getValue().intValue(), 8);
 
         // get existent property ...
-        final SLNodeProperty<Integer> prop2 = root.getProperty(Integer.class, "prop");
+        final NodeProperty<Integer> prop2 = root.getProperty(Integer.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertNotNull(prop2.getValue());
         Assert.assertEquals(prop2.getValue().intValue(), 8);
 
         // get property as Long ...
-        final SLNodeProperty<Long> prop3 = root.getProperty(Long.class, "prop");
+        final NodeProperty<Long> prop3 = root.getProperty(Long.class, "prop");
         Assert.assertNotNull(prop3);
         Assert.assertNotNull(prop3.getValue());
         Assert.assertEquals(prop3.getValue(), new Long(8));
 
         // get property as Number ...
-        final SLNodeProperty<Number> prop4 = root.getProperty(Number.class, "prop");
+        final NodeProperty<Number> prop4 = root.getProperty(Number.class, "prop");
         Assert.assertNotNull(prop4);
         Assert.assertNotNull(prop4.getValue());
         Assert.assertEquals(prop4.getValue().intValue(), 8);
 
         // get property as Serializable ...
-        final SLNodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
+        final NodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
         Assert.assertNotNull(prop5);
         Assert.assertNotNull(prop5.getValue());
         Assert.assertEquals(prop5.getValue(), new Long(8));
@@ -1735,7 +1733,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLineReference() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
 
         final SLLineReference lineRef1 = javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
@@ -1771,7 +1769,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLineReferenceWithArtifactId() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final String artifactId = "targetId";
 
@@ -1802,7 +1800,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLinkProperties() throws SLPropertyNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaPackageNode javaPackageNode1 = root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
 
@@ -1836,7 +1834,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLinkPropertyWithAnnotations() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -1858,7 +1856,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLinksRemovalByNodeDeletion() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaPackageNode javaPackageNode1 = root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
         final JavaClassNode javaClassNode1 = javaPackageNode1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaClassNode javaClassNode2 = javaPackageNode1.addChildNode(JavaClassNode.class, "javaClassNode2");
@@ -1894,7 +1892,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLinkTypesForLinkDeletionMarkAndUnmarkCase() throws SLGraphException {
-        SLNode root1 = session.createContext("1L").getRootNode();
+        Node root1 = session.createContext("1L").getRootNode();
         JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
         final JavaMethodNode javaMethodNode2 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode2");
@@ -1925,7 +1923,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLinkTypesForLinkDeletionMarkCase() throws SLGraphException {
-        SLNode root1 = session.createContext("1L").getRootNode();
+        Node root1 = session.createContext("1L").getRootNode();
         JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
         final JavaMethodNode javaMethodNode2 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode2");
@@ -1959,7 +1957,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase() throws SLGraphException {
-        SLNode root1 = session.createContext("1L").getRootNode();
+        Node root1 = session.createContext("1L").getRootNode();
         JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         JavaMethodNode javaMethodNode1 = javaClassNode1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
         final JavaMethodNode javaMethodNode2 = javaClassNode1.addChildNode(JavaMethodNode.class, "javaMethodNode2");
@@ -1978,7 +1976,7 @@ public abstract class BaseGraphTest {
 
         root1 = session.getContext("1L").getRootNode();
         javaClassNode1 = root1.getChildNode(JavaClassNode.class, "javaClassNode1");
-        final Collection<SLNode> nodes = javaClassNode1.getNodes();
+        final Collection<Node> nodes = javaClassNode1.getNodes();
         Assert.assertEquals(nodes.size(), 1);
         Assert.assertEquals(nodes.iterator().next().getName(), "javaMethodNode1");
     }
@@ -1988,7 +1986,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testLinkTypesForLinkedNodeDeletionMarkCase() throws SLGraphException {
-        SLNode root1 = session.createContext("1L").getRootNode();
+        Node root1 = session.createContext("1L").getRootNode();
         JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         final JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
         final JavaMethodNode javaMethodNode2 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2005,7 +2003,7 @@ public abstract class BaseGraphTest {
 
         root1 = session.getContext("1L").getRootNode();
         javaClassNode1 = root1.getChildNode(JavaClassNode.class, "javaClassNode1");
-        final Collection<SLNode> nodes = javaClassNode1.getNodes();
+        final Collection<Node> nodes = javaClassNode1.getNodes();
         Assert.assertTrue(nodes.isEmpty());
     }
 
@@ -2015,33 +2013,33 @@ public abstract class BaseGraphTest {
     @Test
     public void testLongProperty() throws SLPropertyNotFoundException {
         // set new property ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<Long> prop1 = root.setProperty(Long.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8L);
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<Long> prop1 = root.setProperty(Long.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8L);
 
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
         Assert.assertEquals(prop1.getValue(), new Long(8L));
 
         // get existent property ...
-        final SLNodeProperty<Long> prop2 = root.getProperty(Long.class, "prop");
+        final NodeProperty<Long> prop2 = root.getProperty(Long.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertNotNull(prop2.getValue());
         Assert.assertEquals(prop2.getValue(), new Long(8L));
 
         // get property as Integer ...
-        final SLNodeProperty<Integer> prop3 = root.getProperty(Integer.class, "prop");
+        final NodeProperty<Integer> prop3 = root.getProperty(Integer.class, "prop");
         Assert.assertNotNull(prop3);
         Assert.assertNotNull(prop3.getValue());
         Assert.assertEquals(prop3.getValue(), new Integer(8));
 
         // get property as Number ...
-        final SLNodeProperty<Number> prop4 = root.getProperty(Number.class, "prop");
+        final NodeProperty<Number> prop4 = root.getProperty(Number.class, "prop");
         Assert.assertNotNull(prop4);
         Assert.assertNotNull(prop4.getValue());
         Assert.assertEquals(prop4.getValue(), new Long(8L));
 
         // get property as Serializable ...
-        final SLNodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
+        final NodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
         Assert.assertNotNull(prop5);
         Assert.assertNotNull(prop5.getValue());
         Assert.assertEquals(prop5.getValue(), new Long(8));
@@ -2057,7 +2055,7 @@ public abstract class BaseGraphTest {
 
     @Test
     public void testMetaLinkGetDescription() throws SLMetaNodeTypeNotFoundException, SLMetaLinkTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode = root1.addChildNode(JavaClassNode.class, "javaClassNode");
         final JavaMethodNode javaMethodNode = root1.addChildNode(JavaMethodNode.class, "javaMethodNode");
         session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode, javaMethodNode, false);
@@ -2073,7 +2071,7 @@ public abstract class BaseGraphTest {
 
     @Test
     public void testMetaLinkGetVisibility() throws SLMetaNodeTypeNotFoundException, SLMetaLinkTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode = root1.addChildNode(JavaClassNode.class, "javaClassNode");
         final JavaMethodNode javaMethodNode = root1.addChildNode(JavaMethodNode.class, "javaMethodNode");
         final JavaClassJavaMethodSimpleLinkPrivate link = session.addLink(JavaClassJavaMethodSimpleLinkPrivate.class,
@@ -2092,7 +2090,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testMetaNodeGetDescription() throws SLMetaNodeTypeNotFoundException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         session.save();
 
@@ -2109,24 +2107,24 @@ public abstract class BaseGraphTest {
     @Test
     public void testNodeOperations() throws SLPropertyNotFoundException {
         // add new node ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNode node1 = root.addChildNode("node");
+        final Node root = session.createContext("1L").getRootNode();
+        final Node node1 = root.addChildNode("node");
         Assert.assertNotNull(node1);
         Assert.assertEquals(node1.getName(), "node");
 
         // get node ...
-        final SLNode node2 = root.getNode("node");
+        final Node node2 = root.getNode("node");
         Assert.assertNotNull(node2);
         Assert.assertEquals(node2.getName(), "node");
         Assert.assertEquals(node1, node2);
 
         // set property on node1 ...
-        final SLNodeProperty<Integer> prop1 = node1.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8);
+        final NodeProperty<Integer> prop1 = node1.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8);
         Assert.assertNotNull(prop1);
         Assert.assertEquals(prop1.getValue(), new Integer(8));
 
         // get property on node2 ...
-        final SLNodeProperty<Integer> prop2 = node2.getProperty(Integer.class, "prop");
+        final NodeProperty<Integer> prop2 = node2.getProperty(Integer.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertEquals(prop2.getValue(), new Integer(8));
     }
@@ -2136,11 +2134,11 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testPropertiesRetrieval() {
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         root.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "integerProp", 8);
         root.setProperty(String.class, SLVisibility.VisibilityLevel.PUBLIC, "stringProp", "Hello World!");
-        final Set<SLNodeProperty<Serializable>> properties = root.getProperties();
-        for (final SLNodeProperty<Serializable> property : properties) {
+        final Set<NodeProperty<Serializable>> properties = root.getProperties();
+        for (final NodeProperty<Serializable> property : properties) {
             if (property.getName().equals("integerProp")) {
                 Assert.assertEquals(property.getValue(), new Long(8));
             } else if (property.getName().equals("stringProp")) {
@@ -2154,10 +2152,10 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testPropertyRemoval() throws SLPropertyNotFoundException {
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "property", 8);
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<Integer> prop1 = root.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "property", 8);
         prop1.remove();
-        final SLNodeProperty<Integer> property = root.getProperty(Integer.class, "property");
+        final NodeProperty<Integer> property = root.getProperty(Integer.class, "property");
         Assert.assertTrue(property == null);
     }
 
@@ -2166,9 +2164,9 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testPropertyValueOverwriting() throws SLPropertyNotFoundException {
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<Integer> prop1 = root.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8);
-        final SLNodeProperty<Integer> prop2 = root.getProperty(Integer.class, "prop");
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<Integer> prop1 = root.setProperty(Integer.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", 8);
+        final NodeProperty<Integer> prop2 = root.getProperty(Integer.class, "prop");
         prop2.setValue(71);
         Assert.assertEquals(prop2.getValue(), new Integer(71));
         Assert.assertEquals(prop1.getValue(), prop2.getValue());
@@ -2180,20 +2178,20 @@ public abstract class BaseGraphTest {
     @Test
     public void testStringProperty() throws SLPropertyNotFoundException {
         // set new property ...
-        final SLNode root = session.createContext("1L").getRootNode();
-        final SLNodeProperty<String> prop1 = root.setProperty(String.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", "Hello");
+        final Node root = session.createContext("1L").getRootNode();
+        final NodeProperty<String> prop1 = root.setProperty(String.class, SLVisibility.VisibilityLevel.PUBLIC, "prop", "Hello");
         Assert.assertNotNull(prop1);
         Assert.assertNotNull(prop1.getValue());
         Assert.assertEquals(prop1.getValue(), new String("Hello"));
 
         // get existent property ...
-        final SLNodeProperty<String> prop2 = root.getProperty(String.class, "prop");
+        final NodeProperty<String> prop2 = root.getProperty(String.class, "prop");
         Assert.assertNotNull(prop2);
         Assert.assertNotNull(prop2.getValue());
         Assert.assertEquals(prop2.getValue(), new String("Hello"));
 
         // get property as Serializable ...
-        final SLNodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
+        final NodeProperty<Serializable> prop5 = root.getProperty(Serializable.class, "prop");
         Assert.assertNotNull(prop5);
         Assert.assertNotNull(prop5.getValue());
         Assert.assertEquals(prop5.getValue(), new String("Hello"));
@@ -2212,7 +2210,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testTransientLinksWithAnnotations() throws SLGraphException {
-        SLNode root1 = session.createContext("1L").getRootNode();
+        Node root1 = session.createContext("1L").getRootNode();
         JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
         final JavaMethodNode javaMethodNode2 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2236,7 +2234,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testTransientLinksWithoutAnnotations() throws SLGraphException {
-        SLNode root1 = session.createContext("1L").getRootNode();
+        Node root1 = session.createContext("1L").getRootNode();
         JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         JavaMethodNode javaMethodNode1 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
         JavaMethodNode javaMethodNode2 = root1.addChildNode(JavaMethodNode.class, "javaMethodNode2");
@@ -2265,7 +2263,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testTransientNodesWithAnnotation() throws SLGraphException {
-        SLNode root1 = session.createContext("1L").getRootNode();
+        Node root1 = session.createContext("1L").getRootNode();
         JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
         JavaMethodNode javaMethodNode1 = javaClassNode1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
 
@@ -2290,7 +2288,7 @@ public abstract class BaseGraphTest {
      */
     @Test
     public void testTransientNodesWithoutAnnotation() throws SLGraphException {
-        SLNode root1 = session.createContext("1L").getRootNode();
+        Node root1 = session.createContext("1L").getRootNode();
         JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1", NORMAL);
         JavaMethodNode javaMethodNode1 = javaClassNode1.addChildNode(JavaMethodNode.class, "javaMethodNode1", NORMAL);
 
@@ -2314,7 +2312,7 @@ public abstract class BaseGraphTest {
 
     @Test
     public void testTreeLineReference() throws SLGraphException {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class, "javaClassNode1");
 
         javaClassNode1.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
@@ -2354,7 +2352,7 @@ public abstract class BaseGraphTest {
 
     @Test
     public void testTreeLineReferenceWithArtifactId() {
-        final SLNode root1 = session.createContext("1L").getRootNode();
+        final Node root1 = session.createContext("1L").getRootNode();
 
         final String artifactId = "targetId";
         final String statement = "Hello World 1!";
@@ -2394,7 +2392,7 @@ public abstract class BaseGraphTest {
     @Test
     public void testTypedNodeOperations() {
         // add new node ...
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root.addChildNode(JavaClassNode.class, "javaClassNode");
         Assert.assertNotNull(javaClassNode1);
         Assert.assertEquals(javaClassNode1.getName(), "javaClassNode");
@@ -2414,7 +2412,7 @@ public abstract class BaseGraphTest {
         Assert.assertEquals(javaClassNode2.getCreationTime(), creationTime);
 
         // get node as default type ...
-        final SLNode node = root.getNode("javaClassNode");
+        final Node node = root.getNode("javaClassNode");
         Assert.assertEquals(node, javaClassNode1);
     }
 
@@ -2424,13 +2422,13 @@ public abstract class BaseGraphTest {
     @Test
     public void testTypedOnDifferentContexts() {
         // add new node ...
-        final SLNode root = session.createContext("1L").getRootNode();
+        final Node root = session.createContext("1L").getRootNode();
         final JavaClassNode javaClassNode1 = root.addChildNode(JavaClassNode.class, "javaClassNode");
         Assert.assertNotNull(javaClassNode1);
         Assert.assertEquals(javaClassNode1.getName(), "javaClassNode");
 
         // add new node ...
-        final SLNode root2 = session.createContext("2L").getRootNode();
+        final Node root2 = session.createContext("2L").getRootNode();
         final JavaClassNode javaClassNode2 = root2.addChildNode(JavaClassNode.class, "javaClassNode");
         Assert.assertNotNull(javaClassNode2);
         Assert.assertEquals(javaClassNode2.getName(), "javaClassNode");

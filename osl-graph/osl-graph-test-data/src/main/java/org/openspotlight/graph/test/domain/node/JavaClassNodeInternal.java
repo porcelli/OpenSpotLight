@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 import org.openspotlight.graph.annotation.*;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
@@ -68,7 +68,7 @@ import java.util.Date;
 @SLDescription( "Java Class" )
 @SLRenderHints( {@SLRenderHint( name = "format", value = "cube" ), @SLRenderHint( name = "foreground", value = "gold" )} )
 @SLVisibility( VisibilityLevel.INTERNAL )
-public interface JavaClassNodeInternal extends SLNode {
+public interface JavaClassNodeInternal extends Node {
 
     /** The Constant MODIFIER_PUBLIC. */
     public static final Integer MODIFIER_PUBLIC    = 1;

@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 /**
  * The Interface JavaType.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaType extends SLNode {
+public interface JavaType extends Node {
 
 }

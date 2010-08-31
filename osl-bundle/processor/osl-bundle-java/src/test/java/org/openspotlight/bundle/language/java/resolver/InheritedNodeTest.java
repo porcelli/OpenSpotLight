@@ -55,21 +55,19 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaType;
 import org.openspotlight.bundle.language.java.metamodel.node.JavaTypeClass;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.Node;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.graph.query.SLQueryException;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
@@ -77,8 +75,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 public class InheritedNodeTest {
 
     @SuppressWarnings( "unchecked" )
-    private <T extends SLNode> T findByProperty( final SLSimpleGraphSession session,
-                                                 final Class<T> type,
+    private <T extends Node> T findByProperty( final GraphReadGraphReader                                         final Class<T> type,
                                                  final String propertyName,
                                                  final String propertyValue )
         throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
@@ -86,10 +83,10 @@ public class InheritedNodeTest {
         query1.select().type(type.getName()).subTypes().selectEnd().where().type(type.getName()).subTypes().each().property(
                                                                                                                             propertyName).equalsTo().value(
                                                                                                                                                            propertyValue).typeEnd().whereEnd();
-        final List<SLNode> result1 = query1.execute().getNodes();
+        final List<Node> result1 = query1.execute().getNodes();
         if (result1.size() > 0) {
             synchronized (result1.getLockObject()) {
-                for (final SLNode found : result1) {
+                for (final Node found : result1) {
                     return (T)found;
                 }
             }
@@ -98,10 +95,10 @@ public class InheritedNodeTest {
         final SLQueryApi query = session.createQueryApi();
         query.select().type(type.getName()).selectEnd().where().type(type.getName()).each().property(propertyName).equalsTo().value(
                                                                                                                                     propertyValue).typeEnd().whereEnd();
-        final List<SLNode> result = query.execute().getNodes();
+        final List<Node> result = query.execute().getNodes();
         if (result.size() > 0) {
             synchronized (result.getLockObject()) {
-                for (final SLNode found : result) {
+                for (final Node found : result) {
                     return (T)found;
                 }
             }
@@ -119,7 +116,7 @@ public class InheritedNodeTest {
     @Test
     public void shouldFindNodesByItsProperties() throws Exception {
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                                                                          ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                                                                          repositoryPath("repository")),
                                                  new SimplePersistModule(), new DetailedLoggerModule(),
@@ -128,7 +125,7 @@ public class InheritedNodeTest {
         final ExecutionContextFactory factory = injector.getInstance(ExecutionContextFactory.class);
         final ExecutionContext context = factory.createExecutionContext("sa", "sa", DefaultJcrDescriptor.TEMP_DESCRIPTOR,
                                                                         repository);
-        SLSimpleGraphSession graphSession = context.getGraphSession();
+        GraphReader graphSGraphReaderGraphSession();
         JavaTypeClass newClass = graphSession.createContext("context").getRootNode().addChildNode(JavaTypeClass.class, "newClass");
         newClass.setQualifiedName("qualifiedName");
         newClass.setSimpleName("simpleName");

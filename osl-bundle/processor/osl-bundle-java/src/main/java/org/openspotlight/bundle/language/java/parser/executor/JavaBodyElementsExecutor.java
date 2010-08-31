@@ -62,8 +62,7 @@ import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLQueryApi;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.query.SLQueryApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +71,8 @@ import java.util.*;
 public class JavaBodyElementsExecutor {
 
     private static interface MemberLookupPredicate {
-        List<SLNode> findMember( String param,
-                                 SLNode parentFound ) throws Exception;
+        List<NoNodendMember( String param,
+                                 NodeNodetFound ) throws Exception;
     }
 
     private final boolean quiet = true;
@@ -100,8 +99,8 @@ public class JavaBodyElementsExecutor {
 
     private final MemberLookupPredicate                             getByNamePredicate    = new MemberLookupPredicate() {
 
-                                                                                              public List<SLNode> findMember( final String param,
-                                                                                                                              final SLNode parentFound )
+                                                                                              public List<Node> Nodember( final String param,
+                                                                                                                              final Node parNodend )
                                                                                                   throws Exception {
                                                                                                   if (parentFound.getContext().equals(
                                                                                                                                       support.abstractContext.getContext())
@@ -115,13 +114,12 @@ public class JavaBodyElementsExecutor {
 
     private final MemberLookupPredicate                             getByMethodSimpleName = new MemberLookupPredicate() {
 
-                                                                                              public List<SLNode> findMember( final String param,
-                                                                                                                              final SLNode parentFound )
+                                                                                              public List<Node> findNode( final String param,
+                                                                                                                              final Node parentFNode
                                                                                                   throws Exception {
-                                                                                                  final List<SLNode> result = new ArrayList<SLNode>();
-                                                                                                  final Set<SLNode> nodes = parentFound.getNodes();
-                                                                                                  for (final SLNode node : nodes) {
-                                                                                                      if (node instanceof JavaMethod) {
+                                                                                                  final List<Node> result =NoderrayList<Node>();
+       Node                                                                                     final Set<Node> nodes = pareNoded.getNodes();
+                                                                                                  for (final Node node : nodes) {Node                                                                                                 if (node instanceof JavaMethod) {
                                                                                                           final JavaMethod method = (JavaMethod)node;
                                                                                                           if (param.equals(method.getSimpleName())) {
                                                                                                               result.add(method);
@@ -160,12 +158,12 @@ public class JavaBodyElementsExecutor {
                             final CommonTree extended ) {
         Assertions.checkCondition("peekInstanceOfSLTree", peek instanceof SLCommonTree);
         final SLCommonTree typedPeek = (SLCommonTree)peek;
-        final SLNode peekNode = typedPeek.getNode();
+        final Node peekNode = typedPNodetNode();
         Assertions.checkNotNull("peekNode", peekNode);
 
         Assertions.checkCondition("extendedInstanceOfSLTree", extended instanceof SLCommonTree);
         final SLCommonTree typedExtended = (SLCommonTree)extended;
-        final SLNode extendedNode = typedExtended.getNode();
+        final Node extendedNode = typeNodeded.getNode();
         Assertions.checkNotNull("extendedNode", extendedNode);
         if (logger.isDebugEnabled()) {
             logger.debug(support.completeArtifactName + ": " + "adding extend information: " + peekNode.getName());
@@ -177,13 +175,13 @@ public class JavaBodyElementsExecutor {
                             final List<CommonTree> extendeds ) {
         Assertions.checkCondition("peekInstanceOfSLTree", peek instanceof SLCommonTree);
         final SLCommonTree typedPeek = (SLCommonTree)peek;
-        final SLNode peekNode = typedPeek.getNode();
+        final Node peekNode = typedPeek.Nodee();
         Assertions.checkNotNull("peekNode", peekNode);
         final List<SLCommonTree> typedExtends = new ArrayList<SLCommonTree>(extendeds.size());
         for (final CommonTree extended : extendeds) {
             Assertions.checkCondition("extendedInstanceOfSLTree", extended instanceof SLCommonTree);
             final SLCommonTree typedExtended = (SLCommonTree)extended;
-            final SLNode extendedNode = typedExtended.getNode();
+            final Node extendedNode = typedExtNodegetNode();
             Assertions.checkNotNull("extendedNode", extendedNode);
             typedExtends.add(typedExtended);
         }
@@ -197,7 +195,7 @@ public class JavaBodyElementsExecutor {
         Assertions.checkCondition("peekInstanceOfSLTree", peek instanceof SLCommonTree);
         Assertions.checkCondition("variableDeclaratorInstanceOfSLTree", variableDeclarator instanceof SLCommonTree);
         final SLCommonTree typedVariableDeclarator = (SLCommonTree)variableDeclarator;
-        final SLNode field = typedVariableDeclarator.getNode();
+        final Node field = typedVariableDeclNode.getNode();
         Assertions.checkNotNull("field", field);
         final SLCommonTree typedPeek = (SLCommonTree)peek;
         List<SLCommonTree> value = variablesFromContext.get(peek);
@@ -212,13 +210,12 @@ public class JavaBodyElementsExecutor {
                                final List<CommonTree> extendeds ) {
         Assertions.checkCondition("peekInstanceOfSLTree", peek instanceof SLCommonTree);
         final SLCommonTree typedPeek = (SLCommonTree)peek;
-        final SLNode peekNode = typedPeek.getNode();
-        Assertions.checkNotNull("peekNode", peekNode);
+        final Node peekNode = typedPeek.getNodNode       Assertions.checkNotNull("peekNode", peekNode);
         final List<SLCommonTree> typedExtends = new ArrayList<SLCommonTree>(extendeds.size());
         for (final CommonTree extended : extendeds) {
             Assertions.checkCondition("extendedInstanceOfSLTree", extended instanceof SLCommonTree);
             final SLCommonTree typedExtended = (SLCommonTree)extended;
-            final SLNode extendedNode = typedExtended.getNode();
+            final Node extendedNode = typedExtended.Nodee();
             Assertions.checkNotNull("extendedNode", extendedNode);
             typedExtends.add(typedExtended);
         }
@@ -232,8 +229,8 @@ public class JavaBodyElementsExecutor {
             final SLCommonTree typedPeek = (SLCommonTree)peek;
             final SLCommonTree typedType = (SLCommonTree)type;
             final SLCommonTree typedVariableDeclarator = (SLCommonTree)variableDeclarator29;
-            final SLNode parent = typedPeek.getNode();
-            final JavaType typeAsNode = (JavaType)typedType.getNode();
+            final Node parent = typedPeek.getNode();
+ Node     final JavaType typeAsNode = (JavaType)typedType.getNode();
             final JavaDataVariable variable = parent.addChildNode(JavaDataVariable.class, variableDeclarator29.getText());
             support.session.addLink(DataType.class, variable, typeAsNode, false);
             typedVariableDeclarator.setNode(variable);
@@ -317,8 +314,8 @@ public class JavaBodyElementsExecutor {
                                                 final boolean isStatic ) {
         try {
             final SLCommonTree typed = (SLCommonTree)peek;
-            final SLNode parent = typed.getNode();
-            final String name = (isStatic ? "staticBlockDeclaration" : "blockDeclaration") + ++currentBlock;
+            final Node parent = typed.getNode();
+       Nodeinal String name = (isStatic ? "staticBlockDeclaration" : "blockDeclaration") + ++currentBlock;
             final JavaBlockSimple newBlock = parent.addChildNode(JavaBlockSimple.class, name);
             final SLCommonTree typedBlockTreeElement = (SLCommonTree)blockTreeElement;
             typedBlockTreeElement.setNode(newBlock);
@@ -393,15 +390,15 @@ public class JavaBodyElementsExecutor {
         try {
 
             final JavaType type = (JavaType)((SLCommonTree)commonTree).getNode();
-            SLNode leaf;
-            if (anonymousInnerClassBlock != null) {
+            Node leaf;
+            if (anonymousInneNodeBlock != null) {
                 leaf = ((SLCommonTree)anonymousInnerClassBlock).getNode();
             } else {
                 final int parameterSize = optionalArguments == null ? 0 : optionalArguments.size();
-                final Set<SLNode> children = type.getNodes();
-                final List<JavaMethodConstructor> constructors = new ArrayList<JavaMethodConstructor>();
-                for (final SLNode child : children) {
-                    if (child instanceof JavaMethodConstructor) {
+                final Set<Node> children = type.getNodes();
+        Node  final List<JavaMethodConstructor> constructors = new ArrayList<JavaMethodConstructor>();
+                for (final Node child : children) {
+                   Nodehild instanceof JavaMethodConstructor) {
                         final JavaMethodConstructor possibleMatch = (JavaMethodConstructor)child;
                         if (possibleMatch.getNumberOfParameters().intValue() == parameterSize) {
                             constructors.add(possibleMatch);
@@ -505,8 +502,8 @@ public class JavaBodyElementsExecutor {
                                                      final CommonTree commonTree ) {
         try {
             final SLCommonTree typedTree = (SLCommonTree)commonTree;
-            final SLNode node = typedTree.getNode();
-            final JavaType booleanType = support.findPrimitiveType("boolean");
+            final Node node = typedTree.getNode();
+            fNodeavaType booleanType = support.findPrimitiveType("boolean");
             support.session.addLink(DataComparison.class, elementStack.peek().getNode(), node, false);
             return new ExpressionDto(booleanType, e23);
         } catch (final Exception e) {
@@ -524,8 +521,8 @@ public class JavaBodyElementsExecutor {
         return new ExpressionDto(intType);
     }
 
-    private ExpressionDto createMemberDto( final SLNode currentMember,
-                                           final ExpressionDto e54 ) {
+    private ExpressionDto createMemberDto( final Node currentMember,
+                            Node         final ExpressionDto e54 ) {
         Assertions.checkNotNull("currentMember", currentMember);
         if (currentMember instanceof JavaType) {
             return new ExpressionDto((JavaType)currentMember, currentMember, e54);
@@ -557,8 +554,8 @@ public class JavaBodyElementsExecutor {
                                            final List<SingleVarDto> formalParameters ) {
         try {
             final SLCommonTree parentTree = (SLCommonTree)peek;
-            final SLNode parent = parentTree.getNode();
-            for (final SingleVarDto dto : formalParameters) {
+            final Node parent = parentTree.getNode();
+            foNodeal SingleVarDto dto : formalParameters) {
                 final JavaDataParameter parameter = parent.addChildNode(JavaDataParameter.class, dto.identifierTreeElement.getText());
                 dto.identifierTreeElement.setNode(parameter);
                 support.session.addLink(DataType.class, parameter, dto.typeTreeElement.getNode(), false);
@@ -582,8 +579,8 @@ public class JavaBodyElementsExecutor {
                                  final CommonTree statement ) {
         try {
             final SLCommonTree typed = (SLCommonTree)peek;
-            final SLNode parent = typed.getNode();
-            final JavaBlockSimple newBlock = parent.addChildNode(JavaBlockSimple.class, statement.getText());
+            final Node parent = typed.getNode();
+            final JavNodeSimple newBlock = parent.addChildNode(JavaBlockSimple.class, statement.getText());
             final SLCommonTree typedStatement = (SLCommonTree)statement;
             typedStatement.setNode(newBlock);
         } catch (final Exception e) {
@@ -635,8 +632,7 @@ public class JavaBodyElementsExecutor {
         return new ExpressionDto((JavaType)typed.getNode());
     }
 
-    private SLNode findParentVisibleClasses( final String string ) {
-        JavaType result = support.findOnContext(string, support.abstractContextFinder);
+    private Node findParentVisibleClasses( final String string ) {Node   JavaType result = support.findOnContext(string, support.abstractContextFinder);
         if (result != null) {
             return result;
         }
@@ -654,9 +650,9 @@ public class JavaBodyElementsExecutor {
         return null;
     }
 
-    private JavaType getJavaTypeFromField( final SLNode node ) {
+    private JavaType getJavaTypeFromField( final Node node ) {
         JavaType resultType;
-        final Collection<DataType> link = support.session.getLink(DataType.class, node, null);
+        finalNodection<DataType> link = support.session.getLink(DataType.class, node, null);
         resultType = (JavaType)link.iterator().next().getTarget();
         return resultType;
     }
@@ -669,11 +665,11 @@ public class JavaBodyElementsExecutor {
 
         try {
 
-            final List<SLNode> methods = lookForMembers(parent, methodName, getByMethodSimpleName);
+            final List<Node> methods = lookForMembers(parent, methodName, getByMeNodempleName);
             final int size = optionalArguments == null ? 0 : optionalArguments.size();
             final List<JavaMethod> foundMethods = new ArrayList<JavaMethod>();
-            for (final SLNode methodNode : methods) {
-                final JavaMethod method = (JavaMethod)methodNode;
+            for (final Node methodNode : methods) {
+                final JavaMethoNodeod = (JavaMethod)methodNode;
                 if (method.getNumberOfParameters().intValue() == size) {
                     foundMethods.add(method);
                 }
@@ -747,8 +743,8 @@ public class JavaBodyElementsExecutor {
      * @return
      * @throws Exception
      */
-    private ExpressionDto internalFind( final SLNode node,
-                                        final String string,
+    private ExpressionDto internalFind( final Node node,
+                                        final StrinNodeng,
                                         final ExpressionDto e54 ) throws Exception {
         if (string == null || string.length() == 0) {
             JavaType resultType;
@@ -761,11 +757,10 @@ public class JavaBodyElementsExecutor {
         } else if (string.equals("this")) {
             return internalFind(currentClass.peek().getNode(), null, e54);
         } else if (string.equals("super")) {
-            final SLNode superNode = extendedClasses.get(currentClass.peek()).getNode();
-            return internalFind(superNode, null, e54);
+            final Node superNode = extendedClasses.get(currentClass.peek()).getNodNode           return internalFind(superNode, null, e54);
         } else if (!string.contains(".")) {
-            SLNode currentMember = lookForLocalVariable(string);
-            if (currentMember == null) {
+            Node currentMember = lookForLocalVariable(string);
+            if NodentMember == null) {
                 final JavaType currentJavaType = (JavaType)currentClass.peek().getNode();
 
                 currentMember = lookForMember(currentJavaType, string, getByNamePredicate);
@@ -775,8 +770,8 @@ public class JavaBodyElementsExecutor {
             }
 
         } else if (string.contains(".")) {
-            final SLNode clazz = findParentVisibleClasses(string);
-            if (clazz != null) {
+            final Node clazz = findParentVisibleClasses(string);
+            if (clazzNodell) {
                 return createMemberDto(clazz, e54);
             }
 
@@ -785,8 +780,8 @@ public class JavaBodyElementsExecutor {
                 return internalFind(node, toWork, e54);
             }
             final String[] splitted = toWork.contains(".") ? toWork.split("[.]") : new String[] {toWork};
-            SLNode currentNode = lookForLocalVariable(splitted[0]);
-            if (currentNode == null) {
+            Node currentNode = lookForLocalVariable(splitted[0]);
+            if (NodetNode == null) {
                 final JavaType currentJavaType = (JavaType)currentClass.peek().getNode();
 
                 currentNode = lookForMember(currentJavaType, string, getByNamePredicate);
@@ -806,17 +801,16 @@ public class JavaBodyElementsExecutor {
         return null;
     }
 
-    private SLNode lookForLocalVariable( final String string ) throws Exception {
-        if (logger.isDebugEnabled()) {
+    private Node lookForLocalVariable( final String string ) throws Exception {
+    Node (logger.isDebugEnabled()) {
             logger.debug("looking for visible var " + string);
         }
         final Collection<List<SLCommonTree>> currentVariablesList = variablesFromContext.values();
         for (final List<SLCommonTree> currentVariables : currentVariablesList) {
             for (final SLCommonTree entry : currentVariables) {
                 if (string.equals(entry.getText().trim())) {
-                    final SLNode node = entry.getNode();
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("found visible var " + string + " with node "
+                    final Node node = entry.getNode();
+                    if (logger.isDebugEnabledNode                        logger.debug("found visible var " + string + " with node "
                                      + (node != null ? node.getName() : "null node"));
                     }
                     return node;
@@ -831,19 +825,19 @@ public class JavaBodyElementsExecutor {
 
     }
 
-    private SLNode lookForMember( final JavaType currentJavaType,
-                                  final String string,
+    private Node lookForMember( final JavaType currentJavaType,
+                        Node    final String string,
                                   final MemberLookupPredicate predicate ) throws Exception {
-        final List<SLNode> members = lookForMembers(currentJavaType, string, predicate);
-        if (!members.isEmpty()) {
+        final List<Node> members = lookForMembers(currentJavaType, string, predicate);
+        ifNodebers.isEmpty()) {
             return members.get(0);
         }
         return null;
 
     }
 
-    private List<SLNode> lookForMembers( final JavaType javaType,
-                                         final String string,
+    private List<Node> lookForMembers( final JavaType javaType,
+                                 Node  final String string,
                                          final MemberLookupPredicate predicate ) throws Exception {
         JavaType currentJavaType;
         if (javaType instanceof JavaTypeParameterized) {
@@ -884,23 +878,23 @@ public class JavaBodyElementsExecutor {
             currentJavaType = javaType;
         }
 
-        final List<SLNode> result = new ArrayList<SLNode>();
-        final SLQueryApi query = support.session.createQueryApi();
-        query.select().type(SLNode.class.getName()).subTypes().selectEnd().where().type(SLNode.class.getName()).subTypes().each().property(
-                                                                                                                                           "qualifiedName").equalsTo().value(
+        final List<Node> result = new ArrayList<Node>();
+        final SLQueryApi query = support.sesNodereateQueryApi();
+        Nodeselect().type(Node.class.getName()).subTypes().selectEnd().where().type(Node.class.getName()).subTypNodeach().property(
+                                      Node                                                                                               "qualifiedName").equalsTo().value(
                                                                                                                                                                              currentJavaType.getQualifiedName()).typeEnd().whereEnd().keepResult().select().type(
-                                                                                                                                                                                                                                                                 SLNode.class.getName()).subTypes().comma().byLink(
-                                                                                                                                                                                                                                                                                                                   Extends.class.getName()).any().selectEnd().keepResult().select().type(
-                                                                                                                                                                                                                                                                                                                                                                                         SLNode.class.getName()).subTypes().comma().byLink(
-                                                                                                                                                                                                                                                                                                                                                                                                                                           AbstractTypeBind.class.getName()).any().selectEnd().keepResult().select().type(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          SLNode.class.getName()).subTypes().comma().byLink(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Implements.class.getName()).any().selectEnd().keepResult().select().type(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     SLNode.class.getName()).subTypes().comma().byLink(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       AbstractTypeBind.class.getName()).any().selectEnd();
-        final List<SLNode> nodes = query.execute().getNodes();
-        for (final SLNode currentNode : nodes) {
-            final List<SLNode> foundMember = predicate.findMember(string, currentNode);
-            if (foundMember != null && !foundMember.isEmpty()) {
+                                                                                                                                                                                                                                                                 Node.class.getName()).subTypes().comma().byLink(
+                                         Node                                                                                                                                                                                                                                                                    Extends.class.getName()).any().selectEnd().keepResult().select().type(
+                                                                                                                                                                                                                                                                                                                                                                                         Node.class.getName()).subTypes().comma().byLink(
+                                           Node                                                                                                                                                                                                                                                                                                                                                                                          AbstractTypeBind.class.getName()).any().selectEnd().keepResult().select().type(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Node.class.getName()).subTypes().comma().byLink(
+                                             Node                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         Implements.class.getName()).any().selectEnd().keepResult().select().type(
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Node.class.getName()).subTypes().comma().byLink(
+                                               Node                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  AbstractTypeBind.class.getName()).any().selectEnd();
+        final List<Node> nodes = query.execute().getNodes();
+        for (final Node currentNode : nodes) {
+         Nodeal List<Node> foundMember = predicate.findMember(string, NodetNode);
+            if (foundMember != null && NodeMember.isEmpty()) {
                 result.addAll(foundMember);
             }
         }
@@ -915,8 +909,8 @@ public class JavaBodyElementsExecutor {
     public CommonTree popFromElementStack() {
         final SLCommonTree element = elementStack.peek();
         if (logger.isDebugEnabled()) {
-            final SLNode node = element.getNode();
-            logger.debug(support.completeArtifactName + ": " + "poping from stack text=" + element.getText() + " nodeName="
+            final Node node = element.getNode();
+            logger.debug(support.completeArtifactName + ": " + "poping frNodeck text=" + element.getText() + " nodeName="
                          + node.getName() + " nodeClass=" + node.getClass().getInterfaces()[0].getSimpleName());
         }
         currentBlock = 0;
@@ -934,8 +928,8 @@ public class JavaBodyElementsExecutor {
     public void pushToElementStack( final CommonTree imported ) {
         Assertions.checkCondition("treeInstanceOfSLTree", imported instanceof SLCommonTree);
         final SLCommonTree typed = (SLCommonTree)imported;
-        final SLNode node = typed.getNode();
-        if (node instanceof JavaTypeClass || node instanceof JavaTypeAnnotation || node instanceof JavaTypeEnum) {
+        final Node node = typed.getNode();
+        if (node instanceof JavaTypeClass || node instanceof JavaTypeAnnotatiNodenode instanceof JavaTypeEnum) {
             currentClass.push(typed);
         }
         if (node == null) {

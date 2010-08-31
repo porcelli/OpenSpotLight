@@ -48,9 +48,7 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.exception.SLGraphException;
+import org.openspotlight.graph.GraphReaderpotlight.graph.Nodeimport org.openspotlight.graph.exception.SLGraphException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,110 +57,104 @@ import java.util.TreeMap;
 
 public class MetricsAggregator {
 
-    private final Map<String, SLNode>      currentNodes                 = new HashMap<String, SLNode>();
-
-    private boolean                        methodsAreBlocks             = false;
-    // <SLNode#id, Count>
+    private final Map<String, NoNode   currentNodes                 = new HashMap<String, NodeNode    private boolean                        methodsAreBlocks             = false;
+    // <Node#iNodent>
     private final Map<String, Integer>     conditionalNesting;
 
-    // <SLNode#id, Sum>
-    private final Map<String, Integer>     maxConditionalNesting;
+    // <Node#id,Node    private final Map<String, Integer>     maxConditionalNesting;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     depthLooping;
+    // <Node#id, CNode    private final Map<String, Integer>     depthLooping;
 
-    // <SLNode#id, Sum>
-    private final Map<String, Integer>     maxDepthLooping;
+    // <Node#id, SumNodeprivate final Map<String, Integer>     maxDepthLooping;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     returnPoint;
+    // <Node#id, CountNodeprivate final Map<String, Integer>     returnPoint;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     parameters;
+    // <Node#id, Count>
+Nodeivate final Map<String, Integer>     parameters;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     cyclomatic1;
+    // <Node#id, Count>
+  Nodeate final Map<String, Integer>     cyclomatic1;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     cyclomatic2;
+    // <Node#id, Count>
+    Nodee final Map<String, Integer>     cyclomatic2;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     cyclomatic3;
+    // <Node#id, Count>
+    prNodefinal Map<String, Integer>     cyclomatic3;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     cyclomatic4;
+    // <Node#id, Count>
+    privNodenal Map<String, Integer>     cyclomatic4;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     parentCyclomatic1;
+    // <Node#id, Count>
+    privatNodel Map<String, Integer>     parentCyclomatic1;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     parentCyclomatic2;
+    // <Node#id, Count>
+    private NodeMap<String, Integer>     parentCyclomatic2;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     parentCyclomatic3;
+    // <Node#id, Count>
+    private fiNodep<String, Integer>     parentCyclomatic3;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     parentCyclomatic4;
+    // <Node#id, Count>
+    private finaNodeString, Integer>     parentCyclomatic4;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     declarativeStatement;
+    // <Node#id, Count>
+    private final Nodering, Integer>     declarativeStatement;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     executableStatement;
+    // <Node#id, Count>
+    private final MaNodeng, Integer>     executableStatement;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     controlStatement;
+    // <Node#id, Count>
+    private final Map<Node, Integer>     controlStatement;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     privateMethod;
+    // <Node#id, Count>
+    private final Map<StNodeInteger>     privateMethod;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     nonPrivateMethod;
+    // <Node#id, Count>
+    private final Map<StriNodeteger>     nonPrivateMethod;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     privateVariable;
+    // <Node#id, Count>
+    private final Map<StringNodeger>     privateVariable;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     nonPrivateVariable;
+    // <Node#id, Count>
+    private final Map<String, Noder>     nonPrivateVariable;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     event;
+    // <Node#id, Count>
+    private final Map<String, InNode     event;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     constructor;
+    // <Node#id, Count>
+    private final Map<String, InteNode   constructor;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     implementedInterfaces;
+    // <Node#id, Count>
+    private final Map<String, IntegeNode implementedInterfaces;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     extendedClasses;
+    // <Node#id, Count>
+    private final Map<String, Integer>NodextendedClasses;
 
-    // <SLNode#id, Count>
-    private final Map<String, Integer>     extendedInterfaces;
+    // <Node#id, Count>
+    private final Map<String, Integer>  NodeendedInterfaces;
 
     // <SourcePath, SourceLineInfo>
     private final SourceLineInfoAggregator sourceLineInfo;
 
-    // <SLNode#id, CodeArea>
-    private final Map<String, Integer>     codeAreas;
+    // <Node#id, CodeArea>
+    private final Map<String, Integer> NodedeAreas;
 
     private int                            functionPointPerLogicalLines = -1;
 
-    // <SLNode#id, Count>
+    // <Node#id, Count>
     // Generated on buildPropertyValues
-    private Map<String, Integer>           interfaceComplexity;
+    Nodee Map<String, Integer>           interfaceComplexity;
 
-    // <SLNode#id, Count>
+    // <Node#id, Count>
     // Generated on buildPropertyValues
-    private Map<String, Integer>           statementCount;
+    prNodeMap<String, Integer>           statementCount;
 
-    // <SLNode#id, Count>
+    // <Node#id, Count>
     // Generated on buildPropertyValues
-    private Map<String, Integer>           methodsCount;
+    privNodep<String, Integer>           methodsCount;
 
-    // <SLNode#id, Count>
+    // <Node#id, Count>
     // Generated on buildPropertyValues
-    private Map<String, Integer>           variablesCount;
+    privatNodeString, Integer>           variablesCount;
 
     public MetricsAggregator(
                               final boolean useBlocksInstedOfMethods, final SourceLineInfoAggregator sourceLineInfo,
@@ -205,8 +197,8 @@ public class MetricsAggregator {
         this.functionPointPerLogicalLines = functionPointPerLogicalLines;
     }
 
-    public void addConditionalNesting( final SLNode node ) throws SLGraphException {
-        refreshNodeInformation(node);
+    public void addConditionalNesting( final Node node ) throws SLGraphException {
+        refreshNodeInformationNode;
 
         generalAcumulate(conditionalNesting, node);
         final Integer contConditionalNesting = conditionalNesting.get(node.getID());
@@ -221,56 +213,54 @@ public class MetricsAggregator {
         }
     }
 
-    public void addConstructor( final SLNode node ) throws SLGraphException {
-        refreshNodeInformation(node);
-        generalAcumulate(constructor, node);
+    public void addConstructor( final Node node ) throws SLGraphException {
+        refreshNodeInformation(nNode        generalAcumulate(constructor, node);
     }
 
-    public void addControlStatement( final SLNode node ) throws SLGraphException {
-        refreshNodeInformation(node);
-        addControlStatement(node, 1);
+    public void addControlStatement( final Node node ) throws SLGraphException {
+        refreshNodeInformation(nodNode      addControlStatement(node, 1);
     }
 
-    public void addControlStatement( final SLNode node,
-                                     final int size ) throws SLGraphException {
+    public void addControlStatement( final Node node,
+                                     final int size ) throws SLNodexception {
         refreshNodeInformation(node);
         generalAcumulate(controlStatement, node, size);
     }
 
-    public void addCyclomatic1( final SLNode node ) throws SLGraphException {
+    public void addCyclomatic1( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(cyclomatic1, node);
+Node  generalAcumulate(cyclomatic1, node);
     }
 
-    public void addCyclomatic2( final SLNode node ) throws SLGraphException {
+    public void addCyclomatic2( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(cyclomatic2, node);
+  NodegeneralAcumulate(cyclomatic2, node);
     }
 
-    public void addCyclomatic3( final SLNode node ) throws SLGraphException {
+    public void addCyclomatic3( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(cyclomatic3, node);
+    NodeneralAcumulate(cyclomatic3, node);
     }
 
-    public void addCyclomatic4( final SLNode node ) throws SLGraphException {
+    public void addCyclomatic4( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(cyclomatic4, node);
+      NoderalAcumulate(cyclomatic4, node);
     }
 
-    public void addDeclarativeStatement( final SLNode node ) throws SLGraphException {
+    public void addDeclarativeStatement( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        addDeclarativeStatement(node, 1);
+        NodelarativeStatement(node, 1);
     }
 
-    public void addDeclarativeStatement( final SLNode node,
-                                         final int qty ) throws SLGraphException {
+    public void addDeclarativeStatement( final Node node,
+                                         final int qty ) throws SLGraphExceNode{
         refreshNodeInformation(node);
         generalAcumulate(declarativeStatement, node, qty);
     }
 
-    public void addDepthLooping( final SLNode node ) throws SLGraphException {
+    public void addDepthLooping( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(depthLooping, node);
+        geneNodemulate(depthLooping, node);
         final Integer contDepthLooping = depthLooping.get(node.getID());
         Integer maxDepth = maxDepthLooping.get(node.getID());
         if (maxDepth == null) {
@@ -283,88 +273,87 @@ public class MetricsAggregator {
         }
     }
 
-    public void addEvents( final SLNode node ) throws SLGraphException {
+    public void addEvents( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(event, node);
+        generaNodelate(event, node);
     }
 
-    public void addExecutableStatement( final SLNode node ) throws SLGraphException {
+    public void addExecutableStatement( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        addExecutableStatement(node, 1);
+        addExecuNodetatement(node, 1);
     }
 
-    public void addExecutableStatement( final SLNode node,
+    public void addExecutableStatement( final Node node,
                                         final int size ) throws SLGraphException {
-        refreshNodeInformation(node);
+Node  refreshNodeInformation(node);
         generalAcumulate(executableStatement, node, size);
     }
 
-    public void addExtendedClass( final SLNode node ) throws SLGraphException {
+    public void addExtendedClass( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(extendedClasses, node);
+        generalAcumuNodextendedClasses, node);
     }
 
-    public void addExtendedInterface( final SLNode node ) throws SLGraphException {
+    public void addExtendedInterface( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(extendedInterfaces, node);
+        generalAcumulaNodeendedInterfaces, node);
     }
 
-    public void addImplementedInterface( final SLNode node ) throws SLGraphException {
+    public void addImplementedInterface( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(implementedInterfaces, node);
+        generalAcumulateNodementedInterfaces, node);
     }
 
-    public void addNonPrivateMethod( final SLNode node ) throws SLGraphException {
+    public void addNonPrivateMethod( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(nonPrivateMethod, node);
+        generalAcumulate(nNodeateMethod, node);
     }
 
-    public void addNonPrivateVariable( final SLNode node ) throws SLGraphException {
+    public void addNonPrivateVariable( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(nonPrivateVariable, node);
+        generalAcumulate(nonNodeeVariable, node);
     }
 
-    public void addParameter( final SLNode node ) throws SLGraphException {
+    public void addParameter( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(parameters, node);
+        generalAcumulate(paramNode node);
     }
 
-    public void addParentCyclomatic1( final SLNode node ) throws SLGraphException {
+    public void addParentCyclomatic1( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(parentCyclomatic1, node);
+        generalAcumulate(parentCNodetic1, node);
     }
 
-    public void addParentCyclomatic2( final SLNode node ) throws SLGraphException {
+    public void addParentCyclomatic2( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(parentCyclomatic2, node);
+        generalAcumulate(parentCycNodec2, node);
     }
 
-    public void addParentCyclomatic3( final SLNode node ) throws SLGraphException {
+    public void addParentCyclomatic3( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(parentCyclomatic3, node);
+        generalAcumulate(parentCycloNode, node);
     }
 
-    public void addParentCyclomatic4( final SLNode node ) throws SLGraphException {
+    public void addParentCyclomatic4( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(parentCyclomatic4, node);
+        generalAcumulate(parentCyclomaNodenode);
     }
 
-    public void addPrivateMethod( final SLNode node ) throws SLGraphException {
+    public void addPrivateMethod( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(privateMethod, node);
+        generalAcumulate(privateMethod, Node
     }
 
-    public void addPrivateVariable( final SLNode node ) throws SLGraphException {
+    public void addPrivateVariable( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(privateVariable, node);
+        generalAcumulate(privateVariable, Node
     }
 
-    public void addReturnPoint( final SLNode node ) throws SLGraphException {
+    public void addReturnPoint( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(returnPoint, node);
-    }
+        generalAcumulate(returnPoint, node);Node
 
-    public void buildPropertyValues( final SLSimpleGraphSession session ) throws SLGraphException {
+    public void buildPropertyValues( final GraphReadGraphReadGraphReader
         setProperties(session, SystemMetaModel.propMaxConditionalNesting, maxConditionalNesting);
         setProperties(session, SystemMetaModel.propMaxLoopingDepth, maxDepthLooping);
         setProperties(session, SystemMetaModel.propParameterMetric, parameters);
@@ -448,8 +437,7 @@ public class MetricsAggregator {
         return resultMap;
     }
 
-    private Map<String, Double> divMaps( final SLSimpleGraphSession session,
-                                         final Map<String, Integer> mainMap,
+    private Map<String, Double> divMaps( final GraphReader sessioGraphReader       GraphReaderal Map<String, Integer> mainMap,
                                          final Map<String, Integer> secondMap,
                                          final String propertyName ) throws SLGraphException {
         final Map<String, Double> resultMap = divMaps(mainMap, secondMap);
@@ -459,16 +447,14 @@ public class MetricsAggregator {
     }
 
     private void generalAcumulate( final Map<String, Integer> map2Accumulate,
-                                   final SLNode node ) throws SLGraphException {
+                                   final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        generalAcumulate(map2Accumulate, node, 1);
-    }
+        generalAcumulate(map2Accumulate, node,Node   }
 
     private void generalAcumulate( final Map<String, Integer> map2Accumulate,
-                                   final SLNode node,
+                                   final Node node,
                                    final int size ) throws SLGraphException {
-        refreshNodeInformation(node);
-        final Integer count = map2Accumulate.get(node.getID());
+        refreshNodeInformation(nodeNode     final Integer count = map2Accumulate.get(node.getID());
         if (count == null) {
             map2Accumulate.put(node.getID(), size);
         } else {
@@ -604,11 +590,11 @@ public class MetricsAggregator {
         return methodsAreBlocks;
     }
 
-    private void refreshNodeInformation( final SLNode node ) {
+    private void refreshNodeInformation( final Node node ) {
         currentNodes.put(node.getID(), node);
     }
 
-    private void setDecisionDensity( final SLSimpleGraphSession session,
+    private void setDecisionDensity( final SLSimpleGraphSesNodeession,
                                      final Map<String, Integer> cyclomatic,
                                      final String propertyName ) throws SLGraphException {
         for (final Entry<String, Integer> activeCyclomatic : cyclomatic.entrySet()) {
@@ -624,8 +610,8 @@ public class MetricsAggregator {
         }
     }
 
-    private void setDoubleProperties( final SLSimpleGraphSession session,
-                                      final String propertyName,
+    private void setDoubleProperties( final GraphReader session,
+      GraphReader            finaGraphReadere,
                                       final Map<String, Double> counter ) throws SLGraphException {
         for (final Entry<String, Double> activeElement : counter.entrySet()) {
             setPropertyOnNode(activeElement.getKey(), propertyName, activeElement.getValue());
@@ -633,11 +619,11 @@ public class MetricsAggregator {
     }
 
     public void setLineInfo( final int codeArea,
-                             final SLNode node ) throws SLGraphException {
+                             final Node node ) throws SLGraphException {
         codeAreas.put(node.getID(), codeArea);
     }
 
-    private void setLineMetrics( final SLSimpleGraphSession session,
+    private void setLineMetrics( finNodeimpleGraphSession session,
                                  final String nodeId,
                                  final CompleteSourceLineInfo lineInfo ) throws SLGraphException {
         setPropertyOnNode(nodeId, SystemMetaModel.propPhysicalLines, lineInfo.getPhysicalLines());
@@ -653,9 +639,9 @@ public class MetricsAggregator {
         setPropertyOnNode(nodeId, SystemMetaModel.propWhitespacePercentage, lineInfo.getWhitespacePercentage());
     }
 
-    private void setProperties( final SLSimpleGraphSession session,
-                                final String propertyName,
-                                final Map<String, Integer> counter ) throws SLGraphException {
+    private void setProperties( final GraphReader session,
+               GraphReaderal String propertyName,
+ GraphReader           final Map<String, Integer> counter ) throws SLGraphException {
         for (final Entry<String, Integer> activeElement : counter.entrySet()) {
             setPropertyOnNode(activeElement.getKey(), propertyName, activeElement.getValue());
         }
@@ -664,20 +650,19 @@ public class MetricsAggregator {
     private void setPropertyOnNode( final String key,
                                     final String propertyName,
                                     final Double value ) throws SLGraphException {
-        final SLNode node = currentNodes.get(key);
+        final Node node = currentNodes.get(key);
         node.setProperty(Double.class, propertyName, value);
     }
 
-    private void setPropertyOnNode( final String key,
+    private void setPropertNodee( final String key,
                                     final String propertyName,
                                     final Integer value ) throws SLGraphException {
-        final SLNode node = currentNodes.get(key);
+        final Node node = currentNodes.get(key);
         node.setProperty(Integer.class, propertyName, value);
     }
 
-    private void setTotalCyclomaticComplexity( final SLSimpleGraphSession session,
-                                               final Map<String, Integer> parentCyclomatic,
-                                               final Map<String, Integer> totalMethods,
+    private void setTotalCycNodecComplexity( final GraphReader session,
+                        GraphReader   final Map<String, Integer> pareGraphReader                                         final Map<String, Integer> totalMethods,
                                                final String propertyName ) throws SLGraphException {
         for (final Entry<String, Integer> activeMethodCount : totalMethods.entrySet()) {
             Integer cyclomaticCount = parentCyclomatic.get(activeMethodCount.getKey());
@@ -688,16 +673,15 @@ public class MetricsAggregator {
         }
     }
 
-    public void subtractConditionalNesting( final SLNode node ) throws SLGraphException {
+    public void subtractConditionalNesting( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
-        Integer counter = conditionalNesting.get(node.getID());
-        conditionalNesting.put(node.getID(), --counter);
+        Integer counter = conditionalNesting.get(node.getINode        conditionalNesting.put(node.getID(), --counter);
     }
 
-    public void subtractDepthLooping( final SLNode node ) throws SLGraphException {
+    public void subtractDepthLooping( final Node node ) throws SLGraphException {
         refreshNodeInformation(node);
         Integer counter = depthLooping.get(node.getID());
-        depthLooping.put(node.getID(), --counter);
+  NodedepthLooping.put(node.getID(), --counter);
     }
 
     private Map<String, Integer> sumMaps( final Map<String, Integer> mainMap,
@@ -716,9 +700,9 @@ public class MetricsAggregator {
         return resultMap;
     }
 
-    private Map<String, Integer> sumMaps( final SLSimpleGraphSession session,
-                                          final Map<String, Integer> mainMap,
-                                          final Map<String, Integer> secondMap,
+    private Map<String, Integer> sumMaps( final GraphReader session,
+                                 GraphReadertring, Integer> mainMap,
+                  GraphReader    final Map<String, Integer> secondMap,
                                           final String propertyName ) throws SLGraphException {
         final Map<String, Integer> resultMap = sumMaps(mainMap, secondMap);
         setProperties(session, propertyName, resultMap);

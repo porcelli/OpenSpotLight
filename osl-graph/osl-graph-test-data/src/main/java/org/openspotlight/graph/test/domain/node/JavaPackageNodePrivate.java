@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 import org.openspotlight.graph.annotation.SLVisibility;
 import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
 
@@ -58,6 +58,6 @@ import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
  * @author Vitor Hugo Chagas
  */
 @SLVisibility( VisibilityLevel.PRIVATE )
-public interface JavaPackageNodePrivate extends SLNode {
+public interface JavaPackageNodePrivate extends Node {
 
 }

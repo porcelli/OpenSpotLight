@@ -48,8 +48,8 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
-public interface JavaClassNodeWithoutPropertiesAndDescription extends SLNode {
+public interface JavaClassNodeWithoutPropertiesAndDescription extends Node {
 
 }

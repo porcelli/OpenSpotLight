@@ -48,15 +48,15 @@
  */
 package org.openspotlight.graph.test;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.SLNodePredicate;
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.NodePredicate;
 
 /**
  * The Class NamePredicate.
  * 
  * @author Vitor Hugo Chagas
  */
-public class NamePredicate implements SLNodePredicate {
+public class NamePredicate implements NodePredicate {
 
     private static final long serialVersionUID = -8119875059064738404L;
 
@@ -80,7 +80,7 @@ public class NamePredicate implements SLNodePredicate {
      * @see
      * org.apache.commons.collections15.Predicate#evaluate(java.lang.Object)
      */
-    public boolean evaluate( final SLNode node ) {
+    public boolean evaluate( final Node node ) {
         return node.getName().indexOf(name) > -1;
     }
 }

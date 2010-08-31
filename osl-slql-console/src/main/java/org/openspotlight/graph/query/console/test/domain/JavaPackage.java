@@ -48,13 +48,10 @@
  */
 package org.openspotlight.graph.query.console.test.domain;
 
-import org.openspotlight.graph.SLNode;
-
+import org.openspotlight.graph.Node
 /**
  * The Interface JavaPackage.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaPackage extends SLNode {
-
-}
+public interface JavaPackage extends NoNode}

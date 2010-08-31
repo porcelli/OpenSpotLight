@@ -51,7 +51,7 @@ package org.openspotlight.bundle.common.parser;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 public class SLCommonTree extends CommonTree implements SLLineInfo {
 
@@ -60,7 +60,7 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
     private int              endCharPositionInLine = -1;
     private int              endLine               = -1;
 
-    private SLNode           node;
+    private Node           node;
 
     private SLArtifactStream artifactCache         = null;
 
@@ -139,7 +139,7 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
         return endLine;
     }
 
-    public SLNode getNode() {
+    public Node getNode() {
         return node;
     }
 
@@ -167,7 +167,7 @@ public class SLCommonTree extends CommonTree implements SLLineInfo {
         this.endLine = endLine;
     }
 
-    public void setNode( final SLNode node ) {
+    public void setNode( final Node node ) {
         this.node = node;
     }
 

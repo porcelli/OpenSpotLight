@@ -587,12 +587,12 @@ public class JRedisStorageSessionImpl extends
     @Override
     protected Set<StorageNode> internalNodeEntryGetChildrenByType(
                                                                   final Partition partition,
-                                                                  final StorageNode stNodeEntry,
+                                                                  final StorageNode StorageNode,
                                                                   final String type)
             throws Exception {
         final JRedis jredis = factory.getFrom(partition);
 
-        final String parentKey = stNodeEntry.getKey().getKeyAsString();
+        final String parentKey = StorageNode.getKey().getKeyAsString();
         final String keyName =
             type == null
                 ? SET_WITH_NODE_CHILDREN_KEYS
@@ -620,17 +620,17 @@ public class JRedisStorageSessionImpl extends
     @Override
     protected Set<StorageNode> internalNodeEntryGetChildren(
                                                              final Partition partition,
-                                                             final StorageNode stNodeEntry)
+                                                             final StorageNode StorageNode)
         throws Exception {
-        return internalNodeEntryGetChildrenByType(partition, stNodeEntry, null);
+        return internalNodeEntryGetChildrenByType(partition, StorageNode, null);
     }
 
     @Override
     protected StorageNode internalNodeEntryGetParent(final Partition partition,
-                                                      final StorageNode stNodeEntry)
+                                                      final StorageNode StorageNode)
         throws Exception {
 
-        final String parentKeyAsString = stNodeEntry.getKey()
+        final String parentKeyAsString = StorageNode.getKey()
                                               .getParentKeyAsString();
         if (parentKeyAsString == null) { return null; }
         return loadNodeOrReturnNull(parentKeyAsString, partition);
@@ -656,14 +656,14 @@ public class JRedisStorageSessionImpl extends
     }
 
     private Property loadProperty(final Partition partition,
-                                     final PropertyContainer stNodeEntry,
+                                     final PropertyContainer StorageNode,
                                      final String parentKey,
                                      final String propertyName,
                                      final PropertyType type)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
 
-        final Property property = type.createProperty(propertyName, stNodeEntry);
+        final Property property = type.createProperty(propertyName, StorageNode);
         if (type.isKey()) {
             final String value = toStr(jredis.get(KEY_WITH_PROPERTY_VALUE.format(
                                                                            parentKey, propertyName)));
@@ -842,19 +842,19 @@ public class JRedisStorageSessionImpl extends
     protected Set<Property> internalPropertyContainerLoadProperties(
                                                                        final Nothing reference,
                                                                        final Partition partition,
-                                                                       final PropertyContainer stNodeEntry)
+                                                                       final PropertyContainer StorageNode)
         throws Exception {
         final JRedis jredis = factory.getFrom(partition);
         final Set<Property> result = newHashSet();
 
-        final String parentKey = stNodeEntry.getKeyAsString();
+        final String parentKey = StorageNode.getKeyAsString();
         for (final PropertyType type: PropertyType.values()) {
             final String properties = type.getSetName(parentKey);
             if (jredis.exists(properties)) {
                 final List<String> propertyNames = listBytesToListString(jredis
                                                                          .smembers(properties));
                 for (final String propertyName: propertyNames) {
-                    final Property property = loadProperty(partition, stNodeEntry,
+                    final Property property = loadProperty(partition, StorageNode,
                                                        parentKey, propertyName, type);
                     if (property != null) {
                         result.add(property);

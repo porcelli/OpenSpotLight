@@ -66,7 +66,7 @@ public class DbTestNodesAndLinksGeneration {
         final TemplateTask task = new TemplateTask();
         task.setProject(new Project());
         task.setTemplatePath("src/test/resources/template/sourcecode/");
-        task.addTemplateFiles("OslNode.ftl", "OslLink.ftl");
+        task.addTemplateFiles("ONode.ftl", "OslLink.ftl");
         final FileSet xmls = new FileSet();
         xmls.setDir(new File("src/test/resources/data/sourcecode/"));
         xmls.setIncludes("*.xml");

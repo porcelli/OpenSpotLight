@@ -48,8 +48,7 @@
  */
 package org.openspotlight.bundle.language.java.parser.executor;
 
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.Node;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQueryApi;
@@ -61,12 +60,11 @@ class ByPropertyFinder {
 
     private final String         completeArtifactName;
 
-    private final SLSimpleGraphSession session;
-    private final Logger         logger = LoggerFactory.getLogger(getClass());
-    private final SLNode         contextRootNode;
+    private final GraphReadGraphReaderate final Logger         logger = LoggerFactory.getLogger(getClass());
+    private final Node         contextRootNode;
 
     public ByPropertyFinder(
-                             final String completeArtifactName, final SLSimpleGraphSession session, final SLNode contextRootNode ) {
+                             final String completeArtifactName, final GraphReader sessioGraphReadertRootNode ) {
         super();
         this.completeArtifactName = completeArtifactName;
         this.session = session;
@@ -74,7 +72,7 @@ class ByPropertyFinder {
     }
 
     @SuppressWarnings( "unchecked" )
-    <T extends SLNode> T findByProperty( final Class<T> type,
+    <T extends Node> T findByProperty( final Class<T> type,
                                          final String propertyName,
                                          final String propertyValue )
         throws SLQueryException, SLInvalidQuerySyntaxException, SLInvalidQueryElementException {
@@ -82,10 +80,10 @@ class ByPropertyFinder {
         query1.select().type(type.getName()).subTypes().selectEnd().where().type(type.getName()).subTypes().each().property(
                                                                                                                             propertyName).equalsTo().value(
                                                                                                                                                            propertyValue).typeEnd().whereEnd();
-        final List<SLNode> result1 = query1.execute().getNodes();
+        final List<Node> result1 = query1.execute().getNodes();
         if (result1.size() > 0) {
             synchronized (result1.getLockObject()) {
-                for (final SLNode found : result1) {
+                for (final Node found : result1) {
                     if (found.getContext().getRootNode().equals(contextRootNode)) {
                         if (logger.isDebugEnabled()) {
                             logger.debug(completeArtifactName + ": " + "found on 1st try " + found.getName()

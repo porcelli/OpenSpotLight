@@ -60,8 +60,7 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.rmi.registry.LocateRegistry;
@@ -72,7 +71,7 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
 public class MainClass {
 
     public static void main( final String... args ) throws Exception {
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));

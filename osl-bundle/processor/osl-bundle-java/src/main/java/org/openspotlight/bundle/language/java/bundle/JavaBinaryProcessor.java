@@ -58,17 +58,15 @@ import org.openspotlight.bundle.language.java.resolver.JavaGraphNodeSupport;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.util.InvocationCacheFactory;
 import org.openspotlight.common.util.Sha1;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.StreamArtifact;
-import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
-import org.openspotlight.federation.processing.CurrentProcessorContext;
+import org.openspotlight.bundle.processing.BundleProcessorArtifactPhase;
+import org.openspotlight.bundle.processing.CurrentProcessorContext;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.Node;
 import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.domain.node.StorageNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +168,7 @@ public class JavaBinaryProcessor implements BundleProcessorArtifactPhase<StreamA
 
     private static void createNodesFromJarData( final List<TypeDefinition> types,
                                                 final JavaGraphNodeSupport helper,
-                                                final SLSimpleGraphSession session ) throws Exception {
+                                                final GraphReadGraphReaderException {
         final Map<TypeDefinition, JavaType> map = createTypes(types, helper);
         // int count = 0;
         for (final TypeDefinition definition : types) {
@@ -243,7 +241,7 @@ public class JavaBinaryProcessor implements BundleProcessorArtifactPhase<StreamA
     }
 
     public static String discoverContextName( final StreamArtifact artifact,
-                                              SimplePersistCapable<STNodeEntry, STStorageSession> artifactSimplePersist )
+                                              SimplePersistCapable<StorageNode, StStorageSessiontifactSimplePersist )
         throws IOException, SLException {
 
         InputStream is = artifact.getContent().get(artifactSimplePersist);
@@ -311,7 +309,7 @@ public class JavaBinaryProcessor implements BundleProcessorArtifactPhase<StreamA
             logger.debug(" starting to process artifact " + artifact);
         }
         try {
-            SimplePersistCapable<STNodeEntry, STStorageSession> artifactSimplePersist = context.getPersistentArtifactManager().getSimplePersist();
+            SimplePersistCapable<StorageNode, StorStorageSessionfactSimplePersist = context.getPersistentArtifactManager().getSimplePersist();
             final CompiledTypesExtractor extractor = new CompiledTypesExtractor();
             final List<TypeDefinition> types = extractor.getJavaTypes(artifact.getContent().get(artifactSimplePersist),
                                                                       artifact.getArtifactCompleteName());
@@ -320,12 +318,12 @@ public class JavaBinaryProcessor implements BundleProcessorArtifactPhase<StreamA
             final SLContext slContext = context.getGraphSession().createContext(uniqueContextName);
             slContext.getRootNode().setProperty(String.class, "classPathArtifactPath", artifact.getArtifactCompleteName());
             logger.info("creating context " + uniqueContextName + " for artifact " + artifact.getArtifactCompleteName());
-            final SLSimpleGraphSession session = context.getGraphSession();
-            final SLNode currentContextRootNode = session.createContext(uniqueContextName).getRootNode();
-            final SLNode abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
+            final GraphReader sessioGraphReaderSession();
+            final Node currentContextRootNode = session.createContext(uniqueContextName).getRootNode();
+            final Node abstractContextRootNode = session.createContext(JavaConstants.ABSTRACT_CONTEXT).getRootNode();
             final JavaGraphNodeSupport helper = InvocationCacheFactory.createIntoCached(JavaGraphNodeSupport.class,
-                                                                                        new Class<?>[] {SLSimpleGraphSession.class,
-                                                                                            SLNode.class, SLNode.class},
+                                                                                        new Class<?>[] {GraphReader.class,
+        GraphReader                                                                Node.class, Node.class},
                                                                                         new Object[] {session,
                                                                                             currentContextRootNode,
                                                                                             abstractContextRootNode});

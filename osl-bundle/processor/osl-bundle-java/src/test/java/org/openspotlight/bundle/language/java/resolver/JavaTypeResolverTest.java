@@ -69,8 +69,7 @@ import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.idm.AuthenticatedUser;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.util.Arrays;
@@ -100,7 +99,7 @@ public class JavaTypeResolverTest {
     static SLGraph                graph;
 
     /** The session. */
-    static SLSimpleGraphSession session;
+    static GraphReader
 
     static AuthenticatedUser      user;
 
@@ -190,7 +189,7 @@ public class JavaTypeResolverTest {
     @SuppressWarnings( "deprecation" )
     @BeforeClass
     public static void setupJavaFinder() throws Exception {
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));

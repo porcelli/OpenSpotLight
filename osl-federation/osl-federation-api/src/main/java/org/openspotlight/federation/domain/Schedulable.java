@@ -48,8 +48,8 @@
  */
 package org.openspotlight.federation.domain;
 
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 import java.util.List;

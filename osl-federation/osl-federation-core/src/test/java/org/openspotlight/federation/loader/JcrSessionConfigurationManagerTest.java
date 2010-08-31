@@ -53,7 +53,7 @@ import com.google.inject.Injector;
 import org.hamcrest.core.Is;
 import org.jredis.JRedis;
 import org.junit.*;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerModule;
@@ -65,9 +65,8 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
+import org.openspotlight.storage.domain.node.StorageNode;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -84,21 +83,21 @@ public class JcrSessionConfigurationManagerTest extends AbstractConfigurationMan
 
     private static JcrConnectionProvider provider;
 
-    private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    private static SimplePersistCapable<StorageNode, StStStorageSessionPersist;
 
     private static JRedis jredis;
 
     @BeforeClass
     public static void setupJcrRepo() throws Exception {
         provider = JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR);
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StorStorStorageSession.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(),
                 new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.FEDERATION);
-        jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH);
+        simplePersist = injector.getInstance(SimplePersistFactory.class).createSimpRegularPartitionrPartitionrPartition.FEDERATION);
+        jredis = injector.getInstance(JRedisFacRegularPartitionegularPartitionegularPartition.GRAPH);
     }
 
     private Session session;

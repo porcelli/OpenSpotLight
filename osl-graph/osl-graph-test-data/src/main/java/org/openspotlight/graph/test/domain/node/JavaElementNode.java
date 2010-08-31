@@ -48,13 +48,10 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
-
+import org.openspotlight.graph.Node
 /**
  * The Interface JavaElementNode.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaElementNode extends SLNode {
-
-}
+public interface JavaElementNode extends NoNode}

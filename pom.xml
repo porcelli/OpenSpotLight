@@ -149,7 +149,7 @@
                 <configuration>
                     <aggregate>true</aggregate>
                     <outputName>surefire-report-${project.artifactId}</outputName>
-                    <outputDirectory>${PROJECT_HOME}/target/site</outputDirectory>
+                    <outputDirectory>target/site</outputDirectory>
                     <showSuccess>false</showSuccess>
                 </configuration>
             </plugin>
@@ -168,7 +168,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <outputDirectory>${basedir}/target/site</outputDirectory>
+                    <outputDirectory>target/site</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

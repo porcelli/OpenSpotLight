@@ -3,11 +3,11 @@
     <schedulableCommandMap>
       <entry>
         <java-class>org.openspotlight.federation.domain.artifact.ArtifactSource</java-class>
-        <java-class>org.openspotlight.federation.scheduler.ArtifactSourceSchedulable</java-class>
+        <java-class>org.openspotlight.bundle.scheduler.ArtifactSourceSchedulable</java-class>
       </entry>
       <entry>
         <java-class>org.openspotlight.federation.domain.Group</java-class>
-        <java-class>org.openspotlight.federation.scheduler.GroupSchedulable</java-class>
+        <java-class>org.openspotlight.bundle.scheduler.GroupSchedulable</java-class>
       </entry>
     </schedulableCommandMap>
     <defaultSleepingIntervalInMilliseconds>1000</defaultSleepingIntervalInMilliseconds>
@@ -27,7 +27,7 @@
           <hashCode>-731590671</hashCode>
           <bundleTypes>
             <osl.BundleProcessorType>
-              <globalPhase>org.openspotlight.federation.processing.internal.ExampleBundleProcessor</globalPhase>
+              <globalPhase>org.openspotlight.bundle.processing.internal.ExampleBundleProcessor</globalPhase>
               <active>true</active>
               <group reference="../../.."/>
               <sources>

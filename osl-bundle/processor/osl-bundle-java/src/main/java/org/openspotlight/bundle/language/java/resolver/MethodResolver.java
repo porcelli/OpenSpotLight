@@ -51,10 +51,9 @@ package org.openspotlight.bundle.language.java.resolver;
 import org.openspotlight.bundle.common.SLBundleException;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.IncludedResult;
 import org.openspotlight.bundle.language.java.resolver.TypeResolver.ResultOrder;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.exception.SLNodeNotFoundException;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.NodeNotFoundException;
 import org.openspotlight.graph.exception.SLPropertyNotFoundException;
 import org.openspotlight.graph.query.SLInvalidQueryElementException;
 import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
@@ -72,16 +71,16 @@ import static org.openspotlight.common.util.Assertions.checkNotNull;
  * 
  * @author porcelli
  */
-public class MethodResolver<T extends SLNode, M extends SLNode> {
+public class MethodResolver<T extends Node, M extends Node> {
 
     /** The type resolver. */
     private TypeResolver<T>         typeResolver                      = null;
 
     /** The graph session. */
-    private SLSimpleGraphSession graphSession                      = null;
+    private GraphReadGraphReader                 = null;
 
     /** Class that defines the method super type. */
-    private Class<? extends SLNode> methodSuperType                   = null;
+    private Class<? extends Node> methodSuperType                   = null;
 
     /** Class that defines the link between type and method. */
     private Class<? extends SLLink> typeMethodLink                    = null;
@@ -110,8 +109,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
      * @param propertyMethodDefinitionOrderName property name that defines the order of method parameter definition
      */
     public MethodResolver(
-                           final AbstractTypeResolver<T> typeResolver, final SLSimpleGraphSession graphSession,
-                           final Class<? extends SLNode> methodSuperType, final Class<? extends SLLink> typeMethodLink,
+                           final AbstractTypeResolver<T> typeResolver, final GraphReader graphSGraphReader               final Class<? extends Node> methodSuperType, final Class<? extends SLLink> typeMethodLink,
                            final Class<? extends SLLink> methodParameterDefinitionLink, final String propertySimpleMethodName,
                            final String propertyMethodDefinitionOrderName ) {
         checkNotNull("typeResolver", typeResolver);
@@ -301,14 +299,14 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
             final List<T> inputType = new LinkedList<T>();
             inputType.add(activeType);
 
-            final SLQueryResult result = query.execute((Collection<SLNode>)inputType);
+            final SLQueryResult result = query.execute((Collection<Node>)inputType);
 
             // FIXME: where cast bug fixed..: REMOVE THIS!
             final List<XM> validMethods = new LinkedList<XM>();
-            for (final SLNode activeMethod : result.getNodes()) {
+            for (final Node activeMethod : result.getNodes()) {
                 try {
                     validMethods.add((XM)this.graphSession.getNodeByID(activeMethod.getID()));
-                } catch (SLNodeNotFoundException e) {
+                } catch (NodeNotFoundException e) {
                     throw new SLBundleException("", e);
                 }
             }
@@ -322,7 +320,7 @@ public class MethodResolver<T extends SLNode, M extends SLNode> {
             // Now checks for paramTypes
 
             for (final XM activeMethod : validMethods) {
-                final T[] orderedParams = (T[])new SLNode[paramSize];
+                final T[] orderedParams = (T[])new Node[paramSize];
 
                 final Collection<? extends SLLink> links = this.graphSession.getUnidirectionalLinksBySource(
                                                                                                             this.methodParameterDefinitionLink,

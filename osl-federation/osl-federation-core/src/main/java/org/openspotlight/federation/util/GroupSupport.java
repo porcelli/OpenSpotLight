@@ -55,8 +55,7 @@ import org.openspotlight.federation.domain.Group;
 import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -65,7 +64,7 @@ import java.util.Set;
 
 public class GroupSupport {
 
-    private static STNodeEntry getRootNode( final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+    private static StorageNode getRootNode( final SimplePersistCapable<StorageNode, StStStorageSessionPersist ) {
         return simplePersist.getCurrentSession().withPartition(simplePersist.getCurrentPartition()).createNewSimpleNode(
                                                                                                                         "group-differences");
     }
@@ -112,7 +111,7 @@ public class GroupSupport {
         removeDupplicates(differences);
     }
 
-    public static GroupDifferences getDifferences( final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
+    public static GroupDifferences getDifferences( final SimplePersistCapable<StorageNode, StorStorStorageSessionist,
                                                    String repositoryName ) {
         final Iterable<GroupDifferences> result = simplePersist.findByProperties(getRootNode(simplePersist),
                                                                                  GroupDifferences.class,
@@ -137,7 +136,7 @@ public class GroupSupport {
         differences.getRemovedGroups().removeAll(dupplicate);
     }
 
-    public static void saveDifferences( final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist,
+    public static void saveDifferences( final SimplePersistCapable<StorageNode, StoragStoragStorageSession
                                         final GroupDifferences differences ) {
         try {
             Assertions.checkNotNull("differences", differences);

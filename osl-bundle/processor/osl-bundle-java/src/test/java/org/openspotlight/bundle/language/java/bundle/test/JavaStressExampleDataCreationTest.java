@@ -57,13 +57,12 @@ import org.junit.Ignore;
 import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.bundle.JavaBinaryProcessor;
 import org.openspotlight.bundle.language.java.bundle.JavaGlobalPhase;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.*;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.processing.BundleProcessorManager.GlobalExecutionStatus;
-import org.openspotlight.federation.processing.DefaultBundleProcessorManager;
-import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.bundle.processing.BundleProcessorManager.GlobalExecutionStatus;
+import org.openspotlight.bundle.processing.DefaultBundleProcessorManager;
+import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.SLConsts;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.SLNode;
@@ -75,8 +74,7 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.jcr.provider.SessionWithLock;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.domain.RegularPartitionition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -121,12 +119,12 @@ public class JavaStressExampleDataCreationTest {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     public void setupResourcesAndCreateData() throws Exception {
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+        injector.getInstance(JRedisFactory.class).getRegularPartitionrPartition.GRAPH).flushall();
 
         SLGraph graph = injector.getInstance(SLGraph.class);
 

@@ -55,7 +55,7 @@ import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.security.idm.AuthenticatedUser;
 
 /**
- * This interface describes the Detailed Logger. This logger should be used to log information related to the {@link SLNode}
+ * This interface describes the Detailed Logger. This logger should be used to log information related to the {@link Node}
  * subtypes or {@link ConfigurationNode} subtypes.
  * 
  * @author feu

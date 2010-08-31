@@ -9,24 +9,23 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.federation.processing.*;
-import org.openspotlight.federation.scheduler.DefaultScheduler;
-import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.bundle.processing.*;
+import org.openspotlight.bundle.scheduler.DefaultScheduler;
+import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -268,12 +267,12 @@ public class FileChangingUnderBundleProcessorTest {
         delete(FROM_ROOT_PATH); //$NON-NLS-1$
 
         JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
-        injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        JRedis jredis = injector.getInstance(JRedisFactory.class).getFrom(SLPartition.FEDERATION);
+        JRedis jredis = injector.getInstance(JRedisFactory.classRegularPartitionrPartitionrPartition.FEDERATION);
         jredis.flushall();
         jredis.save();
         if (jredis.dbsize() > 0) throw new Exception("database not cleaned");

@@ -47,8 +47,10 @@
  * Boston, MA  02110-1301  USA
  */
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -60,32 +62,21 @@ import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.federation.log.LogEntry;
 import org.openspotlight.federation.log.LoggedObjectInformation;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.guice.SLGraphModule;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.log.DetailedLogger.ErrorCode;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
 import org.openspotlight.persist.support.SimplePersistFactoryImpl;
 import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
-import org.openspotlight.storage.redis.guice.JRedisSTStorageSessionProvider;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class DetailedLoggerTest {
 
@@ -116,7 +107,7 @@ public class DetailedLoggerTest {
 
     private static DetailedLoggerProvider loggerProvider;
 
-    private SLSimpleGraphSession graphSession;
+    private GraphReader graphSession;
 
     private static JcrConnectionProvider provider;
 
@@ -124,13 +115,13 @@ public class DetailedLoggerTest {
 
     private static AuthenticatedUser user;
 
-    private static SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    private static SimplePersistCapable<StorageNode, StorStorStorageSessionist;
 
     @BeforeClass
     public static void setupJcr() throws Exception {
 
         Injector autoFlushInjector = Guice.createInjector(new JRedisStorageModule(
-                STStorageSession.STFlushMode.AUTO,
+                StoragStoragStorageSessionO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repositoryPath")),new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
 
@@ -140,12 +131,9 @@ public class DetailedLoggerTest {
         final User simpleUser = securityFactory.createUser("testUser");
         user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
         SimplePersistFactory simplePersistFactory = new SimplePersistFactoryImpl(
-                autoFlushInjector.getProvider(STStorageSession.class));
-
-        simplePersist = simplePersistFactory.createSimplePersist(SLPartition.LOG);
+                autoFlushInjector.getProvider(StorageSStorageSStorageSessionimplePersist = simplePersistFactory.createSimpRegularPartitionrPartitionrPartition.LOG);
         loggerProvider = new DetailedLoggerProvider(simplePersistFactory,
-                autoFlushInjector.getInstance(JRedisSTStorageSessionProvider.class));
-        
+                autoFlushInjector.getInstance(JRedisStorageSesStorageSesStorageSession  
     }
 
     private DetailedLogger logger;
@@ -172,9 +160,9 @@ public class DetailedLoggerTest {
         logger = loggerProvider.get();
         final ArtifactWithSyntaxInformation artifact = Artifact.createArtifact(StringArtifact.class, "a/b/c/d",
                 ChangeType.INCLUDED);
-        final SLNode node = graphSession.createContext("ctx").getRootNode().addChildNode("node1");
-        final SLNode node2 = node.addChildNode("node2");
-        final SLNode node3 = node2.addChildNode("node3");
+        final Node node = graphSession.createContext("ctx").getRootNode().addChildNode("node1");
+        final Node node2 = node.addChildNode("node2");
+        final Node node3 = node2.addChildNode("node3");
         logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "firstEntry", node3, artifact);
 
         logger.log(user, "tempRepo", DetailedLogger.LogEventType.DEBUG, new CustomErrorCode(), "secondEntry", artifact);

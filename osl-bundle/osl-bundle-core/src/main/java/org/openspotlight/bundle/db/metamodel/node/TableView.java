@@ -48,8 +48,7 @@
  */
 package org.openspotlight.bundle.db.metamodel.node;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node TableView Meta Model. {@link Catalog} should be used as parent. {@link Schema} should be used as parent.
@@ -57,6 +56,4 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "TableView" )
-public interface TableView extends SLNode {
-
-}
+public interface TableView extends NoNode}

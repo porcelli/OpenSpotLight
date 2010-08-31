@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 /**
  * The Interface MethodParam.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface MethodParam extends SLNode {
+public interface MethodParam extends Node {
 
 }

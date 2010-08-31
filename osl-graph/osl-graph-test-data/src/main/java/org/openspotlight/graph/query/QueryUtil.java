@@ -51,7 +51,7 @@ package org.openspotlight.graph.query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openspotlight.common.util.StringBuilderUtil;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 import java.util.Collection;
 
@@ -70,10 +70,10 @@ public class QueryUtil {
      * 
      * @param nodes the nodes
      */
-    static void printResult( final Collection<SLNode> nodes ) {
+    static void printResult( final Collection<Node> nodes ) {
         final StringBuilder buffer = new StringBuilder();
         StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
-        for (final SLNode node : nodes) {
+        for (final Node node : nodes) {
             StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60), StringUtils.rightPad(node.getName(),
                                                                                                                 60),
                                      node.getParent().getName(), '\n');

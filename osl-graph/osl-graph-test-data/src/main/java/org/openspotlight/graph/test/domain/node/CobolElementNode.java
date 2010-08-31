@@ -48,13 +48,10 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
-
+import org.openspotlight.graph.Node
 /**
  * The Interface CobolElementNode.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface CobolElementNode extends SLNode {
-
-}
+public interface CobolElementNode extends NoNode}

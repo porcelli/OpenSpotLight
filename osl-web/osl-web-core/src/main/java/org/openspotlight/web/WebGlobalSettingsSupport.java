@@ -49,7 +49,7 @@
 package org.openspotlight.web;
 
 import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.scheduler.GlobalSettingsSupport;
+import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
 
 public class WebGlobalSettingsSupport {
 

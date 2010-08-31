@@ -48,17 +48,18 @@
  */
 package org.openspotlight.federation.log;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
 import org.openspotlight.guice.ThreadLocalProvider;
 import org.openspotlight.log.DetailedLogger;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STPartition;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.Partition;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.StorageNode;
+
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
 
 /**
  * The Factory used to newPair {@link DetailedLogger}.
@@ -66,27 +67,27 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
 @Singleton
 public final class DetailedLoggerProvider extends ThreadLocalProvider<DetailedLogger> {
 
-    @Inject
-    public DetailedLoggerProvider(
-                                   SimplePersistFactory simplePersistFactory, Provider<STStorageSession> sessionProvider ) {
-        this.simplePersistFactory = simplePersistFactory;
-        this.sessionProvider = sessionProvider;
-    }
+	private final SimplePersistFactory       simplePersistFactory;
 
-    private final SimplePersistFactory       simplePersistFactory;
+	private final Provider<StorageSession> sessionProvider;
 
-    private final Provider<STStorageSession> sessionProvider;
+	private final Partition                partition = RegularPartitions.LOG;
 
-    private final STPartition                partition = SLPartition.LOG;
+	@Inject
+	public DetailedLoggerProvider(
+			final SimplePersistFactory simplePersistFactory, final Provider<StorageSession> sessionProvider ) {
+		this.simplePersistFactory = simplePersistFactory;
+		this.sessionProvider = sessionProvider;
+	}
 
-    @Override
-    protected DetailedLogger createInstance() {
-        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = simplePersistFactory.createSimplePersist(partition);
-        return new DetailedLoggerImpl(simplePersist);
-    }
+	public void closeResources() {
 
-    public void closeResources() {
+	}
 
-    }
+	@Override
+	protected DetailedLogger createInstance() {
+		final SimplePersistCapable<StorageNode, StorageSession> simplePersist = simplePersistFactory.createSimplePersist(partition);
+		return new DetailedLoggerImpl(simplePersist);
+	}
 
 }

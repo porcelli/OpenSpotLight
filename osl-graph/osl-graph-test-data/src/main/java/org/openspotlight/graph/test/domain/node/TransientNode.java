@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 import org.openspotlight.graph.annotation.SLTransient;
 
 /**
@@ -57,6 +57,6 @@ import org.openspotlight.graph.annotation.SLTransient;
  * @author Vitor Hugo Chagas
  */
 @SLTransient
-public interface TransientNode extends SLNode {
+public interface TransientNode extends Node {
 
 }

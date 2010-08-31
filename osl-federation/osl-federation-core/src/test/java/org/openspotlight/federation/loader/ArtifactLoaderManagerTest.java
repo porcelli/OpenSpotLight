@@ -52,9 +52,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.federation.context.ExecutionContext;
-import org.openspotlight.federation.context.ExecutionContextFactory;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.Repository;
@@ -67,8 +67,7 @@ import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -85,12 +84,12 @@ public class ArtifactLoaderManagerTest {
 
     @Test
     public void shouldLoad() throws Exception {
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+        injector.getInstance(JRedisFactory.classRegularPartitionrPartitionrPartition.GRAPH).flushall();
         final GlobalSettings settings = new GlobalSettings();
         settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
         settings.setDefaultSleepingIntervalInMilliseconds(250);

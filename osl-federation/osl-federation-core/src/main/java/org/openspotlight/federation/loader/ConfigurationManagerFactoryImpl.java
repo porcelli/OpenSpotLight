@@ -55,8 +55,7 @@ import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -75,22 +74,22 @@ public class ConfigurationManagerFactoryImpl {
         /**
          * The session.
          */
-        private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+        private final SimplePersistCapable<StorageNode, StStStorageSessionPersist;
 
         /**
          * The Constant globalSettingsRootNode.
          */
-        private final STNodeEntry                                         globalSettingsRootNode;
+        private final StorageNode                                         globalSettingsRootNode;
         /**
          * The Constant repositoriesRootNode.
          */
-        private final STNodeEntry                                         repositoriesRootNode;
+        private final StorageNode                                         repositoriesRootNode;
 
         /**
          * Instantiates a new mutable jcr session configuration manager.
          */
         public MutableConfigurationManager(
-                                            final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+                                            final SimplePersistCapable<StorageNode, StorStorStorageSessionist ) {
             this.simplePersist = simplePersist;
             this.globalSettingsRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration",
                                                                                                   "global-settings");
@@ -224,7 +223,7 @@ public class ConfigurationManagerFactoryImpl {
      * @param simplePersist the simplePersist
      * @return the configuration manager
      */
-    public static ConfigurationManager createMutableUsingSession( final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist ) {
+    public static ConfigurationManager createMutableUsingSession( final SimplePersistCapable<StorageNode, StoragStoragStorageSession) {
         return new MutableConfigurationManager(simplePersist);
     }
 

@@ -60,13 +60,11 @@ import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.common.util.Strings;
 import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.query.SLQueryApi;
+import org.openspotlight.graph.Nodeimport org.openspotlight.graph.query.SLQueryApi;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.domain.RegularPartitionition;
+import org.openspotlight.storage.domain.node.StorageNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +90,7 @@ public class JavaPublicElementsTreeExecutor {
     private final JavaExecutorSupport                           support;
 
     private final boolean                                       quiet                          = false;
-    private SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    private SimplePersistCapable<StorageNode, StStorageSessionmplePersist;
 
     public JavaPublicElementsTreeExecutor(
                                            SimplePersistFactory factory, final JavaExecutorSupport support,
@@ -100,7 +98,7 @@ public class JavaPublicElementsTreeExecutor {
         super();
         this.support = support;
         this.parsingSupport = parsingSupport;
-        simplePersist = factory.createSimplePersist(SLPartition.LINE_REFERENCE);
+        simplePersist = factory.createSimplePerRegularPartitionrPartition.LINE_REFERENCE);
         completeArtifactName = support.completeArtifactName;
         this.artifactVersion = artifactVersion;
 
@@ -115,7 +113,7 @@ public class JavaPublicElementsTreeExecutor {
     }
 
     public void addLineReference( final CommonTree commonTree,
-                                  final SLNode node ) {
+                                  final NoNodee ) {
         Assertions.checkNotNull("commonTree", commonTree);
         Assertions.checkNotNull("node", node);
         try {
@@ -141,16 +139,14 @@ public class JavaPublicElementsTreeExecutor {
         }
     }
 
-    public SLNode createAnnotation( final SLNode peek,
-                                    final String string,
+    public NodeNodeeAnnotation( final Node pNode                                   final String string,
                                     final List<JavaModifier> modifiers64,
                                     final List<JavaType> annotations65 ) {
         return createInnerTypeWithSateliteData(peek, string, modifiers64, annotations65, null, null, JavaTypeAnnotation.class,
                                                null);
     }
 
-    public JavaType createAnonymousClass( final SLNode peek,
-                                          final JavaType superType ) {
+    public JavaType createAnonymousClass( final Node peeNode                                       final JavaType superType ) {
         try {
             return createInnerTypeWithSateliteData(peek, peek.getName() + "$" + currentAnonymousInnerClassName, null, null,
                                                    superType, null, JavaTypeClass.class, null);
@@ -163,8 +159,7 @@ public class JavaPublicElementsTreeExecutor {
         }
     }
 
-    public JavaTypeEnum createEnum( final SLNode parent,
-                                    final String name,
+    public JavaTypeEnum createEnum( final Node parenNode                                 final String name,
                                     final List<JavaModifier> modifiers,
                                     final List<JavaType> annotations,
                                     final List<JavaType> interfaces ) {
@@ -173,16 +168,16 @@ public class JavaPublicElementsTreeExecutor {
                                                null);
     }
 
-    public List<SLNode> createFieldDeclaration( final SLNode peek,
-                                                final List<JavaModifier> modifiers29,
+    public List<Node> createNodeeclaration( final Node peek,
+   Node                                       final List<JavaModifier> modifiers29,
                                                 final List<JavaType> annotations30,
                                                 final JavaType type31,
                                                 final List<VariableDeclarationDto> variables ) {
         try {
             final String qualifiedParent = ((JavaType)peek).getQualifiedName() + ".";
-            final SLNode concreteParent = support.findEquivalend(peek, WhatContext.CONCRETE);
-            final List<SLNode> nodes = new ArrayList<SLNode>();
-            for (final VariableDeclarationDto var : variables) {
+            final Node concreteParNodesupport.findEquivalend(peek, WhatContext.CONCRETE);
+            final List<Node> nodes = new Nodeist<Node>();
+           Nodefinal VariableDeclarationDto var : variables) {
                 final JavaDataField newField = concreteParent.addChildNode(JavaDataField.class, var.getName());
                 support.session.addLink(DataType.class, newField, type31, false);
 
@@ -233,8 +228,8 @@ public class JavaPublicElementsTreeExecutor {
 
     }
 
-    private <T extends JavaType> T createInnerTypeWithSateliteData( final SLNode peek,
-                                                                    final String string,
+    private <T extends JavaType> T createInnerTypeWithSateliteData( final Node peek,
+           Node                                                   final String string,
                                                                     final List<JavaModifier> modifiers7,
                                                                     final List<JavaType> annotations8,
                                                                     final JavaType normalClassExtends9,
@@ -266,7 +261,7 @@ public class JavaPublicElementsTreeExecutor {
                              + annotationsStr + ", extends=" + (normalClassExtends9 != null ? normalClassExtends9.getName() : "")
                              + ", implements=" + implementsStr);
             }
-            final SLNode concreteParent = support.findEquivalend(peek, WhatContext.CONCRETE);
+            final Node concreteParent = suNodefindEquivalend(peek, WhatContext.CONCRETE);
             final T newClass = createNodeOnBothContexts(JavaType.class, type, concreteParent, string);
             final JavaType newAbstractClass = support.findEquivalend(newClass, WhatContext.ABSTRACT);
             final StringBuilder qualifiedNameBuff = new StringBuilder();
@@ -275,7 +270,7 @@ public class JavaPublicElementsTreeExecutor {
                 newClass.setInner(true);
                 newAbstractClass.setInner(true);
                 support.session.addLink(InnerClass.class, newClass, concreteParent, false);
-                SLNode abstractParent = support.findEquivalend(concreteParent, WhatContext.ABSTRACT);
+                Node abstractParent = suppNodendEquivalend(concreteParent, WhatContext.ABSTRACT);
                 if (abstractParent == null) {
                     abstractParent = concreteParent;
                 }
@@ -290,7 +285,7 @@ public class JavaPublicElementsTreeExecutor {
                              + (newClass != null ? newClass.getName() : "null"));
             }
             support.session.addLink(PackageType.class, currentPackage, newClass, false);
-            SLNode abstractParent = support.findEquivalend(currentPackage, WhatContext.ABSTRACT);
+            Node abstractParent = supporNodeEquivalend(currentPackage, WhatContext.ABSTRACT);
             if (abstractParent == null) {
                 abstractParent = currentPackage;
             }
@@ -333,7 +328,7 @@ public class JavaPublicElementsTreeExecutor {
             if (normalClassExtends9 != null) {
                 support.session.addLink(linkType, newClass, normalClassExtends9, false);
                 addIncludedStaticClass(normalClassExtends9.getQualifiedName());
-                SLNode superType = support.findEquivalend(normalClassExtends9, WhatContext.ABSTRACT);
+                Node superType = support.findENodeend(normalClassExtends9, WhatContext.ABSTRACT);
                 if (superType == null) {
                     superType = normalClassExtends9;
                 }
@@ -342,11 +337,11 @@ public class JavaPublicElementsTreeExecutor {
                 packagesQuery.select().type(JavaType.class.getName()).subTypes().byLink(linkType.getName()).b().selectEnd().select().type(
                                                                                                                                           JavaPackage.class.getName()).byLink(
                                                                                                                                                                               PackageType.class.getName()).selectEnd().keepResult().executeXTimes();
-                final List<SLNode> nodes = packagesQuery.execute(Arrays.asList(superType)).getNodes();
+                final List<Node> nodes = packagesQuery.execNoderays.asList(superType)).getNodes();
                 if (nodes.size() > 0) {
                     synchronized (nodes.getLockObject()) {
-                        for (final SLNode node : nodes) {
-                            importDeclaration(currentPackage, false, true, node.getName());
+                        for (final Node node : nodes) {
+             Node         importDeclaration(currentPackage, false, true, node.getName());
                         }
                     }
                 }
@@ -374,11 +369,11 @@ public class JavaPublicElementsTreeExecutor {
                     packagesQuery.select().type(JavaType.class.getName()).subTypes().byLink(Implements.class.getName()).b().selectEnd().select().type(
                                                                                                                                                       JavaPackage.class.getName()).byLink(
                                                                                                                                                                                           PackageType.class.getName()).selectEnd().keepResult().executeXTimes();
-                    List<SLNode> nodes = packagesQuery.execute(Arrays.asList((SLNode)interfaceType)).getNodes();
-                    if (nodes.size() > 0) {
+                    List<Node> nodes = packagesQuery.execute(Node.asList((Node)interfaceType)).getNodes();
+     Node         if (nodes.size() > 0) {
                         synchronized (nodes.getLockObject()) {
-                            for (final SLNode node : nodes) {
-                                importDeclaration(currentPackage, false, true, node.getName());
+                            for (final Node node : nodes) {
+                   Node       importDeclaration(currentPackage, false, true, node.getName());
                             }
                         }
                     }
@@ -389,11 +384,11 @@ public class JavaPublicElementsTreeExecutor {
                     packagesQuery.select().type(JavaType.class.getName()).subTypes().byLink(InterfaceExtends.class.getName()).b().selectEnd().select().type(
                                                                                                                                                             JavaPackage.class.getName()).byLink(
                                                                                                                                                                                                 PackageType.class.getName()).selectEnd().keepResult().executeXTimes();
-                    nodes = packagesQuery.execute(Arrays.asList((SLNode)interfaceType)).getNodes();
-                    if (nodes.size() > 0) {
+                    nodes = packagesQuery.execute(Arrays.asList((Node)interfaceType)).getNodes();
+         Node     if (nodes.size() > 0) {
                         synchronized (nodes.getLockObject()) {
-                            for (final SLNode node : nodes) {
-                                importDeclaration(currentPackage, false, true, node.getName());
+                            for (final Node node : nodes) {
+                       Node   importDeclaration(currentPackage, false, true, node.getName());
                             }
                         }
                     }
@@ -426,8 +421,8 @@ public class JavaPublicElementsTreeExecutor {
 
     }
 
-    public JavaTypeInterface createInterface( final SLNode peek,
-                                              final String string,
+    public JavaTypeInterface createInterface( final Node peek,
+                                   Node     final String string,
                                               final List<JavaModifier> modifiers19,
                                               final List<JavaType> annotations20,
                                               final List<JavaType> normalInterfaceDeclarationExtends21,
@@ -436,8 +431,8 @@ public class JavaPublicElementsTreeExecutor {
                                                normalInterfaceDeclarationExtends21, JavaTypeInterface.class, typeParameters28);
     }
 
-    public JavaTypeClass createJavaClass( final SLNode peek,
-                                          final String string,
+    public JavaTypeClass createJavaClass( final Node peek,
+                                     Nodeinal String string,
                                           final List<JavaModifier> modifiers7,
                                           final List<JavaType> annotations8,
                                           final JavaType normalClassExtends9,
@@ -449,8 +444,8 @@ public class JavaPublicElementsTreeExecutor {
         return javaClass;
     }
 
-    public JavaMethod createMethodConstructorDeclaration( final SLNode peek,
-                                                          final String string,
+    public JavaMethod createMethodConstructorDeclaration( final Node peek,
+                                       Node             final String string,
                                                           final List<JavaModifier> modifiers25,
                                                           final List<VariableDeclarationDto> formalParameters26,
                                                           final List<JavaType> annotations27,
@@ -460,8 +455,8 @@ public class JavaPublicElementsTreeExecutor {
 
     }
 
-    public JavaMethod createMethodDeclaration( final SLNode peek,
-                                               final String string,
+    public JavaMethod createMethodDeclaration( final Node peek,
+                                         Nodefinal String string,
                                                final List<JavaModifier> modifiers33,
                                                final List<VariableDeclarationDto> formalParameters34,
                                                final List<JavaType> annotations35,
@@ -471,14 +466,14 @@ public class JavaPublicElementsTreeExecutor {
                                     typeBodyDeclarationThrows37, false);
     }
 
-    private <T extends SLNode> T createNodeOnBothContexts( final Class<? extends SLNode> abstractType,
-                                                           final Class<T> type,
-                                                           final SLNode parent,
-                                                           final String name ) {
+    private <T extends Node> T createNodeOnBothContexts( final Class<? extendNode> abstractType,
+                                    Node                 final Class<T> type,
+                                                           final Node parent,
+                                             Node        final String name ) {
         try {
             final T newNode = parent.addChildNode(type, name);
-            SLNode cachedParent;
-            if (parent.getContext().equals(support.abstractContext.getContext())) {
+            Node cachedParent;
+            if (parent.getContext().equalNodeort.abstractContext.getContext())) {
                 cachedParent = parent;
             } else {
                 cachedParent = support.findEquivalend(parent, WhatContext.ABSTRACT);
@@ -486,7 +481,7 @@ public class JavaPublicElementsTreeExecutor {
             if (cachedParent == null) {
                 cachedParent = support.findEquivalend(parent, WhatContext.ABSTRACT);
             }
-            final SLNode newAbstractNode = cachedParent.addChildNode(abstractType, name);
+            final Node newAbstractNode = cachedParent.addChildNode(abstractType,Node;
             support.putOnBothCaches(newNode, newAbstractNode);
             support.session.addLink(AbstractTypeBind.class, newAbstractNode, newNode, false);
             return newNode;
@@ -499,21 +494,21 @@ public class JavaPublicElementsTreeExecutor {
         }
     }
 
-    private <T extends SLNode> T createNodeOnBothContexts( final Class<? extends SLNode> abstractType,
-                                                           final Class<T> type,
+    private <T extends Node> T createNodeOnBothContexts( final Class<? extends Node> abNodeType,
+                                              Node       final Class<T> type,
                                                            final String name ) {
         return this.createNodeOnBothContexts(abstractType, type, support.currentContext, name);
     }
 
     @SuppressWarnings( "unused" )
-    private <T extends SLNode> T createNodeOnBothContexts( final Class<T> type,
-                                                           final SLNode parent,
-                                                           final String name ) {
+    private <T extends Node> T createNodeOnBothContexts( final Class<T> type,
+             Node                                        final Node parent,
+                                                         Nodel String name ) {
         return this.createNodeOnBothContexts(type, type, parent, name);
     }
 
-    private <T extends SLNode> T createNodeOnBothContexts( final Class<T> type,
-                                                           final String name ) {
+    private <T extends Node> T createNodeOnBothContexts( final Class<T> type,
+                 Node                                    final String name ) {
         return this.createNodeOnBothContexts(type, type, name);
     }
 
@@ -523,8 +518,8 @@ public class JavaPublicElementsTreeExecutor {
             return simpleOne;
         }
         try {
-            final SLNode parent = simpleOne.getParent();
-            final String arrayName = simpleOne.getName() + "[]";
+            final Node parent = simpleOne.getParent();
+            final String arrayName = NodeOne.getName() + "[]";
             JavaType arrayNode = (JavaType)parent.getNode(arrayName);
             if (arrayNode == null) {
                 @SuppressWarnings( "unchecked" )
@@ -561,8 +556,8 @@ public class JavaPublicElementsTreeExecutor {
 
     public JavaTypeParameterizedExtended findExtendsParameterizedType( final JavaType simpleOne ) {
         try {
-            final SLNode parent = simpleOne.getParent();
-            final String parameterizedName = "<? extends " + simpleOne.getName() + ">";
+            final Node parent = simpleOne.getParent();
+            final String parameterizedNNode"<? extends " + simpleOne.getName() + ">";
             JavaTypeParameterizedExtended parameterizedNode = (JavaTypeParameterizedExtended)parent.getNode(parameterizedName);
             if (parameterizedNode == null) {
                 parameterizedNode = parent.addChildNode(JavaTypeParameterizedExtended.class, parameterizedName);
@@ -583,8 +578,8 @@ public class JavaPublicElementsTreeExecutor {
     public JavaTypeParameterized findParamerizedType( final JavaType simpleOne,
                                                       final List<JavaType> typeArguments40 ) {
         try {
-            final SLNode parent = simpleOne.getParent();
-            final StringBuilder parameterizedNameBuilder = new StringBuilder();
+            final Node parent = simpleOne.getParent();
+            final StringBuilder parameterNodemeBuilder = new StringBuilder();
             parameterizedNameBuilder.append('<');
             for (int i = 0, size = typeArguments40.size(); i < size; i++) {
                 parameterizedNameBuilder.append('?');
@@ -630,8 +625,8 @@ public class JavaPublicElementsTreeExecutor {
     public JavaTypeParameterizedSuper findSuperParameterizedType( final JavaType typeReturn ) {
         try {
             final JavaType simpleOne = findSimpleType(typeReturn.getQualifiedName());
-            final SLNode parent = simpleOne.getParent();
-            final String parameterizedName = "<? super " + simpleOne.getName() + ">";
+            final Node parent = simpleOne.getParent();
+            final String parameterizedName Nodesuper " + simpleOne.getName() + ">";
             JavaTypeParameterizedSuper parameterizedNode = (JavaTypeParameterizedSuper)parent.getNode(parameterizedName);
             if (parameterizedNode == null) {
                 parameterizedNode = parent.addChildNode(JavaTypeParameterizedSuper.class, parameterizedName);
@@ -666,9 +661,9 @@ public class JavaPublicElementsTreeExecutor {
         return JavaModifier.getByName(string);
     }
 
-    public SLNode importDeclaration( final SLNode peek,
-                                     final boolean isStatic,
-                                     final boolean starred,
+    public Node importDeclaration( final Node peek,
+                                     finaNodeean isStatic,
+            Node                   final boolean starred,
                                      final String string ) {
         try {
             if (isStatic) {
@@ -734,18 +729,18 @@ public class JavaPublicElementsTreeExecutor {
 
     }
 
-    private JavaMethod internalCreateMethod( final SLNode peek,
+    private JavaMethod internalCreateMethod( final Node peek,
                                              final String string,
-                                             final List<JavaModifier> modifiers33,
+         Node                              final List<JavaModifier> modifiers33,
                                              final List<VariableDeclarationDto> formalParameters34,
                                              final List<JavaType> annotations35,
                                              final JavaType type36,
                                              final List<JavaType> typeBodyDeclarationThrows37,
                                              final boolean constructor ) {
         try {
-            final SLNode concreteParent = support.findEquivalend(peek, WhatContext.CONCRETE);
+            final Node concreteParent = support.findEquivalend(peek, WhatContext.CONCRETE);
 
-            final StringBuilder completeMethodName = new StringBuilder();
+            fNodetringBuilder completeMethodName = new StringBuilder();
             completeMethodName.append(string);
             completeMethodName.append('(');
             for (int i = 0, size = formalParameters34.size(); i < size; i++) {
@@ -795,9 +790,9 @@ public class JavaPublicElementsTreeExecutor {
             javaMethod.setQualifiedName(complMethodName);
             javaMethod.setSimpleName(string);
             final StringBuilder qualifiedNameBuff = new StringBuilder();
-            SLNode parent = concreteParent;
+            Node parent = concreteParent;
             do {
-                qualifiedNameBuff.append(parent.getName());
+                qualifiedNameBuff.append(paNodeetName());
                 qualifiedNameBuff.append('.');
                 parent = parent.getParent();
             } while (parent instanceof JavaType);

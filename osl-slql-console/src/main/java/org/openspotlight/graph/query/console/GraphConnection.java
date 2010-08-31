@@ -49,8 +49,7 @@
 package org.openspotlight.graph.query.console;
 
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.client.RemoteGraphSessionFactory;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionDataImpl;
 
 import java.io.IOException;
@@ -65,9 +64,7 @@ public class GraphConnection {
     private RemoteGraphSessionFactory factory;
 
     /**
-     * Connects at server and returns {@link org.openspotlight.graph.SLSimpleGraphSession}.
-     * 
-     * @param serverName the server name
+     * Connects at server and returns {@link org.openspotlight.graph.GraphReadGraphReader@param serverName the server name
      * @param portNumber the port number
      * @param userName the user name
      * @param passw the passw
@@ -77,7 +74,7 @@ public class GraphConnection {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws ClassNotFoundException the class not found exception
      */
-    public SLSimpleGraphSession connect( final String serverName,
+    public GraphReader connecGraphReadererName,
                                    final int portNumber,
                                    final String userName,
                                    final String passw,

@@ -51,14 +51,13 @@ package org.openspotlight.bundle.db.processor;
 import org.openspotlight.bundle.db.processor.DbProcessorHelper.ParentVo;
 import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
 import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
 import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
-import org.openspotlight.federation.processing.*;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 
 import java.util.Set;
 
@@ -92,7 +91,7 @@ public class DbArtifactGlobalProcessor implements BundleProcessorGlobalPhase<Dat
                 final ParentVo parent = createTableParentNodes(wrappedType, tableArtifact, currentContext, context);
 
 
-                final SLNode tableNode = parent.parent.getNode(tableArtifact.getTableName());
+                final Node tableNode = parent.parent.getNode(tableArtifact.getTableName());
                 if (tableNode != null) {
                     tableNode.remove();
                 }
@@ -105,7 +104,7 @@ public class DbArtifactGlobalProcessor implements BundleProcessorGlobalPhase<Dat
                                                                constraintArtifact.getSchemaName(),
                                                                constraintArtifact.getCatalogName());
 
-                final SLNode constraintNode = parent.parent.getNode(constraintArtifact.getConstraintName());
+                final Node constraintNode = parent.parent.getNode(constraintArtifact.getConstraintName());
                 if (constraintNode != null) {
                     constraintNode.remove();
                 }
@@ -119,7 +118,7 @@ public class DbArtifactGlobalProcessor implements BundleProcessorGlobalPhase<Dat
                                                                constraintArtifact.getFromSchemaName(),
                                                                constraintArtifact.getFromCatalogName());
 
-                final SLNode constraintNode = parent.database.getNode(constraintArtifact.getConstraintName());
+                final Node constraintNode = parent.database.getNode(constraintArtifact.getConstraintName());
                 if (constraintNode != null) {
                     constraintNode.remove();
                 }

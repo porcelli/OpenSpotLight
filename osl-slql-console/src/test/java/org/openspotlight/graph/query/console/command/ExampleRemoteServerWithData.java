@@ -65,8 +65,7 @@ import org.openspotlight.security.SecurityFactory;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.User;
 import org.openspotlight.security.idm.auth.IdentityException;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.io.IOException;
@@ -91,7 +90,7 @@ public class ExampleRemoteServerWithData {
          * @param javaClass the java class
          * @param session   the session
          */
-        private void addClassImplementsInterfaceLinks(final SLSimpleGraphSession session,
+        private void addClassImplementsInterfaceLinks(final GraphReader
                                                       final SLNode root,
                                                       final Class<?> clazz,
                                                       final JavaClass javaClass) {
@@ -113,8 +112,7 @@ public class ExampleRemoteServerWithData {
          * @param javaClass the java class
          * @param session   the session
          */
-        private void addJavaClassContainsJavaClassMethod(final SLSimpleGraphSession session,
-                                                         final Class<?> clazz,
+        private void addJavaClassContainsJavaClassMethod(final GraphReadGraphReader                                                 final Class<?> clazz,
                                                          final JavaClass javaClass) {
             final Method[] methods = clazz.getDeclaredMethods();
             for (final Method method : methods) {
@@ -132,8 +130,7 @@ public class ExampleRemoteServerWithData {
          * @param javaClass the java class
          * @param session   the session
          */
-        private void addJavaClassHirarchyLinks(final SLSimpleGraphSession session,
-                                               final SLNode root,
+        private void addJavaClassHirarchyLinks(final GraphReader sessioGraphReader                              final SLNode root,
                                                final Class<?> clazz,
                                                final JavaClass javaClass) {
             final Class<?> superClass = clazz.getSuperclass();
@@ -155,8 +152,8 @@ public class ExampleRemoteServerWithData {
          * @param javaInterface the java interface
          * @param session       the session
          */
-        private void addJavaInterfaceContainsJavaMethod(final SLSimpleGraphSession session,
-                                                        final Class<?> iFace,
+        private void addJavaInterfaceContainsJavaMethod(final GraphReader session,
+      GraphReader                              final Class<?> iFace,
                                                         final JavaInterface javaInterface) {
             final Method[] methods = iFace.getDeclaredMethods();
             for (final Method method : methods) {
@@ -174,8 +171,8 @@ public class ExampleRemoteServerWithData {
          * @param javaInterface the java interface
          * @param session       the session
          */
-        private void addJavaInterfaceHirarchyLinks(final SLSimpleGraphSession session,
-                                                   final SLNode root,
+        private void addJavaInterfaceHirarchyLinks(final GraphReader session,
+               GraphReader                final SLNode root,
                                                    final Class<?> iFace,
                                                    final JavaInterface javaInterface) {
             final Class<?>[] superIFaces = iFace.getInterfaces();
@@ -226,7 +223,7 @@ public class ExampleRemoteServerWithData {
         public void populateGraph() throws SLException, IOException, ClassNotFoundException, IdentityException {
 
 
-            Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+            Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                     ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                     repositoryPath(SLConsts.DEFAULT_REPOSITORY_NAME)),
                     new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
@@ -237,7 +234,7 @@ public class ExampleRemoteServerWithData {
             final User simpleUser = securityFactory.createUser("testUser");
             AuthenticatedUser user = securityFactory.createIdentityManager(DefaultJcrDescriptor.TEMP_DESCRIPTOR).authenticate(simpleUser, "password");
 
-            final SLSimpleGraphSession session = graph.openSession(user, SLConsts.DEFAULT_REPOSITORY_NAME);
+            final GraphReader session = graph.openSession(user,GraphReaderPOSITORY_NAME);
 
             final Collection<Class<?>> iFaces = this.loadClasses("java-util-interfaces.txt");
             final Collection<Class<?>> classes = this.loadClasses("java-util-classes.txt");

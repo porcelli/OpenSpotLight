@@ -49,12 +49,11 @@
 package org.openspotlight.bundle.common.parser;
 
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.SLNode;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.RegularPartitions;
+import org.openspotlight.storage.domain.StorageNode;
 
 /**
  * A supporter class for parsing related actions.
@@ -63,11 +62,11 @@ import org.openspotlight.storage.domain.node.STNodeEntry;
  */
 public class ParsingSupport {
 
-    private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
     public ParsingSupport(
                            SimplePersistFactory simplePersistFactory ) {
-        this.simplePersist = simplePersistFactory.createSimplePersist(SLPartition.LINE_REFERENCE);
+        this.simplePersist = simplePersistFactory.createSimplePersist(RegularPartitions.LINE_REFERENCE);
     }
 
     /**
@@ -79,13 +78,13 @@ public class ParsingSupport {
      */
     public void createLineReference( final SLLineInfo lineInfo,
                                      final String statement,
-                                     final SLNode... nodes ) {
+                                     final Node... nodes ) {
         try {
             if (lineInfo == null || lineInfo.getArtifact() == null) {
                 return;
             }
             if (nodes != null) {
-                for (final SLNode node : nodes) {
+                for (final Node node : nodes) {
                     if (node != null) {
                         try {
                             node.addLineReference(lineInfo.getStartLine(), lineInfo.getEndLine(),

@@ -51,7 +51,7 @@ package org.openspotlight.federation.loader;
 import org.junit.Test;
 import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.processing.internal.ExampleBundleProcessor;
+import org.openspotlight.bundle.processing.internal.ExampleBundleProcessor;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;

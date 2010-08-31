@@ -52,19 +52,18 @@ import org.openspotlight.federation.domain.artifact.ArtifactWithSyntaxInformatio
 import org.openspotlight.federation.domain.artifact.SyntaxInformationType;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
+import org.openspotlight.storage.domain.node.StorageNode;
 
 public class SyntaxInformationAggregator {
     private final ArtifactWithSyntaxInformation                       artifact;
 
-    private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    private final SimplePersistCapable<StorageNode, StStStorageSessionPersist;
 
     public SyntaxInformationAggregator(
                                         SimplePersistFactory simplePersistFactory, final ArtifactWithSyntaxInformation artifact ) {
         this.artifact = artifact;
-        this.simplePersist = simplePersistFactory.createSimplePersist(SLPartition.SYNTAX_HIGHLIGHT);
+        this.simplePersist = simplePersistFactory.createSimpRegularPartitionrPartitionrPartition.SYNTAX_HIGHLIGHT);
     }
 
     public void addHidden( final int tokenLine,

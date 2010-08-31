@@ -53,7 +53,7 @@ import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.GlobalSettings;
 import org.openspotlight.federation.domain.artifact.db.*;
@@ -66,8 +66,7 @@ import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.sql.Connection;
@@ -105,7 +104,7 @@ public class DatabaseCustomTest {
         bundle.setInitialLookup("jdbc:h2:./target/test-data/DatabaseArtifactLoaderTest/h2/inclusions/db");
         finder = new DatabaseCustomArtifactFinder();
 
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),

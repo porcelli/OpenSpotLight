@@ -48,30 +48,20 @@
  */
 package org.openspotlight.graph.server.test;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.SLSimpleGraphSession;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory;
 import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
-import org.openspotlight.graph.exception.SLGraphException;
-import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.graph.server.RemoteGraphSessionServer;
 import org.openspotlight.graph.test.BaseGraphTest;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * The Class SLGraphTest.
@@ -80,12 +70,6 @@ import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
  */
 
 public class SLRemoteGraphTest extends BaseGraphTest {
-    @Override
-    protected void clearSession() {
-        session.close();
-        session = null;
-    }
-
     private static final String userName = "testUser";
 
     private static final String pass = "password";
@@ -97,14 +81,14 @@ public class SLRemoteGraphTest extends BaseGraphTest {
     @BeforeClass
     public static void init() throws Exception {
         JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        final Injector injector = Guice.createInjector(new JRedisStorageModule(StorageSessionlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
+        injector.getInstance(JRedisFactory.class).getFrom(RegularPartitionitionition.GRAPH).flushall();
 
 
-        SLGraph graph = injector.getInstance(SLGraph.class);
+        final SLGraph graph = injector.getInstance(SLGraph.class);
 
         server = new RemoteGraphSessionServer(new UserAuthenticator() {
 
@@ -115,7 +99,7 @@ public class SLRemoteGraphTest extends BaseGraphTest {
             }
 
             @Override
-            public boolean equals(Object obj) {
+            public boolean equals(final Object obj) {
                 return true;
             }
         }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR, graph);
@@ -123,7 +107,11 @@ public class SLRemoteGraphTest extends BaseGraphTest {
     }
 
     @Override
-    public SLSimpleGraphSession openSession() throws SLGraphException {
+    protected void clearSession() {
+    }
+
+    @Override
+    public GraphReaderows SLGraphException {
         return client.createRemoteGraphSession(userName, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
     }
 

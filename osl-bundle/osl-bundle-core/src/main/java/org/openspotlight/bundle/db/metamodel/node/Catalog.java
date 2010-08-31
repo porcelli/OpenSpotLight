@@ -48,7 +48,7 @@
  */
 package org.openspotlight.bundle.db.metamodel.node;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 import org.openspotlight.graph.annotation.SLDescription;
 
 /**
@@ -57,6 +57,6 @@ import org.openspotlight.graph.annotation.SLDescription;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Catalog" )
-public interface Catalog extends SLNode {
+public interface Catalog extends Node {
 
 }

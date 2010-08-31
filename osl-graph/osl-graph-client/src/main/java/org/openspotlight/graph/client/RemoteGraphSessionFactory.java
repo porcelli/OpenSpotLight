@@ -49,7 +49,7 @@
 package org.openspotlight.graph.client;
 
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.graph.SLSimpleGraphSession;
+import org.openspotlight.graph.SimpleGraphSession;
 import org.openspotlight.remote.client.CantConnectException;
 import org.openspotlight.remote.client.RemoteObjectFactory;
 import org.openspotlight.remote.server.AccessDeniedException;
@@ -157,13 +157,13 @@ public class RemoteGraphSessionFactory {
     /**
      * Creates a new RemoteGraphSession object.
      * 
-     * @return the SL graph session
+     * @return the  graph session
      */
-    public SLSimpleGraphSession createRemoteGraphSession( final String username,
+    public SimpleGraphSession createRemoteGraphSession( final String username,
                                                     final String password,
                                                     final String repository ) {
         try {
-            return remoteObjectFactory.createRemoteObject(SLSimpleGraphSession.class, username, password, repository);
+            return remoteObjectFactory.createRemoteObject(SimpleGraphSession.class, username, password, repository);
         } catch (final InvalidReferenceTypeException e) {
             throw logAndReturnNew(e, ConfigurationException.class);
         }

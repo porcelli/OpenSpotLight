@@ -48,10 +48,9 @@
  */
 package org.openspotlight.bundle.common.metrics;
 
-import org.openspotlight.graph.SLNode;
-import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.Node;
 
-public interface SLNodeWithMetrics extends SLNode {
+public interface NodeWithMetrics extends Node {
 
     @SLProperty
     public Integer getBlocksCount();

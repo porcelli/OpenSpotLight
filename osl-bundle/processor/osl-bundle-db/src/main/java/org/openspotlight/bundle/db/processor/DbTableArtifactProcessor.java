@@ -50,11 +50,11 @@ package org.openspotlight.bundle.db.processor;
 
 import org.openspotlight.bundle.db.processor.DbProcessorHelper.TableVo;
 import org.openspotlight.bundle.db.processor.wrapped.WrappedTypeFactory;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 import org.openspotlight.federation.domain.artifact.db.TableArtifact;
-import org.openspotlight.federation.processing.BundleProcessorArtifactPhase;
-import org.openspotlight.federation.processing.CurrentProcessorContext;
+import org.openspotlight.bundle.processing.BundleProcessorArtifactPhase;
+import org.openspotlight.bundle.processing.CurrentProcessorContext;
 
 import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createColumns;
 import static org.openspotlight.bundle.db.processor.DbProcessorHelper.createTableData;

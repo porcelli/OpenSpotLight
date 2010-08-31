@@ -89,7 +89,7 @@ public interface StorageSession {
 
     StorageNode findNodeByStringId(String idAsString);
 
-    void removeNode(StorageNode stNodeEntry);
+    void removeNode(StorageNode StorageNode);
 
     static enum FlushMode {
         AUTO,

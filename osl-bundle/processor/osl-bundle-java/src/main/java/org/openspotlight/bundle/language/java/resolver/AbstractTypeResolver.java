@@ -53,8 +53,7 @@ package org.openspotlight.bundle.language.java.resolver;
 
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.graph.SLContext;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.SLLink;
 import org.openspotlight.graph.SLNode;
 
 import java.util.ArrayList;
@@ -95,9 +94,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements TypeReso
     private final boolean                      enableBoxing;
 
     /** The session. */
-    private final SLSimpleGraphSession session;
-
-    /**
+    private final GraphReadGraphReader
      * Instantiates a new type finder.
      * 
      * @param implementationInheritanceLinks the implementation inheritance links
@@ -114,8 +111,7 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements TypeReso
                                     final Set<Class<? extends SLLink>> interfaceInheritanceLinks,
                                     final Set<Class<? extends SLLink>> primitiveHierarchyLinks, final SLContext abstractContext,
                                     final List<SLContext> orderedActiveContexts, final Set<Class<?>> primitiveTypes,
-                                    final Set<Class<?>> concreteTypes, final boolean enableBoxing, final SLSimpleGraphSession session ) {
-        Assertions.checkNotNull("implementationInheritanceLinks", implementationInheritanceLinks);
+                                    final Set<Class<?>> concreteTypes, final boolean enableBoxing, final GraphReader sessioGraphReaderions.checkNotNull("implementationInheritanceLinks", implementationInheritanceLinks);
         Assertions.checkNotNull("interfaceInheritanceLinks", interfaceInheritanceLinks);
         Assertions.checkNotNull("primitiveHierarchyLinks", primitiveHierarchyLinks);
         Assertions.checkNotNull("abstractContext", abstractContext);
@@ -509,8 +505,8 @@ public abstract class AbstractTypeResolver<N extends SLNode> implements TypeReso
      * 
      * @return the session
      */
-    protected SLSimpleGraphSession getSession() {
-        return this.session;
+    protected GraphReader getSession() {
+GraphReadersession;
     }
 
     /*

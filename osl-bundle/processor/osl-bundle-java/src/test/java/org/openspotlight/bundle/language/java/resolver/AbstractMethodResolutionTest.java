@@ -71,8 +71,7 @@ import org.openspotlight.jcr.provider.JcrConnectionProvider;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.security.idm.auth.IdentityException;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.redis.guice.JRedisStorageModule;
+import org.openspotlight.storage.StorageSessionimport org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.util.ArrayList;
@@ -97,7 +96,7 @@ public abstract class AbstractMethodResolutionTest {
      */
     @BeforeClass
     public static void init() throws AbstractFactoryException, IdentityException {
-        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(StStorageSessionlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
@@ -108,7 +107,7 @@ public abstract class AbstractMethodResolutionTest {
     }
 
     protected MethodResolver<JavaType, JavaMethod> methodResolver = null;
-    protected SLSimpleGraphSession graphSession   = null;
+    protected GraphReadersion   = null;
     protected JavaGraphNodeSupport                 helper         = null;
 
     protected SLContext                            abstractContex = null;
@@ -128,13 +127,13 @@ public abstract class AbstractMethodResolutionTest {
                                                        final String simpleMethodName,
                                                        final String fullMethodName,
                                                        final boolean isConstructor,
-                                                       final SLNode... methodParameters ) throws Exception {
+                                                       final Node... methodParameters ) throws Exception {
 
         final JavaMethod method = helper.createMethod(type, fullMethodName, simpleMethodName, isConstructor, Opcodes.ACC_PUBLIC);
 
         if (methodParameters != null) {
             int position = -1;
-            for (final SLNode activeParameterType : methodParameters) {
+            for (final Node activeParameterType : methodParameters) {
                 position++;
                 final SLLink link = graphSession.addLink(MethodParameterDefinition.class, method, activeParameterType, false);
                 link.setProperty(Integer.class, VisibilityLevel.PUBLIC, "Order", position);
@@ -147,7 +146,7 @@ public abstract class AbstractMethodResolutionTest {
     protected Pair<JavaType, JavaMethod> createMethod( final JavaType type,
                                                        final String simpleMethodName,
                                                        final String fullMethodName,
-                                                       final SLNode... methodParameters ) throws Exception {
+                                                       final Node... methodParameters ) throws Exception {
 
         return this.createMethod(type, simpleMethodName, fullMethodName, false, methodParameters);
     }
@@ -157,7 +156,7 @@ public abstract class AbstractMethodResolutionTest {
                                                        final String simpleMethodName,
                                                        final String fullMethodName ) throws Exception {
 
-        return this.createMethod(packageName, typeName, simpleMethodName, fullMethodName, false, (SLNode[])null);
+        return this.createMethod(packageName, typeName, simpleMethodName, fullMethodName, false, (Node[])null);
     }
 
     protected Pair<JavaType, JavaMethod> createMethod( final String packageName,
@@ -166,7 +165,7 @@ public abstract class AbstractMethodResolutionTest {
                                                        final String fullMethodName,
                                                        final boolean isConstructor ) throws Exception {
 
-        return this.createMethod(packageName, typeName, simpleMethodName, fullMethodName, isConstructor, (SLNode[])null);
+        return this.createMethod(packageName, typeName, simpleMethodName, fullMethodName, isConstructor, (Node[])null);
     }
 
     protected Pair<JavaType, JavaMethod> createMethod( final String packageName,
@@ -174,7 +173,7 @@ public abstract class AbstractMethodResolutionTest {
                                                        final String simpleMethodName,
                                                        final String fullMethodName,
                                                        final boolean isConstructor,
-                                                       final SLNode... methodParameters ) throws Exception {
+                                                       final Node... methodParameters ) throws Exception {
 
         final JavaType type = helper.addTypeOnCurrentContext(JavaTypeClass.class, packageName, typeName, Opcodes.ACC_PUBLIC);
 
@@ -185,7 +184,7 @@ public abstract class AbstractMethodResolutionTest {
                                                        final String typeName,
                                                        final String simpleMethodName,
                                                        final String fullMethodName,
-                                                       final SLNode... methodParameters ) throws Exception {
+                                                       final Node... methodParameters ) throws Exception {
 
         return this.createMethod(packageName, typeName, simpleMethodName, fullMethodName, false, methodParameters);
     }
@@ -214,7 +213,7 @@ public abstract class AbstractMethodResolutionTest {
 
     protected JavaType createTypeParameterized( final String packageName,
                                                 final String className,
-                                                final SLNode parent,
+                                                final Node parent,
                                                 final JavaType extendedType,
                                                 final boolean isImplicit ) throws Exception {
 
@@ -264,8 +263,8 @@ public abstract class AbstractMethodResolutionTest {
         final SLContext testCtx = graphSession.getContext("test");
         final List<SLContext> contexts = new ArrayList<SLContext>();
         contexts.add(testCtx);
-        final SLNode currentContextRootNode = graphSession.getContext("test").getRootNode();
-        final SLNode abstractContextRootNode = abstractContex.getRootNode();
+        final Node currentContextRootNode = graphSession.getContext("test").getRootNode();
+        final Node abstractContextRootNode = abstractContex.getRootNode();
         helper = new JavaGraphNodeSupport(graphSession, currentContextRootNode, abstractContextRootNode);
         helper.setupJavaTypesOnCurrentContext();
         final JavaTypeResolver typeResolver = new JavaTypeResolver(abstractContex, contexts, true, graphSession);
@@ -280,8 +279,8 @@ public abstract class AbstractMethodResolutionTest {
         final SLContext testCtx = graphSession.getContext("test");
         final List<SLContext> contexts = new ArrayList<SLContext>();
         contexts.add(testCtx);
-        final SLNode currentContextRootNode = graphSession.getContext("test").getRootNode();
-        final SLNode abstractContextRootNode = abstractContex.getRootNode();
+        final Node currentContextRootNode = graphSession.getContext("test").getRootNode();
+        final Node abstractContextRootNode = abstractContex.getRootNode();
         helper = new JavaGraphNodeSupport(graphSession, currentContextRootNode, abstractContextRootNode);
         helper.setupJavaTypesOnCurrentContext();
         final JavaTypeResolver typeResolver = new JavaTypeResolver(abstractContex, contexts, false, graphSession);

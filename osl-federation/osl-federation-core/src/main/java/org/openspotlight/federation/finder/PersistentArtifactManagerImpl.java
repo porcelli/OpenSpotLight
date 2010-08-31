@@ -54,9 +54,8 @@ import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.STStorageSession;
-import org.openspotlight.storage.domain.SLPartition;
-import org.openspotlight.storage.domain.node.STNodeEntry;
+import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
+import org.openspotlight.storage.domain.node.StorageNode;
 
 import static org.openspotlight.common.collection.IteratorBuilder.createIteratorBuilder;
 import static org.openspotlight.common.util.Strings.concatPaths;
@@ -64,11 +63,11 @@ import static org.openspotlight.common.util.Strings.concatPaths;
 public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactManager {
 
     private final String repositoryName;
-    private final SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist;
+    private final SimplePersistCapable<StorageNode, StStStorageSessionPersist;
 
     public PersistentArtifactManagerImpl(
             Repository repository, SimplePersistFactory factory) {
-        this.simplePersist = factory.createSimplePersist(SLPartition.FEDERATION);
+        this.simplePersist = factory.createSimpRegularPartitionrPartitionrPartition.FEDERATION);
         this.repositoryName = repository.getName();
     }
 
@@ -115,7 +114,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
 
     @Override
     protected <A extends Artifact> void internalMarkAsRemoved(A artifact) throws Exception {
-        final STNodeEntry node = simplePersist.convertBeanToNode(artifact);
+        final StorageNode node = simplePersist.convertBeanToNode(artifact);
         simplePersist.getCurrentSession().removeNode(node);
     }
 
@@ -149,7 +148,7 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
     private <A> Iterable<String> privateRetrieveNames(final Class<A> type,
                                                       final String initialPath,
                                                       final String[] propertyNameAndPath) throws Exception {
-        Iterable<STNodeEntry> foundNodes;
+        Iterable<StorageNode> foundNodes;
         String nodeName = simplePersist.getInternalMethods().getNodeName(type);
         if (initialPath != null) {
             foundNodes = simplePersist.getPartitionMethods().createCriteria().withNodeEntry(nodeName).withProperty(propertyNameAndPath[IDX_MAPPED]).equalsTo(
@@ -160,10 +159,10 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
 
         }
 
-        IteratorBuilder.SimpleIteratorBuilder<String, STNodeEntry> b = createIteratorBuilder();
-        b.withConverter(new IteratorBuilder.Converter<String, STNodeEntry>() {
+        IteratorBuilder.SimpleIteratorBuilder<String, StorageNode> b = createIteratorBuilder();
+        b.withConverter(new IteratorBuilder.Converter<String, StorageNode>() {
             @Override
-            public String convert(STNodeEntry nodeEntry) throws Exception {
+            public String convert(StorageNode nodeEntry) throws Exception {
                 String name = nodeEntry.getPropertyAsString(simplePersist.getCurrentSession(), propertyNameAndPath[IDX_ARTIFACT_NAME]);
                 if (name == null) {
                     throw new IllegalStateException("Mandatory property " + propertyNameAndPath[IDX_ARTIFACT_NAME] + " from node " + nodeEntry + " with null value");
@@ -180,11 +179,10 @@ public class PersistentArtifactManagerImpl extends AbstractPersistentArtifactMan
         return true;
     }
 
-    public SimplePersistCapable<STNodeEntry, STStorageSession> getSimplePersist() {
+    public SimplePersistCapable<StorageNode, StorStorStorageSessionersist() {
         return simplePersist;
     }
 
-    public STStorageSession getSession() {
-        return simplePersist.getCurrentSession();
+    public StoragStoragStorageSession        return simplePersist.getCurrentSession();
     }
 }

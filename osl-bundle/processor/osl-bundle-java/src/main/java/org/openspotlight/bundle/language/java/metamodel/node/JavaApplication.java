@@ -48,7 +48,7 @@
  */
 package org.openspotlight.bundle.language.java.metamodel.node;
 
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.Node;
 import org.openspotlight.graph.annotation.SLDescription;
 import org.openspotlight.graph.annotation.SLProperty;
 
@@ -59,7 +59,7 @@ import org.openspotlight.graph.annotation.SLProperty;
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
 @SLDescription( "Java Application" )
-public interface JavaApplication extends SLNode {
+public interface JavaApplication extends Node {
 
     /**
      * Gets the version.

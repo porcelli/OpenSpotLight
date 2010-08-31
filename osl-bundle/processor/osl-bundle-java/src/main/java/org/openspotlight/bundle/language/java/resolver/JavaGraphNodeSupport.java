@@ -54,9 +54,8 @@ import org.openspotlight.bundle.language.java.JavaConstants;
 import org.openspotlight.bundle.language.java.metamodel.link.*;
 import org.openspotlight.bundle.language.java.metamodel.node.*;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.graph.SLSimpleGraphSession;
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.SLNode;
+import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,15 +96,13 @@ public class JavaGraphNodeSupport {
     private boolean                     usingCache               = true;
 
     /** The current context root node. */
-    private final SLNode                currentContextRootNode;
+    private final Node                currentContextRootNode;
 
     /** The abstract context root node. */
-    private final SLNode                abstractContextRootNode;
+    private final Node                abstractContextRootNode;
 
     /** The session. */
-    private final SLSimpleGraphSession session;
-
-    /** The nodes from this context. */
+    private final GraphReadGraphReader The nodes from this context. */
     private final Map<String, JavaType> nodesFromThisContext     = new TreeMap<String, JavaType>();
 
     /** The nodes from abstract context. */
@@ -126,8 +123,8 @@ public class JavaGraphNodeSupport {
      * @param abstractContextRootNode the abstract context root node
      */
     public JavaGraphNodeSupport(
-                                 final SLSimpleGraphSession session, final SLNode currentContextRootNode,
-                                 final SLNode abstractContextRootNode ) {
+                                 final GraphReader sessioGraphReadertContextRootNode,
+                                 final Node abstractContextRootNode ) {
         checkNotNull("session", session);
         checkNotNull("currentContextRootNode", currentContextRootNode);
         checkNotNull("abstractContextRootNode", abstractContextRootNode);
@@ -296,7 +293,7 @@ public class JavaGraphNodeSupport {
                                                            final String packageName,
                                                            final String nodeName,
                                                            final int access,
-                                                           final SLNode parentType ) throws Exception {
+                                                           final Node parentType ) throws Exception {
         if (logger.isDebugEnabled()) {
             logger.debug(" adding type on current context " + packageName + "_" + nodeName + " with parent "
                          + (parentType != null ? parentType.getName() : "null"));

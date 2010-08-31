@@ -48,10 +48,10 @@
  */
 package org.openspotlight.bundle.common.parser;
 
-import org.antlr.runtime.ANTLRStringStream;
-
 import java.io.IOException;
 import java.util.List;
+
+import org.antlr.runtime.ANTLRStringStream;
 
 public class SLArtifactStreamBasicImpl extends ANTLRStringStream implements SLArtifactStream {
 

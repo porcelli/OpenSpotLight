@@ -416,20 +416,20 @@ public class MongoStorageSessionImpl extends
     @Override
     protected Iterable<StorageNode> internalNodeEntryGetChildrenByType(
                                                                        final Partition initialPartition,
-                                                                       final StorageNode stNodeEntry,
+                                                                       final StorageNode StorageNode,
                                                                        final String type)
             throws Exception {
-        if (stNodeEntry == null) { return emptySet(); }
-        return internalGetChildren(initialPartition, stNodeEntry, type);
+        if (StorageNode == null) { return emptySet(); }
+        return internalGetChildren(initialPartition, StorageNode, type);
     }
 
     private Iterable<StorageNode> internalGetChildren(
                                                        final Partition partition,
-                                                       final StorageNode stNodeEntry,
+                                                       final StorageNode StorageNode,
                                                        final String name)
             throws Exception {
         final BasicDBObject baseDbObj = new BasicDBObject();
-        baseDbObj.put(PARENT_ID, stNodeEntry.getKey().getKeyAsString());
+        baseDbObj.put(PARENT_ID, StorageNode.getKey().getKeyAsString());
         final ImmutableSet.Builder<String> names = ImmutableSet.builder();
         if (name != null) {
             names.add(name);
@@ -606,18 +606,18 @@ public class MongoStorageSessionImpl extends
     @Override
     protected Iterable<StorageNode> internalNodeEntryGetChildren(
                                                                   final Partition partition,
-                                                                  final StorageNode stNodeEntry)
+                                                                  final StorageNode StorageNode)
         throws Exception {
-        if (stNodeEntry == null) { return emptySet(); }
-        return internalGetChildren(partition, stNodeEntry, null);
+        if (StorageNode == null) { return emptySet(); }
+        return internalGetChildren(partition, StorageNode, null);
 
     }
 
     @Override
     protected StorageNode internalNodeEntryGetParent(final Partition partition,
-                                                      final StorageNode stNodeEntry)
+                                                      final StorageNode StorageNode)
         throws Exception {
-        final String parentKey = stNodeEntry.getKey().getParentKeyAsString();
+        final String parentKey = StorageNode.getKey().getParentKeyAsString();
         if (parentKey == null) { return null; }
         final Partition parentPartition = getPartition(parentKey, partitionFactory);
         final String parentName = getNodeEntryName(parentKey);

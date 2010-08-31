@@ -49,7 +49,7 @@
 package org.openspotlight.web.command;
 
 import net.sf.json.JSONObject;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.web.WebException;
 import org.openspotlight.web.json.Message;
 

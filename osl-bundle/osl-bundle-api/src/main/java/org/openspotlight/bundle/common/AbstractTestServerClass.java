@@ -48,26 +48,16 @@
  */
 package org.openspotlight.bundle.common;
 
-import org.apache.jackrabbit.rmi.remote.RemoteRepository;
-import org.apache.jackrabbit.rmi.server.RemoteAdapterFactory;
-import org.apache.jackrabbit.rmi.server.ServerAdapterFactory;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.server.RemoteGraphSessionServer;
-import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
-import org.openspotlight.jcr.provider.JcrConnectionProvider;
-import org.openspotlight.jcr.provider.SessionWithLock;
-import org.openspotlight.remote.server.UserAuthenticator;
-
-import javax.jcr.Node;
-import javax.jcr.Repository;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.graph.server.RemoteGraphSessionServer;
+import org.openspotlight.remote.server.UserAuthenticator;
 
 public abstract class AbstractTestServerClass {
 

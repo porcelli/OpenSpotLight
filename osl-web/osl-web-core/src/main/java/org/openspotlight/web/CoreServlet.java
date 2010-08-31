@@ -52,7 +52,7 @@ import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.web.command.WebCommand;
 
 import javax.servlet.ServletConfig;
