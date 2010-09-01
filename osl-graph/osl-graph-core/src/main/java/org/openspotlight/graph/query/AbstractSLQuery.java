@@ -51,6 +51,7 @@ package org.openspotlight.graph.query;
 import java.util.Collection;
 
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 
@@ -98,7 +99,7 @@ public abstract class AbstractSLQuery {
      */
     public SLQueryResult execute( final Collection<Node> inputNodes )
         throws SLInvalidQuerySyntaxException, InvalidQueryElementException, QueryException {
-            return this.execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, null, null);
+            return this.execute(QuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, null, null);
     }
 
     /**
@@ -116,7 +117,7 @@ public abstract class AbstractSLQuery {
                                   final Integer limit,
                                   final Integer offset )
         throws SLInvalidQuerySyntaxException, InvalidQueryElementException, QueryException {
-            return this.execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, limit, offset);
+            return this.execute(QuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, limit, offset);
     }
 
     /**
@@ -134,7 +135,7 @@ public abstract class AbstractSLQuery {
                                   final SortMode sortMode,
                                   final boolean showSLQL )
         throws SLInvalidQuerySyntaxException, InvalidQueryElementException, QueryException {
-            return this.execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, null, null);
+            return this.execute(QuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, null, null);
     }
 
     /**
@@ -156,9 +157,7 @@ public abstract class AbstractSLQuery {
                                   final Integer limit,
                                   final Integer offset )
         throws SLInvalidQuerySyntaxException, InvalidQueryElementException, QueryException {
-        synchronized (lock) {
-            return this.execute(SLQuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, limit, offset);
-        }
+            return this.execute(QuerySupport.getNodeIDs(inputNodes), SortMode.NOT_SORTED, false, limit, offset);
     }
 
     /**

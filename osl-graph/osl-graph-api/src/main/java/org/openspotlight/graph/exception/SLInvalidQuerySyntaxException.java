@@ -18,49 +18,47 @@
  * para mais detalhes. Você deve ter recebido uma cópia da Licença Pública Geral Menor do GNU junto com este programa; se não,
  * escreva para: Free Software Foundation, Inc. 51 Franklin Street, Fifth Floor Boston, MA 02110-1301 USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.exception;
 
-import org.openspotlight.graph.exception.GraphRuntimeException;
+import org.openspotlight.common.exception.SLRuntimeException;
 
 /**
- * The Class SLInvalidQueryElementException.
+ * Just an abstract exception that every graph related exception should extend.
  * 
  * @author Vitor Hugo Chagas
  */
-public class InvalidQueryElementException extends GraphRuntimeException {
+public abstract class SLInvalidQuerySyntaxException extends SLRuntimeException {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -393654158315805194L;
 
     /**
-     * Instantiates a new sL invalid query element exception.
-     * 	
+     * Constructs a new graph related exception.
+     * 
      * @param message the message
      * @param cause the cause
      */
-    public InvalidQueryElementException(
-                                           final String message, final Throwable cause) {
+    public SLInvalidQuerySyntaxException(
+                                    final String message, final Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * Instantiates a new sL invalid query element exception.
+     * Constructs a new graph related exception.
      * 
      * @param message the message
      */
-    public InvalidQueryElementException(
-                                           final String message) {
+    public SLInvalidQuerySyntaxException(
+                                    final String message) {
         super(message);
     }
 
     /**
-     * Instantiates a new sL invalid query element exception.
+     * Constructs a new graph related exception.
      * 
      * @param cause the cause
      */
-    public InvalidQueryElementException(
-                                           final Throwable cause) {
+    public SLInvalidQuerySyntaxException(
+                                    final Throwable cause) {
         super(cause);
     }
-
 }

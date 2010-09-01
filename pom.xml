@@ -179,150 +179,145 @@
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-common</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-persistence-api</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-persistence-test</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-persistence-core</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-persistence-redis</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-persistence-mongodb</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-security-api</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-logger-core</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-logger-api</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-security-core</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-simple-persist</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-remote-support</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-web-core</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-web-war</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-federation</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-graph-core</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-graph-test-data</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-graph-client</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-graph-server</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-graph-api</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-bundle-core</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-bundle-api</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-bundle-db</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-bundle-java</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-federation-database-loader</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-federation-core</artifactId>
-                <version>${pom.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-federation-api</artifactId>
-                <version>${pom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.identity.idm</groupId>
-                <artifactId>idm-core</artifactId>
-                <classifier>tests</classifier>
-                <version>1.0.0-Beta4-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.identity.idm</groupId>
                 <artifactId>idm-core</artifactId>
                 <version>1.0.0-Beta4-SNAPSHOT</version>
             </dependency>
+
             <dependency>
                 <groupId>org.jboss.identity.idm</groupId>
                 <artifactId>idm-api</artifactId>
@@ -342,6 +337,11 @@
                 <groupId>org.jboss.identity.idm</groupId>
                 <artifactId>idm-core</artifactId>
                 <classifier>tests</classifier>
+                <version>1.0.0-Beta4-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.identity.idm</groupId>
+                <artifactId>idm-core</artifactId>
                 <version>1.0.0-Beta4-SNAPSHOT</version>
             </dependency>
             <dependency>
@@ -422,6 +422,11 @@
                 <artifactId>commons-beanutils</artifactId>
                 <version>1.8.0</version>
             </dependency>
+            <dependency>
+			  <groupId>commons-beanutils</groupId>
+			  <artifactId>commons-beanutils-core</artifactId>
+			  <version>1.8.0</version>
+			</dependency>
             <!--
                    XML dependencies just to write and read the configuration in a
                    simple way
@@ -432,11 +437,7 @@
                 <version>1.6.1</version>
             </dependency>
             <!-- ant dependency to use the same logic for directory mappings -->
-            <dependency>
-                <groupId>ant</groupId>
-                <artifactId>ant</artifactId>
-                <version>1.7.0</version>
-            </dependency>
+
             <dependency>
                 <groupId>antlr</groupId>
                 <artifactId>antlr</artifactId>
@@ -509,11 +510,6 @@
                 <groupId>org.jboss.security</groupId>
                 <artifactId>jbosssx-bare</artifactId>
                 <version>2.0.2.SP6</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-beanutils</groupId>
-                <artifactId>commons-beanutils-core</artifactId>
-                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>javax.xml</groupId>
@@ -665,11 +661,6 @@
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
                 <version>2.2</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-beanutils</groupId>
-                <artifactId>commons-beanutils</artifactId>
-                <version>1.8.0</version>
             </dependency>
             <dependency>
                 <groupId>com.ibm.icu</groupId>

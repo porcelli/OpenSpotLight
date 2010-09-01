@@ -56,15 +56,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.openspotlight.graph.SLMetaNodeType;
-import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.Nodemport org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentNodeNotFoundException;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
+import org.openspotlight.graph.metadata.MetaNodeType;
+import org.openspotlight.graph.metadata.Metadata;
 
 /**
  * The Class SLQuerySupport.
@@ -73,26 +66,7 @@ import org.openspotlight.graph.query.info.SLSelectStatementInfo;
  */
 public class QuerySupport {
 
-    /**
-     * Find p node wrapper.
-     * 
-     * @param nodeWrappers the node wrappers
-     * @param id the id
-     * @return the p node wrapper
-     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-     */
-    static PNodeWrapper findPNodeWrapper( final List<PNodeWrapper> nodeWrappers,
-                                          final String id ) throws SLPersistentTreeSessionException {
-        PNodeWrapper nodeWrapper = null;
-        for (final PNodeWrapper current : nodeWrappers) {
-            if (current.getID().equals(id)) {
-                nodeWrapper = current;
-                break;
-            }
-        }
-        return nodeWrapper;
-    }
-
+   
     /**
      * Gets the hierarchy type names.
      * 
@@ -101,14 +75,14 @@ public class QuerySupport {
      * @param subTypes the sub types
      * @return the hierarchy type names
      */
-    static List<String> getHierarchyTypeNames( final SLMetadata metadata,
+    static List<String> getHierarchyTypeNames( final Metadata metadata,
                                                final String typeName,
-                                               final boolean subTypes ) throws SLMetaNodeTypeNotFoundException {
+                                               final boolean subTypes ) throws MetaNodeTypeNotFoundException {
         final List<String> types = new ArrayList<String>();
         types.add(typeName);
         if (subTypes) {
-            final SLMetaNodeType type = metadata.getMetaNodeType(typeName);
-            for (final SLMetaNodeType currentType : type.getSubMetaNodeTypes()) {
+            final MetaNodeType type = metadata.getMetaNodeType(typeName);
+            for (final MetaNodeType currentType : type.getSubMetaNodeTypes()) {
                 types.add(currentType.getTypeName());
             }
         }
@@ -121,48 +95,26 @@ public class QuerySupport {
      * @param nodes the nodes
      * @return the node i ds
      */
-    static String[] getNodeIDs( final Collection<NoNoNode) {
+    static String[] getNodeIDs( final Collection<SLNode> nodes ) {
         if (nodes == null) {
             return null;
         }
         int count = 0;
         final String[] ids = new String[nodes.size()];
-        for (final NodeNodeNodes) {
+        for (final SLNode node : nodes) {
             ids[count++] = node.getID();
         }
         return ids;
     }
 
-    /**
-     * Gets the node wrappers.
-     * 
-     * @param treeSession the tree session
-     * @param ids the ids
-     * @return the node wrappers
-     * @throws SLPersistentNodeNotFoundException the SL persistent node not found exception
-     * @throws SLPersistentTreeSessionException the SL persistent tree session exception
-     */
-    static Set<PNodeWrapper> getNodeWrappers( final SLPersistentTreeSession treeSession,
-                                              final String[] ids )
-        throws SLPersistentNodeNotFoundException, SLPersistentTreeSessionException {
-        Set<PNodeWrapper> wrappers = null;
-        if (ids != null && ids.length > 0) {
-            wrappers = new HashSet<PNodeWrapper>();
-            for (int i = 0; i < ids.length; i++) {
-                final SLPersistentNode pNode = treeSession.getNodeByID(ids[i]);
-                wrappers.add(new PNodeWrapper(pNode));
-            }
-        }
-        return wrappers;
-    }
-
+    
     /**
      * Gets the select info.
      * 
      * @param select the select
      * @return the select info
      */
-    static SLSelectInfo getSelectInfo( final SLSelect select ) {
+    static SelectInfo getSelectInfo( final SLSelect select ) {
         final SLSelectInfoGetter getter = (SLSelectInfoGetter)select;
         return getter.getSelectInfo();
     }
@@ -173,7 +125,7 @@ public class QuerySupport {
      * @param select the select
      * @return the select statement info
      */
-    static SLSelectStatementInfo getSelectStatementInfo( final SLSelect select ) {
+    static SelectStatementInfo getSelectStatementInfo( final SLSelect select ) {
         final SLSelectStatementInfoGetter getter = (SLSelectStatementInfoGetter)select;
         return getter.getSelectStatementInfo();
     }
@@ -218,20 +170,5 @@ public class QuerySupport {
         return pLinkNodeWrappers;
     }
 
-    /**
-     * Wrap nodes.
-     * 
-     * @param pNodes the nodes
-     * @return the set
-     *         < p node wrapper>
-     */
-    static Set<PNodeWrapper> wrapNodes( final Collection<SLPersistentNode> pNodes ) {
-        final Set<PNodeWrapper> pNodeWrappers = new HashSet<PNodeWrapper>();
-        for (final SLPersistentNode pNode : pNodes) {
-            final PNodeWrapper pNodeWrapper = new PNodeWrapper(pNode);
-            pNodeWrappers.add(pNodeWrapper);
-        }
-        return pNodeWrappers;
-    }
 
 }
