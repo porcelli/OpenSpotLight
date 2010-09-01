@@ -46,6 +46,9 @@
             <artifactId>idm-core</artifactId>
             <classifier>tests</classifier>
             <scope>test</scope>
+            <!-- this version is necessary -->
+            <!-- test the build if you remove it -->
+			<version>1.0.0-Beta4-SNAPSHOT</version>
         </dependency>
 
         <dependency>

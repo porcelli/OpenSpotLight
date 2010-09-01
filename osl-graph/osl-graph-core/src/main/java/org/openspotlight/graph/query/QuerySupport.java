@@ -51,13 +51,14 @@ package org.openspotlight.graph.query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.openspotlight.graph.Node;
 import org.openspotlight.graph.metadata.MetaNodeType;
 import org.openspotlight.graph.metadata.Metadata;
+import org.openspotlight.graph.query.info.SelectInfo;
+import org.openspotlight.graph.query.info.SelectStatementInfo;
 
 /**
  * The Class SLQuerySupport.
@@ -95,7 +96,7 @@ public class QuerySupport {
      * @param nodes the nodes
      * @return the node i ds
      */
-    static String[] getNodeIDs( final Collection<SLNode> nodes ) {
+    static String[] getNodeIDs( final Collection<Node> nodes ) {
         if (nodes == null) {
             return null;
         }

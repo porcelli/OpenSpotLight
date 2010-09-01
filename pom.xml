@@ -314,12 +314,6 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.identity.idm</groupId>
-                <artifactId>idm-core</artifactId>
-                <version>1.0.0-Beta4-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.jboss.identity.idm</groupId>
                 <artifactId>idm-api</artifactId>
                 <version>1.0.0-Beta4-SNAPSHOT</version>
             </dependency>
@@ -331,12 +325,6 @@
             <dependency>
                 <groupId>org.jboss.identity.idm</groupId>
                 <artifactId>idm-common</artifactId>
-                <version>1.0.0-Beta4-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.identity.idm</groupId>
-                <artifactId>idm-core</artifactId>
-                <classifier>tests</classifier>
                 <version>1.0.0-Beta4-SNAPSHOT</version>
             </dependency>
             <dependency>
