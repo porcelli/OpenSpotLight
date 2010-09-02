@@ -62,262 +62,20 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.openspotlight.common.concurrent.Lock;
 import org.openspotlight.common.exception.SLException;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.SerializationUtil;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLGraphSession;
-import org.openspotlight.graph.SLMetaNodeType;
-import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.Nodeport org.openspotlight.graph.SLRecursiveMode;
-import org.openspotlight.graph.exception.SLGraphRuntimeException;
-import org.openspotlight.graph.exception.SLGraphSessionException;
-import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
-import org.openspotlight.graph.persistence.SLPersistentNode;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
-import org.openspotlight.graph.query.info.SLOrderByStatementInfo;
-import org.openspotlight.graph.query.info.SLOrderByTypeInfo;
-import org.openspotlight.graph.query.info.SLSelectByLinkInfo;
-import org.openspotlight.graph.query.info.SLSelectInfo;
-import org.openspotlight.graph.query.info.SLSelectStatementInfo;
-import org.openspotlight.graph.query.info.SLSelectTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo;
-import org.openspotlight.graph.query.info.SLWhereStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereTypeInfo;
-import org.openspotlight.graph.query.info.SLOrderByTypeInfo.OrderType;
-import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereLinkTypeInfo.SLLinkTypeStatementInfo.SLLinkTypeConditionInfo;
-import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo;
-import org.openspotlight.graph.query.info.SLWhereTypeInfo.SLTypeStatementInfo.SLTypeConditionInfo;
-
-class PLinkNodeWrapper {
-
-    private SLPersistentNode pLinkNode;
-    private String           id;
-    private Integer          linkTypeHash;
-    private String           sourceID;
-    private String           targetID;
-
-    PLinkNodeWrapper(
-                      final SLPersistentNode pLinkNode ) {
-        this.pLinkNode = pLinkNode;
-    }
-
-    @Override
-    public boolean equals( final Object obj ) {
-        try {
-            final PLinkNodeWrapper linkNodeWrapper = (PLinkNodeWrapper)obj;
-            return getId().equals(linkNodeWrapper.getId());
-        } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException("Error on attempt to verify persistent link node wrapper equality.", e);
-        }
-    }
-
-    public String getId() throws SLPersistentTreeSessionException {
-        if (id == null) {
-            id = pLinkNode.getID();
-        }
-        return id;
-    }
-
-    public Integer getLinkTypeHash() throws SLPersistentTreeSessionException {
-        if (linkTypeHash == null) {
-            linkTypeHash = SLCommonSupport.getInternalPropertyAsInteger(pLinkNode, SLConsts.PROPERTY_NAME_LINK_TYPE_HASH);
-        }
-        return linkTypeHash;
-    }
-
-    public SLPersistentNode getPLinkNode() {
-        return pLinkNode;
-    }
-
-    public String getSourceID() throws SLPersistentTreeSessionException {
-        if (sourceID == null) {
-            sourceID = SLCommonSupport.getInternalPropertyAsString(pLinkNode, SLConsts.PROPERTY_NAME_SOURCE_ID);
-        }
-        return sourceID;
-    }
-
-    public String getTargetID() throws SLPersistentTreeSessionException {
-        if (targetID == null) {
-            targetID = SLCommonSupport.getInternalPropertyAsString(pLinkNode, SLConsts.PROPERTY_NAME_TARGET_ID);
-        }
-        return targetID;
-    }
-
-    @Override
-    public int hashCode() {
-        try {
-            return getId().hashCode();
-        } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException("Error on attempt to calculate persistent link node wrapper hash code.", e);
-        }
-    }
-
-    public void setId( final String id ) {
-        this.id = id;
-    }
-
-    public void setLinkTypeHash( final Integer linkTypeHash ) {
-        this.linkTypeHash = linkTypeHash;
-    }
-
-    public void setPLinkNode( final SLPersistentNode linkNode ) {
-        pLinkNode = linkNode;
-    }
-
-    public void setSourceID( final String sourceID ) {
-        this.sourceID = sourceID;
-    }
-
-    public void setTargetID( final String targetID ) {
-        this.targetID = targetID;
-    }
-}
-
-class PNodeWrapper {
-
-    private SLPersistentNode                            pNode;
-    private String                                      typeName;
-    private String                                      id;
-    private String                                      name;
-    private String                                      path;
-    private String                                      parentName;
-    private final Map<String, Comparable<Serializable>> propertyValueMap = new HashMap<String, Comparable<Serializable>>();
-
-    PNodeWrapper(
-                  final SLPersistentNode pNode ) {
-        this.pNode = pNode;
-    }
-
-    PNodeWrapper(
-                  final SLPersistentNode pNode, final String typeName ) {
-        this.pNode = pNode;
-        this.typeName = typeName;
-    }
-
-    @Override
-    public boolean equals( final Object obj ) {
-        try {
-            final PNodeWrapper nodeWrapper = (PNodeWrapper)obj;
-            return getID().equals(nodeWrapper.getID());
-        } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException("Error on attempt to verify persistent node wrapper equality.", e);
-        }
-    }
-
-    public String getID() throws SLPersistentTreeSessionException {
-        if (id == null) {
-            id = pNode.getID();
-        }
-        return id;
-    }
-
-    public String getName() throws SLPersistentTreeSessionException {
-        if (name == null) {
-            name = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
-        }
-        return name;
-    }
-
-    public String getParentName() throws SLPersistentTreeSessionException {
-        if (parentName == null) {
-            final SLPersistentNode pParentNode = pNode.getParent();
-            parentName = SLCommonSupport.getInternalPropertyAsString(pParentNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
-        }
-        return parentName;
-    }
-
-    public String getPath() throws SLPersistentTreeSessionException {
-        if (path == null) {
-            path = pNode.getPath();
-        }
-        return path;
-    }
-
-    public SLPersistentNode getPNode() {
-        return pNode;
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public Comparable<Serializable> getPropertyValue( final String name ) throws SLPersistentTreeSessionException {
-        Comparable<Serializable> comparableValue = propertyValueMap.get(name);
-        if (comparableValue == null) {
-            final Serializable value = SLCommonSupport.getUserPropertyAsSerializable(pNode, name);
-            if (value instanceof Comparable) {
-                comparableValue = (Comparable<Serializable>)value;
-            }
-            if (comparableValue != null) {
-                propertyValueMap.put(name, comparableValue);
-            }
-        }
-        return comparableValue;
-    }
-
-    public String getTypeName() throws SLPersistentTreeSessionException {
-        if (typeName == null) {
-            typeName = SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_TYPE);
-        }
-        return typeName;
-    }
-
-    @Override
-    public int hashCode() {
-        try {
-            return getID().hashCode();
-        } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException("Error on attempt to calculate persistent node wrapper hash code.", e);
-        }
-    }
-
-    public void setId( final String id ) {
-        this.id = id;
-    }
-
-    public void setName( final String name ) {
-        this.name = name;
-    }
-
-    public void setParentName( final String parentName ) {
-        this.parentName = parentName;
-    }
-
-    public void setPath( final String path ) {
-        this.path = path;
-    }
-
-    public void setPNode( final SLPersistentNode node ) {
-        pNode = node;
-    }
-
-    public void setTypeName( final String typeName ) {
-        this.typeName = typeName;
-    }
-
-    @Override
-    public String toString() {
-        try {
-            return SLCommonSupport.getInternalPropertyAsString(pNode, SLConsts.PROPERTY_NAME_DECODED_NAME);
-        } catch (final SLPersistentTreeSessionException e) {
-            throw new SLRuntimeException("Error on attempt to string " + this.getClass().getName());
-        }
-    }
-}
 
 /**
  * The Class SLQueryImpl.
  * 
  * @author Vitor Hugo Chagas
  */
-public class QueryApiImpl extends AbstractSLQuery implements SLQueryApi {
+public class QueryApiImpl extends AbstractSLQuery implements QueryApi {
 
-    private final Lock           lock;
 
     /** The Constant LOGGER. */
-    static final Logger          LOGGER           = Logger.getLogger(SLQueryApiImpl.class);
+    static final Logger          LOGGER           = Logger.getLogger(QueryApiImpl.class);
 
     /** The metadata. */
     private final SLMetadata     metadata;
@@ -342,22 +100,22 @@ public class QueryApiImpl extends AbstractSLQuery implements SLQueryApi {
         super(session, treeSession);
         metadata = session.getMetadata();
         this.cache = cache;
-        lock = session.getLockObject();
     }
 
-    private Collection<PNodeWrapper> applyLimitOffset( final Collection<PNodeWrapper> input,
+    private static <T> Collection<T> applyLimitOffset( final Collection<T> input,
                                                        final Integer limit,
                                                        final Integer offset ) {
         if (limit == null) {
             return input;
         }
-        final LinkedList<PNodeWrapper> resultList = new LinkedList<PNodeWrapper>();
+        final LinkedList<T> resultList = new LinkedList<T>();
 
         final int m_limit = limit;
+
         final int m_offset = offset == null ? 0 : offset - 1;
         int i = 0;
         int addedElements = 0;
-        for (final PNodeWrapper pNodeWrapper : input) {
+        for (final T pNodeWrapper : input) {
             if (i >= m_offset) {
                 resultList.add(pNodeWrapper);
                 addedElements++;
@@ -380,7 +138,7 @@ public class QueryApiImpl extends AbstractSLQuery implements SLQueryApi {
                                   final boolean showSLQL,
                                   final Integer limit,
                                   final Integer offset )
-        throws SLInvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
+        throws InvalidQuerySyntaxException, SLInvalidQueryElementException, SLQueryException {
         synchronized (lock) {
 
             validateSelects();
@@ -762,7 +520,7 @@ public class QueryApiImpl extends AbstractSLQuery implements SLQueryApi {
     private void print( final boolean showSLQL,
                         final Object object ) {
         if (showSLQL) {
-            SLQueryApiImpl.LOGGER.info(object);
+            QueryApiImpl.LOGGER.info(object);
         }
     }
 

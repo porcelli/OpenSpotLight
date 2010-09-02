@@ -61,23 +61,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.SLCommonSupport;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.SLMetaNodeType;
-import org.openspotlight.graph.SLMetadata;
-import org.openspotlight.graph.exception.SLMetaNodeTypeNotFoundException;
-import org.openspotlight.graph.persistence.SLPersistentQuery;
-import org.openspotlight.graph.persistence.SLPersistentQueryResult;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
-import org.openspotlight.graph.persistence.SLPersistentTreeSessionException;
+import org.openspotlight.graph.exception.MetaNodeTypeNotFoundException;
+import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.XPathStatementBuilder.Statement;
 import org.openspotlight.graph.query.XPathStatementBuilder.Statement.Condition;
 import org.openspotlight.graph.query.info.SelectByNodeTypeInfo;
-import org.openspotlight.graph.query.info.WhereByNodeTypeInfo;
 import org.openspotlight.graph.query.info.SelectByNodeTypeInfo.SLSelectTypeInfo;
+import org.openspotlight.graph.query.info.WhereByNodeTypeInfo;
 import org.openspotlight.graph.query.info.WhereByNodeTypeInfo.SLWhereTypeInfo;
 import org.openspotlight.graph.query.info.WhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo;
 import org.openspotlight.graph.query.info.WhereByNodeTypeInfo.SLWhereTypeInfo.SLTypeStatementInfo.SLConditionInfo;
+import org.openspotlight.storage.domain.StorageNode;
 
 /**
  * The Class SLSelectByNodeTypeExecuteCommand.
@@ -93,10 +87,10 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
     private SLSelectCommandDO               commandDO;
 
     /** The node wrapper list map. */
-    private Map<String, List<PNodeWrapper>> nodeWrapperListMap;
+    private Map<String, List<StorageNode>> nodeWrapperListMap;
 
     /** The metadata. */
-    private SLMetadata                      metadata;
+    private Metadata                      metadata;
 
     /**
      * Instantiates a new sL select by node type execute command.
@@ -122,7 +116,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
         try {
 
             if (commandDO.getPreviousNodeWrappers() != null) {
-                nodeWrapperListMap = SLQuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
+                nodeWrapperListMap = QuerySupport.mapNodesByType(commandDO.getPreviousNodeWrappers());
             }
 
             Set<SLSelectTypeInfo> typeInfoSet = getSelectTypeInfoSet();
@@ -131,7 +125,7 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
 
             Set<String> typesNotFiltered = new HashSet<String>();
             for (SLSelectTypeInfo typeInfo : typeInfoSet) {
-                List<String> hierarchyTypeNames = SLQuerySupport.getHierarchyTypeNames(metadata, typeInfo.getName(),
+                List<String> hierarchyTypeNames = QuerySupport.getHierarchyTypeNames(metadata, typeInfo.getName(),
                                                                                        typeInfo.isSubTypes());
                 typesNotFiltered.addAll(hierarchyTypeNames);
             }
@@ -174,22 +168,22 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
             }
 
             statementBuilder.setOrderBy(typePropName);
-            Set<PNodeWrapper> pNodeWrappers = new HashSet<PNodeWrapper>();
-            commandDO.setNodeWrappers(pNodeWrappers);
+            Set<StorageNode> StorageNodes = new HashSet<StorageNode>();
+            commandDO.setNodeWrappers(StorageNodes);
 
             if (statementBuilder.getRootStatement().getConditionCount() > 0) {
                 SLPersistentTreeSession treeSession = commandDO.getTreeSession();
                 String xpath = statementBuilder.getXPath();
                 SLPersistentQuery query = treeSession.createQuery(xpath, SLPersistentQuery.TYPE_XPATH);
                 SLPersistentQueryResult result = query.execute();
-                pNodeWrappers.addAll(SLQuerySupport.wrapNodes(result.getNodes()));
+                StorageNodes.addAll(QuerySupport.wrapNodes(result.getNodes()));
             }
 
             if (commandDO.getPreviousNodeWrappers() != null) {
                 for (String typeName : typesNotFiltered) {
-                    List<PNodeWrapper> typeNodeWrappers = nodeWrapperListMap.get(typeName);
+                    List<StorageNode> typeNodeWrappers = nodeWrapperListMap.get(typeName);
                     if (typeNodeWrappers != null) {
-                        pNodeWrappers.addAll(typeNodeWrappers);
+                        StorageNodes.addAll(typeNodeWrappers);
                     }
                 }
             }
@@ -203,11 +197,11 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
      * 
      * @return the where type info map
      */
-    private Map<String, SLWhereTypeInfo> getWhereTypeInfoMap() throws SLMetaNodeTypeNotFoundException {
+    private Map<String, SLWhereTypeInfo> getWhereTypeInfoMap() throws MetaNodeTypeNotFoundException {
         Map<String, SLWhereTypeInfo> map = new HashMap<String, SLWhereTypeInfo>();
         List<SLWhereTypeInfo> list = selectInfo.getWhereStatementInfo().getWhereTypeInfoList();
         for (SLWhereTypeInfo whereTypeInfo : list) {
-            List<String> typeNames = SLQuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(),
+            List<String> typeNames = QuerySupport.getHierarchyTypeNames(metadata, whereTypeInfo.getName(),
                                                                           whereTypeInfo.isSubTypes());
             for (String typeName : typeNames) {
                 if (!map.containsKey(typeName)) {
@@ -247,15 +241,15 @@ public class SLSelectByNodeTypeExecuteCommand extends SLSelectAbstractCommand {
             if (conditionInfo.getInnerStatementInfo() == null) {
                 Statement idStatement = null;
                 if (commandDO.getPreviousNodeWrappers() != null) {
-                    List<PNodeWrapper> pNodeWrappers = nodeWrapperListMap.get(typeName);
-                    if (pNodeWrappers != null && !pNodeWrappers.isEmpty()) {
+                    List<StorageNode> StorageNodes = nodeWrapperListMap.get(typeName);
+                    if (StorageNodes != null && !StorageNodes.isEmpty()) {
                         idStatement = conditionStatement.openBracket();
-                        for (int j = 0; j < pNodeWrappers.size(); j++) {
-                            PNodeWrapper pNodeWrapper = pNodeWrappers.get(j);
+                        for (int j = 0; j < StorageNodes.size(); j++) {
+                            StorageNode StorageNode = StorageNodes.get(j);
                             Condition idCondition;
                             if (j == 0) idCondition = idStatement.condition();
                             else idCondition = idStatement.operator(OR).condition();
-                            idCondition.leftOperand("jcr:uuid").operator(EQUAL).rightOperand(pNodeWrapper.getID());
+                            idCondition.leftOperand("jcr:uuid").operator(EQUAL).rightOperand(StorageNode.getID());
                         }
                         idStatement.closeBracket();
                     }

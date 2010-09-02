@@ -52,7 +52,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.SLQuery.SortMode;
 
 /**
@@ -77,14 +78,14 @@ public interface SLQueryTextInternal extends Serializable {
      * @throws QueryException the SL query exception
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    public SLQueryResult execute( final SLGraphSession session,
+    public SLQueryResult execute( final GraphReader session,
                                   final Map<String, ?> variableValues,
                                   final String[] inputNodesIDs,
                                   SortMode sortMode,
                                   boolean showSLQL,
                                   Integer limit,
                                   Integer offset )
-        throws InvalidQueryElementException, QueryException, SLInvalidQuerySyntaxException;
+        throws InvalidQueryElementException, QueryException, InvalidQuerySyntaxException;
 
     /**
      * Gets the unique id.

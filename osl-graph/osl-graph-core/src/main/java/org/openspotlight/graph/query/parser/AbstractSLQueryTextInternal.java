@@ -53,19 +53,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.graph.SLGraphSession;
+import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.InvalidQueryElementException;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.QueryException;
+import org.openspotlight.graph.query.SLQLVariable;
+import org.openspotlight.graph.query.SLQuery.SortMode;
 import org.openspotlight.graph.query.SLQueryResult;
 import org.openspotlight.graph.query.SLQueryTextInternal;
-import org.openspotlight.graph.query.SLQuery.SortMode;
 
 /**
  * The Class AbstractSLQueryTextInternal. This class is the base for dynamic bytecode generation.
@@ -129,7 +129,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
     /**
      * {@inheritDoc}
      */
-    public abstract SLQueryResult execute( final SLGraphSession session,
+    public abstract SLQueryResult execute( final GraphReader session,
                                            final Map<String, ?> variableValues,
                                            final String[] inputNodesIDs,
                                            SortMode sortMode,
@@ -263,7 +263,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
      * @param inputNodesIDs the input nodes i ds
      * @throws InvalidQueryElementException the SL invalid query element exception
      */
-    protected void validateAndInit( final SLGraphSession session,
+    protected void validateAndInit( final GraphReader session,
                                     final Map<String, ? extends Serializable> variableValues,
                                     final String[] inputNodesIDs ) throws InvalidQueryElementException {
         Assertions.checkNotNull("session", session);

@@ -55,10 +55,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.openspotlight.graph.Node;
+import org.openspotlight.graph.exception.MetaNodeTypeNotFoundException;
 import org.openspotlight.graph.metadata.MetaNodeType;
 import org.openspotlight.graph.metadata.Metadata;
 import org.openspotlight.graph.query.info.SelectInfo;
 import org.openspotlight.graph.query.info.SelectStatementInfo;
+import org.openspotlight.storage.domain.StorageNode;
 
 /**
  * The Class SLQuerySupport.
@@ -83,9 +85,11 @@ public class QuerySupport {
         types.add(typeName);
         if (subTypes) {
             final MetaNodeType type = metadata.getMetaNodeType(typeName);
-            for (final MetaNodeType currentType : type.getSubMetaNodeTypes()) {
-                types.add(currentType.getTypeName());
-            }
+            throw new UnsupportedOperationException();
+            //FIXME
+//            for (final MetaNodeType currentType : type.getSubMetaNodeTypes()) {
+//                types.add(currentType.getTypeName());
+//            }
         }
         return types;
     }
@@ -102,8 +106,8 @@ public class QuerySupport {
         }
         int count = 0;
         final String[] ids = new String[nodes.size()];
-        for (final SLNode node : nodes) {
-            ids[count++] = node.getID();
+        for (final Node node : nodes) {
+            ids[count++] = node.getId();
         }
         return ids;
     }
@@ -127,7 +131,7 @@ public class QuerySupport {
      * @return the select statement info
      */
     static SelectStatementInfo getSelectStatementInfo( final SLSelect select ) {
-        final SLSelectStatementInfoGetter getter = (SLSelectStatementInfoGetter)select;
+        final SelectStatementInfoGetter getter = (SelectStatementInfoGetter)select;
         return getter.getSelectStatementInfo();
     }
 
@@ -140,14 +144,14 @@ public class QuerySupport {
      *         >
      * @throws SLPersistentTreeSessionException the SL persistent tree session exception
      */
-    static Map<String, List<PNodeWrapper>> mapNodesByType( final Collection<PNodeWrapper> selectNodeWrappers )
-        throws SLPersistentTreeSessionException {
-        final Map<String, List<PNodeWrapper>> nodeWrapperListMap = new HashMap<String, List<PNodeWrapper>>();
-        for (final PNodeWrapper pNodeWrapper : selectNodeWrappers) {
-            final String typeName = pNodeWrapper.getTypeName();
-            List<PNodeWrapper> typeNodes = nodeWrapperListMap.get(typeName);
+    static Map<String, List<StorageNode>> mapNodesByType( final Collection<StorageNode> selectNodeWrappers )
+         {
+        final Map<String, List<StorageNode>> nodeWrapperListMap = new HashMap<String, List<StorageNode>>();
+        for (final StorageNode pNodeWrapper : selectNodeWrappers) {
+            final String typeName = pNodeWrapper.getType();
+            List<StorageNode> typeNodes = nodeWrapperListMap.get(typeName);
             if (typeNodes == null) {
-                typeNodes = new ArrayList<PNodeWrapper>();
+                typeNodes = new ArrayList<StorageNode>();
                 nodeWrapperListMap.put(typeName, typeNodes);
             }
             typeNodes.add(pNodeWrapper);
@@ -155,21 +159,6 @@ public class QuerySupport {
         return nodeWrapperListMap;
     }
 
-    /**
-     * Wrap link nodes.
-     * 
-     * @param pLinkNodes the link nodes
-     * @return the collection
-     *         < p link node wrapper>
-     */
-    static Collection<PLinkNodeWrapper> wrapLinkNodes( final Collection<SLPersistentNode> pLinkNodes ) {
-        final Collection<PLinkNodeWrapper> pLinkNodeWrappers = new ArrayList<PLinkNodeWrapper>();
-        for (final SLPersistentNode pLinkNode : pLinkNodes) {
-            final PLinkNodeWrapper pNodeWrapper = new PLinkNodeWrapper(pLinkNode);
-            pLinkNodeWrappers.add(pNodeWrapper);
-        }
-        return pLinkNodeWrappers;
-    }
 
 
 }

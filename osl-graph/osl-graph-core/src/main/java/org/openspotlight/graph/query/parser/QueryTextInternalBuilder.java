@@ -76,7 +76,8 @@ import org.antlr.stringtemplate.StringTemplateGroup;
 import org.openspotlight.common.util.ClassLoaderUtil;
 import org.openspotlight.common.util.ClassPathResource;
 import org.openspotlight.common.util.Sha1;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.query.InvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQLVariable;
 import org.openspotlight.graph.query.SLQueryTextInternal;
 
@@ -169,7 +170,7 @@ public class QueryTextInternalBuilder {
             return constr.newInstance(id, variables, outputModelName, target, stringConstants);
 
         } catch (final Exception e) {
-            throw new SLInvalidQuerySyntaxException(e);
+            throw new InvalidQuerySyntaxException(e);
         }
     }
 
@@ -234,7 +235,7 @@ public class QueryTextInternalBuilder {
 
             return queryInfo;
         } catch (final Exception e) {
-            throw new SLInvalidQuerySyntaxException(e);
+            throw new InvalidQuerySyntaxException(e);
         }
     }
 
@@ -266,7 +267,7 @@ public class QueryTextInternalBuilder {
             return constr.newInstance(targetUniqueId, null, null, null, stringConstants);
 
         } catch (final Exception e) {
-            throw new SLInvalidQuerySyntaxException(e);
+            throw new InvalidQuerySyntaxException(e);
         }
     }
 
@@ -361,7 +362,7 @@ public class QueryTextInternalBuilder {
             clas.toClass(QueryTextInternalBuilder.class.getClassLoader(),
                          QueryTextInternalBuilder.class.getProtectionDomain());
         } catch (final Exception e) {
-            throw new SLInvalidQuerySyntaxException(e);
+            throw new InvalidQuerySyntaxException(e);
         }
     }
 

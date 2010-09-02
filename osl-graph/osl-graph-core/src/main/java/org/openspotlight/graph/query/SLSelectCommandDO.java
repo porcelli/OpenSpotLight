@@ -50,9 +50,9 @@ package org.openspotlight.graph.query;
 
 import java.util.Collection;
 
-import org.openspotlight.graph.SLMetadata;
 import org.openspotlight.graph.metadata.Metadata;
-import org.openspotlight.graph.persistence.SLPersistentTreeSession;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.StorageNode;
 
 /**
  * The Class SLSelectCommandDO.
@@ -65,13 +65,13 @@ public class SLSelectCommandDO {
     private Metadata               metadata;
 
     /** The node wrappers. */
-    private Collection<PNodeWrapper> nodeWrappers;
+    private Collection<StorageNode> nodeWrappers;
 
     /** The previous node wrappers. */
-    private Collection<PNodeWrapper> previousNodeWrappers;
+    private Collection<StorageNode> previousNodeWrappers;
 
     /** The tree session. */
-    private SLPersistentTreeSession  treeSession;
+    private StorageSession  treeSession;
 
     /** The collator strength. */
     private int                      collatorStrength;
@@ -81,7 +81,7 @@ public class SLSelectCommandDO {
      *
      * @return the metadata
      */
-    public SLMetadata getMetadata() {
+    public Metadata getMetadata() {
         return metadata;
     }
 
@@ -90,7 +90,7 @@ public class SLSelectCommandDO {
      *
      * @param metadata the new metadata
      */
-    public void setMetadata( SLMetadata metadata ) {
+    public void setMetadata( Metadata metadata ) {
         this.metadata = metadata;
     }
 
@@ -99,7 +99,7 @@ public class SLSelectCommandDO {
      *
      * @return the node wrappers
      */
-    public Collection<PNodeWrapper> getNodeWrappers() {
+    public Collection<StorageNode> getNodeWrappers() {
         return nodeWrappers;
     }
 
@@ -108,7 +108,7 @@ public class SLSelectCommandDO {
      *
      * @param nodeWrappers the new node wrappers
      */
-    public void setNodeWrappers( Collection<PNodeWrapper> nodeWrappers ) {
+    public void setNodeWrappers( Collection<StorageNode> nodeWrappers ) {
         this.nodeWrappers = nodeWrappers;
     }
 
@@ -117,7 +117,7 @@ public class SLSelectCommandDO {
      *
      * @return the tree session
      */
-    public SLPersistentTreeSession getTreeSession() {
+    public StorageSession getTreeSession() {
         return treeSession;
     }
 
@@ -126,7 +126,7 @@ public class SLSelectCommandDO {
      *
      * @param treeSession the new tree session
      */
-    public void setTreeSession( SLPersistentTreeSession treeSession ) {
+    public void setTreeSession( StorageSession treeSession ) {
         this.treeSession = treeSession;
     }
 
@@ -135,7 +135,7 @@ public class SLSelectCommandDO {
      *
      * @return the previous node wrappers
      */
-    public Collection<PNodeWrapper> getPreviousNodeWrappers() {
+    public Collection<StorageNode> getPreviousNodeWrappers() {
         return previousNodeWrappers;
     }
 
@@ -144,7 +144,7 @@ public class SLSelectCommandDO {
      *
      * @param previousNodeWrappers the new previous node wrappers
      */
-    public void setPreviousNodeWrappers( Collection<PNodeWrapper> previousNodeWrappers ) {
+    public void setPreviousNodeWrappers( Collection<StorageNode> previousNodeWrappers ) {
         this.previousNodeWrappers = previousNodeWrappers;
     }
 
