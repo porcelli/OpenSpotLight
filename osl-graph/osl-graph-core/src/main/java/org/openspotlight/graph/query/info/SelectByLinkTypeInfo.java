@@ -53,7 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openspotlight.common.util.Equals;
-import org.openspotlight.graph.query.SLSideType;
+import org.openspotlight.graph.query.SideType;
 
 /**
  * The Class SLSelectByLinkTypeInfo.
@@ -175,7 +175,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
 
                 // sides ...
                 buffer.append(" (");
-                SLSideType side = byLinkInfo.getSide();
+                SideType side = byLinkInfo.getSide();
                 buffer.append(side.symbol());
                 buffer.append(')');
             }
@@ -296,7 +296,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
         private String            name;
 
         /** The side. */
-        private SLSideType        side;
+        private SideType        side;
 
         /** The comma. */
         private boolean           comma;
@@ -352,7 +352,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * 
          * @return the side
          */
-        public SLSideType getSide() {
+        public SideType getSide() {
             return side;
         }
 
@@ -361,7 +361,7 @@ public class SelectByLinkTypeInfo extends SelectInfo {
          * 
          * @param side the new side
          */
-        public void setSide( SLSideType side ) {
+        public void setSide( SideType side ) {
             this.side = side;
         }
     }

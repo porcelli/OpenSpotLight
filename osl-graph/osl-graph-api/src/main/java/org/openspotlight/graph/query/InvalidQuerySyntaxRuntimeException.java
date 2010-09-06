@@ -20,24 +20,25 @@
  */
 package org.openspotlight.graph.query;
 
+import org.openspotlight.common.exception.SLRuntimeException;
+
 /**
- * The Interface SLQueryApi.
+ * The Class SLInvalidQuerySyntaxRuntimeException.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface QueryApi extends Query, SelectFacade {
+public class InvalidQuerySyntaxRuntimeException extends SLRuntimeException {
+
+    /** The Constant serialVersionUID. */
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Gets the collator strength.
+     * Instantiates a new sL invalid query syntax runtime exception.
      * 
-     * @return the collator strength
+     * @param message the message
      */
-    public int getCollatorStrength();
-
-    /**
-     * Sets the collator strength.
-     * 
-     * @param collatorStrength the new collator strength
-     */
-    public void setCollatorStrength(int collatorStrength);
+    public InvalidQuerySyntaxRuntimeException(
+                                                 final String message) {
+        super(message);
+    }
 }

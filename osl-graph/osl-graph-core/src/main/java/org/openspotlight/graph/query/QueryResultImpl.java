@@ -48,66 +48,64 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.query.Query.SortMode;
-import org.openspotlight.storage.domain.StorageNode;
+import org.openspotlight.graph.Node;
 
 /**
- * The Interface SLQueryCache.
+ * The Class SLQueryResultImpl.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface QueryCache {
+public class QueryResultImpl implements QueryResult {
+	/** The nodes. */
+	private final List<Node> nodes;
+
+	/** The query id. */
+	private final String queryId;
 
 	/**
-	 * Adds content to the cache.
+	 * Instantiates a new sL query result impl.
 	 * 
-	 * @param queryId
-	 *            the query id
 	 * @param nodes
 	 *            the nodes
 	 */
-	public abstract void add2Cache(final String queryId,
-			final Collection<StorageNode> nodes);
+	public QueryResultImpl(final List<Node> nodes, final String queryId) {
+		this.nodes = nodes != null ? nodes : new ArrayList<Node>();
+		this.queryId = queryId;
+
+	}
 
 	/**
-	 * Builds a unique query id.
+	 * Instantiates a new sL query result impl.
 	 * 
-	 * @param selects
-	 *            the selects
-	 * @param collatorStrength
-	 *            the collator strength
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * @return the string
-	 * @throws SLException
-	 *             the SL exception
+	 * @param nodes
+	 *            the nodes
 	 */
-	public abstract String buildQueryId(final List<Select> selects,
-			final Integer collatorStrength, final String[] inputNodesIDs,
-			final SortMode sortMode, final Integer limit, final Integer offset)
-			throws SLException;
+	public QueryResultImpl(final Node[] nodes, final String queryId) {
+		this.queryId = queryId;
+		this.nodes = nodes != null ? new ArrayList<Node>(nodes.length)
+				: new ArrayList();
+		for (final Node Node : nodes) {
+			this.nodes.add(Node);
+		}
 
-	/**
-	 * Gets the cache content. Returns null if not found.
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param queryId
-	 *            the query id
-	 * @return the cache
+	 * @see org.openspotlight.graph.query.SLQueryResult#getNodes()
 	 */
-	public abstract QueryResult getCache(final String queryId);
+	public List<Node> getNodes() throws QueryException {
+		return nodes;
+	}
 
 	/**
-	 * Flush cache.
+	 * {@inheritDoc}
 	 */
-	public void flush();
+	public String getQueryId() {
+		return queryId;
+	}
 }

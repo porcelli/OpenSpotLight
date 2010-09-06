@@ -21,23 +21,43 @@
 package org.openspotlight.graph.query;
 
 /**
- * The Interface SLQueryApi.
+ * The Enum SLSideType.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface QueryApi extends Query, SelectFacade {
+public enum SideType {
+
+    /** The A_ side. */
+    A_SIDE("A"),
+
+    /** The B_ side. */
+    B_SIDE("B"),
+
+    /** The AN y_ side. */
+    ANY_SIDE("Any"),
+
+    /** The BOT h_ sides. */
+    BOTH_SIDES("Both");
+
+    /** The symbol. */
+    private String symbol;
 
     /**
-     * Gets the collator strength.
+     * Instantiates a new sL side type.
      * 
-     * @return the collator strength
+     * @param symbol the symbol
      */
-    public int getCollatorStrength();
+    SideType(
+                final String symbol) {
+        this.symbol = symbol;
+    }
 
     /**
-     * Sets the collator strength.
+     * Symbol.
      * 
-     * @param collatorStrength the new collator strength
+     * @return the string
      */
-    public void setCollatorStrength(int collatorStrength);
+    public String symbol() {
+        return symbol;
+    }
 }

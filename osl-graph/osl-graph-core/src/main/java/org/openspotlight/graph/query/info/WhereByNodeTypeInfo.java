@@ -59,8 +59,8 @@ import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.common.util.StringBuilderUtil;
 import org.openspotlight.graph.query.ConditionalOperatorType;
-import org.openspotlight.graph.query.SLRelationalOperatorType;
-import org.openspotlight.graph.query.SLSideType;
+import org.openspotlight.graph.query.RelationalOperatorType;
+import org.openspotlight.graph.query.SideType;
 
 /**
  * The Class SLWhereByNodeTypeInfo.
@@ -429,7 +429,7 @@ public class WhereByNodeTypeInfo {
                 private SLWhereTypeInfo           typeInfo;
 
                 /** The operator. */
-                private SLRelationalOperatorType  relationalOperator;
+                private RelationalOperatorType  relationalOperator;
 
                 /** The conditional operator. */
                 private ConditionalOperatorType conditionalOperator;
@@ -441,7 +441,7 @@ public class WhereByNodeTypeInfo {
                 private SLTypeStatementInfo       outerStatementInfo;
 
                 /** The side. */
-                private SLSideType                side;
+                private SideType                side;
 
                 /** The property name. */
                 private String                    propertyName;
@@ -525,7 +525,7 @@ public class WhereByNodeTypeInfo {
                  * 
                  * @return the side
                  */
-                public SLSideType getSide() {
+                public SideType getSide() {
                     return side;
                 }
 
@@ -534,7 +534,7 @@ public class WhereByNodeTypeInfo {
                  * 
                  * @param side the new side
                  */
-                public void setSide( SLSideType side ) {
+                public void setSide( SideType side ) {
                     this.side = side;
                 }
 
@@ -597,7 +597,7 @@ public class WhereByNodeTypeInfo {
                  * 
                  * @return the relational operator
                  */
-                public SLRelationalOperatorType getRelationalOperator() {
+                public RelationalOperatorType getRelationalOperator() {
                     return relationalOperator;
                 }
 
@@ -606,7 +606,7 @@ public class WhereByNodeTypeInfo {
                  * 
                  * @param relationalOperator the new relational operator
                  */
-                public void setRelationalOperator( SLRelationalOperatorType relationalOperator ) {
+                public void setRelationalOperator( RelationalOperatorType relationalOperator ) {
                     this.relationalOperator = relationalOperator;
                 }
 

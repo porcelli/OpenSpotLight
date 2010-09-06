@@ -48,66 +48,53 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.query.Query.SortMode;
-import org.openspotlight.storage.domain.StorageNode;
+import org.openspotlight.graph.query.info.SelectByLinkCountInfo;
+import org.openspotlight.graph.query.info.SelectByLinkTypeInfo;
+import org.openspotlight.graph.query.info.SelectByNodeTypeInfo;
+import org.openspotlight.graph.query.info.SelectInfo;
+import org.openspotlight.graph.query.info.SelectStatementInfo;
 
 /**
- * The Interface SLQueryCache.
+ * The Class SLSelectAbstractCommand.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface QueryCache {
+public abstract class SelectAbstractCommand {
 
-	/**
-	 * Adds content to the cache.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @param nodes
-	 *            the nodes
-	 */
-	public abstract void add2Cache(final String queryId,
-			final Collection<StorageNode> nodes);
+    /**
+     * Execute.
+     */
+    public abstract void execute();
 
-	/**
-	 * Builds a unique query id.
-	 * 
-	 * @param selects
-	 *            the selects
-	 * @param collatorStrength
-	 *            the collator strength
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * @return the string
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	public abstract String buildQueryId(final List<Select> selects,
-			final Integer collatorStrength, final String[] inputNodesIDs,
-			final SortMode sortMode, final Integer limit, final Integer offset)
-			throws SLException;
-
-	/**
-	 * Gets the cache content. Returns null if not found.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @return the cache
-	 */
-	public abstract QueryResult getCache(final String queryId);
-
-	/**
-	 * Flush cache.
-	 */
-	public void flush();
+    /**
+     * Gets the execute command.
+     * 
+     * @param select the select
+     * @param selectInfo the select info
+     * @param commandDO the command do
+     * @return the execute command
+     */
+    public static SelectAbstractCommand getCommand( Select select,
+                                                      SelectInfo selectInfo,
+                                                      SelectCommandDO commandDO ) {
+        SelectAbstractCommand command = null;
+        if (select instanceof SelectByNodeType) {
+            SelectByNodeTypeInfo selectByNodeTypeInfo = SelectByNodeTypeInfo.class.cast(selectInfo);
+            command = new SelectByNodeTypeExecuteCommand(selectByNodeTypeInfo, commandDO);
+        } else if (select instanceof SelectByLinkType) {
+            SelectByLinkTypeInfo selectByLinkTypeInfo = SelectByLinkTypeInfo.class.cast(selectInfo);
+            command = new SelectByLinkTypeExecuteCommand(selectByLinkTypeInfo, commandDO);
+        } else if (select instanceof SelectByLinkCount) {
+            SelectByLinkCountInfo selectByLinkCountInfo = SelectByLinkCountInfo.class.cast(selectInfo);
+            command = new SelectByLinkCountExecuteCommand(selectByLinkCountInfo, commandDO);
+        } else if (select instanceof SelectStatement) {
+            SelectStatementInfo selectStatementInfo = SelectStatementInfo.class.cast(selectInfo);
+            if (selectStatementInfo.getByLinkInfoList().isEmpty()) {
+                command = new SelectByNodeTypeCommand(selectStatementInfo, commandDO);
+            } else {
+                command = new SelectByLinkTypeCommand(selectStatementInfo, commandDO);
+            }
+        }
+        return command;
+    }
 }

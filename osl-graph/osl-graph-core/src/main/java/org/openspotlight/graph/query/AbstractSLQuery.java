@@ -53,7 +53,7 @@ import java.util.Collection;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.manipulation.GraphReader;
-import org.openspotlight.graph.query.SLQuery.SortMode;
+import org.openspotlight.graph.query.Query.SortMode;
 
 /**
  * The Class AbstractSLQuery. Basic implemenation for SLQueries (api or text).
@@ -88,7 +88,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute() throws SLInvalidQuerySyntaxException,
+	public QueryResult execute() throws SLInvalidQuerySyntaxException,
 			InvalidQueryElementException, QueryException {
 		return this.execute((String[]) null, SortMode.NOT_SORTED, false, null,
 				null);
@@ -107,7 +107,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final Collection<Node> inputNodes)
+	public QueryResult execute(final Collection<Node> inputNodes)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
 		return this.execute(QuerySupport.getNodeIDs(inputNodes),
@@ -131,7 +131,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final Collection<Node> inputNodes,
+	public QueryResult execute(final Collection<Node> inputNodes,
 			final Integer limit, final Integer offset)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
@@ -156,7 +156,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final Collection<Node> inputNodes,
+	public QueryResult execute(final Collection<Node> inputNodes,
 			final SortMode sortMode, final boolean showSLQL)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
@@ -185,7 +185,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final Collection<Node> inputNodes,
+	public QueryResult execute(final Collection<Node> inputNodes,
 			final SortMode sortMode, final boolean showSLQL,
 			final Integer limit, final Integer offset)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
@@ -209,7 +209,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final Integer limit, final Integer offset)
+	public QueryResult execute(final Integer limit, final Integer offset)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
 		return this.execute((String[]) null, SortMode.NOT_SORTED, false, limit,
@@ -231,7 +231,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final SortMode sortMode, final boolean showSLQL)
+	public QueryResult execute(final SortMode sortMode, final boolean showSLQL)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
 		return this.execute((String[]) null, sortMode, showSLQL, null, null);
@@ -256,7 +256,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final SortMode sortMode,
+	public QueryResult execute(final SortMode sortMode,
 			final boolean showSLQL, final Integer limit, final Integer offset)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
@@ -276,7 +276,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final String[] inputNodesIDs)
+	public QueryResult execute(final String[] inputNodesIDs)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
 		return this.execute(inputNodesIDs, SortMode.NOT_SORTED, false, null,
@@ -300,7 +300,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final String[] inputNodesIDs,
+	public QueryResult execute(final String[] inputNodesIDs,
 			final Integer limit, final Integer offset)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
@@ -325,7 +325,7 @@ public abstract class AbstractSLQuery {
 	 * @throws QueryException
 	 *             the SL query exception
 	 */
-	public SLQueryResult execute(final String[] inputNodesIDs,
+	public QueryResult execute(final String[] inputNodesIDs,
 			final SortMode sortMode, final boolean showSLQL)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException {
@@ -333,7 +333,7 @@ public abstract class AbstractSLQuery {
 				null);
 	}
 
-	public abstract SLQueryResult execute(String[] inputNodesIDs,
+	public abstract QueryResult execute(String[] inputNodesIDs,
 			SortMode sortMode, boolean showSLQL, Integer limit, Integer offset)
 			throws SLInvalidQuerySyntaxException, InvalidQueryElementException,
 			QueryException;

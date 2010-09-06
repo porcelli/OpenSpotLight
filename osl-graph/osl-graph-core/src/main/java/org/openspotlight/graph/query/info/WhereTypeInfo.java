@@ -58,8 +58,8 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.graph.query.ConditionalOperatorType;
-import org.openspotlight.graph.query.SLRelationalOperatorType;
-import org.openspotlight.graph.query.SLSideType;
+import org.openspotlight.graph.query.RelationalOperatorType;
+import org.openspotlight.graph.query.SideType;
 
 /**
  * The Class SLWhereTypeInfo.
@@ -358,7 +358,7 @@ public class WhereTypeInfo implements Serializable {
             private WhereTypeInfo           typeInfo;
 
             /** The relational operator. */
-            private SLRelationalOperatorType  relationalOperator;
+            private RelationalOperatorType  relationalOperator;
 
             /** The conditional operator. */
             private ConditionalOperatorType conditionalOperator;
@@ -370,7 +370,7 @@ public class WhereTypeInfo implements Serializable {
             private SLTypeStatementInfo       outerStatementInfo;
 
             /** The side. */
-            private SLSideType                side;
+            private SideType                side;
 
             /** The property name. */
             private String                    propertyName;
@@ -454,7 +454,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @return the side
              */
-            public SLSideType getSide() {
+            public SideType getSide() {
                 return side;
             }
 
@@ -463,7 +463,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param side the new side
              */
-            public void setSide( SLSideType side ) {
+            public void setSide( SideType side ) {
                 this.side = side;
             }
 
@@ -526,7 +526,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @return the relational operator
              */
-            public SLRelationalOperatorType getRelationalOperator() {
+            public RelationalOperatorType getRelationalOperator() {
                 return relationalOperator;
             }
 
@@ -535,7 +535,7 @@ public class WhereTypeInfo implements Serializable {
              * 
              * @param relationalOperator the new relational operator
              */
-            public void setRelationalOperator( SLRelationalOperatorType relationalOperator ) {
+            public void setRelationalOperator( RelationalOperatorType relationalOperator ) {
                 this.relationalOperator = relationalOperator;
             }
 

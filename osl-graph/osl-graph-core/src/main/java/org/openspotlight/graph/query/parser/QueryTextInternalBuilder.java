@@ -79,7 +79,7 @@ import org.openspotlight.common.util.Sha1;
 import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
 import org.openspotlight.graph.query.InvalidQuerySyntaxException;
 import org.openspotlight.graph.query.SLQLVariable;
-import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.openspotlight.graph.query.QueryTextInternal;
 
 /**
  * The Class SLQueryTextInternalBuilder. This class genarates, based on slql external dsl, a new instance SLQueryTextInternal.
@@ -122,10 +122,10 @@ public class QueryTextInternalBuilder {
      * @return the sL query text internal
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    public SLQueryTextInternal build( final String slqlText ) throws SLInvalidQuerySyntaxException {
+    public QueryTextInternal build( final String slqlText ) throws SLInvalidQuerySyntaxException {
         final QueryTextInternalInfo queryInfo = buildQueryInfo(slqlText);
 
-        SLQueryTextInternal target = null;
+        QueryTextInternal target = null;
         if (queryInfo.hasTarget()) {
             target = buildTargetQuery(queryInfo.getTargetUniqueId(), queryInfo.getDefineTargetContent(),
                                       queryInfo.getStringsConstant());
@@ -149,11 +149,11 @@ public class QueryTextInternalBuilder {
      * @return the sL query text internal
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private SLQueryTextInternal buildQuery( final String id,
+    private QueryTextInternal buildQuery( final String id,
                                             final Set<SLQLVariable> variables,
                                             final String outputModelName,
                                             final Map<Integer, String> stringConstants,
-                                            final SLQueryTextInternal target,
+                                            final QueryTextInternal target,
                                             final String executeContent ) throws SLInvalidQuerySyntaxException {
         try {
             final String className = getClassName(id);
@@ -166,7 +166,7 @@ public class QueryTextInternalBuilder {
             final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil.getClass(className);
 
             Constructor<AbstractSLQueryTextInternal> constr;
-            constr = queryResult.getConstructor(String.class, Set.class, String.class, SLQueryTextInternal.class, Map.class);
+            constr = queryResult.getConstructor(String.class, Set.class, String.class, QueryTextInternal.class, Map.class);
             return constr.newInstance(id, variables, outputModelName, target, stringConstants);
 
         } catch (final Exception e) {
@@ -248,7 +248,7 @@ public class QueryTextInternalBuilder {
      * @return the sL query text internal
      * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
      */
-    private SLQueryTextInternal buildTargetQuery( final String targetUniqueId,
+    private QueryTextInternal buildTargetQuery( final String targetUniqueId,
                                                   final String defineTargetContent,
                                                   final Map<Integer, String> stringConstants )
         throws SLInvalidQuerySyntaxException {
@@ -263,7 +263,7 @@ public class QueryTextInternalBuilder {
             final Class<AbstractSLQueryTextInternal> queryResult = (Class<AbstractSLQueryTextInternal>)ClassLoaderUtil.getClass(className);
 
             Constructor<AbstractSLQueryTextInternal> constr;
-            constr = queryResult.getConstructor(String.class, Set.class, String.class, SLQueryTextInternal.class, Map.class);
+            constr = queryResult.getConstructor(String.class, Set.class, String.class, QueryTextInternal.class, Map.class);
             return constr.newInstance(targetUniqueId, null, null, null, stringConstants);
 
         } catch (final Exception e) {

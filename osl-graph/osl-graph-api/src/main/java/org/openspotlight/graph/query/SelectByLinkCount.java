@@ -21,23 +21,100 @@
 package org.openspotlight.graph.query;
 
 /**
- * The Interface SLQueryApi.
+ * The Interface SLSelectByLinkCount.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface QueryApi extends Query, SelectFacade {
+public interface SelectByLinkCount extends Select {
 
     /**
-     * Gets the collator strength.
+     * Type.
      * 
-     * @return the collator strength
+     * @param typeName the type name
+     * @return the type
      */
-    public int getCollatorStrength();
+    public Type type(String typeName);
 
     /**
-     * Sets the collator strength.
+     * End.
      * 
-     * @param collatorStrength the new collator strength
+     * @return the end
      */
-    public void setCollatorStrength(int collatorStrength);
+    public End end();
+
+    /**
+     * The Interface Type.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface Type {
+
+        /**
+         * Comma.
+         * 
+         * @return the sL select by link count
+         */
+        public SelectByLinkCount comma();
+
+        /**
+         * Select end.
+         * 
+         * @return the end
+         */
+        public End selectEnd();
+
+        /**
+         * Sub types.
+         * 
+         * @return the type
+         */
+        public Type subTypes();
+    }
+
+    /**
+     * The Interface End.
+     * 
+     * @author Vitor Hugo Chagas
+     */
+    public static interface End extends SelectFacade {
+
+        /**
+         * Where.
+         * 
+         * @return the sL where by link count
+         */
+        public WhereByLinkCount where();
+
+        /**
+         * Order by.
+         * 
+         * @return the sL order by statement
+         */
+        public OrderByStatement orderBy();
+
+        /**
+         * Keep result.
+         * 
+         * @return the end
+         */
+        public End keepResult();
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @return the end
+         */
+        public End limit(Integer size);
+
+        /**
+         * Limit.
+         * 
+         * @param size the size
+         * @param offset the offset
+         * @return the end
+         */
+        public End limit(Integer size,
+                          Integer offset);
+    }
 }

@@ -58,7 +58,7 @@ import org.openspotlight.graph.query.info.WhereByNodeTypeInfo.SLWhereTypeInfo.SL
  * 
  * @author Vitor Hugo Chagas
  */
-public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeInfoGetter {
+public class WhereByNodeTypeImpl implements WhereByNodeType, WhereByNodeTypeInfoGetter {
 
     /** The end. */
     private End                   end;
@@ -74,7 +74,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
      * @param whereByNodeTypeInfo the where by node type info
      */
     public WhereByNodeTypeImpl(
-                                  SLSelectFacade selectFacade, SLOrderByStatement orderBy,
+                                  SelectFacade selectFacade, OrderByStatement orderBy,
                                   WhereByNodeTypeInfo whereByNodeTypeInfo ) {
         this(new EndImpl(selectFacade, whereByNodeTypeInfo, orderBy), whereByNodeTypeInfo);
     }
@@ -125,10 +125,10 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
         private WhereByNodeTypeInfo whereByNodeTypeInfo;
 
         /** The order by statement. */
-        private SLOrderByStatement    orderByStatement;
+        private OrderByStatement    orderByStatement;
 
         /** The select facade. */
-        private SLSelectFacade        selectFacade;
+        private SelectFacade        selectFacade;
 
         /**
          * Instantiates a new end impl.
@@ -138,8 +138,8 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
          * @param orderByStatement the order by statement
          */
         public EndImpl(
-                        SLSelectFacade selectFacade, WhereByNodeTypeInfo whereByNodeTypeInfo,
-                        SLOrderByStatement orderByStatement ) {
+                        SelectFacade selectFacade, WhereByNodeTypeInfo whereByNodeTypeInfo,
+                        OrderByStatement orderByStatement ) {
             this.selectFacade = selectFacade;
             this.whereByNodeTypeInfo = whereByNodeTypeInfo;
             this.orderByStatement = orderByStatement;
@@ -148,7 +148,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
         /**
          * {@inheritDoc}
          */
-        public SLOrderByStatement orderBy() {
+        public OrderByStatement orderBy() {
             return orderByStatement;
         }
 
@@ -197,28 +197,28 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
         /**
          * {@inheritDoc}
          */
-        public SLSelectByLinkType selectByLinkType() {
+        public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectByNodeType selectByNodeType() {
+        public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectByLinkCount selectByLinkCount() {
+        public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectStatement select() {
+        public SelectStatement select() {
             return selectFacade.select();
         }
     }
@@ -231,7 +231,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
     public static class TypeImpl implements Type {
 
         /** The where statement. */
-        private SLWhereByNodeType whereStatement;
+        private WhereByNodeType whereStatement;
 
         /** The type info. */
         private SLWhereTypeInfo   typeInfo;
@@ -243,7 +243,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
          * @param typeInfo the type info
          */
         public TypeImpl(
-                         SLWhereByNodeType whereStatement, SLWhereTypeInfo typeInfo ) {
+                         WhereByNodeType whereStatement, SLWhereTypeInfo typeInfo ) {
             this.whereStatement = whereStatement;
             this.typeInfo = typeInfo;
         }
@@ -274,7 +274,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
         public static class SubTypesImpl implements SubTypes {
 
             /** The where statement. */
-            private SLWhereByNodeType whereStatement;
+            private WhereByNodeType whereStatement;
 
             /** The type info. */
             private SLWhereTypeInfo   typeInfo;
@@ -286,7 +286,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
              * @param typeInfo the type info
              */
             public SubTypesImpl(
-                                 SLWhereByNodeType whereStatement, SLWhereTypeInfo typeInfo ) {
+                                 WhereByNodeType whereStatement, SLWhereTypeInfo typeInfo ) {
                 this.whereStatement = whereStatement;
                 this.typeInfo = typeInfo;
             }
@@ -310,7 +310,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
         public static class EachImpl implements Each {
 
             /** The where statement. */
-            private SLWhereByNodeType whereStatement;
+            private WhereByNodeType whereStatement;
 
             /** The condition info. */
             private SLConditionInfo   conditionInfo;
@@ -325,7 +325,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
              * @param conditionInfo the condition info
              */
             public EachImpl(
-                             SLWhereByNodeType whereStatement, SLConditionInfo conditionInfo ) {
+                             WhereByNodeType whereStatement, SLConditionInfo conditionInfo ) {
                 this(whereStatement, conditionInfo, null);
             }
 
@@ -337,7 +337,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
              * @param outerEach the outer each
              */
             public EachImpl(
-                             SLWhereByNodeType whereStatement, SLConditionInfo conditionInfo, Each outerEach ) {
+                             WhereByNodeType whereStatement, SLConditionInfo conditionInfo, Each outerEach ) {
                 this.whereStatement = whereStatement;
                 this.conditionInfo = conditionInfo;
                 this.outerEach = outerEach;
@@ -367,7 +367,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
             public static class LinkImpl implements Link {
 
                 /** The where statement. */
-                private SLWhereByNodeType whereStatement;
+                private WhereByNodeType whereStatement;
 
                 /** The each. */
                 private Each              each;
@@ -387,7 +387,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * @param conditionInfo the condition info
                  */
                 public LinkImpl(
-                                 SLWhereByNodeType whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
+                                 WhereByNodeType whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
                     this.whereStatement = whereStatement;
                     this.each = each;
                     this.outerEach = outerEach;
@@ -398,7 +398,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Side a() {
-                    conditionInfo.setSide(SLSideType.A_SIDE);
+                    conditionInfo.setSide(SideType.A_SIDE);
                     return new SideImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -406,7 +406,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Side b() {
-                    conditionInfo.setSide(SLSideType.B_SIDE);
+                    conditionInfo.setSide(SideType.B_SIDE);
                     return new SideImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -418,7 +418,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                 public static class SideImpl implements Side {
 
                     /** The where statement. */
-                    private SLWhereByNodeType whereStatement;
+                    private WhereByNodeType whereStatement;
 
                     /** The each. */
                     private Each              each;
@@ -438,7 +438,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                      * @param conditionInfo the condition info
                      */
                     public SideImpl(
-                                     SLWhereByNodeType whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
+                                     WhereByNodeType whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
                         this.whereStatement = whereStatement;
                         this.each = each;
                         this.outerEach = outerEach;
@@ -466,7 +466,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                         private Each              outerEach;
 
                         /** The where statement. */
-                        private SLWhereByNodeType whereStatement;
+                        private WhereByNodeType whereStatement;
 
                         /** The condition info. */
                         private SLConditionInfo   conditionInfo;
@@ -480,7 +480,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * @param conditionInfo the condition info
                          */
                         public CountImpl(
-                                          SLWhereByNodeType whereStatement, Each each, Each outerEach,
+                                          WhereByNodeType whereStatement, Each each, Each outerEach,
                                           SLConditionInfo conditionInfo ) {
                             this.each = each;
                             this.whereStatement = whereStatement;
@@ -500,7 +500,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * {@inheritDoc}
                          */
                         public Operator lesserThan() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_THAN);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -508,7 +508,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * {@inheritDoc}
                          */
                         public Operator greaterThan() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_THAN);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -516,7 +516,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * {@inheritDoc}
                          */
                         public Operator equalsTo() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.EQUAL);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -524,7 +524,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * {@inheritDoc}
                          */
                         public Operator lesserOrEqualThan() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_OR_EQUAL_THAN);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -532,7 +532,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * {@inheritDoc}
                          */
                         public Operator greaterOrEqualThan() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_OR_EQUAL_THAN);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -549,7 +549,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * @return the operator
                          */
                         public Operator contains() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.CONTAINS);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -566,7 +566,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * @return the operator
                          */
                         public Operator startsWith() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.STARTS_WITH);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -583,7 +583,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * @return the operator
                          */
                         public Operator endsWith() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.ENDS_WITH);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -601,7 +601,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                             private Each              outerEach;
 
                             /** The where statement. */
-                            private SLWhereByNodeType whereStatement;
+                            private WhereByNodeType whereStatement;
 
                             /** The condition info. */
                             private SLConditionInfo   conditionInfo;
@@ -615,7 +615,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                              * @param conditionInfo the condition info
                              */
                             public OperatorImpl(
-                                                 SLWhereByNodeType whereStatement, Each each, Each outerEach,
+                                                 WhereByNodeType whereStatement, Each each, Each outerEach,
                                                  SLConditionInfo conditionInfo ) {
                                 this.each = each;
                                 this.outerEach = outerEach;
@@ -645,7 +645,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                 private Each              outerEach;
 
                                 /** The where statement. */
-                                private SLWhereByNodeType whereStatement;
+                                private WhereByNodeType whereStatement;
 
                                 /** The condition info. */
                                 private SLConditionInfo   conditionInfo;
@@ -659,7 +659,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                  * @param conditionInfo the condition info
                                  */
                                 public ValueImpl(
-                                                  SLWhereByNodeType whereStatement, Each each, Each outerEach,
+                                                  WhereByNodeType whereStatement, Each each, Each outerEach,
                                                   SLConditionInfo conditionInfo ) {
                                     this.each = each;
                                     this.outerEach = outerEach;
@@ -670,7 +670,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                 /**
                                  * {@inheritDoc}
                                  */
-                                public SLWhereByNodeType typeEnd() {
+                                public WhereByNodeType typeEnd() {
                                     return whereStatement;
                                 }
 
@@ -712,7 +712,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                     private Each              each;
 
                                     /** The where statement. */
-                                    private SLWhereByNodeType whereStatement;
+                                    private WhereByNodeType whereStatement;
 
                                     /** The condition info. */
                                     private SLConditionInfo   conditionInfo;
@@ -725,7 +725,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                      * @param conditionInfo the condition info
                                      */
                                     public RelationalOperatorImpl(
-                                                                   SLWhereByNodeType whereStatement, Each each,
+                                                                   WhereByNodeType whereStatement, Each each,
                                                                    SLConditionInfo conditionInfo ) {
                                         this.each = each;
                                         this.whereStatement = whereStatement;
@@ -743,7 +743,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                     /**
                                      * {@inheritDoc}
                                      */
-                                    public SLWhereByNodeType comma() {
+                                    public WhereByNodeType comma() {
                                         return this.whereStatement;
                                     }
 
@@ -803,7 +803,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                 public static class CloseBracketImpl implements CloseBracket {
 
                                     /** The where statement. */
-                                    private SLWhereByNodeType whereStatement;
+                                    private WhereByNodeType whereStatement;
 
                                     /** The outer each. */
                                     private Each              outerEach;
@@ -819,7 +819,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                      * @param conditionInfo the condition info
                                      */
                                     public CloseBracketImpl(
-                                                             SLWhereByNodeType whereStatement, Each outerEach,
+                                                             WhereByNodeType whereStatement, Each outerEach,
                                                              SLConditionInfo conditionInfo ) {
                                         this.whereStatement = whereStatement;
                                         this.outerEach = outerEach;
@@ -849,7 +849,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                                     /**
                                      * {@inheritDoc}
                                      */
-                                    public SLWhereByNodeType typeEnd() {
+                                    public WhereByNodeType typeEnd() {
                                         return whereStatement;
                                     }
                                 }
@@ -873,7 +873,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                 private Each              outerEach;
 
                 /** The where statement. */
-                private SLWhereByNodeType whereStatement;
+                private WhereByNodeType whereStatement;
 
                 /** The condition info. */
                 private SLConditionInfo   conditionInfo;
@@ -887,7 +887,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * @param conditionInfo the condition info
                  */
                 public PropertyImpl(
-                                     SLWhereByNodeType whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
+                                     WhereByNodeType whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
                     this.each = each;
                     this.whereStatement = whereStatement;
                     this.conditionInfo = conditionInfo;
@@ -906,7 +906,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Operator lesserThan() {
-                    conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_THAN);
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -914,7 +914,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Operator greaterThan() {
-                    conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_THAN);
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -922,7 +922,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Operator equalsTo() {
-                    conditionInfo.setRelationalOperator(SLRelationalOperatorType.EQUAL);
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -930,7 +930,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Operator lesserOrEqualThan() {
-                    conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_OR_EQUAL_THAN);
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -938,7 +938,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Operator greaterOrEqualThan() {
-                    conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_OR_EQUAL_THAN);
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -946,7 +946,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Operator contains() {
-                    conditionInfo.setRelationalOperator(SLRelationalOperatorType.CONTAINS);
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -954,7 +954,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Operator startsWith() {
-                    conditionInfo.setRelationalOperator(SLRelationalOperatorType.STARTS_WITH);
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -962,7 +962,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                  * {@inheritDoc}
                  */
                 public Operator endsWith() {
-                    conditionInfo.setRelationalOperator(SLRelationalOperatorType.ENDS_WITH);
+                    conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
                     return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -980,7 +980,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                     private Each              outerEach;
 
                     /** The where statement. */
-                    private SLWhereByNodeType whereStatement;
+                    private WhereByNodeType whereStatement;
 
                     /** The condition info. */
                     private SLConditionInfo   conditionInfo;
@@ -994,7 +994,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                      * @param conditionInfo the condition info
                      */
                     public OperatorImpl(
-                                         SLWhereByNodeType whereStatement, Each each, Each outerEach,
+                                         WhereByNodeType whereStatement, Each each, Each outerEach,
                                          SLConditionInfo conditionInfo ) {
                         this.each = each;
                         this.outerEach = outerEach;
@@ -1064,7 +1064,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                         private Each              outerEach;
 
                         /** The where statement. */
-                        private SLWhereByNodeType whereStatement;
+                        private WhereByNodeType whereStatement;
 
                         /** The condition info. */
                         private SLConditionInfo   conditionInfo;
@@ -1078,7 +1078,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                          * @param conditionInfo the condition info
                          */
                         public ValueImpl(
-                                          SLWhereByNodeType whereStatement, Each each, Each outerEach,
+                                          WhereByNodeType whereStatement, Each each, Each outerEach,
                                           SLConditionInfo conditionInfo ) {
                             this.each = each;
                             this.outerEach = outerEach;
@@ -1089,7 +1089,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                         /**
                          * {@inheritDoc}
                          */
-                        public SLWhereByNodeType typeEnd() {
+                        public WhereByNodeType typeEnd() {
                             return whereStatement;
                         }
 
@@ -1131,7 +1131,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                             private Each              each;
 
                             /** The where statement. */
-                            private SLWhereByNodeType whereStatement;
+                            private WhereByNodeType whereStatement;
 
                             /** The condition info. */
                             private SLConditionInfo   conditionInfo;
@@ -1144,7 +1144,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                              * @param conditionInfo the condition info
                              */
                             public RelationalOperatorImpl(
-                                                           SLWhereByNodeType whereStatement, Each each,
+                                                           WhereByNodeType whereStatement, Each each,
                                                            SLConditionInfo conditionInfo ) {
                                 this.each = each;
                                 this.whereStatement = whereStatement;
@@ -1162,7 +1162,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                             /**
                              * {@inheritDoc}
                              */
-                            public SLWhereByNodeType comma() {
+                            public WhereByNodeType comma() {
                                 return this.whereStatement;
                             }
 
@@ -1221,7 +1221,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                         public static class CloseBracketImpl implements CloseBracket {
 
                             /** The where statement. */
-                            private SLWhereByNodeType whereStatement;
+                            private WhereByNodeType whereStatement;
 
                             /** The outer each. */
                             private Each              outerEach;
@@ -1237,7 +1237,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                              * @param conditionInfo the condition info
                              */
                             public CloseBracketImpl(
-                                                     SLWhereByNodeType whereStatement, Each outerEach,
+                                                     WhereByNodeType whereStatement, Each outerEach,
                                                      SLConditionInfo conditionInfo ) {
                                 this.whereStatement = whereStatement;
                                 this.outerEach = outerEach;
@@ -1267,7 +1267,7 @@ public class WhereByNodeTypeImpl implements SLWhereByNodeType, WhereByNodeTypeIn
                             /**
                              * {@inheritDoc}
                              */
-                            public SLWhereByNodeType typeEnd() {
+                            public WhereByNodeType typeEnd() {
                                 return whereStatement;
                             }
                         }

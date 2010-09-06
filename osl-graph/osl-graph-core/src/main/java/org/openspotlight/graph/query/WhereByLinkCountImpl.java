@@ -58,7 +58,7 @@ import org.openspotlight.graph.query.info.WhereByLinkCountInfo.SLWhereTypeInfo.S
  * 
  * @author Vitor Hugo Chagas
  */
-public class WhereByLinkCountImpl implements SLWhereByLinkCount {
+public class WhereByLinkCountImpl implements WhereByLinkCount {
 
     /** The end. */
     private End                    end;
@@ -74,7 +74,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
      * @param whereByLinkCountInfo the where by link count info
      */
     public WhereByLinkCountImpl(
-                                   SLSelectFacade selectFacade, SLOrderByStatement orderBy,
+                                   SelectFacade selectFacade, OrderByStatement orderBy,
                                    WhereByLinkCountInfo whereByLinkCountInfo ) {
         this(new EndImpl(selectFacade, whereByLinkCountInfo, orderBy), whereByLinkCountInfo);
     }
@@ -134,10 +134,10 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
         private WhereByLinkCountInfo whereByLinkCountInfo;
 
         /** The order by statement. */
-        private SLOrderByStatement     orderByStatement;
+        private OrderByStatement     orderByStatement;
 
         /** The select facade. */
-        private SLSelectFacade         selectFacade;
+        private SelectFacade         selectFacade;
 
         /**
          * Instantiates a new end impl.
@@ -147,8 +147,8 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
          * @param orderByStatement the order by statement
          */
         public EndImpl(
-                        SLSelectFacade selectFacade, WhereByLinkCountInfo whereByLinkCountInfo,
-                        SLOrderByStatement orderByStatement ) {
+                        SelectFacade selectFacade, WhereByLinkCountInfo whereByLinkCountInfo,
+                        OrderByStatement orderByStatement ) {
             this.selectFacade = selectFacade;
             this.whereByLinkCountInfo = whereByLinkCountInfo;
             this.orderByStatement = orderByStatement;
@@ -157,7 +157,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
         /**
          * {@inheritDoc}
          */
-        public SLOrderByStatement orderBy() {
+        public OrderByStatement orderBy() {
             return orderByStatement;
         }
 
@@ -206,28 +206,28 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
         /**
          * {@inheritDoc}
          */
-        public SLSelectByLinkType selectByLinkType() {
+        public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectByNodeType selectByNodeType() {
+        public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectByLinkCount selectByLinkCount() {
+        public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectStatement select() {
+        public SelectStatement select() {
             return selectFacade.select();
         }
     }
@@ -240,7 +240,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
     public static class TypeImpl implements Type {
 
         /** The where statement. */
-        private SLWhereByLinkCount whereStatement;
+        private WhereByLinkCount whereStatement;
 
         /** The type info. */
         private SLWhereTypeInfo    typeInfo;
@@ -252,7 +252,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
          * @param typeInfo the type info
          */
         public TypeImpl(
-                         SLWhereByLinkCount whereStatement, SLWhereTypeInfo typeInfo ) {
+                         WhereByLinkCount whereStatement, SLWhereTypeInfo typeInfo ) {
             this.whereStatement = whereStatement;
             this.typeInfo = typeInfo;
         }
@@ -283,7 +283,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
         public static class SubTypesImpl implements SubTypes {
 
             /** The where statement. */
-            private SLWhereByLinkCount whereStatement;
+            private WhereByLinkCount whereStatement;
 
             /** The type info. */
             private SLWhereTypeInfo    typeInfo;
@@ -295,7 +295,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
              * @param typeInfo the type info
              */
             public SubTypesImpl(
-                                 SLWhereByLinkCount whereStatement, SLWhereTypeInfo typeInfo ) {
+                                 WhereByLinkCount whereStatement, SLWhereTypeInfo typeInfo ) {
                 this.whereStatement = whereStatement;
                 this.typeInfo = typeInfo;
             }
@@ -319,7 +319,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
         public static class EachImpl implements Each {
 
             /** The where statement. */
-            private SLWhereByLinkCount whereStatement;
+            private WhereByLinkCount whereStatement;
 
             /** The condition info. */
             private SLConditionInfo    conditionInfo;
@@ -334,7 +334,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
              * @param conditionInfo the condition info
              */
             public EachImpl(
-                             SLWhereByLinkCount whereStatement, SLConditionInfo conditionInfo ) {
+                             WhereByLinkCount whereStatement, SLConditionInfo conditionInfo ) {
                 this(whereStatement, conditionInfo, null);
             }
 
@@ -346,7 +346,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
              * @param outerEach the outer each
              */
             public EachImpl(
-                             SLWhereByLinkCount whereStatement, SLConditionInfo conditionInfo, Each outerEach ) {
+                             WhereByLinkCount whereStatement, SLConditionInfo conditionInfo, Each outerEach ) {
                 this.whereStatement = whereStatement;
                 this.conditionInfo = conditionInfo;
                 this.outerEach = outerEach;
@@ -368,7 +368,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
             public static class LinkImpl implements Link {
 
                 /** The where statement. */
-                private SLWhereByLinkCount whereStatement;
+                private WhereByLinkCount whereStatement;
 
                 /** The each. */
                 private Each               each;
@@ -388,7 +388,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                  * @param conditionInfo the condition info
                  */
                 public LinkImpl(
-                                 SLWhereByLinkCount whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
+                                 WhereByLinkCount whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
                     this.whereStatement = whereStatement;
                     this.each = each;
                     this.outerEach = outerEach;
@@ -399,7 +399,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                  * {@inheritDoc}
                  */
                 public Side a() {
-                    conditionInfo.setSide(SLSideType.A_SIDE);
+                    conditionInfo.setSide(SideType.A_SIDE);
                     return new SideImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -407,7 +407,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                  * {@inheritDoc}
                  */
                 public Side b() {
-                    conditionInfo.setSide(SLSideType.B_SIDE);
+                    conditionInfo.setSide(SideType.B_SIDE);
                     return new SideImpl(whereStatement, each, outerEach, conditionInfo);
                 }
 
@@ -419,7 +419,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                 public static class SideImpl implements Side {
 
                     /** The where statement. */
-                    private SLWhereByLinkCount whereStatement;
+                    private WhereByLinkCount whereStatement;
 
                     /** The each. */
                     private Each               each;
@@ -439,7 +439,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                      * @param conditionInfo the condition info
                      */
                     public SideImpl(
-                                     SLWhereByLinkCount whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
+                                     WhereByLinkCount whereStatement, Each each, Each outerEach, SLConditionInfo conditionInfo ) {
                         this.whereStatement = whereStatement;
                         this.each = each;
                         this.outerEach = outerEach;
@@ -467,7 +467,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                         private Each               outerEach;
 
                         /** The where statement. */
-                        private SLWhereByLinkCount whereStatement;
+                        private WhereByLinkCount whereStatement;
 
                         /** The condition info. */
                         private SLConditionInfo    conditionInfo;
@@ -481,7 +481,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * @param conditionInfo the condition info
                          */
                         public CountImpl(
-                                          SLWhereByLinkCount whereStatement, Each each, Each outerEach,
+                                          WhereByLinkCount whereStatement, Each each, Each outerEach,
                                           SLConditionInfo conditionInfo ) {
                             this.each = each;
                             this.whereStatement = whereStatement;
@@ -501,7 +501,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * {@inheritDoc}
                          */
                         public Operator lesserThan() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_THAN);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -509,7 +509,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * {@inheritDoc}
                          */
                         public Operator greaterThan() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_THAN);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -517,7 +517,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * {@inheritDoc}
                          */
                         public Operator equalsTo() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.EQUAL);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.EQUAL);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -525,7 +525,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * {@inheritDoc}
                          */
                         public Operator lesserOrEqualThan() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.LESSER_OR_EQUAL_THAN);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.LESSER_OR_EQUAL_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -533,7 +533,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * {@inheritDoc}
                          */
                         public Operator greaterOrEqualThan() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.GREATER_OR_EQUAL_THAN);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.GREATER_OR_EQUAL_THAN);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -543,7 +543,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * @return the operator
                          */
                         public Operator contains() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.CONTAINS);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.CONTAINS);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -553,7 +553,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * @return the operator
                          */
                         public Operator startsWith() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.STARTS_WITH);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.STARTS_WITH);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -563,7 +563,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                          * @return the operator
                          */
                         public Operator endsWith() {
-                            conditionInfo.setRelationalOperator(SLRelationalOperatorType.ENDS_WITH);
+                            conditionInfo.setRelationalOperator(RelationalOperatorType.ENDS_WITH);
                             return new OperatorImpl(whereStatement, each, outerEach, conditionInfo);
                         }
 
@@ -581,7 +581,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                             private Each               outerEach;
 
                             /** The where statement. */
-                            private SLWhereByLinkCount whereStatement;
+                            private WhereByLinkCount whereStatement;
 
                             /** The condition info. */
                             private SLConditionInfo    conditionInfo;
@@ -595,7 +595,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                              * @param conditionInfo the condition info
                              */
                             public OperatorImpl(
-                                                 SLWhereByLinkCount whereStatement, Each each, Each outerEach,
+                                                 WhereByLinkCount whereStatement, Each each, Each outerEach,
                                                  SLConditionInfo conditionInfo ) {
                                 this.each = each;
                                 this.outerEach = outerEach;
@@ -625,7 +625,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                 private Each               outerEach;
 
                                 /** The where statement. */
-                                private SLWhereByLinkCount whereStatement;
+                                private WhereByLinkCount whereStatement;
 
                                 /** The condition info. */
                                 private SLConditionInfo    conditionInfo;
@@ -639,7 +639,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                  * @param conditionInfo the condition info
                                  */
                                 public ValueImpl(
-                                                  SLWhereByLinkCount whereStatement, Each each, Each outerEach,
+                                                  WhereByLinkCount whereStatement, Each each, Each outerEach,
                                                   SLConditionInfo conditionInfo ) {
                                     this.each = each;
                                     this.outerEach = outerEach;
@@ -650,7 +650,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                 /**
                                  * {@inheritDoc}
                                  */
-                                public SLWhereByLinkCount typeEnd() {
+                                public WhereByLinkCount typeEnd() {
                                     return whereStatement;
                                 }
 
@@ -692,7 +692,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                     private Each               each;
 
                                     /** The where statement. */
-                                    private SLWhereByLinkCount whereStatement;
+                                    private WhereByLinkCount whereStatement;
 
                                     /** The condition info. */
                                     private SLConditionInfo    conditionInfo;
@@ -705,7 +705,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                      * @param conditionInfo the condition info
                                      */
                                     public RelationalOperatorImpl(
-                                                                   SLWhereByLinkCount whereStatement, Each each,
+                                                                   WhereByLinkCount whereStatement, Each each,
                                                                    SLConditionInfo conditionInfo ) {
                                         this.each = each;
                                         this.whereStatement = whereStatement;
@@ -723,7 +723,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                     /**
                                      * {@inheritDoc}
                                      */
-                                    public SLWhereByLinkCount comma() {
+                                    public WhereByLinkCount comma() {
                                         return this.whereStatement;
                                     }
 
@@ -783,7 +783,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                 public static class CloseBracketImpl implements CloseBracket {
 
                                     /** The where statement. */
-                                    private SLWhereByLinkCount whereStatement;
+                                    private WhereByLinkCount whereStatement;
 
                                     /** The outer each. */
                                     private Each               outerEach;
@@ -799,7 +799,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                      * @param conditionInfo the condition info
                                      */
                                     public CloseBracketImpl(
-                                                             SLWhereByLinkCount whereStatement, Each outerEach,
+                                                             WhereByLinkCount whereStatement, Each outerEach,
                                                              SLConditionInfo conditionInfo ) {
                                         this.whereStatement = whereStatement;
                                         this.outerEach = outerEach;
@@ -829,7 +829,7 @@ public class WhereByLinkCountImpl implements SLWhereByLinkCount {
                                     /**
                                      * {@inheritDoc}
                                      */
-                                    public SLWhereByLinkCount typeEnd() {
+                                    public WhereByLinkCount typeEnd() {
                                         return whereStatement;
                                     }
                                 }

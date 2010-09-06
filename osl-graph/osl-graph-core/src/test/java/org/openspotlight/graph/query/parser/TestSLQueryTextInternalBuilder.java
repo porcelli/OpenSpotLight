@@ -46,68 +46,39 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query;
+package org.openspotlight.graph.query.parser;
 
-import java.util.Collection;
-import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
+import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.query.QueryTextInternal;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.query.Query.SortMode;
-import org.openspotlight.storage.domain.StorageNode;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
-/**
- * The Interface SLQueryCache.
- * 
- * @author porcelli
- */
-public interface QueryCache {
+public class TestSLQueryTextInternalBuilder {
 
-	/**
-	 * Adds content to the cache.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @param nodes
-	 *            the nodes
-	 */
-	public abstract void add2Cache(final String queryId,
-			final Collection<StorageNode> nodes);
+    private final SLQueryTextInternalBuilder queryBuilder = new SLQueryTextInternalBuilder();
 
-	/**
-	 * Builds a unique query id.
-	 * 
-	 * @param selects
-	 *            the selects
-	 * @param collatorStrength
-	 *            the collator strength
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * @return the string
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	public abstract String buildQueryId(final List<Select> selects,
-			final Integer collatorStrength, final String[] inputNodesIDs,
-			final SortMode sortMode, final Integer limit, final Integer offset)
-			throws SLException;
+    @Test
+    public void testCheckQueryExists() throws SLInvalidQuerySyntaxException {
+        final String select = "select *;";
+        final QueryTextInternal result = this.queryBuilder.build(select);
 
-	/**
-	 * Gets the cache content. Returns null if not found.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @return the cache
-	 */
-	public abstract QueryResult getCache(final String queryId);
+        final String select2 = "     select *      ;   ";
+        final QueryTextInternal result2 = this.queryBuilder.build(select2);
 
-	/**
-	 * Flush cache.
-	 */
-	public void flush();
+        assertThat(result.getClass().getName(), is(result2.getClass().getName()));
+    }
+
+    @Test
+    public void testSelectStar() throws SLInvalidQuerySyntaxException {
+        final String select = "select *;";
+        final QueryTextInternal result = this.queryBuilder.build(select);
+
+        assertThat(result, notNullValue());
+        Assert.assertNotNull(result);
+    }
+
 }

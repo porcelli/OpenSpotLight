@@ -21,23 +21,10 @@
 package org.openspotlight.graph.query;
 
 /**
- * The Interface SLQueryApi.
+ * The Interface SLSelect.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface QueryApi extends Query, SelectFacade {
+public interface Select {
 
-    /**
-     * Gets the collator strength.
-     * 
-     * @return the collator strength
-     */
-    public int getCollatorStrength();
-
-    /**
-     * Sets the collator strength.
-     * 
-     * @param collatorStrength the new collator strength
-     */
-    public void setCollatorStrength(int collatorStrength);
 }

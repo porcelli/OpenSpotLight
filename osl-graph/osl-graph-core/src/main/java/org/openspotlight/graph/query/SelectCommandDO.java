@@ -46,125 +46,123 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.graph.query.info;
+package org.openspotlight.graph.query;
 
-import org.openspotlight.common.util.Equals;
-import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.graph.query.SideType;
+import java.util.Collection;
+
+import org.openspotlight.graph.metadata.Metadata;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.StorageNode;
 
 /**
- * The Class SLSelectByLinkInfo.
- * 
+ * The Class SLSelectCommandDO.
+ *
  * @author Vitor Hugo Chagas
  */
-public class SelectByLinkInfo {
+public class SelectCommandDO {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+    /** The metadata. */
+    private Metadata               metadata;
 
-    /** The name. */
-    private String            name;
+    /** The node wrappers. */
+    private Collection<StorageNode> nodeWrappers;
 
-    /** The side. */
-    private SideType        side;
+    /** The previous node wrappers. */
+    private Collection<StorageNode> previousNodeWrappers;
 
-    /** The comma. */
-    private boolean           comma;
+    /** The tree session. */
+    private StorageSession  treeSession;
 
-    /**
-     * Instantiates a new sL select by link info.
-     * 
-     * @param name the name
-     */
-    public SelectByLinkInfo(
-                               String name ) {
-        setName(name);
-    }
+    /** The collator strength. */
+    private int                      collatorStrength;
 
     /**
-     * Gets the name.
-     * 
-     * @return the name
+     * Gets the metadata.
+     *
+     * @return the metadata
      */
-    public String getName() {
-        return name;
+    public Metadata getMetadata() {
+        return metadata;
     }
 
     /**
-     * Sets the name.
-     * 
-     * @param name the new name
+     * Sets the metadata.
+     *
+     * @param metadata the new metadata
      */
-    public void setName( String name ) {
-        this.name = name;
+    public void setMetadata( Metadata metadata ) {
+        this.metadata = metadata;
     }
 
     /**
-     * Checks if is comma.
-     * 
-     * @return true, if is comma
+     * Gets the node wrappers.
+     *
+     * @return the node wrappers
      */
-    public boolean isComma() {
-        return comma;
+    public Collection<StorageNode> getNodeWrappers() {
+        return nodeWrappers;
     }
 
     /**
-     * Sets the comma.
-     * 
-     * @param comma the new comma
+     * Sets the node wrappers.
+     *
+     * @param nodeWrappers the new node wrappers
      */
-    public void setComma( boolean comma ) {
-        this.comma = comma;
+    public void setNodeWrappers( Collection<StorageNode> nodeWrappers ) {
+        this.nodeWrappers = nodeWrappers;
     }
 
     /**
-     * Gets the side.
-     * 
-     * @return the side
+     * Gets the tree session.
+     *
+     * @return the tree session
      */
-    public SideType getSide() {
-        return side;
+    public StorageSession getTreeSession() {
+        return treeSession;
     }
 
     /**
-     * Sets the side.
-     * 
-     * @param side the new side
+     * Sets the tree session.
+     *
+     * @param treeSession the new tree session
      */
-    public void setSide( SideType side ) {
-        this.side = side;
+    public void setTreeSession( StorageSession treeSession ) {
+        this.treeSession = treeSession;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equalsTo(java.lang.Object)
+    /**
+     * Gets the previous node wrappers.
+     *
+     * @return the previous node wrappers
      */
-    @Override
-    public boolean equals( Object obj ) {
-        return Equals.eachEquality(SelectByLinkInfo.class, this, obj, "name");
+    public Collection<StorageNode> getPreviousNodeWrappers() {
+        return previousNodeWrappers;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
+    /**
+     * Sets the previous node wrappers.
+     *
+     * @param previousNodeWrappers the new previous node wrappers
      */
-    @Override
-    public int hashCode() {
-        return HashCodes.hashOf(name);
+    public void setPreviousNodeWrappers( Collection<StorageNode> previousNodeWrappers ) {
+        this.previousNodeWrappers = previousNodeWrappers;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
+    /**
+     * Gets the collator strength.
+     *
+     * @return the collator strength
      */
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append('"').append(name).append('"').append(' ');
-        buffer.append('(').append(side).append(')');
-        return buffer.toString();
+    public int getCollatorStrength() {
+        return collatorStrength;
+    }
+
+    /**
+     * Sets the collator strength.
+     *
+     * @param collatorStrength the new collator strength
+     */
+    public void setCollatorStrength( int collatorStrength ) {
+        this.collatorStrength = collatorStrength;
     }
 }

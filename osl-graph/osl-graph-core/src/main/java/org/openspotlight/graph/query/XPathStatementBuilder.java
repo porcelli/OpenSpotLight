@@ -390,7 +390,7 @@ public class XPathStatementBuilder {
             private Object                    rightOperandValue;
 
             /** The relational operator. */
-            private SLRelationalOperatorType  relationalOperator;
+            private RelationalOperatorType  relationalOperator;
 
             /** The conditional operator. */
             private ConditionalOperatorType conditionalOperator;
@@ -463,7 +463,7 @@ public class XPathStatementBuilder {
                  * @param relationalOperator the relational operator
                  * @return the relational operator
                  */
-                public RelationalOperator operator( SLRelationalOperatorType relationalOperator ) {
+                public RelationalOperator operator( RelationalOperatorType relationalOperator ) {
                     return operator(relationalOperator, false);
                 }
 
@@ -474,7 +474,7 @@ public class XPathStatementBuilder {
                  * @param applyNot the apply not
                  * @return the relational operator
                  */
-                public RelationalOperator operator( SLRelationalOperatorType relationalOperator,
+                public RelationalOperator operator( RelationalOperatorType relationalOperator,
                                                     boolean applyNot ) {
                     condition.relationalOperator = relationalOperator;
                     condition.relationalOperatorApplyNot = applyNot;

@@ -63,9 +63,9 @@ import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.InvalidQueryElementException;
 import org.openspotlight.graph.query.QueryException;
 import org.openspotlight.graph.query.SLQLVariable;
-import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.openspotlight.graph.query.SLQueryResult;
-import org.openspotlight.graph.query.SLQueryTextInternal;
+import org.openspotlight.graph.query.Query.SortMode;
+import org.openspotlight.graph.query.QueryResult;
+import org.openspotlight.graph.query.QueryTextInternal;
 
 /**
  * The Class AbstractSLQueryTextInternal. This class is the base for dynamic bytecode generation.
@@ -73,7 +73,7 @@ import org.openspotlight.graph.query.SLQueryTextInternal;
  * @see QueryTextInternalBuilder
  * @author porcelli
  */
-public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal {
+public abstract class AbstractSLQueryTextInternal implements QueryTextInternal {
 
     /** The Constant serialVersionUID. */
     private static final long           serialVersionUID = 5945900887330334999L;
@@ -85,7 +85,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
     protected Map<Integer, String>      stringConstants  = null;
 
     /** The target query. */
-    protected SLQueryTextInternal       targetQuery      = null;
+    protected QueryTextInternal       targetQuery      = null;
 
     /** The id. */
     protected String                    id               = null;
@@ -94,7 +94,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
     protected String                    outputModelName  = null;
 
     /** The target. */
-    protected SLQueryTextInternal       target           = null;
+    protected QueryTextInternal       target           = null;
 
     /**
      * Instantiates a new abstract sl query text internal.
@@ -107,7 +107,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
      */
     public AbstractSLQueryTextInternal(
                                         final String id, final Set<SLQLVariable> variables, final String outputModelName,
-                                        final SLQueryTextInternal target, final Map<Integer, String> stringConstants ) {
+                                        final QueryTextInternal target, final Map<Integer, String> stringConstants ) {
         Assertions.checkNotEmpty("id", id);
 
         this.id = id;
@@ -129,7 +129,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
     /**
      * {@inheritDoc}
      */
-    public abstract SLQueryResult execute( final GraphReader session,
+    public abstract QueryResult execute( final GraphReader session,
                                            final Map<String, ?> variableValues,
                                            final String[] inputNodesIDs,
                                            SortMode sortMode,
@@ -220,7 +220,7 @@ public abstract class AbstractSLQueryTextInternal implements SLQueryTextInternal
     /**
      * {@inheritDoc}
      */
-    public SLQueryTextInternal getTarget() {
+    public QueryTextInternal getTarget() {
         return this.target;
     }
 

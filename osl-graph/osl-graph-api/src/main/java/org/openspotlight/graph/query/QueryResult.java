@@ -20,24 +20,30 @@
  */
 package org.openspotlight.graph.query;
 
+import java.util.List;
+
+import org.openspotlight.graph.Node;
+
 /**
- * The Interface SLQueryApi.
+ * The Interface SLQueryResult.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface QueryApi extends Query, SelectFacade {
+public interface QueryResult {
 
     /**
-     * Gets the collator strength.
+     * Gets the nodes.
      * 
-     * @return the collator strength
+     * @return the nodes
+     * @throws QueryException the SL query exception
      */
-    public int getCollatorStrength();
+    public List<Node> getNodes()
+        throws QueryException;
 
     /**
-     * Sets the collator strength.
+     * Gets the query id. This id is related to cache.
      * 
-     * @param collatorStrength the new collator strength
+     * @return the query id
      */
-    public void setCollatorStrength(int collatorStrength);
+    public String getQueryId();
 }

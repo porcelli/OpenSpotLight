@@ -58,10 +58,10 @@ import org.openspotlight.graph.query.info.OrderByTypeInfo.OrderType;
  * 
  * @author Vitor Hugo Chagas
  */
-public class OrderByStatementImpl implements SLOrderByStatement {
+public class OrderByStatementImpl implements OrderByStatement {
 
     /** The select facade. */
-    private SLSelectFacade         selectFacade;
+    private SelectFacade         selectFacade;
 
     /** The order by statement info. */
     private OrderByStatementInfo orderByStatementInfo;
@@ -73,7 +73,7 @@ public class OrderByStatementImpl implements SLOrderByStatement {
      * @param orderByStatementInfo the order by statement info
      */
     public OrderByStatementImpl(
-                                   SLSelectFacade selectFacade, OrderByStatementInfo orderByStatementInfo ) {
+                                   SelectFacade selectFacade, OrderByStatementInfo orderByStatementInfo ) {
         this.selectFacade = selectFacade;
         this.orderByStatementInfo = orderByStatementInfo;
     }
@@ -104,10 +104,10 @@ public class OrderByStatementImpl implements SLOrderByStatement {
     public static class TypeImpl implements Type {
 
         /** The order by statement. */
-        private SLOrderByStatement orderByStatement;
+        private OrderByStatement orderByStatement;
 
         /** The select facade. */
-        private SLSelectFacade     selectFacade;
+        private SelectFacade     selectFacade;
 
         /** The type info. */
         private OrderByTypeInfo  typeInfo;
@@ -120,7 +120,7 @@ public class OrderByStatementImpl implements SLOrderByStatement {
          * @param typeInfo the type info
          */
         public TypeImpl(
-                         SLOrderByStatement orderByStatement, SLSelectFacade selectFacade, OrderByTypeInfo typeInfo ) {
+                         OrderByStatement orderByStatement, SelectFacade selectFacade, OrderByTypeInfo typeInfo ) {
             this.orderByStatement = orderByStatement;
             this.selectFacade = selectFacade;
             this.typeInfo = typeInfo;
@@ -150,10 +150,10 @@ public class OrderByStatementImpl implements SLOrderByStatement {
         public static class PropertyImpl implements Property {
 
             /** The order by statement. */
-            SLOrderByStatement        orderByStatement;
+            OrderByStatement        orderByStatement;
 
             /** The select facade. */
-            private SLSelectFacade    selectFacade;
+            private SelectFacade    selectFacade;
 
             /** The type info. */
             private OrderByTypeInfo typeInfo;
@@ -166,7 +166,7 @@ public class OrderByStatementImpl implements SLOrderByStatement {
              * @param typeInfo the type info
              */
             public PropertyImpl(
-                                 SLOrderByStatement orderByStatement, SLSelectFacade selectFacade, OrderByTypeInfo typeInfo ) {
+                                 OrderByStatement orderByStatement, SelectFacade selectFacade, OrderByTypeInfo typeInfo ) {
                 this.selectFacade = selectFacade;
                 this.typeInfo = typeInfo;
                 this.orderByStatement = orderByStatement;
@@ -175,7 +175,7 @@ public class OrderByStatementImpl implements SLOrderByStatement {
             /**
              * {@inheritDoc}
              */
-            public SLOrderByStatement ascending() {
+            public OrderByStatement ascending() {
                 typeInfo.setOrderType(OrderType.ASCENDING);
                 return orderByStatement;
             }
@@ -183,7 +183,7 @@ public class OrderByStatementImpl implements SLOrderByStatement {
             /**
              * {@inheritDoc}
              */
-            public SLOrderByStatement descending() {
+            public OrderByStatement descending() {
                 typeInfo.setOrderType(OrderType.DESCENDING);
                 return orderByStatement;
             }
@@ -205,7 +205,7 @@ public class OrderByStatementImpl implements SLOrderByStatement {
     public static class EndImpl implements End {
 
         /** The select facade. */
-        private SLSelectFacade        selectFacade;
+        private SelectFacade        selectFacade;
 
         /** The select statement info. */
         private SelectStatementInfo selectStatementInfo;
@@ -217,7 +217,7 @@ public class OrderByStatementImpl implements SLOrderByStatement {
          * @param selectStatementInfo the select statement info
          */
         public EndImpl(
-                        SLSelectFacade selectFacade, SelectStatementInfo selectStatementInfo ) {
+                        SelectFacade selectFacade, SelectStatementInfo selectStatementInfo ) {
             this.selectFacade = selectFacade;
             this.selectStatementInfo = selectStatementInfo;
         }
@@ -275,28 +275,28 @@ public class OrderByStatementImpl implements SLOrderByStatement {
         /**
          * {@inheritDoc}
          */
-        public SLSelectStatement select() {
+        public SelectStatement select() {
             return selectFacade.select();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectByLinkCount selectByLinkCount() {
+        public SelectByLinkCount selectByLinkCount() {
             return selectFacade.selectByLinkCount();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectByLinkType selectByLinkType() {
+        public SelectByLinkType selectByLinkType() {
             return selectFacade.selectByLinkType();
         }
 
         /**
          * {@inheritDoc}
          */
-        public SLSelectByNodeType selectByNodeType() {
+        public SelectByNodeType selectByNodeType() {
             return selectFacade.selectByNodeType();
         }
     }

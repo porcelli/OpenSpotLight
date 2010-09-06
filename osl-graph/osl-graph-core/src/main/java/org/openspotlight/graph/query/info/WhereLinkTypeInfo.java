@@ -57,8 +57,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.openspotlight.graph.query.ConditionalOperatorType;
-import org.openspotlight.graph.query.SLRelationalOperatorType;
-import org.openspotlight.graph.query.SLSideType;
+import org.openspotlight.graph.query.RelationalOperatorType;
+import org.openspotlight.graph.query.SideType;
 
 public class WhereLinkTypeInfo {
 
@@ -311,7 +311,7 @@ public class WhereLinkTypeInfo {
             private WhereLinkTypeInfo       linkTypeInfo;
 
             /** The relational operator. */
-            private SLRelationalOperatorType  relationalOperator;
+            private RelationalOperatorType  relationalOperator;
 
             /** The conditional operator. */
             private ConditionalOperatorType conditionalOperator;
@@ -326,7 +326,7 @@ public class WhereLinkTypeInfo {
             private boolean                   conditionalNotOperator;
 
             /** The side. */
-            private SLSideType                side;
+            private SideType                side;
 
             /** The property name. */
             private String                    propertyName;
@@ -407,7 +407,7 @@ public class WhereLinkTypeInfo {
              * 
              * @return the side
              */
-            public SLSideType getSide() {
+            public SideType getSide() {
                 return side;
             }
 
@@ -416,7 +416,7 @@ public class WhereLinkTypeInfo {
              * 
              * @param side the new side
              */
-            public void setSide( SLSideType side ) {
+            public void setSide( SideType side ) {
                 this.side = side;
             }
 
@@ -479,7 +479,7 @@ public class WhereLinkTypeInfo {
              * 
              * @return the relational operator
              */
-            public SLRelationalOperatorType getRelationalOperator() {
+            public RelationalOperatorType getRelationalOperator() {
                 return relationalOperator;
             }
 
@@ -488,7 +488,7 @@ public class WhereLinkTypeInfo {
              * 
              * @param operator the new relational operator
              */
-            public void setRelationalOperator( SLRelationalOperatorType operator ) {
+            public void setRelationalOperator( RelationalOperatorType operator ) {
                 this.relationalOperator = operator;
             }
 

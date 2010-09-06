@@ -119,8 +119,8 @@ public class QuerySupport {
      * @param select the select
      * @return the select info
      */
-    static SelectInfo getSelectInfo( final SLSelect select ) {
-        final SLSelectInfoGetter getter = (SLSelectInfoGetter)select;
+    static SelectInfo getSelectInfo( final Select select ) {
+        final SelectInfoGetter getter = (SelectInfoGetter)select;
         return getter.getSelectInfo();
     }
 
@@ -130,7 +130,7 @@ public class QuerySupport {
      * @param select the select
      * @return the select statement info
      */
-    static SelectStatementInfo getSelectStatementInfo( final SLSelect select ) {
+    static SelectStatementInfo getSelectStatementInfo( final Select select ) {
         final SelectStatementInfoGetter getter = (SelectStatementInfoGetter)select;
         return getter.getSelectStatementInfo();
     }

@@ -48,66 +48,91 @@
  */
 package org.openspotlight.graph.query;
 
+import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
-import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.exception.SLInvalidQuerySyntaxException;
+import org.openspotlight.graph.manipulation.GraphReader;
 import org.openspotlight.graph.query.Query.SortMode;
-import org.openspotlight.storage.domain.StorageNode;
 
 /**
- * The Interface SLQueryCache.
+ * The Interface SLQueryTextInternal. This class is an internal class.
  * 
  * @author porcelli
  */
-public interface QueryCache {
+public interface QueryTextInternal extends Serializable {
 
-	/**
-	 * Adds content to the cache.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @param nodes
-	 *            the nodes
-	 */
-	public abstract void add2Cache(final String queryId,
-			final Collection<StorageNode> nodes);
+    /**
+     * Execute.
+     * 
+     * @param session the session
+     * @param variableValues the variable values
+     * @param inputNodesIDs the input nodes i ds
+     * @param sortMode the sort mode
+     * @param showSLQL the show slql
+     * @param limit the limit
+     * @param offset the offset
+     * @return the sL query result
+     * @throws InvalidQueryElementException the SL invalid query element exception
+     * @throws QueryException the SL query exception
+     * @throws SLInvalidQuerySyntaxException the SL invalid query syntax exception
+     */
+    public QueryResult execute( final GraphReader session,
+                                  final Map<String, ?> variableValues,
+                                  final String[] inputNodesIDs,
+                                  SortMode sortMode,
+                                  boolean showSLQL,
+                                  Integer limit,
+                                  Integer offset )
+        throws InvalidQueryElementException, QueryException, InvalidQuerySyntaxException;
 
-	/**
-	 * Builds a unique query id.
-	 * 
-	 * @param selects
-	 *            the selects
-	 * @param collatorStrength
-	 *            the collator strength
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * @return the string
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	public abstract String buildQueryId(final List<Select> selects,
-			final Integer collatorStrength, final String[] inputNodesIDs,
-			final SortMode sortMode, final Integer limit, final Integer offset)
-			throws SLException;
+    /**
+     * Gets the unique id.
+     * 
+     * @return the id
+     */
+    public String getId();
 
-	/**
-	 * Gets the cache content. Returns null if not found.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @return the cache
-	 */
-	public abstract QueryResult getCache(final String queryId);
+    /**
+     * Gets the output model name.
+     * 
+     * @return the output model name
+     */
+    public String getOutputModelName();
 
-	/**
-	 * Flush cache.
-	 */
-	public void flush();
+    /**
+     * Gets the target.
+     * 
+     * @return the target
+     */
+    public QueryTextInternal getTarget();
+
+    /**
+     * Gets the variables.
+     * 
+     * @return the variables
+     */
+    public Collection<SLQLVariable> getVariables();
+
+    /**
+     * Checks for output model.
+     * 
+     * @return true, if successful
+     */
+    public boolean hasOutputModel();
+
+    /**
+     * Checks for target.
+     * 
+     * @return true, if successful
+     */
+    public boolean hasTarget();
+
+    /**
+     * Checks for variables.
+     * 
+     * @return true, if successful
+     */
+    public boolean hasVariables();
 }

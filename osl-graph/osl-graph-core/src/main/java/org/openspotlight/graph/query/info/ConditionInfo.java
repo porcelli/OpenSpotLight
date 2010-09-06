@@ -51,8 +51,8 @@ package org.openspotlight.graph.query.info;
 import static org.openspotlight.common.util.StringBuilderUtil.appendIfNotNull;
 
 import org.openspotlight.graph.query.ConditionalOperatorType;
-import org.openspotlight.graph.query.SLRelationalOperatorType;
-import org.openspotlight.graph.query.SLSideType;
+import org.openspotlight.graph.query.RelationalOperatorType;
+import org.openspotlight.graph.query.SideType;
 import org.openspotlight.graph.query.info.WhereLinkTypeInfo.SLLinkTypeStatementInfo;
 
 /**
@@ -69,7 +69,7 @@ public class ConditionInfo {
     private WhereTypeInfo           typeInfo;
 
     /** The relational operator. */
-    private SLRelationalOperatorType  relationalOperator;
+    private RelationalOperatorType  relationalOperator;
 
     /** The conditional operator. */
     private ConditionalOperatorType conditionalOperator;
@@ -84,7 +84,7 @@ public class ConditionInfo {
     private boolean                   conditionalNotOperator;
 
     /** The side. */
-    private SLSideType                side;
+    private SideType                side;
 
     /** The property name. */
     private String                    propertyName;
@@ -187,7 +187,7 @@ public class ConditionInfo {
      * 
      * @return the side
      */
-    public SLSideType getSide() {
+    public SideType getSide() {
         return side;
     }
 
@@ -196,7 +196,7 @@ public class ConditionInfo {
      * 
      * @param side the new side
      */
-    public void setSide( SLSideType side ) {
+    public void setSide( SideType side ) {
         this.side = side;
     }
 
@@ -259,7 +259,7 @@ public class ConditionInfo {
      * 
      * @return the relational operator
      */
-    public SLRelationalOperatorType getRelationalOperator() {
+    public RelationalOperatorType getRelationalOperator() {
         return relationalOperator;
     }
 
@@ -268,7 +268,7 @@ public class ConditionInfo {
      * 
      * @param operator the new relational operator
      */
-    public void setRelationalOperator( SLRelationalOperatorType operator ) {
+    public void setRelationalOperator( RelationalOperatorType operator ) {
         this.relationalOperator = operator;
     }
 

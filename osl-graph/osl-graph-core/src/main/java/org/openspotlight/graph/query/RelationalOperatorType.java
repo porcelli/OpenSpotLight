@@ -48,66 +48,92 @@
  */
 package org.openspotlight.graph.query;
 
-import java.util.Collection;
-import java.util.List;
+import org.openspotlight.common.util.StringBuilderUtil;
+import org.openspotlight.common.util.Strings;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.query.Query.SortMode;
-import org.openspotlight.storage.domain.StorageNode;
-
+// TODO: Auto-generated Javadoc
 /**
- * The Interface SLQueryCache.
+ * The Enum SLRelationalOperatorType.
  * 
- * @author porcelli
+ * @author Vitor Hugo Chagas
  */
-public interface QueryCache {
+public enum RelationalOperatorType implements OperatorType {
 
-	/**
-	 * Adds content to the cache.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @param nodes
-	 *            the nodes
-	 */
-	public abstract void add2Cache(final String queryId,
-			final Collection<StorageNode> nodes);
+    /** The EQUAL. */
+    EQUAL("="),
 
-	/**
-	 * Builds a unique query id.
-	 * 
-	 * @param selects
-	 *            the selects
-	 * @param collatorStrength
-	 *            the collator strength
-	 * @param inputNodesIDs
-	 *            the input nodes i ds
-	 * @param sortMode
-	 *            the sort mode
-	 * @param limit
-	 *            the limit
-	 * @param offset
-	 *            the offset
-	 * @return the string
-	 * @throws SLException
-	 *             the SL exception
-	 */
-	public abstract String buildQueryId(final List<Select> selects,
-			final Integer collatorStrength, final String[] inputNodesIDs,
-			final SortMode sortMode, final Integer limit, final Integer offset)
-			throws SLException;
+    /** The GREATE r_ than. */
+    GREATER_THAN(">"),
 
-	/**
-	 * Gets the cache content. Returns null if not found.
-	 * 
-	 * @param queryId
-	 *            the query id
-	 * @return the cache
-	 */
-	public abstract QueryResult getCache(final String queryId);
+    /** The LESSE r_ than. */
+    LESSER_THAN("<"),
 
-	/**
-	 * Flush cache.
-	 */
-	public void flush();
+    /** The GREATE r_ o r_ equa l_ than. */
+    GREATER_OR_EQUAL_THAN(">="),
+
+    /** The LESSE r_ o r_ equa l_ than. */
+    LESSER_OR_EQUAL_THAN("<="),
+
+    /** The START s_ with. */
+    STARTS_WITH("..*"),
+
+    /** The END s_ with. */
+    ENDS_WITH("*.."),
+
+    /** The CONTAINS. */
+    CONTAINS("<*>");
+
+    /** The symbol. */
+    private String symbol;
+
+    /**
+     * Instantiates a new sL relational operator type.
+     * 
+     * @param symbol the symbol
+     */
+    RelationalOperatorType(
+                              String symbol ) {
+        this.symbol = symbol;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String symbol() {
+        return symbol;
+    }
+
+    /**
+     * X path expression.
+     * 
+     * @param leftOperand the left operand
+     * @param rightOperand the right operand
+     * @param applyNot the apply not
+     * @return the string
+     */
+    public String xPathExpression( Object leftOperand,
+                                   Object rightOperand,
+                                   boolean applyNot ) {
+        StringBuilder buffer = new StringBuilder();
+        if (this.equals(STARTS_WITH)) {
+            StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '", rightOperand, "%')");
+        } else if (this.equals(ENDS_WITH)) {
+            StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "')");
+        } else if (this.equals(CONTAINS)) {
+            StringBuilderUtil.append(buffer, "jcr:like(@", leftOperand, ", '%", rightOperand, "%')");
+        } else {
+            StringBuilderUtil.append(buffer, leftOperand, ' ', symbol, ' ', Strings.quote(rightOperand));
+        }
+        if (applyNot) {
+            buffer.insert(0, "not(");
+            buffer.append(')');
+        }
+        return buffer.toString();
+    }
+
+    @Override
+    public String toString() {
+        return symbol;
+    }
+
 }
