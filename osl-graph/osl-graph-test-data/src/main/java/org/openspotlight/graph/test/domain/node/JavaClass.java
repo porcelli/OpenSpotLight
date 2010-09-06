@@ -53,5 +53,5 @@ package org.openspotlight.graph.test.domain.node;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaClass extends JavaType {
+public abstract class JavaClass extends JavaType {
 }

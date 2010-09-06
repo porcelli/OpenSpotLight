@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLLinkAttribute;
+import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.LinkAutoBidirectional;
 
 /**
  * The Interface JavaClassJavaMethodMultipleLink.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLLinkAttribute( SLLinkAttribute.ALLOWS_MULTIPLE )
-public interface JavaClassJavaMethodMultipleLink extends SLLink {
+@LinkAutoBidirectional
+public abstract class JavaClassJavaMethodMultipleLink extends Link {
 }

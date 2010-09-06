@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Link;
 
 /**
  * The Interface JavaClassHierarchy.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaClassHierarchyWithoutProperties extends SLLink {
+public abstract class JavaClassHierarchyWithoutProperties extends Link {
 
 }

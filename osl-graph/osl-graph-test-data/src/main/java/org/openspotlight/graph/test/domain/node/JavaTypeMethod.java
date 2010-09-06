@@ -48,10 +48,12 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.Node
+import org.openspotlight.graph.Node;
 /**
  * The Interface JavaTypeMethod.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaTypeMethod extends NoNode}
+public abstract class JavaTypeMethod extends Node {
+	
+}

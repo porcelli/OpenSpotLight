@@ -50,6 +50,6 @@ package org.openspotlight.graph.test.domain.node;
 
 import org.openspotlight.graph.Node;
 
-public interface JavaClassNodeWithoutPropertiesAndDescription extends Node {
+public abstract class JavaClassNodeWithoutPropertiesAndDescription extends Node {
 
 }

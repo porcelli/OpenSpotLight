@@ -48,7 +48,7 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.annotation.SLDescription;
+import org.openspotlight.graph.annotation.Description;
 import org.openspotlight.graph.test.domain.node.JavaElementNode;
 
 /**
@@ -56,7 +56,7 @@ import org.openspotlight.graph.test.domain.node.JavaElementNode;
  * 
  * @author Luiz Fernando Teston - feu.teston@caravelatech.com
  */
-@SLDescription( "Java Package" )
-public interface JavaPackageNode extends JavaElementNode {
+@Description( "Java Package" )
+public abstract class JavaPackageNode extends JavaElementNode {
 
 }

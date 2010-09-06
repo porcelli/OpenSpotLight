@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Link;
 
 /**
  * The Interface JavaPackagePublicElement.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaPackagePublicElement extends SLLink {
+public abstract class JavaPackagePublicElement extends Link {
 
 }

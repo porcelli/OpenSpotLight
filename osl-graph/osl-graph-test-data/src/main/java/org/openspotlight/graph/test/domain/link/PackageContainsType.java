@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Link;
 
 /**
  * The Interface PackageContainsType.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface PackageContainsType extends SLLink {
+public abstract class PackageContainsType extends Link {
 
 }

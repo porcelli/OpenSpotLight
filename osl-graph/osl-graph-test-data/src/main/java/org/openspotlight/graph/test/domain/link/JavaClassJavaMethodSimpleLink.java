@@ -48,66 +48,46 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLCollator;
-import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
-
 import java.text.Collator;
 import java.util.Date;
+
+import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.Description;
 
 /**
  * The Interface JavaClassJavaMethodSimpleLink.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLDescription( "Java Class to Java Method Link" )
-public interface JavaClassJavaMethodSimpleLink extends SLLink {
+@Description("Java Class to Java Method Link")
+public abstract class JavaClassJavaMethodSimpleLink extends Link {
 
-    /**
-     * Gets the link name.
-     * 
-     * @return the link name
-     */
-    @SLProperty
-    public String getLinkName();
+	private String linkName;
+	private Date creationTime;
+	private String selecao;
 
-    /**
-     * Sets the link name.
-     * 
-     * @param linkName the new link name
-     */
-    public void setLinkName( String linkName );
+	public String getLinkName() {
+		return linkName;
+	}
 
-    /**
-     * Gets the creation time.
-     * 
-     * @return the creation time
-     */
-    @SLProperty
-    public Date getCreationTime();
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
 
-    /**
-     * Sets the creation time.
-     * 
-     * @param creationTime the new creation time
-     */
-    public void setCreationTime( Date creationTime );
+	public Date getCreationTime() {
+		return creationTime;
+	}
 
-    /**
-     * Gets the selecao.
-     * 
-     * @return the selecao
-     */
-    @SLProperty
-    @SLCollator( strength = Collator.PRIMARY )
-    public String getSelecao();
+	public void setCreationTime(Date creationTime) {
+		this.creationTime = creationTime;
+	}
 
-    /**
-     * Sets the selecao.
-     * 
-     * @param selecao the new selecao
-     */
-    public void setSelecao( String selecao );
+	public String getSelecao() {
+		return selecao;
+	}
+
+	public void setSelecao(String selecao) {
+		this.selecao = selecao;
+	}
 
 }

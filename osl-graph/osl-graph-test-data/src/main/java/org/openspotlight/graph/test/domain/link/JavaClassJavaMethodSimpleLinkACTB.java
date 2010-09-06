@@ -48,15 +48,15 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLLinkAttribute;
+import org.openspotlight.graph.annotation.LinkAutoBidirectional;
+import org.openspotlight.graph.query.WhereByLinkCount.Type.Each.Link;
 
 /**
  * The Interface JavaClassJavaMethodSimpleLinkACTB.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLLinkAttribute( SLLinkAttribute.ALLOWS_CHANGE_TO_BIDIRECTIONAL )
-public interface JavaClassJavaMethodSimpleLinkACTB extends SLLink {
+@LinkAutoBidirectional
+public interface JavaClassJavaMethodSimpleLinkACTB extends Link {
 
 }

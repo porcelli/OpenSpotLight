@@ -54,6 +54,6 @@ package org.openspotlight.graph.test.domain.node;
  * @author Vitor Hugo Chagas
  */
 
-public interface JavaClassNodeWithoutDescription extends JavaElementNode {
+public abstract class JavaClassNodeWithoutDescription extends JavaElementNode {
 
 }

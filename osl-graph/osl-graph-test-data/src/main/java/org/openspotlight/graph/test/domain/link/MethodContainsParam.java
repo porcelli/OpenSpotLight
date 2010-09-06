@@ -48,13 +48,13 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
+import org.openspotlight.graph.Link;
 
 /**
  * The Interface MethodContainsParam.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface MethodContainsParam extends SLLink {
+public abstract class MethodContainsParam extends Link {
 
 }

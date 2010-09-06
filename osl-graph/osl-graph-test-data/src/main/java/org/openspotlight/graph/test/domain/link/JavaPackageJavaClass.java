@@ -48,14 +48,14 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLLinkAttribute;
+import org.openspotlight.graph.Link;
+import org.openspotlight.graph.annotation.LinkAutoBidirectional;
 
 /**
  * The Interface JavaPackageJavaClass.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLLinkAttribute( {SLLinkAttribute.ALLOWS_CHANGE_TO_BIDIRECTIONAL} )
-public interface JavaPackageJavaClass extends SLLink {
+@LinkAutoBidirectional
+public abstract class JavaPackageJavaClass extends Link {
 }

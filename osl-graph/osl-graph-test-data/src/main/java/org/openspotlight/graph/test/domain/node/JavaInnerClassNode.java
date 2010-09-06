@@ -53,5 +53,5 @@ package org.openspotlight.graph.test.domain.node;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaInnerClassNode extends JavaClassNode {
+public abstract class JavaInnerClassNode extends JavaClassNode {
 }

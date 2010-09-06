@@ -48,67 +48,39 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLCollator;
-import org.openspotlight.graph.annotation.SLProperty;
-import org.openspotlight.graph.annotation.SLVisibility;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-
-import java.text.Collator;
 import java.util.Date;
+
+import org.openspotlight.graph.Link;
 
 /**
  * The Interface JavaClassJavaMethodSimpleLink.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLVisibility( VisibilityLevel.PRIVATE )
-public interface JavaClassJavaMethodSimpleLinkPrivate extends SLLink {
+public abstract class JavaClassJavaMethodSimpleLinkPrivate extends Link {
 
-    /**
-     * Gets the link name.
-     * 
-     * @return the link name
-     */
-    @SLProperty
-    public String getLinkName();
+	private String linkName;
+	private Date creationTime;
+	private String selecao;
+	public String getLinkName() {
+		return linkName;
+	}
+	public void setLinkName(String linkName) {
+		this.linkName = linkName;
+	}
+	public Date getCreationTime() {
+		return creationTime;
+	}
+	public void setCreationTime(Date creationTime) {
+		this.creationTime = creationTime;
+	}
+	public String getSelecao() {
+		return selecao;
+	}
+	public void setSelecao(String selecao) {
+		this.selecao = selecao;
+	}
 
-    /**
-     * Sets the link name.
-     * 
-     * @param linkName the new link name
-     */
-    public void setLinkName( String linkName );
-
-    /**
-     * Gets the creation time.
-     * 
-     * @return the creation time
-     */
-    @SLProperty
-    public Date getCreationTime();
-
-    /**
-     * Sets the creation time.
-     * 
-     * @param creationTime the new creation time
-     */
-    public void setCreationTime( Date creationTime );
-
-    /**
-     * Gets the selecao.
-     * 
-     * @return the selecao
-     */
-    @SLProperty
-    @SLCollator( strength = Collator.PRIMARY )
-    public String getSelecao();
-
-    /**
-     * Sets the selecao.
-     * 
-     * @param selecao the new selecao
-     */
-    public void setSelecao( String selecao );
-
+	
+	
 }

@@ -55,6 +55,6 @@ import org.openspotlight.graph.Node;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface MethodParam extends Node {
+public abstract class MethodParam extends Node {
 
 }

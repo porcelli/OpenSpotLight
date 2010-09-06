@@ -55,6 +55,6 @@ import org.openspotlight.graph.Node;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaType extends Node {
+public abstract class JavaType extends Node {
 
 }

@@ -48,12 +48,10 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.Nodeimport org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
-import org.openspotlight.graph.annotation.SLVisibility;
-import org.openspotlight.graph.annotation.SLVisibility.VisibilityLevel;
-
 import java.util.Date;
+
+import org.openspotlight.graph.Node;
+import org.openspotlight.graph.annotation.Description;
 
 //@SLTransient
 //@CollatorLevel(IDENTICAL)
@@ -66,64 +64,46 @@ import java.util.Date;
  * @author Vitor Hugo Chagas
  */
 
-@SLDescription( "Java Class" )
-@SLVisibility( VisibilityLevel.PUBLIC )
-public interface JavaClassNodePublic extends NoNode    /** The Constant MODIFIER_PUBLIC. */
-    public static final Integer MODIFIER_PUBLIC    = 1;
+@Description("Java Class")
+public abstract class JavaClassNodePublic extends Node {
+	/** The Constant MODIFIER_PUBLIC. */
+	public static final Integer MODIFIER_PUBLIC = 1;
 
-    /** The Constant MODIFIER_PRIVATE. */
-    public static final Integer MODIFIER_PRIVATE   = 2;
+	/** The Constant MODIFIER_PRIVATE. */
+	public static final Integer MODIFIER_PRIVATE = 2;
 
-    /** The Constant MODIFIER_PROTECTED. */
-    public static final Integer MODIFIER_PROTECTED = 3;
+	/** The Constant MODIFIER_PROTECTED. */
+	public static final Integer MODIFIER_PROTECTED = 3;
 
-    /** The Constant MODIFIER_DEFAULT. */
-    public static final Integer MODIFIER_DEFAULT   = 4;
+	/** The Constant MODIFIER_DEFAULT. */
+	public static final Integer MODIFIER_DEFAULT = 4;
 
-    // @SLProperty(collatorLevel=IDENTICAL)
-    /**
-     * Gets the class name.
-     * 
-     * @return the class name
-     */
-    @SLProperty
-    @SLVisibility( VisibilityLevel.INTERNAL )
-    public String getClassName();
+	private String className;
+	private Integer modifier;
+	private Date creationTime;
 
-    /**
-     * Sets the class name.
-     * 
-     * @param className the new class name
-     */
-    public void setClassName( String className );
+	public String getClassName() {
+		return className;
+	}
 
-    /**
-     * Gets the modifier.
-     * 
-     * @return the modifier
-     */
-    @SLProperty
-    public Integer getModifier();
+	public void setClassName(String className) {
+		this.className = className;
+	}
 
-    /**
-     * Sets the modifier.
-     * 
-     * @param modifier the new modifier
-     */
-    public void setModifier( Integer modifier );
+	public Integer getModifier() {
+		return modifier;
+	}
 
-    /**
-     * Gets the creation time.
-     * 
-     * @return the creation time
-     */
-    @SLProperty
-    public Date getCreationTime();
+	public void setModifier(Integer modifier) {
+		this.modifier = modifier;
+	}
 
-    /**
-     * Sets the creation time.
-     * 
-     * @param creationTime the new creation time
-     */
-    public void setCreationTime( Date creationTime );
+	public Date getCreationTime() {
+		return creationTime;
+	}
+
+	public void setCreationTime(Date creationTime) {
+		this.creationTime = creationTime;
+	}
+
 }

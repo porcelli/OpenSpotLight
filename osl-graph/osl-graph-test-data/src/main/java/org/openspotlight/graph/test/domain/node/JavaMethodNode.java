@@ -53,6 +53,6 @@ package org.openspotlight.graph.test.domain.node;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaMethodNode extends JavaElementNode {
+public abstract class JavaMethodNode extends JavaElementNode {
 
 }

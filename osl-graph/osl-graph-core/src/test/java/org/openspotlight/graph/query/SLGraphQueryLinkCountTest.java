@@ -62,9 +62,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.graph.Context;
+import org.openspotlight.graph.FullGraphSession;
+import org.openspotlight.graph.GraphLocation;
 import org.openspotlight.graph.GraphModule;
+import org.openspotlight.graph.GraphSessionFactory;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.manipulation.GraphReader;
+import org.openspotlight.graph.manipulation.GraphWriter;
 import org.openspotlight.graph.test.domain.link.MethodContainsParam;
 import org.openspotlight.graph.test.domain.link.TypeContainsMethod;
 import org.openspotlight.graph.test.domain.node.JavaInterface;
@@ -104,6 +108,10 @@ public class SLGraphQueryLinkCountTest {
 
     private static AuthenticatedUser user;
 
+	private static GraphWriter writer;
+
+	private static StorageSession storageSession;
+
     /**
      * Finish.
      */
@@ -142,18 +150,19 @@ public class SLGraphQueryLinkCountTest {
                     new SimplePersistModule(), new GraphModule());
 
 
-
+            storageSession = injector.getInstance(StorageSession.class);
             final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
             final User simpleUser = securityFactory.createUser("testUser");
-            user = securityFactory.createIdentityManager(RegularPartitions.FEDERATION).authenticate(simpleUser, "password");
-            session = graph.openSession(user, DEFAULT_REPOSITORY_NAME);
-            final Context context = session.createContext("linkCountTest");
-            final Node root = context.getRootNode();
+            GraphSessionFactory factory = injector.getInstance(GraphSessionFactory.class);
+            session = factory.openSimple().from(GraphLocation.SERVER);
+            writer = factory.openFull().toServer();
+            user = securityFactory.createIdentityManager(storageSession).authenticate(simpleUser, "password");
+            final Context context = session.getContext("linkCountTest");
             final Set<Class<?>> types = getIFaceTypeSet();
             for (final Class<?> type : types) {
                 final Method[] methods = type.getDeclaredMethods();
                 LOGGER.info(type.getName() + ": " + methods.length + " methods");
-                final JavaInterface javaInteface = root.addNode(JavaInterface.class, type.getName());
+                final JavaInterface javaInteface = writer.addNode(context, JavaInterface.class, type.getName());
                 javaInteface.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", type.getName());
                 for (final Method method : methods) {
                     final JavaTypeMethod javaMethod = javaInteface.addNode(JavaTypeMethod.class, method.getName());

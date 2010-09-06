@@ -48,30 +48,24 @@
  */
 package org.openspotlight.graph.test.domain.node;
 
-import org.openspotlight.graph.Nodeport org.openspotlight.graph.annotation.SLCollator;
-import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.Node;
 
-import java.text.Collator;
 
 /**
  * The Interface SQLElement.
  * 
  * @author Vitor Hugo Chagas
  */
-@SLCollator( strength = Collator.PRIMARY )
-public interface SQLElement extends NoNoNode/**
-     * Gets the selecao.
-     * 
-     * @return the selecao
-     */
-    @SLProperty
-    @SLCollator( strength = Collator.PRIMARY )
-    public String getSelecao();
+public abstract class  SQLElement extends Node{
+	private String selecao;
 
-    /**
-     * Sets the selecao.
-     * 
-     * @param selecao the new selecao
-     */
-    public void setSelecao( String selecao );
+	public String getSelecao() {
+		return selecao;
+	}
+
+	public void setSelecao(String selecao) {
+		this.selecao = selecao;
+	}
+
+
 }
