@@ -48,8 +48,8 @@
  */
 package org.openspotlight.bundle.scheduler;
 
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Group;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;
 

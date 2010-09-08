@@ -46,30 +46,20 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.bundle.domain;
 
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 
-public class DnaSvnArtifactSource extends ArtifactSource {
-    private static final long serialVersionUID = 780480895292133774L;
+public class JavaArtifactSource extends ArtifactSource {
+    private static final long serialVersionUID = 5899043044379454212L;
 
-    private String            userName;
-    private String            password;
+    private String            virtualMachineVersion;
 
-    public String getPassword() {
-        return this.password;
+    public String getVirtualMachineVersion() {
+        return this.virtualMachineVersion;
     }
 
-    public String getUserName() {
-        return this.userName;
+    public void setVirtualMachineVersion( final String virtualMachineVersion ) {
+        this.virtualMachineVersion = virtualMachineVersion;
     }
-
-    public void setPassword( final String password ) {
-        this.password = password;
-    }
-
-    public void setUserName( final String userName ) {
-        this.userName = userName;
-    }
-
 }

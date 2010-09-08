@@ -46,9 +46,10 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.bundle.domain;
 
-import org.openspotlight.federation.domain.Schedulable.SchedulableCommand;
+import org.openspotlight.bundle.domain.Schedulable;
+import org.openspotlight.bundle.domain.Schedulable.SchedulableCommand;
 import org.openspotlight.federation.finder.OriginArtifactLoader;
 import org.openspotlight.persist.annotation.Name;
 import org.openspotlight.persist.annotation.SimpleNodeType;

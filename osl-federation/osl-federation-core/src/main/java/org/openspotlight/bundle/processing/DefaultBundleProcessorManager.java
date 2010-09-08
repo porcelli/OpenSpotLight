@@ -51,8 +51,8 @@ package org.openspotlight.bundle.processing;
 
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Group;
 import org.openspotlight.bundle.processing.internal.BundleProcessorExecution;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 

@@ -70,78 +70,11 @@ import com.google.inject.Injector;
  */
 
 public class SLRemoteGraphTest extends BaseGraphTest {
-    private static final String userName = "testUser";
 
-    private static final String pass = "password";
-
-    private static RemoteGraphSessionFactory client;
-
-    public static RemoteGraphSessionServer server;
-
-    @BeforeClass
-    public static void init() throws Exception {
-        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
-        final Injector injector = Guice.createInjector(new JRedisStorageModule(StorageSessionlushMode.AUTO,
-                ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                repositoryPath("repository")),
-                new SimplePersistModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        injector.getInstance(JRedisFactory.class).getFrom(RegularPartitionitionition.GRAPH).flushall();
-
-
-        final SLGraph graph = injector.getInstance(SLGraph.class);
-
-        server = new RemoteGraphSessionServer(new UserAuthenticator() {
-
-            public boolean canConnect(final String userName,
-                                      final String password,
-                                      final String clientHost) {
-                return true;
-            }
-
-            @Override
-            public boolean equals(final Object obj) {
-                return true;
-            }
-        }, 7070, 10 * 60 * 1000L, DefaultJcrDescriptor.TEMP_DESCRIPTOR, graph);
-
-    }
-
-    @Override
-    protected void clearSession() {
-    }
-
-    @Override
-    public GraphReaderows SLGraphException {
-        return client.createRemoteGraphSession(userName, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
-    }
-
-    @Before
-    public void setupClient() throws Exception {
-        server.removeAllObjectsFromServer();
-
-        client = new RemoteGraphSessionFactory(new RemoteGraphFactoryConnectionData() {
-
-            public String getHost() {
-                return "localhost";
-            }
-
-            public String getPassword() {
-                return "***";
-            }
-
-            public int getPort() {
-                return 7070;
-            }
-
-            public String getUserName() {
-                return "***";
-            }
-        });
-        JcrConnectionProvider.createFromData(DefaultJcrDescriptor.TEMP_DESCRIPTOR).closeRepositoryAndCleanResources();
-        if (session == null) {
-            session = client.createRemoteGraphSession(userName, pass, SLConsts.DEFAULT_REPOSITORY_NAME);
-        }
-
-
-    }
+	@Override
+	public void addAddMultipleLinkEmptyCase() {
+		// TODO Auto-generated method stub
+		
+	}
+    
 }

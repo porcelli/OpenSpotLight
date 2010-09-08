@@ -49,6 +49,10 @@
 
 package org.openspotlight.federation.data.processing.test;
 
+import org.openspotlight.bundle.domain.BundleProcessorType;
+import org.openspotlight.bundle.domain.DbArtifactSource;
+import org.openspotlight.bundle.domain.Group;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 

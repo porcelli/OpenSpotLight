@@ -183,6 +183,19 @@ public interface GraphReader {
                                                   Node node,
                                                   Class<T> clazz)
         throws IllegalArgumentException;
+    /**
+     * Returns the children node list of the parameter node type.
+     * 
+     * @param <T> the node type
+     * @param context the parent context
+     * @param clazz the child class node type
+     * @return the children node list, empty if not found
+     * @throws IllegalArgumentException if any input param is null
+     */
+    <T extends Node> Iterable<T> getChildrenNodes(
+                                                  Context context,
+                                                  Class<T> clazz)
+        throws IllegalArgumentException;
 
     /**
      * Returns the children node list.

@@ -46,20 +46,78 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.bundle.domain;
 
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
 
-public class JavaArtifactSource extends ArtifactSource {
-    private static final long serialVersionUID = 5899043044379454212L;
+public class DbArtifactSource extends ArtifactSource {
+    private static final long serialVersionUID = -430683831296857466L;
+    private String            serverName;
+    private String            databaseName;
+    private String            driverClass;
 
-    private String            virtualMachineVersion;
+    private String            user;
 
-    public String getVirtualMachineVersion() {
-        return this.virtualMachineVersion;
+    private String            password;
+
+    private DatabaseType      type;
+
+    private int               maxConnections;
+
+    public String getDatabaseName() {
+        return databaseName;
     }
 
-    public void setVirtualMachineVersion( final String virtualMachineVersion ) {
-        this.virtualMachineVersion = virtualMachineVersion;
+    public String getDriverClass() {
+        return driverClass;
+    }
+
+    public int getMaxConnections() {
+        return maxConnections;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public DatabaseType getType() {
+        return type;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setDatabaseName( final String databaseName ) {
+        this.databaseName = databaseName;
+    }
+
+    public void setDriverClass( final String driverClass ) {
+        this.driverClass = driverClass;
+    }
+
+    public void setMaxConnections( final int maxConnections ) {
+        this.maxConnections = maxConnections;
+    }
+
+    public void setPassword( final String password ) {
+        this.password = password;
+    }
+
+    public void setServerName( final String serverName ) {
+        this.serverName = serverName;
+    }
+
+    public void setType( final DatabaseType type ) {
+        this.type = type;
+    }
+
+    public void setUser( final String user ) {
+        this.user = user;
     }
 }

@@ -46,140 +46,144 @@
  * 51 Franklin Street, Fifth Floor
  * Boston, MA  02110-1301  USA
  */
-package org.openspotlight.federation.domain;
+package org.openspotlight.bundle.domain;
 
+import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.Name;
+import org.openspotlight.persist.annotation.ParentProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import static org.openspotlight.common.util.Arrays.andOf;
-import static org.openspotlight.common.util.Arrays.of;
-
-// TODO: Auto-generated Javadoc
 /**
- * The Class Repository.
+ * The Class BundleSource.
  */
-@Name( "repository" )
-public class Repository implements SimpleNodeType, Serializable {
+@Name( "bundle_source" )
+public class BundleSource implements SimpleNodeType, Serializable {
 
-    public static interface GroupVisitor {
-        public void visitGroup( Group group );
-    }
+    private static final long             serialVersionUID = -5266436076638737597L;
 
-    private List<Class<? extends GroupListener>> groupListeners   = new ArrayList<Class<? extends GroupListener>>();
+    /** The relative. */
+    private String                        relative;
 
-    private static final long                    serialVersionUID = -8278810189446649901L;
+    /** The source. */
+    private transient BundleProcessorType bundleProcessorType;
 
-    /** The artifact sources. */
-    private Set<ArtifactSource>                  artifactSources  = new HashSet<ArtifactSource>();
+    /** The excludeds. */
+    private Set<String>                   excludeds        = new HashSet<String>();
 
-    /** The name. */
-    private String                               name;
+    /** The includeds. */
+    private Set<String>                   includeds        = new HashSet<String>();
 
-    /** The groups. */
-    private Set<Group>                           groups           = new HashSet<Group>();
+    /** The hash code. */
+    private volatile transient int        hashCode;
 
-    /** The active. */
-    private boolean                              active;
-
-    private volatile transient int               hashCode;
-
-    public void acceptGroupVisitor( final GroupVisitor visitor ) {
-        for (final Group entry : getGroups()) {
-            entry.acceptVisitor(visitor);
-        }
-    }
-
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equalsTo(java.lang.Object)
+     */
     public boolean equals( final Object o ) {
-        if (!(o instanceof Repository)) {
+        if (!(o instanceof BundleSource)) {
             return false;
         }
-        final Repository that = (Repository)o;
-        return Equals.eachEquality(of(name), andOf(that.name));
-    }
-
-    public Set<ArtifactSource> getArtifactSources() {
-        return artifactSources;
-    }
-
-    public List<Class<? extends GroupListener>> getGroupListeners() {
-        return groupListeners;
+        final BundleSource that = (BundleSource)o;
+        final boolean result = Equals.eachEquality(Arrays.of(bundleProcessorType, relative),
+                                                   Arrays.andOf(that.bundleProcessorType, that.relative));
+        return result;
     }
 
     /**
-     * Gets the groups.
+     * Gets the bundle processor type.
      * 
-     * @return the groups
+     * @return the bundle processor type
      */
-    public Set<Group> getGroups() {
-        return groups;
+    @ParentProperty
+    public BundleProcessorType getBundleProcessorType() {
+        return bundleProcessorType;
     }
 
     /**
-     * Gets the name.
+     * Gets the excludeds.
      * 
-     * @return the name
+     * @return the excludeds
+     */
+    public Set<String> getExcludeds() {
+        return excludeds;
+    }
+
+    /**
+     * Gets the includeds.
+     * 
+     * @return the includeds
+     */
+    public Set<String> getIncludeds() {
+        return includeds;
+    }
+
+    /**
+     * Gets the relative.
+     * 
+     * @return the relative
      */
     @KeyProperty
-    public String getName() {
-        return name;
+    public String getRelative() {
+        return relative;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     public int hashCode() {
         int result = hashCode;
         if (result == 0) {
-            result = HashCodes.hashOf(name);
+            result = HashCodes.hashOf(bundleProcessorType, relative);
             hashCode = result;
         }
         return result;
     }
 
     /**
-     * Checks if is active.
+     * Sets the bundle processor type.
      * 
-     * @return true, if is active
+     * @param bundleProcessorType the new bundle processor type
      */
-    public boolean isActive() {
-        return active;
+    public void setBundleProcessorType( final BundleProcessorType bundleProcessorType ) {
+        this.bundleProcessorType = bundleProcessorType;
     }
 
     /**
-     * Sets the active.
+     * Sets the excludeds.
      * 
-     * @param active the new active
+     * @param excludeds the new excludeds
      */
-    public void setActive( final boolean active ) {
-        this.active = active;
-    }
-
-    public void setArtifactSources( final Set<ArtifactSource> artifactSources ) {
-        this.artifactSources = artifactSources;
-    }
-
-    public void setGroupListeners( final List<Class<? extends GroupListener>> groupListeners ) {
-        this.groupListeners = groupListeners;
-    }
-
-    public void setGroups( final Set<Group> groups ) {
-        this.groups = groups;
+    public void setExcludeds( final Set<String> excludeds ) {
+        this.excludeds = excludeds;
     }
 
     /**
-     * Sets the name.
+     * Sets the includeds.
      * 
-     * @param name the new name
+     * @param includeds the new includeds
      */
-    public void setName( final String name ) {
-        this.name = name;
+    public void setIncludeds( final Set<String> includeds ) {
+        this.includeds = includeds;
+    }
+
+    /**
+     * Sets the relative.
+     * 
+     * @param relative the new relative
+     */
+    public void setRelative( final String relative ) {
+        this.relative = relative;
     }
 
 }

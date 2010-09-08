@@ -48,8 +48,8 @@
  */
 package org.openspotlight.federation.finder;
 
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.collection.IteratorBuilder;
-import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.persist.support.SimplePersistCapable;

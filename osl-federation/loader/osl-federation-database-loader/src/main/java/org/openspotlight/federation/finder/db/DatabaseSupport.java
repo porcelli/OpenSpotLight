@@ -48,7 +48,7 @@
  */
 package org.openspotlight.federation.finder.db;
 
-import org.openspotlight.federation.domain.DbArtifactSource;
+import org.openspotlight.bundle.domain.DbArtifactSource;
 
 import java.sql.Connection;
 

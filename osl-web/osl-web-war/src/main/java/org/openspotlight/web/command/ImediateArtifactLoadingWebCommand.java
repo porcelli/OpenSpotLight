@@ -51,7 +51,7 @@ package org.openspotlight.web.command;
 import net.sf.json.JSONObject;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.bundle.scheduler.DefaultScheduler;
 import org.openspotlight.bundle.scheduler.SLScheduler;

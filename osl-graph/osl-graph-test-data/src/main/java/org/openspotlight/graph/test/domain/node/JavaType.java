@@ -56,5 +56,34 @@ import org.openspotlight.graph.Node;
  * @author Vitor Hugo Chagas
  */
 public abstract class JavaType extends Node {
+	private int intValue;
+
+	private boolean bolValue;
+
+	private float decValue;
+
+	public boolean isBolValue() {
+		return bolValue;
+	}
+
+	public void setBoolValue(boolean bolValue) {
+		this.bolValue = bolValue;
+	}
+
+	public float getDecValue() {
+		return decValue;
+	}
+
+	public void setDecValue(float decValue) {
+		this.decValue = decValue;
+	}
+
+	public int getIntValue() {
+		return intValue;
+	}
+
+	public void setIntValue(int intValue) {
+		this.intValue = intValue;
+	}
 
 }

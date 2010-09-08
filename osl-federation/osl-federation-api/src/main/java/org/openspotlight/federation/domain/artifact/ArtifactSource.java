@@ -48,12 +48,12 @@
  */
 package org.openspotlight.federation.domain.artifact;
 
+import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.bundle.domain.Schedulable;
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.Schedulable;
 import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.annotation.*;
 

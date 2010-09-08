@@ -48,10 +48,10 @@
  */
 package org.openspotlight.bundle.context;
 
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.DisposingListener;
 import org.openspotlight.common.concurrent.AtomicLazyResource;
 import org.openspotlight.common.util.AbstractFactory;
-import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.finder.PersistentArtifactManager;
 import org.openspotlight.federation.finder.PersistentArtifactManagerImpl;

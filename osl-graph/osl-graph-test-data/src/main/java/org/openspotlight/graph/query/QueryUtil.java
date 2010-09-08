@@ -62,23 +62,25 @@ import java.util.Collection;
  */
 public class QueryUtil {
 
-    /** The Constant LOGGER. */
-    static final Logger LOGGER = Logger.getLogger(QueryUtil.class);
+	/** The Constant LOGGER. */
+	static final Logger LOGGER = Logger.getLogger(QueryUtil.class);
 
-    /**
-     * Prints the result.
-     * 
-     * @param nodes the nodes
-     */
-    static void printResult( final Collection<Node> nodes ) {
-        final StringBuilder buffer = new StringBuilder();
-        StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
-        for (final Node node : nodes) {
-            StringBuilderUtil.append(buffer, StringUtils.rightPad(node.getTypeName(), 60), StringUtils.rightPad(node.getName(),
-                                                                                                                60),
-                                     node.getParent().getName(), '\n');
-        }
-        LOGGER.info(buffer);
-    }
+	/**
+	 * Prints the result.
+	 * 
+	 * @param nodes
+	 *            the nodes
+	 */
+	static void printResult(final Collection<Node> nodes) {
+		final StringBuilder buffer = new StringBuilder();
+		StringBuilderUtil.append(buffer, "\n\nRESULTS (", nodes.size(), "):\n");
+		for (final Node node : nodes) {
+			StringBuilderUtil.append(buffer,
+					StringUtils.rightPad(node.getTypeName(), 60),
+					StringUtils.rightPad(node.getName(), 60),
+					node.getParentId(), '\n');
+		}
+		LOGGER.info(buffer);
+	}
 
 }

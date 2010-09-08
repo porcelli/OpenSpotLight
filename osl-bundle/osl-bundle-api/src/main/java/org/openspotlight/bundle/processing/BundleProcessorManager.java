@@ -49,8 +49,8 @@
 package org.openspotlight.bundle.processing;
 
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Group;
 
 public interface BundleProcessorManager {
 

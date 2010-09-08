@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.finder;
 
+import org.openspotlight.bundle.domain.DbArtifactSource;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.common.util.Strings;
-import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.ChangeType;

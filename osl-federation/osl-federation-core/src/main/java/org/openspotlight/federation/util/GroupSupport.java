@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.util;
 
+import org.openspotlight.bundle.domain.Group;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
 import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;

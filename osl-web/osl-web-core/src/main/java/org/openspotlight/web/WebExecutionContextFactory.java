@@ -53,7 +53,7 @@ import com.google.inject.Injector;
 import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;

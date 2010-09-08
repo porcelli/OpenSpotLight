@@ -50,9 +50,9 @@ package org.openspotlight.federation.finder;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.language.DefaultTemplateLexer;
+import org.openspotlight.bundle.domain.DbArtifactSource;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
-import org.openspotlight.federation.domain.DbArtifactSource;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.db.DatabaseType;

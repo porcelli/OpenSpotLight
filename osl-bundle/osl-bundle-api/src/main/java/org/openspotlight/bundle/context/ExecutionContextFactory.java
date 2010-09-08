@@ -48,8 +48,8 @@
  */
 package org.openspotlight.bundle.context;
 
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.Disposable;
-import org.openspotlight.federation.domain.Repository;
 
 public interface ExecutionContextFactory extends Disposable {
     ExecutionContext createExecutionContext( String username,

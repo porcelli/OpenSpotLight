@@ -49,9 +49,9 @@
 package org.openspotlight.bundle.scheduler;
 
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Repository;
-import org.openspotlight.federation.domain.Schedulable;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.bundle.domain.Schedulable;
 
 public interface SLScheduler {
 

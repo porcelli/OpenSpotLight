@@ -50,9 +50,9 @@ package org.openspotlight.bundle.scheduler;
 
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Group;
-import org.openspotlight.federation.domain.Schedulable.SchedulableCommandWithContextFactory;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Group;
+import org.openspotlight.bundle.domain.Schedulable.SchedulableCommandWithContextFactory;
 import org.openspotlight.bundle.processing.DefaultBundleProcessorManager;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 import org.openspotlight.persist.annotation.TransientProperty;

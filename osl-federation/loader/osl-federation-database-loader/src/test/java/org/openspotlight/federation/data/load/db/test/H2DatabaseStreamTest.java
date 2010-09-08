@@ -49,8 +49,8 @@
 package org.openspotlight.federation.data.load.db.test;
 
 import org.junit.Before;
-import org.openspotlight.federation.domain.DbArtifactSource;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.bundle.domain.DbArtifactSource;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.federation.finder.db.ScriptType;
 
 import java.sql.Connection;

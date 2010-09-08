@@ -49,7 +49,7 @@
 package org.openspotlight.federation.finder.test;
 
 import org.junit.Test;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
 import org.openspotlight.federation.finder.FileSystemOriginArtifactLoader;

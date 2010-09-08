@@ -48,8 +48,8 @@
  */
 package org.openspotlight.graph.test.domain.link;
 
+import org.openspotlight.graph.Link;
 import org.openspotlight.graph.annotation.LinkAutoBidirectional;
-import org.openspotlight.graph.query.WhereByLinkCount.Type.Each.Link;
 
 /**
  * The Interface JavaClassJavaMethodSimpleLinkACTB.
@@ -57,6 +57,6 @@ import org.openspotlight.graph.query.WhereByLinkCount.Type.Each.Link;
  * @author Vitor Hugo Chagas
  */
 @LinkAutoBidirectional
-public interface JavaClassJavaMethodSimpleLinkACTB extends Link {
+public abstract class JavaClassJavaMethodSimpleLinkACTB extends Link {
 
 }

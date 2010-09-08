@@ -52,7 +52,7 @@ import org.openspotlight.common.task.exception.RunnableWithException;
 import org.openspotlight.common.taskexec.RunnableListener;
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.federation.domain.Repository;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.jcr.provider.JcrConnectionDescriptor;
 
 import java.util.Map;

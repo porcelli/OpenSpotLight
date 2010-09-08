@@ -49,9 +49,9 @@
 package org.openspotlight.web.util;
 
 import org.apache.commons.io.IOUtils;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.util.ClassPathResource;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.loader.ConfigurationManager;
 import org.openspotlight.federation.loader.XmlConfigurationManagerFactory;
 import org.openspotlight.web.WebGlobalSettingsSupport;

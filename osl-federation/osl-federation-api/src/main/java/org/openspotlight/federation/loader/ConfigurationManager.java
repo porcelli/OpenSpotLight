@@ -49,9 +49,9 @@
 
 package org.openspotlight.federation.loader;
 
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.domain.GlobalSettings;
-import org.openspotlight.federation.domain.Repository;
 
 import java.util.Set;
 

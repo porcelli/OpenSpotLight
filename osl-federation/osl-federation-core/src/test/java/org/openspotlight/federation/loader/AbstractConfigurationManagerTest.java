@@ -51,6 +51,11 @@ package org.openspotlight.federation.loader;
 import org.junit.Test;
 import org.openspotlight.federation.domain.*;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.bundle.domain.BundleProcessorType;
+import org.openspotlight.bundle.domain.BundleSource;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Group;
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.bundle.processing.internal.ExampleBundleProcessor;
 
 import static org.hamcrest.core.Is.is;

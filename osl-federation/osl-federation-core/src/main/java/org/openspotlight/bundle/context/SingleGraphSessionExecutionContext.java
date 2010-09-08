@@ -48,8 +48,8 @@
  */
 package org.openspotlight.bundle.context;
 
+import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.DisposingListener;
-import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.log.DetailedLoggerProvider;
 import org.openspotlight.graph.SLGraph;
 import org.openspotlight.graph.GraphReaderpotlight.jcr.provider.JcrConnectionDescriptor;
