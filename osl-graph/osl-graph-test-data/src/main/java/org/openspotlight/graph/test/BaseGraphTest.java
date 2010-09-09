@@ -51,7 +51,6 @@ package org.openspotlight.graph.test;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
@@ -60,8 +59,10 @@ import java.util.TreeSet;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openspotlight.common.util.SLCollections;
 import org.openspotlight.graph.Context;
 import org.openspotlight.graph.Link;
+import org.openspotlight.graph.LinkDirection;
 import org.openspotlight.graph.Node;
 import org.openspotlight.graph.TreeLineReference;
 import org.openspotlight.graph.exception.MetaNodeTypeNotFoundException;
@@ -287,11 +288,11 @@ public abstract class BaseGraphTest {
 	 * @param expectedLinks
 	 *            the expected links
 	 */
-	private void assertLinks(final Collection<? extends Link> links,
+	private void assertLinks(final Iterable<? extends Link> links,
 			final Link... expectedLinks) {
 		Assert.assertNotNull(links);
-		Assert.assertEquals(links.size(), expectedLinks.length);
-		final Set<Link> linkSet = new TreeSet<Link>(links);
+		final Set<Link> linkSet = new TreeSet<Link>(
+				SLCollections.iterableToList(links));
 		final Set<Link> expectedLinkSet = new TreeSet<Link>(
 				Arrays.asList(expectedLinks));
 		Assert.assertEquals(linkSet, expectedLinkSet);
@@ -305,10 +306,9 @@ public abstract class BaseGraphTest {
 	 * @param expectedLinks
 	 *            the expected links
 	 */
-	private void assertLinksInOrder(final Collection<? extends Link> links,
+	private void assertLinksInOrder(final Iterable<? extends Link> links,
 			final Link... expectedLinks) {
 		Assert.assertNotNull(links);
-		Assert.assertEquals(links.size(), expectedLinks.length);
 		final Iterator<? extends Link> iter = links.iterator();
 		for (final Link expectedLink : expectedLinks) {
 			Assert.assertEquals(expectedLink, iter.next());
@@ -323,10 +323,9 @@ public abstract class BaseGraphTest {
 	 * @param expectedNodeTypes
 	 *            the expected node types
 	 */
-	private void assertMetaNodes(final Collection<MetaNodeType> metaNodes,
+	private void assertMetaNodes(final Iterable<MetaNodeType> metaNodes,
 			final Class<?>... expectedNodeTypes) {
 		Assert.assertNotNull(metaNodes);
-		Assert.assertEquals(metaNodes.size(), expectedNodeTypes.length);
 		final Set<String> metaNodeTypeNameSet = new TreeSet<String>(
 				this.getNodeTypeNameSet(metaNodes));
 		final Set<String> expectedNodeTypeNameSet = new TreeSet<String>(
@@ -342,11 +341,11 @@ public abstract class BaseGraphTest {
 	 * @param expectedNodes
 	 *            the expected nodes
 	 */
-	private void assertNodes(final Collection<? extends Node> nodes,
+	private void assertNodes(final Iterable<? extends Node> nodes,
 			final Node... expectedNodes) {
 		Assert.assertNotNull(nodes);
-		Assert.assertEquals(nodes.size(), expectedNodes.length);
-		final Set<Node> nodeSet = new TreeSet<Node>(nodes);
+		final Set<Node> nodeSet = new TreeSet<Node>(
+				SLCollections.iterableToList(nodes));
 		final Set<Node> expectedNodeSet = new TreeSet<Node>(
 				Arrays.asList(expectedNodes));
 		Assert.assertEquals(nodeSet, expectedNodeSet);
@@ -409,7 +408,7 @@ public abstract class BaseGraphTest {
 	 * @return the node type name set
 	 */
 	private Set<String> getNodeTypeNameSet(
-			final Collection<MetaNodeType> metaNodes) {
+			final Iterable<MetaNodeType> metaNodes) {
 		final Set<String> set = new TreeSet<String>();
 		for (final MetaNodeType metaNode : metaNodes) {
 			set.add(metaNode.getTypeName());
@@ -887,21 +886,24 @@ public abstract class BaseGraphTest {
 				javaMethodNode1);
 		session.flush();
 
-		Collection<Link> links = null;
-		Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
-		Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
+		Iterable<Link> links = null;
+		Iterable<Link> simpleLinks = null;
+		Iterable<Link> multipleLinks = null;
 
-		simpleLinks = session.getBidirectionalLink(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1);
+		simpleLinks = reader.getLinks(javaClassNode1, javaMethodNode1,
+				LinkDirection.BIDIRECTIONAL);
 		assertLinksInOrder(simpleLinks, simpleLinkBoth);
 
-		multipleLinks = session.getBidirectionalLink(
-				JavaClassJavaMethodMultipleLink.class, javaClassNode1,
-				javaMethodNode1);
+		multipleLinks = reader.getLinks(javaMethodNode1, javaClassNode1,
+				LinkDirection.BIDIRECTIONAL);
 		assertLinksInOrder(multipleLinks, multipleLinkBoth);
 
-		links = session.getBidirectionalLinks(javaClassNode1, javaMethodNode1);
+		links = reader.getLinks(javaClassNode1, javaMethodNode1,
+				LinkDirection.ANY);
+		assertLinks(links, simpleLinkBoth, multipleLinkBoth);
+
+		links = reader.getLinks(javaMethodNode1, javaClassNode1,
+				LinkDirection.ANY);
 		assertLinks(links, simpleLinkBoth, multipleLinkBoth);
 	}
 
@@ -911,41 +913,36 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testGetBidirectionalLinksBySide() {
 		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
+		final JavaMethodNode javaMethodNode1 = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode1");
 
 		final Link simpleLinkBoth = session.addLink(
 				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1, true);
-		final Link multipleLinkBoth = session.addLink(
+				javaMethodNode1);
+		final Link multipleLinkBoth = session.addBidirectionalLink(
 				JavaClassJavaMethodMultipleLink.class, javaClassNode1,
-				javaMethodNode1, true);
-		session.save();
+				javaMethodNode1);
+		session.flush();
 
-		Collection<Link> links = null;
-		Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
-		Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
+		Iterable<Link> bidLinks = reader.getLinks(javaMethodNode1,
+				javaClassNode1, LinkDirection.BIDIRECTIONAL);
 
-		simpleLinks = session.getBidirectionalLinksBySide(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
-		simpleLinks = session.getBidirectionalLinksBySide(
-				JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
+		Iterable<Link> uniLinks = reader.getLinks(javaMethodNode1,
+				javaClassNode1, LinkDirection.UNIDIRECTIONAL);
 
-		multipleLinks = session.getBidirectionalLinksBySide(
-				JavaClassJavaMethodMultipleLink.class, javaClassNode1);
-		assertLinksInOrder(multipleLinks, multipleLinkBoth);
-		multipleLinks = session.getBidirectionalLinksBySide(
-				JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
-		assertLinksInOrder(multipleLinks, multipleLinkBoth);
+		assertLinksInOrder(bidLinks, multipleLinkBoth);
+		assertLinksInOrder(uniLinks, simpleLinkBoth);
+		bidLinks = reader.getLinks(javaMethodNode1, null,
+				LinkDirection.BIDIRECTIONAL);
 
-		links = session.getBidirectionalLinksBySide(javaClassNode1);
-		assertLinks(links, simpleLinkBoth, multipleLinkBoth);
-		links = session.getBidirectionalLinksBySide(javaMethodNode1);
-		assertLinks(links, simpleLinkBoth, multipleLinkBoth);
+		uniLinks = reader.getLinks(javaMethodNode1, null,
+				LinkDirection.UNIDIRECTIONAL);
+
+		assertLinksInOrder(bidLinks, multipleLinkBoth);
+		assertLinksInOrder(uniLinks, simpleLinkBoth);
+
 	}
 
 	/**
@@ -954,275 +951,77 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testGetLinks() {
 		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
+		final JavaMethodNode javaMethodNode1 = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode1");
 
-		final Link simpleLinkAB = session.addLink(
+		final Link simpleUniLinkClass = session.addLink(
 				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode1);
-		final Link simpleLinkBA = session.addLink(
+		final Link simpleUniLinkMethod = session.addLink(
 				JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
 				javaClassNode1);
-		final Link simpleLinkBoth = session.addLink(
+		final Link simpleBidLink = session.addBidirectionalLink(
 				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1, true);
+				javaMethodNode1);
 
-		Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
+		session.flush();
 
-		// direction filter:
-		// DIRECTION_UNI: AB
-		// DIRECTION_UNI_REVERSAL: BA
-		// DIRECTION_BI: BOTH
-		// DIRECTION_UNI | DIRECTION_UNI_REVERSAL: AB, BA
-		// DIRECTION_UNI | DIRECTION_BI: AB, BOTH
-		// DIRECTION_UNI_REVERSAL | DIRECTION_BI: BA, BOTH
-		// DIRECTION_UNI | DIRECTION_UNI_REVERSAL | DIRECTION_BI: AB, BA,
-		// BOTH
-		// DIRECTION_ANY: AB, BA, BOTH
+		Iterable<Link> bidLinks = reader.getLinks(javaMethodNode1, null,
+				LinkDirection.BIDIRECTIONAL);
+		assertLinksInOrder(bidLinks, simpleBidLink);
 
-		// test getLink between javaClassNode1 and javaMethodNode1
-		session.save();
+		bidLinks = reader.getLinks(javaClassNode1, null,
+				LinkDirection.BIDIRECTIONAL);
+		assertLinksInOrder(bidLinks, simpleBidLink);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, javaMethodNode1, DIRECTION_UNI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
+		bidLinks = reader.getLinks(javaClassNode1, javaMethodNode1,
+				LinkDirection.BIDIRECTIONAL);
+		assertLinksInOrder(bidLinks, simpleBidLink);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, javaClassNode1, DIRECTION_UNI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
+		bidLinks = reader.getLinks(javaMethodNode1, javaClassNode1,
+				LinkDirection.BIDIRECTIONAL);
+		assertLinksInOrder(bidLinks, simpleBidLink);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, javaMethodNode1, DIRECTION_UNI_REVERSAL);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
+		Iterable<Link> twoLinkTypes = reader.getLinks(javaClassNode1, null,
+				LinkDirection.ANY);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, javaClassNode1, DIRECTION_UNI_REVERSAL);
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
+		assertLinksInOrder(bidLinks, simpleBidLink, simpleUniLinkClass);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, javaMethodNode1, DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, javaClassNode1, DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
+		twoLinkTypes = reader.getLinks(javaClassNode1, javaMethodNode1,
+				LinkDirection.ANY);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, javaMethodNode1, DIRECTION_UNI | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, javaClassNode1, DIRECTION_UNI | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
+		assertLinksInOrder(bidLinks, simpleBidLink, simpleUniLinkClass);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, javaMethodNode1, DIRECTION_UNI_REVERSAL
-						| DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, javaClassNode1, DIRECTION_UNI_REVERSAL
-						| DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
+		twoLinkTypes = reader
+				.getLinks(javaMethodNode1, null, LinkDirection.ANY);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, javaMethodNode1, DIRECTION_ANY);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA,
-				simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, javaClassNode1, DIRECTION_ANY);
+		assertLinksInOrder(bidLinks, simpleBidLink, simpleUniLinkMethod);
+		twoLinkTypes = reader.getLinks(javaMethodNode1, javaClassNode1,
+				LinkDirection.ANY);
 
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA,
-				simpleLinkBoth);
+		assertLinksInOrder(bidLinks, simpleBidLink, simpleUniLinkMethod);
 
-		// test getLink between javaClassNode1 and *
+		Iterable<Link> oneLink = reader.getLinks(javaClassNode1, null,
+				LinkDirection.UNIDIRECTIONAL);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, null, DIRECTION_UNI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
+		assertLinksInOrder(oneLink, simpleUniLinkClass);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaClassNode1, DIRECTION_UNI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
+		oneLink = reader.getLinks(javaClassNode1, javaMethodNode1,
+				LinkDirection.UNIDIRECTIONAL);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, null, DIRECTION_UNI_REVERSAL);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
+		assertLinksInOrder(oneLink, simpleUniLinkClass);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaClassNode1, DIRECTION_UNI_REVERSAL);
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
+		oneLink = reader.getLinks(javaMethodNode1, null,
+				LinkDirection.UNIDIRECTIONAL);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, null, DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaClassNode1, DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
+		assertLinksInOrder(oneLink, simpleUniLinkMethod);
+		oneLink = reader.getLinks(javaMethodNode1, javaClassNode1,
+				LinkDirection.UNIDIRECTIONAL);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, null, DIRECTION_UNI | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaClassNode1, DIRECTION_UNI | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
+		assertLinksInOrder(oneLink, simpleUniLinkMethod);
 
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, null, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaClassNode1, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
-
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, null, DIRECTION_ANY);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA,
-				simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaClassNode1, DIRECTION_ANY);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA,
-				simpleLinkBoth);
-
-		// test getLink between javaMethodNode1 and *
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaMethodNode1, DIRECTION_UNI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, null, DIRECTION_UNI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaMethodNode1, DIRECTION_UNI_REVERSAL);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, null, DIRECTION_UNI_REVERSAL);
-
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaMethodNode1, DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, null, DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaMethodNode1, DIRECTION_UNI | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, null, DIRECTION_UNI | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaMethodNode1, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBA, simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, null, DIRECTION_UNI_REVERSAL | DIRECTION_BI);
-
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBoth);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, javaMethodNode1, DIRECTION_ANY);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA,
-				simpleLinkBoth);
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				javaMethodNode1, null, DIRECTION_ANY);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA,
-				simpleLinkBoth);
-
-		// test getLink between * and *
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, null, DIRECTION_UNI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, null, DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkBoth);
-
-		simpleLinks = session.getLinks(JavaClassJavaMethodSimpleLink.class,
-				null, null, DIRECTION_UNI | DIRECTION_BI);
-		assertLinksInOrder(simpleLinks, simpleLinkAB, simpleLinkBA,
-				simpleLinkBoth);
-	}
-
-	/**
-	 * Test get meta link properties.
-	 */
-	@Test
-	public void testGetMetaLinkProperties()
-			throws MetaLinkTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-
-		final Link link = session.addLink(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, javaMethodNode1);
-		link.setProperty(String.class, Visibility.VisibilityLevel.PUBLIC,
-				"author", "Zé Café");
-		link.setProperty(Integer.class, Visibility.VisibilityLevel.PUBLIC,
-				"age", 270);
-		session.save();
-		final Metadata metadata = session.getMetadata();
-		final MetaLinkType metaLinkType = metadata
-				.getMetaLinkType(JavaClassJavaMethodSimpleLink.class);
-		final MetaLink metaLink = metaLinkType.getMetalinks().iterator().next();
-
-		final MetaLinkProperty authorMetaProperty = metaLink
-				.getMetaProperty("author");
-		Assert.assertNotNull(authorMetaProperty);
-		Assert.assertEquals(authorMetaProperty.getName(), "author");
-		Assert.assertEquals(authorMetaProperty.getType(), String.class);
-
-		final MetaLinkProperty ageMetaProperty = metaLink
-				.getMetaProperty("age");
-		Assert.assertNotNull(ageMetaProperty);
-		Assert.assertEquals(ageMetaProperty.getName(), "age");
-		Assert.assertEquals(ageMetaProperty.getType(), Integer.class);
-	}
-
-	/**
-	 * Test get meta link property.
-	 */
-	@Test
-	public void testGetMetaLinkProperty() throws MetaLinkTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-
-		final Link link = session.addLink(JavaClassJavaMethodSimpleLink.class,
-				javaClassNode1, javaMethodNode1);
-		link.setProperty(String.class, Visibility.VisibilityLevel.PUBLIC,
-				"author", "Zé Café");
-		link.setProperty(Integer.class, Visibility.VisibilityLevel.PUBLIC,
-				"age", 270);
-		session.save();
-		final Metadata metadata = session.getMetadata();
-		final MetaLinkType metaLinkType = metadata
-				.getMetaLinkType(JavaClassJavaMethodSimpleLink.class);
-		final MetaLink metaLink = metaLinkType.getMetalinks().iterator().next();
-
-		final Collection<SLMetaLinkProperty> metaProperties = metaLink
-				.getMetaProperties();
-		Assert.assertEquals(metaProperties.size(), 2);
-
-		for (final MetaLinkProperty metaProperty : metaProperties) {
-			Assert.assertNotNull(metaProperty.getName());
-			if (metaProperty.getName().equals("author")) {
-				Assert.assertEquals(metaProperty.getType(), String.class);
-			} else if (metaProperty.getName().equals("age")) {
-				Assert.assertEquals(metaProperty.getType(), Integer.class);
-			} else {
-				Assert.fail();
-			}
-		}
 	}
 
 	/**
@@ -1231,145 +1030,26 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testGetMetaNode() throws MetaNodeTypeNotFoundException {
 		final Context root1 = reader.getContext("1L");
-		root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
-		root1.addChildNode(JavaPackageNode.class, "javaPackageNode2");
-		root1.addChildNode(JavaClassNode.class, "javaClassNode1");
-		root1.addChildNode(JavaClassNode.class, "javaClassNode2");
-		session.save();
+		session.addNode(root1, JavaPackageNode.class, "javaPackageNode1");
+		session.addNode(root1, JavaPackageNode.class, "javaPackageNode2");
+		session.addNode(root1, JavaClassNode.class, "javaClassNode1");
+		session.addNode(root1, JavaClassNode.class, "javaClassNode2");
+		session.flush();
 
-		final Metadata metadata = session.getMetadata();
+		final Metadata metadata = reader.getMetadata();
 
 		final MetaNodeType metaNode1 = metadata
 				.getMetaNodeType(JavaPackageNode.class);
 		Assert.assertNotNull(metaNode1);
-		Assert.assertEquals(metaNode1.getType(), JavaPackageNode.class);
-		Assert.assertEquals(metaNode1.getVisibility(),
-				Visibility.VisibilityLevel.PUBLIC);
+		Assert.assertEquals(metaNode1.getTypeName(),
+				JavaPackageNode.class.getName());
 
 		final MetaNodeType metaNode2 = metadata
 				.getMetaNodeType(JavaClassNode.class);
 		Assert.assertNotNull(metaNode2);
-		Assert.assertEquals(metaNode2.getType(), JavaClassNode.class);
-		Assert.assertEquals(metaNode2.getVisibility(),
-				Visibility.VisibilityLevel.PUBLIC);
-	}
+		Assert.assertEquals(metaNode2.getTypeName(),
+				JavaClassNode.class.getName());
 
-	@Test
-	public void testGetMetaNodeByVisibility() {
-		final Context root1 = reader.getContext("AAAA1L");
-		root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
-		root1.addChildNode(JavaPackageNode.class, "javaPackageNode2");
-		root1.addChildNode(JavaClassNode.class, "javaClassNode1");
-		root1.addChildNode(JavaClassNodePublic.class, "javaClassNode2");
-		root1.addChildNode(JavaPackageNodePrivate.class, "javaPackageNode1X");
-		root1.addChildNode(JavaPackageNodePrivate.class, "javaPackageNode2X");
-		root1.addChildNode(JavaClassNodeInternal.class, "javaClassNode1X");
-		root1.addChildNode(JavaClassNodeInternal.class, "javaClassNode2X");
-		session.save();
-
-		final Metadata metadata = session.getMetadata();
-
-		final Collection<MetaNodeType> publicMetaNodes = metadata
-				.getMetaNodesTypes(SLRecursiveMode.RECURSIVE,
-						Visibility.VisibilityLevel.PUBLIC);
-		Assert.assertEquals(4, publicMetaNodes.size());
-		final Collection<MetaNodeType> publicNotRecursiveMetaNodes = metadata
-				.getMetaNodesTypes(RecursiveMode.NOT_RECURSIVE,
-						Visibility.VisibilityLevel.PUBLIC);
-		Assert.assertEquals(2, publicNotRecursiveMetaNodes.size());
-		final Collection<MetaNodeType> privateMetaNodes = metadata
-				.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE,
-						Visibility.VisibilityLevel.PRIVATE);
-		Assert.assertEquals(1, privateMetaNodes.size());
-		final Collection<MetaNodeType> internalMetaNodes = metadata
-				.getMetaNodesTypes(SLRecursiveMode.NOT_RECURSIVE,
-						Visibility.VisibilityLevel.INTERNAL);
-		Assert.assertEquals(1, internalMetaNodes.size());
-	}
-
-	/**
-	 * Test get meta node properties.
-	 */
-	@Test
-	public void testGetMetaNodeProperties()
-			throws MetaNodeTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-		javaClassNode1.setClassName("HelloWorld");
-		javaClassNode1.setModifier(JavaClassNode.MODIFIER_PUBLIC);
-		javaClassNode1.setCreationTime(new Date());
-		javaClassNode1.setProperty(String.class, "newProperty", "someãCc");
-
-		final Metadata metadata = session.getMetadata();
-		final MetaNodeType metaNode = metadata
-				.getMetaNodeType(JavaClassNode.class);
-		final Collection<SLMetaNodeProperty> metaProperties = metaNode
-				.getMetaProperties();
-		Assert.assertEquals(metaProperties.size(), 5);
-
-		for (final MetaNodeProperty metaProperty : metaProperties) {
-			Assert.assertNotNull(metaProperty.getName());
-			if (metaProperty.getName().equals("className")) {
-				Assert.assertEquals(metaProperty.getType(), String.class);
-			} else if (metaProperty.getName().equals("modifier")) {
-				Assert.assertEquals(metaProperty.getType(), Long.class);
-			} else if (metaProperty.getName().equals("creationTime")) {
-				Assert.assertEquals(metaProperty.getType(), Date.class);
-			} else if (metaProperty.getName().equals("caption")) {
-				Assert.assertEquals(metaProperty.getType(), String.class);
-			} else if (metaProperty.getName().equals("newProperty")) {
-				Assert.assertEquals(metaProperty.getType(), String.class);
-			} else {
-				Assert.fail();
-			}
-		}
-
-		for (NodeProperty<Serializable> activeProperty : javaClassNode1
-				.getProperties()) {
-			MetaNodeProperty metaProperty = session.getMetadata()
-					.getMetaNodeType(JavaClassNode.class)
-					.getMetaProperty(activeProperty.getName());
-			// System.out.println(activeProperty.getName() + ":" +
-			// activeProperty.getValueAsString() + " -> " + metaProperty);
-			Assert.assertNotNull("Property " + activeProperty.getName()
-					+ " not found on metadata registry.", metaProperty);
-		}
-	}
-
-	/**
-	 * Test get meta node property.
-	 */
-	@Test
-	public void testGetMetaNodeProperty() throws MetaNodeTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode");
-		javaClassNode.setClassName("HelloWorld");
-		javaClassNode.setModifier(JavaClassNode.MODIFIER_PUBLIC);
-		javaClassNode.setCreationTime(new Date());
-
-		final Metadata metadata = session.getMetadata();
-		final MetaNodeType metaNode = metadata
-				.getMetaNodeType(JavaClassNode.class);
-
-		final MetaNodeProperty classNameMetaProperty = metaNode
-				.getMetaProperty("className");
-		Assert.assertNotNull(classNameMetaProperty);
-		Assert.assertEquals(classNameMetaProperty.getName(), "className");
-		Assert.assertEquals(classNameMetaProperty.getType(), String.class);
-
-		final MetaNodeProperty modifierMetaProperty = metaNode
-				.getMetaProperty("modifier");
-		Assert.assertNotNull(modifierMetaProperty);
-		Assert.assertEquals(modifierMetaProperty.getName(), "modifier");
-		Assert.assertEquals(modifierMetaProperty.getType(), Long.class);
-
-		final MetaNodeProperty creationTimeMetaProperty = metaNode
-				.getMetaProperty("creationTime");
-		Assert.assertNotNull(creationTimeMetaProperty);
-		Assert.assertEquals(creationTimeMetaProperty.getName(), "creationTime");
-		Assert.assertEquals(creationTimeMetaProperty.getType(), Date.class);
 	}
 
 	/**
@@ -1378,109 +1058,74 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testGetMetaNodes() {
 		final Context root1 = reader.getContext("1L");
-		final Node nonTypedNode = root1.addChildNode("XX");
 
-		Assert.assertNull(nonTypedNode.getMetaType());
-
-		root1.addChildNode(JavaPackageNode.class, "javaPackageNode1");
-		root1.addChildNode(JavaPackageNode.class, "javaPackageNode2");
-		root1.addChildNode(JavaClassNode.class, "javaClassNode1");
-		final JavaClassNode createdNode = root1.addChildNode(
+		session.addNode(root1, JavaPackageNode.class, "javaPackageNode1");
+		session.addNode(root1, JavaPackageNode.class, "javaPackageNode2");
+		session.addNode(root1, JavaClassNode.class, "javaClassNode1");
+		final JavaClassNode createdNode = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode2");
-		session.save();
+		session.flush();
 
-		Assert.assertNotNull(createdNode.getMetaType());
-
-		Assert.assertEquals("Java Class", createdNode.getMetaType()
-				.getDescription());
-
-		final Metadata metadata = session.getMetadata();
-		final Collection<MetaNodeType> metaNodes = metadata
-				.getMetaNodesTypes(RECURSIVE);
+		final Metadata metadata = reader.getMetadata();
+		final Iterable<MetaNodeType> metaNodes = metadata.getMetaNodesTypes();
 		assertMetaNodes(metaNodes, JavaElementNode.class,
 				JavaPackageNode.class, JavaClassNode.class);
-	}
-
-	/**
-	 * Test get meta node.
-	 */
-	@Test
-	public void testGetMetaNodeVisibilityPrivate()
-			throws MetaNodeTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		root1.addChildNode(JavaPackageNodePrivate.class, "javaPackageNode1");
-		root1.addChildNode(JavaPackageNodePrivate.class, "javaPackageNode2");
-		root1.addChildNode(JavaClassNodeInternal.class, "javaClassNode1");
-		root1.addChildNode(JavaClassNodeInternal.class, "javaClassNode2");
-		session.save();
-		final Metadata metadata = session.getMetadata();
-
-		final MetaNodeType metaNode1 = metadata
-				.getMetaNodeType(JavaPackageNodePrivate.class);
-		Assert.assertNotNull(metaNode1);
-		Assert.assertEquals(metaNode1.getType(), JavaPackageNodePrivate.class);
-		Assert.assertEquals(metaNode1.getVisibility(),
-				Visibility.VisibilityLevel.PRIVATE);
-
-		final MetaNodeType metaNode2 = metadata
-				.getMetaNodeType(JavaClassNodeInternal.class);
-		Assert.assertNotNull(metaNode2);
-		Assert.assertEquals(metaNode2.getType(), JavaClassNodeInternal.class);
-		Assert.assertEquals(metaNode2.getVisibility(),
-				Visibility.VisibilityLevel.INTERNAL);
 	}
 
 	/**
 	 * Test get meta render hint.
 	 */
 	@Test
-	public void testGetMetaRenderHint() throws RenderHintNotFoundException,
+	public void testGetMetaRenderHint() throws Exception,
 			MetaNodeTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		root1.addChildNode(JavaClassNode.class, "javaClassNode1");
-		session.save();
-
-		final Metadata metadata = session.getMetadata();
-		final MetaNodeType metaNode = metadata
-				.getMetaNodeType(JavaClassNode.class);
-
-		final MetaRenderHint formatRenderHint = metaNode
-				.getMetaRenderHint("format");
-		Assert.assertNotNull(formatRenderHint);
-		Assert.assertEquals(formatRenderHint.getName(), "format");
-		Assert.assertEquals(formatRenderHint.getValue(), "cube");
-
-		final MetaRenderHint foregroundRenderHint = metaNode
-				.getMetaRenderHint("foreground");
-		Assert.assertNotNull(foregroundRenderHint);
-		Assert.assertEquals(foregroundRenderHint.getName(), "foreground");
-		Assert.assertEquals(foregroundRenderHint.getValue(), "gold");
+		throw new UnsupportedOperationException();
+		// final Context root1 = reader.getContext("1L");
+		// session.addNode(root1, JavaClassNode.class, "javaClassNode1");
+		// session.flush();
+		//
+		// final Metadata metadata = reader.getMetadata();
+		// final MetaNodeType metaNode = metadata
+		// .getMetaNodeType(JavaClassNode.class);
+		//
+		// final MetaRenderHint formatRenderHint = metaNode.get
+		// .getMetaRenderHint("format");
+		// Assert.assertNotNull(formatRenderHint);
+		// Assert.assertEquals(formatRenderHint.getName(), "format");
+		// Assert.assertEquals(formatRenderHint.getValue(), "cube");
+		//
+		// final MetaRenderHint foregroundRenderHint = metaNode
+		// .getMetaRenderHint("foreground");
+		// Assert.assertNotNull(foregroundRenderHint);
+		// Assert.assertEquals(foregroundRenderHint.getName(), "foreground");
+		// Assert.assertEquals(foregroundRenderHint.getValue(), "gold");
 	}
 
 	/**
 	 * Test get meta render hints.
 	 */
 	@Test
-	public void testGetMetaRenderHints() throws MetaNodeTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		root1.addChildNode(JavaClassNode.class, "javaClassNode1");
-		session.save();
+	public void testGetMetaRenderHints() throws Exception {
+		throw new UnsupportedOperationException();
 
-		final Metadata metadata = session.getMetadata();
-		final MetaNodeType metaNode = metadata
-				.getMetaNodeType(JavaClassNode.class);
-		final Collection<SLMetaRenderHint> renderHints = metaNode
-				.getMetaRenderHints();
-		Assert.assertEquals(renderHints.size(), 2);
-		for (final MetaRenderHint renderHint : renderHints) {
-			if (renderHint.getName().equals("format")) {
-				Assert.assertEquals(renderHint.getValue(), "cube");
-			} else if (renderHint.getName().equals("foreground")) {
-				Assert.assertEquals(renderHint.getValue(), "gold");
-			} else {
-				Assert.fail();
-			}
-		}
+		// final Context root1 = reader.getContext("1L");
+		// session.addNode(root1, JavaClassNode.class, "javaClassNode1");
+		// session.flush();
+		//
+		// final Metadata metadata = reader.getMetadata();
+		// final MetaNodeType metaNode = metadata
+		// .getMetaNodeType(JavaClassNode.class);
+		// final Iterable<MetaRenderHint> renderHints = metaNode
+		// .getMetaRenderHints();
+		// Assert.assertEquals(renderHints.size(), 2);
+		// for (final MetaRenderHint renderHint : renderHints) {
+		// if (renderHint.getName().equals("format")) {
+		// Assert.assertEquals(renderHint.getValue(), "cube");
+		// } else if (renderHint.getName().equals("foreground")) {
+		// Assert.assertEquals(renderHint.getValue(), "gold");
+		// } else {
+		// Assert.fail();
+		// }
+		// }
 	}
 
 	/**
@@ -1489,21 +1134,21 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testGetNodesByLinkWithLinkType() {
 		final Context root1 = reader.getContext("1L");
-		final JavaPackageNode javaPackageNode1 = root1.addChildNode(
+		final JavaPackageNode javaPackageNode1 = session.addNode(root1,
 				JavaPackageNode.class, "javaPackageNode1");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
-		final JavaClassNode javaClassNode2 = root1.addChildNode(
+		final JavaClassNode javaClassNode2 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode2");
-		final JavaInnerClassNode javaInnerClassNode1 = root1.addChildNode(
+		final JavaInnerClassNode javaInnerClassNode1 = session.addNode(root1,
 				JavaInnerClassNode.class, "javaInnerClassNode1");
-		final JavaInnerClassNode javaInnerClassNode2 = root1.addChildNode(
+		final JavaInnerClassNode javaInnerClassNode2 = session.addNode(root1,
 				JavaInnerClassNode.class, "javaInnerClassNode2");
 
 		session.addLink(JavaPackageJavaClass.class, javaPackageNode1,
 				javaClassNode1);
-		session.addLink(JavaPackageJavaClass.class, javaPackageNode1,
-				javaClassNode2, true);
+		session.addBidirectionalLink(JavaPackageJavaClass.class,
+				javaPackageNode1, javaClassNode2);
 		session.addLink(JavaPackageJavaClass.class, javaClassNode1,
 				javaPackageNode1);
 		session.addLink(JavaPackageJavaClass.class, javaClassNode2,
@@ -1511,41 +1156,38 @@ public abstract class BaseGraphTest {
 
 		session.addLink(JavaPackageJavaClass.class, javaPackageNode1,
 				javaInnerClassNode1);
-		session.addLink(JavaPackageJavaClass.class, javaPackageNode1,
-				javaInnerClassNode2, true);
+		session.addBidirectionalLink(JavaPackageJavaClass.class,
+				javaPackageNode1, javaInnerClassNode2);
 		session.addLink(JavaPackageJavaClass.class, javaInnerClassNode1,
 				javaPackageNode1);
 		session.addLink(JavaPackageJavaClass.class, javaInnerClassNode2,
 				javaPackageNode1);
 
-		Collection<? extends Node> nodes = null;
-		session.save();
+		Iterable<? extends Node> nodes = null;
+		session.flush();
 
-		nodes = session.getLinkedNodes(JavaPackageJavaClass.class,
-				javaPackageNode1);
+		nodes = reader.getLinkedNodes(JavaPackageJavaClass.class,
+				javaPackageNode1, LinkDirection.UNIDIRECTIONAL);
 		assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1,
 				javaInnerClassNode2);
 
-		nodes = session.getNodesByLink(JavaPackageJavaClass.class,
-				javaPackageNode1, JavaClassNode.class);
+		nodes = reader.getLinkedNodes(JavaPackageJavaClass.class,
+				javaPackageNode1, LinkDirection.UNIDIRECTIONAL);
 		assertNodes(nodes, javaClassNode1, javaClassNode2);
 
-		nodes = session.getNodesByLink(JavaPackageJavaClass.class,
-				javaPackageNode1, JavaInnerClassNode.class);
+		nodes = reader.getLinkedNodes(JavaPackageJavaClass.class,
+				javaPackageNode1, LinkDirection.UNIDIRECTIONAL);
 		assertNodes(nodes, javaInnerClassNode1, javaInnerClassNode2);
 
-		nodes = session.getNodesByLink(JavaPackageJavaClass.class,
-				javaPackageNode1, JavaClassNode.class, true);
+		nodes = reader.getLinkedNodes(JavaPackageJavaClass.class,
+				javaPackageNode1, LinkDirection.UNIDIRECTIONAL);
 		assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1,
 				javaInnerClassNode2);
 
-		nodes = session.getNodesByLink(JavaPackageJavaClass.class,
-				javaPackageNode1, JavaInnerClassNode.class, true);
+		nodes = reader.getLinkedNodes(JavaPackageJavaClass.class,
+				javaPackageNode1, LinkDirection.UNIDIRECTIONAL);
 		assertNodes(nodes, javaInnerClassNode1, javaInnerClassNode2);
 
-		nodes = session.getNodesByLink(JavaPackageJavaClass.class);
-		assertNodes(nodes, javaPackageNode1, javaClassNode1, javaClassNode2,
-				javaInnerClassNode1, javaInnerClassNode2);
 	}
 
 	/**
@@ -1554,102 +1196,46 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testGetNodesByLinkWithoutLinkType() {
 		final Context root1 = reader.getContext("1L");
-		final JavaPackageNode javaPackageNode1 = root1.addChildNode(
+		final JavaPackageNode javaPackageNode1 = session.addNode(root1,
 				JavaPackageNode.class, "javaPackageNode1");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
-		final JavaClassNode javaClassNode2 = root1.addChildNode(
+		final JavaClassNode javaClassNode2 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode2");
-		final JavaInnerClassNode javaInnerClassNode1 = root1.addChildNode(
+		final JavaInnerClassNode javaInnerClassNode1 = session.addNode(root1,
 				JavaInnerClassNode.class, "javaInnerClassNode1");
-		final JavaInnerClassNode javaInnerClassNode2 = root1.addChildNode(
+		final JavaInnerClassNode javaInnerClassNode2 = session.addNode(root1,
 				JavaInnerClassNode.class, "javaInnerClassNode2");
 
 		session.addLink(JavaPackageJavaClass.class, javaPackageNode1,
 				javaClassNode1);
-		session.addLink(JavaPackageJavaClass.class, javaPackageNode1,
-				javaInnerClassNode1, true);
+		session.addBidirectionalLink(JavaPackageJavaClass.class,
+				javaPackageNode1, javaInnerClassNode1);
 
 		session.addLink(JavaPackagePublicElement.class, javaPackageNode1,
 				javaClassNode2);
-		session.addLink(JavaPackagePublicElement.class, javaPackageNode1,
-				javaInnerClassNode2, true);
-		session.save();
+		session.addBidirectionalLink(JavaPackagePublicElement.class,
+				javaPackageNode1, javaInnerClassNode2);
+		session.flush();
 
-		Collection<? extends Node> nodes = null;
+		Iterable<? extends Node> nodes = null;
 
-		nodes = session.getLinkedNodes(javaPackageNode1);
+		nodes = reader.getLinkedNodes(javaPackageNode1, LinkDirection.ANY);
 		assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1,
 				javaInnerClassNode2);
 
-		nodes = session.getLinkedNodes(javaPackageNode1, JavaClassNode.class);
+		nodes = reader.getLinkedNodes(javaPackageNode1, LinkDirection.ANY);
 		assertNodes(nodes, javaClassNode1, javaClassNode2);
 
-		nodes = session.getLinkedNodes(javaPackageNode1,
-				JavaInnerClassNode.class);
+		nodes = reader.getLinkedNodes(javaPackageNode1, LinkDirection.ANY);
 		assertNodes(nodes, javaInnerClassNode1, javaInnerClassNode2);
 
-		nodes = session.getLinkedNodes(javaPackageNode1, JavaClassNode.class,
-				true);
+		nodes = reader.getLinkedNodes(javaPackageNode1, LinkDirection.ANY);
 		assertNodes(nodes, javaClassNode1, javaClassNode2, javaInnerClassNode1,
 				javaInnerClassNode2);
 
-		nodes = session.getLinkedNodes(javaPackageNode1,
-				JavaInnerClassNode.class, true);
+		nodes = reader.getLinkedNodes(javaPackageNode1, LinkDirection.ANY);
 		assertNodes(nodes, javaInnerClassNode1, javaInnerClassNode2);
-	}
-
-	/**
-	 * Test get nodes by predicate.
-	 */
-	@Test
-	public void testGetNodesByPredicate() {
-		final Context root1 = reader.getContext("1L");
-		final JavaPackageNode javaPackageNode1 = root1.addChildNode(
-				JavaPackageNode.class, "javaPackageNode1");
-		final JavaClassNode javaClassNode1 = javaPackageNode1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-		final JavaClassNode javaClassNode2 = javaPackageNode1.addChildNode(
-				JavaClassNode.class, "javaClassNode2");
-
-		final JavaMethodNode javaMethodNode1A = javaClassNode1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1A");
-		final JavaMethodNode javaMethodNode1B = javaClassNode1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1B");
-
-		final JavaMethodNode javaMethodNode2A = javaClassNode2.addChildNode(
-				JavaMethodNode.class, "javaMethodNode2A");
-		final JavaMethodNode javaMethodNode2B = javaClassNode2.addChildNode(
-				JavaMethodNode.class, "javaMethodNode2B");
-		session.save();
-
-		Collection<Node> nodes = null;
-		nodes = session.getNodesByPredicate(new NamePredicate("javaPackage"));
-		assertNodes(nodes, javaPackageNode1);
-
-		nodes = session.getNodesByPredicate(new NamePredicate("javaClass"));
-		assertNodes(nodes, javaClassNode1, javaClassNode2);
-
-		nodes = session.getNodesByPredicate(new NamePredicate("javaMethod"));
-		assertNodes(nodes, javaMethodNode1A, javaMethodNode1B,
-				javaMethodNode2A, javaMethodNode2B);
-	}
-
-	/**
-	 * Test get property as string.
-	 */
-	@Test
-	public void testGetPropertyAsString() throws PropertyNotFoundException {
-		final Context root = reader.getContext("1L");
-		final Node node = session.addNode(root, "node");
-		final NodeProperty<Integer> property = node.setProperty(Integer.class,
-				Visibility.VisibilityLevel.PUBLIC, "number", new Integer(8));
-		String value = node.getPropertyValueAsString("number");
-		Assert.assertNotNull(value);
-		Assert.assertEquals(value, "8");
-		value = property.getValueAsString();
-		Assert.assertNotNull(value);
-		Assert.assertEquals(value, "8");
 	}
 
 	/**
@@ -1658,14 +1244,14 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testGetSubMetaNodeType() throws MetaNodeTypeNotFoundException {
 		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
 		javaClassNode1.addChildNode(JavaInnerClassNode.class,
 				"javaInnerClassNode1");
 		javaClassNode1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
-		session.save();
+		session.flush();
 
-		final Metadata metadata = session.getMetadata();
+		final Metadata metadata = reader.getMetadata();
 		final MetaNodeType elementType = metadata
 				.getMetaNodeType(JavaElementNode.class);
 		final MetaNodeType javaClassType = elementType
@@ -1686,227 +1272,27 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testGetSubMetaNodeTypes() throws MetaNodeTypeNotFoundException {
 		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
 		javaClassNode1.addChildNode(JavaInnerClassNode.class,
 				"javaInnerClassNode1");
 		javaClassNode1.addChildNode(JavaMethodNode.class, "javaMethodNode1");
-		session.save();
+		session.flush();
 
-		final Metadata metadata = session.getMetadata();
+		final Metadata metadata = reader.getMetadata();
 		final MetaNodeType elementType = metadata
 				.getMetaNodeType(JavaElementNode.class);
 
-		final Collection<MetaNodeType> elementSubTypes = elementType
+		final Iterable<MetaNodeType> elementSubTypes = elementType
 				.getSubMetaNodeTypes();
 		assertMetaNodes(elementSubTypes, JavaClassNode.class,
 				JavaMethodNode.class);
 
 		final MetaNodeType javaClassType = metadata
 				.getMetaNodeType(JavaClassNode.class);
-		final Collection<MetaNodeType> javaClassSubTypes = javaClassType
+		final Iterable<MetaNodeType> javaClassSubTypes = javaClassType
 				.getSubMetaNodeTypes();
 		assertMetaNodes(javaClassSubTypes, JavaInnerClassNode.class);
-	}
-
-	/**
-	 * Test get unidirectional links.
-	 */
-	@Test
-	public void testGetUnidirectionalLinks() {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-
-		final Link simpleLinkAB = session.addLink(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1);
-		final Link simpleLinkBA = session.addLink(
-				JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
-				javaClassNode1);
-		final Link multipleLinkAB = session.addLink(
-				JavaClassJavaMethodMultipleLink.class, javaClassNode1,
-				javaMethodNode1);
-		final Link multipleLinkBA = session.addLink(
-				JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
-				javaClassNode1);
-
-		Collection<Link> links = null;
-		Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
-		Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
-		session.save();
-
-		simpleLinks = session.getUnidirectionalLinks(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1);
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
-		simpleLinks = session.getUnidirectionalLinks(
-				JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
-				javaClassNode1);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
-
-		multipleLinks = session.getUnidirectionalLinks(
-				JavaClassJavaMethodMultipleLink.class, javaClassNode1,
-				javaMethodNode1);
-		assertLinksInOrder(multipleLinks, multipleLinkAB);
-		multipleLinks = session.getUnidirectionalLinks(
-				JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
-				javaClassNode1);
-
-		assertLinksInOrder(multipleLinks, multipleLinkBA);
-
-		links = session.getUnidirectionalLinks(javaClassNode1, javaMethodNode1);
-		assertLinks(links, simpleLinkAB, multipleLinkAB);
-		links = session.getUnidirectionalLinks(javaMethodNode1, javaClassNode1);
-		assertLinks(links, simpleLinkBA, multipleLinkBA);
-	}
-
-	/**
-	 * Test get unidirectional links by source.
-	 */
-	@Test
-	public void testGetUnidirectionalLinksBySource() {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-
-		final Link simpleLinkAB = session.addLink(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1);
-		final Link simpleLinkBA = session.addLink(
-				JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
-				javaClassNode1);
-		final Link multipleLinkAB = session.addLink(
-				JavaClassJavaMethodMultipleLink.class, javaClassNode1,
-				javaMethodNode1);
-		final Link multipleLinkBA = session.addLink(
-				JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
-				javaClassNode1);
-
-		Collection<Link> links = null;
-		Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
-		Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
-		session.save();
-
-		simpleLinks = session.getUnidirectionalLinksBySource(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1);
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
-		simpleLinks = session.getUnidirectionalLinksBySource(
-				JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
-
-		multipleLinks = session.getUnidirectionalLinksBySource(
-				JavaClassJavaMethodMultipleLink.class, javaClassNode1);
-		assertLinksInOrder(multipleLinks, multipleLinkAB);
-		multipleLinks = session.getUnidirectionalLinksBySource(
-				JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
-		assertLinksInOrder(multipleLinks, multipleLinkBA);
-
-		links = session.getUnidirectionalLinksBySource(javaClassNode1);
-		assertLinks(links, simpleLinkAB, multipleLinkAB);
-		links = session.getUnidirectionalLinksBySource(javaMethodNode1);
-		assertLinks(links, simpleLinkBA, multipleLinkBA);
-	}
-
-	/**
-	 * Test get unidirectional links by target.
-	 */
-	@Test
-	public void testGetUnidirectionalLinksByTarget() {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-
-		final Link simpleLinkAB = session.addLink(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1);
-		final Link simpleLinkBA = session.addLink(
-				JavaClassJavaMethodSimpleLink.class, javaMethodNode1,
-				javaClassNode1);
-		final Link multipleLinkAB = session.addLink(
-				JavaClassJavaMethodMultipleLink.class, javaClassNode1,
-				javaMethodNode1);
-		final Link multipleLinkBA = session.addLink(
-				JavaClassJavaMethodMultipleLink.class, javaMethodNode1,
-				javaClassNode1);
-
-		Collection<Link> links = null;
-		Collection<JavaClassJavaMethodSimpleLink> simpleLinks = null;
-		Collection<JavaClassJavaMethodMultipleLink> multipleLinks = null;
-		session.save();
-		simpleLinks = session.getUnidirectionalLinksByTarget(
-				JavaClassJavaMethodSimpleLink.class, javaMethodNode1);
-		assertLinksInOrder(simpleLinks, simpleLinkAB);
-		simpleLinks = session.getUnidirectionalLinksByTarget(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1);
-		assertLinksInOrder(simpleLinks, simpleLinkBA);
-
-		multipleLinks = session.getUnidirectionalLinksByTarget(
-				JavaClassJavaMethodMultipleLink.class, javaMethodNode1);
-		assertLinksInOrder(multipleLinks, multipleLinkAB);
-		multipleLinks = session.getUnidirectionalLinksByTarget(
-				JavaClassJavaMethodMultipleLink.class, javaClassNode1);
-		assertLinksInOrder(multipleLinks, multipleLinkBA);
-
-		links = session.getUnidirectionalLinksByTarget(javaMethodNode1);
-		assertLinks(links, simpleLinkAB, multipleLinkAB);
-		links = session.getUnidirectionalLinksByTarget(javaClassNode1);
-		assertLinks(links, simpleLinkBA, multipleLinkBA);
-	}
-
-	/**
-	 * Test integer property.
-	 */
-	@Test
-	public void testIntegerProperty() throws PropertyNotFoundException {
-		// set new property ...
-		final Context root = reader.getContext("1L");
-		final NodeProperty<Integer> prop1 = root.setProperty(Integer.class,
-				Visibility.VisibilityLevel.PUBLIC, "prop", 8);
-		Assert.assertNotNull(prop1);
-		Assert.assertNotNull(prop1.getValue());
-		Assert.assertEquals(prop1.getValue().intValue(), 8);
-
-		// get existent property ...
-		final NodeProperty<Integer> prop2 = root.getProperty(Integer.class,
-				"prop");
-		Assert.assertNotNull(prop2);
-		Assert.assertNotNull(prop2.getValue());
-		Assert.assertEquals(prop2.getValue().intValue(), 8);
-
-		// get property as Long ...
-		final NodeProperty<Long> prop3 = root.getProperty(Long.class, "prop");
-		Assert.assertNotNull(prop3);
-		Assert.assertNotNull(prop3.getValue());
-		Assert.assertEquals(prop3.getValue(), new Long(8));
-
-		// get property as Number ...
-		final NodeProperty<Number> prop4 = root.getProperty(Number.class,
-				"prop");
-		Assert.assertNotNull(prop4);
-		Assert.assertNotNull(prop4.getValue());
-		Assert.assertEquals(prop4.getValue().intValue(), 8);
-
-		// get property as Serializable ...
-		final NodeProperty<Serializable> prop5 = root.getProperty(
-				Serializable.class, "prop");
-		Assert.assertNotNull(prop5);
-		Assert.assertNotNull(prop5.getValue());
-		Assert.assertEquals(prop5.getValue(), new Long(8));
-
-		// try to integer property as non-hierarchy class ...
-		try {
-			root.getProperty(String.class, "prop");
-			Assert.fail();
-		} catch (final PropertyTypeInvalidException e) {
-			Assert.assertTrue(true);
-		}
 	}
 
 	/**
@@ -1915,7 +1301,7 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testLineReference() {
 		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
 
 		final LineReference lineRef1 = javaClassNode1.addLineReference(8, 17,
@@ -1923,7 +1309,7 @@ public abstract class BaseGraphTest {
 		final LineReference lineRef2 = javaClassNode1.addLineReference(71, 80,
 				35, 53, "Bye World!", "2", "1");
 
-		final Collection<SLLineReference> lineRefs = javaClassNode1
+		final Iterable<SLLineReference> lineRefs = javaClassNode1
 				.getLineReferences();
 		Assert.assertNotNull(lineRefs);
 		Assert.assertEquals(lineRefs.size(), 2);
@@ -1955,7 +1341,7 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testLineReferenceWithArtifactId() {
 		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
 		final String artifactId = "targetId";
 
@@ -1963,7 +1349,7 @@ public abstract class BaseGraphTest {
 				26, 44, "Hello World!", artifactId, "1");
 		javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
 		javaClassNode1.addLineReference(4, 8, 15, 16, "Hello Again!", "3", "1");
-		final Collection<SLLineReference> lineRefs = javaClassNode1
+		final Iterable<SLLineReference> lineRefs = javaClassNode1
 				.getLineReferences(artifactId);
 		Assert.assertNotNull(lineRefs);
 		Assert.assertEquals(lineRefs.size(), 1);
@@ -1983,75 +1369,12 @@ public abstract class BaseGraphTest {
 	}
 
 	/**
-	 * Test link properties.
-	 */
-	@Test
-	public void testLinkProperties() throws PropertyNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		final JavaPackageNode javaPackageNode1 = root1.addChildNode(
-				JavaPackageNode.class, "javaPackageNode1");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-
-		String name;
-		Integer value;
-		Link link;
-		LinkProperty<Integer> property;
-
-		// test set property ...
-		link = session.addLink(JavaPackageJavaClass.class, javaPackageNode1,
-				javaClassNode1);
-		property = link.setProperty(Integer.class,
-				Visibility.VisibilityLevel.PUBLIC, "integerProperty", 8);
-		Assert.assertNotNull(property);
-		name = property.getName();
-		Assert.assertEquals(name, "integerProperty");
-		value = property.getValue();
-		Assert.assertNotNull(value);
-		Assert.assertEquals(value, new Integer(8));
-
-		// test get property ...
-		property = link.getProperty(Integer.class, "integerProperty");
-		Assert.assertNotNull(property);
-		name = property.getName();
-		Assert.assertEquals(name, "integerProperty");
-		value = property.getValue();
-		Assert.assertNotNull(value);
-		Assert.assertEquals(value, new Integer(8));
-	}
-
-	/**
-	 * Test link property with annotations.
-	 */
-	@Test
-	public void testLinkPropertyWithAnnotations() {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-
-		final JavaClassJavaMethodSimpleLink link = session.addLink(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1);
-
-		final Date creationTime = new Date();
-		link.setLinkName("myLink");
-		link.setCreationTime(creationTime);
-
-		Assert.assertNotNull(link.getLinkName());
-		Assert.assertEquals(link.getLinkName(), "myLink");
-		Assert.assertNotNull(link.getCreationTime());
-		Assert.assertEquals(link.getCreationTime(), creationTime);
-	}
-
-	/**
 	 * Test links removal by node deletion.
 	 */
 	@Test
 	public void testLinksRemovalByNodeDeletion() {
 		final Context root1 = reader.getContext("1L");
-		final JavaPackageNode javaPackageNode1 = root1.addChildNode(
+		final JavaPackageNode javaPackageNode1 = session.addNode(root1,
 				JavaPackageNode.class, "javaPackageNode1");
 		final JavaClassNode javaClassNode1 = javaPackageNode1.addChildNode(
 				JavaClassNode.class, "javaClassNode1");
@@ -2079,9 +1402,9 @@ public abstract class BaseGraphTest {
 		session.addLink(JavaLink.class, javaClassNode1, javaMethodNode1B);
 		session.addLink(JavaLink.class, javaClassNode2, javaMethodNode2A);
 		session.addLink(JavaLink.class, javaClassNode2, javaMethodNode2B);
-		session.save();
-		Collection<JavaLink> links = session.getLinks(JavaLink.class, null,
-				null, Link.DIRECTION_ANY);
+		session.flush();
+		Iterable<JavaLink> links = session.getLinks(JavaLink.class, null, null,
+				Link.DIRECTION_ANY);
 		Assert.assertEquals(links.size(), 10);
 
 		javaPackageNode1.remove();
@@ -2097,11 +1420,11 @@ public abstract class BaseGraphTest {
 	public void testLinkTypesForLinkDeletionMarkAndUnmarkCase()
 			throws Exception {
 		Context root1 = reader.getContext("1L");
-		JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		JavaMethodNode javaMethodNode1 = root1.addChildNode(
+		JavaClassNode javaClassNode1 = session.addNode(root1,
+				JavaClassNode.class, "javaClassNode1");
+		JavaMethodNode javaMethodNode1 = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode1");
-		final JavaMethodNode javaMethodNode2 = root1.addChildNode(
+		final JavaMethodNode javaMethodNode2 = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode2");
 
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
@@ -2109,15 +1432,15 @@ public abstract class BaseGraphTest {
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode2);
 
-		final Collection<Class<? extends Link>> linkTypesForLinkDeletion = new ArrayList<Class<? extends Link>>();
+		final Iterable<Class<? extends Link>> linkTypesForLinkDeletion = new ArrayList<Class<? extends Link>>();
 		linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
-		root1.addChildNode(JavaMethodNode.class, "javaMethodNode2",
+		session.addNode(root1, JavaMethodNode.class, "javaMethodNode2",
 				linkTypesForLinkDeletion, null);
 
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode2);
 
-		session.save();
+		session.flush();
 		session.close();
 		session = openSession();
 
@@ -2127,7 +1450,7 @@ public abstract class BaseGraphTest {
 		javaMethodNode1 = root1.getChildNode(JavaMethodNode.class,
 				"javaMethodNode1");
 
-		final Collection<? extends Link> links = session.getLink(
+		final Iterable<? extends Link> links = session.getLink(
 				JavaClassJavaMethodSimpleLink.class, null, null);
 		Assert.assertEquals(links.size(), 2);
 	}
@@ -2138,23 +1461,23 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testLinkTypesForLinkDeletionMarkCase() throws Exception {
 		Context root1 = reader.getContext("1L");
-		JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		JavaMethodNode javaMethodNode1 = root1.addChildNode(
+		JavaClassNode javaClassNode1 = session.addNode(root1,
+				JavaClassNode.class, "javaClassNode1");
+		JavaMethodNode javaMethodNode1 = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode1");
-		final JavaMethodNode javaMethodNode2 = root1.addChildNode(
+		final JavaMethodNode javaMethodNode2 = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode2");
 
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode1);
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode2);
-		final Collection<Class<? extends Link>> linkTypesForLinkDeletion = new ArrayList<Class<? extends Link>>();
+		final Iterable<Class<? extends Link>> linkTypesForLinkDeletion = new ArrayList<Class<? extends Link>>();
 		linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
-		root1.addChildNode(JavaMethodNode.class, "javaMethodNode2",
+		session.addNode(root1, JavaMethodNode.class, "javaMethodNode2",
 				linkTypesForLinkDeletion, null);
 
-		session.save();
+		session.flush();
 		session = openSession();
 
 		root1 = reader.getContext("1L");
@@ -2162,7 +1485,7 @@ public abstract class BaseGraphTest {
 				"javaClassNode1");
 		javaMethodNode1 = root1.getChildNode(JavaMethodNode.class,
 				"javaMethodNode1");
-		final Collection<? extends Link> links = session.getLink(
+		final Iterable<? extends Link> links = session.getLink(
 				JavaClassJavaMethodSimpleLink.class, null, null);
 		for (final Link k : links) {
 			System.err.println(">>> " + k.getSource().getName() + " - "
@@ -2183,8 +1506,8 @@ public abstract class BaseGraphTest {
 	public void testLinkTypesForLinkedNodeDeletionMarkAndUnmarkCase()
 			throws Exception {
 		Context root1 = reader.getContext("1L");
-		JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class,
-				"javaClassNode1");
+		JavaClassNode javaClassNode1 = session.addNode(root1,
+				JavaClassNode.class, "javaClassNode1");
 		JavaMethodNode javaMethodNode1 = javaClassNode1.addChildNode(
 				JavaMethodNode.class, "javaMethodNode1");
 		final JavaMethodNode javaMethodNode2 = javaClassNode1.addChildNode(
@@ -2195,22 +1518,22 @@ public abstract class BaseGraphTest {
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode2);
 
-		final Collection<Class<? extends Link>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends Link>>();
+		final Iterable<Class<? extends Link>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends Link>>();
 		linkTypesForLinkedNodesDeletion
 				.add(JavaClassJavaMethodSimpleLink.class);
-		root1.addChildNode(JavaClassNode.class, "javaClassNode1", null,
+		session.addNode(root1, JavaClassNode.class, "javaClassNode1", null,
 				linkTypesForLinkedNodesDeletion);
 
 		javaMethodNode1 = javaClassNode1.addChildNode(JavaMethodNode.class,
 				"javaMethodNode1");
 
-		session.save();
+		session.flush();
 		session = openSession();
 
 		root1 = reader.getContext("1L");
 		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
 				"javaClassNode1");
-		final Collection<Node> nodes = javaClassNode1.getNodes();
+		final Iterable<Node> nodes = javaClassNode1.getNodes();
 		Assert.assertEquals(nodes.size(), 1);
 		Assert.assertEquals(nodes.iterator().next().getName(),
 				"javaMethodNode1");
@@ -2222,11 +1545,11 @@ public abstract class BaseGraphTest {
 	@Test
 	public void testLinkTypesForLinkedNodeDeletionMarkCase() throws Exception {
 		Context root1 = reader.getContext("1L");
-		JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		final JavaMethodNode javaMethodNode1 = root1.addChildNode(
+		JavaClassNode javaClassNode1 = session.addNode(root1,
+				JavaClassNode.class, "javaClassNode1");
+		final JavaMethodNode javaMethodNode1 = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode1");
-		final JavaMethodNode javaMethodNode2 = root1.addChildNode(
+		final JavaMethodNode javaMethodNode2 = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode2");
 
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
@@ -2234,85 +1557,35 @@ public abstract class BaseGraphTest {
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode2);
 
-		final Collection<Class<? extends Link>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends Link>>();
+		final Iterable<Class<? extends Link>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends Link>>();
 		linkTypesForLinkedNodesDeletion
 				.add(JavaClassJavaMethodSimpleLink.class);
-		root1.addChildNode(JavaClassNode.class, "javaClassNode1", null,
+		session.addNode(root1, JavaClassNode.class, "javaClassNode1", null,
 				linkTypesForLinkedNodesDeletion);
 
-		session.save();
+		session.flush();
 		session = openSession();
 
 		root1 = reader.getContext("1L");
 		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
 				"javaClassNode1");
-		final Collection<Node> nodes = javaClassNode1.getNodes();
+		final Iterable<Node> nodes = javaClassNode1.getNodes();
 		Assert.assertTrue(nodes.isEmpty());
-	}
-
-	/**
-	 * Test long property.
-	 */
-	@Test
-	public void testLongProperty() throws PropertyNotFoundException {
-		// set new property ...
-		final Context root = reader.getContext("1L");
-		final NodeProperty<Long> prop1 = root.setProperty(Long.class,
-				Visibility.VisibilityLevel.PUBLIC, "prop", 8L);
-
-		Assert.assertNotNull(prop1);
-		Assert.assertNotNull(prop1.getValue());
-		Assert.assertEquals(prop1.getValue(), new Long(8L));
-
-		// get existent property ...
-		final NodeProperty<Long> prop2 = root.getProperty(Long.class, "prop");
-		Assert.assertNotNull(prop2);
-		Assert.assertNotNull(prop2.getValue());
-		Assert.assertEquals(prop2.getValue(), new Long(8L));
-
-		// get property as Integer ...
-		final NodeProperty<Integer> prop3 = root.getProperty(Integer.class,
-				"prop");
-		Assert.assertNotNull(prop3);
-		Assert.assertNotNull(prop3.getValue());
-		Assert.assertEquals(prop3.getValue(), new Integer(8));
-
-		// get property as Number ...
-		final NodeProperty<Number> prop4 = root.getProperty(Number.class,
-				"prop");
-		Assert.assertNotNull(prop4);
-		Assert.assertNotNull(prop4.getValue());
-		Assert.assertEquals(prop4.getValue(), new Long(8L));
-
-		// get property as Serializable ...
-		final NodeProperty<Serializable> prop5 = root.getProperty(
-				Serializable.class, "prop");
-		Assert.assertNotNull(prop5);
-		Assert.assertNotNull(prop5.getValue());
-		Assert.assertEquals(prop5.getValue(), new Long(8));
-
-		// try to integer property as non-hierarchy class ...
-		try {
-			root.getProperty(String.class, "prop");
-			Assert.fail();
-		} catch (final PropertyTypeInvalidException e) {
-			Assert.assertTrue(true);
-		}
 	}
 
 	@Test
 	public void testMetaLinkGetDescription()
 			throws MetaNodeTypeNotFoundException, MetaLinkTypeNotFoundException {
 		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode = root1.addChildNode(
+		final JavaClassNode javaClassNode = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode");
-		final JavaMethodNode javaMethodNode = root1.addChildNode(
+		final JavaMethodNode javaMethodNode = session.addNode(root1,
 				JavaMethodNode.class, "javaMethodNode");
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode,
 				javaMethodNode);
-		session.save();
+		session.flush();
 
-		final Metadata metadata = session.getMetadata();
+		final Metadata metadata = reader.getMetadata();
 		final MetaLink metaLink = metadata
 				.getMetaLinkType(JavaClassJavaMethodSimpleLink.class)
 				.getMetalinks().iterator().next();
@@ -2323,30 +1596,6 @@ public abstract class BaseGraphTest {
 				Visibility.VisibilityLevel.PUBLIC);
 	}
 
-	@Test
-	public void testMetaLinkGetVisibility()
-			throws MetaNodeTypeNotFoundException, MetaLinkTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode = root1.addChildNode(
-				JavaClassNode.class, "javaClassNode");
-		final JavaMethodNode javaMethodNode = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode");
-		final JavaClassJavaMethodSimpleLinkPrivate link = session.addLink(
-				JavaClassJavaMethodSimpleLinkPrivate.class, javaClassNode,
-				javaMethodNode);
-		session.save();
-		Assert.assertNotNull(link.getMetaLink());
-		Assert.assertEquals(link.getMetaLink().getVisibility(),
-				Visibility.VisibilityLevel.PRIVATE);
-
-		final Metadata metadata = session.getMetadata();
-		final MetaLink metaLink = metadata
-				.getMetaLinkType(JavaClassJavaMethodSimpleLinkPrivate.class)
-				.getMetalinks().iterator().next();
-		Assert.assertEquals(metaLink.getVisibility(),
-				Visibility.VisibilityLevel.PRIVATE);
-	}
-
 	/**
 	 * Test meta node get description.
 	 */
@@ -2354,10 +1603,10 @@ public abstract class BaseGraphTest {
 	public void testMetaNodeGetDescription()
 			throws MetaNodeTypeNotFoundException {
 		final Context root1 = reader.getContext("1L");
-		root1.addChildNode(JavaClassNode.class, "javaClassNode1");
-		session.save();
+		session.addNode(root1, JavaClassNode.class, "javaClassNode1");
+		session.flush();
 
-		final Metadata metadata = session.getMetadata();
+		final Metadata metadata = reader.getMetadata();
 		final MetaNodeType metaNode = metadata
 				.getMetaNodeType(JavaClassNode.class);
 		final String description = metaNode.getDescription();
@@ -2365,260 +1614,10 @@ public abstract class BaseGraphTest {
 		Assert.assertEquals(description, "Java Class");
 	}
 
-	/**
-	 * Test node operations.
-	 */
-	@Test
-	public void testNodeOperations() throws PropertyNotFoundException {
-		// add new node ...
-		final Context root = reader.getContext("1L");
-		final Node node1 = session.addNode(root, "node");
-		Assert.assertNotNull(node1);
-		Assert.assertEquals(node1.getName(), "node");
-
-		// get node ...
-		final Node node2 = root.getNode("node");
-		Assert.assertNotNull(node2);
-		Assert.assertEquals(node2.getName(), "node");
-		Assert.assertEquals(node1, node2);
-
-		// set property on node1 ...
-		final NodeProperty<Integer> prop1 = node1.setProperty(Integer.class,
-				Visibility.VisibilityLevel.PUBLIC, "prop", 8);
-		Assert.assertNotNull(prop1);
-		Assert.assertEquals(prop1.getValue(), new Integer(8));
-
-		// get property on node2 ...
-		final NodeProperty<Integer> prop2 = node2.getProperty(Integer.class,
-				"prop");
-		Assert.assertNotNull(prop2);
-		Assert.assertEquals(prop2.getValue(), new Integer(8));
-	}
-
-	/**
-	 * Test properties retrieval.
-	 */
-	@Test
-	public void testPropertiesRetrieval() {
-		final Context root = reader.getContext("1L");
-		root.setProperty(Integer.class, Visibility.VisibilityLevel.PUBLIC,
-				"integerProp", 8);
-		root.setProperty(String.class, Visibility.VisibilityLevel.PUBLIC,
-				"stringProp", "Hello World!");
-		final Set<NodeProperty<Serializable>> properties = root.getProperties();
-		for (final NodeProperty<Serializable> property : properties) {
-			if (property.getName().equals("integerProp")) {
-				Assert.assertEquals(property.getValue(), new Long(8));
-			} else if (property.getName().equals("stringProp")) {
-				Assert.assertEquals(property.getValue(), "Hello World!");
-			}
-		}
-	}
-
-	/**
-	 * Test property removal.
-	 */
-	@Test
-	public void testPropertyRemoval() throws PropertyNotFoundException {
-		final Context root = reader.getContext("1L");
-		final NodeProperty<Integer> prop1 = root.setProperty(Integer.class,
-				Visibility.VisibilityLevel.PUBLIC, "property", 8);
-		prop1.remove();
-		final NodeProperty<Integer> property = root.getProperty(Integer.class,
-				"property");
-		Assert.assertTrue(property == null);
-	}
-
-	/**
-	 * Test property value overwriting.
-	 */
-	@Test
-	public void testPropertyValueOverwriting() throws PropertyNotFoundException {
-		final Context root = reader.getContext("1L");
-		final NodeProperty<Integer> prop1 = root.setProperty(Integer.class,
-				Visibility.VisibilityLevel.PUBLIC, "prop", 8);
-		final NodeProperty<Integer> prop2 = root.getProperty(Integer.class,
-				"prop");
-		prop2.setValue(71);
-		Assert.assertEquals(prop2.getValue(), new Integer(71));
-		Assert.assertEquals(prop1.getValue(), prop2.getValue());
-	}
-
-	/**
-	 * Test string property.
-	 */
-	@Test
-	public void testStringProperty() throws PropertyNotFoundException {
-		// set new property ...
-		final Context root = reader.getContext("1L");
-		final NodeProperty<String> prop1 = root.setProperty(String.class,
-				Visibility.VisibilityLevel.PUBLIC, "prop", "Hello");
-		Assert.assertNotNull(prop1);
-		Assert.assertNotNull(prop1.getValue());
-		Assert.assertEquals(prop1.getValue(), new String("Hello"));
-
-		// get existent property ...
-		final NodeProperty<String> prop2 = root.getProperty(String.class,
-				"prop");
-		Assert.assertNotNull(prop2);
-		Assert.assertNotNull(prop2.getValue());
-		Assert.assertEquals(prop2.getValue(), new String("Hello"));
-
-		// get property as Serializable ...
-		final NodeProperty<Serializable> prop5 = root.getProperty(
-				Serializable.class, "prop");
-		Assert.assertNotNull(prop5);
-		Assert.assertNotNull(prop5.getValue());
-		Assert.assertEquals(prop5.getValue(), new String("Hello"));
-
-		// try to integer property as non-hierarchy class ...
-		try {
-			root.getProperty(Integer.class, "prop");
-			Assert.fail();
-		} catch (final PropertyTypeInvalidException e) {
-			Assert.assertTrue(true);
-		}
-	}
-
-	/**
-	 * Test transient links with annotations.
-	 */
-	@Test
-	public void testTransientLinksWithAnnotations() throws Exception {
-		Context root1 = reader.getContext("1L");
-		JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		JavaMethodNode javaMethodNode1 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-		final JavaMethodNode javaMethodNode2 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode2");
-
-		session.addLink(TransientLink.class, javaClassNode1, javaMethodNode1);
-		session.addLink(TransientLink.class, javaClassNode1, javaMethodNode2);
-
-		session.save();
-		session = openSession();
-
-		root1 = reader.getContext("1L");
-		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		javaMethodNode1 = root1.getChildNode(JavaMethodNode.class,
-				"javaMethodNode1");
-		final Collection<? extends Link> links = session
-				.getUnidirectionalLinks(TransientLink.class, javaClassNode1,
-						javaMethodNode1);
-		Assert.assertEquals(links.size(), 0);
-	}
-
-	/**
-	 * Test transient links without annotations.
-	 */
-	@Test
-	public void testTransientLinksWithoutAnnotations() throws Exception {
-		Context root1 = reader.getContext("1L");
-		JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		JavaMethodNode javaMethodNode1 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-		JavaMethodNode javaMethodNode2 = root1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode2");
-
-		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode1, false, TRANSIENT);
-		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode2, false, TRANSIENT);
-
-		// make previous transient link persistent now ...
-		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
-				javaMethodNode2, false, NORMAL);
-
-		session.save();
-		session = openSession();
-
-		root1 = reader.getContext("1L");
-		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		javaMethodNode1 = root1.getChildNode(JavaMethodNode.class,
-				"javaMethodNode1");
-		javaMethodNode2 = root1.getChildNode(JavaMethodNode.class,
-				"javaMethodNode2");
-		final Collection<? extends Link> links = session.getLink(
-				JavaClassJavaMethodSimpleLink.class, javaClassNode1, null);
-		Assert.assertEquals(links.size(), 1);
-		final Link link = links.iterator().next();
-		Assert.assertEquals(link.getTarget(), javaMethodNode2);
-	}
-
-	/**
-	 * Test transient nodes with annotation.
-	 */
-	@Test
-	public void testTransientNodesWithAnnotation() throws Exception {
-		Context root1 = reader.getContext("1L");
-		JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		JavaMethodNode javaMethodNode1 = javaClassNode1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1");
-
-		javaClassNode1.addChildNode(TransientNode.class, "transNode1");
-		javaMethodNode1.addChildNode(TransientNode.class, "transNode2");
-
-		session.save();
-		session = openSession();
-
-		root1 = reader.getContext("1L");
-		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		Assert.assertNotNull(javaClassNode1);
-		javaMethodNode1 = javaClassNode1.getChildNode(JavaMethodNode.class,
-				"javaMethodNode1");
-		Assert.assertNotNull(javaMethodNode1);
-
-		Assert.assertNull(javaClassNode1.getChildNode(TransientNode.class,
-				"transNode1"));
-		Assert.assertNull(javaMethodNode1.getChildNode(TransientNode.class,
-				"transNode2"));
-	}
-
-	/**
-	 * Test transient nodes without annotation.
-	 */
-	@Test
-	public void testTransientNodesWithoutAnnotation() throws Exception {
-		Context root1 = reader.getContext("1L");
-		JavaClassNode javaClassNode1 = root1.addChildNode(JavaClassNode.class,
-				"javaClassNode1", NORMAL);
-		JavaMethodNode javaMethodNode1 = javaClassNode1.addChildNode(
-				JavaMethodNode.class, "javaMethodNode1", NORMAL);
-
-		javaClassNode1.addChildNode(JavaClassNode.class, "transNode1",
-				TRANSIENT);
-		javaMethodNode1.addChildNode(JavaMethodNode.class, "transNode2",
-				TRANSIENT);
-
-		// add transNode1 as NORMAL (not PERSISTENT anymore) ...
-		javaClassNode1.addChildNode(JavaClassNode.class, "transNode1", NORMAL);
-
-		session.save();
-		session = openSession();
-
-		root1 = reader.getContext("1L");
-		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		Assert.assertNotNull(javaClassNode1);
-		javaMethodNode1 = javaClassNode1.getChildNode(JavaMethodNode.class,
-				"javaMethodNode1");
-		Assert.assertNotNull(javaMethodNode1);
-		Assert.assertNotNull(javaClassNode1.getChildNode(JavaClassNode.class,
-				"transNode1"));
-		Assert.assertNull(javaMethodNode1.getChildNode(TransientNode.class,
-				"transNode2"));
-	}
-
 	@Test
 	public void testTreeLineReference() throws Exception {
 		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
 
 		javaClassNode1
@@ -2675,7 +1674,7 @@ public abstract class BaseGraphTest {
 		final String artifactId = "targetId";
 		final String statement = "Hello World 1!";
 
-		final JavaClassNode javaClassNode1 = root1.addChildNode(
+		final JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
 
 		javaClassNode1.addLineReference(8, 17, 26, 44, statement, artifactId,
@@ -2712,39 +1711,6 @@ public abstract class BaseGraphTest {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Test typed node operations.
-	 */
-	@Test
-	public void testTypedNodeOperations() {
-		// add new node ...
-		final Context root = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = session.addNode(root,
-				JavaClassNode.class, "javaClassNode");
-		Assert.assertNotNull(javaClassNode1);
-		Assert.assertEquals(javaClassNode1.getName(), "javaClassNode");
-
-		// get node ...
-		final JavaClassNode javaClassNode2 = root.getChildNode(
-				JavaClassNode.class, "javaClassNode");
-		Assert.assertNotNull(javaClassNode2);
-		Assert.assertEquals(javaClassNode2.getName(), "javaClassNode");
-
-		// set and get custom properties ...
-		javaClassNode2.setClassName("HelloWorld");
-		Assert.assertEquals(javaClassNode2.getClassName(), "HelloWorld");
-		javaClassNode2.setModifier(JavaClassNode.MODIFIER_PUBLIC);
-		Assert.assertEquals(javaClassNode2.getModifier(),
-				JavaClassNode.MODIFIER_PUBLIC);
-		final Date creationTime = new Date();
-		javaClassNode2.setCreationTime(creationTime);
-		Assert.assertEquals(javaClassNode2.getCreationTime(), creationTime);
-
-		// get node as default type ...
-		final Node node = root.getNode("javaClassNode");
-		Assert.assertEquals(node, javaClassNode1);
 	}
 
 	/**
@@ -2785,7 +1751,7 @@ public abstract class BaseGraphTest {
 		Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
 		Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
 
-		session.save();
+		session.flush();
 		session.close();
 		session = openSession();
 
