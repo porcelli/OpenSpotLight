@@ -268,14 +268,13 @@ public abstract class AbstractGeneralQueryTest {
 	/**
 	 * The LOGGER.
 	 */
-	protected static Logger LOGGER = Logger
-			.getLogger(AbstractGeneralQueryTest.class);
+	protected final Logger LOGGER = Logger.getLogger(getClass());
 
 	protected GraphReader session;
 
 	protected GraphWriter writer;
 
-	protected static SortMode sortMode = SortMode.NOT_SORTED;
+	protected SortMode sortMode = SortMode.NOT_SORTED;
 
 	/**
 	 * Adds the class implements interface links.

@@ -98,7 +98,6 @@ public class TestSLQueryTextInternal extends AbstractGeneralQueryTest {
 	 * Instantiates a new sL graph query test.
 	 */
 	public TestSLQueryTextInternal() {
-		LOGGER = Logger.getLogger(TestSLQueryTextInternal.class);
 	}
 
 	@Test
