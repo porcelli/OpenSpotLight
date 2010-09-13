@@ -48,62 +48,30 @@
  */
 package org.openspotlight.graph.server.test;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import org.apache.log4j.Logger;
-import org.junit.Test;
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.SLGraph;
-import org.openspotlight.graph.GraphReaderpotlight.graph.Node;
-import org.openspotlight.graph.client.RemoteGraphSessionFactory;
-import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionData;
-import org.openspotlight.graph.guice.SLGraphModule;
-import org.openspotlight.graph.manipulation.GraphReader;
-import org.openspotlight.graph.query.*;
-import org.openspotlight.graph.query.SLQuery.SortMode;
-import org.openspotlight.graph.server.RemoteGraphSessionServer;
-import org.openspotlight.graph.test.domain.link.JavaInterfaceHierarchy;
-import org.openspotlight.graph.test.domain.link.PackageContainsType;
-import org.openspotlight.graph.test.domain.link.TypeContainsMethod;
-import org.openspotlight.graph.test.domain.node.*;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.remote.server.UserAuthenticator;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.redis.guice.JRedisStorageModule;
-import org.openspotlight.storage.redis.util.ExampleRedisConfig;
-
-import java.text.Collator;
-import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.Callable;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import org.openspotlight.graph.manipulation.GraphReader;
+import org.openspotlight.graph.query.AbstractGeneralQueryTest;
 
 /**
  * The Class SLGraphQueryTest.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
-@SuppressWarnings("unused")
 public class SLRemoteGraphQueryTest extends AbstractGeneralQueryTest {
 
 	@Override
 	protected Callable<Void> createStartUpHandler() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	protected Callable<Void> createShutdownHandler() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	protected GraphReader graphReader() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 }
