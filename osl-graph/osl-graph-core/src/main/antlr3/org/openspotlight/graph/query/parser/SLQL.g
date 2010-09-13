@@ -148,8 +148,7 @@ tokens {
 
 package org.openspotlight.graph.query.parser;
 
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxExceptionFactory;
+import org.openspotlight.graph.query.*;
 }
 
 @parser::header {
@@ -206,13 +205,12 @@ package org.openspotlight.graph.query.parser;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxException;
-import org.openspotlight.graph.query.SLInvalidQuerySyntaxExceptionFactory;
+import org.openspotlight.graph.query.*;
 }
 
 @parser::members {
-	private List<SLInvalidQuerySyntaxException> errors = new ArrayList<SLInvalidQuerySyntaxException>();
-	private SLInvalidQuerySyntaxExceptionFactory errorMessageFactory = new SLInvalidQuerySyntaxExceptionFactory(tokenNames);
+	private List<InvalidQuerySyntaxException> errors = new ArrayList<InvalidQuerySyntaxException>();
+	private InvalidQuerySyntaxExceptionFactory errorMessageFactory = new InvalidQuerySyntaxExceptionFactory(tokenNames);
 	private boolean isInsideDefineTarget = false;
 	private boolean isgUnitTest = true;
 	private Set<String> defineMessageVariableSet = new HashSet<String>();
@@ -259,7 +257,7 @@ import org.openspotlight.graph.query.SLInvalidQuerySyntaxExceptionFactory;
 	}
 	
 	/** return the raw DroolsParserException errors */
-	public List<SLInvalidQuerySyntaxException> getErrors() {
+	public List<InvalidQuerySyntaxException> getErrors() {
 		return errors;
 	}
 	
@@ -267,7 +265,7 @@ import org.openspotlight.graph.query.SLInvalidQuerySyntaxExceptionFactory;
 	public List<String> getErrorMessages() {
 		List<String> messages = new ArrayList<String>(errors.size());
 	
-		for (SLInvalidQuerySyntaxException activeException : errors) {
+		for (InvalidQuerySyntaxException activeException : errors) {
 			messages.add(activeException.getMessage());
 		}
 	
@@ -579,58 +577,58 @@ propertyName
 	;
 
 define_output_key
-	:	{validateLT(2, SLSoftKeywords.OUTPUT)}?=>  DEFINE ID
+	:	{validateLT(2, SoftKeywords.OUTPUT)}?=>  DEFINE ID
 	;
 
 define_target_key
 @init{
 	String text = "";
-}	:	{validateLT(2, SLSoftKeywords.TARGET)}?=>  DEFINE ID {text = $text;}
+}	:	{validateLT(2, SoftKeywords.TARGET)}?=>  DEFINE ID {text = $text;}
 		-> DEFINE_TARGET_VK[$start, text]
 	;
 
 define_message_key
 @init{
 	String text = "";
-}	:	{validateLT(2, SLSoftKeywords.MESSAGE)}?=>  DEFINE ID {text = $text;}
+}	:	{validateLT(2, SoftKeywords.MESSAGE)}?=>  DEFINE ID {text = $text;}
 		-> DEFINE_MESSAGE_VK[$start, text]
 	;
 
 define_domain_key
 @init{
 	String text = "";
-}	:	{validateLT(2, SLSoftKeywords.DOMAIN)}?=>  DEFINE ID {text = $text;}
+}	:	{validateLT(2, SoftKeywords.DOMAIN)}?=>  DEFINE ID {text = $text;}
 		-> DEFINE_DOMAIN_VK[$start, text]
 	;
 
 order_by_key
 @init{
 	String text = "";
-}	:	{(validateIdentifierKey(SLSoftKeywords.ORDER) && validateLT(2, SLSoftKeywords.BY))}?=>  ID ID {text = $text;}
+}	:	{(validateIdentifierKey(SoftKeywords.ORDER) && validateLT(2, SoftKeywords.BY))}?=>  ID ID {text = $text;}
 		-> ORDER_BY_VK[$start, text]
 	;
 
 by_link_key
 @init{
 	String text = "";
-}	:	{(validateIdentifierKey(SLSoftKeywords.BY) && validateLT(2, SLSoftKeywords.LINK))}?=>  ID ID {text = $text;}
+}	:	{(validateIdentifierKey(SoftKeywords.BY) && validateLT(2, SoftKeywords.LINK))}?=>  ID ID {text = $text;}
 		-> BY_LINK_VK[$start, text]
 	;
 
 keep_result_key
 @init{
 	String text = "";
-}	:	{(validateIdentifierKey(SLSoftKeywords.KEEP) && validateLT(2, SLSoftKeywords.RESULT))}?=>  ID ID {text = $text;}
+}	:	{(validateIdentifierKey(SoftKeywords.KEEP) && validateLT(2, SoftKeywords.RESULT))}?=>  ID ID {text = $text;}
 		-> KEEP_RESULT_VK[$start, text]
 	;
 
 asc_key
-	:	{(validateIdentifierKey(SLSoftKeywords.ASC))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.ASC))}?=>	ID
 		-> ASC_VK[$ID]
 	;
 
 desc_key
-	:	{(validateIdentifierKey(SLSoftKeywords.DESC))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.DESC))}?=>	ID
 		-> DESC_VK[$ID]
 	;
 
@@ -639,17 +637,17 @@ select_key
 	;
 
 limit_key
-	:	{(validateIdentifierKey(SLSoftKeywords.LIMIT))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.LIMIT))}?=>	ID
 		-> LIMIT_VK[$ID]
 	;
 
 offset_key
-	:	{(validateIdentifierKey(SLSoftKeywords.OFFSET))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.OFFSET))}?=>	ID
 		-> OFFSET_VK[$ID]
 	;
 
 where_key
-	:	{(validateIdentifierKey(SLSoftKeywords.WHERE))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.WHERE))}?=>	ID
 		-> WHERE_VK[$ID]
 	;
 
@@ -658,57 +656,57 @@ property_key
 	;
 
 link_key
-	:	{(validateIdentifierKey(SLSoftKeywords.LINK))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.LINK))}?=>	ID
 		-> LINK_VK[$ID]
 	;
 
 values_key
-	:	{(validateIdentifierKey(SLSoftKeywords.VALUES))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.VALUES))}?=>	ID
 		-> VALUES_VK[$ID]
 	;
 
 a_link_side_key
-	:	{(validateIdentifierKey(SLSoftKeywords.A))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.A))}?=>	ID
 		-> A_VK[$ID]
 	;
 
 b_link_side_key
-	:	{(validateIdentifierKey(SLSoftKeywords.B))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.B))}?=>	ID
 		-> B_VK[$ID]
 	;
 
 both_link_side_key
-	:	{(validateIdentifierKey(SLSoftKeywords.BOTH))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.BOTH))}?=>	ID
 		-> BOTH_VK[$ID]
 	;
 
 null_key
-	:	{(validateIdentifierKey(SLSoftKeywords.NULL))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.NULL))}?=>	ID
 		-> NULL_VK[$ID]
 	;
 
 true_key
-	:	{(validateIdentifierKey(SLSoftKeywords.TRUE))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.TRUE))}?=>	ID
 		-> TRUE_VK[$ID]
 	;
 
 false_key
-	:	{(validateIdentifierKey(SLSoftKeywords.FALSE))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.FALSE))}?=>	ID
 		-> FALSE_VK[$ID]
 	;
 
 executing_key
-	:	{(validateIdentifierKey(SLSoftKeywords.EXECUTING))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.EXECUTING))}?=>	ID
 		-> EXECUTING_VK[$ID]
 	;
 
 times_key
-	:	{(validateIdentifierKey(SLSoftKeywords.TIMES))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.TIMES))}?=>	ID
 		-> TIMES_VK[$ID]
 	;
 
 n_times_key
-	:	{(validateIdentifierKey(SLSoftKeywords.N))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.N))}?=>	ID
 		-> N_VK[$ID]
 	;
 
@@ -717,32 +715,32 @@ use_key
 	;
 
 collator_key
-	:	{(validateIdentifierKey(SLSoftKeywords.COLLATOR))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.COLLATOR))}?=>	ID
 		-> COLLATOR_VK[$ID]
 	;
 
 level_key
-	:	{(validateIdentifierKey(SLSoftKeywords.LEVEL))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.LEVEL))}?=>	ID
 		-> LEVEL_VK[$ID]
 	;
 
 identical_key
-	:	{(validateIdentifierKey(SLSoftKeywords.IDENTICAL))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.IDENTICAL))}?=>	ID
 		-> IDENTICAL_VK[$ID]
 	;
 
 primary_key
-	:	{(validateIdentifierKey(SLSoftKeywords.PRIMARY))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.PRIMARY))}?=>	ID
 		-> PRIMARY_VK[$ID]
 	;
 
 secondary_key
-	:	{(validateIdentifierKey(SLSoftKeywords.SECONDARY))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.SECONDARY))}?=>	ID
 		-> SECONDARY_VK[$ID]
 	;
 
 tertiary_key
-	:	{(validateIdentifierKey(SLSoftKeywords.TERTIARY))}?=>	ID
+	:	{(validateIdentifierKey(SoftKeywords.TERTIARY))}?=>	ID
 		-> TERTIARY_VK[$ID]
 	;
 

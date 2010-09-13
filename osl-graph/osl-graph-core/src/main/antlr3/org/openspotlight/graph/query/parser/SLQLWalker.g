@@ -115,7 +115,7 @@ import java.io.Serializable;
 }
 
 @members {
-	private SLQueryTextInternalInfo queryInfo = new SLQueryTextInternalInfo();
+	private QueryTextInternalInfo queryInfo = new QueryTextInternalInfo();
 	private int stringCount = -1;
 	
 	private String formatUnicodeString(String input){
@@ -148,7 +148,7 @@ import java.io.Serializable;
 	}
 }
 
-compilationUnit returns [SLQueryTextInternalInfo queryInfoReturn]
+compilationUnit returns [QueryTextInternalInfo queryInfoReturn]
 	:	enclosedCompilationUnit
 	{	queryInfo.setContent($enclosedCompilationUnit.st.toString());
 		$queryInfoReturn = queryInfo;	}
