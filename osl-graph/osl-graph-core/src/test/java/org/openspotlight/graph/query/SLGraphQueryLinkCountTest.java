@@ -88,172 +88,177 @@ import com.google.inject.Injector;
 
 /**
  * The Class GraphQueryLinkCountTest.
- *
+ * 
  * @author Vitor Hugo Chagas
  */
 
 public class SLGraphQueryLinkCountTest {
 
 	private static String DEFAULT_REPOSITORY_NAME = "default-repository";
-	
-    /**
-     * The Constant LOGGER.
-     */
-    static final Logger LOGGER = Logger.getLogger(SLGraphQueryLinkCountTest.class);
 
-    /**
-     * The session.
-     */
-    private static GraphReader session;
+	/**
+	 * The Constant LOGGER.
+	 */
+	static final Logger LOGGER = Logger
+			.getLogger(SLGraphQueryLinkCountTest.class);
 
-    private static AuthenticatedUser user;
+	/**
+	 * The session.
+	 */
+	private static GraphReader session;
+
+	private static AuthenticatedUser user;
 
 	private static GraphWriter writer;
 
 	private static StorageSession storageSession;
 
-    /**
-     * Finish.
-     */
-    @AfterClass
-    public static void finish() {
+	/**
+	 * Finish.
+	 */
+	@AfterClass
+	public static void finish() {
 
-    }
+	}
 
-    /**
-     * Gets the i face type set.
-     *
-     * @return the i face type set
-     */
-    private static Set<Class<?>> getIFaceTypeSet() {
-        final Set<Class<?>> set = new HashSet<Class<?>>();
-        set.add(java.util.Collection.class);
-        set.add(java.util.Map.class);
-        set.add(java.util.List.class);
-        set.add(java.util.Set.class);
-        set.add(java.util.SortedSet.class);
-        return set;
-    }
+	/**
+	 * Gets the i face type set.
+	 * 
+	 * @return the i face type set
+	 */
+	private static Set<Class<?>> getIFaceTypeSet() {
+		final Set<Class<?>> set = new HashSet<Class<?>>();
+		set.add(java.util.Collection.class);
+		set.add(java.util.Map.class);
+		set.add(java.util.List.class);
+		set.add(java.util.Set.class);
+		set.add(java.util.SortedSet.class);
+		return set;
+	}
 
-    /**
-     * Quick graph population.
-     */
-    @BeforeClass
-    public static void quickGraphPopulation() {
-        try {
+	/**
+	 * Quick graph population.
+	 */
+	@BeforeClass
+	public static void quickGraphPopulation() {
 
+		Injector injector = Guice.createInjector(
+				new JRedisStorageModule(StorageSession.FlushMode.AUTO,
+						ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
+						repositoryPath("repository")),
+				new SimplePersistModule(), new GraphModule());
 
+		storageSession = injector.getInstance(StorageSession.class);
+		final SecurityFactory securityFactory = injector
+				.getInstance(SecurityFactory.class);
+		final User simpleUser = securityFactory.createUser("testUser");
+		GraphSessionFactory factory = injector
+				.getInstance(GraphSessionFactory.class);
+		session = factory.openSimple().from(GraphLocation.SERVER);
+		writer = factory.openFull().toServer();
+		final Context context = session.getContext("linkCountTest");
+		final Set<Class<?>> types = getIFaceTypeSet();
+		for (final Class<?> type : types) {
+			final Method[] methods = type.getDeclaredMethods();
+			LOGGER.info(type.getName() + ": " + methods.length + " methods");
+			final JavaInterface javaInteface = writer.addNode(context,
+					JavaInterface.class, type.getName());
+			javaInteface.setCaption(type.getName());
+			for (final Method method : methods) {
+				final JavaTypeMethod javaMethod = writer.addChildNode(
+						javaInteface, JavaTypeMethod.class, method.getName());
+				javaMethod.setCaption(method.getName());
+				writer.addLink(TypeContainsMethod.class, javaInteface,
+						javaMethod);
+				final Class<?>[] paramTypes = method.getParameterTypes();
+				LOGGER.info("\t\t" + method.getName() + ": "
+						+ paramTypes.length + " params");
+				for (final Class<?> paramType : paramTypes) {
+					final MethodParam methodParam = writer.addChildNode(
+							javaMethod, MethodParam.class, paramType.getName());
+					methodParam.setCaption(paramType.getName());
+					writer.addLink(MethodContainsParam.class, javaMethod,
+							methodParam);
+				}
+			}
+		}
+		writer.flush();
+	}
 
-            Injector injector = Guice.createInjector(new JRedisStorageModule(StorageSession.FlushMode.AUTO,
-                    ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
-                    repositoryPath("repository")),
-                    new SimplePersistModule(), new GraphModule());
+	/**
+	 * Find i face id.
+	 * 
+	 * @param type
+	 *            the type
+	 * @return the string
+	 * @throws InvalidQuerySyntaxException
+	 */
+	private String findIFaceID(final Class<?> type)
+			throws InvalidQuerySyntaxException, InvalidQueryElementException {
+		final QueryApi query = session.createQueryApi();
+		query.select().allTypes().onWhere().selectEnd().where()
+				.type(JavaInterface.class.getName()).each().property("caption")
+				.equalsTo().value(type.getName()).typeEnd().whereEnd();
+		final QueryResult result = query.execute();
+		final Collection<Node> nodes = result.getNodes();
+		return nodes.size() > 0 ? result.getNodes().iterator().next().getId()
+				: null;
+	}
 
+	/**
+	 * Select collection methods with all in caption and with one param.
+	 */
+	@Test
+	public void selectCollectionMethodsWithAllInCaptionAndWithOneParam() {
 
-            storageSession = injector.getInstance(StorageSession.class);
-            final SecurityFactory securityFactory = injector.getInstance(SecurityFactory.class);
-            final User simpleUser = securityFactory.createUser("testUser");
-            GraphSessionFactory factory = injector.getInstance(GraphSessionFactory.class);
-            session = factory.openSimple().from(GraphLocation.SERVER);
-            writer = factory.openFull().toServer();
-            user = securityFactory.createIdentityManager(storageSession).authenticate(simpleUser, "password");
-            final Context context = session.getContext("linkCountTest");
-            final Set<Class<?>> types = getIFaceTypeSet();
-            for (final Class<?> type : types) {
-                final Method[] methods = type.getDeclaredMethods();
-                LOGGER.info(type.getName() + ": " + methods.length + " methods");
-                final JavaInterface javaInteface = writer.addNode(context, JavaInterface.class, type.getName());
-                javaInteface.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", type.getName());
-                for (final Method method : methods) {
-                    final JavaTypeMethod javaMethod = javaInteface.addNode(JavaTypeMethod.class, method.getName());
-                    javaMethod.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", method.getName());
-                    session.addLink(TypeContainsMethod.class, javaInteface, javaMethod, false);
-                    final Class<?>[] paramTypes = method.getParameterTypes();
-                    LOGGER.info("\t\t" + method.getName() + ": " + paramTypes.length + " params");
-                    for (final Class<?> paramType : paramTypes) {
-                        final MethodParam methodParam = javaMethod.addNode(MethodParam.class, paramType.getName());
-                        methodParam.setProperty(String.class, VisibilityLevel.PUBLIC, "caption", paramType.getName());
-                        session.addLink(MethodContainsParam.class, javaMethod, methodParam, false);
-                    }
-                }
-            }
-            session.save();
-            session.close();
-            session = graph.openSession(user, DEFAULT_REPOSITORY_NAME);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
+		try {
 
-    /**
-     * Find i face id.
-     *
-     * @param type the type
-     * @return the string
-     * @throws InvalidQuerySyntaxException
-     */
-    private String findIFaceID(final Class<?> type) throws InvalidQuerySyntaxException, InvalidQueryElementException {
-        final QueryApi query = session.createQueryApi();
-        query.select().allTypes().onWhere().selectEnd().where().type(JavaInterface.class.getName()).each().property("caption").equalsTo().value(
-                type.getName()).typeEnd().whereEnd();
-        final QueryResult result = query.execute();
-        final Collection<Node> nodes = result.getNodes();
-        return nodes.size() > 0 ? result.getNodes().iterator().next().getId() : null;
-    }
+			final String id = findIFaceID(java.util.Collection.class);
+			final Node node = SLCollections.firstOf(session.getNode(id));
+			final Collection<Node> inputNodes = new ArrayList<Node>();
+			inputNodes.add(node);
 
-    /**
-     * Select collection methods with all in caption and with one param.
-     */
-    @Test
-    public void selectCollectionMethodsWithAllInCaptionAndWithOneParam() {
+			final QueryApi query = session.createQueryApi();
 
-        try {
+			query.select().type(JavaTypeMethod.class.getName())
+					.byLink(TypeContainsMethod.class.getName()).b().selectEnd()
+					.select().type(JavaTypeMethod.class.getName()).selectEnd()
+					.where().type(JavaTypeMethod.class.getName()).each()
+					.property("caption").contains().value("All").and().each()
+					.link(MethodContainsParam.class.getName()).a().count()
+					.equalsTo().value(1).typeEnd().whereEnd();
 
-            final String id = findIFaceID(java.util.Collection.class);
-            final Node node =  SLCollections.firstOf(session.getNode(id));
-            final Collection<Node> inputNodes = new ArrayList<Node>();
-            inputNodes.add(node);
+			final QueryResult result = query.execute(new String[] { id });
+			final Collection<Node> nodes = result.getNodes();
+			QueryUtil.printResult(nodes);
+		} catch (final Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
 
-            final QueryApi query = session.createQueryApi();
+	/**
+	 * Select map zero param methods.
+	 */
+	@Test
+	public void selectMapZeroParamMethods() {
 
-            query.select().type(JavaTypeMethod.class.getName()).byLink(TypeContainsMethod.class.getName()).b().selectEnd().select().type(
-                    JavaTypeMethod.class.getName()).selectEnd().where().type(
-                    JavaTypeMethod.class.getName()).each().property(
-                    "caption").contains().value(
-                    "All").and().each().link(
-                    MethodContainsParam.class.getName()).a().count().equalsTo().value(
-                    1).typeEnd().whereEnd();
+		try {
 
-            final QueryResult result = query.execute(new String[]{id});
-            final Collection<Node> nodes = result.getNodes();
-            QueryUtil.printResult(nodes);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
+			final String id = findIFaceID(java.util.Map.class);
+			final QueryApi query = session.createQueryApi();
 
-    /**
-     * Select map zero param methods.
-     */
-    @Test
-    public void selectMapZeroParamMethods() {
+			query.select().type(JavaTypeMethod.class.getName())
+					.byLink(TypeContainsMethod.class.getName()).b().selectEnd()
+					.select().type(JavaTypeMethod.class.getName()).selectEnd()
+					.where().type(JavaTypeMethod.class.getName()).each()
+					.link(MethodContainsParam.class.getName()).a().count()
+					.equalsTo().value(0).typeEnd().whereEnd();
 
-        try {
-
-            final String id = findIFaceID(java.util.Map.class);
-            final QueryApi query = session.createQueryApi();
-
-            query.select().type(JavaTypeMethod.class.getName()).byLink(TypeContainsMethod.class.getName()).b().selectEnd().select().type(
-                    JavaTypeMethod.class.getName()).selectEnd().where().type(
-                    JavaTypeMethod.class.getName()).each().link(
-                    MethodContainsParam.class.getName()).a().count().equalsTo().value(
-                    0).typeEnd().whereEnd();
-
-            final QueryResult result = query.execute(new String[]{id});
-            final Collection<Node> nodes = result.getNodes();
-            QueryUtil.printResult(nodes);
-        } catch (final Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
+			final QueryResult result = query.execute(new String[] { id });
+			final Collection<Node> nodes = result.getNodes();
+			QueryUtil.printResult(nodes);
+		} catch (final Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
 }

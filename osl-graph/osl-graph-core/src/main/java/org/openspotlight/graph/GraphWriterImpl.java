@@ -53,19 +53,6 @@ public class GraphWriterImpl implements GraphWriter {
         this.graphReader = graphReader;
     }
 
-    @Override
-    public <T extends Node> T addNode(
-                                      final Context context, final Class<T> clazz,
-                                      final String name,
-                                      final Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                      final Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
-        final StorageSession session = sessionProvider.get();
-        final T newNode = NodeAndLinkSupport.createNode(factory, session, context.getId(),
-            null, clazz, name, true, linkTypesForLinkDeletion,
-            linkTypesForLinkedNodeDeletion);
-        dirtyNodes.add(newNode);
-        return newNode;
-    }
 
     @Override
     public void removeContext(
@@ -130,22 +117,7 @@ public class GraphWriterImpl implements GraphWriter {
         return addChildNode(parent, clazz, name, null, null);
     }
 
-    @Override
-    public <T extends Node> T addChildNode(
-                                           final Node parent, final Class<T> clazz,
-                                           final String name,
-                                           final Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                           final Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
-        throws IllegalArgumentException {
-        final StorageSession session = sessionProvider.get();
-        final T newNode = NodeAndLinkSupport.createNode(factory, session, parent
-            .getContextId(), parent.getId(), clazz, name, true,
-            linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
-        dirtyNodes.add(newNode);
-        return newNode;
-    }
-
-    @Override
+        @Override
     public <L extends Link> L addLink(
                                       final Class<L> linkClass, final Node source,
                                       final Node target)
@@ -193,4 +165,36 @@ public class GraphWriterImpl implements GraphWriter {
         return addNode(context, clazz, name, null, null);
     }
 
+
+	@Override
+	public <T extends Node> T addNode(Context context, Class<T> clazz,
+			String name,
+			Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+			Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+			throws IllegalArgumentException {
+        final StorageSession session = sessionProvider.get();
+        final T newNode = NodeAndLinkSupport.createNode(factory, session, context.getId(),
+            null, clazz, name, true, linkTypesForLinkDeletion,
+            linkTypesForLinkedNodeDeletion);
+        dirtyNodes.add(newNode);
+        return newNode;
+	}
+
+
+	@Override
+	public <T extends Node> T addChildNode(Node parent, Class<T> clazz,
+			String name,
+			Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+			Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+			throws IllegalArgumentException {
+        final StorageSession session = sessionProvider.get();
+        final T newNode = NodeAndLinkSupport.createNode(factory, session, parent
+            .getContextId(), parent.getId(), clazz, name, true,
+            linkTypesForLinkDeletion, linkTypesForLinkedNodeDeletion);
+        dirtyNodes.add(newNode);
+        return newNode;
+	}
+
+
+	
 }

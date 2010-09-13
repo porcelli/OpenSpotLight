@@ -151,8 +151,8 @@ public class NodeAndLinkSupport {
                                                  final PartitionFactory factory,
                                                  final StorageSession session, final String contextId, final String parentId,
                                                  final Class<T> clazz, final String name, final boolean needsToVerifyType,
-                                                 final Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                                 final Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion,
+                                                 final Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                                                 final Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion,
                                                  final RepositoryPath repositoryPath) {
         final Map<String, Class<? extends Serializable>> propertyTypes = newHashMap();
         final Map<String, Serializable> propertyValues = newHashMap();
@@ -453,8 +453,8 @@ public class NodeAndLinkSupport {
                                                 final PartitionFactory factory,
                                                 final StorageSession session, final String contextId, final String parentId,
                                                 final Class<T> clazz, final String name, final boolean needsToVerifyType,
-                                                final Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                                final Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
+                                                final Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                                                final Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion) {
         return createNode(factory, session, contextId, parentId, clazz, name,
             needsToVerifyType, linkTypesForLinkDeletion,
             linkTypesForLinkedNodeDeletion, null);

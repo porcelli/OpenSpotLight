@@ -102,7 +102,7 @@ public class GraphReaderImpl implements GraphReader {
     }
 
     @SuppressWarnings("unchecked")
-    private Iterable<Node> internalGetChildrenNodes(
+	private Iterable<Node> internalGetChildrenNodes(
                                                     final Node node,
                                                     final Class<?> clazz, final String name) {
         final StorageSession session = sessionProvider.get();
@@ -784,9 +784,9 @@ public class GraphReaderImpl implements GraphReader {
             .createCriteria().withUniqueKeyAsString(id).buildCriteria()
             .andFindUnique(session);
         if (parentStNode == null) { return null; }
-        return (Node) SLCollections.iterableOfOne(convertToSLNode(parentStNode
+        return (Node) convertToSLNode(parentStNode
             .getKey().getParentKeyAsString(), contextId,
-            parentStNode, false));
+            parentStNode, false);
 
     }
 
@@ -870,5 +870,12 @@ public class GraphReaderImpl implements GraphReader {
                                                    Element e, String artifactId) {
         return NodeAndLinkSupport.getTreeLineReferences(sessionProvider.get(), this.factory, e, artifactId);
     }
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Node> Iterable<T> getChildrenNodes(Context context,
+			Class<T> clazz) throws IllegalArgumentException {
+		return (Iterable<T>) internalFindNodes(clazz,true,null,null,null,null,SLCollections.iterableOfOne(context));
+	}
 
 }

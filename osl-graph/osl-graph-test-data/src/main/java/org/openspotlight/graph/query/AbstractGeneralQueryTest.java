@@ -271,9 +271,9 @@ public abstract class AbstractGeneralQueryTest {
 	protected static Logger LOGGER = Logger
 			.getLogger(AbstractGeneralQueryTest.class);
 
-	private GraphReader session;
+	protected GraphReader session;
 
-	private GraphWriter writer;
+	protected GraphWriter writer;
 
 	protected static SortMode sortMode = SortMode.NOT_SORTED;
 
