@@ -150,8 +150,8 @@ public interface GraphWriter {
     <T extends Node> T addNode(Context context,
                                 Class<T> clazz,
                                 String name,
-                                Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+                                Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                                Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
         throws IllegalArgumentException;
 
     /**
@@ -191,8 +191,8 @@ public interface GraphWriter {
     <T extends Node> T addChildNode(Node parent,
                                      Class<T> clazz,
                                      String name,
-                                     Collection<Class<? extends Link>> linkTypesForLinkDeletion,
-                                     Collection<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
+                                     Iterable<Class<? extends Link>> linkTypesForLinkDeletion,
+                                     Iterable<Class<? extends Link>> linkTypesForLinkedNodeDeletion)
         throws IllegalArgumentException;
 
     /**

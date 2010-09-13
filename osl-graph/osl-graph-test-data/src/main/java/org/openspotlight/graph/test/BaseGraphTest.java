@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -86,8 +87,6 @@ import org.openspotlight.graph.test.domain.node.JavaElementNode;
 import org.openspotlight.graph.test.domain.node.JavaInnerClassNode;
 import org.openspotlight.graph.test.domain.node.JavaMethodNode;
 import org.openspotlight.graph.test.domain.node.JavaType;
-
-import com.google.inject.internal.BytecodeGen.Visibility;
 
 public abstract class BaseGraphTest {
 
@@ -1482,14 +1481,14 @@ public abstract class BaseGraphTest {
 		session.flush();
 
 		root1 = reader.getContext("1L");
-		javaClassNode1 = reader.getNo.getChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		javaMethodNode1 = root1.getChildNode(JavaMethodNode.class,
-				"javaMethodNode1");
+		javaClassNode1 = SLCollections.firstOf(reader.findNodesByName(
+				JavaClassNode.class, "javaClassNode1", true, root1));
+		javaMethodNode1 = SLCollections.firstOf(reader.findNodesByName(
+				JavaMethodNode.class, "javaMethodNode1", true, root1));
 
-		final Iterable<? extends Link> links = session.getLink(
-				JavaClassJavaMethodSimpleLink.class, null, null);
-		Assert.assertEquals(links.size(), 2);
+		final Iterable<? extends Link> links = reader.getLinks(javaClassNode1,
+				null, LinkDirection.ANY);
+		Assert.assertEquals(SLCollections.iterableToList(links).size(), 2);
 	}
 
 	/**
@@ -1509,27 +1508,25 @@ public abstract class BaseGraphTest {
 				javaMethodNode1);
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode2);
-		final Iterable<Class<? extends Link>> linkTypesForLinkDeletion = new ArrayList<Class<? extends Link>>();
+		final List<Class<? extends Link>> linkTypesForLinkDeletion = new ArrayList<Class<? extends Link>>();
 		linkTypesForLinkDeletion.add(JavaClassJavaMethodSimpleLink.class);
 		session.addNode(root1, JavaMethodNode.class, "javaMethodNode2",
 				linkTypesForLinkDeletion, null);
 
 		session.flush();
-		session = openSession();
 
 		root1 = reader.getContext("1L");
-		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		javaMethodNode1 = root1.getChildNode(JavaMethodNode.class,
-				"javaMethodNode1");
-		final Iterable<? extends Link> links = session.getLink(
-				JavaClassJavaMethodSimpleLink.class, null, null);
+		javaClassNode1 = SLCollections.firstOf(reader.findNodesByName(JavaClassNode.class,
+				"javaClassNode1",true,root1));
+		javaMethodNode1 = SLCollections.firstOf(reader.findNodesByName(JavaMethodNode.class,
+				"javaMethodNode1",true,root1));
+		final Iterable<? extends Link> links = reader.getLinks(javaClassNode1, null,LinkDirection.ANY);
 		for (final Link k : links) {
 			System.err.println(">>> " + k.getSource().getName() + " - "
 					+ k.getTarget().getName());
 		}
 
-		Assert.assertEquals(links.size(), 1);
+		Assert.assertEquals(SLCollections.iterableToList(links).size(), 1);
 
 		final Link link = links.iterator().next();
 		Assert.assertEquals(link.getSource(), javaClassNode1);
@@ -1545,9 +1542,9 @@ public abstract class BaseGraphTest {
 		Context root1 = reader.getContext("1L");
 		JavaClassNode javaClassNode1 = session.addNode(root1,
 				JavaClassNode.class, "javaClassNode1");
-		JavaMethodNode javaMethodNode1 = javaClassNode1.addChildNode(
+		JavaMethodNode javaMethodNode1 = session.addChildNode(javaClassNode1,
 				JavaMethodNode.class, "javaMethodNode1");
-		final JavaMethodNode javaMethodNode2 = javaClassNode1.addChildNode(
+		final JavaMethodNode javaMethodNode2 = session.addChildNode(javaClassNode1,
 				JavaMethodNode.class, "javaMethodNode2");
 
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
@@ -1555,25 +1552,22 @@ public abstract class BaseGraphTest {
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode2);
 
-		final Iterable<Class<? extends Link>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends Link>>();
+		final List<Class<? extends Link>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends Link>>();
 		linkTypesForLinkedNodesDeletion
 				.add(JavaClassJavaMethodSimpleLink.class);
 		session.addNode(root1, JavaClassNode.class, "javaClassNode1", null,
 				linkTypesForLinkedNodesDeletion);
 
-		javaMethodNode1 = javaClassNode1.addChildNode(JavaMethodNode.class,
+		javaMethodNode1 = session.addChildNode(javaClassNode1,JavaMethodNode.class,
 				"javaMethodNode1");
 
 		session.flush();
-		session = openSession();
 
 		root1 = reader.getContext("1L");
-		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		final Iterable<Node> nodes = javaClassNode1.getNodes();
-		Assert.assertEquals(nodes.size(), 1);
-		Assert.assertEquals(nodes.iterator().next().getName(),
-				"javaMethodNode1");
+		javaClassNode1 = SLCollections.firstOf(reader.findNodesByName(JavaClassNode.class,
+				"javaClassNode1",true,root1));
+		javaMethodNode1 = reader.getChildNode(javaClassNode1, JavaMethodNode.class, "javaMethodNode1");
+		Assert.assertThat(javaMethodNode1, Is.is(IsNull.notNullValue()));
 	}
 
 	/**
@@ -1612,25 +1606,27 @@ public abstract class BaseGraphTest {
 
 	@Test
 	public void testMetaLinkGetDescription()
-			throws MetaNodeTypeNotFoundException, MetaLinkTypeNotFoundException {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode = session.addNode(root1,
-				JavaClassNode.class, "javaClassNode");
-		final JavaMethodNode javaMethodNode = session.addNode(root1,
-				JavaMethodNode.class, "javaMethodNode");
-		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode,
-				javaMethodNode);
-		session.flush();
-
-		final Metadata metadata = reader.getMetadata();
-		final MetaLink metaLink = metadata
-				.getMetaLinkType(JavaClassJavaMethodSimpleLink.class)
-				.getMetalinks().iterator().next();
-		final String description = metaLink.getDescription();
-		Assert.assertNotNull(description);
-		Assert.assertEquals(description, "Java Class to Java Method Link");
-		Assert.assertEquals(metaLink.getVisibility(),
-				Visibility.VisibilityLevel.PUBLIC);
+			throws Exception{
+		throw new UnsupportedOperationException();
+//		
+//		final Context root1 = reader.getContext("1L");
+//		final JavaClassNode javaClassNode = session.addNode(root1,
+//				JavaClassNode.class, "javaClassNode");
+//		final JavaMethodNode javaMethodNode = session.addNode(root1,
+//				JavaMethodNode.class, "javaMethodNode");
+//		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode,
+//				javaMethodNode);
+//		session.flush();
+//
+//		final Metadata metadata = reader.getMetadata();
+//		final MetaLink metaLink = metadata
+//				.getMetaLinkType(JavaClassJavaMethodSimpleLink.class)
+//				.getMetalinks().iterator().next();
+//		final String description = metaLink.getDescription();
+//		Assert.assertNotNull(description);
+//		Assert.assertEquals(description, "Java Class to Java Method Link");
+//		Assert.assertEquals(metaLink.getVisibility(),
+//				Visibility.VisibilityLevel.PUBLIC);
 	}
 
 	/**
