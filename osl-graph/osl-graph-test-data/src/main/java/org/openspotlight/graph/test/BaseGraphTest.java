@@ -1516,11 +1516,12 @@ public abstract class BaseGraphTest {
 		session.flush();
 
 		root1 = reader.getContext("1L");
-		javaClassNode1 = SLCollections.firstOf(reader.findNodesByName(JavaClassNode.class,
-				"javaClassNode1",true,root1));
-		javaMethodNode1 = SLCollections.firstOf(reader.findNodesByName(JavaMethodNode.class,
-				"javaMethodNode1",true,root1));
-		final Iterable<? extends Link> links = reader.getLinks(javaClassNode1, null,LinkDirection.ANY);
+		javaClassNode1 = SLCollections.firstOf(reader.findNodesByName(
+				JavaClassNode.class, "javaClassNode1", true, root1));
+		javaMethodNode1 = SLCollections.firstOf(reader.findNodesByName(
+				JavaMethodNode.class, "javaMethodNode1", true, root1));
+		final Iterable<? extends Link> links = reader.getLinks(javaClassNode1,
+				null, LinkDirection.ANY);
 		for (final Link k : links) {
 			System.err.println(">>> " + k.getSource().getName() + " - "
 					+ k.getTarget().getName());
@@ -1544,8 +1545,8 @@ public abstract class BaseGraphTest {
 				JavaClassNode.class, "javaClassNode1");
 		JavaMethodNode javaMethodNode1 = session.addChildNode(javaClassNode1,
 				JavaMethodNode.class, "javaMethodNode1");
-		final JavaMethodNode javaMethodNode2 = session.addChildNode(javaClassNode1,
-				JavaMethodNode.class, "javaMethodNode2");
+		final JavaMethodNode javaMethodNode2 = session.addChildNode(
+				javaClassNode1, JavaMethodNode.class, "javaMethodNode2");
 
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode1);
@@ -1558,15 +1559,16 @@ public abstract class BaseGraphTest {
 		session.addNode(root1, JavaClassNode.class, "javaClassNode1", null,
 				linkTypesForLinkedNodesDeletion);
 
-		javaMethodNode1 = session.addChildNode(javaClassNode1,JavaMethodNode.class,
-				"javaMethodNode1");
+		javaMethodNode1 = session.addChildNode(javaClassNode1,
+				JavaMethodNode.class, "javaMethodNode1");
 
 		session.flush();
 
 		root1 = reader.getContext("1L");
-		javaClassNode1 = SLCollections.firstOf(reader.findNodesByName(JavaClassNode.class,
-				"javaClassNode1",true,root1));
-		javaMethodNode1 = reader.getChildNode(javaClassNode1, JavaMethodNode.class, "javaMethodNode1");
+		javaClassNode1 = SLCollections.firstOf(reader.findNodesByName(
+				JavaClassNode.class, "javaClassNode1", true, root1));
+		javaMethodNode1 = reader.getChildNode(javaClassNode1,
+				JavaMethodNode.class, "javaMethodNode1");
 		Assert.assertThat(javaMethodNode1, Is.is(IsNull.notNullValue()));
 	}
 
@@ -1588,45 +1590,45 @@ public abstract class BaseGraphTest {
 		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode1,
 				javaMethodNode2);
 
-		final Iterable<Class<? extends Link>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends Link>>();
+		final List<Class<? extends Link>> linkTypesForLinkedNodesDeletion = new ArrayList<Class<? extends Link>>();
 		linkTypesForLinkedNodesDeletion
 				.add(JavaClassJavaMethodSimpleLink.class);
 		session.addNode(root1, JavaClassNode.class, "javaClassNode1", null,
 				linkTypesForLinkedNodesDeletion);
 
 		session.flush();
-		session = openSession();
 
 		root1 = reader.getContext("1L");
-		javaClassNode1 = root1.getChildNode(JavaClassNode.class,
-				"javaClassNode1");
-		final Iterable<Node> nodes = javaClassNode1.getNodes();
-		Assert.assertTrue(nodes.isEmpty());
+		javaClassNode1 = SLCollections.firstOf(reader.findNodesByName(
+				JavaClassNode.class, "javaClassNode1", true, root1));
+
+		final Iterable<Node> nodes = reader.getChildrenNodes(javaClassNode1);
+		;
+		Assert.assertFalse(nodes.iterator().hasNext());
 	}
 
 	@Test
-	public void testMetaLinkGetDescription()
-			throws Exception{
+	public void testMetaLinkGetDescription() throws Exception {
 		throw new UnsupportedOperationException();
-//		
-//		final Context root1 = reader.getContext("1L");
-//		final JavaClassNode javaClassNode = session.addNode(root1,
-//				JavaClassNode.class, "javaClassNode");
-//		final JavaMethodNode javaMethodNode = session.addNode(root1,
-//				JavaMethodNode.class, "javaMethodNode");
-//		session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode,
-//				javaMethodNode);
-//		session.flush();
-//
-//		final Metadata metadata = reader.getMetadata();
-//		final MetaLink metaLink = metadata
-//				.getMetaLinkType(JavaClassJavaMethodSimpleLink.class)
-//				.getMetalinks().iterator().next();
-//		final String description = metaLink.getDescription();
-//		Assert.assertNotNull(description);
-//		Assert.assertEquals(description, "Java Class to Java Method Link");
-//		Assert.assertEquals(metaLink.getVisibility(),
-//				Visibility.VisibilityLevel.PUBLIC);
+		//
+		// final Context root1 = reader.getContext("1L");
+		// final JavaClassNode javaClassNode = session.addNode(root1,
+		// JavaClassNode.class, "javaClassNode");
+		// final JavaMethodNode javaMethodNode = session.addNode(root1,
+		// JavaMethodNode.class, "javaMethodNode");
+		// session.addLink(JavaClassJavaMethodSimpleLink.class, javaClassNode,
+		// javaMethodNode);
+		// session.flush();
+		//
+		// final Metadata metadata = reader.getMetadata();
+		// final MetaLink metaLink = metadata
+		// .getMetaLinkType(JavaClassJavaMethodSimpleLink.class)
+		// .getMetalinks().iterator().next();
+		// final String description = metaLink.getDescription();
+		// Assert.assertNotNull(description);
+		// Assert.assertEquals(description, "Java Class to Java Method Link");
+		// Assert.assertEquals(metaLink.getVisibility(),
+		// Visibility.VisibilityLevel.PUBLIC);
 	}
 
 	/**
@@ -1645,105 +1647,6 @@ public abstract class BaseGraphTest {
 		final String description = metaNode.getDescription();
 		Assert.assertNotNull(description);
 		Assert.assertEquals(description, "Java Class");
-	}
-
-	@Test
-	public void testTreeLineReference() throws Exception {
-		final Context root1 = reader.getContext("1L");
-		final JavaClassNode javaClassNode1 = session.addNode(root1,
-				JavaClassNode.class, "javaClassNode1");
-
-		javaClassNode1
-				.addLineReference(8, 17, 26, 44, "Hello World!", "1", "1");
-		javaClassNode1
-				.addLineReference(9, 16, 26, 44, "Hello World!", "1", "1");
-		javaClassNode1.addLineReference(22, 16, 26, 44, "Hello World!", "1",
-				"1");
-		javaClassNode1.addLineReference(22, 16, 26, 32, "Hello World!", "1",
-				"1");
-		javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
-		javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
-		javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
-		javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "2");
-		javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
-
-		final TreeLineReference treeLineRefs = javaClassNode1
-				.getTreeLineReferences();
-		Assert.assertEquals(treeLineRefs.getArtifacts().size(), 3);
-
-		for (final TreeLineReference.SLArtifactLineReference artifactLine : treeLineRefs
-				.getArtifacts()) {
-			if (artifactLine.getArtifactId().equals("1")) {
-				Assert.assertEquals(artifactLine.getStatements().size(), 2);
-				for (final TreeLineReference.SLStatementLineReference activeStatement : artifactLine
-						.getStatements()) {
-					if (activeStatement.getStatement().equals("Hello World!")) {
-						Assert.assertEquals(activeStatement.getLineReferences()
-								.size(), 4);
-					} else if (activeStatement.getStatement().equals(
-							"New Hello!")) {
-						Assert.assertEquals(activeStatement.getLineReferences()
-								.size(), 1);
-					} else {
-						Assert.fail();
-					}
-				}
-			} else if (artifactLine.getArtifactId().equals("2")
-					&& artifactLine.getArtifactVersion().equals("1")) {
-				Assert.assertEquals(artifactLine.getStatements().size(), 1);
-			} else if (artifactLine.getArtifactId().equals("2")
-					&& artifactLine.getArtifactVersion().equals("2")) {
-				Assert.assertEquals(artifactLine.getStatements().size(), 1);
-			} else {
-				Assert.fail();
-			}
-		}
-	}
-
-	@Test
-	public void testTreeLineReferenceWithArtifactId() {
-		final Context root1 = reader.getContext("1L");
-
-		final String artifactId = "targetId";
-		final String statement = "Hello World 1!";
-
-		final JavaClassNode javaClassNode1 = session.addNode(root1,
-				JavaClassNode.class, "javaClassNode1");
-
-		javaClassNode1.addLineReference(8, 17, 26, 44, statement, artifactId,
-				"1");
-		javaClassNode1.addLineReference(22, 16, 26, 32, statement, artifactId,
-				"1");
-		javaClassNode1.addLineReference(9, 16, 26, 44, "Hello World 2!",
-				artifactId, "1");
-		javaClassNode1.addLineReference(22, 16, 26, 44, "Hello World 3!",
-				artifactId, "1");
-		javaClassNode1.addLineReference(22, 16, 26, 32, statement, "1", "1");
-		javaClassNode1.addLineReference(22, 16, 26, 32, "New Hello!", "1", "1");
-		javaClassNode1.addLineReference(71, 80, 35, 53, statement, "2", "1");
-		javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "2");
-		javaClassNode1.addLineReference(71, 80, 35, 53, "Bye World!", "2", "1");
-
-		final TreeLineReference treeLineRefs = javaClassNode1
-				.getTreeLineReferences(artifactId);
-		Assert.assertEquals(treeLineRefs.getArtifacts().size(), 1);
-
-		for (final TreeLineReference.SLArtifactLineReference artifactLine : treeLineRefs
-				.getArtifacts()) {
-			if (artifactLine.getArtifactId().equals(artifactId)) {
-				Assert.assertEquals(artifactLine.getStatements().size(), 3);
-				for (final TreeLineReference.SLStatementLineReference activeStatement : artifactLine
-						.getStatements()) {
-					if (activeStatement.getStatement().equals(statement)) {
-						Assert.assertEquals(activeStatement.getLineReferences()
-								.size(), 2);
-					} else {
-						Assert.assertEquals(activeStatement.getLineReferences()
-								.size(), 1);
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -1779,19 +1682,10 @@ public abstract class BaseGraphTest {
 
 		Assert.assertEquals(myNewContext.getCaption(), "MyNewContext");
 		Assert.assertEquals(myNewContext.getCaption(), "MyNewContext");
-
-		myNewContext.setCaption("newContextCaption");
-		Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
-		Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
-
+		session.setContextCaption(myNewContext, "newContextCaption");
 		session.flush();
-		session.close();
-		session = openSession();
-
-		myNewContext = reader.getContext("newContextCaption");
 		Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
 		Assert.assertEquals(myNewContext.getCaption(), "newContextCaption");
 
 	}
-
 }
