@@ -148,7 +148,7 @@ public class ContextImpl extends Context {
     @Override
     public <V extends Serializable> V getPropertyValue(final String key,
                                                        final V defaultValue) {
-        final V value = getPropertyValue(key);
+        final V value = this.<V>getPropertyValue(key);
         return value != null ? value : defaultValue;
     }
 
