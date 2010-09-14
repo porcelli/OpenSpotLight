@@ -48,15 +48,14 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
+import java.io.PrintWriter;
+
 import jline.ConsoleReader;
+
 import org.openspotlight.common.util.Assertions;
-import org.openspotlight.graph.meta.SLMetaNodeType;
-import org.openspotlight.graph.SLRecursiveMode;
+import org.openspotlight.graph.metadata.MetaNodeType;
 import org.openspotlight.graph.query.console.ConsoleState;
 import org.openspotlight.graph.query.console.command.DynamicCommand;
-
-import java.io.PrintWriter;
-import java.util.Collection;
 
 public class ShowNodeTypesCommand implements DynamicCommand {
 
@@ -81,11 +80,11 @@ public class ShowNodeTypesCommand implements DynamicCommand {
         if (state.getSession() == null) {
             out.println("\t(none)");
         } else {
-            Collection<SLMetaNodeType> nodeTypes = state.getSession().getMetadata().getMetaNodesTypes(SLRecursiveMode.RECURSIVE);
-            if (nodeTypes.size() == 0) {
+            Iterable<MetaNodeType> nodeTypes = state.getSession().getMetadata().getMetaNodesTypes();
+            if (!nodeTypes.iterator().hasNext()) {
                 out.println("\t(none)");
             } else {
-                for (SLMetaNodeType nodeType : nodeTypes) {
+                for (MetaNodeType nodeType : nodeTypes) {
                     out.print("\t- ");
                     out.println(nodeType.getTypeName());
                 }

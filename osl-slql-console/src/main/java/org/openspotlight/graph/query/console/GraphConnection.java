@@ -1,4 +1,4 @@
-/**
+/*
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -48,11 +48,12 @@
  */
 package org.openspotlight.graph.query.console;
 
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.GraphReaderorg.openspotlight.graph.client.RemoteGraphSessionFactory;
-import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionDataImpl;
-
 import java.io.IOException;
+
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.SimpleGraphSession;
+import org.openspotlight.graph.client.RemoteGraphSessionFactory;
+import org.openspotlight.graph.client.RemoteGraphSessionFactory.RemoteGraphFactoryConnectionDataImpl;
 
 /**
  * The Class GraphConnection. This implementation should be changes as soon we get remote access to graph done.
@@ -64,7 +65,9 @@ public class GraphConnection {
     private RemoteGraphSessionFactory factory;
 
     /**
-     * Connects at server and returns {@link org.openspotlight.graph.GraphReadGraphReader@param serverName the server name
+     * Connects at server and returns {@link SLGraphSession}.
+     * 
+     * @param serverName the server name
      * @param portNumber the port number
      * @param userName the user name
      * @param passw the passw
@@ -74,7 +77,7 @@ public class GraphConnection {
      * @throws IOException Signals that an I/O exception has occurred.
      * @throws ClassNotFoundException the class not found exception
      */
-    public GraphReader connecGraphReadererName,
+    public SimpleGraphSession connect( final String serverName,
                                    final int portNumber,
                                    final String userName,
                                    final String passw,

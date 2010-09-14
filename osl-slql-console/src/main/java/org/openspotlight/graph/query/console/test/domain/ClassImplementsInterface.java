@@ -48,29 +48,25 @@
  */
 package org.openspotlight.graph.query.console.test.domain;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.Link;
+
 
 /**
  * The Interface ClassImplementsInterface.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface ClassImplementsInterface extends SLLink {
+public abstract class ClassImplementsInterface extends Link {
 
-    /**
-     * Gets the tag.
-     * 
-     * @return the tag
-     */
-    @SLProperty
-    public Integer getTag();
+    private Integer tag;
 
-    /**
-     * Sets the tag.
-     * 
-     * @param tag the new tag
-     */
-    public void setTag( Integer tag );
+	public Integer getTag() {
+		return tag;
+	}
+
+	public void setTag(Integer tag) {
+		this.tag = tag;
+	}
+
 
 }

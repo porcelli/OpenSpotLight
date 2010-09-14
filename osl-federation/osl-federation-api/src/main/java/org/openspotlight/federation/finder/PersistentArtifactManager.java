@@ -173,8 +173,8 @@ public interface PersistentArtifactManager extends Disposable {
      */
     public void saveTransientData();
 
-    public StStStorageSessionion();
+    public StorageSession ion();
 
-    public SimplePersistCapable<StorageNode, StorStorStorageSessionersist();
+    public SimplePersistCapable<StorageNode, StorageSession> ersist();
 
 }

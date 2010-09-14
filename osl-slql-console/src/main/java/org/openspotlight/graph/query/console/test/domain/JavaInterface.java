@@ -53,6 +53,6 @@ package org.openspotlight.graph.query.console.test.domain;
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaInterface extends JavaType {
+public abstract class JavaInterface extends JavaType {
 
 }

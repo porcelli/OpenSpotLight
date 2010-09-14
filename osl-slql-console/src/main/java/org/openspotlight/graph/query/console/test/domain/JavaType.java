@@ -48,10 +48,42 @@
  */
 package org.openspotlight.graph.query.console.test.domain;
 
-import org.openspotlight.graph.Node
+import org.openspotlight.graph.Node;
+
 /**
  * The Interface JavaType.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface JavaType extends NoNode}
+public abstract class JavaType extends Node {
+	
+	private Float decValue;
+	
+	public Float getDecValue() {
+		return decValue;
+	}
+
+	public void setDecValue(Float decValue) {
+		this.decValue = decValue;
+	}
+
+	public Boolean getBoolValue() {
+		return boolValue;
+	}
+
+	public void setBoolValue(Boolean boolValue) {
+		this.boolValue = boolValue;
+	}
+
+	public Integer getIntValue() {
+		return intValue;
+	}
+
+	public void setIntValue(Integer intValue) {
+		this.intValue = intValue;
+	}
+
+	private Boolean boolValue;
+	
+	private Integer intValue;
+}

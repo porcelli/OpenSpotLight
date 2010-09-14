@@ -48,29 +48,22 @@
  */
 package org.openspotlight.graph.query.console.test.domain;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLProperty;
+import org.openspotlight.graph.Link;
 
 /**
  * The Interface TypeContainsMethod.
  * 
  * @author Vitor Hugo Chagas
  */
-public interface TypeContainsMethod extends SLLink {
+public abstract class TypeContainsMethod extends Link {
 
-    /**
-     * Gets the tag.
-     * 
-     * @return the tag
-     */
-    @SLProperty
-    public Integer getTag();
+	public Integer getTag() {
+		return tag;
+	}
 
-    /**
-     * Sets the tag.
-     * 
-     * @param tag the new tag
-     */
-    public void setTag( Integer tag );
+	public void setTag(Integer tag) {
+		this.tag = tag;
+	}
 
+	private Integer tag;
 }

@@ -48,29 +48,31 @@
  */
 package org.openspotlight.graph.query.console.command.dynamic;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.openspotlight.common.exception.SLException;
-import org.openspotlight.graph.SLConsts;
-import org.openspotlight.graph.query.console.ConsoleState;
-import org.openspotlight.graph.query.console.GraphConnection;
-import org.openspotlight.graph.query.console.command.AbstractCommandTest;
-import org.openspotlight.graph.query.console.command.ExampleRemoteServerWithData;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.openspotlight.common.exception.SLException;
+import org.openspotlight.graph.GraphLocation;
+import org.openspotlight.graph.query.console.ConsoleState;
+import org.openspotlight.graph.query.console.GraphConnection;
+import org.openspotlight.graph.query.console.command.AbstractCommandTest;
+import org.openspotlight.graph.query.console.command.ExampleRemoteServerWithData;
 
 public class TestExecuteLastQueryCommand extends AbstractCommandTest {
-    @BeforeClass
+    private static final String DEFAULT_REPOSITORY_NAME="default";
+	
+	@BeforeClass
     public static void setupServer() throws Exception {
         ExampleRemoteServerWithData.populateSomeDataAndStartTheServer();
     }
@@ -95,9 +97,9 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
 
     @After
     public void deleteTestFile() {
-        if (this.state.getSession() != null) {
-            this.state.getSession().close();
-        }
+//        if (this.state.getSession() != null) {
+//            this.state.getSession().close();
+//        }
         new File("out.txt").delete();
     }
 
@@ -189,7 +191,7 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     @Test
     public void testInvalidQueryWithTargetError() throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", SLConsts.DEFAULT_REPOSITORY_NAME));
+        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", "sample").from(GraphLocation.SERVER));
 
         this.state.setLastQuery("define target org.openspotlight.graph.query.console.test.domain.JavaInterface select * by link JavaTypeMethod (b);");
         this.state.setInput("/ > out,txt");
@@ -208,7 +210,7 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     @Test
     public void testInvalidQueryWithVariablesError() throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", SLConsts.DEFAULT_REPOSITORY_NAME));
+        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(GraphLocation.SERVER));
 
         this.state.setLastQuery("select ** where org.openspotlight.graph.query.console.test.domain.JavaInterface property caption == $var;");
         this.state.setInput("/ > out,txt");
@@ -227,7 +229,7 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     @Test
     public void testValidParameter() throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", SLConsts.DEFAULT_REPOSITORY_NAME));
+        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(GraphLocation.SERVER));
 
         this.state.setLastQuery("select *;");
         this.state.setInput("/");
@@ -242,7 +244,7 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     @Test
     public void testValidParameter2() throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", SLConsts.DEFAULT_REPOSITORY_NAME));
+        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(GraphLocation.SERVER));
 
         this.state.setLastQuery("select *;");
         this.state.setInput("/ > out.txt");
@@ -263,7 +265,7 @@ public class TestExecuteLastQueryCommand extends AbstractCommandTest {
     @Test
     public void testValidParameterSyntaxError() throws SLException, IOException, ClassNotFoundException {
         final GraphConnection graphConnection = new GraphConnection();
-        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", SLConsts.DEFAULT_REPOSITORY_NAME));
+        this.state = new ConsoleState(graphConnection.connect("localhost", 7070, "sa", "sa", DEFAULT_REPOSITORY_NAME).from(GraphLocation.SERVER));
 
         this.state.setLastQuery("select *?*;");
         this.state.setInput("/ > out.txt");
