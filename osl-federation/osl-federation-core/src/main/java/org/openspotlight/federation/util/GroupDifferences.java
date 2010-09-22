@@ -48,15 +48,15 @@
  */
 package org.openspotlight.federation.util;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openspotlight.common.util.Arrays;
 import org.openspotlight.common.util.Equals;
 import org.openspotlight.common.util.HashCodes;
 import org.openspotlight.persist.annotation.KeyProperty;
 import org.openspotlight.persist.annotation.SimpleNodeType;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 public class GroupDifferences implements SimpleNodeType, Serializable {
 

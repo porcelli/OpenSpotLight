@@ -48,8 +48,6 @@
  */
 package org.openspotlight.bundle.db.metamodel.link;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for a link between Catalog - TableView. Catalog A2B TableView

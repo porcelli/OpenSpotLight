@@ -48,7 +48,6 @@
  */
 package org.openspotlight.bundle.db.metamodel.node;
 
-import org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node TableView Table Meta Model. {@link Catalog} should be used as parent. {@link Schema} should be used as

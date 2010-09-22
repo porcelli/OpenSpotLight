@@ -48,10 +48,10 @@
  */
 package org.openspotlight.federation.util;
 
+import java.util.Set;
+
 import org.openspotlight.persist.annotation.SimpleNodeType;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitor;
-
-import java.util.Set;
 
 public class AggregateVisitor<A extends SimpleNodeType> implements SimpleNodeTypeVisitor<A> {
     private final Set<A> sources;

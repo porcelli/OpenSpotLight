@@ -48,17 +48,30 @@
  */
 package org.openspotlight.federation.finder;
 
-import org.apache.commons.io.IOUtils;
-import org.openspotlight.common.exception.SLRuntimeException;
-import org.openspotlight.common.util.*;
-import org.openspotlight.federation.domain.artifact.*;
+import static com.google.common.collect.Lists.newLinkedList;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.collect.Lists.newLinkedList;
+import org.apache.commons.io.IOUtils;
+import org.openspotlight.common.exception.SLRuntimeException;
+import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.Exceptions;
+import org.openspotlight.common.util.Files;
+import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.common.util.Strings;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.StreamArtifact;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
 
 public class LocalSourceOriginArtifactLoader extends AbstractOriginArtifactLoader {
 

@@ -48,6 +48,10 @@
  */
 package org.openspotlight.federation.loader;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.openspotlight.bundle.domain.GlobalSettings;
 import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.exception.ConfigurationException;
@@ -55,176 +59,195 @@ import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.federation.util.GroupDifferences;
 import org.openspotlight.federation.util.GroupSupport;
 import org.openspotlight.persist.support.SimplePersistCapable;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.StorageNode;
 
 /**
  * A factory for creating JcrSessionConfigurationManager objects.
  */
 public class ConfigurationManagerFactoryImpl {
 
-    /**
-     * The Class MutableConfigurationManager.
-     */
-    private static class MutableConfigurationManager implements ConfigurationManager {
+	/**
+	 * The Class MutableConfigurationManager.
+	 */
+	private static class MutableConfigurationManager implements
+			ConfigurationManager {
 
-        /**
-         * The session.
-         */
-        private final SimplePersistCapable<StorageNode, StStStorageSessionPersist;
+		/**
+		 * The session.
+		 */
+		private final SimplePersistCapable<StorageNode, StorageSession> simplePersist;
 
-        /**
-         * The Constant globalSettingsRootNode.
-         */
-        private final StorageNode                                         globalSettingsRootNode;
-        /**
-         * The Constant repositoriesRootNode.
-         */
-        private final StorageNode                                         repositoriesRootNode;
+		/**
+		 * The Constant globalSettingsRootNode.
+		 */
+		private final StorageNode globalSettingsRootNode;
+		/**
+		 * The Constant repositoriesRootNode.
+		 */
+		private final StorageNode repositoriesRootNode;
 
-        /**
-         * Instantiates a new mutable jcr session configuration manager.
-         */
-        public MutableConfigurationManager(
-                                            final SimplePersistCapable<StorageNode, StorStorStorageSessionist ) {
-            this.simplePersist = simplePersist;
-            this.globalSettingsRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration",
-                                                                                                  "global-settings");
-            this.repositoriesRootNode = simplePersist.getPartitionMethods().createNewSimpleNode("configuration", "repositories");
-        }
+		/**
+		 * Instantiates a new mutable jcr session configuration manager.
+		 */
+		public MutableConfigurationManager(
+				SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+			this.simplePersist = simplePersist;
+			this.globalSettingsRootNode = simplePersist.getPartitionMethods()
+					.createNewSimpleNode("configuration", "global-settings");
+			this.repositoriesRootNode = simplePersist.getPartitionMethods()
+					.createNewSimpleNode("configuration", "repositories");
+		}
 
-        private void applyGroupDeltas( final Repository configuration ) {
-            GroupDifferences existentDeltas = GroupSupport.getDifferences(simplePersist, configuration.getName());
-            if (existentDeltas == null) {
-                existentDeltas = new GroupDifferences();
-                existentDeltas.setRepositoryName(configuration.getName());
-            }
-            final Iterable<Repository> existentRepository = simplePersist.findByProperties(repositoriesRootNode,
-                                                                                           Repository.class,
-                                                                                           new String[] {"name"},
-                                                                                           new Object[] {configuration.getName()});
-            Iterator<Repository> it = existentRepository.iterator();
-            Repository old = null;
-            if (it.hasNext()) {
-                old = it.next();
-            }
+		private void applyGroupDeltas(final Repository configuration) {
+			GroupDifferences existentDeltas = GroupSupport.getDifferences(
+					simplePersist, configuration.getName());
+			if (existentDeltas == null) {
+				existentDeltas = new GroupDifferences();
+				existentDeltas.setRepositoryName(configuration.getName());
+			}
+			final Iterable<Repository> existentRepository = simplePersist
+					.findByProperties(repositoriesRootNode, Repository.class,
+							new String[] { "name" },
+							new Object[] { configuration.getName() });
+			Iterator<Repository> it = existentRepository.iterator();
+			Repository old = null;
+			if (it.hasNext()) {
+				old = it.next();
+			}
 
-            GroupSupport.findDifferencesOnAllRepositories(existentDeltas, old, configuration);
-            GroupSupport.saveDifferences(simplePersist, existentDeltas);
-        }
+			GroupSupport.findDifferencesOnAllRepositories(existentDeltas, old,
+					configuration);
+			GroupSupport.saveDifferences(simplePersist, existentDeltas);
+		}
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * org.openspotlight.federation.loader.ConfigurationManager#closeResources
-         * ()
-         */
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.openspotlight.federation.loader.ConfigurationManager#closeResources
+		 * ()
+		 */
 
-        public void closeResources() {
+		public void closeResources() {
 
-        }
+		}
 
-        public Iterable<Repository> getAllRepositories() throws ConfigurationException {
-            final Iterable<Repository> repositories = simplePersist.findByProperties(repositoriesRootNode, Repository.class,
-                                                                                     new String[] {}, new Object[] {});
-            return repositories;
-        }
+		public Iterable<Repository> getAllRepositories()
+				throws ConfigurationException {
+			final Iterable<Repository> repositories = simplePersist
+					.findByProperties(repositoriesRootNode, Repository.class,
+							new String[] {}, new Object[] {});
+			return repositories;
+		}
 
-        public Set<String> getAllRepositoryNames() throws ConfigurationException {
-            final Iterable<Repository> repositories = simplePersist.findByProperties(repositoriesRootNode, Repository.class,
-                                                                                     new String[] {}, new Object[] {});
-            final Set<String> repositoryNames = new HashSet<String>();
-            for (final Repository repo : repositories) {
-                repositoryNames.add(repo.getName());
-            }
-            return repositoryNames;
-        }
+		public Set<String> getAllRepositoryNames()
+				throws ConfigurationException {
+			final Iterable<Repository> repositories = simplePersist
+					.findByProperties(repositoriesRootNode, Repository.class,
+							new String[] {}, new Object[] {});
+			final Set<String> repositoryNames = new HashSet<String>();
+			for (final Repository repo : repositories) {
+				repositoryNames.add(repo.getName());
+			}
+			return repositoryNames;
+		}
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @seeorg.openspotlight.federation.loader.ConfigurationManager#
-         * getGlobalSettings()
-         */
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @seeorg.openspotlight.federation.loader.ConfigurationManager#
+		 * getGlobalSettings()
+		 */
 
-        public GlobalSettings getGlobalSettings() {
-            try {
-                GlobalSettings settings = simplePersist.findUnique(GlobalSettings.class);
-                return settings;
+		public GlobalSettings getGlobalSettings() {
+			try {
+				GlobalSettings settings = simplePersist
+						.findUnique(GlobalSettings.class);
+				return settings;
 
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
-            }
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew(e,
+						ConfigurationException.class);
+			}
 
-        }
+		}
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @seeorg.openspotlight.federation.loader.ConfigurationManager#
-         * getRepositoryByName(java.lang.String)
-         */
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @seeorg.openspotlight.federation.loader.ConfigurationManager#
+		 * getRepositoryByName(java.lang.String)
+		 */
 
-        public Repository getRepositoryByName( final String name ) throws ConfigurationException {
-            try {
-                final Repository repository = simplePersist.findUniqueByProperties(repositoriesRootNode, Repository.class,
-                                                                                   new String[] {"name"}, new Object[] {name});
+		public Repository getRepositoryByName(final String name)
+				throws ConfigurationException {
+			try {
+				final Repository repository = simplePersist
+						.findUniqueByProperties(repositoriesRootNode,
+								Repository.class, new String[] { "name" },
+								new Object[] { name });
 
-                return repository;
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
-            }
-        }
+				return repository;
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew(e,
+						ConfigurationException.class);
+			}
+		}
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @seeorg.openspotlight.federation.loader.ConfigurationManager#
-         * saveGlobalSettings
-         * (org.openspotlight.federation.domain.GlobalSettings)
-         */
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @seeorg.openspotlight.federation.loader.ConfigurationManager#
+		 * saveGlobalSettings
+		 * (org.openspotlight.federation.domain.GlobalSettings)
+		 */
 
-        public void saveGlobalSettings( final GlobalSettings globalSettings ) throws ConfigurationException {
-            try {
-                simplePersist.convertBeanToNode(globalSettingsRootNode, globalSettings);
-                simplePersist.getCurrentSession().flushTransient();
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
-            }
-        }
+		public void saveGlobalSettings(final GlobalSettings globalSettings)
+				throws ConfigurationException {
+			try {
+				simplePersist.convertBeanToNode(globalSettingsRootNode,
+						globalSettings);
+				simplePersist.getCurrentSession().flushTransient();
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew(e,
+						ConfigurationException.class);
+			}
+		}
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * org.openspotlight.federation.loader.ConfigurationManager#saveRepository
-         * (org.openspotlight.federation.domain.Repository)
-         */
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.openspotlight.federation.loader.ConfigurationManager#saveRepository
+		 * (org.openspotlight.federation.domain.Repository)
+		 */
 
-        public void saveRepository( final Repository configuration ) throws ConfigurationException {
-            try {
-                applyGroupDeltas(configuration);
-                simplePersist.convertBeanToNode(repositoriesRootNode, configuration);
-                simplePersist.getCurrentSession().flushTransient();
-            } catch (final Exception e) {
-                throw Exceptions.logAndReturnNew(e, ConfigurationException.class);
-            }
-        }
+		public void saveRepository(final Repository configuration)
+				throws ConfigurationException {
+			try {
+				applyGroupDeltas(configuration);
+				simplePersist.convertBeanToNode(repositoriesRootNode,
+						configuration);
+				simplePersist.getCurrentSession().flushTransient();
+			} catch (final Exception e) {
+				throw Exceptions.logAndReturnNew(e,
+						ConfigurationException.class);
+			}
+		}
 
-    }
+	}
 
-    /**
-     * Creates a new JcrSessionConfigurationManager object.
-     * 
-     * @param simplePersist the simplePersist
-     * @return the configuration manager
-     */
-    public static ConfigurationManager createMutableUsingSession( final SimplePersistCapable<StorageNode, StoragStoragStorageSession) {
-        return new MutableConfigurationManager(simplePersist);
-    }
+	/**
+	 * Creates a new JcrSessionConfigurationManager object.
+	 * 
+	 * @param simplePersist
+	 *            the simplePersist
+	 * @return the configuration manager
+	 */
+	public static ConfigurationManager createMutableUsingSession(
+			final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
+		return new MutableConfigurationManager(simplePersist);
+	}
 
 }

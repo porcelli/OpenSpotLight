@@ -50,7 +50,6 @@ package org.openspotlight.bundle.processing;
 
 import org.openspotlight.bundle.context.ExecutionContext;
 import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.LastProcessStatus;
 
 public interface BundleProcessorArtifactPhase<T extends Artifact> {
 

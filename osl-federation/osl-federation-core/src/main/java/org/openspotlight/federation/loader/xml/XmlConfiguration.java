@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.loader.xml;
 
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Repository;
 
 public class XmlConfiguration {
 

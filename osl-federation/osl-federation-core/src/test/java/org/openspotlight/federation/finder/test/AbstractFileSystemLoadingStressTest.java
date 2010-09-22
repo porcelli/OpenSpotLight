@@ -49,32 +49,10 @@
 
 package org.openspotlight.federation.finder.test;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.internal.ImmutableList;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
-import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Group;
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.federation.domain.ArtifactSourceMapping;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.StringArtifact;
-import org.openspotlight.federation.log.DetailedLoggerModule;
-import org.openspotlight.bundle.scheduler.DefaultScheduler;
-import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
-import org.openspotlight.graph.guice.SLGraphModule;
-import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
-import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.STRepositoryPath;
-import org.openspotlight.task.ExecutorInstance;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -82,11 +60,28 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.openspotlight.storage.STRepositoryPath.repositoryPath;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Test;
+import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.bundle.domain.GlobalSettings;
+import org.openspotlight.bundle.domain.Group;
+import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.bundle.scheduler.DefaultScheduler;
+import org.openspotlight.bundle.scheduler.GlobalSettingsSupport;
+import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.StringArtifact;
+import org.openspotlight.federation.log.DetailedLoggerModule;
+import org.openspotlight.persist.guice.SimplePersistModule;
+import org.openspotlight.task.ExecutorInstance;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.internal.ImmutableList;
 
 public abstract class AbstractFileSystemLoadingStressTest {
 

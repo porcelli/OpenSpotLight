@@ -49,16 +49,6 @@
 
 package org.openspotlight.federation.finder.db;
 
-import com.thoughtworks.xstream.XStream;
-import net.jcip.annotations.ThreadSafe;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.federation.domain.artifact.db.DatabaseType;
-import org.openspotlight.federation.finder.db.DatabaseMetadataScript.PreferedType;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
 import static java.text.MessageFormat.format;
 import static org.openspotlight.common.util.Arrays.andOf;
 import static org.openspotlight.common.util.Arrays.of;
@@ -67,6 +57,16 @@ import static org.openspotlight.common.util.Equals.eachEquality;
 import static org.openspotlight.common.util.Exceptions.logAndReturn;
 import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
 import static org.openspotlight.common.util.HashCodes.hashOf;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.federation.domain.artifact.db.DatabaseType;
+import org.openspotlight.federation.finder.db.DatabaseMetadataScript.PreferedType;
+
+import com.thoughtworks.xstream.XStream;
 
 /**
  * Singleton for guarding the database metadata scripts, and to load this only once or when asked. The xml with all select

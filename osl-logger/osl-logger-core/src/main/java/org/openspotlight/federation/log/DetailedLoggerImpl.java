@@ -51,7 +51,6 @@ package org.openspotlight.federation.log;
 import org.openspotlight.common.exception.SLRuntimeException;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.log.DetailedLogger;
-import org.openspotlight.log.LogableObject;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.security.idm.AuthenticatedUser;
 import org.openspotlight.storage.StorageSession;
@@ -67,8 +66,9 @@ public final class DetailedLoggerImpl implements DetailedLogger {
 			final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
 		try {
 			this.simplePersist = simplePersist;
-			rootNode = this.simplePersist.getCurrentSession().withPartition(this.simplePersist.getCurrentPartition()).createNewSimpleNode(
-					"log");
+			rootNode = this.simplePersist.getCurrentSession()
+					.withPartition(this.simplePersist.getCurrentPartition())
+					.createNewSimpleNode("log");
 
 		} catch (final Exception e) {
 			throw Exceptions.logAndReturnNew(e, SLRuntimeException.class);
@@ -76,59 +76,48 @@ public final class DetailedLoggerImpl implements DetailedLogger {
 
 	}
 
-	public void log( final AuthenticatedUser user,
-			final LogEventType type,
-			final ErrorCode errorCode,
-			final String detailedMessage,
-			final LogableObject... anotherNodes ) {
+	public void log(final AuthenticatedUser user, final LogEventType type,
+			final ErrorCode errorCode, final String detailedMessage,
+			final Object... anotherNodes) {
 
 	}
 
-	public void log( final AuthenticatedUser user,
-			final LogEventType type,
-			final ErrorCode errorCode,
-			final String message,
-			final String detailedMessage,
-			final LogableObject... anotherNodes ) {
-		this.log(user, null, type, errorCode, message, detailedMessage, anotherNodes);
+	public void log(final AuthenticatedUser user, final LogEventType type,
+			final ErrorCode errorCode, final String message,
+			final String detailedMessage, final Object... anotherNodes) {
+		this.log(user, null, type, errorCode, message, detailedMessage,
+				anotherNodes);
 
 	}
 
-	public void log( final AuthenticatedUser user,
-			final LogEventType type,
-			final String message,
-			final LogableObject... anotherNodes ) {
+	public void log(final AuthenticatedUser user, final LogEventType type,
+			final String message, final Object... anotherNodes) {
 		this.log(user, null, type, null, message, null, anotherNodes);
 
 	}
 
-	public void log( final AuthenticatedUser user,
-			final LogEventType type,
-			final String message,
-			final String detailedMessage,
-			final LogableObject... anotherNodes ) {
+	public void log(final AuthenticatedUser user, final LogEventType type,
+			final String message, final String detailedMessage,
+			final Object... anotherNodes) {
 		this.log(user, null, type, null, message, detailedMessage, anotherNodes);
 
 	}
 
-	public void log( final AuthenticatedUser user,
-			final String repository,
-			final LogEventType type,
-			final ErrorCode errorCode,
-			final String detailedMessage,
-			final LogableObject... anotherNodes ) {
-		this.log(user, repository, type, errorCode, null, detailedMessage, anotherNodes);
+	public void log(final AuthenticatedUser user, final String repository,
+			final LogEventType type, final ErrorCode errorCode,
+			final String detailedMessage, final Object... anotherNodes) {
+		this.log(user, repository, type, errorCode, null, detailedMessage,
+				anotherNodes);
 
 	}
 
-	public void log( final AuthenticatedUser user,
-			final String repository,
-			final LogEventType type,
-			final ErrorCode errorCode,
-			final String message,
-			final String detailedMessage,
-			final LogableObject... anotherNodes ) {
-		final org.openspotlight.federation.log.LogEntry entry = new org.openspotlight.federation.log.LogEntry(errorCode, System.currentTimeMillis(), type, message, detailedMessage,
+	public void log(final AuthenticatedUser user, final String repository,
+			final LogEventType type, final ErrorCode errorCode,
+			final String message, final String detailedMessage,
+			final Object... anotherNodes) {
+		final org.openspotlight.federation.log.LogEntry entry = new org.openspotlight.federation.log.LogEntry(
+				errorCode, System.currentTimeMillis(), type, message,
+				detailedMessage,
 				LoggedObjectInformation.getHierarchyFrom(anotherNodes));
 
 		simplePersist.convertBeanToNode(rootNode, entry);
@@ -136,22 +125,18 @@ public final class DetailedLoggerImpl implements DetailedLogger {
 
 	}
 
-	public void log( final AuthenticatedUser user,
-			final String repository,
-			final LogEventType type,
-			final String message,
-			final LogableObject... anotherNodes ) {
+	public void log(final AuthenticatedUser user, final String repository,
+			final LogEventType type, final String message,
+			final Object... anotherNodes) {
 		this.log(user, repository, type, null, message, null, anotherNodes);
 
 	}
 
-	public void log( final AuthenticatedUser user,
-			final String repository,
-			final LogEventType type,
-			final String message,
-			final String detailedMessage,
-			final LogableObject... anotherNodes ) {
-		this.log(user, repository, type, null, message, detailedMessage, anotherNodes);
+	public void log(final AuthenticatedUser user, final String repository,
+			final LogEventType type, final String message,
+			final String detailedMessage, final Object... anotherNodes) {
+		this.log(user, repository, type, null, message, detailedMessage,
+				anotherNodes);
 	}
 
 }

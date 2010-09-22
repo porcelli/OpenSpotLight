@@ -49,7 +49,6 @@
 package org.openspotlight.bundle.db.metamodel.node;
 
 import org.openspotlight.graph.Node;
-import org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node Database Meta Model. {@link Server} should be used as parent.

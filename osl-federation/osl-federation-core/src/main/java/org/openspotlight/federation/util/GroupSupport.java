@@ -48,6 +48,11 @@
  */
 package org.openspotlight.federation.util;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.openspotlight.bundle.domain.Group;
 import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.common.exception.SLRuntimeException;
@@ -55,16 +60,12 @@ import org.openspotlight.common.util.Assertions;
 import org.openspotlight.common.util.Exceptions;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.util.SimpleNodeTypeVisitorSupport;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.node.StorageNode;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import org.openspotlight.storage.StorageSession;
+import org.openspotlight.storage.domain.StorageNode;
 
 public class GroupSupport {
 
-    private static StorageNode getRootNode( final SimplePersistCapable<StorageNode, StStStorageSessionPersist ) {
+    private static StorageNode getRootNode( final SimplePersistCapable<StorageNode, StorageSession> simplePersist) {
         return simplePersist.getCurrentSession().withPartition(simplePersist.getCurrentPartition()).createNewSimpleNode(
                                                                                                                         "group-differences");
     }
@@ -111,7 +112,7 @@ public class GroupSupport {
         removeDupplicates(differences);
     }
 
-    public static GroupDifferences getDifferences( final SimplePersistCapable<StorageNode, StorStorStorageSessionist,
+    public static GroupDifferences getDifferences( final  SimplePersistCapable<StorageNode, StorageSession> simplePersist,
                                                    String repositoryName ) {
         final Iterable<GroupDifferences> result = simplePersist.findByProperties(getRootNode(simplePersist),
                                                                                  GroupDifferences.class,
@@ -136,7 +137,7 @@ public class GroupSupport {
         differences.getRemovedGroups().removeAll(dupplicate);
     }
 
-    public static void saveDifferences( final SimplePersistCapable<StorageNode, StoragStoragStorageSession
+    public static void saveDifferences( final  SimplePersistCapable<StorageNode, StorageSession> simplePersist,
                                         final GroupDifferences differences ) {
         try {
             Assertions.checkNotNull("differences", differences);

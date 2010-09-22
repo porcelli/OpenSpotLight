@@ -50,7 +50,6 @@ package org.openspotlight.bundle.processing;
 
 import java.util.Map;
 
-import org.openspotlight.bundle.domain.BundleProcessorType;
 import org.openspotlight.bundle.domain.Group;
 import org.openspotlight.bundle.domain.Repository;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;

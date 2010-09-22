@@ -48,14 +48,14 @@
  */
 package org.openspotlight.federation.data.load.db.test;
 
-import org.openspotlight.bundle.domain.DbArtifactSource;
-import org.openspotlight.bundle.domain.Repository;
-import org.openspotlight.federation.finder.db.ScriptType;
+import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createDb2Configuration;
 
 import java.util.EnumSet;
 import java.util.Set;
 
-import static org.openspotlight.federation.data.processing.test.ConfigurationExamples.createDb2Configuration;
+import org.openspotlight.bundle.domain.DbArtifactSource;
+import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.federation.finder.db.ScriptType;
 
 @SuppressWarnings( "all" )
 public class Db2DatabaseStreamTest extends DatabaseStreamTest implements RunWhenDatabaseVendorTestsIsActive {

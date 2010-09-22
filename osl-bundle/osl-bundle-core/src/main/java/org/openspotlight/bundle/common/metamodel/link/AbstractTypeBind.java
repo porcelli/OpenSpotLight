@@ -48,8 +48,6 @@
  */
 package org.openspotlight.bundle.common.metamodel.link;
 
-import org.openspotlight.graph.SLLink;
-import org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for a link between Abstract Type Bind. Java Context A2B Java Type

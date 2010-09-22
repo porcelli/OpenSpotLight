@@ -48,8 +48,6 @@
  */
 package org.openspotlight.bundle.domain;
 
-import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.graph.Node;
 
 public interface GroupListener {
 

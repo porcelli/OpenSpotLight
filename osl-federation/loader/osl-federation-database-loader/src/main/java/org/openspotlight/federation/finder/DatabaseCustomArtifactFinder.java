@@ -48,15 +48,9 @@
  */
 package org.openspotlight.federation.finder;
 
-import org.openspotlight.bundle.domain.DbArtifactSource;
-import org.openspotlight.common.exception.ConfigurationException;
-import org.openspotlight.common.util.Assertions;
-import org.openspotlight.common.util.SLCollections;
-import org.openspotlight.common.util.Strings;
-import org.openspotlight.federation.domain.artifact.Artifact;
-import org.openspotlight.federation.domain.artifact.ArtifactSource;
-import org.openspotlight.federation.domain.artifact.ChangeType;
-import org.openspotlight.federation.domain.artifact.db.*;
+import static org.openspotlight.common.util.Arrays.of;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -69,9 +63,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.openspotlight.common.util.Arrays.of;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
+import org.openspotlight.bundle.domain.DbArtifactSource;
+import org.openspotlight.common.exception.ConfigurationException;
+import org.openspotlight.common.util.Assertions;
+import org.openspotlight.common.util.SLCollections;
+import org.openspotlight.common.util.Strings;
+import org.openspotlight.federation.domain.artifact.Artifact;
+import org.openspotlight.federation.domain.artifact.ArtifactSource;
+import org.openspotlight.federation.domain.artifact.ChangeType;
+import org.openspotlight.federation.domain.artifact.db.Column;
+import org.openspotlight.federation.domain.artifact.db.ColumnType;
+import org.openspotlight.federation.domain.artifact.db.ConstraintArtifact;
+import org.openspotlight.federation.domain.artifact.db.DatabaseCustomArtifact;
+import org.openspotlight.federation.domain.artifact.db.ForeignKeyConstraintArtifact;
+import org.openspotlight.federation.domain.artifact.db.NullableSqlType;
+import org.openspotlight.federation.domain.artifact.db.PrimaryKeyConstraintArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineArtifact;
+import org.openspotlight.federation.domain.artifact.db.RoutineParameter;
+import org.openspotlight.federation.domain.artifact.db.RoutineParameterType;
+import org.openspotlight.federation.domain.artifact.db.RoutineType;
+import org.openspotlight.federation.domain.artifact.db.TableArtifact;
+import org.openspotlight.federation.domain.artifact.db.ViewArtifact;
 
 public class DatabaseCustomArtifactFinder extends AbstractDatabaseArtifactFinder {
 

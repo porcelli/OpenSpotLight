@@ -1,4 +1,4 @@
-/**
+/*
  * OpenSpotLight - Open Source IT Governance Platform
  *
  * Copyright (c) 2009, CARAVELATECH CONSULTORIA E TECNOLOGIA EM INFORMATICA LTDA
@@ -52,12 +52,12 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
-import org.openspotlight.bundle.context.ExecutionContext;
-import org.openspotlight.bundle.context.ExecutionContextFactory;
-import org.openspotlight.bundle.domain.GlobalSettings;
-import org.openspotlight.bundle.domain.Repository;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.federation.context.ExecutionContext;
+import org.openspotlight.federation.context.ExecutionContextFactory;
 import org.openspotlight.federation.domain.ArtifactSourceMapping;
+import org.openspotlight.federation.domain.GlobalSettings;
+import org.openspotlight.federation.domain.Repository;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -67,13 +67,15 @@ import org.openspotlight.federation.log.DetailedLoggerModule;
 import org.openspotlight.graph.guice.SLGraphModule;
 import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -84,12 +86,12 @@ public class ArtifactLoaderManagerTest {
 
     @Test
     public void shouldLoad() throws Exception {
-        Injector injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
+        Injector injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),
                 new DefaultExecutionContextFactoryModule(), new SLGraphModule(DefaultJcrDescriptor.TEMP_DESCRIPTOR));
-        injector.getInstance(JRedisFactory.classRegularPartitionrPartitionrPartition.GRAPH).flushall();
+        injector.getInstance(JRedisFactory.class).getFrom(SLPartition.GRAPH).flushall();
         final GlobalSettings settings = new GlobalSettings();
         settings.getLoaderRegistry().add(FileSystemOriginArtifactLoader.class);
         settings.setDefaultSleepingIntervalInMilliseconds(250);
@@ -122,7 +124,7 @@ public class ArtifactLoaderManagerTest {
                 repository);
 
         ArtifactLoaderManager.INSTANCE.refreshResources(settings, source, provider);
-        Iterable<StringArtifact> artifacts = provider.get().listByInitialPath(StringArtifact.class, null);
+        Set<StringArtifact> artifacts = provider.get().listByInitialPath(StringArtifact.class, null);
         provider.closeResources();
         boolean hasAny = false;
 

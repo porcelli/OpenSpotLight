@@ -48,11 +48,11 @@
  */
 package org.openspotlight.federation.finder;
 
+import java.util.Set;
+
 import org.openspotlight.common.Disposable;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ArtifactSource;
-
-import java.util.Set;
 
 /**
  * The Interface OriginArtifactLoader. It should work on a multi threaded environmnent. It should be very easy to do, since

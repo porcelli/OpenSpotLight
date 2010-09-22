@@ -26,6 +26,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openspotlight</groupId>
+			<artifactId>osl-conf</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openspotlight</groupId>
 			<artifactId>osl-simple-persist</artifactId>
 		</dependency>
 		<!-- Test dependencies -->

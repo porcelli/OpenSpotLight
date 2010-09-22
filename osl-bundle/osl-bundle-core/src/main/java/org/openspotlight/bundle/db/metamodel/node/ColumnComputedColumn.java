@@ -48,8 +48,6 @@
  */
 package org.openspotlight.bundle.db.metamodel.node;
 
-import org.openspotlight.graph.annotation.SLDescription;
-import org.openspotlight.graph.annotation.SLProperty;
 
 /**
  * The Interface for node Column Computed Column Meta Model. {@link TableView} should be used as parent.

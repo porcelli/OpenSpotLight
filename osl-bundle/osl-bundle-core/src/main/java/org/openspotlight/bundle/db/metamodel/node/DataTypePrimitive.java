@@ -48,7 +48,6 @@
  */
 package org.openspotlight.bundle.db.metamodel.node;
 
-import org.openspotlight.graph.annotation.SLDescription;
 
 /**
  * The Interface for node DataType Primitive Meta Model. {@link Column} should be used as parent.

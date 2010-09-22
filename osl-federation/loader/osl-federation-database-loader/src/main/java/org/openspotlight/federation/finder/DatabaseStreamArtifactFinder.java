@@ -48,6 +48,17 @@
  */
 package org.openspotlight.federation.finder;
 
+import static com.google.common.collect.Lists.newLinkedList;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.sql.Connection;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+
 import org.openspotlight.bundle.domain.DbArtifactSource;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.SLCollections;
@@ -60,17 +71,6 @@ import org.openspotlight.federation.finder.db.DatabaseMetadataScript;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScript.DatabaseStreamHandler;
 import org.openspotlight.federation.finder.db.DatabaseMetadataScriptManager;
 import org.openspotlight.federation.finder.db.ScriptType;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.sql.Connection;
-import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import static com.google.common.collect.Lists.newLinkedList;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
 
 public class DatabaseStreamArtifactFinder extends AbstractDatabaseArtifactFinder {
 

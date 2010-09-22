@@ -48,8 +48,24 @@
  */
 package org.openspotlight.federation.finder;
 
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.language.DefaultTemplateLexer;
+import static java.util.Collections.emptySet;
+import static org.openspotlight.common.util.Exceptions.logAndReturn;
+import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
+import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
+import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.openspotlight.bundle.domain.DbArtifactSource;
 import org.openspotlight.common.exception.ConfigurationException;
 import org.openspotlight.common.util.Exceptions;
@@ -65,19 +81,6 @@ import org.openspotlight.federation.finder.db.ScriptType;
 import org.openspotlight.federation.template.CustomizedStringTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static java.util.Collections.emptySet;
-import static org.openspotlight.common.util.Exceptions.logAndReturn;
-import static org.openspotlight.common.util.Exceptions.logAndReturnNew;
-import static org.openspotlight.common.util.PatternMatcher.isMatchingWithoutCaseSentitiveness;
-import static org.openspotlight.federation.finder.db.DatabaseSupport.createConnection;
 
 public abstract class AbstractDatabaseArtifactFinder extends AbstractOriginArtifactLoader {
 

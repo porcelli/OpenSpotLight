@@ -6,7 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openspotlight.common.util.Files;
-import org.openspotlight.bundle.context.DefaultExecutionContextFactoryModule;
+import org.openspotlight.federation.context.DefaultExecutionContextFactoryModule;
 import org.openspotlight.federation.domain.artifact.Artifact;
 import org.openspotlight.federation.domain.artifact.ChangeType;
 import org.openspotlight.federation.domain.artifact.StringArtifact;
@@ -16,8 +16,9 @@ import org.openspotlight.jcr.provider.DefaultJcrDescriptor;
 import org.openspotlight.persist.guice.SimplePersistModule;
 import org.openspotlight.persist.support.SimplePersistCapable;
 import org.openspotlight.persist.support.SimplePersistFactory;
-import org.openspotlight.storage.StorageSessionport org.openspotlight.storage.domain.RegularPartitionitionition;
-import org.openspotlight.storage.domain.node.StorageNode;
+import org.openspotlight.storage.STStorageSession;
+import org.openspotlight.storage.domain.SLPartition;
+import org.openspotlight.storage.domain.node.STNodeEntry;
 import org.openspotlight.storage.redis.guice.JRedisFactory;
 import org.openspotlight.storage.redis.guice.JRedisStorageModule;
 import org.openspotlight.storage.redis.util.ExampleRedisConfig;
@@ -43,7 +44,7 @@ public class FilesStressTest {
     private final Injector injector;
 
     public FilesStressTest() {
-        injector = Guice.createInjector(new JRedisStorageModule(StStStorageSessionMode.AUTO,
+        injector = Guice.createInjector(new JRedisStorageModule(STStorageSession.STFlushMode.AUTO,
                 ExampleRedisConfig.EXAMPLE.getMappedServerConfig(),
                 repositoryPath("repository")),
                 new SimplePersistModule(), new DetailedLoggerModule(),
@@ -98,7 +99,7 @@ public class FilesStressTest {
                     JRedisFactory factory = injector.getInstance(JRedisFactory.class);
                     ByteArrayOutputStream fos = new ByteArrayOutputStream();
                     IOUtils.copy(fis, fos);
-                    factorRegularPartitionrPartitionrPartition.GRAPH).set(fileName.replaceAll("[ ]",""), fos.toByteArray());
+                    factory.getFrom(SLPartition.GRAPH).set(fileName.replaceAll("[ ]",""), fos.toByteArray());
                     return null;
                 }
             });
@@ -131,7 +132,7 @@ public class FilesStressTest {
                     artifact.setMappedFrom(fileName);
                     artifact.setLastChange(System.currentTimeMillis());
                     artifact.setOriginalName(fileName);
-                    SimplePersistCapable<StorageNode, StorStorStorageSessionist = injector.getInstance(SimplePersistFactory.class).RegularPartitionegularPartitionegularPartition.GRAPH);
+                    SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.GRAPH);
                     JRedisFactory factory = injector.getInstance(JRedisFactory.class);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
                     String line;
@@ -163,7 +164,7 @@ public class FilesStressTest {
                         artifact.setMappedFrom(fileName);
                         artifact.setLastChange(System.currentTimeMillis());
                         artifact.setOriginalName(fileName);
-                        SimplePersistCapable<StorageNode, StoragStoragStorageSession= injector.getInstance(SimplePersistFactoRegularPartitionreatRegularPartitionist(RegularPartitions...GRAPH);
+                        SimplePersistCapable<STNodeEntry, STStorageSession> simplePersist = injector.getInstance(SimplePersistFactory.class).createSimplePersist(SLPartition.GRAPH);
                         JRedisFactory factory = injector.getInstance(JRedisFactory.class);
                         BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
                         String line;

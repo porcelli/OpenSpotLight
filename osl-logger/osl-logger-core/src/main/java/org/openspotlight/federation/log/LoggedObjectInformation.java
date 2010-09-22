@@ -36,9 +36,9 @@ public class LoggedObjectInformation implements SimpleNodeType, Serializable {
 	 * @return the hierarchy from
 	 */
 	public static List<LoggedObjectInformation> getHierarchyFrom(
-			final LogableObject... anotherNodes) {
-		final List<LogableObject> nodes = new LinkedList<LogableObject>();
-		for (final LogableObject o : anotherNodes) {
+			final Object... anotherNodes) {
+		final List<Object> nodes = new LinkedList<Object>();
+		for (final Object o : anotherNodes) {
 			nodes.add(o);
 		}
 		Collections.reverse(nodes);
@@ -78,7 +78,7 @@ public class LoggedObjectInformation implements SimpleNodeType, Serializable {
 	 * @param object
 	 *            the object
 	 */
-	LoggedObjectInformation(final int order, final LogableObject object) {
+	LoggedObjectInformation(final int order, final Object object) {
 		this.order = order;
 		if (object instanceof Node) {
 			final Node node = (Node) object;

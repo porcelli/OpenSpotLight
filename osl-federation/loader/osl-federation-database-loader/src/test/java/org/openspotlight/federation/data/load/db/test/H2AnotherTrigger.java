@@ -49,10 +49,10 @@
 
 package org.openspotlight.federation.data.load.db.test;
 
-import org.h2.api.Trigger;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import org.h2.api.Trigger;
 
 /**
  * Trigger class to be used on {@link H2DatabaseTest}.

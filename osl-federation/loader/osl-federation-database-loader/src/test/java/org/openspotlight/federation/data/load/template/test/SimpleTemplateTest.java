@@ -48,13 +48,11 @@
  */
 package org.openspotlight.federation.data.load.template.test;
 
-import org.antlr.stringtemplate.StringTemplate;
-import org.antlr.stringtemplate.language.DefaultTemplateLexer;
-import org.junit.Test;
-import org.openspotlight.federation.template.CustomizedStringTemplate;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
+import org.openspotlight.federation.template.CustomizedStringTemplate;
 
 @SuppressWarnings( "all" )
 public class SimpleTemplateTest {

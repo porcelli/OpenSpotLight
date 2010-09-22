@@ -76,8 +76,9 @@
     </pluginRepositories>
     <modules>
         <module>osl-common</module>
-        <module>osl-persistence</module>
-        <module>osl-remote-support</module>
+	<module>osl-persistence</module>
+        <module>osl-conf</module>
+	<module>osl-remote-support</module>
         <module>osl-simple-persist</module>
         <module>osl-logger</module>
         <module>osl-security</module>
@@ -179,6 +180,11 @@
             <dependency>
                 <groupId>org.openspotlight</groupId>
                 <artifactId>osl-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openspotlight</groupId>
+                <artifactId>osl-conf</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
